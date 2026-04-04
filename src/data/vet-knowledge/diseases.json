@@ -1,0 +1,599 @@
+{
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-18",
+    "diseases": [
+        {
+            "id": "parvovirose",
+            "nom": "Parvovirose Canine",
+            "especes": [
+                "chien"
+            ],
+            "systeme": "Digestif",
+            "etiologie": "Parvovirus canin type 2 (CPV-2a, CPV-2b, CPV-2c)",
+            "transmission": "Fécale-orale, contact direct, environnement contaminé",
+            "incubation": "3-7 jours",
+            "symptomes": [
+                "Vomissements sévères et répétés",
+                "Diarrhée hémorragique (odeur caractéristique)",
+                "Déshydratation rapide",
+                "Léthargie profonde",
+                "Anorexie",
+                "Hyperthermie puis hypothermie",
+                "Douleur abdominale"
+            ],
+            "diagnostic": {
+                "clinique": [
+                    "Signes cliniques typiques",
+                    "Historique vaccinal incomplet"
+                ],
+                "laboratoire": [
+                    "Test ELISA rapide (fèces)",
+                    "PCR fèces",
+                    "Leucopénie sévère (<2000/µL)",
+                    "Hypoglycémie"
+                ]
+            },
+            "traitement": {
+                "fluidotherapie": "Ringer lactate ou NaCl 0.9% IV, correction déshydratation (80-90 mL/kg/24h selon degré)",
+                "antiemetiques": "Maropitant 1mg/kg SC 1x/jour",
+                "antibiotiques": "Amoxicilline-clavulanate 20-25mg/kg IV 2-3x/jour OU Ampicilline + Métronidazole",
+                "nutrition": "Réalimentation entérale précoce (meilleur pronostic), sonde naso-œsophagienne si besoin",
+                "autres": "Correction hypoglycémie (Glucose 25%), transfusion si nécessaire"
+            },
+            "pronostic": "Réservé à bon avec traitement précoce et agressif (survie 70-90% si hospitalisé)",
+            "prevention": "Vaccination : primo-vaccination 6-8-12 semaines, rappel annuel",
+            "urgence": true
+        },
+        {
+            "id": "typhus-chat",
+            "nom": "Panleucopénie Féline (Typhus du chat)",
+            "especes": [
+                "chat"
+            ],
+            "systeme": "Digestif",
+            "etiologie": "Parvovirus félin (FPV)",
+            "transmission": "Contact direct, environnement contaminé (très résistant)",
+            "incubation": "2-7 jours",
+            "symptomes": [
+                "Vomissements",
+                "Diarrhée (parfois hémorragique)",
+                "Déshydratation",
+                "Hyperthermie",
+                "Anorexie",
+                "Ataxie cérébelleuse (si infection in utero)"
+            ],
+            "diagnostic": {
+                "clinique": [
+                    "Signes typiques chez chat non vacciné"
+                ],
+                "laboratoire": [
+                    "Test parvo canin (cross-réactivité)",
+                    "PCR",
+                    "Leucopénie sévère"
+                ]
+            },
+            "traitement": {
+                "fluidotherapie": "Correction agressive déshydratation IV",
+                "antiemetiques": "Maropitant 1mg/kg SC",
+                "antibiotiques": "Amoxicilline-clavulanate ou Ampicilline IV",
+                "nutrition": "Réalimentation précoce"
+            },
+            "pronostic": "Réservé chez jeunes chatons, meilleur chez adultes traités",
+            "prevention": "Vaccination RCP (typhus-coryza-chlamydiose)",
+            "urgence": true
+        },
+        {
+            "id": "leptospirose",
+            "nom": "Leptospirose",
+            "especes": [
+                "chien",
+                "bovins"
+            ],
+            "systeme": "Multi-systémique",
+            "etiologie": "Leptospira spp. (L. icterohaemorrhagiae, L. canicola, L. grippotyphosa, etc.)",
+            "transmission": "Urine animaux infectés, eau/sol contaminés, morsure rats",
+            "incubation": "7-14 jours",
+            "zoonotique": true,
+            "symptomes": [
+                "Fièvre",
+                "Léthargie",
+                "Anorexie",
+                "Vomissements",
+                "Diarrhée",
+                "Ictère",
+                "PUPD",
+                "Pétéchies",
+                "Insuffisance rénale aiguë"
+            ],
+            "diagnostic": {
+                "clinique": [
+                    "Exposition à risque",
+                    "Signes hépatiques/rénaux"
+                ],
+                "laboratoire": [
+                    "PCR sang/urine",
+                    "Sérologie (MAT)",
+                    "Azotémie",
+                    "Élévation enzymes hépatiques",
+                    "Bilirubinémie"
+                ]
+            },
+            "traitement": {
+                "antibiotiques": "Doxycycline 5mg/kg PO 2x/jour pendant 14 jours (élimine portage rénal)",
+                "phase_aigue": "Ampicilline 20mg/kg IV 4x/jour",
+                "supportif": "Fluidothérapie, dialyse si anurie, transfusion si CIVD"
+            },
+            "pronostic": "Variable selon atteinte - bon si traitement précoce",
+            "prevention": "Vaccination (souches L, Pi), contrôle rats",
+            "urgence": true
+        },
+        {
+            "id": "pyometre",
+            "nom": "Pyomètre",
+            "especes": [
+                "chien",
+                "chat"
+            ],
+            "systeme": "Reproducteur",
+            "etiologie": "Infection utérine bactérienne (E. coli principalement), secondaire à imprégnation progestéronique",
+            "symptomes": [
+                "Léthargie",
+                "Anorexie",
+                "PUPD",
+                "Distension abdominale",
+                "Pertes vulvaires purulentes (col ouvert) ou absentes (col fermé)",
+                "Fièvre ou hypothermie",
+                "Vomissements"
+            ],
+            "diagnostic": {
+                "clinique": [
+                    "Femelle non stérilisée, 1-2 mois post-chaleurs"
+                ],
+                "laboratoire": [
+                    "Leucocytose avec virage à gauche",
+                    "Azotémie pré-rénale",
+                    "Hyperglobulinémie"
+                ],
+                "imagerie": [
+                    "Échographie (utérus dilaté, contenu liquidien)",
+                    "Radio (effet masse)"
+                ]
+            },
+            "traitement": {
+                "chirurgical": "Ovariohystérectomie (traitement de choix)",
+                "fluidotherapie": "Correction déshydratation pré-opératoire",
+                "antibiotiques": "Amoxicilline-clavulanate ou Fluoroquinolone",
+                "medical": "Aglépristone ± PGF2α (si reproduction souhaitée, col ouvert uniquement)"
+            },
+            "pronostic": "Bon à réservé selon état général et complications (sepsis, péritonite)",
+            "urgence": true
+        },
+        {
+            "id": "irc-chat",
+            "nom": "Insuffisance Rénale Chronique (IRC)",
+            "especes": [
+                "chat",
+                "chien"
+            ],
+            "systeme": "Urinaire",
+            "etiologie": "Multifactorielle : néphrite interstitielle, PKD, glomérulonéphrite, néoplasie",
+            "symptomes": [
+                "PUPD",
+                "Perte de poids",
+                "Anorexie",
+                "Vomissements",
+                "Déshydratation",
+                "Mauvais état général",
+                "Halitose urémique",
+                "Ulcères buccaux"
+            ],
+            "diagnostic": {
+                "laboratoire": [
+                    "Azotémie (↑ urée/créatinine)",
+                    "↓ Densité urinaire (<1.035 chat, <1.030 chien)",
+                    "SDMA",
+                    "Hyperkaliémie ou hypokaliémie",
+                    "Anémie non régénérative",
+                    "Protéinurie"
+                ],
+                "imagerie": [
+                    "Échographie rénale (taille, structure)"
+                ]
+            },
+            "classification": {
+                "IRIS_1": "Créatinine <1.6 mg/dL (chat) - SDMA 18-25, pas d'azotémie",
+                "IRIS_2": "Créatinine 1.6-2.8 mg/dL (chat) - Azotémie légère",
+                "IRIS_3": "Créatinine 2.9-5.0 mg/dL (chat) - Azotémie modérée",
+                "IRIS_4": "Créatinine >5.0 mg/dL (chat) - Azotémie sévère"
+            },
+            "traitement": {
+                "alimentation": "Régime rénal (↓ phosphore, ↓ protéines de haute qualité)",
+                "hydratation": "Fluidothérapie SC à domicile si besoin",
+                "phosphore": "Chélateurs phosphore si hyperphosphatémie (Carbonate de calcium, Hydroxyde d'aluminium)",
+                "hypertension": "Amlodipine 0.625-1.25mg/chat/jour",
+                "proteinurie": "IECA (Bénazépril 0.5mg/kg/jour) si RPCU >0.4",
+                "anemie": "Darbépoétine si Ht<20%",
+                "nausees": "Maropitant, Famotidine"
+            },
+            "pronostic": "Variable selon stade - survie médiane stade 3: 1-2 ans (chat)",
+            "urgence": false
+        },
+        {
+            "id": "cystite",
+            "nom": "Cystite / Infection Urinaire Basse",
+            "especes": [
+                "chien",
+                "chat"
+            ],
+            "systeme": "Urinaire",
+            "etiologie": "Bactérienne (E. coli, Staphylococcus, Proteus) ou idiopathique (chat)",
+            "symptomes": [
+                "Pollakiurie",
+                "Dysurie",
+                "Strangurie",
+                "Hématurie",
+                "Léchage zone périnéale",
+                "Mictions hors litière (chat)"
+            ],
+            "diagnostic": {
+                "clinique": [
+                    "Signes urinaires bas"
+                ],
+                "laboratoire": [
+                    "Analyse urine (Cristaux, Bactéries, Leucocytes, pH)",
+                    "Culture urine (cystocentèse)"
+                ],
+                "imagerie": [
+                    "Échographie/Radio (calculs)"
+                ]
+            },
+            "traitement": {
+                "antibiotiques": "Selon antibiogramme - Amoxicilline-clavulanate 7 jours (1ère fois) ou Fluoroquinolone",
+                "chat_idiopathique": "Gestion stress, enrichissement environnemental, alimentation humide, phéromones (Feliway)",
+                "antispasmodiques": "Prazosin si spasme urétral"
+            },
+            "pronostic": "Bon avec traitement adapté",
+            "urgence": false
+        },
+        {
+            "id": "obstruction-urinaire-chat",
+            "nom": "Obstruction Urétrale Féline",
+            "especes": [
+                "chat"
+            ],
+            "systeme": "Urinaire",
+            "etiologie": "Bouchon urétral (mucus/cristaux), calculs, spasme urétral",
+            "symptomes": [
+                "Efforts improductifs pour uriner",
+                "Vocalisation",
+                "Vessie distendue et douloureuse",
+                "Léthargie",
+                "Vomissements",
+                "Hypothermie (si prolongé)",
+                "Bradycardie (hyperkaliémie)"
+            ],
+            "diagnostic": {
+                "clinique": [
+                    "Chat mâle, globe vésical palpable"
+                ],
+                "laboratoire": [
+                    "Hyperkaliémie (urgence)",
+                    "Azotémie post-rénale",
+                    "Acidose métabolique"
+                ],
+                "ECG": "Anomalies si K>7 mEq/L"
+            },
+            "traitement": {
+                "stabilisation": "Traitement hyperkaliémie si sévère (Gluconate Ca, Insuline+Glucose, NaHCO3)",
+                "catheterisation": "Sondage urétral et rinçage vésical",
+                "fluidotherapie": "NaCl 0.9% IV (éviter Ringer si hyperkaliémie)",
+                "analgesie": "Buprénorphine",
+                "suivi": "Surveillance production urine, ionogramme"
+            },
+            "pronostic": "Bon si traitement rapide, réservé si hyperkaliémie sévère non traitée",
+            "prevention": "Alimentation humide, gestion stress",
+            "urgence": true
+        },
+        {
+            "id": "giardiose",
+            "nom": "Giardiose",
+            "especes": [
+                "chien",
+                "chat"
+            ],
+            "systeme": "Digestif",
+            "etiologie": "Giardia duodenalis (protozoaire)",
+            "transmission": "Fécale-orale, eau contaminée",
+            "zoonotique": true,
+            "symptomes": [
+                "Diarrhée chronique ou intermittente",
+                "Selles molles, malodorantes, graisseuses",
+                "Perte de poids",
+                "Flatulences",
+                "Parfois asymptomatique"
+            ],
+            "diagnostic": {
+                "laboratoire": [
+                    "Test ELISA rapide (fèces)",
+                    "Coproscopie (kystes)",
+                    "PCR fèces"
+                ]
+            },
+            "traitement": {
+                "fenbendazole": "50 mg/kg PO 1x/jour pendant 3-5 jours",
+                "metronidazole": "25 mg/kg PO 2x/jour pendant 5-7 jours",
+                "environnement": "Nettoyage et désinfection (ammonium quaternaire)",
+                "traitement_tous_animaux": "Traiter tous les animaux du foyer"
+            },
+            "pronostic": "Bon avec traitement complet",
+            "urgence": false
+        },
+        {
+            "id": "ehrlichiose",
+            "nom": "Ehrlichiose Canine",
+            "especes": [
+                "chien"
+            ],
+            "systeme": "Multi-systémique",
+            "etiologie": "Ehrlichia canis (rickettsie)",
+            "transmission": "Tique (Rhipicephalus sanguineus)",
+            "symptomes": {
+                "phase_aiguë": [
+                    "Fièvre",
+                    "Anorexie",
+                    "Adénomégalie",
+                    "Thrombopénie",
+                    "Pétéchies"
+                ],
+                "phase_chronique": [
+                    "Pancytopénie",
+                    "Hémorragies",
+                    "Cachexie",
+                    "Uvéite",
+                    "Insuffisance rénale"
+                ]
+            },
+            "diagnostic": {
+                "laboratoire": [
+                    "Test rapide 4Dx (anticorps)",
+                    "PCR sang",
+                    "Thrombocytopénie",
+                    "Anémie",
+                    "Hyperglobulinémie"
+                ],
+                "frottis": "Morulas dans monocytes (rare)"
+            },
+            "traitement": {
+                "doxycycline": "5-10 mg/kg PO 1x/jour pendant 28 jours",
+                "supportif": "Transfusion si anémie sévère, corticothérapie si AHMI"
+            },
+            "pronostic": "Bon phase aiguë, réservé phase chronique",
+            "prevention": "Antiparasitaires externes, contrôle tiques",
+            "urgence": false
+        },
+        {
+            "id": "leishmaniose",
+            "nom": "Leishmaniose Canine",
+            "especes": [
+                "chien"
+            ],
+            "systeme": "Multi-systémique",
+            "etiologie": "Leishmania infantum (protozoaire)",
+            "transmission": "Phlébotome (moustique)",
+            "zoonotique": true,
+            "symptomes": [
+                "Lésions cutanées (squamosis, ulcères)",
+                "Onychogryphose",
+                "Adénomégalie",
+                "Splénomégalie",
+                "Perte de poids",
+                "Atrophie musculaire",
+                "Épistaxis",
+                "Uvéite",
+                "Insuffisance rénale"
+            ],
+            "diagnostic": {
+                "laboratoire": [
+                    "Sérologie (ELISA, IFI)",
+                    "PCR (moelle, ganglion)",
+                    "Électrophorèse (↑ gammaglobulines)",
+                    "Protéinurie"
+                ],
+                "cytologie": "Amastigotes dans macrophages (moelle, ganglion)"
+            },
+            "classification": "Stade LeishVet I à IV selon signes cliniques et biologie",
+            "traitement": {
+                "antimoniates": "Glucantime 100mg/kg SC 1x/jour pendant 4-8 semaines",
+                "miltefosine": "Milteforan 2mg/kg PO 1x/jour pendant 28 jours",
+                "allopurinol": "10-15 mg/kg PO 2x/jour à vie (leishmaniostatique)"
+            },
+            "pronostic": "Réservé - maladie non curable, contrôle à vie",
+            "prevention": "Vaccination (Letifend), répulsifs phlébotomes (collier Scalibor)",
+            "urgence": false
+        },
+        {
+            "id": "otite-externe",
+            "nom": "Otite Externe",
+            "especes": [
+                "chien",
+                "chat"
+            ],
+            "systeme": "Dermatologie/ORL",
+            "etiologie": "Multifactorielle : bactéries (Staph, Pseudomonas), levures (Malassezia), allergies, corps étranger",
+            "symptomes": [
+                "Prurit auriculaire",
+                "Secouement tête",
+                "Odeur désagréable",
+                "Écoulement",
+                "Douleur",
+                "Érythème"
+            ],
+            "diagnostic": {
+                "examen": [
+                    "Otoscopie",
+                    "Évaluation tympan"
+                ],
+                "cytologie": "Écouvillonnage auriculaire (bactéries, levures, parasites)"
+            },
+            "traitement": {
+                "nettoyage": "Solution auriculaire 1-2x/semaine",
+                "topique": "Selon cytologie - Antibiotique ± Antifongique ± Corticoïde",
+                "systemique": "Si otite sévère ou moyenne",
+                "cause_primaire": "Traiter allergie sous-jacente si présente"
+            },
+            "pronostic": "Bon si cause primaire traitée",
+            "urgence": false
+        },
+        {
+            "id": "demodecie",
+            "nom": "Démodécie Canine",
+            "especes": [
+                "chien"
+            ],
+            "systeme": "Dermatologie",
+            "etiologie": "Demodex canis (acarien folliculaire)",
+            "symptomes": [
+                "Alopécie localisée ou généralisée",
+                "Comédons",
+                "Érythème",
+                "Pyodermite secondaire",
+                "Prurit variable"
+            ],
+            "diagnostic": {
+                "raclage": "Raclage cutané profond (jusqu'au sang capillaire)",
+                "trichogramme": "Poils arrachés"
+            },
+            "classification": {
+                "localisee": "< 5 lésions, bon pronostic, souvent autorésolutive",
+                "generalisee": "> 5 lésions ou régions multiples, traitement nécessaire"
+            },
+            "traitement": {
+                "isoxazolines": "Fluralaner (Bravecto), Sarolaner (Simparica), Afoxolaner (NexGard) - très efficaces",
+                "ivermectine": "0.3-0.6 mg/kg PO 1x/jour (si test MDR1 négatif)",
+                "pyodermite": "Antibiotiques si infection secondaire"
+            },
+            "pronostic": "Bon avec nouveaux traitements isoxazolines",
+            "urgence": false
+        },
+        {
+            "id": "dilatation-torsion-estomac",
+            "nom": "Syndrome Dilatation-Torsion de l'Estomac (SDTE)",
+            "especes": [
+                "chien"
+            ],
+            "systeme": "Digestif",
+            "etiologie": "Multifactorielle : grandes races, repas volumineux, exercice post-prandial",
+            "facteurs_risque": [
+                "Grandes races à thorax profond",
+                "Dogue allemand, Berger allemand, Setter",
+                "Repas unique volumineux",
+                "Stress"
+            ],
+            "symptomes": [
+                "Distension abdominale aiguë",
+                "Efforts de vomissement improductifs",
+                "Hypersalivation",
+                "Agitation puis prostration",
+                "Dyspnée",
+                "Tachycardie",
+                "Choc hypovolémique",
+                "Muqueuses pâles/cyanosées"
+            ],
+            "diagnostic": {
+                "clinique": [
+                    "Tympanisme abdominal",
+                    "Signes de choc"
+                ],
+                "imagerie": [
+                    "Radio abdomen : estomac dilaté, signe 'double bulle' si torsion"
+                ]
+            },
+            "traitement": {
+                "stabilisation": "Fluidothérapie agressive IV (90 mL/kg/h choc), oxygénothérapie",
+                "decompression": "Trocardisation ou sondage gastrique",
+                "chirurgie": "Gastropexie en urgence (indispensable)",
+                "arythmies": "Surveillance ECG, Lidocaïne si TV"
+            },
+            "pronostic": "Réservé - mortalité 15-33% même avec traitement",
+            "prevention": "Gastropexie prophylactique races à risque, repas fractionnés",
+            "urgence": true
+        },
+        {
+            "id": "intoxication-chocolat",
+            "nom": "Intoxication au Chocolat",
+            "especes": [
+                "chien",
+                "chat"
+            ],
+            "systeme": "Toxicologie",
+            "etiologie": "Théobromine et caféine (méthylxanthines)",
+            "dose_toxique": {
+                "chien": "20 mg/kg théobromine (signes légers), >40 mg/kg (cardiotoxicité), >60 mg/kg (convulsions)",
+                "concentrations": {
+                    "chocolat_blanc": "0.5 mg/g théobromine",
+                    "chocolat_lait": "2 mg/g théobromine",
+                    "chocolat_noir": "5-8 mg/g théobromine",
+                    "cacao_poudre": "14-26 mg/g théobromine"
+                }
+            },
+            "symptomes": [
+                "Vomissements",
+                "Diarrhée",
+                "Hyperactivité",
+                "Tachycardie",
+                "Polypnée",
+                "Hyperthermie",
+                "Tremblements",
+                "Convulsions",
+                "Arythmies cardiaques"
+            ],
+            "traitement": {
+                "decontamination": "Vomissement provoqué si <2h (Apomorphine 0.04mg/kg IV)",
+                "charbon_active": "1-2 g/kg PO (répéter car cycle entéro-hépatique)",
+                "fluidotherapie": "Accélérer élimination",
+                "arythmies": "Lidocaïne si tachyarythmie ventriculaire",
+                "convulsions": "Diazépam 0.5-1 mg/kg IV",
+                "monitoring": "ECG, température"
+            },
+            "pronostic": "Bon si traitement précoce, réservé si convulsions/arythmies",
+            "urgence": true
+        },
+        {
+            "id": "intoxication-raticide",
+            "nom": "Intoxication aux Anticoagulants (Raticides)",
+            "especes": [
+                "chien",
+                "chat"
+            ],
+            "systeme": "Toxicologie",
+            "etiologie": "Rodenticides anticoagulants (brodifacoum, bromadiolone, chlorophacinone)",
+            "mecanisme": "Inhibition vitamine K → déplétion facteurs coagulation II, VII, IX, X",
+            "delai_apparition": "3-5 jours",
+            "symptomes": [
+                "Léthargie",
+                "Anorexie",
+                "Dyspnée (hémorragie pulmonaire)",
+                "Pâleur muqueuses",
+                "Épistaxis",
+                "Hématomes",
+                "Hématurie",
+                "Mort subite"
+            ],
+            "diagnostic": {
+                "laboratoire": [
+                    "Temps de coagulation allongé (PT, PTT)",
+                    "Temps de Quick (PT) test pivK"
+                ],
+                "toxicologie": "Dosage anticoagulants (si disponible)"
+            },
+            "traitement": {
+                "decontamination": "Vomissement si < 2h, charbon activé",
+                "vitamine_K1": "2.5-5 mg/kg PO avec repas gras, 2x/jour pendant 4-6 semaines",
+                "transfusion": "Sang frais ou plasma si hémorragie active",
+                "suivi": "PT 48h après arrêt vitamine K"
+            },
+            "pronostic": "Bon si traitement précoce et complet",
+            "urgence": true
+        }
+    ]
+}

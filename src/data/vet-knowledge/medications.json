@@ -1,0 +1,1145 @@
+{
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-18",
+    "medications": [
+        {
+            "id": "amoxicilline",
+            "nom": "Amoxicilline",
+            "nomCommercial": [
+                "Clamoxyl",
+                "Suramox",
+                "Amoxival"
+            ],
+            "classe": "Antibiotique - Bêta-lactamine",
+            "formes": [
+                "Comprimés",
+                "Injectable",
+                "Suspension orale"
+            ],
+            "indications": [
+                "Infections respiratoires",
+                "Infections urinaires",
+                "Infections cutanées",
+                "Otites"
+            ],
+            "contreIndications": [
+                "Allergie aux pénicillines",
+                "Insuffisance rénale sévère"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "10-20 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO/IM/SC",
+                    "duree": "5-7 jours"
+                },
+                "chat": {
+                    "dose": "10-20 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO/IM/SC",
+                    "duree": "5-7 jours"
+                },
+                "bovins": {
+                    "dose": "6-10 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "IM",
+                    "duree": "3-5 jours"
+                },
+                "ovins": {
+                    "dose": "7-10 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "IM",
+                    "duree": "3-5 jours"
+                }
+            },
+            "effetsSecondaires": [
+                "Diarrhée",
+                "Vomissements",
+                "Réactions allergiques"
+            ],
+            "interactions": [
+                "Méthotrexate",
+                "Anticoagulants oraux"
+            ],
+            "tempsAttente": {
+                "viande": "15 jours",
+                "lait": "48 heures"
+            },
+            "conservation": "À température ambiante, à l'abri de l'humidité"
+        },
+        {
+            "id": "amoxicilline-acide-clavulanique",
+            "nom": "Amoxicilline + Acide Clavulanique",
+            "nomCommercial": [
+                "Synulox",
+                "Clavaseptin",
+                "Kesium"
+            ],
+            "classe": "Antibiotique - Bêta-lactamine + Inhibiteur bêta-lactamase",
+            "formes": [
+                "Comprimés",
+                "Injectable",
+                "Suspension orale"
+            ],
+            "indications": [
+                "Infections résistantes",
+                "Pyodermites",
+                "Infections urinaires",
+                "Infections respiratoires",
+                "Abcès"
+            ],
+            "contreIndications": [
+                "Allergie aux pénicillines",
+                "Lapins",
+                "Cobayes",
+                "Hamsters"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "12.5-25 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "5-7 jours"
+                },
+                "chat": {
+                    "dose": "12.5-25 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "5-7 jours"
+                }
+            },
+            "effetsSecondaires": [
+                "Troubles digestifs",
+                "Diarrhée",
+                "Vomissements"
+            ],
+            "interactions": [
+                "Méthotrexate"
+            ],
+            "conservation": "Au réfrigérateur après reconstitution"
+        },
+        {
+            "id": "enrofloxacine",
+            "nom": "Enrofloxacine",
+            "nomCommercial": [
+                "Baytril",
+                "Enroxil"
+            ],
+            "classe": "Antibiotique - Fluoroquinolone",
+            "formes": [
+                "Comprimés",
+                "Injectable",
+                "Solution orale"
+            ],
+            "indications": [
+                "Infections urinaires",
+                "Infections respiratoires",
+                "Infections cutanées",
+                "Otites"
+            ],
+            "contreIndications": [
+                "Animaux en croissance",
+                "Épilepsie",
+                "Gestation"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "5-10 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO/SC",
+                    "duree": "5-10 jours"
+                },
+                "chat": {
+                    "dose": "5 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO/SC",
+                    "duree": "5-10 jours",
+                    "attention": "Ne pas dépasser 5mg/kg (risque rétinopathie)"
+                }
+            },
+            "effetsSecondaires": [
+                "Troubles digestifs",
+                "Atteintes cartilagineuses chez jeunes"
+            ],
+            "interactions": [
+                "Théophylline",
+                "AINS",
+                "Cations divalents (Ca, Mg, Fe)"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "metronidazole",
+            "nom": "Métronidazole",
+            "nomCommercial": [
+                "Flagyl",
+                "Metrobactin"
+            ],
+            "classe": "Antibiotique - Nitroimidazolé / Antiparasitaire",
+            "formes": [
+                "Comprimés",
+                "Injectable",
+                "Suspension orale"
+            ],
+            "indications": [
+                "Giardiose",
+                "Infections anaérobies",
+                "Colites",
+                "Maladie inflammatoire chronique intestinale"
+            ],
+            "contreIndications": [
+                "Gestation (1er trimestre)",
+                "Insuffisance hépatique sévère"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "15-25 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "5-7 jours"
+                },
+                "chat": {
+                    "dose": "10-15 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "5-7 jours"
+                }
+            },
+            "effetsSecondaires": [
+                "Nausées",
+                "Ataxie (surdosage)",
+                "Neutropénie"
+            ],
+            "interactions": [
+                "Alcool",
+                "Anticoagulants"
+            ],
+            "conservation": "À l'abri de la lumière"
+        },
+        {
+            "id": "meloxicam",
+            "nom": "Méloxicam",
+            "nomCommercial": [
+                "Metacam",
+                "Loxicom",
+                "Meloxidyl"
+            ],
+            "classe": "Anti-inflammatoire non stéroïdien (AINS)",
+            "formes": [
+                "Suspension orale",
+                "Injectable",
+                "Comprimés à croquer"
+            ],
+            "indications": [
+                "Douleur",
+                "Inflammation",
+                "Arthrose",
+                "Post-opératoire"
+            ],
+            "contreIndications": [
+                "Insuffisance rénale",
+                "Insuffisance hépatique",
+                "Déshydratation",
+                "Ulcères digestifs",
+                "Gestation"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.2 mg/kg J1 puis 0.1 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO/SC",
+                    "duree": "Selon besoin"
+                },
+                "chat": {
+                    "dose": "0.1 mg/kg J1 puis 0.05 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO/SC",
+                    "duree": "Court terme recommandé"
+                }
+            },
+            "effetsSecondaires": [
+                "Troubles digestifs",
+                "Insuffisance rénale",
+                "Ulcères"
+            ],
+            "interactions": [
+                "Autres AINS",
+                "Corticoïdes",
+                "Diurétiques",
+                "Aminosides"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "carprofen",
+            "nom": "Carprofène",
+            "nomCommercial": [
+                "Rimadyl",
+                "Carprodyl",
+                "Carprieve"
+            ],
+            "classe": "Anti-inflammatoire non stéroïdien (AINS)",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Arthrose",
+                "Douleur post-opératoire",
+                "Inflammation"
+            ],
+            "contreIndications": [
+                "Insuffisance rénale/hépatique",
+                "Déshydratation",
+                "Troubles hémorragiques"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "4 mg/kg",
+                    "frequence": "1x/jour ou 2 mg/kg 2x/jour",
+                    "voie": "PO/SC/IV",
+                    "duree": "Selon besoin"
+                }
+            },
+            "effetsSecondaires": [
+                "Troubles digestifs",
+                "Hépatotoxicité",
+                "Néphrotoxicité"
+            ],
+            "interactions": [
+                "Autres AINS",
+                "Corticoïdes"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "prednisolone",
+            "nom": "Prednisolone",
+            "nomCommercial": [
+                "Dermipred",
+                "Megasolone"
+            ],
+            "classe": "Corticostéroïde",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Inflammation",
+                "Allergies",
+                "Maladies auto-immunes",
+                "Choc"
+            ],
+            "contreIndications": [
+                "Diabète",
+                "Infections non contrôlées",
+                "Ulcères digestifs"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.5-2 mg/kg",
+                    "frequence": "1-2x/jour",
+                    "voie": "PO",
+                    "duree": "Diminution progressive"
+                },
+                "chat": {
+                    "dose": "1-2 mg/kg",
+                    "frequence": "1-2x/jour",
+                    "voie": "PO",
+                    "duree": "Diminution progressive"
+                }
+            },
+            "effetsSecondaires": [
+                "PUPD",
+                "Polyphagie",
+                "Fonte musculaire",
+                "Immunosuppression"
+            ],
+            "interactions": [
+                "AINS",
+                "Vaccins vivants"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "dexamethasone",
+            "nom": "Dexaméthasone",
+            "nomCommercial": [
+                "Dexafort",
+                "Dexadreson"
+            ],
+            "classe": "Corticostéroïde",
+            "formes": [
+                "Injectable"
+            ],
+            "indications": [
+                "Choc",
+                "Œdème cérébral",
+                "Inflammation sévère",
+                "Allergies graves"
+            ],
+            "contreIndications": [
+                "Diabète",
+                "Infections virales",
+                "Gestation"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.1-0.5 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "IV/IM/SC",
+                    "duree": "Court terme"
+                },
+                "chat": {
+                    "dose": "0.1-0.5 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "IV/IM/SC",
+                    "duree": "Court terme"
+                },
+                "bovins": {
+                    "dose": "0.02-0.1 mg/kg",
+                    "frequence": "1x",
+                    "voie": "IV/IM",
+                    "duree": "Dose unique"
+                }
+            },
+            "effetsSecondaires": [
+                "PUPD",
+                "Immunosuppression",
+                "Retard cicatrisation"
+            ],
+            "tempsAttente": {
+                "viande": "8-14 jours",
+                "lait": "72 heures"
+            },
+            "conservation": "Au réfrigérateur"
+        },
+        {
+            "id": "ivermectine",
+            "nom": "Ivermectine",
+            "nomCommercial": [
+                "Ivomec",
+                "Oramec"
+            ],
+            "classe": "Antiparasitaire - Endectocide",
+            "formes": [
+                "Injectable",
+                "Solution orale",
+                "Spot-on"
+            ],
+            "indications": [
+                "Gale",
+                "Démodécie",
+                "Strongles",
+                "Vers ronds"
+            ],
+            "contreIndications": [
+                "Races sensibles MDR1 (Colley, Berger Australien)",
+                "Chiots < 6 semaines"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.2-0.4 mg/kg",
+                    "frequence": "Mensuel (prévention) ou selon protocole",
+                    "voie": "PO/SC",
+                    "attention": "Test MDR1 recommandé pour races à risque"
+                },
+                "chat": {
+                    "dose": "0.2 mg/kg",
+                    "frequence": "Mensuel",
+                    "voie": "PO/SC"
+                },
+                "bovins": {
+                    "dose": "0.2 mg/kg",
+                    "frequence": "Selon infestation",
+                    "voie": "SC"
+                }
+            },
+            "effetsSecondaires": [
+                "Ataxie",
+                "Mydriase",
+                "Tremblements (surdosage)"
+            ],
+            "tempsAttente": {
+                "viande": "28 jours",
+                "lait": "Ne pas utiliser"
+            },
+            "conservation": "À l'abri de la lumière"
+        },
+        {
+            "id": "fenbendazole",
+            "nom": "Fenbendazole",
+            "nomCommercial": [
+                "Panacur"
+            ],
+            "classe": "Antiparasitaire - Benzimidazolé",
+            "formes": [
+                "Pâte",
+                "Suspension",
+                "Granulés"
+            ],
+            "indications": [
+                "Vers ronds",
+                "Giardiose",
+                "Vers plats (certains)"
+            ],
+            "contreIndications": [
+                "Hypersensibilité connue"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "50 mg/kg",
+                    "frequence": "1x/jour pendant 3 jours",
+                    "voie": "PO"
+                },
+                "chat": {
+                    "dose": "50 mg/kg",
+                    "frequence": "1x/jour pendant 3-5 jours",
+                    "voie": "PO"
+                }
+            },
+            "effetsSecondaires": [
+                "Rares - vomissements"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "praziquantel",
+            "nom": "Praziquantel",
+            "nomCommercial": [
+                "Droncit",
+                "Milbemax (combiné)",
+                "Drontal (combiné)"
+            ],
+            "classe": "Antiparasitaire - Cestodicide",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Téniasis",
+                "Vers plats",
+                "Dipylidium",
+                "Echinococcus"
+            ],
+            "contreIndications": [
+                "Chiots/chatons < 6 semaines"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "5 mg/kg",
+                    "frequence": "Dose unique",
+                    "voie": "PO/SC"
+                },
+                "chat": {
+                    "dose": "5 mg/kg",
+                    "frequence": "Dose unique",
+                    "voie": "PO/SC"
+                }
+            },
+            "effetsSecondaires": [
+                "Rares - salivation, diarrhée"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "fipronil",
+            "nom": "Fipronil",
+            "nomCommercial": [
+                "Frontline",
+                "Fiprospot",
+                "Effipro"
+            ],
+            "classe": "Antiparasitaire externe - Phénylpyrazolé",
+            "formes": [
+                "Spot-on",
+                "Spray"
+            ],
+            "indications": [
+                "Puces",
+                "Tiques"
+            ],
+            "contreIndications": [
+                "Lapins (toxique)",
+                "Animaux malades/affaiblis"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "Selon poids (pipette adaptée)",
+                    "frequence": "Mensuel",
+                    "voie": "Topique"
+                },
+                "chat": {
+                    "dose": "Selon poids (pipette adaptée)",
+                    "frequence": "Mensuel",
+                    "voie": "Topique"
+                }
+            },
+            "effetsSecondaires": [
+                "Réaction locale",
+                "Prurit transitoire"
+            ],
+            "conservation": "À température ambiante, à l'abri de la lumière"
+        },
+        {
+            "id": "maropitant",
+            "nom": "Maropitant",
+            "nomCommercial": [
+                "Cerenia"
+            ],
+            "classe": "Antiémétique - Antagoniste NK1",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Vomissements",
+                "Mal des transports",
+                "Nausées chimio-induites"
+            ],
+            "contreIndications": [
+                "Hypersensibilité",
+                "Obstruction digestive mécanique"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "1-2 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO/SC",
+                    "duree": "Jusqu'à 5 jours"
+                },
+                "chat": {
+                    "dose": "1 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "SC",
+                    "duree": "Jusqu'à 5 jours"
+                }
+            },
+            "effetsSecondaires": [
+                "Douleur à l'injection",
+                "Hypersalivation"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "omeprazole",
+            "nom": "Oméprazole",
+            "nomCommercial": [
+                "Gastrogard",
+                "Mopral"
+            ],
+            "classe": "Anti-ulcéreux - Inhibiteur pompe à protons",
+            "formes": [
+                "Gélules",
+                "Pâte orale"
+            ],
+            "indications": [
+                "Ulcères gastriques",
+                "Reflux gastro-œsophagien",
+                "Prévention ulcères (AINS)"
+            ],
+            "contreIndications": [
+                "Hypersensibilité"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.5-1 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO",
+                    "duree": "2-4 semaines"
+                },
+                "chat": {
+                    "dose": "0.5-1 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO",
+                    "duree": "2-4 semaines"
+                }
+            },
+            "effetsSecondaires": [
+                "Rares"
+            ],
+            "interactions": [
+                "Kétoconazole",
+                "Digoxine"
+            ],
+            "conservation": "À température ambiante, ne pas ouvrir les gélules"
+        },
+        {
+            "id": "furosemide",
+            "nom": "Furosémide",
+            "nomCommercial": [
+                "Dimazon",
+                "Lasilix"
+            ],
+            "classe": "Diurétique de l'anse",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Œdème pulmonaire",
+                "Insuffisance cardiaque",
+                "Ascite",
+                "Œdème cérébral"
+            ],
+            "contreIndications": [
+                "Déshydratation",
+                "Anurie",
+                "Hypokaliémie sévère"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "1-4 mg/kg",
+                    "frequence": "1-3x/jour",
+                    "voie": "PO/IV/IM",
+                    "duree": "Selon indication"
+                },
+                "chat": {
+                    "dose": "1-2 mg/kg",
+                    "frequence": "1-2x/jour",
+                    "voie": "PO/IV/IM",
+                    "duree": "Selon indication"
+                }
+            },
+            "effetsSecondaires": [
+                "Déshydratation",
+                "Hypokaliémie",
+                "Ototoxicité (fortes doses IV)"
+            ],
+            "interactions": [
+                "Aminosides",
+                "AINS",
+                "Digoxine"
+            ],
+            "conservation": "À l'abri de la lumière"
+        },
+        {
+            "id": "pimobendan",
+            "nom": "Pimobendan",
+            "nomCommercial": [
+                "Vetmedin"
+            ],
+            "classe": "Inotrope positif - Inhibiteur phosphodiestérase III",
+            "formes": [
+                "Comprimés à croquer",
+                "Gélules"
+            ],
+            "indications": [
+                "Insuffisance cardiaque congestive",
+                "Cardiomyopathie dilatée",
+                "Maladie valvulaire dégénérative"
+            ],
+            "contreIndications": [
+                "Cardiomyopathie hypertrophique",
+                "Sténose aortique"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.25-0.3 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO (à jeun)",
+                    "duree": "À vie"
+                }
+            },
+            "effetsSecondaires": [
+                "Anorexie",
+                "Diarrhée",
+                "Arythmies (rares)"
+            ],
+            "interactions": [
+                "Bêta-bloquants"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "enalapril",
+            "nom": "Énalapril",
+            "nomCommercial": [
+                "Enacard",
+                "Prilenal"
+            ],
+            "classe": "Inhibiteur de l'enzyme de conversion (IECA)",
+            "formes": [
+                "Comprimés"
+            ],
+            "indications": [
+                "Insuffisance cardiaque",
+                "Hypertension",
+                "Protéinurie rénale"
+            ],
+            "contreIndications": [
+                "Hypotension",
+                "Déshydratation",
+                "Sténose artère rénale"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.5 mg/kg",
+                    "frequence": "1-2x/jour",
+                    "voie": "PO",
+                    "duree": "À vie"
+                },
+                "chat": {
+                    "dose": "0.25-0.5 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO",
+                    "duree": "À vie"
+                }
+            },
+            "effetsSecondaires": [
+                "Hypotension",
+                "Hyperkaliémie",
+                "Azotémie"
+            ],
+            "interactions": [
+                "AINS",
+                "Diurétiques épargneurs de potassium"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "phenobarbital",
+            "nom": "Phénobarbital",
+            "nomCommercial": [
+                "Gardénal",
+                "Soliphen"
+            ],
+            "classe": "Antiépileptique - Barbiturique",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Épilepsie",
+                "Convulsions"
+            ],
+            "contreIndications": [
+                "Insuffisance hépatique sévère"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "2-3 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "À vie",
+                    "suivi": "Phénobarbitalémie à contrôler"
+                },
+                "chat": {
+                    "dose": "2-3 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "À vie"
+                }
+            },
+            "effetsSecondaires": [
+                "Sédation",
+                "PUPD",
+                "Polyphagie",
+                "Hépatotoxicité"
+            ],
+            "interactions": [
+                "Glucocorticoïdes",
+                "Phénytoïne"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "gabapentine",
+            "nom": "Gabapentine",
+            "nomCommercial": [
+                "Neurontin",
+                "Gabapentine générique"
+            ],
+            "classe": "Antiépileptique / Analgesique neuropathique",
+            "formes": [
+                "Gélules",
+                "Solution orale"
+            ],
+            "indications": [
+                "Douleur neuropathique",
+                "Épilepsie réfractaire",
+                "Anxiété",
+                "Douleur chronique"
+            ],
+            "contreIndications": [
+                "Insuffisance rénale sévère (ajuster dose)"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "5-10 mg/kg",
+                    "frequence": "2-3x/jour",
+                    "voie": "PO"
+                },
+                "chat": {
+                    "dose": "5-10 mg/kg",
+                    "frequence": "1-2x/jour",
+                    "voie": "PO",
+                    "attention": "Éviter formulations avec xylitol"
+                }
+            },
+            "effetsSecondaires": [
+                "Sédation",
+                "Ataxie"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "tramadol",
+            "nom": "Tramadol",
+            "nomCommercial": [
+                "Topalgic",
+                "Contramal"
+            ],
+            "classe": "Analgésique opioïde atypique",
+            "formes": [
+                "Comprimés",
+                "Gouttes",
+                "Injectable"
+            ],
+            "indications": [
+                "Douleur modérée à sévère"
+            ],
+            "contreIndications": [
+                "Épilepsie",
+                "Utilisation avec IMAO"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "2-5 mg/kg",
+                    "frequence": "2-3x/jour",
+                    "voie": "PO"
+                },
+                "chat": {
+                    "dose": "2-4 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO"
+                }
+            },
+            "effetsSecondaires": [
+                "Sédation",
+                "Constipation",
+                "Nausées"
+            ],
+            "interactions": [
+                "IMAO",
+                "ISRS"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "acepromazine",
+            "nom": "Acépromazine",
+            "nomCommercial": [
+                "Calmivet",
+                "Vetranquil"
+            ],
+            "classe": "Tranquillisant - Phénothiazine",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Tranquillisation",
+                "Prémédication",
+                "Antiémétique"
+            ],
+            "contreIndications": [
+                "Hypovolémie",
+                "Épilepsie",
+                "Animaux agressifs par peur"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.01-0.05 mg/kg",
+                    "frequence": "Dose unique",
+                    "voie": "IV/IM/SC"
+                },
+                "chat": {
+                    "dose": "0.05-0.1 mg/kg",
+                    "frequence": "Dose unique",
+                    "voie": "IV/IM/SC"
+                }
+            },
+            "effetsSecondaires": [
+                "Hypotension",
+                "Hypothermie",
+                "Prolapsus pénien (équins)"
+            ],
+            "conservation": "À l'abri de la lumière"
+        },
+        {
+            "id": "atropine",
+            "nom": "Atropine",
+            "nomCommercial": [
+                "Atropine sulfate"
+            ],
+            "classe": "Anticholinergique",
+            "formes": [
+                "Injectable"
+            ],
+            "indications": [
+                "Bradycardie",
+                "Intoxication organophosphorés",
+                "Prémédication"
+            ],
+            "contreIndications": [
+                "Tachycardie",
+                "Glaucome"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "0.02-0.04 mg/kg",
+                    "frequence": "Selon besoin",
+                    "voie": "IV/IM/SC"
+                },
+                "chat": {
+                    "dose": "0.02-0.04 mg/kg",
+                    "frequence": "Selon besoin",
+                    "voie": "IV/IM/SC"
+                },
+                "bovins": {
+                    "dose": "0.06-0.1 mg/kg",
+                    "frequence": "Selon besoin",
+                    "voie": "IV/SC"
+                }
+            },
+            "effetsSecondaires": [
+                "Tachycardie",
+                "Mydriase",
+                "Sécheresse buccale"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "clindamycine",
+            "nom": "Clindamycine",
+            "nomCommercial": [
+                "Antirobe"
+            ],
+            "classe": "Antibiotique - Lincosamide",
+            "formes": [
+                "Gélules",
+                "Suspension orale"
+            ],
+            "indications": [
+                "Infections osseuses",
+                "Infections dentaires",
+                "Abcès profonds",
+                "Toxoplasmose"
+            ],
+            "contreIndications": [
+                "Hypersensibilité",
+                "Lapins/Rongeurs"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "5-11 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "7-14 jours (jusqu'à 28 pour os)"
+                },
+                "chat": {
+                    "dose": "5-11 mg/kg",
+                    "frequence": "2x/jour",
+                    "voie": "PO",
+                    "duree": "7-14 jours"
+                }
+            },
+            "effetsSecondaires": [
+                "Diarrhée",
+                "Vomissements"
+            ],
+            "conservation": "À température ambiante"
+        },
+        {
+            "id": "doxycycline",
+            "nom": "Doxycycline",
+            "nomCommercial": [
+                "Ronaxan",
+                "Doxyval"
+            ],
+            "classe": "Antibiotique - Tétracycline",
+            "formes": [
+                "Comprimés",
+                "Pâte orale"
+            ],
+            "indications": [
+                "Ehrlichiose",
+                "Anaplasmose",
+                "Leptospirose",
+                "Infections respiratoires",
+                "Chlamydiose"
+            ],
+            "contreIndications": [
+                "Gestation",
+                "Animaux en croissance",
+                "Insuffisance hépatique"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "5-10 mg/kg",
+                    "frequence": "1-2x/jour",
+                    "voie": "PO avec nourriture",
+                    "duree": "14-28 jours"
+                },
+                "chat": {
+                    "dose": "5-10 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO avec nourriture ou eau",
+                    "duree": "14-21 jours",
+                    "attention": "Donner avec eau pour éviter sténose œsophagienne"
+                }
+            },
+            "effetsSecondaires": [
+                "Nausées",
+                "Photosensibilisation",
+                "Dysphagie (chat)"
+            ],
+            "interactions": [
+                "Antiacides",
+                "Produits laitiers"
+            ],
+            "conservation": "À l'abri de la lumière et de l'humidité"
+        },
+        {
+            "id": "marbofloxacine",
+            "nom": "Marbofloxacine",
+            "nomCommercial": [
+                "Marbocyl"
+            ],
+            "classe": "Antibiotique - Fluoroquinolone",
+            "formes": [
+                "Comprimés",
+                "Injectable"
+            ],
+            "indications": [
+                "Infections urinaires",
+                "Infections respiratoires",
+                "Infections cutanées"
+            ],
+            "contreIndications": [
+                "Animaux en croissance",
+                "Épilepsie"
+            ],
+            "posologies": {
+                "chien": {
+                    "dose": "2 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO/SC",
+                    "duree": "5-10 jours"
+                },
+                "chat": {
+                    "dose": "2 mg/kg",
+                    "frequence": "1x/jour",
+                    "voie": "PO/SC",
+                    "duree": "5-10 jours"
+                }
+            },
+            "effetsSecondaires": [
+                "Troubles digestifs",
+                "Atteinte cartilagineuse"
+            ],
+            "conservation": "À température ambiante"
+        }
+    ]
+}

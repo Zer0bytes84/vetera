@@ -1,36 +1,94 @@
-import data from "@/app/dashboard/data.json"
-import { AppSidebar } from "@/components/app-sidebar"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { DataTable } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
-import { SiteHeader } from "@/components/site-header"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { useEffect, useState } from "react"
+
+import Auth from "@/components/Auth"
+import SetupWizard from "@/components/SetupWizard"
+import { useTheme } from "@/components/theme-provider"
+import { useAuth } from "@/contexts/AuthContext"
+import { appSettingsRepository } from "@/data/repositories"
+import { applyTheme, getThemeConfig } from "@/lib/theme-store"
+import { checkAutoBackup } from "@/services/backupService"
+import { seedDemoDataIfNeeded } from "@/services/demo-data"
+import { saveLicenseInfo } from "@/services/appSettingsService"
+import { createInitialAdmin } from "@/services/sqlite/auth"
+import { AppShell } from "@/modules/shell/app-shell"
+
+type SetupPayload = {
+  name: string
+  email: string
+  password: string
+  licenseKey: string
+}
 
 export function App() {
-  return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
+  const [isCheckingSetup, setIsCheckingSetup] = useState(true)
+  const [needsSetup, setNeedsSetup] = useState(false)
+  const { currentUser, loading, login } = useAuth()
+  const { theme } = useTheme()
+
+  useEffect(() => {
+    const checkSetup = async () => {
+      try {
+        const setupDone = await appSettingsRepository.isSetupComplete()
+        setNeedsSetup(!setupDone)
+      } catch (error) {
+        console.error("[App] Error checking setup status:", error)
+        setNeedsSetup(true)
+      } finally {
+        setIsCheckingSetup(false)
       }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <SectionCards />
-            <div className="px-4 lg:px-6">
-              <ChartAreaInteractive />
-            </div>
-            <DataTable data={data} />
-          </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
-  )
+    }
+
+    checkAutoBackup().catch((error) => {
+      console.error("[App] Auto-backup check failed:", error)
+    })
+
+    checkSetup()
+  }, [])
+
+  useEffect(() => {
+    seedDemoDataIfNeeded(currentUser ?? null).catch((error) => {
+      console.error("[App] Demo seed failed:", error)
+    })
+  }, [currentUser])
+
+  useEffect(() => {
+    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+    const isDark =
+      theme === "dark" ||
+      (theme === "system" && systemPrefersDark)
+
+    applyTheme(getThemeConfig(), isDark)
+  }, [theme])
+
+  const handleSetupComplete = async (userData: SetupPayload) => {
+    await saveLicenseInfo(userData.licenseKey, userData.email)
+    await createInitialAdmin({
+      email: userData.email,
+      password: userData.password,
+      displayName: userData.name,
+    })
+    await appSettingsRepository.markSetupComplete()
+    await login(userData.email, userData.password)
+    setNeedsSetup(false)
+  }
+
+  if (isCheckingSetup || loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--bg-app)]">
+        <div className="text-sm text-[var(--text-muted)]">Chargement...</div>
+      </div>
+    )
+  }
+
+  if (needsSetup) {
+    return <SetupWizard onComplete={handleSetupComplete} />
+  }
+
+  if (!currentUser) {
+    return <Auth />
+  }
+
+  return <AppShell />
 }
 
 export default App

@@ -1,0 +1,382 @@
+{
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-18",
+    "species": [
+        {
+            "id": "chien",
+            "nom": "Chien",
+            "nomScientifique": "Canis lupus familiaris",
+            "parametresVitaux": {
+                "temperature": {
+                    "min": 38.0,
+                    "max": 39.2,
+                    "unite": "°C",
+                    "notes": "Chiots: jusqu'à 39.5°C"
+                },
+                "frequenceCardiaque": {
+                    "petitChien": {
+                        "min": 100,
+                        "max": 140
+                    },
+                    "moyenChien": {
+                        "min": 80,
+                        "max": 120
+                    },
+                    "grandChien": {
+                        "min": 60,
+                        "max": 100
+                    },
+                    "unite": "bpm"
+                },
+                "frequenceRespiratoire": {
+                    "min": 10,
+                    "max": 30,
+                    "unite": "/min"
+                },
+                "TRC": {
+                    "normal": "<2 secondes"
+                },
+                "muqueuses": "Rose, humides"
+            },
+            "reproduction": {
+                "maturiteSexuelle": {
+                    "femelle": "6-12 mois",
+                    "male": "6-12 mois"
+                },
+                "cycleSexuel": "Mono-œstrus saisonnier, 2 chaleurs/an",
+                "dureeOestrus": "7-9 jours (saillie fécondante J10-J14 après début chaleurs)",
+                "gestation": "58-68 jours (moyenne 63 jours)",
+                "tailleePortee": "3-12 chiots selon race",
+                "sevrage": "6-8 semaines"
+            },
+            "alimentation": {
+                "besoinsEnergetiques": "RER = 70 x (poids kg)^0.75 kcal/jour",
+                "maintenance": "RER x 1.4-1.8 selon activité",
+                "croissance": "RER x 2-3",
+                "gestation": "RER x 1.5-2 (dernier tiers)",
+                "lactation": "RER x 2-4 selon portée"
+            },
+            "vaccinationRecommandee": {
+                "core": [
+                    "CHPPiL (Carré, Hépatite, Parvovirose, Parainfluenza, Leptospirose)"
+                ],
+                "calendrier": {
+                    "primovaccination": "8 semaines, 12 semaines, 16 semaines",
+                    "rappel": "1 an, puis tous les 1-3 ans selon vaccin"
+                },
+                "optionnels": [
+                    "Rage (obligatoire déplacement)",
+                    "Bordetella",
+                    "Leishmaniose (zones endémiques)"
+                ]
+            },
+            "alimentsToxiques": [
+                "Chocolat",
+                "Raisins/Raisins secs",
+                "Oignon/Ail",
+                "Xylitol",
+                "Avocat",
+                "Macadamia"
+            ],
+            "esperanceVie": "10-15 ans selon race"
+        },
+        {
+            "id": "chat",
+            "nom": "Chat",
+            "nomScientifique": "Felis catus",
+            "parametresVitaux": {
+                "temperature": {
+                    "min": 38.0,
+                    "max": 39.2,
+                    "unite": "°C"
+                },
+                "frequenceCardiaque": {
+                    "min": 120,
+                    "max": 220,
+                    "unite": "bpm",
+                    "notes": "Stress peut augmenter jusqu'à 240"
+                },
+                "frequenceRespiratoire": {
+                    "min": 20,
+                    "max": 40,
+                    "unite": "/min"
+                },
+                "TRC": {
+                    "normal": "<2 secondes"
+                },
+                "pressionArterielle": {
+                    "systolique": {
+                        "min": 100,
+                        "max": 160
+                    },
+                    "unite": "mmHg"
+                }
+            },
+            "reproduction": {
+                "maturiteSexuelle": {
+                    "femelle": "5-9 mois",
+                    "male": "6-12 mois"
+                },
+                "cycleSexuel": "Polyœstrus saisonnier (jours longs)",
+                "ovulation": "Provoquée par coït",
+                "gestation": "63-68 jours (moyenne 65 jours)",
+                "taillePortee": "3-6 chatons",
+                "sevrage": "6-8 semaines"
+            },
+            "alimentation": {
+                "besoinsEnergetiques": "RER = 70 x (poids kg)^0.75 kcal/jour",
+                "maintenance": "RER x 1.2-1.4",
+                "particularites": [
+                    "Carnivore strict",
+                    "Besoin taurine (aliment chat obligatoire)",
+                    "Besoin vitamine A préformée",
+                    "Sensible déficit arginine"
+                ]
+            },
+            "vaccinationRecommandee": {
+                "core": [
+                    "RCP (Typhus/Panleucopénie, Coryza-Calicivirus, Coryza-Herpès)"
+                ],
+                "calendrier": {
+                    "primovaccination": "8 semaines, 12 semaines",
+                    "rappel": "1 an, puis tous les 1-3 ans"
+                },
+                "optionnels": [
+                    "FeLV (chats à risque sortie)",
+                    "Rage (obligatoire déplacement)",
+                    "Chlamydia"
+                ]
+            },
+            "alimentsToxiques": [
+                "Chocolat",
+                "Oignon/Ail",
+                "Lys (très toxique)",
+                "Raisins",
+                "Paracétamol (TRÈS toxique)"
+            ],
+            "particularites": [
+                "Métabolisme hépatique pauvre (attention médicaments)",
+                "Stress marqué par handling"
+            ],
+            "esperanceVie": "12-18 ans"
+        },
+        {
+            "id": "bovins",
+            "nom": "Bovins",
+            "nomScientifique": "Bos taurus",
+            "parametresVitaux": {
+                "temperature": {
+                    "min": 38.0,
+                    "max": 39.5,
+                    "unite": "°C"
+                },
+                "frequenceCardiaque": {
+                    "min": 40,
+                    "max": 80,
+                    "unite": "bpm"
+                },
+                "frequenceRespiratoire": {
+                    "min": 12,
+                    "max": 36,
+                    "unite": "/min"
+                },
+                "rumenMotilite": {
+                    "min": 1,
+                    "max": 3,
+                    "unite": "contractions/2min"
+                }
+            },
+            "reproduction": {
+                "maturiteSexuelle": {
+                    "femelle": "10-14 mois",
+                    "male": "10-12 mois"
+                },
+                "cycleSexuel": "21 jours (18-24 jours)",
+                "dureeOestrus": "8-18 heures",
+                "gestation": "280-290 jours (9 mois)",
+                "involutionUterine": "30-45 jours post-partum"
+            },
+            "alimentation": {
+                "type": "Ruminant herbivore",
+                "besoins": "2-3% poids vif en MS/jour",
+                "lactation": "Augmentation besoins 50-100%"
+            },
+            "vaccinationRecommandee": {
+                "core": [
+                    "IBR (Rhinotrachéite)",
+                    "BVD (Diarrhée virale)",
+                    "Pasteurellose",
+                    "Clostridioses"
+                ],
+                "optionnels": [
+                    "Fièvre Q",
+                    "Leptospirose",
+                    "Fièvre aphteuse (selon zone)"
+                ]
+            },
+            "particularites": [
+                "Décubitus latéral = urgence",
+                "Météorisation aiguë = urgence"
+            ],
+            "esperanceVie": "15-25 ans"
+        },
+        {
+            "id": "ovins",
+            "nom": "Ovins",
+            "nomScientifique": "Ovis aries",
+            "parametresVitaux": {
+                "temperature": {
+                    "min": 38.5,
+                    "max": 40.0,
+                    "unite": "°C"
+                },
+                "frequenceCardiaque": {
+                    "min": 60,
+                    "max": 120,
+                    "unite": "bpm"
+                },
+                "frequenceRespiratoire": {
+                    "min": 12,
+                    "max": 25,
+                    "unite": "/min"
+                },
+                "rumenMotilite": {
+                    "min": 1,
+                    "max": 2,
+                    "unite": "contractions/min"
+                }
+            },
+            "reproduction": {
+                "maturiteSexuelle": "7-12 mois",
+                "saisonnalite": "Jours courts (automne)",
+                "cycleSexuel": "17 jours (14-19)",
+                "gestation": "145-150 jours"
+            },
+            "vaccinationRecommandee": {
+                "core": [
+                    "Clostridioses (entérotoxémie)",
+                    "Pasteurellose"
+                ],
+                "optionnels": [
+                    "Chlamydiose abortive",
+                    "Fièvre Q"
+                ]
+            },
+            "particularites": [
+                "Proie = cache signes maladie",
+                "Mouton à terre = urgence"
+            ],
+            "esperanceVie": "10-12 ans"
+        },
+        {
+            "id": "equins",
+            "nom": "Équins",
+            "nomScientifique": "Equus caballus",
+            "parametresVitaux": {
+                "temperature": {
+                    "min": 37.5,
+                    "max": 38.5,
+                    "unite": "°C",
+                    "notes": "Poulain: jusqu'à 39°C"
+                },
+                "frequenceCardiaque": {
+                    "min": 28,
+                    "max": 44,
+                    "unite": "bpm",
+                    "notes": "Poulain: 60-120 bpm"
+                },
+                "frequenceRespiratoire": {
+                    "min": 8,
+                    "max": 16,
+                    "unite": "/min"
+                },
+                "TRC": {
+                    "normal": "<2 secondes"
+                },
+                "bruitDigestifs": "4 quadrants, borborygmes présents"
+            },
+            "reproduction": {
+                "maturiteSexuelle": {
+                    "femelle": "18 mois",
+                    "male": "2-3 ans"
+                },
+                "saisonnalite": "Jours longs (printemps-été)",
+                "cycleSexuel": "21-23 jours",
+                "dureeOestrus": "5-7 jours",
+                "gestation": "335-345 jours (11 mois)"
+            },
+            "vaccinationRecommandee": {
+                "core": [
+                    "Grippe équine",
+                    "Tétanos",
+                    "Rhinopneumonie"
+                ],
+                "optionnels": [
+                    "Rage",
+                    "Gourme",
+                    "West Nile (zones endémiques)"
+                ]
+            },
+            "particularites": [
+                "Colique = urgence potentielle",
+                "Fourbure",
+                "Ne pas coucher (décubitus latéral problématique)"
+            ],
+            "alimentsToxiques": [
+                "Érable rouge",
+                "Séneçon",
+                "Glands (excès)",
+                "Laurier"
+            ],
+            "esperanceVie": "25-30 ans"
+        },
+        {
+            "id": "lapin",
+            "nom": "Lapin",
+            "nomScientifique": "Oryctolagus cuniculus",
+            "parametresVitaux": {
+                "temperature": {
+                    "min": 38.5,
+                    "max": 40.0,
+                    "unite": "°C"
+                },
+                "frequenceCardiaque": {
+                    "min": 180,
+                    "max": 300,
+                    "unite": "bpm"
+                },
+                "frequenceRespiratoire": {
+                    "min": 30,
+                    "max": 60,
+                    "unite": "/min"
+                }
+            },
+            "reproduction": {
+                "maturiteSexuelle": {
+                    "petitesRaces": "4-5 mois",
+                    "grandesRaces": "6-9 mois"
+                },
+                "ovulation": "Provoquée (10-12h post-coït)",
+                "gestation": "29-33 jours (moyenne 31)",
+                "taillePortee": "4-12 lapereaux"
+            },
+            "alimentation": {
+                "type": "Herbivore strict, caecotrophe",
+                "base": "Foin à volonté (80% alimentation)",
+                "complementaire": "Légumes frais, granulés limités"
+            },
+            "vaccinationRecommandee": {
+                "core": [
+                    "Myxomatose",
+                    "VHD (maladie hémorragique virale 1 et 2)"
+                ]
+            },
+            "particularites": [
+                "JAMAIS de jeûne pré-opératoire",
+                "Antibiotiques contre-indiqués: Pénicillines PO, Clindamycine, Lincomycine, Érythromycine",
+                "Stress = stase digestive"
+            ],
+            "esperanceVie": "8-12 ans"
+        }
+    ]
+}

@@ -20,18 +20,46 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Logout01Icon,
+  MoreVerticalCircle01Icon,
+  Notification03Icon,
+  Settings02Icon,
+  UserCircle02Icon,
+  WalletIcon,
+} from "@hugeicons/core-free-icons"
 
-export function NavUser({
-  user,
-}: {
+type NavUserProps = {
   user: {
     name: string
     email: string
-    avatar: string
+    avatar?: string | null
   }
-}) {
+  onProfile?: () => void
+  onSettings?: () => void
+  onFinances?: () => void
+  onNotifications?: () => void
+  onLogout?: () => void | Promise<void>
+}
+
+export function NavUser({
+  user,
+  onProfile,
+  onSettings,
+  onFinances,
+  onNotifications,
+  onLogout,
+}: NavUserProps) {
   const { isMobile } = useSidebar()
+  const fallback = user.name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
+    .slice(0, 2)
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -41,9 +69,9 @@ export function NavUser({
               <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
             }
           >
-            <Avatar className="size-8 rounded-lg grayscale">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+            <Avatar className="size-8 rounded-lg">
+              <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+              <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
@@ -51,7 +79,11 @@ export function NavUser({
                 {user.email}
               </span>
             </div>
-            <EllipsisVerticalIcon className="ml-auto size-4" />
+            <HugeiconsIcon
+              icon={MoreVerticalCircle01Icon}
+              strokeWidth={2}
+              className="ml-auto size-4"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="min-w-56"
@@ -62,9 +94,9 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="size-8">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <Avatar className="size-8 rounded-lg">
+                    <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+                    <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">{user.name}</span>
@@ -77,27 +109,27 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CircleUserRoundIcon
-                />
-                Account
+              <DropdownMenuItem onClick={onProfile}>
+                <HugeiconsIcon icon={UserCircle02Icon} strokeWidth={2} />
+                Mon profil
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon
-                />
-                Billing
+              <DropdownMenuItem onClick={onFinances}>
+                <HugeiconsIcon icon={WalletIcon} strokeWidth={2} />
+                Finances
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon
-                />
+              <DropdownMenuItem onClick={onNotifications}>
+                <HugeiconsIcon icon={Notification03Icon} strokeWidth={2} />
                 Notifications
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onSettings}>
+                <HugeiconsIcon icon={Settings02Icon} strokeWidth={2} />
+                Parametres
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOutIcon
-              />
-              Log out
+            <DropdownMenuItem onClick={() => void onLogout?.()}>
+              <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+              Deconnexion
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

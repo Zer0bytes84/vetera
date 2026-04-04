@@ -14,25 +14,26 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { MoreHorizontalIcon, FolderIcon, ShareIcon, Trash2Icon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MoreHorizontalCircle01Icon, Folder01Icon, Share01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 
 export function NavDocuments({
   items,
 }: {
   items: {
     name: string
-    url: string
     icon: React.ReactNode
+    onClick?: () => void
   }[]
 }) {
   const { isMobile } = useSidebar()
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Documents</SidebarGroupLabel>
+      <SidebarGroupLabel>Exploitation</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton render={<a href={item.url} />}>
+            <SidebarMenuButton render={<button type="button" onClick={item.onClick} />}>
               {item.icon}
               <span>{item.name}</span>
             </SidebarMenuButton>
@@ -45,8 +46,7 @@ export function NavDocuments({
                   />
                 }
               >
-                <MoreHorizontalIcon
-                />
+                <HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2} />
                 <span className="sr-only">More</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -55,31 +55,22 @@ export function NavDocuments({
                 align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
-                  <FolderIcon
-                  />
-                  <span>Open</span>
+                  <HugeiconsIcon icon={Folder01Icon} strokeWidth={2} />
+                  <span>Ouvrir</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <ShareIcon
-                  />
-                  <span>Share</span>
+                  <HugeiconsIcon icon={Share01Icon} strokeWidth={2} />
+                  <span>Partager</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">
-                  <Trash2Icon
-                  />
-                  <span>Delete</span>
+                  <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+                  <span>Supprimer</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontalIcon className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   )

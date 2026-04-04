@@ -1,0 +1,254 @@
+{
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-18",
+    "emergencies": [
+        {
+            "id": "choc",
+            "nom": "État de Choc",
+            "urgence": "CRITIQUE",
+            "signes": [
+                "Tachycardie",
+                "Pouls faible/filant",
+                "TRC > 2 secondes",
+                "Muqueuses pâles, grises ou cyanosées",
+                "Hypothermie",
+                "Altération conscience"
+            ],
+            "types": {
+                "hypovolemique": "Perte volume (hémorragie, déshydratation)",
+                "distributif": "Vasodilatation (sepsis, anaphylaxie)",
+                "cardiogenique": "Défaillance cardiaque",
+                "obstructif": "Obstruction flux (tamponnade, embolie)"
+            },
+            "protocole": {
+                "abcde": [
+                    "A - Airway: Dégager voies aériennes",
+                    "B - Breathing: O2, ventilation si besoin",
+                    "C - Circulation: Accès IV, fluidothérapie choc",
+                    "D - Disability: Évaluer conscience",
+                    "E - Exposure: Réchauffement, examen complet"
+                ],
+                "fluidotherapie": {
+                    "cristalloides": "Bolus 10-20 mL/kg IV en 10-15 min, réévaluer, répéter si besoin (max 80-90 mL/kg chien)",
+                    "colloides": "Si pas réponse cristalloïdes: 5-10 mL/kg",
+                    "chat": "Plus prudent: 5-10 mL/kg bolus"
+                },
+                "vasopresseurs": "Dopamine 5-10 µg/kg/min ou Noradrénaline si non réponse fluides",
+                "monitoring": "FC, PA, FR, TRC, lactates, production urine"
+            }
+        },
+        {
+            "id": "arret-cardiaque",
+            "nom": "Arrêt Cardio-Respiratoire (RCP)",
+            "urgence": "CRITIQUE",
+            "reconnaissance": [
+                "Absence de conscience",
+                "Absence de respiration efficace",
+                "Absence de pouls palpable"
+            ],
+            "protocole": {
+                "sequence": "CAB - Circulation, Airway, Breathing",
+                "compressions": {
+                    "technique": "30 compressions : 2 ventilations",
+                    "rythme": "100-120/min",
+                    "profondeur": "1/3 à 1/2 du thorax",
+                    "position": {
+                        "petitAnimal": "Décubitus latéral, main sur cœur",
+                        "grandChien": "Décubitus latéral ou dorsal, deux mains"
+                    }
+                },
+                "ventilation": "10-12/min, intubation si possible",
+                "medicaments": {
+                    "adrenaline": "0.01 mg/kg IV toutes les 3-5 min (haute dose 0.1 mg/kg si asystolie prolongée)",
+                    "atropine": "0.04 mg/kg IV si bradycardie/asystolie",
+                    "vasopressine": "0.8 U/kg IV (alternative adrénaline)"
+                },
+                "defibrillation": "Si FV/TV: 4-6 J/kg externe",
+                "evaluation": "Vérifier pouls toutes les 2 min"
+            },
+            "pronostic": "< 10% survie sortie hôpital"
+        },
+        {
+            "id": "dyspnee-aigue",
+            "nom": "Détresse Respiratoire Aiguë",
+            "urgence": "HAUTE",
+            "signes": [
+                "Respiration bouche ouverte",
+                "Extension du cou",
+                "Tirage costal",
+                "Cyanose",
+                "Orthopnée",
+                "Anxiété/Agitation"
+            ],
+            "diagnosticDifferentiel": {
+                "obstruction": "Corps étranger, paralysie laryngée, œdème",
+                "pleural": "Épanchement, pneumothorax",
+                "pulmonaire": "Œdème, pneumonie, contusions",
+                "cardiaque": "Insuffisance cardiaque, épanchement péricardique"
+            },
+            "protocole": {
+                "stabilisation": [
+                    "Oxygène IMMÉDIAT (cage O2, masque, flow-by)",
+                    "MINIMUM de stress/manipulation",
+                    "Position confortable (ne pas forcer décubitus)",
+                    "Voie IV si possible sans stress"
+                ],
+                "traitementCause": {
+                    "oedeme_pulmonaire": "Furosémide 2-4 mg/kg IV",
+                    "pneumothorax": "Thoracocentèse d'urgence",
+                    "epanchement_pleural": "Thoracocentèse",
+                    "obstruction_haute": "Intubation/Trachéotomie si besoin"
+                }
+            }
+        },
+        {
+            "id": "convulsions",
+            "nom": "Convulsions / Status Epilepticus",
+            "urgence": "HAUTE",
+            "definition": {
+                "convulsion": "Activité > 5 min OU > 2 crises sans retour conscience",
+                "status_epilepticus": "Urgence vitale - risque hyperthermie, hypoxie cérébrale"
+            },
+            "protocole": {
+                "immediate": [
+                    "Sécuriser animal (éviter blessures)",
+                    "NE PAS mettre main dans gueule",
+                    "Voie IV si possible"
+                ],
+                "medicaments": {
+                    "diazepam": "0.5-1 mg/kg IV lente (ou rectal si pas IV)",
+                    "midazolam": "0.2-0.5 mg/kg IM/IN si pas accès IV",
+                    "si_refractaire": "Propofol 1-2 mg/kg IV bolus, puis CRI 0.1-0.6 mg/kg/min",
+                    "phenobarbital": "Charge 16-20 mg/kg IV lente (4 mg/kg toutes les 30 min)"
+                },
+                "supportif": [
+                    "Oxygène",
+                    "Refroidissement si hyperthermie",
+                    "Glucose si hypoglycémie suspectée"
+                ]
+            }
+        },
+        {
+            "id": "intoxication",
+            "nom": "Intoxication - Prise en Charge Générale",
+            "urgence": "VARIABLE",
+            "elements_cles": [
+                "Identifier toxique si possible",
+                "Estimer dose ingérée",
+                "Temps depuis ingestion"
+            ],
+            "protocole": {
+                "decontamination": {
+                    "vomissement": {
+                        "indication": "< 2h post-ingestion, animal conscient, pas corrosif/hydrocarbure",
+                        "agents": {
+                            "apomorphine": "0.03-0.04 mg/kg IV/IM ou conjonctival",
+                            "peroxyde_hydrogene_3pct": "1-2 mL/kg PO (chien uniquement, max 45 mL)"
+                        },
+                        "contreIndications": [
+                            "Inconscience",
+                            "Convulsions",
+                            "Produit corrosif",
+                            "Hydrocarbures",
+                            "Objets pointus"
+                        ]
+                    },
+                    "charbon_active": {
+                        "dose": "1-2 g/kg PO",
+                        "indication": "Après vomissement ou si vomissement CI",
+                        "repetition": "Si cycle entéro-hépatique (théobromine, AINS)"
+                    },
+                    "lavage_gastrique": "Si grandes quantités, animal intubé"
+                },
+                "antidotes_specifiques": {
+                    "anticoagulants": "Vitamine K1",
+                    "organophosphores": "Atropine + Pralidoxime",
+                    "paracetamol": "N-Acétylcystéine",
+                    "ethylene_glycol": "Éthanol ou Fomépizole",
+                    "metaldehyde": "Pas d'antidote - contrôle convulsions"
+                },
+                "supportif": "Fluidothérapie, contrôle convulsions/arythmies, thermorégulation"
+            }
+        },
+        {
+            "id": "hypoglycemie",
+            "nom": "Hypoglycémie",
+            "urgence": "HAUTE",
+            "causesCourantes": [
+                "Surdosage insuline",
+                "Insulinome",
+                "Sepsis",
+                "Insuffisance hépatique",
+                "Chiot toy à jeun"
+            ],
+            "signes": [
+                "Faiblesse",
+                "Tremblements",
+                "Ataxie",
+                "Convulsions",
+                "Coma"
+            ],
+            "protocole": {
+                "conscient": "Miel/Sucre sur gencives, alimentation",
+                "inconscient": "Dextrose 25% : 0.5-1 mL/kg IV lente (diluer à 12.5%)",
+                "entretien": "Dextrose 2.5-5% dans fluides",
+                "surveiller": "Glycémie toutes les 1-2h"
+            }
+        },
+        {
+            "id": "hyperthermie",
+            "nom": "Coup de Chaleur / Hyperthermie",
+            "urgence": "CRITIQUE si T > 41°C",
+            "facteurs_risque": [
+                "Voiture fermée",
+                "Exercice par temps chaud",
+                "Races brachycéphales",
+                "Obésité"
+            ],
+            "signes": [
+                "Halètement excessif",
+                "Hypersalivation",
+                "Muqueuses rouge brique puis cyanosées",
+                "Ataxie",
+                "Convulsions",
+                "Collapsus"
+            ],
+            "protocole": {
+                "refroidissement": [
+                    "Mouiller avec eau TIÈDE (pas glacée - vasoconstriction)",
+                    "Ventilateur",
+                    "Ice packs sur zones glabres (aine, aisselles)",
+                    "STOP refroidissement à 39.5°C"
+                ],
+                "fluidotherapie": "Cristalloïdes IV température ambiante",
+                "monitoring": "Coagulation (risque CIVD), fonction rénale, neurologique",
+                "attention": "Risque séquelles 24-48h : CIVD, IRA, nécrose intestinale"
+            }
+        },
+        {
+            "id": "traumatisme",
+            "nom": "Traumatisme / Polytraumatisé",
+            "urgence": "HAUTE à CRITIQUE",
+            "protocole": {
+                "triage": [
+                    "Évaluation rapide ABC",
+                    "Contrôle hémorragie externe (pression directe)",
+                    "Immobilisation si suspicion fracture vertébrale"
+                ],
+                "evaluation": {
+                    "primaire": "Voies aériennes, Respiration, Circulation, Neurologique",
+                    "secondaire": "Examen complet tête-queue"
+                },
+                "imagerie": "Radio thorax, abdo, FAST écho",
+                "priorite_traitement": [
+                    "1. Choc - Fluidothérapie",
+                    "2. Hémorragie - Contrôle, transfusion",
+                    "3. Pneumothorax - Thoracocentèse",
+                    "4. Fractures - Stabilisation temporaire"
+                ],
+                "analgesie": "Méthadone 0.2-0.5 mg/kg IV/IM ou Fentanyl CRI",
+                "surveillance": "Monitoring continu 24-48h minimum"
+            }
+        }
+    ]
+}

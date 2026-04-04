@@ -1,0 +1,1040 @@
+{
+    "version": "2.0.0",
+    "lastUpdated": "2024-12-18",
+    "labValues": {
+        "hematologie": {
+            "chien": {
+                "hematies": {
+                    "min": 5.5,
+                    "max": 8.5,
+                    "unite": "10^12/L"
+                },
+                "hemoglobine": {
+                    "min": 12,
+                    "max": 18,
+                    "unite": "g/dL"
+                },
+                "hematocrite": {
+                    "min": 37,
+                    "max": 55,
+                    "unite": "%"
+                },
+                "VGM": {
+                    "min": 60,
+                    "max": 77,
+                    "unite": "fL"
+                },
+                "TCMH": {
+                    "min": 19,
+                    "max": 23,
+                    "unite": "pg"
+                },
+                "CCMH": {
+                    "min": 32,
+                    "max": 36,
+                    "unite": "g/dL"
+                },
+                "leucocytes": {
+                    "min": 6,
+                    "max": 17,
+                    "unite": "10^9/L"
+                },
+                "neutrophiles": {
+                    "min": 3,
+                    "max": 11.5,
+                    "unite": "10^9/L"
+                },
+                "lymphocytes": {
+                    "min": 1,
+                    "max": 4.8,
+                    "unite": "10^9/L"
+                },
+                "monocytes": {
+                    "min": 0.15,
+                    "max": 1.35,
+                    "unite": "10^9/L"
+                },
+                "eosinophiles": {
+                    "min": 0.1,
+                    "max": 1.25,
+                    "unite": "10^9/L"
+                },
+                "basophiles": {
+                    "min": 0,
+                    "max": 0.1,
+                    "unite": "10^9/L"
+                },
+                "plaquettes": {
+                    "min": 175,
+                    "max": 500,
+                    "unite": "10^9/L"
+                },
+                "reticulocytes": {
+                    "min": 0,
+                    "max": 60,
+                    "unite": "10^9/L"
+                }
+            },
+            "chat": {
+                "hematies": {
+                    "min": 5,
+                    "max": 10,
+                    "unite": "10^12/L"
+                },
+                "hemoglobine": {
+                    "min": 8,
+                    "max": 15,
+                    "unite": "g/dL"
+                },
+                "hematocrite": {
+                    "min": 24,
+                    "max": 45,
+                    "unite": "%"
+                },
+                "VGM": {
+                    "min": 39,
+                    "max": 55,
+                    "unite": "fL"
+                },
+                "TCMH": {
+                    "min": 12.5,
+                    "max": 17.5,
+                    "unite": "pg"
+                },
+                "CCMH": {
+                    "min": 30,
+                    "max": 36,
+                    "unite": "g/dL"
+                },
+                "leucocytes": {
+                    "min": 5.5,
+                    "max": 19.5,
+                    "unite": "10^9/L"
+                },
+                "neutrophiles": {
+                    "min": 2.5,
+                    "max": 12.5,
+                    "unite": "10^9/L"
+                },
+                "lymphocytes": {
+                    "min": 1.5,
+                    "max": 7,
+                    "unite": "10^9/L"
+                },
+                "monocytes": {
+                    "min": 0,
+                    "max": 0.85,
+                    "unite": "10^9/L"
+                },
+                "eosinophiles": {
+                    "min": 0,
+                    "max": 1.5,
+                    "unite": "10^9/L"
+                },
+                "basophiles": {
+                    "min": 0,
+                    "max": 0.2,
+                    "unite": "10^9/L"
+                },
+                "plaquettes": {
+                    "min": 175,
+                    "max": 500,
+                    "unite": "10^9/L"
+                },
+                "reticulocytes": {
+                    "min": 0,
+                    "max": 50,
+                    "unite": "10^9/L"
+                }
+            },
+            "bovins": {
+                "hematies": {
+                    "min": 5,
+                    "max": 10,
+                    "unite": "10^12/L"
+                },
+                "hemoglobine": {
+                    "min": 8,
+                    "max": 15,
+                    "unite": "g/dL"
+                },
+                "hematocrite": {
+                    "min": 24,
+                    "max": 46,
+                    "unite": "%"
+                },
+                "leucocytes": {
+                    "min": 4,
+                    "max": 12,
+                    "unite": "10^9/L"
+                },
+                "neutrophiles": {
+                    "min": 0.6,
+                    "max": 4,
+                    "unite": "10^9/L"
+                },
+                "lymphocytes": {
+                    "min": 2.5,
+                    "max": 7.5,
+                    "unite": "10^9/L"
+                },
+                "plaquettes": {
+                    "min": 100,
+                    "max": 800,
+                    "unite": "10^9/L"
+                }
+            },
+            "equins": {
+                "hematies": {
+                    "min": 6.8,
+                    "max": 13,
+                    "unite": "10^12/L"
+                },
+                "hemoglobine": {
+                    "min": 11,
+                    "max": 19,
+                    "unite": "g/dL"
+                },
+                "hematocrite": {
+                    "min": 32,
+                    "max": 53,
+                    "unite": "%"
+                },
+                "leucocytes": {
+                    "min": 5.4,
+                    "max": 14.3,
+                    "unite": "10^9/L"
+                },
+                "neutrophiles": {
+                    "min": 2.3,
+                    "max": 8.6,
+                    "unite": "10^9/L"
+                },
+                "lymphocytes": {
+                    "min": 1.5,
+                    "max": 7.7,
+                    "unite": "10^9/L"
+                },
+                "plaquettes": {
+                    "min": 90,
+                    "max": 350,
+                    "unite": "10^9/L"
+                }
+            }
+        },
+        "biochimie": {
+            "chien": {
+                "uree": {
+                    "min": 2.5,
+                    "max": 9.6,
+                    "unite": "mmol/L",
+                    "mg_dL": {
+                        "min": 7,
+                        "max": 27
+                    }
+                },
+                "creatinine": {
+                    "min": 44,
+                    "max": 159,
+                    "unite": "µmol/L",
+                    "mg_dL": {
+                        "min": 0.5,
+                        "max": 1.8
+                    }
+                },
+                "SDMA": {
+                    "min": 0,
+                    "max": 14,
+                    "unite": "µg/dL"
+                },
+                "glucose": {
+                    "min": 3.9,
+                    "max": 7.9,
+                    "unite": "mmol/L",
+                    "mg_dL": {
+                        "min": 70,
+                        "max": 143
+                    }
+                },
+                "proteines_totales": {
+                    "min": 52,
+                    "max": 82,
+                    "unite": "g/L"
+                },
+                "albumine": {
+                    "min": 23,
+                    "max": 40,
+                    "unite": "g/L"
+                },
+                "globulines": {
+                    "min": 25,
+                    "max": 45,
+                    "unite": "g/L"
+                },
+                "bilirubine_totale": {
+                    "min": 0,
+                    "max": 15,
+                    "unite": "µmol/L"
+                },
+                "ALAT_GPT": {
+                    "min": 10,
+                    "max": 125,
+                    "unite": "U/L"
+                },
+                "ASAT_GOT": {
+                    "min": 0,
+                    "max": 50,
+                    "unite": "U/L"
+                },
+                "PAL": {
+                    "min": 23,
+                    "max": 212,
+                    "unite": "U/L"
+                },
+                "GGT": {
+                    "min": 0,
+                    "max": 11,
+                    "unite": "U/L"
+                },
+                "cholesterol": {
+                    "min": 3.5,
+                    "max": 9.0,
+                    "unite": "mmol/L"
+                },
+                "triglycerides": {
+                    "min": 0.6,
+                    "max": 1.2,
+                    "unite": "mmol/L"
+                },
+                "amylase": {
+                    "min": 500,
+                    "max": 1500,
+                    "unite": "U/L"
+                },
+                "lipase": {
+                    "min": 200,
+                    "max": 1800,
+                    "unite": "U/L"
+                },
+                "CK": {
+                    "min": 10,
+                    "max": 200,
+                    "unite": "U/L"
+                },
+                "LDH": {
+                    "min": 45,
+                    "max": 233,
+                    "unite": "U/L"
+                }
+            },
+            "chat": {
+                "uree": {
+                    "min": 5.4,
+                    "max": 12.1,
+                    "unite": "mmol/L",
+                    "mg_dL": {
+                        "min": 15,
+                        "max": 34
+                    }
+                },
+                "creatinine": {
+                    "min": 71,
+                    "max": 212,
+                    "unite": "µmol/L",
+                    "mg_dL": {
+                        "min": 0.8,
+                        "max": 2.4
+                    }
+                },
+                "SDMA": {
+                    "min": 0,
+                    "max": 14,
+                    "unite": "µg/dL"
+                },
+                "glucose": {
+                    "min": 4.1,
+                    "max": 8.8,
+                    "unite": "mmol/L",
+                    "mg_dL": {
+                        "min": 74,
+                        "max": 159
+                    }
+                },
+                "proteines_totales": {
+                    "min": 57,
+                    "max": 89,
+                    "unite": "g/L"
+                },
+                "albumine": {
+                    "min": 21,
+                    "max": 33,
+                    "unite": "g/L"
+                },
+                "globulines": {
+                    "min": 26,
+                    "max": 51,
+                    "unite": "g/L"
+                },
+                "bilirubine_totale": {
+                    "min": 0,
+                    "max": 15,
+                    "unite": "µmol/L"
+                },
+                "ALAT_GPT": {
+                    "min": 12,
+                    "max": 130,
+                    "unite": "U/L"
+                },
+                "ASAT_GOT": {
+                    "min": 0,
+                    "max": 48,
+                    "unite": "U/L"
+                },
+                "PAL": {
+                    "min": 14,
+                    "max": 111,
+                    "unite": "U/L"
+                },
+                "GGT": {
+                    "min": 0,
+                    "max": 4,
+                    "unite": "U/L"
+                },
+                "amylase": {
+                    "min": 500,
+                    "max": 1500,
+                    "unite": "U/L"
+                },
+                "lipase": {
+                    "min": 100,
+                    "max": 1400,
+                    "unite": "U/L"
+                },
+                "T4_totale": {
+                    "min": 12,
+                    "max": 50,
+                    "unite": "nmol/L"
+                },
+                "fructosamine": {
+                    "min": 190,
+                    "max": 365,
+                    "unite": "µmol/L"
+                }
+            }
+        },
+        "electrolytes": {
+            "chien": {
+                "sodium": {
+                    "min": 144,
+                    "max": 160,
+                    "unite": "mmol/L"
+                },
+                "potassium": {
+                    "min": 3.5,
+                    "max": 5.8,
+                    "unite": "mmol/L"
+                },
+                "chlorure": {
+                    "min": 109,
+                    "max": 122,
+                    "unite": "mmol/L"
+                },
+                "calcium_total": {
+                    "min": 2.3,
+                    "max": 3.0,
+                    "unite": "mmol/L",
+                    "mg_dL": {
+                        "min": 9.0,
+                        "max": 11.8
+                    }
+                },
+                "calcium_ionise": {
+                    "min": 1.12,
+                    "max": 1.40,
+                    "unite": "mmol/L"
+                },
+                "phosphore": {
+                    "min": 0.8,
+                    "max": 2.0,
+                    "unite": "mmol/L",
+                    "mg_dL": {
+                        "min": 2.5,
+                        "max": 6.2
+                    }
+                },
+                "magnesium": {
+                    "min": 0.7,
+                    "max": 1.1,
+                    "unite": "mmol/L"
+                }
+            },
+            "chat": {
+                "sodium": {
+                    "min": 147,
+                    "max": 156,
+                    "unite": "mmol/L"
+                },
+                "potassium": {
+                    "min": 3.4,
+                    "max": 4.6,
+                    "unite": "mmol/L"
+                },
+                "chlorure": {
+                    "min": 107,
+                    "max": 120,
+                    "unite": "mmol/L"
+                },
+                "calcium_total": {
+                    "min": 2.3,
+                    "max": 3.0,
+                    "unite": "mmol/L"
+                },
+                "calcium_ionise": {
+                    "min": 1.12,
+                    "max": 1.40,
+                    "unite": "mmol/L"
+                },
+                "phosphore": {
+                    "min": 1.0,
+                    "max": 2.4,
+                    "unite": "mmol/L"
+                },
+                "magnesium": {
+                    "min": 0.7,
+                    "max": 1.1,
+                    "unite": "mmol/L"
+                }
+            }
+        },
+        "hemostase": {
+            "chien": {
+                "temps_quick_PT": {
+                    "min": 6,
+                    "max": 11,
+                    "unite": "secondes"
+                },
+                "temps_cephaline_aPTT": {
+                    "min": 10,
+                    "max": 25,
+                    "unite": "secondes"
+                },
+                "fibrinogene": {
+                    "min": 1,
+                    "max": 5,
+                    "unite": "g/L"
+                },
+                "D_dimeres": {
+                    "min": 0,
+                    "max": 0.5,
+                    "unite": "µg/mL"
+                }
+            },
+            "chat": {
+                "temps_quick_PT": {
+                    "min": 7,
+                    "max": 12,
+                    "unite": "secondes"
+                },
+                "temps_cephaline_aPTT": {
+                    "min": 12,
+                    "max": 20,
+                    "unite": "secondes"
+                },
+                "fibrinogene": {
+                    "min": 0.5,
+                    "max": 3,
+                    "unite": "g/L"
+                }
+            }
+        },
+        "analyse_urinaire": {
+            "chien": {
+                "densite": {
+                    "min": 1.015,
+                    "max": 1.045,
+                    "concentration": ">1.030",
+                    "dilution": "<1.008"
+                },
+                "pH": {
+                    "min": 5.5,
+                    "max": 7.5
+                },
+                "proteines": {
+                    "normal": "Négatif ou traces"
+                },
+                "glucose": {
+                    "normal": "Négatif"
+                },
+                "corps_cetoniques": {
+                    "normal": "Négatif"
+                },
+                "bilirubine": {
+                    "normal": "Négatif à 1+"
+                },
+                "sang": {
+                    "normal": "Négatif"
+                },
+                "RPCU": {
+                    "normal": "<0.2",
+                    "douteux": "0.2-0.5",
+                    "pathologique": ">0.5"
+                }
+            },
+            "chat": {
+                "densite": {
+                    "min": 1.035,
+                    "max": 1.060,
+                    "concentration": ">1.035",
+                    "dilution": "<1.008"
+                },
+                "pH": {
+                    "min": 5.5,
+                    "max": 7.0
+                },
+                "proteines": {
+                    "normal": "Négatif"
+                },
+                "glucose": {
+                    "normal": "Négatif"
+                },
+                "corps_cetoniques": {
+                    "normal": "Négatif"
+                },
+                "bilirubine": {
+                    "normal": "Négatif"
+                },
+                "sang": {
+                    "normal": "Négatif"
+                },
+                "RPCU": {
+                    "normal": "<0.2",
+                    "douteux": "0.2-0.4",
+                    "pathologique": ">0.4"
+                }
+            }
+        }
+    },
+    "formulas": {
+        "fluidotherapie": {
+            "maintenance": {
+                "formule": "30 × poids(kg) + 70 mL/jour",
+                "alternative": "50-60 mL/kg/jour",
+                "exemple": "Chien 10kg: 30×10+70 = 370 mL/jour"
+            },
+            "choc_crystalloides": {
+                "chien": "80-90 mL/kg sur 1h (en bolus de 20 mL/kg)",
+                "chat": "40-60 mL/kg sur 1h (en bolus de 10-15 mL/kg)"
+            },
+            "deshydratation": {
+                "formule": "Poids(kg) × % déshydratation × 10 = Volume (mL) à corriger",
+                "exemple": "Chien 20kg déshydraté 8%: 20 × 8 × 10 = 1600 mL",
+                "evaluation": {
+                    "5%": "Légère - pli de peau légèrement persistant",
+                    "6-8%": "Modérée - pli persistant, muqueuses sèches",
+                    "10-12%": "Sévère - yeux enfoncés, choc",
+                    ">12%": "Critique - moribond"
+                }
+            },
+            "deficit_potassium": {
+                "formule": "Supplément selon kaliémie",
+                "tableau": {
+                    "<2.0": "80 mEq/L",
+                    "2.0-2.5": "60 mEq/L",
+                    "2.5-3.0": "40 mEq/L",
+                    "3.0-3.5": "28 mEq/L"
+                },
+                "vitesse_max": "0.5 mEq/kg/h"
+            }
+        },
+        "transfusion": {
+            "volume_sang": {
+                "formule": "Volume(mL) = Poids(kg) × 90 × (Ht cible - Ht patient) / Ht donneur",
+                "regle_simple": "2 mL/kg de sang total augmente Ht de 1%"
+            },
+            "vitesse": {
+                "normale": "5-10 mL/kg/h",
+                "urgence": "Jusqu'à 22 mL/kg/h",
+                "debut": "0.25 mL/kg pendant 15-30 min (surveillance réaction)"
+            }
+        },
+        "nutrition": {
+            "RER": {
+                "formule": "70 × Poids(kg)^0.75 kcal/jour",
+                "simplifiee": "30 × Poids(kg) + 70 kcal/jour (pour 2-45kg)"
+            },
+            "MER": {
+                "chien_repos": "RER × 1.4",
+                "chien_actif": "RER × 1.6-2.0",
+                "chat": "RER × 1.2-1.4",
+                "croissance": "RER × 2-3",
+                "lactation": "RER × 2-4"
+            }
+        },
+        "anesthesie": {
+            "volume_courant": "10-15 mL/kg",
+            "frequence_respiratoire": "8-20/min",
+            "volume_minute": "150-250 mL/kg/min",
+            "debit_O2": "50-100 mL/kg/min (circuit ouvert)",
+            "isoflurane_MAC": {
+                "chien": "1.3%",
+                "chat": "1.6%"
+            },
+            "sevoflurane_MAC": {
+                "chien": "2.4%",
+                "chat": "2.6%"
+            }
+        },
+        "cardiologie": {
+            "VHS": {
+                "chien": {
+                    "normal": "<10.5",
+                    "cardiomegalie": ">10.5"
+                },
+                "chat": {
+                    "normal": "<8.0",
+                    "cardiomegalie": ">8.0"
+                }
+            },
+            "frequence_cardiaque": {
+                "chien_petit": "100-140 bpm",
+                "chien_moyen": "80-120 bpm",
+                "chien_grand": "60-100 bpm",
+                "chat": "140-220 bpm"
+            }
+        },
+        "surface_corporelle": {
+            "formule": "SC(m²) = 10 × Poids(kg)^(2/3) / 10000",
+            "simplifiee_chien": "SC = 0.1 × Poids^0.67"
+        }
+    },
+    "vaccinations": {
+        "chien": {
+            "core": {
+                "CHPPi": {
+                    "nom_complet": "Maladie de Carré, Hépatite de Rubarth, Parvovirose, Parainfluenza",
+                    "protocole": {
+                        "primovaccination": [
+                            "6-8 semaines",
+                            "10-12 semaines",
+                            "14-16 semaines"
+                        ],
+                        "rappel": "12 mois après primovaccination",
+                        "rappels_ulterieurs": "Tous les 3 ans (CHPPi) selon guidelines WSAVA"
+                    }
+                },
+                "Rage": {
+                    "obligatoire": "Déplacement international, zones endémiques",
+                    "protocole": {
+                        "primovaccination": "À partir de 12 semaines",
+                        "rappel": "Annuel ou tous les 3 ans selon législation et vaccin"
+                    }
+                }
+            },
+            "non_core": {
+                "Leptospirose": {
+                    "recommande": "Chiens à risque (eau stagnante, rats)",
+                    "protocole": {
+                        "primovaccination": [
+                            "8-9 semaines",
+                            "12 semaines"
+                        ],
+                        "rappel": "Annuel (protection courte durée)"
+                    }
+                },
+                "Bordetella": {
+                    "recommande": "Collectivités, pensions, expositions",
+                    "protocole": {
+                        "intranasal": "Dose unique, protection rapide 72h",
+                        "injectable": "2 doses à 2-4 semaines d'intervalle"
+                    }
+                },
+                "Leishmaniose": {
+                    "recommande": "Zones endémiques (sud Europe, Afrique Nord)",
+                    "protocole": {
+                        "primovaccination": [
+                            "6 mois",
+                            "3 semaines après",
+                            "3 semaines après"
+                        ],
+                        "rappel": "Annuel"
+                    }
+                },
+                "Lyme": {
+                    "recommande": "Zones endémiques tiques Ixodes",
+                    "protocole": {
+                        "primovaccination": [
+                            "12 semaines",
+                            "4 semaines après"
+                        ],
+                        "rappel": "Annuel avant saison des tiques"
+                    }
+                }
+            }
+        },
+        "chat": {
+            "core": {
+                "RCP": {
+                    "nom_complet": "Rhinotrachéite (Herpès), Calicivirus, Panleucopénie (Typhus)",
+                    "protocole": {
+                        "primovaccination": [
+                            "8-9 semaines",
+                            "12 semaines"
+                        ],
+                        "rappel": "12 mois",
+                        "rappels_ulterieurs": "Tous les 3 ans (Typhus), annuel à tous les 3 ans (Coryza selon risque)"
+                    }
+                },
+                "Rage": {
+                    "obligatoire": "Déplacement international",
+                    "protocole": {
+                        "primovaccination": "À partir de 12 semaines",
+                        "rappel": "Selon législation"
+                    }
+                }
+            },
+            "non_core": {
+                "FeLV": {
+                    "recommande": "Chats sortant, contacts positifs",
+                    "protocole": {
+                        "test_prealable": "Obligatoire avant vaccination",
+                        "primovaccination": [
+                            "8-9 semaines",
+                            "12 semaines"
+                        ],
+                        "rappel": "Annuel si risque persiste"
+                    }
+                },
+                "Chlamydophila": {
+                    "recommande": "Collectivités avec problème connu",
+                    "protocole": {
+                        "primovaccination": [
+                            "9 semaines",
+                            "12 semaines"
+                        ],
+                        "rappel": "Annuel"
+                    }
+                },
+                "PIF": {
+                    "note": "Vaccin controversé, efficacité limitée, peu recommandé"
+                }
+            }
+        },
+        "bovins": {
+            "IBR": {
+                "nom_complet": "Rhinotrachéite Infectieuse Bovine",
+                "protocole": "Selon statut troupeau et plan de lutte"
+            },
+            "BVD": {
+                "nom_complet": "Diarrhée Virale Bovine",
+                "protocole": "Vaccination génisses avant mise à la reproduction"
+            },
+            "Clostridioses": {
+                "protocole": {
+                    "primovaccination": "2 injections à 4 semaines",
+                    "rappel": "Annuel"
+                }
+            }
+        },
+        "equins": {
+            "Tetanos": {
+                "obligatoire": true,
+                "protocole": {
+                    "primovaccination": "2 injections à 4-6 semaines",
+                    "rappel": "Annuel à biannuel"
+                }
+            },
+            "Grippe": {
+                "obligatoire": "Compétition FEI",
+                "protocole": {
+                    "primovaccination": [
+                        "J0",
+                        "J21-92",
+                        "6 mois après"
+                    ],
+                    "rappel": "Tous les 6-12 mois selon réglementation"
+                }
+            },
+            "Rhinopneumonie": {
+                "recommande": "Juments reproductrices, effectifs",
+                "protocole": {
+                    "gestation": "5, 7, 9 mois de gestation"
+                }
+            }
+        }
+    },
+    "diagnosticDifferentiel": {
+        "vomissements_chroniques_chien": [
+            "Gastrite chronique",
+            "Corps étranger",
+            "Maladie inflammatoire intestinale (IBD)",
+            "Insuffisance rénale chronique",
+            "Hépatopathie",
+            "Pancréatite chronique",
+            "Hypoadrénocorticisme (Addison)",
+            "Néoplasie gastrique",
+            "Parasitisme",
+            "Intolérance/allergie alimentaire"
+        ],
+        "diarrhee_chronique_chien": [
+            "IBD",
+            "Insuffisance pancréatique exocrine (IPE)",
+            "Giardiose",
+            "Intolérance alimentaire",
+            "SIBO (dysbiose)",
+            "Lymphangiectasie",
+            "Néoplasie intestinale",
+            "Colite lymphoplasmocytaire",
+            "Hyperthyroïdie (rare)",
+            "Parasitisme"
+        ],
+        "PUPD_chien": [
+            "Insuffisance rénale",
+            "Diabète sucré",
+            "Hypercorticisme (Cushing)",
+            "Pyomètre",
+            "Hypercalcémie",
+            "Insuffisance hépatique",
+            "Diabète insipide",
+            "Hypokaliémie",
+            "Hyperthyroïdie",
+            "Potomanie"
+        ],
+        "PUPD_chat": [
+            "Insuffisance rénale chronique",
+            "Diabète sucré",
+            "Hyperthyroïdie",
+            "Hépatopathie",
+            "Hypercorticisme (rare)",
+            "Hypokaliémie",
+            "Acromégalie",
+            "Pyélonéphrite"
+        ],
+        "anemie_chien": {
+            "regenerative": [
+                "Hémorragie aiguë",
+                "Anémie hémolytique à médiation immune (AHMI)",
+                "Babésiose",
+                "Intoxication (oignon, zinc)",
+                "Corps de Heinz"
+            ],
+            "non_regenerative": [
+                "Insuffisance rénale chronique",
+                "Maladie inflammatoire chronique",
+                "Ehrlichiose chronique",
+                "Leishmaniose",
+                "Néoplasie médullaire",
+                "Hypothyroïdie",
+                "Hypoadrénocorticisme"
+            ]
+        },
+        "ictere": {
+            "prehepatique": [
+                "AHMI",
+                "Babésiose",
+                "Transfusion incompatible"
+            ],
+            "hepatique": [
+                "Hépatite",
+                "Lipidose hépatique (chat)",
+                "Cholangite",
+                "Néoplasie",
+                "Intoxication"
+            ],
+            "posthepatique": [
+                "Cholélithiase",
+                "Pancréatite",
+                "Néoplasie voies biliaires",
+                "Mucocèle biliaire"
+            ]
+        },
+        "epanchement_abdominal": {
+            "transsudat_pur": [
+                "Hypoprotéinémie",
+                "Cirrhose précoce",
+                "Obstruction lymphatique"
+            ],
+            "transsudat_modifie": [
+                "Insuffisance cardiaque",
+                "Néoplasie",
+                "Cirrhose avancée",
+                "Torsion de lobe hépatique"
+            ],
+            "exsudat": [
+                "Péritonite septique",
+                "PIF",
+                "Pancréatite",
+                "Corps étranger perforant"
+            ],
+            "hemorragique": [
+                "Tumeur splénique/hépatique rupturée",
+                "Coagulopathie",
+                "Traumatisme"
+            ]
+        },
+        "boiterie_anterieure_chien": [
+            "Dysplasie du coude",
+            "Fragmentation processus coronoïde",
+            "Ostéochondrite disséquante",
+            "Panostéite",
+            "Arthrose",
+            "Tendinite bicipitale",
+            "Instabilité scapulo-humérale",
+            "Fracture",
+            "Luxation",
+            "Néoplasie osseuse"
+        ],
+        "boiterie_posterieure_chien": [
+            "Dysplasie hanche",
+            "Rupture ligament croisé antérieur",
+            "Luxation patelle",
+            "Arthrose",
+            "Panostéite",
+            "Néoplasie osseuse",
+            "Hernie discale lombaire",
+            "Spondylose",
+            "Myopathie",
+            "Neuropathie"
+        ],
+        "prurit_chien": [
+            "Dermatite atopique",
+            "Allergie alimentaire",
+            "DAPP (Dermatite Allergique aux Piqûres de Puces)",
+            "Gale sarcoptique",
+            "Pyodermite",
+            "Malasseziose",
+            "Dermatite de contact",
+            "Otite externe"
+        ],
+        "alopecie_chien": {
+            "prurigineuse": [
+                "Démodécie",
+                "Gale",
+                "Pyodermite",
+                "Dermatophytose"
+            ],
+            "non_prurigineuse": [
+                "Hypothyroïdie",
+                "Hypercorticisme",
+                "Alopécie X",
+                "Alopécie saisonnière",
+                "Alopécie de dilution de couleur"
+            ]
+        },
+        "convulsions": {
+            "intracraniennes": [
+                "Épilepsie idiopathique",
+                "Tumeur cérébrale",
+                "Encéphalite",
+                "Traumatisme",
+                "Hydrocéphalie"
+            ],
+            "extracraniennes": [
+                "Hypoglycémie",
+                "Encéphalose hépatique",
+                "Hypocalcémie",
+                "Intoxication",
+                "Insuffisance rénale"
+            ]
+        }
+    }
+}

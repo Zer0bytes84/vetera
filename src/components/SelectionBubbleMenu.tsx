@@ -1,0 +1,202 @@
+import React, { useState, useEffect, useRef } from "react"
+import { Editor } from "@tiptap/react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  TextBoldIcon,
+  TextItalicIcon,
+  TextStrikethroughIcon,
+  Heading01Icon,
+  Heading02Icon,
+  SparklesIcon,
+  ArrowDown01Icon,
+  CheckmarkCircle02Icon,
+  MagicWand01Icon,
+  CheckListIcon,
+} from "@hugeicons/core-free-icons"
+import { Button } from "@/components/ui/button"
+
+interface SelectionBubbleMenuProps {
+  editor: Editor
+  onAiAction: (action: string) => void
+}
+
+const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
+  editor,
+  onAiAction,
+}) => {
+  const [showAiMenu, setShowAiMenu] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const [position, setPosition] = useState({ top: 0, left: 0 })
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  const aiActions = [
+    {
+      label: "Corriger",
+      action: "Corrige l'orthographe et la grammaire",
+      icon: CheckmarkCircle02Icon,
+    },
+    {
+      label: "Reformuler",
+      action: "Reformule de manière professionnelle",
+      icon: MagicWand01Icon,
+    },
+    { label: "Résumer", action: "Résume en points clés", icon: CheckListIcon },
+  ]
+
+  useEffect(() => {
+    const updateMenu = () => {
+      const { selection } = editor.state
+      const { from, to } = selection
+
+      if (from === to) {
+        setIsVisible(false)
+        return
+      }
+
+      const { view } = editor
+      const start = view.coordsAtPos(from)
+      const end = view.coordsAtPos(to)
+
+      const menuWidth = 340
+      const menuHeight = 50
+
+      let left = (start.left + end.left) / 2 - menuWidth / 2
+      left = Math.max(10, Math.min(left, window.innerWidth - menuWidth - 10))
+
+      let top = start.top - menuHeight - 10
+      if (top < 10) {
+        top = end.bottom + 10
+      }
+
+      setPosition({ top, left })
+      setIsVisible(true)
+    }
+
+    editor.on("selectionUpdate", updateMenu)
+    return () => {
+      editor.off("selectionUpdate", updateMenu)
+    }
+  }, [editor])
+
+  const handleAiAction = (action: string) => {
+    setShowAiMenu(false)
+    setIsVisible(false)
+    onAiAction(action)
+  }
+
+  if (!isVisible) return null
+
+  return (
+    <div
+      ref={menuRef}
+      className="fixed z-50 flex items-center gap-0.5 rounded-xl border border-border bg-popover p-1.5 shadow-xl backdrop-blur-md"
+      style={{ top: position.top, left: position.left }}
+    >
+      <Button
+        variant={editor.isActive("bold") ? "default" : "ghost"}
+        size="icon-sm"
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        title="Gras"
+      >
+        <HugeiconsIcon icon={TextBoldIcon} strokeWidth={2} className="size-4" />
+      </Button>
+
+      <Button
+        variant={editor.isActive("italic") ? "default" : "ghost"}
+        size="icon-sm"
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        title="Italique"
+      >
+        <HugeiconsIcon
+          icon={TextItalicIcon}
+          strokeWidth={2}
+          className="size-4"
+        />
+      </Button>
+
+      <Button
+        variant={editor.isActive("strike") ? "default" : "ghost"}
+        size="icon-sm"
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+        title="Barré"
+      >
+        <HugeiconsIcon
+          icon={TextStrikethroughIcon}
+          strokeWidth={2}
+          className="size-4"
+        />
+      </Button>
+
+      <div className="mx-1 h-6 w-px bg-border" />
+
+      <Button
+        variant={editor.isActive("heading", { level: 1 }) ? "default" : "ghost"}
+        size="icon-sm"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        title="Titre 1"
+      >
+        <HugeiconsIcon
+          icon={Heading01Icon}
+          strokeWidth={2}
+          className="size-4"
+        />
+      </Button>
+
+      <Button
+        variant={editor.isActive("heading", { level: 2 }) ? "default" : "ghost"}
+        size="icon-sm"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        title="Titre 2"
+      >
+        <HugeiconsIcon
+          icon={Heading02Icon}
+          strokeWidth={2}
+          className="size-4"
+        />
+      </Button>
+
+      <div className="mx-1 h-6 w-px bg-border" />
+
+      <div className="relative">
+        <Button
+          onClick={() => setShowAiMenu(!showAiMenu)}
+          className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+          size="sm"
+        >
+          <HugeiconsIcon
+            icon={SparklesIcon}
+            strokeWidth={2}
+            className="size-3.5"
+          />
+          <span>IA</span>
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
+            strokeWidth={2}
+            className={`size-3 transition-transform ${showAiMenu ? "rotate-180" : ""}`}
+          />
+        </Button>
+
+        {showAiMenu && (
+          <div className="absolute top-full left-0 z-50 mt-2 min-w-[180px] overflow-hidden rounded-xl border border-border bg-popover shadow-xl">
+            {aiActions.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => handleAiAction(item.action)}
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-muted"
+              >
+                <HugeiconsIcon
+                  icon={item.icon}
+                  strokeWidth={2}
+                  className="size-3.5 text-violet-500"
+                />
+                {item.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default SelectionBubbleMenu
