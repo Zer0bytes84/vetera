@@ -186,7 +186,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         detail: "Base vivante des dossiers suivis au cabinet",
       },
       {
-        title: "CA encaissé",
+        title: "Revenus encaissés",
         value: formatMoneyDa(currentIncome),
         badge: `${incomeDelta >= 0 ? "+" : ""}${incomeDelta}%`,
         trend: incomeDelta >= 0 ? "up" : "down",
