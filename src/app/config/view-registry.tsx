@@ -9,6 +9,9 @@ import { DashboardPage } from "../../modules/dashboard/dashboard-page"
 const AgendaPage = lazy(() => import("@/components/Agenda"))
 const CliniquePage = lazy(() => import("@/components/Clinique"))
 const FinancesPage = lazy(() => import("@/components/Finances"))
+const FinancialAnalyticsPage = lazy(
+  () => import("@/modules/finances/financial-analytics-page")
+)
 const HelpPage = lazy(() => import("@/components/Help"))
 const NotesPage = lazy(() => import("@/components/Notes"))
 const ParametresPage = lazy(() => import("@/components/Parametres"))
@@ -53,7 +56,11 @@ export function renderView(view: View, props: ViewRegistryProps) {
     case "stock":
       return renderLazyView(<StockPage />)
     case "finances":
-      return renderLazyView(<FinancesPage />)
+      return renderLazyView(<FinancesPage onNavigate={props.onNavigate} />)
+    case "finances_analytics":
+      return renderLazyView(
+        <FinancialAnalyticsPage onNavigate={props.onNavigate} />
+      )
     case "equipe":
       return renderLazyView(<TeamPage />)
     case "parametres":

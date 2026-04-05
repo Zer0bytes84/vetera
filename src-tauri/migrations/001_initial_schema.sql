@@ -251,17 +251,7 @@ BEGIN
 END;
 
 -- ============================================
--- Données initiales: Admin par défaut
+-- Données initiales
 -- ============================================
-
--- Mot de passe: "admin123" (SHA-256 hash temporaire)
--- Hash: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INSERT OR IGNORE INTO users (id, email, password_hash, display_name, role, status)
-VALUES (
-    'admin-default-001',
-    'zohir.kh@gmail.com',
-    '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9',
-    'Zouhir Kherroubi',
-    'admin',
-    'active'
-);
+-- Le premier admin est créé via le wizard de premier lancement (createInitialAdmin).
+-- Aucun compte par défaut n'est seedé dans la migration.

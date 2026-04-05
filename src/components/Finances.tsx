@@ -4,6 +4,7 @@ import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
 import {
   Add01Icon,
   ArrowDown01Icon,
+  ArrowRight01Icon,
   ArrowUp01Icon,
   CheckmarkCircle02Icon,
   Clock01Icon,
@@ -69,6 +70,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import type { View } from "@/types"
 
 type TimeRange = "today" | "week" | "month" | "year"
 type TransactionFilter = "all" | "income" | "expense"
@@ -448,7 +450,9 @@ function FinanceMetricCard({
   )
 }
 
-const Finances: React.FC = () => {
+const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
+  onNavigate,
+}) => {
   const [timeRange, setTimeRange] = useState<TimeRange>("month")
   const [filterType, setFilterType] = useState<TransactionFilter>("all")
   const [searchTerm, setSearchTerm] = useState("")
@@ -718,6 +722,17 @@ const Finances: React.FC = () => {
         />
 
         <div className="flex flex-col gap-2 sm:flex-row">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate?.("finances_analytics")}
+          >
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
+            Vue analytique
+          </Button>
           <Button
             variant="outline"
             onClick={handleExport}

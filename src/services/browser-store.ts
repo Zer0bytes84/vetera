@@ -21,7 +21,7 @@ type BrowserDatabaseState = {
   tables: Record<BrowserTableName, BrowserRow[]>
 }
 
-const STORAGE_KEY = "luma-dashboard.browser-db.v1"
+const STORAGE_KEY = "vetera.browser-db.v1"
 
 const EMPTY_STATE: BrowserDatabaseState = {
   tables: {
@@ -77,7 +77,10 @@ function readState(): BrowserDatabaseState {
       },
     }
   } catch (error) {
-    console.error("[BrowserDB] Failed to parse browser database, resetting.", error)
+    console.error(
+      "[BrowserDB] Failed to parse browser database, resetting.",
+      error
+    )
     return cloneState(EMPTY_STATE)
   }
 }
@@ -90,7 +93,10 @@ function writeState(state: BrowserDatabaseState) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
-function withTimestamps<T extends BrowserRow>(row: T, existing?: BrowserRow): T {
+function withTimestamps<T extends BrowserRow>(
+  row: T,
+  existing?: BrowserRow
+): T {
   const now = new Date().toISOString()
 
   return {
@@ -100,7 +106,9 @@ function withTimestamps<T extends BrowserRow>(row: T, existing?: BrowserRow): T 
   } as T
 }
 
-export function getBrowserTable<T extends BrowserRow>(tableName: BrowserTableName): T[] {
+export function getBrowserTable<T extends BrowserRow>(
+  tableName: BrowserTableName
+): T[] {
   return readState().tables[tableName] as T[]
 }
 
@@ -111,7 +119,10 @@ export function findBrowserRow<T extends BrowserRow>(
   return (getBrowserTable<T>(tableName).find(predicate) ?? null) as T | null
 }
 
-export function insertBrowserRow<T extends BrowserRow>(tableName: BrowserTableName, row: T): T {
+export function insertBrowserRow<T extends BrowserRow>(
+  tableName: BrowserTableName,
+  row: T
+): T {
   const state = readState()
   const preparedRow = withTimestamps(row)
 
@@ -143,11 +154,17 @@ export function updateBrowserRow<T extends BrowserRow>(
 
 export function removeBrowserRow(tableName: BrowserTableName, id: string) {
   const state = readState()
-  state.tables[tableName] = state.tables[tableName].filter((row) => row.id !== id)
+  state.tables[tableName] = state.tables[tableName].filter(
+    (row) => row.id !== id
+  )
   writeState(state)
 }
 
-export function setBrowserRow<T extends BrowserRow>(tableName: BrowserTableName, id: string, row: Partial<T>) {
+export function setBrowserRow<T extends BrowserRow>(
+  tableName: BrowserTableName,
+  id: string,
+  row: Partial<T>
+) {
   const exists = findBrowserRow<T>(tableName, (entry) => entry.id === id)
   if (exists) {
     updateBrowserRow(tableName, id, row)
@@ -157,22 +174,35 @@ export function setBrowserRow<T extends BrowserRow>(tableName: BrowserTableName,
   insertBrowserRow(tableName, { id, ...row } as T)
 }
 
-export function replaceBrowserTable<T extends BrowserRow>(tableName: BrowserTableName, rows: T[]) {
+export function replaceBrowserTable<T extends BrowserRow>(
+  tableName: BrowserTableName,
+  rows: T[]
+) {
   const state = readState()
   state.tables[tableName] = rows
   writeState(state)
 }
 
 export function getBrowserSetting(key: string): string | null {
-  const setting = findBrowserRow<{ id: string; key: string; value: string }>("app_settings", (entry) => entry.key === key)
+  const setting = findBrowserRow<{ id: string; key: string; value: string }>(
+    "app_settings",
+    (entry) => entry.key === key
+  )
   return setting?.value ?? null
 }
 
 export function setBrowserSetting(key: string, value: string) {
-  const existing = findBrowserRow<{ id: string; key: string; value: string }>("app_settings", (entry) => entry.key === key)
+  const existing = findBrowserRow<{ id: string; key: string; value: string }>(
+    "app_settings",
+    (entry) => entry.key === key
+  )
 
   if (existing) {
-    updateBrowserRow<{ id: string; key: string; value: string }>("app_settings", existing.id ?? key, { key, value })
+    updateBrowserRow<{ id: string; key: string; value: string }>(
+      "app_settings",
+      existing.id ?? key,
+      { key, value }
+    )
     return
   }
 
@@ -188,6 +218,8 @@ export function clearBrowserRows(
   predicate: (row: BrowserRow) => boolean
 ) {
   const state = readState()
-  state.tables[tableName] = state.tables[tableName].filter((row) => !predicate(row))
+  state.tables[tableName] = state.tables[tableName].filter(
+    (row) => !predicate(row)
+  )
   writeState(state)
 }

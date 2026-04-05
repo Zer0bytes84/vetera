@@ -1,8 +1,4 @@
-import {
-  CreateMLCEngine,
-  type ChatCompletionMessageParam,
-  type MLCEngine,
-} from "@mlc-ai/web-llm"
+import type { ChatCompletionMessageParam, MLCEngine } from "@mlc-ai/web-llm"
 
 import { vetKnowledgeService } from "./vetKnowledgeService"
 
@@ -16,7 +12,7 @@ export interface LocalChatTurn {
   text: string
 }
 
-const DEFAULT_SYSTEM_PROMPT = `Tu es l'assistant clinique de Luma Vet.
+const DEFAULT_SYSTEM_PROMPT = `Tu es l'assistant clinique de Vetera.
 Tu aides une clinique veterinaire locale a mieux travailler.
 
 Regles:
@@ -88,6 +84,7 @@ export const initializeWebLLM = async (
 
   initPromise = (async () => {
     try {
+      const { CreateMLCEngine } = await import("@mlc-ai/web-llm")
       engine = await CreateMLCEngine(modelId, {
         initProgressCallback: (report) => {
           const progress = { progress: report.progress, text: report.text }

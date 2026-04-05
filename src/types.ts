@@ -23,4 +23,4 @@ export interface DashboardData {
   revenue: number;
 }
 
-export type View = 'dashboard' | 'agenda' | 'clinique' | 'patients' | 'notes' | 'stock' | 'finances' | 'parametres' | 'equipe' | 'taches' | 'aide';
+export type View = 'dashboard' | 'agenda' | 'clinique' | 'patients' | 'notes' | 'stock' | 'finances' | 'finances_analytics' | 'parametres' | 'equipe' | 'taches' | 'aide';

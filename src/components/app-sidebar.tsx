@@ -124,68 +124,56 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       {isDesktopRuntime ? (
-        <div className="flex h-10 items-center px-4" data-tauri-drag-region>
+        <div
+          className="flex h-10 items-center px-4 [@media(max-height:820px)]:h-8 [@media(max-height:820px)]:px-3"
+          data-tauri-drag-region
+        >
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => appWindow?.close()}
-              className="size-3 rounded-full bg-[#ff5f57]"
-            />
-            <button
-              type="button"
-              onClick={() => appWindow?.minimize()}
-              className="size-3 rounded-full bg-[#febc2e]"
-            />
-            <button
-              type="button"
-              onClick={async () => {
-                if (!appWindow) return
-                const isFs = await appWindow.isFullscreen()
-                appWindow.setFullscreen(!isFs)
-              }}
-              className="size-3 rounded-full bg-[#28c840]"
-            />
+            <div className="size-3" />
           </div>
         </div>
       ) : null}
-      <SidebarHeader>
+      <SidebarHeader className="shrink-0 [@media(max-height:820px)]:p-1.5">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
+              className="data-[slot=sidebar-menu-button]:p-1.5! [@media(max-height:820px)]:data-[slot=sidebar-menu-button]:p-1!"
               render={
                 <button type="button" onClick={() => onNavigate("dashboard")} />
               }
             >
               <Logo size="md" className="text-sidebar-foreground" />
-              <Badge variant="secondary" className="ml-auto rounded-full text-[10px]">
+              <Badge
+                variant="secondary"
+                className="ml-auto rounded-full text-[10px]"
+              >
                 Pro
               </Badge>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain
-          title="Parcours patient"
-          items={mainItems}
-          onPrimaryAction={() => onNavigate("patients")}
-          onAssistant={onOpenAIAgent}
-        />
-        <NavDocuments
-          items={documents.map((item) => ({
-            name: item.name,
-            icon: item.icon,
-            onClick: item.onClick,
-          }))}
-        />
-        <NavSecondary
-          title="Configuration"
-          items={secondaryItems}
-          className="mt-auto"
-        />
+      <SidebarContent className="scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent overflow-y-auto">
+        <div className="flex min-h-full flex-1 flex-col gap-2 [@media(max-height:820px)]:gap-1.5">
+          <NavMain
+            title="Parcours patient"
+            items={mainItems}
+            onPrimaryAction={() => onNavigate("patients")}
+            onAssistant={onOpenAIAgent}
+          />
+          <NavDocuments
+            items={documents.map((item) => ({
+              name: item.name,
+              icon: item.icon,
+              onClick: item.onClick,
+            }))}
+          />
+          <div className="mt-auto pt-3 [@media(max-height:820px)]:pt-2">
+            <NavSecondary title="Configuration" items={secondaryItems} />
+          </div>
+        </div>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="shrink-0 border-t border-sidebar-border/50 bg-sidebar/80 backdrop-blur-sm [@media(max-height:820px)]:p-1.5">
         <NavUser
           user={{
             name: resolvedUserName,

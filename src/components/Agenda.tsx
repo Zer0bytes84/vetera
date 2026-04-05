@@ -798,6 +798,8 @@ const Agenda: React.FC = () => {
   const [editingAppointmentId, setEditingAppointmentId] = useState<
     string | null
   >(null)
+  const [selectedOwnerId, setSelectedOwnerId] = useState("")
+  const [ownerSearchTerm, setOwnerSearchTerm] = useState("")
   const [selectedPatientId, setSelectedPatientId] = useState("")
   const [selectedVetId, setSelectedVetId] = useState("")
   const [selectedType, setSelectedType] =
@@ -856,6 +858,31 @@ const Agenda: React.FC = () => {
     () => new Map(users.map((user) => [user.id, user])),
     [users]
   )
+  const filteredOwners = useMemo(() => {
+    const query = ownerSearchTerm.trim().toLowerCase()
+    if (!query) return owners.slice(0, 8)
+
+    return owners
+      .filter((owner) =>
+        [
+          owner.firstName,
+          owner.lastName,
+          owner.phone,
+          owner.email,
+          owner.city,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(query)
+      )
+      .slice(0, 8)
+  }, [ownerSearchTerm, owners])
+
+  const patientsForSelectedOwner = useMemo(() => {
+    if (!selectedOwnerId) return patients
+    return patients.filter((patient) => patient.ownerId === selectedOwnerId)
+  }, [patients, selectedOwnerId])
 
   const appointmentsByDate = useMemo(() => {
     const map = new Map<string, Appointment[]>()
@@ -1112,6 +1139,8 @@ const Agenda: React.FC = () => {
 
   const resetForm = (date = selectedDate) => {
     setEditingAppointmentId(null)
+    setSelectedOwnerId("")
+    setOwnerSearchTerm("")
     setSelectedPatientId("")
     setSelectedVetId(vets[0]?.id ?? "")
     setSelectedType("Consultation")
@@ -1138,6 +1167,8 @@ const Agenda: React.FC = () => {
     const end = normalizeDate(appointment.endTime)
 
     setEditingAppointmentId(appointment.id)
+    setSelectedOwnerId(appointment.ownerId)
+    setOwnerSearchTerm("")
     setSelectedPatientId(appointment.patientId)
     setSelectedVetId(appointment.vetId)
     setSelectedType(appointment.type)
@@ -1150,6 +1181,37 @@ const Agenda: React.FC = () => {
     )
     setReason(appointment.reason || "")
     setIsDialogOpen(true)
+  }
+
+  const handleOwnerSelect = (ownerId: string) => {
+    setSelectedOwnerId(ownerId)
+    const owner = ownersById.get(ownerId)
+    setOwnerSearchTerm(
+      owner ? `${owner.firstName} ${owner.lastName}`.trim() : ""
+    )
+
+    const ownerPatients = patients.filter((patient) => patient.ownerId === ownerId)
+    if (ownerPatients.length === 1) {
+      setSelectedPatientId(ownerPatients[0].id)
+      return
+    }
+
+    const selectedPatient = patientsById.get(selectedPatientId)
+    if (!selectedPatient || selectedPatient.ownerId !== ownerId) {
+      setSelectedPatientId("")
+    }
+  }
+
+  const handlePatientSelect = (patientId: string) => {
+    setSelectedPatientId(patientId)
+    const patient = patientsById.get(patientId)
+    if (patient?.ownerId) {
+      setSelectedOwnerId(patient.ownerId)
+      const owner = ownersById.get(patient.ownerId)
+      setOwnerSearchTerm(
+        owner ? `${owner.firstName} ${owner.lastName}`.trim() : ""
+      )
+    }
   }
 
   const selectAppointment = (appointment: Appointment, syncDate = false) => {
@@ -2091,19 +2153,58 @@ const Agenda: React.FC = () => {
           <div className="min-h-0 overflow-y-auto p-6">
             <FieldGroup className="grid gap-6">
               <div className="grid gap-5 lg:grid-cols-2">
+                <Field className="lg:col-span-2">
+                  <FieldLabel>Client existant</FieldLabel>
+                  <Input
+                    value={ownerSearchTerm}
+                    onChange={(event) => {
+                      setOwnerSearchTerm(event.target.value)
+                      if (!event.target.value.trim()) {
+                        setSelectedOwnerId("")
+                      }
+                    }}
+                    placeholder="Rechercher un propriétaire par nom, téléphone ou email..."
+                  />
+                  <FieldDescription>
+                    Sélectionnez d’abord le client pour filtrer automatiquement
+                    ses dossiers patients.
+                  </FieldDescription>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {filteredOwners.length > 0 ? (
+                      filteredOwners.map((owner) => (
+                        <Button
+                          key={owner.id}
+                          type="button"
+                          variant={
+                            selectedOwnerId === owner.id ? "default" : "outline"
+                          }
+                          size="sm"
+                          onClick={() => handleOwnerSelect(owner.id)}
+                        >
+                          {formatOwnerName(owner)}
+                        </Button>
+                      ))
+                    ) : (
+                      <div className="text-sm text-muted-foreground">
+                        Aucun client existant ne correspond à cette recherche.
+                      </div>
+                    )}
+                  </div>
+                </Field>
+
                 <Field>
                   <FieldLabel>Patient</FieldLabel>
                   <NativeSelect
                     value={selectedPatientId}
-                    onChange={(event) =>
-                      setSelectedPatientId(event.target.value)
-                    }
+                    onChange={(event) => handlePatientSelect(event.target.value)}
                     className="w-full"
                   >
                     <NativeSelectOption value="">
-                      Sélectionner un dossier
+                      {selectedOwnerId
+                        ? "Sélectionner un dossier du client"
+                        : "Sélectionner un dossier"}
                     </NativeSelectOption>
-                    {patients.map((patient) => {
+                    {patientsForSelectedOwner.map((patient) => {
                       const owner = ownersById.get(patient.ownerId)
                       return (
                         <NativeSelectOption key={patient.id} value={patient.id}>
@@ -2114,8 +2215,9 @@ const Agenda: React.FC = () => {
                     })}
                   </NativeSelect>
                   <FieldDescription>
-                    Le propriétaire sera lié automatiquement depuis le dossier
-                    choisi.
+                    {selectedOwnerId
+                      ? "Seuls les patients liés au client choisi sont affichés."
+                      : "Le propriétaire sera lié automatiquement depuis le dossier choisi."}
                   </FieldDescription>
                 </Field>
 

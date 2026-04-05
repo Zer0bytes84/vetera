@@ -223,7 +223,7 @@ const sections = [
     description: "Configuration de l'application selon vos besoins.",
     content: (
       <div className="space-y-4">
-        <p>Personnalisez votre expérience Luma Vet :</p>
+        <p>Personnalisez votre expérience Vetera :</p>
         <ul className="list-disc space-y-2 pl-5 text-muted-foreground">
           <li>Modification de votre profil et mot de passe.</li>
           <li>Choix du thème (Clair, Sombre, Système).</li>
@@ -259,7 +259,7 @@ const Help: React.FC = () => {
               strokeWidth={2}
               className="size-8 text-primary"
             />
-            Centre d'Aide Luma Vet
+            Centre d'Aide Vetera
           </h1>
           <p className="mb-6 text-lg text-muted-foreground">
             Tout ce que vous devez savoir pour maîtriser votre logiciel

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Alert02Icon,
@@ -46,6 +46,8 @@ import {
   listBackups,
   restoreBackup,
   exportDatabase,
+  importDatabase,
+  importDatabaseFromFile,
   getLastBackupDate,
   deleteBackup,
   BackupInfo,
@@ -358,6 +360,8 @@ const BackupSettings: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false)
   const [isRestoring, setIsRestoring] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
+  const importInputRef = useRef<HTMLInputElement | null>(null)
   const [feedbackMessage, setFeedbackMessage] = useState<{
     type: "success" | "error"
     text: string
@@ -463,6 +467,95 @@ const BackupSettings: React.FC = () => {
     }
   }
 
+  const handleImport = async () => {
+    if (
+      !confirm(
+        "⚠️ Attention : cela remplacera toutes vos données actuelles par celles du fichier sélectionné.\n\nContinuer ?"
+      )
+    ) {
+      return
+    }
+    setIsImporting(true)
+    try {
+      let success = await importDatabase()
+      if (!success) {
+        importInputRef.current?.click()
+        return
+      }
+      if (success) {
+        setFeedbackMessage({
+          type: "success",
+          text: "✅ Base de données importée ! L'application va redémarrer...",
+        })
+        setTimeout(async () => {
+          try {
+            await exit(0)
+          } catch (e) {
+            console.error("[BackupSettings] Exit failed:", e)
+            window.close()
+          }
+        }, 2000)
+      } else {
+        setFeedbackMessage({
+          type: "error",
+          text: "❌ Échec de l'importation",
+        })
+      }
+    } catch (error) {
+      console.error("[BackupSettings] Error importing:", error)
+      setFeedbackMessage({
+        type: "error",
+        text: "❌ Erreur lors de l'importation",
+      })
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
+  const handleImportFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+
+    if (!file) {
+      setIsImporting(false)
+      return
+    }
+
+    setIsImporting(true)
+    try {
+      const success = await importDatabaseFromFile(file)
+      if (success) {
+        setFeedbackMessage({
+          type: "success",
+          text: "✅ Base de données importée ! L'application va redémarrer...",
+        })
+        setTimeout(async () => {
+          try {
+            await exit(0)
+          } catch (e) {
+            console.error("[BackupSettings] Exit failed:", e)
+            window.close()
+          }
+        }, 2000)
+      } else {
+        setFeedbackMessage({
+          type: "error",
+          text: "❌ Échec de l'importation",
+        })
+      }
+    } catch (error) {
+      console.error("[BackupSettings] Error importing from file:", error)
+      setFeedbackMessage({
+        type: "error",
+        text: "❌ Erreur lors de l'importation",
+      })
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   const handleDeleteBackup = async (filename: string) => {
     if (!confirm("Supprimer cette sauvegarde ?")) return
     try {
@@ -561,6 +654,13 @@ const BackupSettings: React.FC = () => {
       </Card>
 
       <div className="grid grid-cols-2 gap-4">
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".db,.sqlite,.sqlite3"
+          className="hidden"
+          onChange={handleImportFileChange}
+        />
         <Button
           variant="outline"
           className="h-auto justify-start gap-3 p-4"
@@ -579,6 +679,27 @@ const BackupSettings: React.FC = () => {
             </div>
           </div>
         </Button>
+        <Button
+          variant="outline"
+          className="h-auto justify-start gap-3 p-4"
+          onClick={handleImport}
+          disabled={isImporting}
+        >
+          <HugeiconsIcon
+            icon={Upload01Icon}
+            strokeWidth={2}
+            className="size-5 text-primary"
+          />
+          <div className="text-left">
+            <div className="font-medium text-foreground">Importer une base</div>
+            <div className="text-xs text-muted-foreground">
+              Restaurer depuis un fichier
+            </div>
+          </div>
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <Button
           variant="outline"
           className="h-auto justify-start gap-3 p-4"
@@ -1861,9 +1982,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   V+
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">
-                    Luma Vet
-                  </h3>
+                  <h3 className="text-lg font-bold text-foreground">Vetera</h3>
                   <p className="text-sm text-muted-foreground">
                     Logiciel de gestion vétérinaire
                   </p>

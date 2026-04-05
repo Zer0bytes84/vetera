@@ -77,7 +77,7 @@ const Auth: React.FC = () => {
             <h1 className="text-3xl font-bold tracking-tight">
               {view === "login"
                 ? "Bon retour parmi nous"
-                : "Bienvenue sur Luma Vet"}
+                : "Bienvenue sur Vetera"}
             </h1>
             <p className="max-w-md text-lg text-primary-foreground/80">
               {view === "login"
@@ -141,7 +141,7 @@ const Auth: React.FC = () => {
             <p className="text-sm text-muted-foreground">
               {view === "login"
                 ? "Entrez vos identifiants pour accéder à votre espace"
-                : "Remplissez le formulaire pour commencer"}
+                : "Remplissez le formulaire pour commencer. Le premier compte créé devient le compte principal."}
             </p>
           </div>
 

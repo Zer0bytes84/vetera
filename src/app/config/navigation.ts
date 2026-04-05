@@ -23,6 +23,7 @@ export const viewTitles: Record<View, string> = {
   notes: "Notes",
   stock: "Produits",
   finances: "Finances",
+  finances_analytics: "Analyse financière",
   equipe: "Équipe",
   parametres: "Configuration",
   taches: "Tâches & rappels",

@@ -143,11 +143,11 @@ export function DataTable({
             <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[32%] pl-6">Patient</TableHead>
-                  <TableHead className="hidden w-[22%] xl:table-cell">Propriétaire</TableHead>
-                  <TableHead className="w-[20%]">Acte</TableHead>
-                  <TableHead className="w-[16%]">Créneau</TableHead>
-                  <TableHead className="w-[12%]">Statut</TableHead>
+                  <TableHead className="w-[30%] pl-6">Patient</TableHead>
+                  <TableHead className="hidden w-[20%] xl:table-cell">Propriétaire</TableHead>
+                  <TableHead className="w-[16%]">Acte</TableHead>
+                  <TableHead className="w-[18%]">Créneau</TableHead>
+                  <TableHead className="w-[10%]">Statut</TableHead>
                   <TableHead className="w-[12%] pr-6 text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -174,10 +174,15 @@ export function DataTable({
                         <div className="break-words">{row.type}</div>
                       </TableCell>
                       <TableCell className="align-top">
-                        <div className="break-words text-sm sm:text-base">{row.appointmentAt}</div>
+                        <div className="pr-3 text-sm leading-6 break-words sm:text-base">
+                          {row.appointmentAt}
+                        </div>
                       </TableCell>
                       <TableCell className="align-top">
-                        <Badge variant={statusVariant(row.status)} className="max-w-full whitespace-normal break-words text-center">
+                        <Badge
+                          variant={statusVariant(row.status)}
+                          className="inline-flex max-w-full whitespace-normal break-words px-2 py-0.5 text-center text-xs"
+                        >
                           {row.status}
                         </Badge>
                       </TableCell>

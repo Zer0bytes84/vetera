@@ -1,7 +1,4 @@
-import {
-  SearchIcon,
-  Sun03Icon,
-} from "@hugeicons/core-free-icons"
+import { SearchIcon, Sun03Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import { useTauriDrag } from "@/hooks/use-tauri-drag"
@@ -45,7 +42,7 @@ export function SiteHeader({
     <header
       ref={headerRef}
       onMouseDown={handleMouseDown}
-      className="flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background/95 transition-[width,height] ease-linear supports-[backdrop-filter]:bg-background/60 group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
+      className="flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background/95 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) supports-[backdrop-filter]:bg-background/60"
     >
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
@@ -74,7 +71,7 @@ export function SiteHeader({
             onClick={onOpenPalette}
           >
             <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
-            <span className="text-sm">Search...</span>
+            <span className="text-sm">Rechercher...</span>
             <Kbd className="ml-2">K</Kbd>
           </Button>
           <DropdownMenu>
@@ -87,7 +84,11 @@ export function SiteHeader({
                 />
               }
             >
-              <HugeiconsIcon icon={Sun03Icon} strokeWidth={2} className="size-4.5" />
+              <HugeiconsIcon
+                icon={Sun03Icon}
+                strokeWidth={2}
+                className="size-4.5"
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-64">
               <DropdownMenuRadioGroup
@@ -99,9 +100,7 @@ export function SiteHeader({
                 <DropdownMenuRadioItem value="light">
                   Light
                 </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="dark">
-                  Dark
-                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="system">
                   System
                 </DropdownMenuRadioItem>

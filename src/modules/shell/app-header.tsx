@@ -66,7 +66,7 @@ export function AppHeader({
     "Utilisateur"
   const userName =
     userLabelSource.split("@")[0].trim().split(/\s+/)[0] || "Utilisateur"
-  const pageTitle = viewTitles[currentView] ?? "Luma Vet"
+  const pageTitle = viewTitles[currentView] ?? "Vetera"
   const notificationItems = useMemo(() => {
     const urgentTasks = tasks
       .filter(

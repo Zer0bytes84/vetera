@@ -49,7 +49,7 @@ export function AppShell() {
 
   const currentUserName =
     currentUser?.displayName || currentUser?.email || "Utilisateur"
-  const currentUserEmail = currentUser?.email || "local@luma-vet.app"
+  const currentUserEmail = currentUser?.email || "local@vetera.app"
 
   return (
     <SidebarProvider
@@ -72,7 +72,7 @@ export function AppShell() {
         onOpenPalette={() => setPaletteOpen(true)}
         onOpenAIAgent={() => setAiAgentOpen(true)}
       />
-      <SidebarInset className="overflow-hidden md:rounded-t-none md:rounded-b-2xl md:rounded-l-none md:rounded-r-none">
+      <SidebarInset className="overflow-hidden md:rounded-t-none md:rounded-l-none md:rounded-r-none md:rounded-b-2xl">
         <SiteHeader
           title={viewTitles[currentView] ?? "Tableau de bord"}
           onOpenPalette={() => setPaletteOpen(true)}

@@ -1,5 +1,15 @@
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "recharts"
 
 import {
   Card,
@@ -23,10 +33,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export type ClinicalActivityPoint = {
   date: string
@@ -72,7 +80,9 @@ export function ChartAreaInteractive({
 
   const filteredData = React.useMemo(() => {
     const maxDate = new Date(
-      data.length ? data[data.length - 1].date : fallbackData[fallbackData.length - 1].date
+      data.length
+        ? data[data.length - 1].date
+        : fallbackData[fallbackData.length - 1].date
     )
     const startDate = new Date(maxDate)
 
@@ -95,18 +105,13 @@ export function ChartAreaInteractive({
           Consultations et interventions sur la période active
         </CardDescription>
         <CardAction className="flex items-center gap-2">
-          <ToggleGroup
-            multiple={false}
-            value={[chartType]}
-            onValueChange={(value) => {
-              setChartType((value[0] as "area" | "line" | undefined) ?? "area")
-            }}
-            variant="outline"
-            className="hidden @[767px]/card:flex"
-          >
-            <ToggleGroupItem value="area">Aire</ToggleGroupItem>
-            <ToggleGroupItem value="line">Ligne</ToggleGroupItem>
-          </ToggleGroup>
+          <Tabs value={chartType} onValueChange={setChartType}>
+            <TabsList className="hidden @[767px]/card:flex">
+              <TabsTrigger value="area">Aire</TabsTrigger>
+              <TabsTrigger value="line">Ligne</TabsTrigger>
+              <TabsTrigger value="stacked">Empilé</TabsTrigger>
+            </TabsList>
+          </Tabs>
           <Select value={period} onValueChange={setPeriod}>
             <SelectTrigger className="w-28" size="sm">
               <SelectValue>{PERIOD_LABELS[period] ?? "90J"}</SelectValue>
@@ -129,13 +134,41 @@ export function ChartAreaInteractive({
         >
           <AreaChart data={filteredData}>
             <defs>
-              <linearGradient id="dashboard-consultations" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-consultations)" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="var(--color-consultations)" stopOpacity={0.02} />
+              <linearGradient
+                id="dashboard-consultations"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-consultations)"
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-consultations)"
+                  stopOpacity={0.02}
+                />
               </linearGradient>
-              <linearGradient id="dashboard-interventions" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-interventions)" stopOpacity={0.28} />
-                <stop offset="95%" stopColor="var(--color-interventions)" stopOpacity={0.02} />
+              <linearGradient
+                id="dashboard-interventions"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-interventions)"
+                  stopOpacity={0.28}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-interventions)"
+                  stopOpacity={0.02}
+                />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} />
@@ -168,20 +201,56 @@ export function ChartAreaInteractive({
                 />
               }
             />
-            <Area
-              type="monotone"
-              dataKey="consultations"
-              stroke="var(--color-consultations)"
-              fill="url(#dashboard-consultations)"
-              strokeWidth={2}
-            />
-            <Area
-              type="monotone"
-              dataKey="interventions"
-              stroke="var(--color-interventions)"
-              fill="url(#dashboard-interventions)"
-              strokeWidth={2}
-            />
+            {chartType === "stacked" ? (
+              <>
+                <Bar
+                  dataKey="consultations"
+                  stackId="activity"
+                  fill="var(--color-consultations)"
+                  radius={[0, 0, 0, 0]}
+                />
+                <Bar
+                  dataKey="interventions"
+                  stackId="activity"
+                  fill="var(--color-interventions)"
+                  radius={[6, 6, 0, 0]}
+                />
+              </>
+            ) : chartType === "line" ? (
+              <>
+                <Line
+                  type="monotone"
+                  dataKey="consultations"
+                  stroke="var(--color-consultations)"
+                  strokeWidth={2.5}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="interventions"
+                  stroke="var(--color-interventions)"
+                  strokeWidth={2.5}
+                  dot={false}
+                />
+              </>
+            ) : (
+              <>
+                <Area
+                  type="monotone"
+                  dataKey="consultations"
+                  stroke="var(--color-consultations)"
+                  fill="url(#dashboard-consultations)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="interventions"
+                  stroke="var(--color-interventions)"
+                  fill="url(#dashboard-interventions)"
+                  strokeWidth={2}
+                />
+              </>
+            )}
           </AreaChart>
         </ChartContainer>
       </CardContent>

@@ -119,7 +119,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             </h1>
             <p className="max-w-md text-lg text-primary-foreground/80">
               {step === 1
-                ? "Activez votre licence pour débloquer toutes les fonctionnalités de Luma Vet."
+                ? "Activez votre licence pour débloquer toutes les fonctionnalités de Vetera."
                 : "Configurez votre compte administrateur pour commencer à utiliser l'application."}
             </p>
           </div>

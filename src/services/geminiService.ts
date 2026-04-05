@@ -8,7 +8,7 @@ import {
   type LocalChatTurn,
 } from "./webLLMService"
 
-const ASSISTANT_SYSTEM_PROMPT = `Tu es l'assistant officiel de Luma Vet, logiciel de clinique veterinaire.
+const ASSISTANT_SYSTEM_PROMPT = `Tu es l'assistant officiel de Vetera, logiciel de clinique veterinaire.
 Tu aides l'equipe sur l'organisation, les dossiers patients, les notes cliniques et les actions quotidiennes.
 
 Contraintes:
@@ -59,16 +59,18 @@ const NOTE_PROMPTS: Record<string, (text: string) => string> = {
 
 const isWriteInstruction = (instruction: string): boolean => {
   const normalized = instruction.toLowerCase()
-  return normalized.includes("redige") || normalized.includes("ecris") || normalized.includes("genere")
+  return (
+    normalized.includes("redige") ||
+    normalized.includes("ecris") ||
+    normalized.includes("genere")
+  )
 }
 
 const toLocalHistory = (history: ChatMessage[]): LocalChatTurn[] =>
-  history
-    .slice(-8)
-    .map((message) => ({
-      role: message.role === "user" ? "user" : "assistant",
-      text: message.text,
-    }))
+  history.slice(-8).map((message) => ({
+    role: message.role === "user" ? "user" : "assistant",
+    text: message.text,
+  }))
 
 export const sendMessageToGemini = async (
   history: ChatMessage[],
@@ -97,7 +99,10 @@ export const sendMessageToGemini = async (
   }
 }
 
-export const assistWithNote = async (content: string, instruction: string): Promise<string> => {
+export const assistWithNote = async (
+  content: string,
+  instruction: string
+): Promise<string> => {
   if (!isWebLLMReady()) {
     await initializeWebLLM()
   }

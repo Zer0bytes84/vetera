@@ -66,23 +66,26 @@ export function NavUser({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
+              <SidebarMenuButton
+                size="lg"
+                className="aria-expanded:bg-muted [@media(max-height:820px)]:h-10"
+              />
             }
           >
-            <Avatar className="size-8 rounded-lg">
+            <Avatar className="size-8 rounded-lg [@media(max-height:820px)]:size-7">
               <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
               <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
+            <div className="grid flex-1 text-left text-sm leading-tight [@media(max-height:820px)]:text-[13px]">
               <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-xs text-foreground/70">
+              <span className="truncate text-xs text-foreground/70 [@media(max-height:820px)]:text-[11px]">
                 {user.email}
               </span>
             </div>
             <HugeiconsIcon
               icon={MoreVerticalCircle01Icon}
               strokeWidth={2}
-              className="ml-auto size-4"
+              className="ml-auto size-4 [@media(max-height:820px)]:size-3.5"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
