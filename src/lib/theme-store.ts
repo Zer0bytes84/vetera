@@ -1,4 +1,5 @@
 export type AccentColor =
+  | "mist"
   | "blue"
   | "emerald"
   | "violet"
@@ -43,6 +44,25 @@ export const ACCENT_THEMES: Record<
     previewGradient: string
   }
 > = {
+  mist: {
+    label: "Mist",
+    description: "Neutre et élégant",
+    light: {
+      primary: "oklch(0.218 0.008 223.9)",
+      primaryForeground: "oklch(0.987 0.002 197.1)",
+      ring: "oklch(0.723 0.014 214.4)",
+      muted: "oklch(0.963 0.002 197.1)",
+      mutedForeground: "oklch(0.56 0.021 213.5)",
+    },
+    dark: {
+      primary: "oklch(0.925 0.005 214.3)",
+      primaryForeground: "oklch(0.218 0.008 223.9)",
+      ring: "oklch(0.56 0.021 213.5)",
+      muted: "oklch(0.275 0.011 216.9)",
+      mutedForeground: "oklch(0.723 0.014 214.4)",
+    },
+    previewGradient: "from-slate-500 to-slate-600",
+  },
   blue: {
     label: "Bleu",
     description: "Classique et professionnel",
@@ -255,7 +275,7 @@ export const DENSITY_MAP: Record<
 }
 
 export const DEFAULT_THEME: ThemeConfig = {
-  accent: "blue",
+  accent: "mist",
   radius: "lg",
   density: "comfortable",
   font: "geist",

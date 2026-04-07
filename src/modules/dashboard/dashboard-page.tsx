@@ -15,9 +15,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
-import {
-  type ClinicalActivityPoint,
-} from "@/components/chart-area-interactive"
+import { type ClinicalActivityPoint } from "@/components/chart-area-interactive"
 import { DataTable, type DashboardRow } from "@/components/data-table"
 import { SectionCards, type SectionCardItem } from "@/components/section-cards"
 import { Button } from "@/components/ui/button"
@@ -35,7 +33,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/contexts/AuthContext"
 import type { View } from "@/types"
@@ -51,10 +53,7 @@ import { RevenueSparkCard } from "./revenue-spark-card"
 import { QuickActionsBar } from "./quick-actions-bar"
 import { TasksProgressCard } from "./tasks-progress-card"
 import { ActivityFeedCard, type ActivityItem } from "./activity-feed-card"
-import {
-  SmartInsights,
-  generateSmartInsights,
-} from "./smart-insights"
+import { SmartInsights, generateSmartInsights } from "./smart-insights"
 
 import {
   useAppointmentsRepository,
@@ -125,9 +124,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   const [dashboardTab, setDashboardTab] = useState<
     "overview" | "analytics" | "reports" | "notifications"
   >("overview")
-  const [selectedReportDate, setSelectedReportDate] = useState<Date | undefined>(
-    undefined
-  )
+  const [selectedReportDate, setSelectedReportDate] = useState<
+    Date | undefined
+  >(undefined)
   const { currentUser } = useAuth()
   const { data: appointments } = useAppointmentsRepository()
   const { data: patients } = usePatientsRepository()
@@ -383,8 +382,14 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
   const revenueSeries = useMemo(() => {
     const buckets = Array.from({ length: 6 }, (_, index) => {
-      const monthDate = new Date(referenceDate.getFullYear(), referenceDate.getMonth() - (5 - index), 1)
-      const monthLabel = monthDate.toLocaleDateString("fr-FR", { month: "short" })
+      const monthDate = new Date(
+        referenceDate.getFullYear(),
+        referenceDate.getMonth() - (5 - index),
+        1
+      )
+      const monthLabel = monthDate.toLocaleDateString("fr-FR", {
+        month: "short",
+      })
       const revenue = transactions
         .filter((item) => {
           const date = new Date(item.date)
@@ -442,7 +447,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
     const todayApts = appointments.filter((a) => {
       const d = new Date(a.startTime)
-      return d >= todayStart && d <= todayEnd && !["cancelled", "no_show"].includes(a.status)
+      return (
+        d >= todayStart &&
+        d <= todayEnd &&
+        !["cancelled", "no_show"].includes(a.status)
+      )
     }).length
 
     const upcomingApts = appointments.filter((a) => {
@@ -457,13 +466,30 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     const pendingReminders = tasks
       .filter((t) => t.status !== "done")
       .slice(0, 3)
-      .map((t) => ({ patient: t.title, reason: t.dueDate ? `Échéance ${new Date(t.dueDate).toLocaleDateString("fr-FR")}` : "À suivre" }))
+      .map((t) => ({
+        patient: t.title,
+        reason: t.dueDate
+          ? `Échéance ${new Date(t.dueDate).toLocaleDateString("fr-FR")}`
+          : "À suivre",
+      }))
 
     const currIncome = transactions
-      .filter((t) => t.type === "income" && t.status === "paid" && new Date(t.date) >= current30Start && new Date(t.date) <= todayEnd)
+      .filter(
+        (t) =>
+          t.type === "income" &&
+          t.status === "paid" &&
+          new Date(t.date) >= current30Start &&
+          new Date(t.date) <= todayEnd
+      )
       .reduce((s, t) => s + t.amount, 0)
     const prevIncome = transactions
-      .filter((t) => t.type === "income" && t.status === "paid" && new Date(t.date) >= previous30Start && new Date(t.date) <= previous30End)
+      .filter(
+        (t) =>
+          t.type === "income" &&
+          t.status === "paid" &&
+          new Date(t.date) >= previous30Start &&
+          new Date(t.date) <= previous30End
+      )
       .reduce((s, t) => s + t.amount, 0)
 
     return generateSmartInsights({
@@ -481,7 +507,10 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
     appointments
       .filter((a) => a.status === "completed")
-      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+      )
       .slice(0, 4)
       .forEach((a) => {
         const patient = patients.find((p) => p.id === a.patientId)
@@ -509,7 +538,10 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       })
 
     patients
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
       .slice(0, 2)
       .forEach((p) => {
         items.push({
@@ -604,7 +636,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     const previousPaidInvoices = transactions.filter((item) => {
       if (item.type !== "income" || item.status !== "paid") return false
       const date = new Date(item.date)
-        const prevMonth = new Date(
+      const prevMonth = new Date(
         reportReferenceDate.getFullYear(),
         reportReferenceDate.getMonth() - 1,
         1
@@ -802,12 +834,15 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       .map((item) => ({
         id: `appointment-${item.id}`,
         title: `Urgence en attente`,
-        description: `${item.title} · ${new Date(item.startTime).toLocaleString("fr-FR", {
-          day: "numeric",
-          month: "short",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}`,
+        description: `${item.title} · ${new Date(item.startTime).toLocaleString(
+          "fr-FR",
+          {
+            day: "numeric",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          }
+        )}`,
         actionLabel: "Voir l'agenda",
         onClick: () => onNavigate("agenda"),
       }))
@@ -904,7 +939,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       )
     })
 
-    doc.save(`vetera-${period === "daily" ? "quotidien" : period === "weekly" ? "hebdomadaire" : "mensuel"}.pdf`)
+    doc.save(
+      `vetera-${period === "daily" ? "quotidien" : period === "weekly" ? "hebdomadaire" : "mensuel"}.pdf`
+    )
     toast.success(`${reportTitle} téléchargé.`)
   }
 
@@ -912,7 +949,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     { value: "overview", label: "Vue d’ensemble", icon: DashboardSquare01Icon },
     { value: "analytics", label: "Analyse", icon: ChartUpIcon },
     { value: "reports", label: "Rapports", icon: File01Icon },
-    { value: "notifications", label: "Notifications", icon: Notification02Icon },
+    {
+      value: "notifications",
+      label: "Notifications",
+      icon: Notification02Icon,
+    },
   ] as const
 
   // --- New: Next Appointment with countdown ---
@@ -1006,25 +1047,27 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         >
           <div className="flex flex-col gap-4 px-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
             <TabsList className="h-auto w-fit gap-1 rounded-xl bg-muted/70 p-1">
-                {dashboardTabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="!flex-none h-8 rounded-lg px-3 text-sm font-medium text-muted-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
-                  >
-                    <HugeiconsIcon
-                      icon={tab.icon}
-                      strokeWidth={2}
-                      className="size-4"
-                    />
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
+              {dashboardTabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="h-8 !flex-none rounded-lg px-3 text-sm font-medium text-muted-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
+                >
+                  <HugeiconsIcon
+                    icon={tab.icon}
+                    strokeWidth={2}
+                    className="size-4"
+                  />
+                  {tab.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
             <div className="flex flex-col gap-2 sm:flex-row">
               <DropdownMenu>
                 <DropdownMenuTrigger
-                  render={<Button variant="default" className="w-full sm:w-auto" />}
+                  render={
+                    <Button variant="default" className="w-full sm:w-auto" />
+                  }
                 >
                   <HugeiconsIcon
                     icon={Download01Icon}
@@ -1034,13 +1077,19 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   Télécharger
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-64">
-                  <DropdownMenuItem onClick={() => void exportDashboardReport("daily")}>
+                  <DropdownMenuItem
+                    onClick={() => void exportDashboardReport("daily")}
+                  >
                     Rapport quotidien
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => void exportDashboardReport("weekly")}>
+                  <DropdownMenuItem
+                    onClick={() => void exportDashboardReport("weekly")}
+                  >
                     Rapport hebdomadaire
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => void exportDashboardReport("monthly")}>
+                  <DropdownMenuItem
+                    onClick={() => void exportDashboardReport("monthly")}
+                  >
                     Rapport mensuel
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -1076,12 +1125,63 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   />
                 </PopoverContent>
               </Popover>
-              </div>
+            </div>
           </div>
 
           <TabsContent value="overview" className="space-y-6">
+            <div className="px-4 lg:px-6">
+              <div className="flex items-center gap-3 rounded-2xl border bg-card/60 p-3 shadow-sm backdrop-blur-sm">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                    <HugeiconsIcon
+                      icon={StethoscopeIcon}
+                      className="size-4 text-primary"
+                      strokeWidth={2}
+                    />
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold">{todayStats.total}</span>
+                    <span className="text-muted-foreground">
+                      {" "}
+                      consultations
+                    </span>
+                  </div>
+                </div>
+                <div className="h-6 w-px bg-border" />
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10">
+                    <HugeiconsIcon
+                      icon={Notification02Icon}
+                      className="size-4 text-destructive"
+                      strokeWidth={2}
+                    />
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold">
+                      {todayStats.urgencies}
+                    </span>
+                    <span className="text-muted-foreground"> urgences</span>
+                  </div>
+                </div>
+                <div className="h-6 w-px bg-border" />
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
+                    <HugeiconsIcon
+                      icon={Invoice03Icon}
+                      className="size-4 text-emerald-500"
+                      strokeWidth={2}
+                    />
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold">
+                      {formatMoneyDa(revenueSeries.total * 100)}
+                    </span>
+                    <span className="text-muted-foreground"> ce mois</span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <SectionCards items={sectionCards} />
-            <QuickActionsBar onNavigate={onNavigate} />
             <DashboardOverviewAnalytics
               data={chartData}
               referenceDate={referenceDate.toISOString()}
@@ -1118,6 +1218,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 data={dashboardRows}
                 onCreate={() => onNavigate("agenda")}
               />
+            </div>
+            <div className="px-4 lg:px-6">
+              <QuickActionsBar onNavigate={onNavigate} />
             </div>
           </TabsContent>
 
