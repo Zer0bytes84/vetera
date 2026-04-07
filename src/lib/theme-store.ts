@@ -296,25 +296,22 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.style.setProperty("--radius", RADIUS_MAP[config.radius])
 
   root.style.setProperty("--chart-1", mode.primary)
-  root.style.setProperty(
-    "--chart-2",
-    isDark
-      ? `color-mix(in oklch, ${mode.primary} 72%, white 28%)`
-      : `color-mix(in oklch, ${mode.primary} 78%, black 22%)`
-  )
+  root.style.setProperty("--chart-2", mode.primaryForeground)
   root.style.setProperty(
     "--chart-3",
-    `color-mix(in oklch, ${mode.primary} 58%, ${mode.mutedForeground})`
+    isDark
+      ? `color-mix(in oklch, ${mode.primary} 60%, white 40%)`
+      : `color-mix(in oklch, ${mode.primary} 40%, black 60%)`
   )
   root.style.setProperty(
     "--chart-4",
     isDark
-      ? `color-mix(in oklch, ${mode.primary} 42%, white 58%)`
-      : `color-mix(in oklch, ${mode.primary} 46%, black 54%)`
+      ? `color-mix(in oklch, ${mode.primary} 80%, white 20%)`
+      : `color-mix(in oklch, ${mode.primary} 20%, black 80%)`
   )
   root.style.setProperty(
     "--chart-5",
-    `color-mix(in oklch, ${mode.primary} 28%, ${mode.mutedForeground})`
+    `color-mix(in oklch, ${mode.primary} 30%, ${mode.mutedForeground})`
   )
 
   const font = config.font || "geist"

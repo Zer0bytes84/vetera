@@ -32,11 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon } from "@hugeicons/core-free-icons"
 
@@ -102,14 +98,20 @@ export function DataTable({
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="border-b">
-        <CardDescription>Registre clinique</CardDescription>
-        <CardTitle className="text-2xl tracking-[-0.04em]">
-          Activité des dossiers
-        </CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between border-b px-6">
+        <div>
+          <CardDescription>Registre clinique</CardDescription>
+          <CardTitle className="text-2xl tracking-[-0.04em]">
+            Activité des dossiers
+          </CardTitle>
+        </div>
         <CardAction>
           <Button onClick={onCreate}>
-            <HugeiconsIcon icon={Add01Icon} strokeWidth={2} data-icon="inline-start" />
+            <HugeiconsIcon
+              icon={Add01Icon}
+              strokeWidth={2}
+              data-icon="inline-start"
+            />
             Nouveau rendez-vous
           </Button>
         </CardAction>
@@ -144,11 +146,15 @@ export function DataTable({
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[30%] pl-6">Patient</TableHead>
-                  <TableHead className="hidden w-[20%] xl:table-cell">Propriétaire</TableHead>
+                  <TableHead className="hidden w-[20%] xl:table-cell">
+                    Propriétaire
+                  </TableHead>
                   <TableHead className="w-[16%]">Acte</TableHead>
                   <TableHead className="w-[18%]">Créneau</TableHead>
                   <TableHead className="w-[10%]">Statut</TableHead>
-                  <TableHead className="w-[12%] pr-6 text-right">Action</TableHead>
+                  <TableHead className="w-[12%] pr-6 text-right">
+                    Action
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -156,17 +162,21 @@ export function DataTable({
                   filtered.map((row) => (
                     <TableRow key={row.id}>
                       <TableCell className="pl-6 align-top">
-                        <div className="min-w-0 font-medium break-words">{row.patient}</div>
-                        <div className="text-sm text-muted-foreground break-words">
+                        <div className="min-w-0 font-medium break-words">
+                          {row.patient}
+                        </div>
+                        <div className="text-sm break-words text-muted-foreground">
                           {row.summary}
                         </div>
-                        <div className="mt-1 text-sm text-muted-foreground xl:hidden break-words">
+                        <div className="mt-1 text-sm break-words text-muted-foreground xl:hidden">
                           {row.owner}
                         </div>
                       </TableCell>
                       <TableCell className="hidden align-top xl:table-cell">
-                        <div className="min-w-0 font-medium break-words">{row.owner}</div>
-                        <div className="text-sm text-muted-foreground break-words">
+                        <div className="min-w-0 font-medium break-words">
+                          {row.owner}
+                        </div>
+                        <div className="text-sm break-words text-muted-foreground">
                           {row.veterinarian}
                         </div>
                       </TableCell>
@@ -181,7 +191,7 @@ export function DataTable({
                       <TableCell className="align-top">
                         <Badge
                           variant={statusVariant(row.status)}
-                          className="inline-flex max-w-full whitespace-normal break-words px-2 py-0.5 text-center text-xs"
+                          className="inline-flex max-w-full px-2 py-0.5 text-center text-xs break-words whitespace-normal"
                         >
                           {row.status}
                         </Badge>
@@ -189,7 +199,13 @@ export function DataTable({
                       <TableCell className="pr-6 text-right align-top">
                         <Dialog>
                           <DialogTrigger
-                            render={<Button variant="ghost" size="sm" className="h-8 px-2 text-xs sm:px-3 sm:text-sm" />}
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-2 text-xs sm:px-3 sm:text-sm"
+                              />
+                            }
                           >
                             Consulter
                           </DialogTrigger>
@@ -202,13 +218,17 @@ export function DataTable({
                             </DialogHeader>
                             <div className="grid gap-4 py-2 sm:grid-cols-2">
                               <div className="rounded-xl border p-4">
-                                <div className="text-sm font-medium">Propriétaire</div>
+                                <div className="text-sm font-medium">
+                                  Propriétaire
+                                </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
                                   {row.owner}
                                 </div>
                               </div>
                               <div className="rounded-xl border p-4">
-                                <div className="text-sm font-medium">Vétérinaire</div>
+                                <div className="text-sm font-medium">
+                                  Vétérinaire
+                                </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
                                   {row.veterinarian}
                                 </div>
@@ -220,20 +240,26 @@ export function DataTable({
                                 </div>
                               </div>
                               <div className="rounded-xl border p-4">
-                                <div className="text-sm font-medium">Diagnostic</div>
+                                <div className="text-sm font-medium">
+                                  Diagnostic
+                                </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
                                   {row.diagnosis || "Non renseigné"}
                                 </div>
                               </div>
                               <div className="rounded-xl border p-4">
-                                <div className="text-sm font-medium">Traitement</div>
+                                <div className="text-sm font-medium">
+                                  Traitement
+                                </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
                                   {row.treatment || "Non renseigné"}
                                 </div>
                               </div>
                             </div>
                             <DialogFooter>
-                              <DialogClose render={<Button variant="outline" />}>
+                              <DialogClose
+                                render={<Button variant="outline" />}
+                              >
                                 Fermer
                               </DialogClose>
                             </DialogFooter>

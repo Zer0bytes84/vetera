@@ -1129,58 +1129,6 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           </div>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="px-4 lg:px-6">
-              <div className="flex items-center gap-3 rounded-2xl border bg-card/60 p-3 shadow-sm backdrop-blur-sm">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                    <HugeiconsIcon
-                      icon={StethoscopeIcon}
-                      className="size-4 text-primary"
-                      strokeWidth={2}
-                    />
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold">{todayStats.total}</span>
-                    <span className="text-muted-foreground">
-                      {" "}
-                      consultations
-                    </span>
-                  </div>
-                </div>
-                <div className="h-6 w-px bg-border" />
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10">
-                    <HugeiconsIcon
-                      icon={Notification02Icon}
-                      className="size-4 text-destructive"
-                      strokeWidth={2}
-                    />
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold">
-                      {todayStats.urgencies}
-                    </span>
-                    <span className="text-muted-foreground"> urgences</span>
-                  </div>
-                </div>
-                <div className="h-6 w-px bg-border" />
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
-                    <HugeiconsIcon
-                      icon={Invoice03Icon}
-                      className="size-4 text-emerald-500"
-                      strokeWidth={2}
-                    />
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold">
-                      {formatMoneyDa(revenueSeries.total * 100)}
-                    </span>
-                    <span className="text-muted-foreground"> ce mois</span>
-                  </div>
-                </div>
-              </div>
-            </div>
             <SectionCards items={sectionCards} />
             <DashboardOverviewAnalytics
               data={chartData}
