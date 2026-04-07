@@ -59,76 +59,60 @@ export function NextAppointmentCard({
   }, [appointment, now])
 
   return (
-    <Card className="flex h-full flex-col">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">Prochain RDV</CardTitle>
+        {timeUntil && (
+          <Badge
+            variant={timeUntil.urgent ? "destructive" : "default"}
+            className="text-xs font-bold tabular-nums"
+          >
             <HugeiconsIcon
-              icon={Calendar01Icon}
+              icon={Clock01Icon}
               strokeWidth={2}
-              className="size-4 text-muted-foreground"
+              className="mr-1 size-3"
             />
-            <CardTitle className="text-sm font-medium">Prochain RDV</CardTitle>
-          </div>
-          {timeUntil && (
-            <Badge
-              variant={timeUntil.urgent ? "destructive" : "default"}
-              className="text-[10px] font-bold tabular-nums"
-            >
-              <HugeiconsIcon
-                icon={Clock01Icon}
-                strokeWidth={2}
-                className="mr-1 size-3"
-              />
-              {timeUntil.label}
-            </Badge>
-          )}
-        </div>
+            {timeUntil.label}
+          </Badge>
+        )}
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col justify-between pt-0">
+      <CardContent>
         {appointment ? (
-          <>
-            <div className="space-y-3">
-              <div>
-                <p className="text-lg font-semibold text-foreground">
-                  {appointment.patient}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {appointment.type}
-                </p>
+          <div className="space-y-4">
+            <div>
+              <p className="text-lg font-semibold">{appointment.patient}</p>
+              <p className="text-xs text-muted-foreground">
+                {appointment.type}
+              </p>
+            </div>
+            <Separator />
+            <div className="space-y-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={UserCircle02Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0"
+                />
+                <span className="truncate">{appointment.owner}</span>
               </div>
-
-              <Separator />
-
-              <div className="space-y-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <HugeiconsIcon
-                    icon={UserCircle02Icon}
-                    strokeWidth={2}
-                    className="size-3.5 shrink-0"
-                  />
-                  <span className="truncate">{appointment.owner}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <HugeiconsIcon
-                    icon={Clock01Icon}
-                    strokeWidth={2}
-                    className="size-3.5 shrink-0"
-                  />
-                  <span>
-                    {appointment.startTime.toLocaleTimeString("fr-FR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                </div>
+              <div className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  strokeWidth={2}
+                  className="size-3.5 shrink-0"
+                />
+                <span>
+                  {appointment.startTime.toLocaleTimeString("fr-FR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </div>
             </div>
-
             <Button
               variant="outline"
               size="sm"
-              className="mt-4 w-full gap-1 text-xs"
+              className="w-full gap-1 text-xs"
               onClick={onNavigate}
             >
               Ouvrir le dossier
@@ -138,9 +122,9 @@ export function NextAppointmentCard({
                 className="size-3"
               />
             </Button>
-          </>
+          </div>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center text-center">
+          <div className="flex flex-col items-center justify-center py-6 text-center">
             <div className="mb-3 flex size-10 items-center justify-center rounded-full bg-muted">
               <HugeiconsIcon
                 icon={Calendar01Icon}
@@ -148,9 +132,7 @@ export function NextAppointmentCard({
                 className="size-4 text-muted-foreground"
               />
             </div>
-            <p className="text-sm font-medium text-foreground">
-              Aucun RDV à venir
-            </p>
+            <p className="text-sm font-medium">Aucun RDV à venir</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Libre pour planifier
             </p>

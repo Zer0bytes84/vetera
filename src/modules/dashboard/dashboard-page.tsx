@@ -3,8 +3,15 @@ import jsPDF from "jspdf"
 import { toast } from "sonner"
 import {
   Calendar01Icon,
+  ChartUpIcon,
+  DashboardSquare01Icon,
   Download01Icon,
+  File01Icon,
   Notification02Icon,
+  StethoscopeIcon,
+  UserGroupIcon,
+  Invoice03Icon,
+  Package02Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
@@ -39,7 +46,15 @@ import {
   type NextAppointmentData,
 } from "./next-appointment-card"
 import { DashboardAnalytics } from "./dashboard-analytics"
+import { DashboardOverviewAnalytics } from "./dashboard-overview-analytics"
 import { RevenueSparkCard } from "./revenue-spark-card"
+import { QuickActionsBar } from "./quick-actions-bar"
+import { TasksProgressCard } from "./tasks-progress-card"
+import { ActivityFeedCard, type ActivityItem } from "./activity-feed-card"
+import {
+  SmartInsights,
+  generateSmartInsights,
+} from "./smart-insights"
 
 import {
   useAppointmentsRepository,
@@ -211,6 +226,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         trend: consultationDelta >= 0 ? "up" : "down",
         summary: `${urgentOpen} urgence${urgentOpen > 1 ? "s" : ""} en suivi`,
         detail: "Créneaux planifiés sur la journée clinique",
+        icon: StethoscopeIcon,
       },
       {
         title: "Patients actifs",
@@ -219,6 +235,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         trend: "up",
         summary: `${patients.filter((item) => item.status === "traitement" || item.status === "hospitalise").length} sous surveillance`,
         detail: "Base vivante des dossiers suivis au cabinet",
+        icon: UserGroupIcon,
       },
       {
         title: "Revenus encaissés",
@@ -227,6 +244,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         trend: incomeDelta >= 0 ? "up" : "down",
         summary: "Encaissements consolidés",
         detail: "Comparaison avec les 30 jours précédents",
+        icon: Invoice03Icon,
       },
       {
         title: "Stock critique",
@@ -235,6 +253,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         trend: lowStock > 0 ? "down" : "up",
         summary: "Produits sous le seuil minimum",
         detail: "Ordonnances et consommables à surveiller",
+        icon: Package02Icon,
       },
     ]
   }, [appointments, patients, products, reportReferenceDate, transactions])
@@ -413,6 +432,97 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
     return { total: todayAppointments.length, urgencies }
   }, [appointments, referenceDate])
+
+  const smartInsights = useMemo(() => {
+    const todayStart = startOfDay(referenceDate)
+    const todayEnd = endOfDay(referenceDate)
+    const current30Start = startOfDay(addDays(referenceDate, -29))
+    const previous30Start = startOfDay(addDays(referenceDate, -59))
+    const previous30End = endOfDay(addDays(referenceDate, -30))
+
+    const todayApts = appointments.filter((a) => {
+      const d = new Date(a.startTime)
+      return d >= todayStart && d <= todayEnd && !["cancelled", "no_show"].includes(a.status)
+    }).length
+
+    const upcomingApts = appointments.filter((a) => {
+      const d = new Date(a.startTime)
+      return d >= todayStart && a.status === "scheduled"
+    }).length
+
+    const lowStockProducts = products
+      .filter((p) => Number(p.quantity) <= Number(p.minStock))
+      .map((p) => ({ name: p.name, quantity: Number(p.quantity) }))
+
+    const pendingReminders = tasks
+      .filter((t) => t.status !== "done")
+      .slice(0, 3)
+      .map((t) => ({ patient: t.title, reason: t.dueDate ? `Échéance ${new Date(t.dueDate).toLocaleDateString("fr-FR")}` : "À suivre" }))
+
+    const currIncome = transactions
+      .filter((t) => t.type === "income" && t.status === "paid" && new Date(t.date) >= current30Start && new Date(t.date) <= todayEnd)
+      .reduce((s, t) => s + t.amount, 0)
+    const prevIncome = transactions
+      .filter((t) => t.type === "income" && t.status === "paid" && new Date(t.date) >= previous30Start && new Date(t.date) <= previous30End)
+      .reduce((s, t) => s + t.amount, 0)
+
+    return generateSmartInsights({
+      todayAppointments: todayApts,
+      upcomingAppointments: upcomingApts,
+      lowStockProducts,
+      pendingReminders,
+      currentIncome: currIncome,
+      previousIncome: prevIncome,
+    })
+  }, [appointments, products, tasks, transactions, referenceDate])
+
+  const activityFeed = useMemo<ActivityItem[]>(() => {
+    const items: ActivityItem[] = []
+
+    appointments
+      .filter((a) => a.status === "completed")
+      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+      .slice(0, 4)
+      .forEach((a) => {
+        const patient = patients.find((p) => p.id === a.patientId)
+        items.push({
+          id: `apt-${a.id}`,
+          type: "appointment",
+          label: `${patient?.name || a.title} — ${a.type}`,
+          detail: `Consultation terminée`,
+          time: new Date(a.startTime),
+        })
+      })
+
+    transactions
+      .filter((t) => t.type === "income" && t.status === "paid")
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 3)
+      .forEach((t) => {
+        items.push({
+          id: `tx-${t.id}`,
+          type: "transaction",
+          label: `${formatMoneyDa(t.amount)} encaissé`,
+          detail: t.description || "Paiement reçu",
+          time: new Date(t.date),
+        })
+      })
+
+    patients
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 2)
+      .forEach((p) => {
+        items.push({
+          id: `pat-${p.id}`,
+          type: "patient",
+          label: `${p.name} ajouté`,
+          detail: p.species || "Nouveau dossier",
+          time: new Date(p.createdAt),
+        })
+      })
+
+    return items.sort((a, b) => b.time.getTime() - a.time.getTime()).slice(0, 8)
+  }, [appointments, patients, transactions])
 
   const financeAnalytics = useMemo(() => {
     const months = Array.from({ length: 6 }, (_, index) => {
@@ -799,10 +909,10 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   }
 
   const dashboardTabs = [
-    { value: "overview", label: "Vue d’ensemble" },
-    { value: "analytics", label: "Analyse" },
-    { value: "reports", label: "Rapports" },
-    { value: "notifications", label: "Notifications" },
+    { value: "overview", label: "Vue d’ensemble", icon: DashboardSquare01Icon },
+    { value: "analytics", label: "Analyse", icon: ChartUpIcon },
+    { value: "reports", label: "Rapports", icon: File01Icon },
+    { value: "notifications", label: "Notifications", icon: Notification02Icon },
   ] as const
 
   // --- New: Next Appointment with countdown ---
@@ -895,16 +1005,21 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           className="gap-4"
         >
           <div className="flex flex-col gap-4 px-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
-            <TabsList className="h-auto gap-1 rounded-xl bg-muted/70 p-1">
-              {dashboardTabs.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="h-8 rounded-lg px-3 text-sm font-medium"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
+            <TabsList className="h-auto w-fit gap-1 rounded-xl bg-muted/70 p-1">
+                {dashboardTabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="!flex-none h-8 rounded-lg px-3 text-sm font-medium text-muted-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
+                  >
+                    <HugeiconsIcon
+                      icon={tab.icon}
+                      strokeWidth={2}
+                      className="size-4"
+                    />
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
             </TabsList>
             <div className="flex flex-col gap-2 sm:flex-row">
               <DropdownMenu>
@@ -961,11 +1076,16 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   />
                 </PopoverContent>
               </Popover>
-            </div>
+              </div>
           </div>
 
           <TabsContent value="overview" className="space-y-6">
             <SectionCards items={sectionCards} />
+            <QuickActionsBar onNavigate={onNavigate} />
+            <DashboardOverviewAnalytics
+              data={chartData}
+              referenceDate={referenceDate.toISOString()}
+            />
             <div className="grid gap-6 px-4 lg:px-6">
               <div className="grid gap-6 xl:grid-cols-3">
                 <RevenueSparkCard
@@ -982,6 +1102,17 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   appointments={todayTimeline}
                   onNavigate={() => onNavigate("agenda")}
                 />
+              </div>
+              <div className="grid gap-6 xl:grid-cols-3">
+                <TasksProgressCard
+                  tasks={tasks}
+                  onNavigate={() => onNavigate("taches")}
+                />
+                <SmartInsights
+                  insights={smartInsights}
+                  onNavigate={(view) => onNavigate(view as View)}
+                />
+                <ActivityFeedCard items={activityFeed} />
               </div>
               <DataTable
                 data={dashboardRows}

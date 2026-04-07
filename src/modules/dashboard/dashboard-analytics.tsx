@@ -155,35 +155,31 @@ export function DashboardAnalytics({
     <div className="grid gap-6 px-4 lg:px-6">
       <div className="grid gap-6 xl:grid-cols-2">
         <Card>
-          <CardHeader className="border-b">
-            <div>
-              <CardTitle>Performance financière</CardTitle>
-              <CardDescription>
-                Encaissements et équilibre de trésorerie sur la période.
-              </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle>Performance financière</CardTitle>
+            <div className="inline-flex rounded-md bg-muted p-1">
+              <Button
+                variant={financeView === "month" ? "secondary" : "ghost"}
+                size="sm"
+                className="rounded-md"
+                onClick={() => setFinanceView("month")}
+              >
+                Mois
+              </Button>
+              <Button
+                variant={financeView === "week" ? "secondary" : "ghost"}
+                size="sm"
+                className="rounded-md"
+                onClick={() => setFinanceView("week")}
+              >
+                Semaine
+              </Button>
             </div>
-            <CardAction>
-              <div className="inline-flex rounded-full bg-muted p-1">
-                <Button
-                  variant={financeView === "month" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setFinanceView("month")}
-                >
-                  Mois
-                </Button>
-                <Button
-                  variant={financeView === "week" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setFinanceView("week")}
-                >
-                  Semaine
-                </Button>
-              </div>
-            </CardAction>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
+            <CardDescription className="mb-4">
+              Encaissements et équilibre de trésorerie sur la période.
+            </CardDescription>
             <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-stretch">
               <div className="space-y-4">
                 <MetricCardView metric={financeSeries.primary} />
@@ -211,35 +207,31 @@ export function DashboardAnalytics({
         </Card>
 
         <Card>
-          <CardHeader className="border-b">
-            <div>
-              <CardTitle>Flux patients</CardTitle>
-              <CardDescription>
-                Nouveaux dossiers et retours à la clinique au fil du temps.
-              </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle>Flux patients</CardTitle>
+            <div className="inline-flex rounded-md bg-muted p-1">
+              <Button
+                variant={visitorsView === "month" ? "secondary" : "ghost"}
+                size="sm"
+                className="rounded-md"
+                onClick={() => setVisitorsView("month")}
+              >
+                Mois
+              </Button>
+              <Button
+                variant={visitorsView === "week" ? "secondary" : "ghost"}
+                size="sm"
+                className="rounded-md"
+                onClick={() => setVisitorsView("week")}
+              >
+                Semaine
+              </Button>
             </div>
-            <CardAction>
-              <div className="inline-flex rounded-full bg-muted p-1">
-                <Button
-                  variant={visitorsView === "month" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setVisitorsView("month")}
-                >
-                  Mois
-                </Button>
-                <Button
-                  variant={visitorsView === "week" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setVisitorsView("week")}
-                >
-                  Semaine
-                </Button>
-              </div>
-            </CardAction>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
+            <CardDescription className="mb-4">
+              Nouveaux dossiers et retours à la clinique au fil du temps.
+            </CardDescription>
             <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-stretch">
               <div className="space-y-4">
                 <MetricCardView metric={visitorsSeries.primary} />
@@ -252,7 +244,13 @@ export function DashboardAnalytics({
               >
                 <AreaChart data={visitorsData}>
                   <defs>
-                    <linearGradient id="visitors-new" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="visitors-new"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop
                         offset="5%"
                         stopColor="var(--color-newPatients)"
@@ -349,7 +347,13 @@ export function DashboardAnalytics({
             >
               <AreaChart data={customerTrend}>
                 <defs>
-                  <linearGradient id="customer-active" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    id="customer-active"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop
                       offset="5%"
                       stopColor="var(--color-activePatients)"
@@ -440,7 +444,10 @@ export function DashboardAnalytics({
             </ChartContainer>
             <div className="mt-4 grid gap-2">
               {profileShare.map((item) => (
-                <div key={item.label} className="flex items-center justify-between text-sm">
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between text-sm"
+                >
                   <div className="flex items-center gap-2">
                     <span
                       className="size-2.5 rounded-full"

@@ -107,8 +107,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
         </div>
 
         {/* Top */}
-        <div className="relative z-10">
-          <Logo size="lg" className="text-primary-foreground" collapsed />
+        <div className="relative z-10 space-y-2">
+          <Logo size="lg" className="text-primary-foreground" />
+          <p className="pl-14 text-sm text-primary-foreground/70">
+            {APP_TAGLINE}
+          </p>
         </div>
 
         {/* Center */}
@@ -206,7 +209,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
           {/* Mobile logo */}
           <div className="lg:hidden">
             <div className="mb-2 flex justify-center">
-              <Logo size="lg" collapsed />
+              <Logo size="lg" />
             </div>
             {/* Mobile step indicator */}
             <div className="mt-4 flex items-center justify-center gap-3">

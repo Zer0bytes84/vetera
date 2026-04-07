@@ -76,6 +76,7 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { ThemeSelector } from "./ThemeSelector"
+import { useLayout, type Collapsible } from "@/contexts/layout-provider"
 import {
   getThemeConfig,
   saveThemeConfig,
@@ -873,6 +874,16 @@ const Parametres: React.FC<ParametresProps> = ({
   currentTheme = "light",
   onThemeChange,
 }) => {
+  const sanitizeAvatarValue = (value?: string | null) => {
+    if (typeof value !== "string") return ""
+    const normalized = value.trim()
+    if (!normalized) return ""
+    if (["undefined", "null", "nan"].includes(normalized.toLowerCase())) {
+      return ""
+    }
+    return normalized
+  }
+
   const [activeTab, setActiveTab] = useState<SettingsTab>("profil")
   const { currentUser, refreshCurrentUser } = useAuth()
   const { data: users, update: updateUserDoc } = useUsersRepository()
@@ -900,7 +911,7 @@ const Parametres: React.FC<ParametresProps> = ({
     }
     if (userDoc) {
       setPhone(userDoc.phone || "")
-      setAvatarUrl(userDoc.avatarUrl || "")
+      setAvatarUrl(sanitizeAvatarValue(userDoc.avatarUrl))
     } else if (currentUser?.email === "zohir.kh@gmail.com") {
       setDisplayName("Zouhir Kherroubi")
     }
@@ -970,12 +981,12 @@ const Parametres: React.FC<ParametresProps> = ({
       await updateUserDoc(dbUser.id, {
         displayName,
         phone,
-        avatarUrl,
+        avatarUrl: sanitizeAvatarValue(avatarUrl),
       })
 
       writeCachedProfile(currentUser.email, {
         displayName,
-        avatarUrl,
+        avatarUrl: sanitizeAvatarValue(avatarUrl),
       })
 
       await refreshCurrentUser()
@@ -1661,6 +1672,9 @@ const Parametres: React.FC<ParametresProps> = ({
               </CardContent>
             </Card>
 
+            {/* Sidebar Layout */}
+            <SidebarLayoutSettings />
+
             {/* Preview */}
             <Card size="sm">
               <CardHeader>
@@ -2038,6 +2052,120 @@ const Parametres: React.FC<ParametresProps> = ({
       {/* Content */}
       <div className="min-h-[400px]">{renderContent()}</div>
     </div>
+  )
+}
+
+function SidebarLayoutSettings() {
+  const { variant, setVariant, collapsible, setCollapsible, resetLayout } =
+    useLayout()
+
+  const variants = [
+    { value: "inset" as const, label: "Inset", description: "Intégré dans la page" },
+    { value: "sidebar" as const, label: "Sidebar", description: "Barre latérale classique" },
+    { value: "floating" as const, label: "Floating", description: "Flottant avec bordure" },
+  ]
+
+  const collapsibles = [
+    { value: "icon" as const, label: "Icônes", description: "Réduit en icônes" },
+    { value: "offcanvas" as const, label: "Offcanvas", description: "Se masque complètement" },
+    { value: "none" as const, label: "Fixe", description: "Toujours visible" },
+  ]
+
+  return (
+    <Card size="sm">
+      <CardHeader>
+        <CardTitle>Disposition de la barre latérale</CardTitle>
+        <CardDescription>
+          Choisissez le style et le comportement de la sidebar
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="space-y-2">
+          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Variante
+          </Label>
+          <div className="grid grid-cols-3 gap-2">
+            {variants.map((v) => {
+              const isActive = variant === v.value
+              return (
+                <button
+                  key={v.value}
+                  onClick={() => setVariant(v.value)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 rounded-xl border-2 p-3 transition-all",
+                    isActive
+                      ? "border-primary bg-primary/5"
+                      : "border-border bg-card hover:border-primary/30"
+                  )}
+                >
+                  <div className="flex h-10 w-14 items-stretch gap-0.5 overflow-hidden rounded-md border border-border/60">
+                    <div
+                      className={cn(
+                        "w-3.5 shrink-0",
+                        v.value === "floating"
+                          ? "m-0.5 rounded-sm bg-muted-foreground/20"
+                          : v.value === "inset"
+                            ? "bg-muted-foreground/15"
+                            : "bg-muted-foreground/20"
+                      )}
+                    />
+                    <div className="flex-1 bg-muted-foreground/5" />
+                  </div>
+                  <span className="text-[10px] font-medium text-muted-foreground">
+                    {v.label}
+                  </span>
+                  {isActive && (
+                    <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle02Icon}
+                        strokeWidth={2}
+                        className="size-2.5"
+                      />
+                    </div>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="space-y-2">
+          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Comportement au collapse
+          </Label>
+          <div className="grid grid-cols-3 gap-2">
+            {collapsibles.map((c) => {
+              const isActive = collapsible === c.value
+              return (
+                <button
+                  key={c.value}
+                  onClick={() => setCollapsible(c.value)}
+                  className={cn(
+                    "flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all",
+                    isActive
+                      ? "border-primary bg-primary/5"
+                      : "border-border bg-card hover:border-primary/30"
+                  )}
+                >
+                  <span className="text-xs font-medium text-foreground">
+                    {c.label}
+                  </span>
+                  <span className="text-[9px] text-muted-foreground">
+                    {c.description}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <Button variant="outline" size="sm" onClick={resetLayout}>
+          Réinitialiser la disposition
+        </Button>
+      </CardContent>
+    </Card>
   )
 }
 

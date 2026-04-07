@@ -4,7 +4,6 @@ import { Dog, Cat, Bird, Fish, Rabbit, Turtle, PawPrint } from "lucide-react"
 import {
   Avatar as ShadAvatar,
   AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 
@@ -66,9 +65,24 @@ const SIZE_MAP: Record<AvatarSize, string> = {
   "2xl": "size-32",
 }
 
+const normalizeAvatarSrc = (src?: string | null) => {
+  if (typeof src !== "string") return ""
+  const value = src.trim()
+  if (!value) return ""
+  if (["undefined", "null", "nan"].includes(value.toLowerCase())) return ""
+  return value
+}
+
+const normalizeName = (name?: string | null) => {
+  if (typeof name !== "string") return "Utilisateur"
+  const value = name.trim()
+  if (!value || value.toLowerCase() === "undefined") return "Utilisateur"
+  return value
+}
+
 const getInitials = (name: string) => {
   if (!name) return "?"
-  const parts = name.split(" ")
+  const parts = name.split(" ").filter(Boolean)
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
   return name.substring(0, 2).toUpperCase()
 }
@@ -80,19 +94,57 @@ const Avatar: React.FC<AvatarProps> = ({
   className,
 }) => {
   const sizeClass = SIZE_MAP[size]
+  const safeName = normalizeName(name)
+  const normalizedSrc = normalizeAvatarSrc(src)
 
-  if (src && (src.startsWith("http") || src.startsWith("data:"))) {
+  if (
+    normalizedSrc &&
+    (normalizedSrc.startsWith("http") || normalizedSrc.startsWith("data:"))
+  ) {
     return (
-      <ShadAvatar className={cn(sizeClass, className)}>
-        <AvatarImage src={src} alt={name} />
-        <AvatarFallback>{getInitials(name)}</AvatarFallback>
-      </ShadAvatar>
+      <div
+        className={cn(
+          "overflow-hidden rounded-full bg-muted",
+          sizeClass,
+          className
+        )}
+      >
+        <img
+          src={normalizedSrc}
+          alt={safeName}
+          className="size-full object-cover"
+          draggable={false}
+          onError={(event) => {
+            event.currentTarget.style.display = "none"
+            const fallback = event.currentTarget.nextElementSibling as
+              | HTMLElement
+              | null
+            if (fallback) fallback.style.display = "flex"
+          }}
+        />
+        <div
+          className={cn(
+            "hidden size-full items-center justify-center rounded-full bg-muted font-bold text-muted-foreground",
+            size === "sm"
+              ? "text-xs"
+              : size === "md"
+                ? "text-sm"
+                : size === "lg"
+                  ? "text-base"
+                  : size === "xl"
+                    ? "text-2xl"
+                    : "text-4xl"
+          )}
+        >
+          {getInitials(safeName)}
+        </div>
+      </div>
     )
   }
 
-  if (src && src.startsWith("gradient:")) {
-    const gradientClass = src.replace("gradient:", "")
-    const initials = getInitials(name)
+  if (normalizedSrc && normalizedSrc.startsWith("gradient:")) {
+    const gradientClass = normalizedSrc.replace("gradient:", "")
+    const initials = getInitials(safeName)
 
     return (
       <div
@@ -108,8 +160,8 @@ const Avatar: React.FC<AvatarProps> = ({
     )
   }
 
-  if (src && src.startsWith("animal:")) {
-    const animalKey = src.split(":")[1]
+  if (normalizedSrc && normalizedSrc.startsWith("animal:")) {
+    const animalKey = normalizedSrc.split(":")[1]
     const config = ANIMAL_ICONS[animalKey] || ANIMAL_ICONS.paw
     const Icon = config.icon
 
@@ -144,7 +196,7 @@ const Avatar: React.FC<AvatarProps> = ({
                   : "text-4xl"
         )}
       >
-        {getInitials(name)}
+        {getInitials(safeName)}
       </AvatarFallback>
     </ShadAvatar>
   )

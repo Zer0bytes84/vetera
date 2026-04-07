@@ -14,7 +14,7 @@ import {
   CheckmarkCircle02Icon,
   HeartPulse,
 } from "@hugeicons/core-free-icons"
-import { APP_NAME } from "@/lib/brand"
+import { APP_NAME, APP_TAGLINE } from "@/lib/brand"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -67,8 +67,11 @@ const Auth: React.FC = () => {
         </div>
 
         {/* Top */}
-        <div className="relative z-10">
-          <Logo size="lg" className="text-primary-foreground" collapsed />
+        <div className="relative z-10 space-y-2">
+          <Logo size="lg" className="text-primary-foreground" />
+          <p className="pl-14 text-sm text-primary-foreground/70">
+            {APP_TAGLINE}
+          </p>
         </div>
 
         {/* Center */}
@@ -129,7 +132,7 @@ const Auth: React.FC = () => {
           {/* Mobile logo */}
           <div className="lg:hidden">
             <div className="mb-2 flex justify-center">
-              <Logo size="lg" collapsed />
+              <Logo size="lg" />
             </div>
           </div>
 

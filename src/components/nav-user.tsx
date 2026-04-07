@@ -52,6 +52,12 @@ export function NavUser({
   onLogout,
 }: NavUserProps) {
   const { isMobile } = useSidebar()
+  const normalizedAvatar =
+    typeof user.avatar === "string" &&
+    user.avatar.trim() &&
+    !["undefined", "null", "nan"].includes(user.avatar.trim().toLowerCase())
+      ? user.avatar.trim()
+      : undefined
   const fallback = user.name
     .split(" ")
     .filter(Boolean)
@@ -73,7 +79,7 @@ export function NavUser({
             }
           >
             <Avatar className="size-8 rounded-lg [@media(max-height:820px)]:size-7">
-              <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+              <AvatarImage src={normalizedAvatar} alt={user.name} />
               <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight [@media(max-height:820px)]:text-[13px]">
@@ -98,7 +104,7 @@ export function NavUser({
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="size-8 rounded-lg">
-                    <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+                    <AvatarImage src={normalizedAvatar} alt={user.name} />
                     <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">

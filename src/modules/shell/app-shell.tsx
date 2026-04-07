@@ -6,6 +6,7 @@ import CommandPalette from "@/components/CommandPalette"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/AuthContext"
+import { LayoutProvider } from "@/contexts/layout-provider"
 import type { View } from "@/types"
 
 import { viewTitles } from "../../app/config/navigation"
@@ -13,6 +14,14 @@ import { renderView } from "../../app/config/view-registry"
 import { useThemeMode } from "../../app/hooks/use-theme-mode"
 
 export function AppShell() {
+  return (
+    <LayoutProvider>
+      <AppShellInner />
+    </LayoutProvider>
+  )
+}
+
+function AppShellInner() {
   const [currentView, setCurrentView] = useState<View>("dashboard")
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [aiAgentOpen, setAiAgentOpen] = useState(false)
@@ -56,13 +65,14 @@ export function AppShell() {
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--sidebar-width-icon": "calc(var(--spacing) * 16)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
     >
       <AppSidebar
         variant="inset"
-        className="md:pt-2 md:pr-2 md:pb-2 md:pl-2"
+        collapsible="icon"
         currentView={currentView}
         onNavigate={setCurrentView}
         currentUserName={currentUserName}
@@ -72,7 +82,7 @@ export function AppShell() {
         onOpenPalette={() => setPaletteOpen(true)}
         onOpenAIAgent={() => setAiAgentOpen(true)}
       />
-      <SidebarInset className="overflow-hidden md:rounded-t-none md:rounded-l-none md:rounded-r-none md:rounded-b-2xl">
+      <SidebarInset className="overflow-hidden">
         <SiteHeader
           title={viewTitles[currentView] ?? "Tableau de bord"}
           onOpenPalette={() => setPaletteOpen(true)}
