@@ -1,6 +1,29 @@
-# React + TypeScript + Vite + shadcn/ui
+# Vetera
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+Application desktop Vetera construite avec React, TypeScript, Vite et Tauri.
+
+## Development
+
+```bash
+npm install
+npm run tauri:dev
+```
+
+## Desktop build
+
+```bash
+npm run tauri:build
+```
+
+## Automatic updates
+
+Le projet publie des releases GitHub versionnees pour le systeme de mise a jour integree.
+
+- l'application verifie les mises a jour au demarrage
+- un tag Git `vX.Y.Z` declenche la release de mise a jour
+- le manifeste `latest.json` est publie avec les artefacts desktop
+
+Voir `docs/updates.md` pour le flux complet.
 
 ## Adding components
 

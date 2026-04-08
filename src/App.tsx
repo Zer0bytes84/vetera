@@ -9,6 +9,7 @@ import { applyTheme, getThemeConfig } from "@/lib/theme-store"
 import { checkAutoBackup } from "@/services/backupService"
 import { seedDemoDataIfNeeded } from "@/services/demo-data"
 import { saveLicenseInfo } from "@/services/appSettingsService"
+import { startAppUpdateCheck } from "@/services/updateService"
 import { createInitialAdmin } from "@/services/sqlite/auth"
 import { AppShell } from "@/modules/shell/app-shell"
 
@@ -40,6 +41,10 @@ export function App() {
 
     checkAutoBackup().catch((error) => {
       console.error("[App] Auto-backup check failed:", error)
+    })
+
+    startAppUpdateCheck().catch((error) => {
+      console.error("[App] Update check failed:", error)
     })
 
     checkSetup()

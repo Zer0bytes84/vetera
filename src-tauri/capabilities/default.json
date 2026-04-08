@@ -38,6 +38,8 @@
         { "path": "$DOCUMENT/**" }
       ]
     },
-    "process:allow-exit"
+    "process:allow-exit",
+    "process:allow-restart",
+    "updater:default"
   ]
 }

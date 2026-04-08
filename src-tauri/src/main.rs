@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+#[cfg(debug_assertions)]
 use tauri::Manager;
 
 fn main() {
@@ -8,12 +9,12 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
-        .setup(|app| {
-            let window = app.get_webview_window("main").unwrap();
-            
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .setup(|_app| {
             // DevTools only in debug mode
             #[cfg(debug_assertions)]
             {
+                let window = _app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
             Ok(())
