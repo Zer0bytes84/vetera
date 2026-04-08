@@ -127,8 +127,8 @@ jobs:
 
           selections = {
               "darwin-aarch64": ["*.app.tar.gz"],
-              "windows-x86_64": ["*-setup.exe.zip", "*.msi.zip"],
-              "linux-x86_64": ["*.AppImage.tar.gz", "*.deb"],
+              "windows-x86_64": ["*-setup.exe", "*.msi"],
+              "linux-x86_64": ["*.AppImage", "*.deb"],
           }
 
           platforms = {}

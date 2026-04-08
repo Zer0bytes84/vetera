@@ -27,6 +27,9 @@ jobs:
             bundle_path: src-tauri/target/release/bundle
 
     runs-on: ${{ matrix.os }}
+    env:
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
     steps:
       - name: Checkout repository
@@ -70,6 +73,7 @@ jobs:
           path: |
             ${{ matrix.bundle_path }}/**/*.dmg
             ${{ matrix.bundle_path }}/**/*.app.tar.gz
+            ${{ matrix.bundle_path }}/**/*.sig
             ${{ matrix.bundle_path }}/**/*.appimage
             ${{ matrix.bundle_path }}/**/*.deb
             ${{ matrix.bundle_path }}/**/*.rpm
@@ -99,6 +103,7 @@ jobs:
           files: |
             release-assets/**/*.dmg
             release-assets/**/*.app.tar.gz
+            release-assets/**/*.sig
             release-assets/**/*.AppImage
             release-assets/**/*.appimage
             release-assets/**/*.deb
