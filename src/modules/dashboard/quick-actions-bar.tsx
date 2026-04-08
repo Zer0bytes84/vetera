@@ -32,7 +32,7 @@ export function QuickActionsBar({
   onNavigate: (view: View) => void
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 px-4 lg:px-6">
+    <div className="flex flex-wrap items-center gap-2">
       <span className="mr-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
         Accès rapide
       </span>
@@ -44,7 +44,6 @@ export function QuickActionsBar({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 gap-1.5 rounded-xl border-border/60 bg-card/50 text-xs font-medium text-muted-foreground shadow-xs transition-all hover:bg-accent/10 hover:text-foreground hover:shadow-sm"
                   onClick={() => onNavigate(action.view)}
                 />
               }

@@ -98,12 +98,14 @@ export function ChartAreaInteractive({
   }, [data, period])
 
   return (
-    <Card className="@container/card">
+    <Card>
       <CardHeader>
-        <CardTitle>Vue d&apos;activité</CardTitle>
-        <CardDescription>
-          Consultations et interventions sur la période active
-        </CardDescription>
+        <div className="flex flex-col gap-1">
+          <CardTitle>Vue d&apos;activité</CardTitle>
+          <CardDescription>
+            Consultations et interventions sur la période active
+          </CardDescription>
+        </div>
         <CardAction className="flex items-center gap-2">
           <Tabs value={chartType} onValueChange={setChartType}>
             <TabsList className="hidden @[767px]/card:flex">
@@ -126,11 +128,10 @@ export function ChartAreaInteractive({
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="pt-4">
         <ChartContainer
           config={chartConfig}
           className="h-[250px] w-full"
-          initialDimension={{ width: 960, height: 250 }}
         >
           <AreaChart data={filteredData}>
             <defs>
@@ -171,13 +172,15 @@ export function ChartAreaInteractive({
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 5%)" vertical={false} />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={28}
+              fontSize={12}
+              stroke="oklch(0.65 0.015 285)"
               tickFormatter={(value) =>
                 new Date(value).toLocaleDateString("fr-FR", {
                   day: "numeric",
@@ -185,7 +188,7 @@ export function ChartAreaInteractive({
                 })
               }
             />
-            <YAxis tickLine={false} axisLine={false} width={28} />
+            <YAxis tickLine={false} axisLine={false} width={32} fontSize={12} stroke="oklch(0.65 0.015 285)" />
             <ChartTooltip
               cursor={false}
               content={

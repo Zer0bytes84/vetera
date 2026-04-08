@@ -46,7 +46,7 @@ const StatCard: React.FC<StatCardProps> = ({
           </div>
 
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-2xl shadow-sm transition-all duration-300 group-hover:scale-110"
+            className="flex h-10 w-10 items-center justify-center rounded-2xl transition-all duration-300 group-hover:scale-110"
             style={{ backgroundColor: iconBg, color: iconColor }}
           >
             <Icon size={20} strokeWidth={2} />

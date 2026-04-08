@@ -74,7 +74,7 @@ export function NavUser({
             render={
               <SidebarMenuButton
                 size="lg"
-                className="aria-expanded:bg-muted [@media(max-height:820px)]:h-10"
+                className="aria-expanded:bg-muted [@media(max-height:820px)]:h-10 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0"
               />
             }
           >
@@ -82,7 +82,7 @@ export function NavUser({
               <AvatarImage src={normalizedAvatar} alt={user.name} />
               <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight [@media(max-height:820px)]:text-[13px]">
+            <div className="grid flex-1 text-left text-sm leading-tight [@media(max-height:820px)]:text-[13px] group-data-[collapsible=icon]:hidden">
               <span className="truncate font-medium">{user.name}</span>
               <span className="truncate text-xs text-foreground/70 [@media(max-height:820px)]:text-[11px]">
                 {user.email}
@@ -91,7 +91,7 @@ export function NavUser({
             <HugeiconsIcon
               icon={MoreVerticalCircle01Icon}
               strokeWidth={2}
-              className="ml-auto size-4 [@media(max-height:820px)]:size-3.5"
+              className="ml-auto size-4 [@media(max-height:820px)]:size-3.5 group-data-[collapsible=icon]:hidden"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent

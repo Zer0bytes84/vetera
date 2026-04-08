@@ -3,7 +3,7 @@
 import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { getCurrentWindow } from "@tauri-apps/api/window"
-import { BotIcon } from "@hugeicons/core-free-icons"
+import { SparklesIcon } from "@hugeicons/core-free-icons"
 
 import Logo from "@/components/Logo"
 import { NavDocuments } from "@/components/nav-documents"
@@ -18,6 +18,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { useUsersRepository } from "@/data/repositories"
 import {
@@ -51,6 +52,8 @@ export function AppSidebar({
   onOpenAIAgent,
   ...props
 }: AppSidebarProps) {
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
   const { data: users } = useUsersRepository()
   const [cachedProfile, setCachedProfile] = React.useState(() =>
     readCachedProfile(currentUserEmail)
@@ -122,7 +125,7 @@ export function AppSidebar({
   }))
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar {...props}>
       {isDesktopRuntime ? (
         <div
           className="flex h-10 items-center px-4 [@media(max-height:820px)]:h-8 [@media(max-height:820px)]:px-3"
@@ -142,18 +145,10 @@ export function AppSidebar({
                 <button type="button" onClick={() => onNavigate("dashboard")} />
               }
             >
-              <Logo size="md" className="text-sidebar-foreground" />
+              <Logo size="md" collapsed={isCollapsed} className="text-sidebar-foreground" />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <button
-          type="button"
-          onClick={onOpenAIAgent}
-          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          title="Assistant IA"
-        >
-          <HugeiconsIcon icon={BotIcon} strokeWidth={2} className="size-4" />
-        </button>
       </SidebarHeader>
       <SidebarContent className="scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent overflow-y-auto">
         <div className="flex min-h-full flex-1 flex-col gap-2 [@media(max-height:820px)]:gap-1.5">

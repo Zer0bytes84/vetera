@@ -29,6 +29,15 @@
     "fs:allow-read-text-file",
     "fs:allow-write-text-file",
     "fs:scope-appdata-recursive",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "$HOME/**" },
+        { "path": "$DESKTOP/**" },
+        { "path": "$DOWNLOAD/**" },
+        { "path": "$DOCUMENT/**" }
+      ]
+    },
     "process:allow-exit"
   ]
 }

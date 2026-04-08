@@ -1,11 +1,10 @@
-import { ChartDownIcon, ChartUpIcon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
 
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -21,13 +20,6 @@ export type SectionCardItem = {
   icon?: IconSvgElement
 }
 
-const ACCENT_CLASSES = [
-  { bg: "bg-blue-500/10", text: "text-blue-600 dark:text-blue-400" },
-  { bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400" },
-  { bg: "bg-violet-500/10", text: "text-violet-600 dark:text-violet-400" },
-  { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400" },
-]
-
 export function SectionCards({
   items,
   className,
@@ -38,59 +30,54 @@ export function SectionCards({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-4 px-4 lg:px-6 xl:grid-cols-4",
+        "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4",
         className
       )}
     >
-      {items.map((item, index) => {
-        const trendIcon = item.trend === "down" ? ChartDownIcon : ChartUpIcon
-        const accent = ACCENT_CLASSES[index % ACCENT_CLASSES.length]
+      {items.map((item) => {
+        const trendIcon = item.trend === "down" ? ArrowDown01Icon : ArrowUp01Icon
 
         return (
-          <Card key={item.title} className="@container/card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+          <Card key={item.title} size="sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 {item.title}
               </CardTitle>
-              {item.icon ? (
-                <div
-                  className={cn(
-                    "flex size-8 items-center justify-center rounded-lg",
-                    accent.bg
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={item.icon}
-                    strokeWidth={1.8}
-                    className={cn("size-4", accent.text)}
-                  />
-                </div>
-              ) : item.badge ? (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "gap-1 text-xs tabular-nums",
-                    item.trend === "up" &&
-                      "border-emerald-200 text-emerald-700 dark:border-emerald-800 dark:text-emerald-400",
-                    item.trend === "down" &&
-                      "border-rose-200 text-rose-700 dark:border-rose-800 dark:text-rose-400"
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={trendIcon}
-                    strokeWidth={2}
-                    className="size-3"
-                  />
-                  {item.badge}
-                </Badge>
-              ) : null}
+              {item.icon && (
+                <HugeiconsIcon
+                  icon={item.icon}
+                  strokeWidth={2}
+                  className="size-4 text-muted-foreground"
+                />
+              )}
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">
-                {item.value}
+              <div className="flex items-baseline gap-2">
+                <div className="text-2xl font-bold tabular-nums">
+                  {item.value}
+                </div>
+                {item.badge && (
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "text-xs tabular-nums",
+                      item.trend === "up" &&
+                        "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400",
+                      item.trend === "down" &&
+                        "bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:text-rose-400"
+                    )}
+                  >
+                    <HugeiconsIcon
+                      icon={trendIcon}
+                      strokeWidth={2}
+                      className="mr-0.5 size-3"
+                    />
+                    {item.badge}
+                  </Badge>
+                )}
               </div>
               {(item.summary || item.detail) && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   {item.summary || item.detail}
                 </p>
               )}

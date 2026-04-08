@@ -1,8 +1,8 @@
-import { SearchIcon, Sun03Icon } from "@hugeicons/core-free-icons"
+import { useEffect, useState } from "react"
+import { SearchIcon, Sun03Icon, Moon02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import { useTauriDrag } from "@/hooks/use-tauri-drag"
-
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,13 +12,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Kbd } from "@/components/ui/kbd"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -37,14 +30,35 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   const { theme, setTheme } = useTheme()
   const { ref: headerRef, handleMouseDown } = useTauriDrag()
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const header = headerRef.current as HTMLElement | null
+    if (!header) return
+
+    // The scroll container is the parent (SidebarInset with overflow-auto)
+    const scrollContainer = header.parentElement
+    if (!scrollContainer) return
+
+    const handleScroll = () => {
+      setIsScrolled(scrollContainer.scrollTop > 8)
+    }
+
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
+    return () => scrollContainer.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <header
       ref={headerRef}
       onMouseDown={handleMouseDown}
-      className="flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background/95 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) supports-[backdrop-filter]:bg-background/60"
+      className={`sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 border-b px-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:px-6 ${
+        isScrolled
+          ? 'site-header-glass border-black/[0.06] dark:border-white/[0.08]'
+          : 'bg-background'
+      }`}
     >
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+      <div className="flex w-full items-center gap-1 lg:gap-2">
         <SidebarTrigger className="-ml-1" />
         <Separator
           orientation="vertical"
@@ -74,39 +88,24 @@ export function SiteHeader({
             <span className="text-sm">Rechercher...</span>
             <Kbd className="ml-2">K</Kbd>
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="size-9 rounded-full border-border/70 bg-background text-muted-foreground shadow-none hover:bg-muted/40 hover:text-foreground"
-                />
-              }
-            >
-              <HugeiconsIcon
-                icon={Sun03Icon}
-                strokeWidth={2}
-                className="size-4.5"
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-64">
-              <DropdownMenuRadioGroup
-                value={theme}
-                onValueChange={(value) =>
-                  setTheme(value as "light" | "dark" | "system")
-                }
-              >
-                <DropdownMenuRadioItem value="light">
-                  Light
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="system">
-                  System
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 rounded-full relative"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            <HugeiconsIcon
+              icon={Sun03Icon}
+              strokeWidth={2}
+              className="size-4.5 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0"
+            />
+            <HugeiconsIcon
+              icon={Moon02Icon}
+              strokeWidth={2}
+              className="size-4.5 absolute rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100"
+            />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
         </div>
       </div>
     </header>

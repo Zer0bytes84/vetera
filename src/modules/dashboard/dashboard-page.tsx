@@ -42,18 +42,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/contexts/AuthContext"
 import type { View } from "@/types"
 
-import { DayTimeline, type TimelineAppointment } from "./day-timeline"
-import {
-  NextAppointmentCard,
-  type NextAppointmentData,
-} from "./next-appointment-card"
 import { DashboardAnalytics } from "./dashboard-analytics"
 import { DashboardOverviewAnalytics } from "./dashboard-overview-analytics"
-import { RevenueSparkCard } from "./revenue-spark-card"
 import { QuickActionsBar } from "./quick-actions-bar"
-import { TasksProgressCard } from "./tasks-progress-card"
-import { ActivityFeedCard, type ActivityItem } from "./activity-feed-card"
-import { SmartInsights, generateSmartInsights } from "./smart-insights"
+import { RevenueChart } from "./revenue-chart"
+import { ConsultationsChart } from "./consultations-chart"
+import {
+  InsightsWidget,
+  TasksWidget,
+  StockAlertsWidget,
+  NextAppointmentWidget,
+  QuickStatsWidget,
+  generateInsights,
+  type SmartInsight,
+} from "./dashboard-widgets"
 
 import {
   useAppointmentsRepository,
@@ -68,6 +70,27 @@ import MotivationalHeader from "@/components/MotivationalHeader"
 
 type DashboardPageProps = {
   onNavigate: (view: View) => void
+}
+
+type NextAppointmentData = {
+  id: string
+  patient: string
+  owner: string
+  type: string
+  startTime: Date
+  endTime: Date
+  vetName: string
+  ownerPhone?: string
+}
+
+type TimelineAppointment = {
+  id: string
+  patient: string
+  type: string
+  startTime: Date
+  endTime: Date
+  status: string
+  vetName: string
 }
 
 function addDays(date: Date, amount: number) {
@@ -461,17 +484,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
     const lowStockProducts = products
       .filter((p) => Number(p.quantity) <= Number(p.minStock))
-      .map((p) => ({ name: p.name, quantity: Number(p.quantity) }))
+      .map((p) => ({ id: p.id, name: p.name, quantity: Number(p.quantity) }))
 
-    const pendingReminders = tasks
-      .filter((t) => t.status !== "done")
-      .slice(0, 3)
-      .map((t) => ({
-        patient: t.title,
-        reason: t.dueDate
-          ? `Échéance ${new Date(t.dueDate).toLocaleDateString("fr-FR")}`
-          : "À suivre",
-      }))
+    const pendingTasks = tasks.filter((t) => t.status !== "done")
 
     const currIncome = transactions
       .filter(
@@ -492,18 +507,18 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       )
       .reduce((s, t) => s + t.amount, 0)
 
-    return generateSmartInsights({
+    return generateInsights({
       todayAppointments: todayApts,
       upcomingAppointments: upcomingApts,
       lowStockProducts,
-      pendingReminders,
+      pendingTasks: pendingTasks.length,
       currentIncome: currIncome,
       previousIncome: prevIncome,
     })
   }, [appointments, products, tasks, transactions, referenceDate])
 
-  const activityFeed = useMemo<ActivityItem[]>(() => {
-    const items: ActivityItem[] = []
+  const activityFeed = useMemo(() => {
+    const items: Array<{id: string; type: string; label: string; detail: string; time: Date}> = []
 
     appointments
       .filter((a) => a.status === "completed")
@@ -946,13 +961,14 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   }
 
   const dashboardTabs = [
-    { value: "overview", label: "Vue d’ensemble", icon: DashboardSquare01Icon },
-    { value: "analytics", label: "Analyse", icon: ChartUpIcon },
-    { value: "reports", label: "Rapports", icon: File01Icon },
+    { value: "overview", label: "Vue d'ensemble", icon: DashboardSquare01Icon, count: null },
+    { value: "analytics", label: "Analyse", icon: ChartUpIcon, count: null },
+    { value: "reports", label: "Rapports", icon: File01Icon, count: null },
     {
       value: "notifications",
       label: "Notifications",
       icon: Notification02Icon,
+      count: dashboardNotifications.length,
     },
   ] as const
 
@@ -1023,42 +1039,58 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   }, [appointments, patients, users, referenceDate])
 
   return (
-    <div className="@container/main flex flex-1 flex-col gap-2">
-      <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-        <div className="px-4 lg:px-6">
-          <MotivationalHeader
-            section="dashboard"
-            title=""
-            subtitle=""
-          />
-        </div>
-        <Tabs
-          value={dashboardTab}
-          onValueChange={(value) =>
-            setDashboardTab(
-              value as "overview" | "analytics" | "reports" | "notifications"
-            )
-          }
-          className="gap-4"
-        >
-          <div className="flex flex-col gap-4 px-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+    <div className="@container/main relative isolate flex flex-1 flex-col gap-6 py-6">
+      {/* Decorative Ambient Mesh Gradient Background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        {/* Top left primary glow */}
+        <div className="absolute -left-[10%] -top-[10%] h-[50vh] w-[50vw] animate-pulse rounded-full bg-[var(--chart-1)]/15 blur-[120px] mix-blend-multiply duration-[10000ms] ease-in-out dark:bg-[var(--chart-1)]/20 dark:mix-blend-screen" />
+        
+        {/* Middle right secondary glow */}
+        <div className="absolute -right-[10%] top-[25%] h-[45vh] w-[45vw] rounded-full bg-[var(--chart-2)]/10 blur-[100px] mix-blend-multiply dark:bg-[var(--chart-2)]/15 dark:mix-blend-screen" />
+        
+        {/* Bottom center deep glow */}
+        <div className="absolute -bottom-[20%] left-[15%] h-[60vh] w-[60vw] rounded-full bg-[var(--chart-3)]/10 blur-[140px] mix-blend-multiply dark:bg-[var(--chart-3)]/15 dark:mix-blend-screen" />
+      </div>
+
+      <Tabs
+        value={dashboardTab}
+        onValueChange={(value) =>
+          setDashboardTab(
+            value as "overview" | "analytics" | "reports" | "notifications"
+          )
+        }
+        className="gap-6"
+      >
+        <div className="flex flex-col gap-4 px-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-4">
+            <MotivationalHeader
+              section="dashboard"
+              title=""
+              subtitle=""
+            />
             <TabsList className="h-auto w-fit gap-1 rounded-xl bg-muted/70 p-1">
               {dashboardTabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="h-8 !flex-none rounded-lg px-3 text-sm font-medium text-muted-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
+                  className="h-8 !flex-none gap-2 rounded-lg px-3 text-sm font-medium text-muted-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
                 >
                   <HugeiconsIcon
                     icon={tab.icon}
                     strokeWidth={2}
                     className="size-4"
                   />
-                  {tab.label}
+                  <span>{tab.label}</span>
+                  {tab.count !== null && tab.count > 0 && (
+                    <span className="ml-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                      {tab.count > 99 ? "99+" : tab.count}
+                    </span>
+                  )}
                 </TabsTrigger>
               ))}
             </TabsList>
-            <div className="flex flex-col gap-2 sm:flex-row">
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
@@ -1125,45 +1157,83 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           </div>
 
           <TabsContent value="overview" className="space-y-6">
-            <SectionCards items={sectionCards} />
-            <DashboardOverviewAnalytics
-              data={chartData}
-              referenceDate={referenceDate.toISOString()}
-            />
-            <div className="grid gap-6 px-4 lg:px-6">
-              <div className="grid gap-6 xl:grid-cols-3">
-                <RevenueSparkCard
-                  total={revenueSeries.total}
-                  delta={revenueSeries.delta}
-                  points={revenueSeries.points}
-                  onNavigate={() => onNavigate("finances")}
-                />
-                <NextAppointmentCard
-                  appointment={nextAppointmentCard}
-                  onNavigate={() => onNavigate("agenda")}
-                />
-                <DayTimeline
-                  appointments={todayTimeline}
-                  onNavigate={() => onNavigate("agenda")}
-                />
+            <div className="px-6">
+              <SectionCards items={sectionCards} />
+            </div>
+
+            <div className="px-6">
+              <div className="grid gap-6 xl:grid-cols-2">
+                <ConsultationsChart />
+                <RevenueChart />
               </div>
-              <div className="grid gap-6 xl:grid-cols-3">
-                <TasksProgressCard
-                  tasks={tasks}
+            </div>
+
+            <div className="px-6">
+              <DashboardOverviewAnalytics
+                data={chartData}
+                referenceDate={referenceDate.toISOString()}
+              />
+            </div>
+
+            {/* Widgets modernisés en tête */}
+            <div className="px-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <QuickStatsWidget
+                  todayAppointments={(() => {
+                    const todayStart = startOfDay(referenceDate)
+                    const todayEnd = endOfDay(referenceDate)
+                    return appointments.filter((a) => {
+                      const d = new Date(a.startTime)
+                      return d >= todayStart && d <= todayEnd && !["cancelled", "no_show"].includes(a.status)
+                    }).length
+                  })()}
+                  activePatients={patients.filter((p) => p.status !== "decede").length}
+                  todayRevenue={(() => {
+                    const todayStart = startOfDay(referenceDate)
+                    const todayEnd = endOfDay(referenceDate)
+                    return transactions
+                      .filter((t) => t.type === "income" && t.status === "paid" && new Date(t.date) >= todayStart && new Date(t.date) <= todayEnd)
+                      .reduce((sum, t) => sum + t.amount, 0)
+                  })()}
+                  onNavigate={onNavigate}
+                />
+                <NextAppointmentWidget
+                  appointment={nextAppointmentCard ? {
+                    id: nextAppointmentCard.id,
+                    patient: nextAppointmentCard.patient,
+                    type: nextAppointmentCard.type,
+                    startTime: nextAppointmentCard.startTime,
+                    vetName: nextAppointmentCard.vetName,
+                  } : null}
+                  onNavigate={() => onNavigate("agenda")}
+                />
+                <TasksWidget
+                  tasks={tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, priority: t.priority, dueDate: t.dueDate }))}
                   onNavigate={() => onNavigate("taches")}
                 />
-                <SmartInsights
-                  insights={smartInsights}
-                  onNavigate={(view) => onNavigate(view as View)}
+                <StockAlertsWidget
+                  products={products.map((p) => ({ id: p.id, name: p.name, quantity: Number(p.quantity), minStock: Number(p.minStock), unit: p.unit }))}
+                  onNavigate={() => onNavigate("stock")}
                 />
-                <ActivityFeedCard items={activityFeed} />
               </div>
+            </div>
+
+            {/* Insights IA en dessous */}
+            <div className="px-6">
+              <InsightsWidget
+                insights={smartInsights}
+                onNavigate={(view) => onNavigate(view as View)}
+              />
+            </div>
+
+            <div className="px-6">
               <DataTable
                 data={dashboardRows}
                 onCreate={() => onNavigate("agenda")}
               />
             </div>
-            <div className="px-4 lg:px-6">
+
+            <div className="px-6">
               <QuickActionsBar onNavigate={onNavigate} />
             </div>
           </TabsContent>
@@ -1271,6 +1341,5 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
   )
 }

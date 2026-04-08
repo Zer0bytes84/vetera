@@ -25,43 +25,37 @@ const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
 function VeteraMark({ iconClassName }: { iconClassName: string }) {
   return (
     <svg
-      viewBox="0 0 64 64"
+      viewBox="0 0 32 32"
       aria-hidden="true"
       className={iconClassName}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        d="M20 7H44C52.284 7 59 13.716 59 22V42C59 50.284 52.284 57 44 57H20C11.716 57 5 50.284 5 42V22C5 13.716 11.716 7 20 7Z"
-        fill="currentColor"
-        fillOpacity="0.04"
+      {/* Outer large layer - soft and highly translucent glass */}
+      <rect 
+        x="16" y="2.5" 
+        width="18" height="18" rx="4.5" 
+        transform="rotate(45 16 2.5)" 
+        fill="currentColor" 
+        className="opacity-[0.14] dark:opacity-[0.18]" 
       />
-      <path
-        d="M20 7H44C52.284 7 59 13.716 59 22V42C59 50.284 52.284 57 44 57H20C11.716 57 5 50.284 5 42V22C5 13.716 11.716 7 20 7Z"
-        stroke="currentColor"
-        strokeWidth="3.5"
+      
+      {/* Medium center layer - defining the shape */}
+      <rect 
+        x="16" y="11" 
+        width="12" height="12" rx="3" 
+        transform="rotate(45 16 11)" 
+        fill="currentColor" 
+        className="opacity-[0.45] dark:opacity-[0.55]" 
       />
-      <path
-        d="M18 20L29.5 45.5C30.399 47.493 33.227 47.493 34.126 45.5L45.5 20"
-        stroke="currentColor"
-        strokeWidth="5.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M24.5 31H39.5"
-        stroke="currentColor"
-        strokeWidth="4"
-        strokeLinecap="round"
-        opacity="0.12"
-      />
-      <path
-        d="M45.5 20V24.25C45.5 27.149 47.851 29.5 50.75 29.5H55"
-        stroke="currentColor"
-        strokeWidth="3.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.22"
+      
+      {/* Inner core - sharp, solid apex */}
+      <rect 
+        x="16" y="19.5" 
+        width="6" height="6" rx="1.5" 
+        transform="rotate(45 16 19.5)" 
+        fill="currentColor" 
+        className="opacity-95 dark:opacity-100" 
       />
     </svg>
   )
@@ -82,12 +76,12 @@ const Logo: React.FC<LogoProps> = ({
         className
       )}
     >
-      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-3")}>
+      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-2")}>
         <VeteraMark iconClassName={cn(iconSizeClass, "shrink-0")} />
         {!collapsed ? (
           <span
             className={cn(
-              "translate-y-[1px] truncate font-heading font-semibold leading-none tracking-[-0.045em]",
+              "-ml-0.5 translate-y-[1px] truncate font-heading font-semibold leading-none tracking-[-0.045em]",
               wordmarkClass
             )}
             style={{ color: "currentColor" }}

@@ -6,7 +6,7 @@ import CommandPalette from "@/components/CommandPalette"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/AuthContext"
-import { LayoutProvider } from "@/contexts/layout-provider"
+import { LayoutProvider, useLayout } from "@/contexts/layout-provider"
 import type { View } from "@/types"
 
 import { viewTitles } from "../../app/config/navigation"
@@ -27,6 +27,7 @@ function AppShellInner() {
   const [aiAgentOpen, setAiAgentOpen] = useState(false)
   const { currentUser, logout } = useAuth()
   const { themeMode, setThemeMode } = useThemeMode()
+  const { variant, collapsible } = useLayout()
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -62,6 +63,7 @@ function AppShellInner() {
 
   return (
     <SidebarProvider
+      className="!min-h-0 h-svh overflow-hidden"
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
@@ -71,8 +73,8 @@ function AppShellInner() {
       }
     >
       <AppSidebar
-        variant="inset"
-        collapsible="icon"
+        variant={variant}
+        collapsible={collapsible}
         currentView={currentView}
         onNavigate={setCurrentView}
         currentUserName={currentUserName}
@@ -82,7 +84,7 @@ function AppShellInner() {
         onOpenPalette={() => setPaletteOpen(true)}
         onOpenAIAgent={() => setAiAgentOpen(true)}
       />
-      <SidebarInset className="overflow-hidden">
+      <SidebarInset className="flex min-h-0 flex-col overflow-y-auto">
         <SiteHeader
           title={viewTitles[currentView] ?? "Tableau de bord"}
           onOpenPalette={() => setPaletteOpen(true)}

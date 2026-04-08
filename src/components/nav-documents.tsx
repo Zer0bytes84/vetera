@@ -28,14 +28,14 @@ export function NavDocuments({
 }) {
   const { isMobile } = useSidebar()
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Exploitation</SidebarGroupLabel>
-      <SidebarMenu>
+    <SidebarGroup className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:mt-0">
+      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Exploitation</SidebarGroupLabel>
+      <SidebarMenu className="group-data-[collapsible=icon]:gap-2">
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton render={<button type="button" onClick={item.onClick} />}>
+            <SidebarMenuButton render={<button type="button" onClick={item.onClick} />} tooltip={item.name}>
               {item.icon}
-              <span>{item.name}</span>
+              <span className="group-data-[collapsible=icon]:hidden">{item.name}</span>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger
