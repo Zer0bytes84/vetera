@@ -98,23 +98,25 @@ export function DataTable({
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between border-b px-6">
-        <div>
-          <CardDescription>Registre clinique</CardDescription>
-          <CardTitle className="text-2xl tracking-[-0.04em]">
-            Activité des dossiers
-          </CardTitle>
-        </div>
-        <CardAction>
-          <Button onClick={onCreate}>
+      <CardHeader className="border-b px-6 py-5">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <CardDescription>Registre clinique</CardDescription>
+            <CardTitle className="text-2xl tracking-[-0.04em]">
+              Activité des dossiers
+            </CardTitle>
+          </div>
+          <CardAction className="self-start lg:self-auto">
+            <Button onClick={onCreate}>
             <HugeiconsIcon
               icon={Add01Icon}
               strokeWidth={2}
               data-icon="inline-start"
             />
             Nouveau rendez-vous
-          </Button>
-        </CardAction>
+            </Button>
+          </CardAction>
+        </div>
       </CardHeader>
       <CardContent className="px-0 pb-0">
         <div className="flex flex-col gap-4 px-6 pt-4 pb-5">

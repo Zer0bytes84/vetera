@@ -45,7 +45,7 @@ export const navigationSections: Array<{
     items: [
       { view: "patients", label: "Patients", icon: StethoscopeIcon },
       { view: "agenda", label: "Agenda", icon: Calendar01Icon },
-      { view: "clinique", label: "Dossiers cliniques", icon: ClinicIcon },
+      { view: "clinique", label: "Consultations", icon: ClinicIcon },
       { view: "notes", label: "Notes", icon: BookOpenTextIcon },
       { view: "taches", label: "Rappels", icon: Task01Icon },
     ],

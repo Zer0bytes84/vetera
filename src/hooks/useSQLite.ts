@@ -60,10 +60,17 @@ const mapKeys = (obj: Record<string, unknown>, mapper: (key: string) => string) 
 }
 
 const sanitizeParam = (value: unknown) => {
+  if (value === undefined) return null
+  if (value === null) return null
   if (typeof value === "boolean") return value ? 1 : 0
   if (value instanceof Date) return toSQLiteTimestamp(value)
   return value
 }
+
+const stripUndefinedEntries = (obj: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(obj).filter(([, value]) => value !== undefined)
+  )
 
 const normalizeBooleanFields = (tableName: string, row: Record<string, unknown>) => {
   const booleanFields = BOOLEAN_FIELDS_BY_TABLE[tableName] ?? []
@@ -150,7 +157,9 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
 
       const db = await getDatabase()
       const id = generateId()
-      const dbItem = mapKeys(item as Record<string, unknown>, toSnakeCase)
+      const dbItem = stripUndefinedEntries(
+        mapKeys(item as Record<string, unknown>, toSnakeCase)
+      )
 
       const fields = Object.keys(dbItem)
       const placeholders = fields.map(() => "?").join(", ")
@@ -193,8 +202,11 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
         }
 
         const db = await getDatabase()
-        const dbUpdates = mapKeys(updates as Record<string, unknown>, toSnakeCase)
+        const dbUpdates = stripUndefinedEntries(
+          mapKeys(updates as Record<string, unknown>, toSnakeCase)
+        )
         const fields = Object.keys(dbUpdates)
+        if (fields.length === 0) return true
         const setClause = fields.map((field) => `${field} = ?`).join(", ")
         const params = [...Object.values(dbUpdates).map(sanitizeParam), id]
 
@@ -252,7 +264,9 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
         return
       }
 
-      const dbItem = mapKeys(item as Record<string, unknown>, toSnakeCase)
+      const dbItem = stripUndefinedEntries(
+        mapKeys(item as Record<string, unknown>, toSnakeCase)
+      )
       const fields = Object.keys(dbItem)
       const placeholders = fields.map(() => "?").join(", ")
       const values = Object.values(dbItem).map(sanitizeParam)

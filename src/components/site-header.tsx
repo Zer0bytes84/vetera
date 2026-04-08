@@ -78,9 +78,9 @@ export function SiteHeader({
             <DropdownMenuTrigger
               render={
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="icon"
-                  className="size-9 rounded-full bg-muted/60 text-foreground hover:bg-muted"
+                  className="size-9 rounded-full border-border/70 bg-background text-muted-foreground shadow-none hover:bg-muted/40 hover:text-foreground"
                 />
               }
             >

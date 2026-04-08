@@ -295,24 +295,40 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.style.setProperty("--accent", mode.primary)
   root.style.setProperty("--radius", RADIUS_MAP[config.radius])
 
-  root.style.setProperty("--chart-1", mode.primary)
-  root.style.setProperty("--chart-2", mode.primaryForeground)
-  root.style.setProperty(
-    "--chart-3",
-    isDark
-      ? `color-mix(in oklch, ${mode.primary} 60%, white 40%)`
-      : `color-mix(in oklch, ${mode.primary} 40%, black 60%)`
-  )
-  root.style.setProperty(
-    "--chart-4",
-    isDark
-      ? `color-mix(in oklch, ${mode.primary} 80%, white 20%)`
-      : `color-mix(in oklch, ${mode.primary} 20%, black 80%)`
-  )
-  root.style.setProperty(
-    "--chart-5",
-    `color-mix(in oklch, ${mode.primary} 30%, ${mode.mutedForeground})`
-  )
+  if (config.accent === "mist") {
+    if (isDark) {
+      root.style.setProperty("--chart-1", "oklch(0.72 0.086 248)")
+      root.style.setProperty("--chart-2", "oklch(0.8 0.055 196)")
+      root.style.setProperty("--chart-3", "oklch(0.68 0.03 230)")
+      root.style.setProperty("--chart-4", "oklch(0.56 0.025 228)")
+      root.style.setProperty("--chart-5", "oklch(0.84 0.018 228)")
+    } else {
+      root.style.setProperty("--chart-1", "oklch(0.62 0.086 248)")
+      root.style.setProperty("--chart-2", "oklch(0.74 0.05 196)")
+      root.style.setProperty("--chart-3", "oklch(0.57 0.03 230)")
+      root.style.setProperty("--chart-4", "oklch(0.82 0.022 228)")
+      root.style.setProperty("--chart-5", "oklch(0.68 0.018 228)")
+    }
+  } else {
+    root.style.setProperty("--chart-1", mode.primary)
+    root.style.setProperty("--chart-2", mode.primaryForeground)
+    root.style.setProperty(
+      "--chart-3",
+      isDark
+        ? `color-mix(in oklch, ${mode.primary} 60%, white 40%)`
+        : `color-mix(in oklch, ${mode.primary} 40%, black 60%)`
+    )
+    root.style.setProperty(
+      "--chart-4",
+      isDark
+        ? `color-mix(in oklch, ${mode.primary} 80%, white 20%)`
+        : `color-mix(in oklch, ${mode.primary} 20%, black 80%)`
+    )
+    root.style.setProperty(
+      "--chart-5",
+      `color-mix(in oklch, ${mode.primary} 30%, ${mode.mutedForeground})`
+    )
+  }
 
   const font = config.font || "geist"
   root.style.setProperty("--font-sans", FONT_MAP[font].css)

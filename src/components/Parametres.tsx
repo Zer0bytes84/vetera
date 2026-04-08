@@ -46,7 +46,6 @@ import {
   listBackups,
   restoreBackup,
   exportDatabase,
-  importDatabase,
   importDatabaseFromFile,
   getLastBackupDate,
   deleteBackup,
@@ -85,6 +84,7 @@ import {
   DEFAULT_THEME,
   ACCENT_THEMES,
 } from "@/lib/theme-store"
+import { getSetting, setSetting } from "@/services/appSettingsService"
 
 type SettingsTab =
   | "profil"
@@ -363,6 +363,7 @@ const BackupSettings: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
   const importInputRef = useRef<HTMLInputElement | null>(null)
+  const [isAwaitingImportFile, setIsAwaitingImportFile] = useState(false)
   const [feedbackMessage, setFeedbackMessage] = useState<{
     type: "success" | "error"
     text: string
@@ -476,41 +477,9 @@ const BackupSettings: React.FC = () => {
     ) {
       return
     }
-    setIsImporting(true)
-    try {
-      let success = await importDatabase()
-      if (!success) {
-        importInputRef.current?.click()
-        return
-      }
-      if (success) {
-        setFeedbackMessage({
-          type: "success",
-          text: "✅ Base de données importée ! L'application va redémarrer...",
-        })
-        setTimeout(async () => {
-          try {
-            await exit(0)
-          } catch (e) {
-            console.error("[BackupSettings] Exit failed:", e)
-            window.close()
-          }
-        }, 2000)
-      } else {
-        setFeedbackMessage({
-          type: "error",
-          text: "❌ Échec de l'importation",
-        })
-      }
-    } catch (error) {
-      console.error("[BackupSettings] Error importing:", error)
-      setFeedbackMessage({
-        type: "error",
-        text: "❌ Erreur lors de l'importation",
-      })
-    } finally {
-      setIsImporting(false)
-    }
+    setFeedbackMessage(null)
+    setIsAwaitingImportFile(true)
+    importInputRef.current?.click()
   }
 
   const handleImportFileChange = async (
@@ -520,11 +489,13 @@ const BackupSettings: React.FC = () => {
     event.target.value = ""
 
     if (!file) {
+      setIsAwaitingImportFile(false)
       setIsImporting(false)
       return
     }
 
     setIsImporting(true)
+    setIsAwaitingImportFile(false)
     try {
       const success = await importDatabaseFromFile(file)
       if (success) {
@@ -684,7 +655,7 @@ const BackupSettings: React.FC = () => {
           variant="outline"
           className="h-auto justify-start gap-3 p-4"
           onClick={handleImport}
-          disabled={isImporting}
+          disabled={isImporting || isAwaitingImportFile}
         >
           <HugeiconsIcon
             icon={Upload01Icon}
@@ -694,7 +665,9 @@ const BackupSettings: React.FC = () => {
           <div className="text-left">
             <div className="font-medium text-foreground">Importer une base</div>
             <div className="text-xs text-muted-foreground">
-              Restaurer depuis un fichier
+              {isAwaitingImportFile
+                ? "Choisissez maintenant votre sauvegarde"
+                : "Restaurer depuis un fichier"}
             </div>
           </div>
         </Button>
@@ -892,6 +865,7 @@ const Parametres: React.FC<ParametresProps> = ({
   const [displayName, setDisplayName] = useState("")
   const [phone, setPhone] = useState("")
   const [bio, setBio] = useState("")
+  const [clinicName, setClinicName] = useState("")
   const [avatarUrl, setAvatarUrl] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{
@@ -906,14 +880,42 @@ const Parametres: React.FC<ParametresProps> = ({
   )
 
   useEffect(() => {
-    if (currentUser) {
-      setDisplayName(currentUser.displayName || "")
+    let cancelled = false
+
+    const loadProfileState = async () => {
+      if (currentUser) {
+        setDisplayName(currentUser.displayName || "")
+      }
+      if (userDoc) {
+        setPhone(userDoc.phone || "")
+        setAvatarUrl(sanitizeAvatarValue(userDoc.avatarUrl))
+      } else if (currentUser?.email === "zohir.kh@gmail.com") {
+        setDisplayName("Zouhir Kherroubi")
+      }
+
+      try {
+        const [savedBio, savedClinicName, savedCabinetName, savedPracticeName] =
+          await Promise.all([
+            getSetting("profile_bio"),
+            getSetting("clinic_name"),
+            getSetting("cabinet_name"),
+            getSetting("practice_name"),
+          ])
+
+        if (cancelled) return
+        setBio(savedBio || "")
+        setClinicName(
+          savedClinicName || savedCabinetName || savedPracticeName || ""
+        )
+      } catch (error) {
+        console.error("[SETTINGS] Error loading profile settings:", error)
+      }
     }
-    if (userDoc) {
-      setPhone(userDoc.phone || "")
-      setAvatarUrl(sanitizeAvatarValue(userDoc.avatarUrl))
-    } else if (currentUser?.email === "zohir.kh@gmail.com") {
-      setDisplayName("Zouhir Kherroubi")
+
+    loadProfileState()
+
+    return () => {
+      cancelled = true
     }
   }, [currentUser, userDoc])
 
@@ -983,6 +985,13 @@ const Parametres: React.FC<ParametresProps> = ({
         phone,
         avatarUrl: sanitizeAvatarValue(avatarUrl),
       })
+
+      await Promise.all([
+        setSetting("profile_bio", bio.trim()),
+        setSetting("clinic_name", clinicName.trim()),
+        setSetting("cabinet_name", clinicName.trim()),
+        setSetting("practice_name", clinicName.trim()),
+      ])
 
       writeCachedProfile(currentUser.email, {
         displayName,
@@ -1090,6 +1099,9 @@ const Parametres: React.FC<ParametresProps> = ({
                 <p className="text-sm text-muted-foreground">
                   {currentUser?.email}
                 </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {clinicName ? `🏥 ${clinicName}` : "🏥 Nom du cabinet à définir"}
+                </p>
                 <Badge variant="outline" className="mt-2">
                   {getRoleDisplay()}
                 </Badge>
@@ -1136,7 +1148,7 @@ const Parametres: React.FC<ParametresProps> = ({
             {/* Avatar Gallery */}
             <Card size="sm">
               <CardHeader>
-                <CardTitle>Photo de profil</CardTitle>
+                <CardTitle>Photo de profil ✨</CardTitle>
                 <CardDescription>
                   Choisissez un avatar ou uploadez votre propre photo
                 </CardDescription>
@@ -1298,6 +1310,7 @@ const Parametres: React.FC<ParametresProps> = ({
                             }
                             className={cn(
                               "flex h-9 w-9 items-center justify-center rounded-full border-2 bg-gradient-to-br text-xs font-bold text-white transition-all hover:scale-110",
+                              grad.gradient,
                               avatarUrl === `gradient:${grad.gradient}`
                                 ? "scale-110 border-foreground ring-2 ring-foreground/20 dark:border-white dark:ring-white/20"
                                 : "border-transparent"
@@ -1316,13 +1329,25 @@ const Parametres: React.FC<ParametresProps> = ({
             {/* Form Fields */}
             <Card size="sm">
               <CardHeader>
-                <CardTitle>Informations</CardTitle>
+                <CardTitle>Informations du praticien 🩺</CardTitle>
                 <CardDescription>
-                  Modifiez vos informations personnelles
+                  Modifiez votre identité et celle du cabinet
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field>
+                    <FieldLabel>Nom de la clinique / cabinet</FieldLabel>
+                    <Input
+                      type="text"
+                      value={clinicName}
+                      onChange={(e) => setClinicName(e.target.value)}
+                      placeholder="Ex: Clinique vétérinaire du Centre"
+                    />
+                    <FieldDescription>
+                      Ce nom apparaîtra dans l'en-tête des factures.
+                    </FieldDescription>
+                  </Field>
                   <Field>
                     <FieldLabel>Nom complet</FieldLabel>
                     <Input
@@ -1361,7 +1386,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   <Textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    placeholder="Quelques mots sur vous..."
+                    placeholder="Quelques mots sur vous, votre spécialité ou le ton du cabinet..."
                   />
                 </Field>
                 <div className="flex justify-end pt-2">

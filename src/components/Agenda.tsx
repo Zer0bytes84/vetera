@@ -2,7 +2,6 @@ import React, {
   useDeferredValue,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react"
 import { toast } from "sonner"
@@ -13,11 +12,13 @@ import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   Calendar01Icon,
+  CheckmarkCircle02Icon,
   MoreVerticalCircle01Icon,
   SearchIcon,
   StethoscopeIcon,
   UserCircle02Icon,
 } from "@hugeicons/core-free-icons"
+import { fr } from "date-fns/locale"
 
 import MotivationalHeader from "@/components/MotivationalHeader"
 import { SectionCards, type SectionCardItem } from "@/components/section-cards"
@@ -62,6 +63,12 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
@@ -229,6 +236,13 @@ function formatDateInput(value: Date) {
   return `${year}-${month}-${day}`
 }
 
+function parseDateInput(value?: string | null) {
+  if (!value) return null
+  const [year, month, day] = value.split("-").map(Number)
+  if (!year || !month || !day) return null
+  return new Date(year, month - 1, day, 12, 0, 0, 0)
+}
+
 function startOfDay(value: Date) {
   const next = new Date(value)
   next.setHours(0, 0, 0, 0)
@@ -248,6 +262,14 @@ function formatTime(value?: string | Date | null) {
   })
 }
 
+function formatTimeCompact(value?: string | Date | null) {
+  const date = normalizeDate(value)
+  if (!date) return "--h--"
+  const hours = `${date.getHours()}`.padStart(2, "0")
+  const minutes = `${date.getMinutes()}`.padStart(2, "0")
+  return `${hours}h${minutes}`
+}
+
 function formatDateLabel(
   value: Date,
   options: Intl.DateTimeFormatOptions = {
@@ -262,13 +284,11 @@ function formatDateLabel(
 function formatDateTimeLabel(value?: string | Date | null) {
   const date = normalizeDate(value)
   if (!date) return "Créneau non défini"
-  return date.toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "short",
+  return `${date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+  })} · ${formatTimeCompact(date)}`
 }
 
 function formatDuration(minutes: number) {
@@ -816,8 +836,6 @@ const Agenda: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState("all")
   const [tableTab, setTableTab] = useState<TableTab>("planning")
 
-  const dateInputRef = useRef<HTMLInputElement>(null)
-
   const {
     data: appointments,
     loading: loadingAppointments,
@@ -1050,7 +1068,7 @@ const Agenda: React.FC = () => {
       {
         title: "Prochain rendez-vous",
         value: nextAppointment
-          ? formatTime(nextAppointment.startTime)
+          ? formatTimeCompact(nextAppointment.startTime)
           : "--:--",
         badge: nextAppointment ? nextAppointment.type : "Libre",
         trend: nextAppointment ? "up" : "down",
@@ -1233,13 +1251,6 @@ const Agenda: React.FC = () => {
     if (viewMode === "month") next.setMonth(next.getMonth() + direction)
 
     setSelectedDate(next)
-  }
-
-  const triggerDatePicker = () => {
-    const input = dateInputRef.current
-    if (!input) return
-    if (typeof input.showPicker === "function") input.showPicker()
-    else input.focus()
   }
 
   const deleteAppointment = async (appointment: Appointment) => {
@@ -1519,25 +1530,29 @@ const Agenda: React.FC = () => {
                     </Button>
                   </div>
 
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={triggerDatePicker}
-                  >
-                    <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
-                    {periodLabel}
-                  </Button>
-
-                  <input
-                    ref={dateInputRef}
-                    type="date"
-                    value={formatDateInput(selectedDate)}
-                    onChange={(event) => {
-                      const next = normalizeDate(event.target.value)
-                      if (next) setSelectedDate(next)
-                    }}
-                    className="pointer-events-none absolute opacity-0"
-                  />
+                  <Popover>
+                    <PopoverTrigger
+                      render={<Button variant="outline" className="gap-2" />}
+                    >
+                      <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
+                      {periodLabel}
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      sideOffset={10}
+                      className="w-auto rounded-[1.75rem] p-2"
+                    >
+                      <Calendar
+                        mode="single"
+                        locale={fr}
+                        selected={selectedDate}
+                        onSelect={(date) => {
+                          if (date) setSelectedDate(date)
+                        }}
+                        className="rounded-[1.4rem]"
+                      />
+                    </PopoverContent>
+                  </Popover>
 
                   {isSameDay(selectedDate, new Date()) ? (
                     <Badge
@@ -1650,8 +1665,8 @@ const Agenda: React.FC = () => {
                         Créneau
                       </span>
                       <span className="text-right font-medium text-foreground">
-                        {formatTime(selectedAppointment.startTime)} -{" "}
-                        {formatTime(selectedAppointment.endTime)}
+                        {formatTimeCompact(selectedAppointment.startTime)} -{" "}
+                        {formatTimeCompact(selectedAppointment.endTime)}
                       </span>
                     </div>
                     <div className="flex items-start justify-between gap-3">
@@ -2199,7 +2214,7 @@ const Agenda: React.FC = () => {
                     onChange={(event) => handlePatientSelect(event.target.value)}
                     className="w-full"
                   >
-                    <NativeSelectOption value="">
+                    <NativeSelectOption value="" disabled>
                       {selectedOwnerId
                         ? "Sélectionner un dossier du client"
                         : "Sélectionner un dossier"}
@@ -2264,11 +2279,30 @@ const Agenda: React.FC = () => {
               <div className="grid gap-5 lg:grid-cols-[1fr_1fr_200px]">
                 <Field>
                   <FieldLabel>Date</FieldLabel>
-                  <Input
-                    type="date"
-                    value={formDate}
-                    onChange={(event) => setFormDate(event.target.value)}
-                  />
+                  <Popover>
+                    <PopoverTrigger
+                      render={<Button variant="outline" className="w-full justify-between" />}
+                    >
+                      <span>{formDate.split("-").reverse().join("/")}</span>
+                      <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      sideOffset={10}
+                      className="w-auto rounded-[1.75rem] p-2"
+                    >
+                      <Calendar
+                        mode="single"
+                        locale={fr}
+                        selected={parseDateInput(formDate) ?? new Date()}
+                        onSelect={(date) => {
+                          if (date) setFormDate(formatDateInput(date))
+                        }}
+                        className="rounded-[1.4rem]"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FieldDescription>Format français : JJ/MM/AAAA.</FieldDescription>
                 </Field>
 
                 <Field>
@@ -2278,6 +2312,9 @@ const Agenda: React.FC = () => {
                     value={formTime}
                     onChange={(event) => setFormTime(event.target.value)}
                   />
+                  <FieldDescription>
+                    Format 24h, par exemple 20:45.
+                  </FieldDescription>
                 </Field>
 
                 <Field>
@@ -2379,6 +2416,13 @@ const Agenda: React.FC = () => {
                 onClick={handleSave}
                 disabled={isSubmitting || !selectedPatientId}
               >
+                {!isSubmitting ? (
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle02Icon}
+                    strokeWidth={2}
+                    data-icon="inline-start"
+                  />
+                ) : null}
                 {isSubmitting ? <Spinner className="size-4" /> : null}
                 {editingAppointmentId ? "Enregistrer" : "Ajouter au planning"}
               </Button>

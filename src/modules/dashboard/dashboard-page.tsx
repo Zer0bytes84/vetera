@@ -1029,11 +1029,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           <MotivationalHeader
             section="dashboard"
             title=""
-            subtitle={
-              todayStats.total > 0
-                ? `${todayStats.total} consultation${todayStats.total > 1 ? "s" : ""} prévue${todayStats.total > 1 ? "s" : ""} aujourd'hui${todayStats.urgencies > 0 ? ` · ${todayStats.urgencies} urgence${todayStats.urgencies > 1 ? "s" : ""}` : ""}`
-                : "Aucune consultation aujourd'hui, la journée est calme."
-            }
+            subtitle=""
           />
         </div>
         <Tabs

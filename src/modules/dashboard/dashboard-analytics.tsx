@@ -6,16 +6,15 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Line,
   Pie,
   PieChart,
   XAxis,
   YAxis,
 } from "recharts"
 
-import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -23,10 +22,20 @@ import {
 } from "@/components/ui/card"
 import {
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
 type SeriesPoint = {
@@ -115,7 +124,7 @@ const customerConfig = {
 
 function MetricCardView({ metric }: { metric: MetricCard }) {
   return (
-    <div className="rounded-3xl border bg-muted/35 p-4">
+    <div className="rounded-2xl border bg-muted/25 p-4">
       <div className="text-sm font-medium text-muted-foreground">
         {metric.label}
       </div>
@@ -153,160 +162,176 @@ export function DashboardAnalytics({
 
   return (
     <div className="grid gap-6 px-4 lg:px-6">
-      <div className="grid gap-6 xl:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <Card>
+        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1">
             <CardTitle>Performance financière</CardTitle>
-            <div className="inline-flex rounded-md bg-muted p-1">
-              <Button
-                variant={financeView === "month" ? "secondary" : "ghost"}
-                size="sm"
-                className="rounded-md"
-                onClick={() => setFinanceView("month")}
-              >
-                Mois
-              </Button>
-              <Button
-                variant={financeView === "week" ? "secondary" : "ghost"}
-                size="sm"
-                className="rounded-md"
-                onClick={() => setFinanceView("week")}
-              >
-                Semaine
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="mb-4">
-              Encaissements et équilibre de trésorerie sur la période.
+            <CardDescription>
+              Encaissements, décaissements et solde net sur la période.
             </CardDescription>
-            <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-stretch">
-              <div className="space-y-4">
-                <MetricCardView metric={financeSeries.primary} />
-                <MetricCardView metric={financeSeries.secondary} />
-              </div>
-              <ChartContainer
-                config={financeConfig}
-                className="h-[320px] w-full"
-                initialDimension={{ width: 760, height: 320 }}
-              >
-                <BarChart data={financeData} barGap={12}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} width={32} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="revenue"
-                    fill="var(--color-revenue)"
-                    radius={[8, 8, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+          <Select value={financeView} onValueChange={(value) => setFinanceView(value as "month" | "week")}>
+            <SelectTrigger className="w-[132px] rounded-lg sm:ml-auto" size="sm">
+              <SelectValue>
+                {financeView === "month" ? "Mensuel" : "Hebdomadaire"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectGroup>
+                <SelectItem value="month">Mensuel</SelectItem>
+                <SelectItem value="week">Hebdomadaire</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent className="grid gap-5 px-6 py-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+          <div className="grid gap-4">
+            <MetricCardView metric={financeSeries.primary} />
+            <MetricCardView metric={financeSeries.secondary} />
+          </div>
+          <ChartContainer
+            config={financeConfig}
+            className="h-[340px] w-full"
+            initialDimension={{ width: 1080, height: 340 }}
+          >
+            <AreaChart data={financeData} margin={{ top: 12, right: 12, left: 8, bottom: 0 }}>
+              <defs>
+                <linearGradient id="finance-revenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--color-revenue)" stopOpacity={0.55} />
+                  <stop offset="95%" stopColor="var(--color-revenue)" stopOpacity={0.06} />
+                </linearGradient>
+                <linearGradient id="finance-expenses" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--color-expenses)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--color-expenses)" stopOpacity={0.04} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
+              <YAxis tickLine={false} axisLine={false} width={42} />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                type="natural"
+                dataKey="revenue"
+                stroke="var(--color-revenue)"
+                fill="url(#finance-revenue)"
+                strokeWidth={2.2}
+              />
+              <Area
+                type="natural"
+                dataKey="expenses"
+                stroke="var(--color-expenses)"
+                fill="url(#finance-expenses)"
+                strokeWidth={2}
+              />
+              <Line
+                type="natural"
+                dataKey="net"
+                stroke="var(--color-net)"
+                strokeWidth={2.2}
+                dot={false}
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+            </AreaChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <Card>
+        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1">
             <CardTitle>Flux patients</CardTitle>
-            <div className="inline-flex rounded-md bg-muted p-1">
-              <Button
-                variant={visitorsView === "month" ? "secondary" : "ghost"}
-                size="sm"
-                className="rounded-md"
-                onClick={() => setVisitorsView("month")}
-              >
-                Mois
-              </Button>
-              <Button
-                variant={visitorsView === "week" ? "secondary" : "ghost"}
-                size="sm"
-                className="rounded-md"
-                onClick={() => setVisitorsView("week")}
-              >
-                Semaine
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="mb-4">
-              Nouveaux dossiers et retours à la clinique au fil du temps.
+            <CardDescription>
+              Nouveaux dossiers et patients de retour dans le temps.
             </CardDescription>
-            <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-stretch">
-              <div className="space-y-4">
-                <MetricCardView metric={visitorsSeries.primary} />
-                <MetricCardView metric={visitorsSeries.secondary} />
-              </div>
-              <ChartContainer
-                config={visitorsConfig}
-                className="h-[320px] w-full"
-                initialDimension={{ width: 760, height: 320 }}
-              >
-                <AreaChart data={visitorsData}>
-                  <defs>
-                    <linearGradient
-                      id="visitors-new"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="5%"
-                        stopColor="var(--color-newPatients)"
-                        stopOpacity={0.28}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="var(--color-newPatients)"
-                        stopOpacity={0.02}
-                      />
-                    </linearGradient>
-                    <linearGradient
-                      id="visitors-returning"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="5%"
-                        stopColor="var(--color-returningPatients)"
-                        stopOpacity={0.24}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="var(--color-returningPatients)"
-                        stopOpacity={0.02}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} width={32} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Area
-                    type="monotone"
-                    dataKey="newPatients"
-                    stroke="var(--color-newPatients)"
-                    fill="url(#visitors-new)"
-                    strokeWidth={2}
+          </div>
+          <Select value={visitorsView} onValueChange={(value) => setVisitorsView(value as "month" | "week")}>
+            <SelectTrigger className="w-[132px] rounded-lg sm:ml-auto" size="sm">
+              <SelectValue>
+                {visitorsView === "month" ? "Mensuel" : "Hebdomadaire"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectGroup>
+                <SelectItem value="month">Mensuel</SelectItem>
+                <SelectItem value="week">Hebdomadaire</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent className="grid gap-5 px-6 py-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+          <div className="grid gap-4">
+            <MetricCardView metric={visitorsSeries.primary} />
+            <MetricCardView metric={visitorsSeries.secondary} />
+          </div>
+          <ChartContainer
+            config={visitorsConfig}
+            className="h-[340px] w-full"
+            initialDimension={{ width: 1080, height: 340 }}
+          >
+            <AreaChart data={visitorsData} margin={{ top: 12, right: 12, left: 8, bottom: 0 }}>
+              <defs>
+                <linearGradient
+                  id="visitors-new"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-newPatients)"
+                    stopOpacity={0.48}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="returningPatients"
-                    stroke="var(--color-returningPatients)"
-                    fill="url(#visitors-returning)"
-                    strokeWidth={2}
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-newPatients)"
+                    stopOpacity={0.05}
                   />
-                </AreaChart>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                </linearGradient>
+                <linearGradient
+                  id="visitors-returning"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-returningPatients)"
+                    stopOpacity={0.34}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-returningPatients)"
+                    stopOpacity={0.04}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
+              <YAxis tickLine={false} axisLine={false} width={42} />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                type="natural"
+                dataKey="newPatients"
+                stroke="var(--color-newPatients)"
+                fill="url(#visitors-new)"
+                strokeWidth={2.2}
+              />
+              <Area
+                type="natural"
+                dataKey="returningPatients"
+                stroke="var(--color-returningPatients)"
+                fill="url(#visitors-returning)"
+                strokeWidth={2.2}
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+            </AreaChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <Card>
           <CardHeader>
             <CardTitle>Répartition des actes</CardTitle>

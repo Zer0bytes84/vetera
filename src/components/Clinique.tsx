@@ -29,6 +29,7 @@ import {
   useOwnersRepository,
   usePatientsRepository,
 } from "@/data/repositories"
+import { getSetting } from "@/services/appSettingsService"
 import { cn } from "@/lib/utils"
 import type { View } from "@/types"
 import type { Appointment, Owner, Patient } from "@/types/db"
@@ -74,6 +75,10 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { Separator } from "@/components/ui/separator"
 import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select"
+import {
   Table,
   TableBody,
   TableCell,
@@ -102,6 +107,11 @@ type CliniqueMetricItem = {
   badge: string
   summary: string
   detail: string
+}
+
+type ConsultationDraftPayload = {
+  appointmentPatch: Partial<Appointment>
+  patientPatch: Partial<Patient>
 }
 
 const LIST_TABS: Array<{ value: ListTab; label: string }> = [
@@ -247,6 +257,17 @@ function formatShortDate(value?: string | Date | null) {
   })
 }
 
+function formatElapsedDuration(ms: number) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000))
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  return [hours, minutes, seconds]
+    .map((value) => String(value).padStart(2, "0"))
+    .join(":")
+}
+
 function getSpeciesIcon(_species?: string): IconSvgElement {
   return BirdIcon
 }
@@ -362,19 +383,21 @@ const generateInvoicePDF = async (data: {
   total: number
   id: string
   diagnosis?: string
+  clinicName?: string
 }) => {
   const doc = new jsPDF()
   const primaryColor = "#2563EB"
   const grayColor = "#52525B"
+  const clinicName = data.clinicName?.trim() || "Vetera"
 
   doc.setFontSize(22)
   doc.setTextColor(primaryColor)
-  doc.text("Vetera", 20, 20)
+  doc.text(clinicName, 20, 20)
 
   doc.setFontSize(10)
   doc.setTextColor(grayColor)
   doc.text("Clinique vétérinaire", 20, 26)
-  doc.text("Gestion locale du cabinet", 20, 31)
+  doc.text(`${clinicName} · Gestion locale du cabinet`, 20, 31)
   doc.text("Support interne", 20, 36)
 
   doc.setDrawColor(200, 200, 200)
@@ -461,7 +484,9 @@ const generateInvoicePDF = async (data: {
 
   doc.setFontSize(9)
   doc.setTextColor(150, 150, 150)
-  doc.text("Vetera · Système clinique local", 105, 290, { align: "center" })
+  doc.text(`${clinicName} · Système clinique local`, 105, 290, {
+    align: "center",
+  })
   doc.save(
     `Facture-${data.patientName}-${data.date.toISOString().split("T")[0]}.pdf`
   )
@@ -567,82 +592,366 @@ const generatePrescriptionPDF = (data: {
   )
 }
 
-function MedicalReportDialog({
+function ConsultationSessionDialog({
   appointment,
+  patient,
+  owner,
   patientName,
   onClose,
-  onConfirm,
+  onSaveDraft,
+  onComplete,
 }: {
   appointment: Appointment
+  patient: Patient
+  owner?: Owner
   patientName: string
   onClose: () => void
-  onConfirm: (diagnosis: string, treatment: string) => void
+  onSaveDraft: (payload: ConsultationDraftPayload) => Promise<void>
+  onComplete: (payload: ConsultationDraftPayload) => Promise<void>
 }) {
+  const [patientNameValue, setPatientNameValue] = useState(patient.name)
+  const [patientSpecies, setPatientSpecies] = useState(patient.species || "Chien")
+  const [patientBreed, setPatientBreed] = useState(patient.breed || "")
+  const [patientSex, setPatientSex] = useState<Patient["sex"]>(patient.sex || "M")
+  const [patientStatus, setPatientStatus] = useState<Patient["status"]>(
+    patient.status || "sante"
+  )
+  const [allergies, setAllergies] = useState(patient.allergies || "")
+  const [chronicConditions, setChronicConditions] = useState(
+    patient.chronicConditions || ""
+  )
+  const [generalNotes, setGeneralNotes] = useState(patient.generalNotes || "")
+  const [reason, setReason] = useState(appointment.reason || "")
   const [diagnosis, setDiagnosis] = useState(appointment.diagnosis || "")
   const [treatment, setTreatment] = useState(appointment.treatment || "")
+  const [consultationNotes, setConsultationNotes] = useState(
+    appointment.notes || ""
+  )
+  const [startedAt, setStartedAt] = useState(() => {
+    if (typeof window === "undefined") return new Date().toISOString()
+    const key = `vetera:consultation-start:${appointment.id}`
+    const existing = window.sessionStorage.getItem(key)
+    if (existing) return existing
+    const fallback = new Date().toISOString()
+    window.sessionStorage.setItem(key, fallback)
+    return fallback
+  })
+  const [elapsedMs, setElapsedMs] = useState(0)
+
+  useEffect(() => {
+    setPatientNameValue(patient.name)
+    setPatientSpecies(patient.species || "Chien")
+    setPatientBreed(patient.breed || "")
+    setPatientSex(patient.sex || "M")
+    setPatientStatus(patient.status || "sante")
+    setAllergies(patient.allergies || "")
+    setChronicConditions(patient.chronicConditions || "")
+    setGeneralNotes(patient.generalNotes || "")
+    setReason(appointment.reason || "")
+    setDiagnosis(appointment.diagnosis || "")
+    setTreatment(appointment.treatment || "")
+    setConsultationNotes(appointment.notes || "")
+  }, [appointment, patient])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const key = `vetera:consultation-start:${appointment.id}`
+    const existing = window.sessionStorage.getItem(key)
+    if (existing) {
+      setStartedAt(existing)
+      return
+    }
+    const now = new Date().toISOString()
+    window.sessionStorage.setItem(key, now)
+    setStartedAt(now)
+  }, [appointment.id])
+
+  useEffect(() => {
+    const start = new Date(startedAt).getTime()
+    if (Number.isNaN(start)) return
+
+    const updateElapsed = () => {
+      setElapsedMs(Date.now() - start)
+    }
+
+    updateElapsed()
+    const timer = window.setInterval(updateElapsed, 1000)
+    return () => window.clearInterval(timer)
+  }, [startedAt])
+
+  const buildPayload = (): ConsultationDraftPayload => ({
+    appointmentPatch: {
+      status: "in_progress",
+      reason: reason.trim(),
+      diagnosis: diagnosis.trim(),
+      treatment: treatment.trim(),
+      notes: consultationNotes.trim(),
+    },
+    patientPatch: {
+      name: patientNameValue.trim() || patient.name,
+      species: patientSpecies,
+      breed: patientBreed.trim(),
+      sex: patientSex,
+      status: patientStatus,
+      allergies: allergies.trim(),
+      chronicConditions: chronicConditions.trim(),
+      generalNotes: generalNotes.trim(),
+    },
+  })
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-[min(860px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(860px,calc(100%-2rem))]">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-[min(1180px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
         <DialogHeader className="border-b px-6 py-5">
-          <DialogTitle className="text-xl tracking-[-0.04em]">
-            Rapport de consultation
-          </DialogTitle>
-          <DialogDescription>
-            Clôturez la consultation avec un diagnostic clair et le traitement
-            prescrit avant l’encaissement.
-          </DialogDescription>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-1.5">
+              <DialogTitle className="text-xl tracking-[-0.04em]">
+                Consultation active
+              </DialogTitle>
+              <DialogDescription>
+                Gardez cette fiche ouverte pendant l’examen pour documenter le
+                dossier en temps réel puis clôturer la consultation.
+              </DialogDescription>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" className="bg-background/90">
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  strokeWidth={2}
+                  className="mr-1 size-3.5"
+                />
+                {formatElapsedDuration(elapsedMs)}
+              </Badge>
+              <AppointmentStatusBadge
+                status="in_progress"
+                className="min-w-[92px] bg-blue-500/12 px-3 text-sm font-semibold text-blue-700 dark:bg-blue-500/18 dark:text-blue-200"
+              />
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="min-h-0 overflow-y-auto p-6">
-          <FieldGroup className="grid gap-6">
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)]">
+            <div className="grid gap-6">
+              <Card size="sm">
+                <CardHeader>
+                  <CardTitle className="text-base">Résumé du créneau</CardTitle>
+                  <CardDescription>
+                    {patientName} · {appointment.type} ·{" "}
+                    {formatTime(appointment.startTime)}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                    <p className="text-sm text-muted-foreground">Patient</p>
+                    <p className="mt-1 font-medium text-foreground">
+                      {patient.name}
+                    </p>
+                  </div>
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                    <p className="text-sm text-muted-foreground">Propriétaire</p>
+                    <p className="mt-1 font-medium text-foreground">
+                      {formatOwnerName(owner)}
+                    </p>
+                  </div>
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                    <p className="text-sm text-muted-foreground">Heure de début</p>
+                    <p className="mt-1 font-medium text-foreground">
+                      {formatTime(startedAt)}
+                    </p>
+                  </div>
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                    <p className="text-sm text-muted-foreground">Téléphone</p>
+                    <p className="mt-1 font-medium text-foreground">
+                      {owner?.phone || "Non renseigné"}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card size="sm">
+                <CardHeader>
+                  <CardTitle className="text-base">Mise à jour du patient</CardTitle>
+                  <CardDescription>
+                    Ajustez les informations utiles pendant l’examen.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FieldGroup className="grid gap-4 sm:grid-cols-2">
+                    <Field>
+                      <FieldLabel>Nom du patient</FieldLabel>
+                      <Input
+                        value={patientNameValue}
+                        onChange={(event) =>
+                          setPatientNameValue(event.target.value)
+                        }
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Espèce</FieldLabel>
+                      <Input
+                        value={patientSpecies}
+                        onChange={(event) =>
+                          setPatientSpecies(event.target.value)
+                        }
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Race</FieldLabel>
+                      <Input
+                        value={patientBreed}
+                        onChange={(event) =>
+                          setPatientBreed(event.target.value)
+                        }
+                        placeholder="Race ou profil"
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Sexe</FieldLabel>
+                      <NativeSelect
+                        value={patientSex}
+                        onChange={(event) =>
+                          setPatientSex(event.target.value as Patient["sex"])
+                        }
+                        className="w-full"
+                      >
+                        <NativeSelectOption value="M">Mâle</NativeSelectOption>
+                        <NativeSelectOption value="F">Femelle</NativeSelectOption>
+                      </NativeSelect>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Statut clinique</FieldLabel>
+                      <NativeSelect
+                        value={patientStatus}
+                        onChange={(event) =>
+                          setPatientStatus(
+                            event.target.value as Patient["status"]
+                          )
+                        }
+                        className="w-full"
+                      >
+                        <NativeSelectOption value="sante">
+                          En bonne santé
+                        </NativeSelectOption>
+                        <NativeSelectOption value="traitement">
+                          En traitement
+                        </NativeSelectOption>
+                        <NativeSelectOption value="hospitalise">
+                          Hospitalisé
+                        </NativeSelectOption>
+                        <NativeSelectOption value="decede">
+                          Décédé
+                        </NativeSelectOption>
+                      </NativeSelect>
+                    </Field>
+                    <Field className="sm:col-span-2">
+                      <FieldLabel>Allergies</FieldLabel>
+                      <Input
+                        value={allergies}
+                        onChange={(event) => setAllergies(event.target.value)}
+                        placeholder="Aucune allergie connue, pénicilline, etc."
+                      />
+                    </Field>
+                    <Field className="sm:col-span-2">
+                      <FieldLabel>Affections chroniques</FieldLabel>
+                      <Textarea
+                        value={chronicConditions}
+                        onChange={(event) =>
+                          setChronicConditions(event.target.value)
+                        }
+                        placeholder="Arthrose, insuffisance rénale, diabète..."
+                        className="min-h-24"
+                      />
+                    </Field>
+                    <Field className="sm:col-span-2">
+                      <FieldLabel>Notes générales du patient</FieldLabel>
+                      <Textarea
+                        value={generalNotes}
+                        onChange={(event) =>
+                          setGeneralNotes(event.target.value)
+                        }
+                        placeholder="Comportement, sensibilité, consignes particulières..."
+                        className="min-h-28"
+                      />
+                    </Field>
+                  </FieldGroup>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card size="sm">
               <CardHeader>
-                <CardTitle className="text-base">Résumé du créneau</CardTitle>
+                <CardTitle className="text-base">Conduite de consultation</CardTitle>
                 <CardDescription>
-                  {patientName} · {appointment.type} ·{" "}
-                  {formatTime(appointment.startTime)}
+                  Notez le motif, l’examen, le diagnostic et le traitement au fil de l’eau.
                 </CardDescription>
               </CardHeader>
+              <CardContent>
+                <FieldGroup className="grid gap-5">
+                  <Field>
+                    <FieldLabel>Motif</FieldLabel>
+                    <Textarea
+                      value={reason}
+                      onChange={(event) => setReason(event.target.value)}
+                      placeholder="Motif de visite, contexte, symptômes observés..."
+                      className="min-h-24"
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Notes en temps réel</FieldLabel>
+                    <Textarea
+                      value={consultationNotes}
+                      onChange={(event) =>
+                        setConsultationNotes(event.target.value)
+                      }
+                      placeholder="Constantes, examen clinique, réactions du patient, points à surveiller..."
+                      className="min-h-40"
+                    />
+                    <FieldDescription>
+                      Gardez cette zone ouverte pendant la consultation pour saisir vos observations.
+                    </FieldDescription>
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Diagnostic</FieldLabel>
+                    <Textarea
+                      value={diagnosis}
+                      onChange={(event) => setDiagnosis(event.target.value)}
+                      placeholder="Ex: gastro-entérite aiguë, syndrome respiratoire, contrôle post-opératoire..."
+                      className="min-h-28"
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Traitement prescrit</FieldLabel>
+                    <Textarea
+                      value={treatment}
+                      onChange={(event) => setTreatment(event.target.value)}
+                      placeholder="Ex: injection anti-vomitive, antibiothérapie 5 jours, alimentation fractionnée..."
+                      className="min-h-32"
+                    />
+                  </Field>
+                </FieldGroup>
+              </CardContent>
             </Card>
-
-            <Field>
-              <FieldLabel>Diagnostic</FieldLabel>
-              <Textarea
-                value={diagnosis}
-                onChange={(event) => setDiagnosis(event.target.value)}
-                placeholder="Ex: gastro-entérite aiguë, syndrome respiratoire, contrôle post-opératoire..."
-                className="min-h-28"
-              />
-              <FieldDescription>
-                Ce texte sera visible dans l’historique clinique et sur la
-                facture interne.
-              </FieldDescription>
-            </Field>
-
-            <Field>
-              <FieldLabel>Traitement prescrit</FieldLabel>
-              <Textarea
-                value={treatment}
-                onChange={(event) => setTreatment(event.target.value)}
-                placeholder="Ex: injection anti-vomitive, alimentation fractionnée, antibiothérapie 5 jours..."
-                className="min-h-32"
-              />
-            </Field>
-          </FieldGroup>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 border-t px-6 py-4 sm:flex-row sm:justify-end">
           <Button variant="outline" onClick={onClose}>
-            Retour
+            Fermer
           </Button>
-          <Button onClick={() => onConfirm(diagnosis, treatment)}>
+          <Button variant="outline" onClick={() => void onSaveDraft(buildPayload())}>
+            Sauvegarder
+          </Button>
+          <Button onClick={() => void onComplete(buildPayload())}>
             <HugeiconsIcon
               icon={Dollar01Icon}
               strokeWidth={2}
               data-icon="inline-start"
             />
-            Valider et facturer
+            Clôturer et facturer
           </Button>
         </div>
       </DialogContent>
@@ -692,6 +1001,31 @@ function BillingDialog({
 
   const removeItem = (index: number) => {
     setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))
+  }
+
+  const updateItem = (
+    index: number,
+    field: keyof BillingItem,
+    value: string | number
+  ) => {
+    setItems((current) =>
+      current.map((item, itemIndex) => {
+        if (itemIndex !== index) return item
+
+        if (field === "amount") {
+          const amount = Number(value)
+          return {
+            ...item,
+            amount: Number.isFinite(amount) && amount >= 0 ? amount : 0,
+          }
+        }
+
+        return {
+          ...item,
+          [field]: String(value),
+        }
+      })
+    )
   }
 
   const handleSendEmail = () => {
@@ -778,10 +1112,31 @@ function BillingDialog({
                 <TableBody>
                   {items.map((item, index) => (
                     <TableRow key={`${item.desc}-${index}`}>
-                      <TableCell className="pl-8 font-medium">
-                        {item.desc}
+                      <TableCell className="pl-8">
+                        <Input
+                          value={item.desc}
+                          onChange={(event) =>
+                            updateItem(index, "desc", event.target.value)
+                          }
+                          className="h-9 border-transparent bg-transparent px-0 font-medium shadow-none focus-visible:border-input focus-visible:bg-background"
+                        />
                       </TableCell>
-                      <TableCell>{item.amount} DA</TableCell>
+                      <TableCell className="w-[180px]">
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            value={String(item.amount)}
+                            onChange={(event) =>
+                              updateItem(index, "amount", event.target.value)
+                            }
+                            className="h-9"
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            DA
+                          </span>
+                        </div>
+                      </TableCell>
                       <TableCell className="pr-8 text-right">
                         <Button
                           variant="ghost"
@@ -848,7 +1203,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null)
-  const [medicalAppointment, setMedicalAppointment] =
+  const [activeConsultation, setActiveConsultation] =
     useState<Appointment | null>(null)
   const [billingAppointment, setBillingAppointment] =
     useState<Appointment | null>(null)
@@ -1031,12 +1386,15 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     try {
       if (appointment.status === "scheduled") {
         await updateAppointment(appointment.id, { status: "in_progress" })
+        const openedAppointment = { ...appointment, status: "in_progress" as const }
+        setActiveConsultation(openedAppointment)
+        setSelectedAppointmentId(appointment.id)
         toast.success("La consultation a été démarrée.")
         return
       }
 
       if (appointment.status === "in_progress") {
-        setMedicalAppointment(appointment)
+        setActiveConsultation(appointment)
       }
     } catch (error) {
       console.error(error)
@@ -1044,27 +1402,62 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     }
   }
 
-  const handleMedicalConfirm = async (diagnosis: string, treatment: string) => {
-    if (!medicalAppointment) return
+  const handleConsultationSaveDraft = async (
+    payload: ConsultationDraftPayload
+  ) => {
+    if (!activeConsultation) return
 
     try {
-      await updateAppointment(medicalAppointment.id, { diagnosis, treatment })
-      await updatePatient(medicalAppointment.patientId, {
-        lastVisit: new Date().toISOString(),
-      } as Partial<Patient>)
+      await updateAppointment(activeConsultation.id, payload.appointmentPatch)
+      await updatePatient(activeConsultation.patientId, payload.patientPatch)
 
-      const updatedAppointment = {
-        ...medicalAppointment,
-        diagnosis,
-        treatment,
-      }
+      setActiveConsultation((current) =>
+        current
+          ? {
+              ...current,
+              ...payload.appointmentPatch,
+            }
+          : current
+      )
 
-      setMedicalAppointment(null)
-      setBillingAppointment(updatedAppointment)
-      toast.success("Le rapport médical est enregistré.")
+      toast.success("Consultation mise à jour.")
     } catch (error) {
       console.error(error)
-      toast.error("Impossible d’enregistrer le rapport médical.")
+      toast.error("Impossible d’enregistrer la consultation.")
+    }
+  }
+
+  const handleConsultationComplete = async (
+    payload: ConsultationDraftPayload
+  ) => {
+    if (!activeConsultation) return
+
+    try {
+      const patientPatch: Partial<Patient> = {
+        ...payload.patientPatch,
+        lastVisit: new Date().toISOString(),
+      }
+
+      await updateAppointment(activeConsultation.id, payload.appointmentPatch)
+      await updatePatient(activeConsultation.patientId, patientPatch)
+
+      if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem(
+          `vetera:consultation-start:${activeConsultation.id}`
+        )
+      }
+
+      const updatedAppointment: Appointment = {
+        ...activeConsultation,
+        ...payload.appointmentPatch,
+      }
+
+      setActiveConsultation(null)
+      setBillingAppointment(updatedAppointment)
+      toast.success("Consultation clôturée. Passez à la facturation.")
+    } catch (error) {
+      console.error(error)
+      toast.error("Impossible de clôturer la consultation.")
     }
   }
 
@@ -1082,6 +1475,12 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         method: "cash",
       })
 
+      const clinicName =
+        (await getSetting("clinic_name")) ||
+        (await getSetting("cabinet_name")) ||
+        (await getSetting("practice_name")) ||
+        "Vetera"
+
       await generateInvoicePDF({
         patientName: patient?.name || "Patient local",
         ownerName: formatOwnerName(owner),
@@ -1090,9 +1489,15 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         total: totalAmountDa,
         id: `FACT-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
         diagnosis: billingAppointment.diagnosis,
+        clinicName,
       })
 
       setBillingAppointment(null)
+      if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem(
+          `vetera:consultation-start:${billingAppointment.id}`
+        )
+      }
       toast.success("Facturation finalisée et reçu généré.")
     } catch (error) {
       console.error(error)
@@ -1143,6 +1548,12 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
 
   const visibleCount = filteredAppointments.length
   const SelectedSpeciesIcon = getSpeciesIcon(selectedPatient?.species)
+  const activeConsultationPatient = activeConsultation
+    ? patientsById.get(activeConsultation.patientId)
+    : undefined
+  const activeConsultationOwner = activeConsultation
+    ? getOwner(activeConsultation)
+    : undefined
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
@@ -1179,11 +1590,11 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
               ) : selectedAppointment.status === "in_progress" ? (
                 <>
                   <HugeiconsIcon
-                    icon={CheckmarkCircle02Icon}
+                    icon={StethoscopeIcon}
                     strokeWidth={2}
                     data-icon="inline-start"
                   />
-                  Clôturer
+                  Reprendre
                 </>
               ) : (
                 <>
@@ -1421,11 +1832,11 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                                     }
                                   >
                                     <HugeiconsIcon
-                                      icon={CheckmarkCircle02Icon}
+                                      icon={StethoscopeIcon}
                                       strokeWidth={2}
                                       data-icon="inline-start"
                                     />
-                                    <span>Clôturer</span>
+                                    <span>Ouvrir</span>
                                   </Button>
                                 ) : (
                                   <Button
@@ -1818,15 +2229,18 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         </Card>
       </div>
 
-      {medicalAppointment ? (
-        <MedicalReportDialog
-          appointment={medicalAppointment}
+      {activeConsultation && activeConsultationPatient ? (
+        <ConsultationSessionDialog
+          appointment={activeConsultation}
+          patient={activeConsultationPatient}
+          owner={activeConsultationOwner}
           patientName={
-            patientsById.get(medicalAppointment.patientId)?.name ||
+            patientsById.get(activeConsultation.patientId)?.name ||
             "Patient local"
           }
-          onClose={() => setMedicalAppointment(null)}
-          onConfirm={handleMedicalConfirm}
+          onClose={() => setActiveConsultation(null)}
+          onSaveDraft={handleConsultationSaveDraft}
+          onComplete={handleConsultationComplete}
         />
       ) : null}
 

@@ -27,7 +27,7 @@ type RevenuePoint = {
 const chartConfig = {
   revenue: {
     label: "Revenus",
-    color: "var(--primary)",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
