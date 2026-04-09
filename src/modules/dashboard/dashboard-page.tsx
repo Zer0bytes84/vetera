@@ -1076,16 +1076,33 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
   return (
     <div className="@container/main relative isolate flex flex-1 flex-col gap-6 py-6">
-      {/* Decorative Ambient Mesh Gradient Background */}
+      {/* Decorative Tailwind UI Background (Balanced) */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        {/* Top left primary glow */}
-        <div className="absolute -left-[10%] -top-[10%] h-[50vh] w-[50vw] animate-pulse rounded-full bg-[var(--chart-1)]/15 blur-[120px] mix-blend-multiply duration-[10000ms] ease-in-out dark:bg-[var(--chart-1)]/20 dark:mix-blend-screen" />
+        <div
+          aria-hidden="true"
+          className="absolute -top-32 right-0 transform-gpu blur-[80px] sm:-top-40"
+        >
+          <div
+            style={{
+              clipPath:
+                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+            }}
+            className="relative right-0 aspect-[1155/678] w-[24rem] translate-x-1/4 rotate-[30deg] mix-blend-multiply bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:w-[48rem] sm:translate-x-1/3 dark:mix-blend-screen dark:opacity-[0.12]"
+          />
+        </div>
         
-        {/* Middle right secondary glow */}
-        <div className="absolute -right-[10%] top-[25%] h-[45vh] w-[45vw] rounded-full bg-[var(--chart-2)]/10 blur-[100px] mix-blend-multiply dark:bg-[var(--chart-2)]/15 dark:mix-blend-screen" />
-        
-        {/* Bottom center deep glow */}
-        <div className="absolute -bottom-[20%] left-[15%] h-[60vh] w-[60vw] rounded-full bg-[var(--chart-3)]/10 blur-[140px] mix-blend-multiply dark:bg-[var(--chart-3)]/15 dark:mix-blend-screen" />
+        <div
+          aria-hidden="true"
+          className="absolute top-[30%] right-0 transform-gpu blur-[80px]"
+        >
+          <div
+            style={{
+              clipPath:
+                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+            }}
+            className="relative right-0 aspect-[1155/678] w-[24rem] translate-x-1/4 mix-blend-multiply bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:w-[48rem] sm:translate-x-1/3 dark:mix-blend-screen dark:opacity-[0.12]"
+          />
+        </div>
       </div>
 
       <Tabs

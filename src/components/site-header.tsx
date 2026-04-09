@@ -77,16 +77,18 @@ export function SiteHeader({
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3 pr-4 sm:pr-6 lg:pr-8">
           <Button
             type="button"
             variant="outline"
-            className="hidden items-center gap-2 text-muted-foreground md:flex"
+            className="hidden h-10 w-full max-w-[280px] lg:max-w-[400px] items-center justify-between rounded-full bg-muted/30 hover:bg-muted/60 px-4 text-sm text-muted-foreground transition-all md:flex border-border/40 shadow-sm backdrop-blur-md"
             onClick={onOpenPalette}
           >
-            <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
-            <span className="text-sm">Rechercher...</span>
-            <Kbd className="ml-2">K</Kbd>
+            <div className="flex items-center gap-2">
+              <HugeiconsIcon icon={SearchIcon} strokeWidth={2} className="size-4.5" />
+              <span>Rechercher ou demander à l'IA...</span>
+            </div>
+            <Kbd className="ml-2 border-none bg-background/40 shadow-none">⌘ K</Kbd>
           </Button>
           <Button
             variant="outline"

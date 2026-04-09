@@ -21,7 +21,7 @@ function Command({
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "flex size-full flex-col overflow-hidden rounded-4xl bg-popover p-1 text-popover-foreground",
+        "flex size-full flex-col overflow-hidden rounded-3xl bg-transparent text-popover-foreground",
         className
       )}
       {...props}
@@ -51,7 +51,7 @@ function CommandDialog({
       </DialogHeader>
       <DialogContent
         className={cn(
-          "top-1/3 translate-y-0 overflow-hidden rounded-4xl! p-0",
+          "top-[20%] translate-y-0 overflow-hidden rounded-3xl! p-0 sm:max-w-[700px] border border-border/40 bg-background/70 backdrop-blur-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] dark:bg-background/40 dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] !duration-300",
           className
         )}
         showCloseButton={showCloseButton}
@@ -67,24 +67,20 @@ function CommandInput({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
-    <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="h-9 bg-input/50">
-        <CommandPrimitive.Input
-          data-slot="command-input"
-          className={cn(
-            "w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
-            className
-          )}
-          {...props}
-        />
-        <InputGroupAddon>
-          <HugeiconsIcon
-            icon={SearchIcon}
-            strokeWidth={2}
-            className="size-4 shrink-0 opacity-50"
-          />
-        </InputGroupAddon>
-      </InputGroup>
+    <div data-slot="command-input-wrapper" className="flex items-center gap-3 px-4 py-4 border-b border-border/40">
+      <HugeiconsIcon
+        icon={SearchIcon}
+        strokeWidth={2}
+        className="size-6 shrink-0 opacity-40 ml-1"
+      />
+      <CommandPrimitive.Input
+        data-slot="command-input"
+        className={cn(
+          "flex w-full rounded-md bg-transparent text-lg outline-hidden placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 font-medium tracking-tight",
+          className
+        )}
+        {...props}
+      />
     </div>
   )
 }
@@ -126,7 +122,7 @@ function CommandGroup({
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        "overflow-hidden p-1.5 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-2 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
+        "overflow-hidden p-2 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-2.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:text-muted-foreground/70 **:[[cmdk-group-heading]]:tracking-wider **:[[cmdk-group-heading]]:uppercase",
         className
       )}
       {...props}
@@ -141,7 +137,7 @@ function CommandSeparator({
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
-      className={cn("my-1.5 h-px bg-border/50", className)}
+      className={cn("my-1.5 h-px bg-border/40", className)}
       {...props}
     />
   )
@@ -156,7 +152,7 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "group/command-item relative flex cursor-default items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium outline-hidden select-none in-data-[slot=dialog-content]:rounded-3xl data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-selected:*:[svg]:text-foreground",
+        "group/command-item relative flex cursor-default outline-none items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-medium select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 transition-colors data-[selected=true]:bg-primary/10 data-[selected=true]:text-primary dark:data-[selected=true]:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-[selected=true]:*:[svg]:text-primary",
         className
       )}
       {...props}
