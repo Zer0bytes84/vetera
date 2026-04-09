@@ -14,7 +14,7 @@ export type SectionCardItem = {
   title: string
   value: string
   badge?: string
-  trend?: "up" | "down"
+  trend?: "up" | "down" | "neutral"
   summary?: string
   detail?: string
   icon?: IconSvgElement
@@ -35,7 +35,8 @@ export function SectionCards({
       )}
     >
       {items.map((item) => {
-        const trendIcon = item.trend === "down" ? ArrowDown01Icon : ArrowUp01Icon
+        const trendIcon =
+          item.trend === "down" ? ArrowDown01Icon : ArrowUp01Icon
 
         return (
           <Card key={item.title} size="sm">
@@ -64,14 +65,18 @@ export function SectionCards({
                       item.trend === "up" &&
                         "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400",
                       item.trend === "down" &&
-                        "bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:text-rose-400"
+                        "bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:text-rose-400",
+                      item.trend === "neutral" &&
+                        "bg-muted text-muted-foreground hover:bg-muted"
                     )}
                   >
-                    <HugeiconsIcon
-                      icon={trendIcon}
-                      strokeWidth={2}
-                      className="mr-0.5 size-3"
-                    />
+                    {item.trend !== "neutral" && (
+                      <HugeiconsIcon
+                        icon={trendIcon}
+                        strokeWidth={2}
+                        className="mr-0.5 size-3"
+                      />
+                    )}
                     {item.badge}
                   </Badge>
                 )}

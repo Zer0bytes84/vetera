@@ -7,19 +7,21 @@ interface LogoProps {
   className?: string
   collapsed?: boolean
   isDarkMode?: boolean
-  size?: "sm" | "md" | "lg"
+  size?: "sm" | "md" | "lg" | "xl"
 }
 
 const SIZE_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
   sm: "!size-7.5",
   md: "!size-8",
   lg: "!size-11",
+  xl: "!size-14",
 }
 
 const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
   sm: "text-[1.0625rem]",
   md: "text-[1.125rem]",
   lg: "text-[1.5rem]",
+  xl: "text-[1.875rem]",
 }
 
 function VeteraMark({ iconClassName }: { iconClassName: string }) {

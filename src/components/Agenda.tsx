@@ -1045,7 +1045,7 @@ const Agenda: React.FC = () => {
         title: "Créneaux du jour",
         value: String(dailyAppointments.length),
         badge: `${deltaPrefix}${delta}`,
-        trend: delta >= 0 ? "up" : "down",
+        trend: delta === 0 ? "neutral" : delta > 0 ? "up" : "down",
         summary: `${dailyAppointments.filter((item) => item.status === "completed").length} consultation${dailyAppointments.filter((item) => item.status === "completed").length > 1 ? "s" : ""} clôturée${dailyAppointments.filter((item) => item.status === "completed").length > 1 ? "s" : ""}`,
         detail: "Comparaison avec la veille clinique",
       },
@@ -1053,7 +1053,7 @@ const Agenda: React.FC = () => {
         title: "Urgences ouvertes",
         value: String(urgentOpenCount),
         badge: `${urgentOpenCount} alerte${urgentOpenCount > 1 ? "s" : ""}`,
-        trend: urgentOpenCount === 0 ? "up" : "down",
+        trend: urgentOpenCount === 0 ? "neutral" : "down",
         summary: "Cas à surveiller en priorité",
         detail: "Toujours visibles dans l’onglet attention",
       },
@@ -1061,7 +1061,12 @@ const Agenda: React.FC = () => {
         title: "Temps planifié",
         value: formatDuration(totalPlannedMinutes),
         badge: `${Number.isFinite(occupancy) ? occupancy : 0}%`,
-        trend: occupancy >= 65 ? "up" : "down",
+        trend:
+          totalPlannedMinutes === 0
+            ? "neutral"
+            : occupancy >= 65
+              ? "up"
+              : "down",
         summary: `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""}`,
         detail: "Charge répartie sur la journée sélectionnée",
       },
@@ -1071,7 +1076,7 @@ const Agenda: React.FC = () => {
           ? formatTimeCompact(nextAppointment.startTime)
           : "--:--",
         badge: nextAppointment ? nextAppointment.type : "Libre",
-        trend: nextAppointment ? "up" : "down",
+        trend: nextAppointment ? "up" : "neutral",
         summary: nextAppointment
           ? patientsById.get(nextAppointment.patientId)?.name ||
             nextAppointment.title

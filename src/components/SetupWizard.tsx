@@ -92,228 +92,116 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   }
 
   return (
-    <div className="flex min-h-screen w-full">
-      {/* Left panel — Branding */}
-      <div className="relative hidden w-1/2 flex-col justify-between bg-gradient-to-br from-primary to-primary/80 p-10 text-primary-foreground lg:flex">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div>
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background p-6">
+      {/* Ambient Mesh Gradient Background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        {/* Top left primary glow */}
+        <div className="absolute -left-[10%] -top-[10%] h-[50vh] w-[50vw] animate-pulse rounded-full bg-[var(--chart-1)]/20 blur-[120px] mix-blend-multiply duration-[10000ms] dark:bg-[var(--chart-1)]/15 dark:mix-blend-screen" />
+        {/* Middle right secondary glow */}
+        <div className="absolute -right-[10%] top-[20%] h-[60vh] w-[45vw] rounded-full bg-[var(--chart-2)]/15 blur-[120px] mix-blend-multiply dark:bg-[var(--chart-2)]/10 dark:mix-blend-screen" />
+        {/* Bottom center deep glow */}
+        <div className="absolute -bottom-[20%] left-[20%] h-[50vh] w-[60vw] rounded-full bg-[var(--chart-3)]/15 blur-[140px] mix-blend-multiply dark:bg-[var(--chart-3)]/10 dark:mix-blend-screen" />
+      </div>
 
-        {/* Top */}
-        <div className="relative z-10 space-y-2">
-          <Logo size="lg" className="text-primary-foreground" />
-          <p className="pl-14 text-sm text-primary-foreground/70">
-            {APP_TAGLINE}
+      <div className="relative z-10 flex w-full max-w-md flex-col items-center">
+        {/* Floating Branding Header */}
+        <div className="mb-10 flex flex-col items-center text-center">
+          <Logo size="xl" className="mb-6 drop-shadow-md" />
+          <h1 className="font-heading text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+            {step === 1 ? "Activation de Vetera" : "Bienvenue, Docteur."}
+          </h1>
+          <p className="mt-3 text-sm tracking-wide text-muted-foreground/80 sm:text-base">
+            {step === 1
+              ? "Préparez-vous à transformer votre pratique."
+              : "Configuration de votre espace de travail."}
           </p>
         </div>
 
-        {/* Center */}
-        <div className="relative z-10 space-y-6">
-          <div className="space-y-3">
-            <h1 className="text-3xl font-bold tracking-tight">
-              {step === 1 ? "Activation de la licence" : "Création du compte"}
-            </h1>
-            <p className="max-w-md text-lg text-primary-foreground/80">
-              {step === 1
-                ? "Activez votre licence pour débloquer toutes les fonctionnalités de Vetera."
-                : "Configurez votre compte administrateur pour commencer à utiliser l'application."}
-            </p>
-          </div>
+        {/* Glassmorphic Form Card */}
+        <div className="w-full relative overflow-hidden rounded-[2rem] border border-white/20 bg-white/40 p-8 shadow-[0_8px_32px_rgba(0,0,0,0.04)] backdrop-blur-2xl dark:border-white/5 dark:bg-black/20 dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] sm:p-10">
+          
+          {/* Subtle inner light reflection */}
+          <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-white/50 to-transparent dark:via-white/10" />
 
           {/* Steps indicator */}
-          <div className="flex items-center gap-3">
+          <div className="mb-8 flex items-center justify-center gap-3">
             <div
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors",
+                "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-500",
                 step >= 1
-                  ? "bg-primary-foreground text-primary"
-                  : "bg-primary-foreground/20 text-primary-foreground/40"
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  : "bg-muted text-muted-foreground"
               )}
             >
               {step > 1 ? (
-                <HugeiconsIcon
-                  icon={CheckmarkCircle02Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
+                <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2.5} className="size-4" />
               ) : (
                 "1"
               )}
             </div>
             <div
               className={cn(
-                "h-px flex-1 transition-colors",
-                step >= 2
-                  ? "bg-primary-foreground/60"
-                  : "bg-primary-foreground/20"
+                "h-[2px] w-12 transition-colors duration-500 rounded-full",
+                step >= 2 ? "bg-primary" : "bg-primary/10 dark:bg-primary/20"
               )}
             />
             <div
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors",
+                "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-500",
                 step >= 2
-                  ? "bg-primary-foreground text-primary"
-                  : "bg-primary-foreground/20 text-primary-foreground/40"
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  : "bg-background border-2 border-muted-foreground/20 text-muted-foreground"
               )}
             >
               2
             </div>
           </div>
 
-          {/* Feature list */}
-          <div className="space-y-3">
-            {[
-              { icon: Shield01Icon, text: "Licence valide à vie" },
-              { icon: HeartPulse, text: "Suivi médical complet" },
-              { icon: SparklesIcon, text: "Assistant IA intégré" },
-            ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/15">
-                  <HugeiconsIcon
-                    icon={feature.icon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </div>
-                <span className="text-sm text-primary-foreground/90">
-                  {feature.text}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom */}
-        <div className="relative z-10 flex items-center gap-2 text-sm text-primary-foreground/60">
-          <HugeiconsIcon
-            icon={CheckmarkCircle02Icon}
-            strokeWidth={2}
-            className="size-4 text-primary-foreground/40"
-          />
-          <span>
-            {APP_NAME} · {APP_TAGLINE}
-          </span>
-        </div>
-      </div>
-
-      {/* Right panel — Form */}
-      <div className="flex w-full flex-col items-center justify-center p-6 lg:w-1/2">
-        <div className="w-full max-w-sm space-y-8">
-          {/* Mobile logo */}
-          <div className="lg:hidden">
-            <div className="mb-2 flex justify-center">
-              <Logo size="lg" />
-            </div>
-            {/* Mobile step indicator */}
-            <div className="mt-4 flex items-center justify-center gap-3">
-              <div
-                className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold",
-                  step >= 1
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {step > 1 ? (
-                  <HugeiconsIcon
-                    icon={CheckmarkCircle02Icon}
-                    strokeWidth={2}
-                    className="size-3.5"
-                  />
-                ) : (
-                  "1"
-                )}
-              </div>
-              <div
-                className={cn(
-                  "h-px w-12 transition-colors",
-                  step >= 2 ? "bg-primary" : "bg-muted"
-                )}
-              />
-              <div
-                className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold",
-                  step >= 2
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                2
-              </div>
-            </div>
-          </div>
-
-          {/* Header */}
-          <div className="space-y-2 text-center lg:text-left">
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-              {step === 1 ? "Activation de la licence" : "Créer votre compte"}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {step === 1
-                ? "Entrez votre clé de licence et l'email associé"
-                : "Configurez votre compte administrateur"}
-            </p>
-          </div>
-
-          {/* Error */}
+          {/* Error Banner */}
           {error && (
-            <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
-              <HugeiconsIcon
-                icon={Alert02Icon}
-                strokeWidth={2}
-                className="size-4 shrink-0"
-              />
-              <span>{error}</span>
+            <div className="mb-6 flex animate-in fade-in slide-in-from-top-2 items-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive backdrop-blur-md">
+              <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="size-5 shrink-0" />
+              <span className="font-medium">{error}</span>
             </div>
           )}
 
-          {/* Step 1: License */}
+          {/* Step 1: License Form */}
           {step === 1 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="setup-email">Adresse email</Label>
-                <div className="relative">
+            <div className="space-y-5 animate-in fade-in zoom-in-95 duration-300">
+              <div className="space-y-2.5">
+                <Label htmlFor="setup-email" className="ml-1 text-xs uppercase tracking-widest text-muted-foreground">Adresse email</Label>
+                <div className="relative group">
                   <HugeiconsIcon
                     icon={MailIcon}
                     strokeWidth={2}
-                    className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                    className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
                   />
                   <Input
                     id="setup-email"
                     type="email"
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value)
-                      setError("")
-                    }}
-                    className="pl-9"
-                    placeholder="dr.example@clinique.com"
+                    onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                    className="h-12 rounded-xl border-white/20 bg-white/50 pl-11 shadow-sm backdrop-blur-sm transition-all focus:border-primary focus:bg-white dark:border-white/5 dark:bg-black/30 dark:focus:bg-black/50"
+                    placeholder="docteur@clinique.com"
                     required
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="setup-license">Clé de licence</Label>
-                <div className="relative">
+              <div className="space-y-2.5">
+                <Label htmlFor="setup-license" className="ml-1 text-xs uppercase tracking-widest text-muted-foreground">Clé de licence</Label>
+                <div className="relative group">
                   <HugeiconsIcon
                     icon={Key01Icon}
                     strokeWidth={2}
-                    className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                    className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
                   />
                   <Input
                     id="setup-license"
                     type="text"
                     value={licenseKey}
                     onChange={(e) => handleKeyChange(e.target.value)}
-                    className="pl-9 font-mono tracking-wider uppercase"
+                    className="h-12 rounded-xl border-white/20 bg-white/50 pl-11 font-mono tracking-widest uppercase shadow-sm backdrop-blur-sm transition-all focus:border-primary focus:bg-white dark:border-white/5 dark:bg-black/30 dark:focus:bg-black/50"
                     placeholder="XXXX-XXXX-XXXX-XXXX"
                     maxLength={19}
                     required
@@ -321,147 +209,89 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                 </div>
               </div>
 
-              <Button onClick={handleValidateLicense} className="w-full">
-                Continuer
-                <HugeiconsIcon
-                  icon={ArrowRight01Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                  data-icon="inline-end"
-                />
+              <Button onClick={handleValidateLicense} size="lg" className="mt-4 w-full rounded-xl text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-primary/30">
+                Vérifier l'accès
+                <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2.5} className="ml-2 size-5" />
               </Button>
-
-              <p className="text-center text-xs text-muted-foreground">
-                Pas de licence ? Contactez votre administrateur {APP_NAME}
-              </p>
             </div>
           )}
 
-          {/* Step 2: Account */}
+          {/* Step 2: Account Form */}
           {step === 2 && (
-            <div className="space-y-4">
-              {/* Verified email */}
-              <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:border-emerald-800 dark:text-emerald-400">
-                <HugeiconsIcon
-                  icon={CheckmarkCircle02Icon}
-                  strokeWidth={2}
-                  className="size-4 shrink-0"
-                />
-                <span>
-                  Licence activée pour <strong>{email}</strong>
-                </span>
+            <div className="space-y-5 animate-in slide-in-from-right-4 fade-in duration-500">
+              <div className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3.5 text-sm font-medium text-emerald-700 backdrop-blur-sm dark:border-emerald-500/10 dark:text-emerald-400">
+                <HugeiconsIcon icon={Shield01Icon} strokeWidth={2.5} className="size-4 shrink-0" />
+                <span>Licence authentifiée</span>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="setup-name">Nom complet</Label>
-                <div className="relative">
-                  <HugeiconsIcon
-                    icon={UserCircle02Icon}
-                    strokeWidth={2}
-                    className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                  />
+              <div className="space-y-2.5">
+                <Label htmlFor="setup-name" className="ml-1 text-xs uppercase tracking-widest text-muted-foreground">Nom complet</Label>
+                <div className="relative group">
+                  <HugeiconsIcon icon={UserCircle02Icon} strokeWidth={2} className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
                   <Input
                     id="setup-name"
                     type="text"
                     value={name}
-                    onChange={(e) => {
-                      setName(e.target.value)
-                      setError("")
-                    }}
-                    className="pl-9"
+                    onChange={(e) => { setName(e.target.value); setError(""); }}
+                    className="h-12 rounded-xl border-white/20 bg-white/50 pl-11 shadow-sm backdrop-blur-sm transition-all focus:border-primary focus:bg-white dark:border-white/5 dark:bg-black/30 dark:focus:bg-black/50"
                     placeholder="Dr. Prénom Nom"
                     required
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="setup-password">Mot de passe</Label>
-                <div className="relative">
-                  <HugeiconsIcon
-                    icon={LockIcon}
-                    strokeWidth={2}
-                    className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                  />
+              <div className="space-y-2.5">
+                <Label htmlFor="setup-password" className="ml-1 text-xs uppercase tracking-widest text-muted-foreground">Mot de passe secret</Label>
+                <div className="relative group">
+                  <HugeiconsIcon icon={LockIcon} strokeWidth={2} className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
                   <Input
                     id="setup-password"
                     type="password"
                     value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value)
-                      setError("")
-                    }}
-                    className="pl-9"
+                    onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                    className="h-12 rounded-xl border-white/20 bg-white/50 pl-11 shadow-sm backdrop-blur-sm transition-all focus:border-primary focus:bg-white dark:border-white/5 dark:bg-black/30 dark:focus:bg-black/50"
                     placeholder="••••••••"
                     required
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="setup-confirm">Confirmer le mot de passe</Label>
-                <div className="relative">
-                  <HugeiconsIcon
-                    icon={LockIcon}
-                    strokeWidth={2}
-                    className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                  />
+              <div className="space-y-2.5">
+                <Label htmlFor="setup-confirm" className="ml-1 text-xs uppercase tracking-widest text-muted-foreground">Confirmer le mot de passe</Label>
+                <div className="relative group">
+                  <HugeiconsIcon icon={LockIcon} strokeWidth={2} className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
                   <Input
                     id="setup-confirm"
                     type="password"
                     value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value)
-                      setError("")
-                    }}
-                    className="pl-9"
+                    onChange={(e) => { setConfirmPassword(e.target.value); setError(""); }}
+                    className="h-12 rounded-xl border-white/20 bg-white/50 pl-11 shadow-sm backdrop-blur-sm transition-all focus:border-primary focus:bg-white dark:border-white/5 dark:bg-black/30 dark:focus:bg-black/50"
                     placeholder="••••••••"
                     required
                   />
                 </div>
               </div>
 
-              <Button
-                onClick={handleCreateAccount}
-                disabled={isLoading}
-                className="w-full"
-              >
-                {isLoading ? (
-                  <Spinner className="size-4" />
-                ) : (
-                  <>
-                    <HugeiconsIcon
-                      icon={CheckmarkCircle02Icon}
-                      strokeWidth={2}
-                      className="size-4"
-                    />
-                    Créer mon compte
-                  </>
-                )}
-              </Button>
+              <div className="pt-2">
+                <Button onClick={handleCreateAccount} disabled={isLoading} size="lg" className="w-full rounded-xl text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-primary/30">
+                  {isLoading ? <Spinner className="size-5" /> : <>Terminer l'installation <HugeiconsIcon icon={SparklesIcon} strokeWidth={2.5} className="ml-2 size-5" /></>}
+                </Button>
+              </div>
 
-              <Separator />
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full text-muted-foreground"
-                onClick={() => setStep(1)}
-              >
-                <HugeiconsIcon
-                  icon={ArrowLeft01Icon}
-                  strokeWidth={2}
-                  className="mr-1.5 size-3.5"
-                />
-                Retour à l'activation
-              </Button>
+              <div className="flex justify-center pt-2">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-white/20 hover:text-foreground dark:hover:bg-white/5" onClick={() => setStep(1)}>
+                  <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} className="mr-2 size-4" /> Retour
+                </Button>
+              </div>
             </div>
           )}
+        </div>
 
-          {/* Footer */}
-          <p className="text-center text-xs text-muted-foreground/60">
-            {APP_NAME} · © {new Date().getFullYear()}
-          </p>
+        {/* Floating Footer */}
+        <div className="mt-10 flex items-center justify-center gap-6 text-sm font-medium text-muted-foreground/60">
+          <span className="flex items-center gap-1.5 hover:text-foreground transition-colors"><HugeiconsIcon icon={Shield01Icon} strokeWidth={2} className="size-4" /> Crypté & Sécurisé</span>
+          <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
+          <span className="hover:text-foreground transition-colors">Support Vetera</span>
         </div>
       </div>
     </div>
