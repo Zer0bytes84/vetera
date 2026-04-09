@@ -128,7 +128,14 @@ const MONTH_NAMES = [
   "Novembre",
   "Décembre",
 ]
-const HOUR_BLOCKS = Array.from({ length: 10 }, (_, index) => 8 + index)
+const CALENDAR_START_HOUR = 7
+const CALENDAR_END_HOUR = 21
+const HOUR_BLOCKS = Array.from(
+  { length: CALENDAR_END_HOUR - CALENDAR_START_HOUR + 1 },
+  (_, index) => CALENDAR_START_HOUR + index
+)
+const CALENDAR_START_MINUTES = CALENDAR_START_HOUR * 60
+const CALENDAR_END_MINUTES = (CALENDAR_END_HOUR + 1) * 60
 
 const TYPE_META: Record<
   Appointment["type"],
@@ -300,12 +307,39 @@ function formatDuration(minutes: number) {
 }
 
 function getTimePosition(time: Date) {
-  return (time.getHours() - 8) * 60 + time.getMinutes()
+  return (time.getHours() - CALENDAR_START_HOUR) * 60 + time.getMinutes()
 }
 
 function getDurationHeight(start: Date, end: Date) {
   const diffMs = end.getTime() - start.getTime()
-  return Math.max(52, diffMs / 60000)
+  return Math.max(18, diffMs / 60000)
+}
+
+function getMinutesFromDayStart(value: Date) {
+  return value.getHours() * 60 + value.getMinutes()
+}
+
+function getAppointmentFrame(
+  start: Date,
+  end: Date,
+  pixelsPerHour: number,
+  minHeight: number
+) {
+  const rawStart = getMinutesFromDayStart(start)
+  const rawEnd = getMinutesFromDayStart(end)
+  if (rawEnd <= rawStart) return null
+
+  const clippedStart = Math.max(rawStart, CALENDAR_START_MINUTES)
+  const clippedEnd = Math.min(rawEnd, CALENDAR_END_MINUTES)
+  if (clippedEnd <= clippedStart) return null
+
+  const top = ((clippedStart - CALENDAR_START_MINUTES) / 60) * pixelsPerHour
+  const height = Math.max(
+    minHeight,
+    ((clippedEnd - clippedStart) / 60) * pixelsPerHour
+  )
+
+  return { top, height }
 }
 
 function getWeekDays(date: Date) {
@@ -451,6 +485,69 @@ function AppointmentStatusBadge({
   )
 }
 
+function calculateOverlapMap(appointments: Appointment[]) {
+  const layout = new Map<string, { column: number; totalColumns: number }>()
+
+  const sorted = [...appointments].sort((a, b) => {
+    const startA = new Date(a.startTime).getTime()
+    const startB = new Date(b.startTime).getTime()
+    if (startA !== startB) return startA - startB
+    return new Date(b.endTime).getTime() - new Date(a.endTime).getTime()
+  })
+
+  let currentGroup: Appointment[] = []
+  let groupEnd = 0
+
+  const layoutGroup = (group: Appointment[]) => {
+    const columns: Appointment[][] = []
+    for (const appt of group) {
+      const start = new Date(appt.startTime).getTime()
+      let placed = false
+
+      for (let i = 0; i < columns.length; i++) {
+        const lastAppt = columns[i][columns[i].length - 1]
+        if (start >= new Date(lastAppt.endTime).getTime()) {
+          columns[i].push(appt)
+          layout.set(appt.id, { column: i, totalColumns: 0 })
+          placed = true
+          break
+        }
+      }
+
+      if (!placed) {
+        columns.push([appt])
+        layout.set(appt.id, { column: columns.length - 1, totalColumns: 0 })
+      }
+    }
+
+    const totalCols = columns.length
+    for (const appt of group) {
+      const info = layout.get(appt.id)
+      if (info) info.totalColumns = totalCols
+    }
+  }
+
+  for (const appt of sorted) {
+    const start = new Date(appt.startTime).getTime()
+    const end = new Date(appt.endTime).getTime()
+
+    if (currentGroup.length > 0 && start >= groupEnd) {
+      layoutGroup(currentGroup)
+      currentGroup = []
+      groupEnd = 0
+    }
+
+    currentGroup.push(appt)
+    groupEnd = Math.max(groupEnd, end)
+  }
+
+  if (currentGroup.length > 0) {
+    layoutGroup(currentGroup)
+  }
+
+  return layout
+}
+
 function AgendaDayView({
   vets,
   appointmentsByVet,
@@ -505,6 +602,7 @@ function AgendaDayView({
 
           {vets.map((vet) => {
             const vetAppointments = appointmentsByVet.get(vet.id) ?? []
+            const layoutMap = calculateOverlapMap(vetAppointments)
 
             return (
               <div
@@ -548,16 +646,20 @@ function AgendaDayView({
                     </div>
                   ) : null}
 
-                  <div className="absolute inset-0 p-2">
+                  <div className="absolute inset-0">
                     {vetAppointments.map((appointment) => {
                       const start = normalizeDate(appointment.startTime)
                       const end = normalizeDate(appointment.endTime)
 
                       if (!start || !end) return null
 
-                      const top = getTimePosition(start)
-                      const height = getDurationHeight(start, end)
+                      const frame = getAppointmentFrame(start, end, 60, 24)
+                      if (!frame) return null
                       const patientName = getPatientName(appointment.patientId)
+
+                      const layout = layoutMap.get(appointment.id) || { column: 0, totalColumns: 1 }
+                      const widthPercent = 100 / Math.max(1, layout.totalColumns)
+                      const leftPercent = layout.column * widthPercent
 
                       return (
                         <button
@@ -565,13 +667,18 @@ function AgendaDayView({
                           type="button"
                           onClick={() => onSelectAppointment(appointment)}
                           className={cn(
-                            "absolute inset-x-2 overflow-hidden rounded-3xl border p-3 text-left shadow-sm transition hover:shadow-md",
+                            "absolute overflow-hidden rounded-3xl border p-3 text-left shadow-sm transition hover:shadow-md",
                             TYPE_META[appointment.type].surfaceClassName,
                             selectedAppointmentId === appointment.id
-                              ? "ring-2 ring-primary/55 ring-offset-1"
+                              ? "ring-2 ring-primary/55 ring-offset-1 z-10"
                               : "ring-0"
                           )}
-                          style={{ top, height }}
+                          style={{
+                            top: frame.top,
+                            height: frame.height,
+                            left: `calc(${leftPercent}% + 4px)`,
+                            width: `calc(${widthPercent}% - 8px)`,
+                          }}
                         >
                           <div className="flex h-full gap-3">
                             <span
@@ -635,6 +742,7 @@ function AgendaWeekView({
 
           {weekDays.map((day) => {
             const appointments = getAppointmentsForDate(day)
+            const layoutMap = calculateOverlapMap(appointments)
             const isTodayColumn = isSameDay(day, new Date())
 
             return (
@@ -664,18 +772,19 @@ function AgendaWeekView({
                     />
                   ))}
 
-                  <div className="absolute inset-0 p-1.5">
+                  <div className="absolute inset-0">
                     {appointments.map((appointment) => {
                       const start = normalizeDate(appointment.startTime)
                       const end = normalizeDate(appointment.endTime)
 
                       if (!start || !end) return null
 
-                      const top = getTimePosition(start) * (50 / 60)
-                      const height = Math.max(
-                        38,
-                        getDurationHeight(start, end) * (50 / 60)
-                      )
+                      const frame = getAppointmentFrame(start, end, 50, 18)
+                      if (!frame) return null
+
+                      const layout = layoutMap.get(appointment.id) || { column: 0, totalColumns: 1 }
+                      const widthPercent = 100 / Math.max(1, layout.totalColumns)
+                      const leftPercent = layout.column * widthPercent
 
                       return (
                         <button
@@ -683,13 +792,18 @@ function AgendaWeekView({
                           type="button"
                           onClick={() => onSelectAppointment(appointment)}
                           className={cn(
-                            "absolute inset-x-1.5 rounded-2xl border px-2.5 py-2 text-left shadow-sm transition hover:shadow-md",
+                            "absolute rounded-2xl border px-2.5 py-2 text-left shadow-sm transition hover:shadow-md",
                             TYPE_META[appointment.type].surfaceClassName,
                             selectedAppointmentId === appointment.id
-                              ? "ring-2 ring-primary/55 ring-offset-1"
+                              ? "ring-2 ring-primary/55 ring-offset-1 z-10"
                               : "ring-0"
                           )}
-                          style={{ top, height }}
+                          style={{
+                            top: frame.top,
+                            height: frame.height,
+                            left: `calc(${leftPercent}% + 3px)`,
+                            width: `calc(${widthPercent}% - 6px)`,
+                          }}
                         >
                           <p className="truncate text-xs font-medium text-foreground">
                             {getPatientName(appointment.patientId)}
@@ -715,11 +829,13 @@ function AgendaMonthView({
   monthDays,
   selectedDate,
   getAppointmentsForDate,
+  getPatientName,
   onPickDate,
 }: {
   monthDays: Array<Date | null>
   selectedDate: Date
   getAppointmentsForDate: (date: Date) => Appointment[]
+  getPatientName: (patientId: string) => string
   onPickDate: (date: Date) => void
 }) {
   return (
@@ -786,7 +902,7 @@ function AgendaMonthView({
                         {formatTime(appointment.startTime)} · {appointment.type}
                       </p>
                       <p className="truncate text-muted-foreground">
-                        {appointment.title}
+                        {getPatientName(appointment.patientId)}
                       </p>
                     </div>
                   ))}
@@ -982,7 +1098,9 @@ const Agenda: React.FC = () => {
 
   const currentTimePosition = useMemo(() => {
     const hours = currentTime.getHours()
-    if (hours < 8 || hours >= 18) return null
+    if (hours < CALENDAR_START_HOUR || hours >= CALENDAR_END_HOUR + 1) {
+      return null
+    }
     return getTimePosition(currentTime)
   }, [currentTime])
 
@@ -1615,6 +1733,7 @@ const Agenda: React.FC = () => {
                       monthDays={monthDays}
                       selectedDate={selectedDate}
                       getAppointmentsForDate={getAppointmentsForDate}
+                      getPatientName={getPatientName}
                       onPickDate={(date) => {
                         setSelectedDate(date)
                         setViewMode("day")

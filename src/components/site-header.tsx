@@ -15,6 +15,7 @@ import {
 import { Kbd } from "@/components/ui/kbd"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
 import type { View } from "@/types"
 
 type SiteHeaderProps = {
@@ -52,11 +53,11 @@ export function SiteHeader({
     <header
       ref={headerRef}
       onMouseDown={handleMouseDown}
-      className={`sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 border-b px-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:px-6 ${
-        isScrolled
-          ? 'site-header-glass border-black/[0.06] dark:border-white/[0.08]'
-          : 'bg-background'
-      }`}
+      className={cn(
+        "sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 border-b px-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:px-6",
+        "site-header-glass border-black/[0.06] dark:border-white/[0.08]",
+        !isScrolled && "shadow-none border-transparent"
+      )}
     >
       <div className="flex w-full items-center gap-1 lg:gap-2">
         <SidebarTrigger className="-ml-1" />
