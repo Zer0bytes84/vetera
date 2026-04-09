@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
@@ -7,19 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
-
-const chartData = [
-  { time: "08:00", consultations: 4, chirurgies: 0, urgences: 1 },
-  { time: "09:00", consultations: 6, chirurgies: 1, urgences: 0 },
-  { time: "10:00", consultations: 5, chirurgies: 2, urgences: 2 },
-  { time: "11:00", consultations: 8, chirurgies: 1, urgences: 1 },
-  { time: "12:00", consultations: 3, chirurgies: 0, urgences: 0 },
-  { time: "14:00", consultations: 7, chirurgies: 1, urgences: 1 },
-  { time: "15:00", consultations: 6, chirurgies: 2, urgences: 0 },
-  { time: "16:00", consultations: 4, chirurgies: 1, urgences: 1 },
-  { time: "17:00", consultations: 2, chirurgies: 0, urgences: 0 },
-  { time: "Now", consultations: 1, chirurgies: 0, urgences: 0 },
-]
 
 const chartConfig: ChartConfig = {
   consultations: {
@@ -36,14 +24,31 @@ const chartConfig: ChartConfig = {
   },
 }
 
-export function ConsultationsChart() {
-  const totals = chartData.reduce(
+type ConsultationPoint = {
+  time: string
+  consultations: number
+  chirurgies: number
+  urgences: number
+}
+
+export function ConsultationsChart({
+  data,
+  onNavigate,
+}: {
+  data: ConsultationPoint[]
+  onNavigate: () => void
+}) {
+  const totals = React.useMemo(
+    () =>
+      data.reduce(
     (acc, d) => ({
       consultations: acc.consultations + d.consultations,
       chirurgies: acc.chirurgies + d.chirurgies,
       urgences: acc.urgences + d.urgences,
     }),
     { consultations: 0, chirurgies: 0, urgences: 0 }
+      ),
+    [data]
   )
 
   return (
@@ -70,7 +75,12 @@ export function ConsultationsChart() {
           <CardDescription>Répartition des actes sur la journée</CardDescription>
         </div>
         <CardAction>
-          <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1 text-muted-foreground"
+            onClick={onNavigate}
+          >
             Voir agenda
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-4" />
           </Button>
@@ -78,7 +88,7 @@ export function ConsultationsChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
-          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="fillConsultations" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="var(--color-consultations)" stopOpacity={0.3} />

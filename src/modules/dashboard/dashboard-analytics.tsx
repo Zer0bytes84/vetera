@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import type { View } from "@/types"
 
 type SeriesPoint = {
   label: string
@@ -52,6 +53,7 @@ type SeriesPoint = {
 type TrafficSourceItem = {
   label: string
   value: number
+  view?: View
 }
 
 type ProfileShareItem = {
@@ -83,6 +85,7 @@ export type DashboardAnalyticsProps = {
   trafficSources: TrafficSourceItem[]
   customerTrend: SeriesPoint[]
   profileShare: ProfileShareItem[]
+  onNavigate?: (view: View) => void
 }
 
 const financeConfig = {
@@ -149,6 +152,7 @@ export function DashboardAnalytics({
   trafficSources,
   customerTrend,
   profileShare,
+  onNavigate,
 }: DashboardAnalyticsProps) {
   const [financeView, setFinanceView] = React.useState<"month" | "week">(
     "month"
@@ -342,8 +346,23 @@ export function DashboardAnalytics({
           <CardContent className="space-y-4">
             {trafficSources.map((source) => (
               <div key={source.label} className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">{source.label}</span>
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <button
+                    type="button"
+                    className={cn(
+                      "font-medium transition-colors",
+                      source.view && onNavigate
+                        ? "cursor-pointer hover:text-primary"
+                        : "cursor-default"
+                    )}
+                    onClick={() => {
+                      if (source.view && onNavigate) {
+                        onNavigate(source.view)
+                      }
+                    }}
+                  >
+                    {source.label}
+                  </button>
                   <span className="text-muted-foreground">{source.value}%</span>
                 </div>
                 <div className="h-2.5 overflow-hidden rounded-full bg-muted">

@@ -13,6 +13,7 @@
     "core:window:allow-toggle-maximize",
     "core:window:allow-set-fullscreen",
     "sql:default",
+    "sql:allow-close",
     "sql:allow-execute",
     "sql:allow-select",
     "dialog:default",

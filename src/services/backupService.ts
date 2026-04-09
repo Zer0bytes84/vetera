@@ -11,13 +11,14 @@ import {
   mkdir,
   copyFile,
   remove,
+  readFile,
   readTextFile,
   writeFile,
   writeTextFile,
 } from "@tauri-apps/plugin-fs"
 import { save, open } from "@tauri-apps/plugin-dialog"
 import { isTauriRuntime } from "./browser-store"
-import { getDatabase } from "./sqlite/database"
+import { closeDatabaseConnection, getDatabase } from "./sqlite/database"
 
 const DB_FILENAME = "baitari.db"
 const WAL_FILENAME = "baitari.db-wal"
@@ -144,6 +145,57 @@ async function checkpointWal(): Promise<void> {
   } catch (e) {
     console.warn("[Backup] WAL checkpoint failed (non-critical):", e)
   }
+}
+
+function hasSqliteHeader(bytes: Uint8Array): boolean {
+  if (bytes.length < 16) {
+    return false
+  }
+
+  const header = new TextDecoder().decode(bytes.slice(0, 16))
+  return header === "SQLite format 3\u0000"
+}
+
+async function prepareForDatabaseReplacement(): Promise<{
+  appData: string
+  dbPath: string
+  liveWalPath: string
+  liveShmPath: string
+}> {
+  const appData = await getAppDataPath()
+  const dbPath = await joinPath(appData, DB_FILENAME)
+  const liveWalPath = await joinPath(appData, WAL_FILENAME)
+  const liveShmPath = await joinPath(appData, SHM_FILENAME)
+
+  await checkpointWal()
+  await closeDatabaseConnection()
+
+  const walExists = await exists(liveWalPath)
+  const shmExists = await exists(liveShmPath)
+
+  if (walExists) {
+    await remove(liveWalPath)
+    console.log("[Backup] Removed stale WAL file before database replacement")
+  }
+
+  if (shmExists) {
+    await remove(liveShmPath)
+    console.log("[Backup] Removed stale SHM file before database replacement")
+  }
+
+  return { appData, dbPath, liveWalPath, liveShmPath }
+}
+
+async function replaceDatabaseFile(
+  sourcePath: string,
+  destinationPath: string
+): Promise<void> {
+  const destinationExists = await exists(destinationPath)
+  if (destinationExists) {
+    await remove(destinationPath)
+  }
+
+  await copyFile(sourcePath, destinationPath)
 }
 
 /**
@@ -448,9 +500,6 @@ export async function importDatabase(): Promise<boolean> {
   }
 
   try {
-    const appData = await getAppDataPath()
-    const dbPath = await joinPath(appData, DB_FILENAME)
-
     // Open file picker
     const filePath = await open({
       multiple: false,
@@ -464,34 +513,25 @@ export async function importDatabase(): Promise<boolean> {
       return false
     }
 
-    // Checkpoint WAL before replacing the database
-    await checkpointWal()
+    const bytes = await readFile(filePath)
+    if (!hasSqliteHeader(bytes)) {
+      throw new Error("Le fichier sélectionné n'est pas une base SQLite valide")
+    }
 
-    // Copy the imported file over the current database
+    await createBackup("pre-import")
+    const { dbPath } = await prepareForDatabaseReplacement()
+
+    // Replace the live database with the selected SQLite file.
     console.log("[Backup] Importing database from:", filePath)
-    await copyFile(filePath, dbPath)
-
-    // Remove any existing WAL/SHM files since we're replacing the DB
-    const liveWalPath = await joinPath(appData, WAL_FILENAME)
-    const liveShmPath = await joinPath(appData, SHM_FILENAME)
-
-    const walExists = await exists(liveWalPath)
-    const shmExists = await exists(liveShmPath)
-
-    if (walExists) {
-      await remove(liveWalPath)
-      console.log("[Backup] Removed stale WAL file")
-    }
-    if (shmExists) {
-      await remove(liveShmPath)
-      console.log("[Backup] Removed stale SHM file")
-    }
+    await replaceDatabaseFile(filePath, dbPath)
 
     console.log("[Backup] Database imported successfully from:", filePath)
     return true
   } catch (error) {
     console.error("[Backup] Error importing database:", error)
-    return false
+    throw error instanceof Error
+      ? error
+      : new Error("Impossible d'importer cette sauvegarde")
   }
 }
 
@@ -505,33 +545,23 @@ export async function importDatabaseFromFile(file: File): Promise<boolean> {
   }
 
   try {
-    const appData = await getAppDataPath()
-    const dbPath = await joinPath(appData, DB_FILENAME)
-
-    await checkpointWal()
-
     const bytes = new Uint8Array(await file.arrayBuffer())
+    if (!hasSqliteHeader(bytes)) {
+      throw new Error(
+        "Le fichier sélectionné n'est pas une base SQLite compatible"
+      )
+    }
+
+    await createBackup("pre-import")
+    const { dbPath } = await prepareForDatabaseReplacement()
     await writeFile(dbPath, bytes)
-
-    const liveWalPath = await joinPath(appData, WAL_FILENAME)
-    const liveShmPath = await joinPath(appData, SHM_FILENAME)
-
-    const walExists = await exists(liveWalPath)
-    const shmExists = await exists(liveShmPath)
-
-    if (walExists) {
-      await remove(liveWalPath)
-      console.log("[Backup] Removed stale WAL file after file import")
-    }
-    if (shmExists) {
-      await remove(liveShmPath)
-      console.log("[Backup] Removed stale SHM file after file import")
-    }
 
     console.log("[Backup] Database imported successfully from File:", file.name)
     return true
   } catch (error) {
     console.error("[Backup] Error importing database from File:", error)
-    return false
+    throw error instanceof Error
+      ? error
+      : new Error("Impossible d'importer cette sauvegarde")
   }
 }

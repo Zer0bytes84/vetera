@@ -18,6 +18,26 @@ export async function getDatabase(): Promise<Database> {
 }
 
 /**
+ * Ferme explicitement la connexion SQLite en cours.
+ * Utile avant de remplacer physiquement le fichier de base.
+ */
+export async function closeDatabaseConnection(): Promise<boolean> {
+  if (!db) {
+    return true
+  }
+
+  try {
+    const connection = db
+    db = null
+    return await connection.close()
+  } catch (error) {
+    console.error("[DB] Failed to close database connection:", error)
+    db = null
+    return false
+  }
+}
+
+/**
  * Exécute les migrations SQL au démarrage
  */
 async function runMigrations(database: Database): Promise<void> {

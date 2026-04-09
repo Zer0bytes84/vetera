@@ -46,12 +46,13 @@ import {
   listBackups,
   restoreBackup,
   exportDatabase,
+  importDatabase,
   importDatabaseFromFile,
   getLastBackupDate,
   deleteBackup,
   BackupInfo,
 } from "../services/backupService"
-import { exit } from "@tauri-apps/plugin-process"
+import { relaunch } from "@tauri-apps/plugin-process"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -430,16 +431,16 @@ const BackupSettings: React.FC = () => {
         )
         setFeedbackMessage({
           type: "success",
-          text: "✅ Restauration réussie ! Fermeture automatique...",
+          text: "✅ Restauration réussie ! Redémarrage automatique...",
         })
         setTimeout(async () => {
           try {
-            await exit(0)
+            await relaunch()
           } catch (e) {
-            console.error("[BackupSettings] Exit failed:", e)
-            window.close()
+            console.error("[BackupSettings] Relaunch failed:", e)
+            window.location.reload()
           }
-        }, 2000)
+        }, 1200)
       } else {
         setFeedbackMessage({
           type: "error",
@@ -478,8 +479,44 @@ const BackupSettings: React.FC = () => {
       return
     }
     setFeedbackMessage(null)
-    setIsAwaitingImportFile(true)
-    importInputRef.current?.click()
+    setIsImporting(true)
+    setIsAwaitingImportFile(false)
+
+    try {
+      const success = await importDatabase()
+      if (success) {
+        setFeedbackMessage({
+          type: "success",
+          text: "✅ Base de données importée ! L'application va redémarrer...",
+        })
+
+        setTimeout(async () => {
+          try {
+            await relaunch()
+          } catch (e) {
+            console.error("[BackupSettings] Relaunch failed:", e)
+            window.location.reload()
+          }
+        }, 1200)
+      } else {
+        setFeedbackMessage({
+          type: "error",
+          text: "❌ Import annulé ou impossible",
+        })
+      }
+    } catch (error) {
+      console.error("[BackupSettings] Error importing:", error)
+      setFeedbackMessage({
+        type: "error",
+        text:
+          "❌ " +
+          (error instanceof Error
+            ? error.message
+            : "Erreur lors de l'importation"),
+      })
+    } finally {
+      setIsImporting(false)
+    }
   }
 
   const handleImportFileChange = async (
@@ -505,12 +542,12 @@ const BackupSettings: React.FC = () => {
         })
         setTimeout(async () => {
           try {
-            await exit(0)
+            await relaunch()
           } catch (e) {
-            console.error("[BackupSettings] Exit failed:", e)
-            window.close()
+            console.error("[BackupSettings] Relaunch failed:", e)
+            window.location.reload()
           }
-        }, 2000)
+        }, 1200)
       } else {
         setFeedbackMessage({
           type: "error",
@@ -521,7 +558,11 @@ const BackupSettings: React.FC = () => {
       console.error("[BackupSettings] Error importing from file:", error)
       setFeedbackMessage({
         type: "error",
-        text: "❌ Erreur lors de l'importation",
+        text:
+          "❌ " +
+          (error instanceof Error
+            ? error.message
+            : "Erreur lors de l'importation"),
       })
     } finally {
       setIsImporting(false)
@@ -1090,23 +1131,42 @@ const Parametres: React.FC<ParametresProps> = ({
         return (
           <div className="space-y-6">
             {/* Profile Header */}
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-              <Avatar src={avatarUrl} name={displayName} size="2xl" />
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {displayName || "Votre profil"}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {currentUser?.email}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {clinicName ? `🏥 ${clinicName}` : "🏥 Nom du cabinet à définir"}
-                </p>
-                <Badge variant="outline" className="mt-2">
-                  {getRoleDisplay()}
-                </Badge>
-              </div>
-            </div>
+            <Card size="sm" className="overflow-hidden">
+              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
+                <div className="relative shrink-0 self-start">
+                  <Avatar src={avatarUrl} name={displayName} size="xl" />
+                  <label
+                    htmlFor="profile-photo-upload"
+                    className="absolute right-0 bottom-0 inline-flex cursor-pointer items-center justify-center rounded-full border-2 border-background bg-primary p-2 text-primary-foreground shadow-md transition-transform hover:scale-105"
+                    title="Changer la photo de profil"
+                  >
+                    <HugeiconsIcon
+                      icon={Camera01Icon}
+                      strokeWidth={2}
+                      className="size-3.5"
+                    />
+                  </label>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h2 className="truncate text-xl font-semibold text-foreground">
+                    {displayName || "Votre profil"}
+                  </h2>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {currentUser?.email}
+                  </p>
+                  <p className="mt-1 truncate text-sm text-muted-foreground">
+                    {clinicName
+                      ? `Cabinet ${clinicName}`
+                      : "Cabinet à définir"}
+                  </p>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <Badge variant="outline">{getRoleDisplay()}</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {message && (
               <Card
@@ -1163,11 +1223,11 @@ const Parametres: React.FC<ParametresProps> = ({
                     onChange={handleImageUpload}
                   />
                   <div className="flex items-center gap-4">
-                    <div className="group relative cursor-pointer">
+                    <div className="group relative shrink-0">
                       <Avatar src={avatarUrl} name={displayName} size="lg" />
                       <label
                         htmlFor="profile-photo-upload"
-                        className="absolute right-0 bottom-0 cursor-pointer rounded-full border-2 border-white bg-gradient-to-br from-emerald-500 to-teal-600 p-2 text-white shadow-lg transition-transform hover:scale-110"
+                        className="absolute right-0 bottom-0 cursor-pointer rounded-full border-2 border-white bg-gradient-to-br from-emerald-500 to-teal-600 p-2 text-white shadow-lg transition-transform hover:scale-105"
                       >
                         <HugeiconsIcon
                           icon={Camera01Icon}
@@ -1183,6 +1243,11 @@ const Parametres: React.FC<ParametresProps> = ({
                       <p className="text-xs text-muted-foreground">
                         JPG, PNG, WebP. Max 1 Mo.
                       </p>
+                      <label htmlFor="profile-photo-upload" className="mt-3 inline-flex">
+                        <span className="inline-flex h-9 cursor-pointer items-center justify-center rounded-full bg-secondary px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/80">
+                          Téléverser une photo
+                        </span>
+                      </label>
                     </div>
                   </div>
 

@@ -1044,23 +1044,31 @@ const Agenda: React.FC = () => {
       {
         title: "Créneaux du jour",
         value: String(dailyAppointments.length),
-        badge: `${deltaPrefix}${delta}`,
+        badge: delta === 0 ? undefined : `${deltaPrefix}${delta}`,
         trend: delta === 0 ? "neutral" : delta > 0 ? "up" : "down",
         summary: `${dailyAppointments.filter((item) => item.status === "completed").length} consultation${dailyAppointments.filter((item) => item.status === "completed").length > 1 ? "s" : ""} clôturée${dailyAppointments.filter((item) => item.status === "completed").length > 1 ? "s" : ""}`,
         detail: "Comparaison avec la veille clinique",
+        icon: Calendar01Icon,
       },
       {
         title: "Urgences ouvertes",
         value: String(urgentOpenCount),
-        badge: `${urgentOpenCount} alerte${urgentOpenCount > 1 ? "s" : ""}`,
+        badge:
+          urgentOpenCount === 0
+            ? undefined
+            : `${urgentOpenCount} alerte${urgentOpenCount > 1 ? "s" : ""}`,
         trend: urgentOpenCount === 0 ? "neutral" : "down",
         summary: "Cas à surveiller en priorité",
         detail: "Toujours visibles dans l’onglet attention",
+        icon: Alert02Icon,
       },
       {
         title: "Temps planifié",
         value: formatDuration(totalPlannedMinutes),
-        badge: `${Number.isFinite(occupancy) ? occupancy : 0}%`,
+        badge:
+          totalPlannedMinutes === 0
+            ? undefined
+            : `${Number.isFinite(occupancy) ? occupancy : 0}%`,
         trend:
           totalPlannedMinutes === 0
             ? "neutral"
@@ -1069,13 +1077,14 @@ const Agenda: React.FC = () => {
               : "down",
         summary: `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""}`,
         detail: "Charge répartie sur la journée sélectionnée",
+        icon: StethoscopeIcon,
       },
       {
         title: "Prochain rendez-vous",
         value: nextAppointment
           ? formatTimeCompact(nextAppointment.startTime)
-          : "--:--",
-        badge: nextAppointment ? nextAppointment.type : "Libre",
+          : "Libre",
+        badge: nextAppointment ? nextAppointment.type : undefined,
         trend: nextAppointment ? "up" : "neutral",
         summary: nextAppointment
           ? patientsById.get(nextAppointment.patientId)?.name ||
@@ -1084,6 +1093,7 @@ const Agenda: React.FC = () => {
         detail: nextAppointment
           ? formatDateTimeLabel(nextAppointment.startTime)
           : "Le planning à venir est actuellement vide",
+        icon: UserCircle02Icon,
       },
     ]
   }, [
@@ -1486,12 +1496,7 @@ const Agenda: React.FC = () => {
         </div>
       </div>
 
-      <div className="-mx-4 lg:-mx-6">
-        <SectionCards
-          items={overviewItems}
-          className="md:grid-cols-2 lg:grid-cols-4"
-        />
-      </div>
+      <SectionCards items={overviewItems} className="xl:grid-cols-4" />
 
       <div className="grid gap-4">
         <Card className="min-h-[780px]">

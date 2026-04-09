@@ -403,6 +403,32 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     }))
   }, [chartData])
 
+  const consultationSeries = useMemo(() => {
+    const weekStart = startOfDay(addDays(referenceDate, -6))
+
+    return Array.from({ length: 7 }, (_, index) => {
+      const day = addDays(weekStart, index)
+      const label = day.toLocaleDateString("fr-FR", { weekday: "short" })
+      const dayAppointments = appointments.filter((item) => {
+        const date = new Date(item.startTime)
+        return (
+          isSameDay(date, day) && !["cancelled", "no_show"].includes(item.status)
+        )
+      })
+
+      return {
+        time: label.charAt(0).toUpperCase() + label.slice(1, 3),
+        consultations: dayAppointments.filter((item) =>
+          ["Consultation", "Contrôle", "Vaccin"].includes(item.type)
+        ).length,
+        chirurgies: dayAppointments.filter((item) => item.type === "Chirurgie")
+          .length,
+        urgences: dayAppointments.filter((item) => item.type === "Urgence")
+          .length,
+      }
+    })
+  }, [appointments, referenceDate])
+
   const revenueSeries = useMemo(() => {
     const buckets = Array.from({ length: 6 }, (_, index) => {
       const monthDate = new Date(
@@ -680,6 +706,16 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     }
   }, [reportReferenceDate, transactions])
 
+  const revenueChartSeries = useMemo(
+    () =>
+      financeAnalytics.week.map((item) => ({
+        time: item.label,
+        encaissements: item.revenue ?? 0,
+        depenses: item.expenses ?? 0,
+      })),
+    [financeAnalytics.week]
+  )
+
   const visitorsAnalytics = useMemo(() => {
     const months = Array.from({ length: 6 }, (_, index) => {
       const monthDate = new Date(
@@ -762,7 +798,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     return categories.map((label) => {
       const count = appointments.filter((item) => item.type === label).length
       const value = total > 0 ? Math.round((count / total) * 100) : 0
-      return { label, value }
+      return { label, value, view: "agenda" as View }
     })
   }, [appointments])
 
@@ -1163,8 +1199,14 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
             <div className="px-6">
               <div className="grid gap-6 xl:grid-cols-2">
-                <ConsultationsChart />
-                <RevenueChart />
+                <ConsultationsChart
+                  data={consultationSeries}
+                  onNavigate={() => onNavigate("agenda")}
+                />
+                <RevenueChart
+                  data={revenueChartSeries}
+                  onNavigate={() => onNavigate("finances")}
+                />
               </div>
             </div>
 
@@ -1245,6 +1287,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               trafficSources={trafficSources}
               customerTrend={customerTrend}
               profileShare={profileShare}
+              onNavigate={onNavigate}
             />
           </TabsContent>
 
