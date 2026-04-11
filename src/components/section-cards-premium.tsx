@@ -22,6 +22,7 @@ export type SectionCardItem = {
   sparklineData?: number[]
   color?: "blue" | "violet" | "emerald" | "amber" | "rose" | "cyan"
   onClick?: () => void
+  accentVisible?: boolean
 }
 
 const colorMap = {
@@ -100,9 +101,9 @@ export function SectionCardsPremium({
             {/* Gradient background */}
             <div
               className={cn(
-                "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300",
+                "absolute inset-0 bg-gradient-to-br transition-opacity duration-300",
                 colors.gradient,
-                "group-hover:opacity-100"
+                item.accentVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"
               )}
             />
 

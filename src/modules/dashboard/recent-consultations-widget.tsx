@@ -79,8 +79,9 @@ export function RecentConsultationsWidget({
   const visibleConsultations = consultations.slice(0, 6)
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="border-b bg-muted/30">
+    <Card className="relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-violet-500/[0.05] via-violet-500/[0.02] to-transparent" />
+      <CardHeader className="relative border-b border-border/35 bg-transparent">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10">
             <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={2} className="h-5 w-5 text-violet-600" />

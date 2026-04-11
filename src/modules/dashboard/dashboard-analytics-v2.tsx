@@ -249,8 +249,9 @@ export function DashboardAnalyticsV2({
       {/* Main Charts Row */}
       <div className="grid gap-6 xl:grid-cols-2">
         {/* Financial Performance Card */}
-        <Card className={cn("overflow-hidden", accentMap.emerald.card)}>
-          <CardHeader className={cn("flex items-center gap-2 space-y-0 py-5 sm:flex-row", accentMap.emerald.header)}>
+        <Card className={cn("relative overflow-hidden", accentMap.emerald.card)}>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-500/[0.05] via-emerald-500/[0.02] to-transparent" />
+          <CardHeader className={cn("relative flex items-center gap-2 space-y-0 py-5 sm:flex-row", accentMap.emerald.header)}>
             <div className="flex items-center gap-3">
               <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl", accentMap.emerald.iconWrap)}>
                 <HugeiconsIcon icon={DollarCircleIcon} strokeWidth={2} className="h-5 w-5" />
@@ -325,8 +326,9 @@ export function DashboardAnalyticsV2({
         </Card>
 
         {/* Patient Flow Card */}
-        <Card className={cn("overflow-hidden", accentMap.blue.card)}>
-          <CardHeader className={cn("flex items-center gap-2 space-y-0 py-5 sm:flex-row", accentMap.blue.header)}>
+        <Card className={cn("relative overflow-hidden", accentMap.blue.card)}>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-blue-500/[0.05] via-blue-500/[0.02] to-transparent" />
+          <CardHeader className={cn("relative flex items-center gap-2 space-y-0 py-5 sm:flex-row", accentMap.blue.header)}>
             <div className="flex items-center gap-3">
               <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl", accentMap.blue.iconWrap)}>
                 <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="h-5 w-5" />
@@ -397,8 +399,9 @@ export function DashboardAnalyticsV2({
       {/* Bottom Row - 3 Cards */}
       <div className="grid gap-6 xl:grid-cols-3">
         {/* Traffic Sources */}
-        <Card className={cn("overflow-hidden", accentMap.violet.card)}>
-          <CardHeader className={accentMap.violet.header}>
+        <Card className={cn("relative overflow-hidden", accentMap.violet.card)}>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-violet-500/[0.05] via-violet-500/[0.02] to-transparent" />
+          <CardHeader className={cn("relative", accentMap.violet.header)}>
             <div className="flex items-center gap-3">
               <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", accentMap.violet.iconWrap)}>
                 <HugeiconsIcon icon={ChartIcon} strokeWidth={2} className="h-4 w-4" />
@@ -464,8 +467,9 @@ export function DashboardAnalyticsV2({
         </Card>
 
         {/* Customer Trend */}
-        <Card className={cn("overflow-hidden", accentMap.cyan.card)}>
-          <CardHeader className={accentMap.cyan.header}>
+        <Card className={cn("relative overflow-hidden", accentMap.cyan.card)}>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-cyan-500/[0.05] via-cyan-500/[0.02] to-transparent" />
+          <CardHeader className={cn("relative", accentMap.cyan.header)}>
             <div className="flex items-center gap-3">
               <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", accentMap.cyan.iconWrap)}>
                 <HugeiconsIcon icon={TrendingUp} strokeWidth={2} className="h-4 w-4" />
@@ -519,8 +523,9 @@ export function DashboardAnalyticsV2({
         </Card>
 
         {/* Profile Share - Pie Chart */}
-        <Card className={cn("overflow-hidden", accentMap.rose.card)}>
-          <CardHeader className={accentMap.rose.header}>
+        <Card className={cn("relative overflow-hidden", accentMap.rose.card)}>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-rose-500/[0.05] via-rose-500/[0.02] to-transparent" />
+          <CardHeader className={cn("relative", accentMap.rose.header)}>
             <div className="flex items-center gap-3">
               <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", accentMap.rose.iconWrap)}>
                 <HugeiconsIcon icon={PieChartIcon} strokeWidth={2} className="h-4 w-4" />

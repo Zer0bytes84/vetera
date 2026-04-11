@@ -1241,18 +1241,8 @@ const Parametres: React.FC<ParametresProps> = ({
                     onChange={handleImageUpload}
                   />
                   <div className="flex items-center gap-4">
-                    <div className="group relative shrink-0">
+                    <div className="shrink-0">
                       <Avatar src={avatarUrl} name={displayName} size="lg" />
-                      <label
-                        htmlFor="profile-photo-upload"
-                        className="absolute right-0 bottom-0 cursor-pointer rounded-full border-2 border-white bg-gradient-to-br from-emerald-500 to-teal-600 p-2 text-white shadow-lg transition-transform hover:scale-105"
-                      >
-                        <HugeiconsIcon
-                          icon={Camera01Icon}
-                          strokeWidth={2}
-                          className="size-3"
-                        />
-                      </label>
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-foreground">
@@ -1261,11 +1251,6 @@ const Parametres: React.FC<ParametresProps> = ({
                       <p className="text-xs text-muted-foreground">
                         JPG, PNG, WebP. Max 1 Mo.
                       </p>
-                      <label htmlFor="profile-photo-upload" className="mt-3 inline-flex">
-                        <span className="inline-flex h-9 cursor-pointer items-center justify-center rounded-full bg-secondary px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/80">
-                          Téléverser une photo
-                        </span>
-                      </label>
                     </div>
                   </div>
 
