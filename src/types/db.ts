@@ -103,6 +103,22 @@ export interface Note {
   updatedAt: string;
 }
 
+export interface ConsultationDocument {
+  id: string;
+  appointmentId: string;
+  patientId: string;
+  ownerId?: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  category: "pdf" | "image" | "other";
+  dataUrl: string;
+  description?: string;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Task {
   id: string;
   title: string;

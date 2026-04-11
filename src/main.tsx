@@ -4,9 +4,12 @@ import { createRoot } from "react-dom/client"
 import { AuthProvider } from "@/contexts/AuthContext"
 import App from "@/App"
 import "./index.css"
+import "@/i18n/config"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { DirectionProvider } from "@/components/ui/direction"
+import i18n, { isRtlLanguage } from "@/i18n/config"
 
 type ErrorBoundaryState = {
   hasError: boolean
@@ -51,17 +54,38 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBounda
   }
 }
 
+function AppDirectionProvider({ children }: React.PropsWithChildren) {
+  const [dir, setDir] = React.useState<"ltr" | "rtl">(
+    isRtlLanguage(i18n.language) ? "rtl" : "ltr"
+  )
+
+  React.useEffect(() => {
+    const onLanguageChanged = (language: string) => {
+      setDir(isRtlLanguage(language) ? "rtl" : "ltr")
+    }
+
+    i18n.on("languageChanged", onLanguageChanged)
+    return () => {
+      i18n.off("languageChanged", onLanguageChanged)
+    }
+  }, [])
+
+  return <DirectionProvider direction={dir}>{children}</DirectionProvider>
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
-      <ThemeProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <App />
-            <Toaster />
-          </TooltipProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <AppDirectionProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              <App />
+              <Toaster />
+            </TooltipProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </AppDirectionProvider>
     </ErrorBoundary>
   </StrictMode>
 )

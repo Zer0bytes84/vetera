@@ -67,6 +67,7 @@ import {
   useUsersRepository,
 } from "../../data/repositories"
 import MotivationalHeader from "@/components/MotivationalHeader"
+import { useTranslation } from "react-i18next"
 
 type DashboardPageProps = {
   onNavigate: (view: View) => void
@@ -131,19 +132,31 @@ function formatMoneyDa(amountCentimes: number) {
 function mapStatus(status: string) {
   switch (status) {
     case "completed":
-      return "Terminé"
+      return "Completed"
     case "in_progress":
-      return "En cours"
+      return "In progress"
     case "cancelled":
-      return "Annulé"
+      return "Cancelled"
     case "no_show":
-      return "Absent"
+      return "No-show"
     default:
-      return "Planifié"
+      return "Scheduled"
   }
 }
 
 export function DashboardPage({ onNavigate }: DashboardPageProps) {
+  const { t, i18n } = useTranslation()
+  const currentLocale = i18n.language.startsWith("ar")
+    ? "ar"
+    : i18n.language.startsWith("en")
+      ? "en-US"
+      : i18n.language.startsWith("es")
+        ? "es-ES"
+        : i18n.language.startsWith("pt")
+          ? "pt-PT"
+          : i18n.language.startsWith("de")
+            ? "de-DE"
+            : "fr-FR"
   const [dashboardTab, setDashboardTab] = useState<
     "overview" | "analytics" | "reports" | "notifications"
   >("overview")
@@ -242,39 +255,41 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
     return [
       {
-        title: "Consultations du jour",
+        title: t("dashboardPage.consultationsOfDay"),
         value: String(todayAppointments.length),
         badge: `${consultationDelta >= 0 ? "+" : ""}${consultationDelta}%`,
         trend: consultationDelta >= 0 ? "up" : "down",
-        summary: `${urgentOpen} urgence${urgentOpen > 1 ? "s" : ""} en suivi`,
-        detail: "Créneaux planifiés sur la journée clinique",
+        summary: t("dashboardPage.urgencyFollowUp", { count: urgentOpen }),
+        detail: t("dashboardPage.plannedSlots"),
         icon: StethoscopeIcon,
       },
       {
-        title: "Patients actifs",
+        title: t("dashboardPage.activePatients"),
         value: String(activePatients),
-        badge: `${upcomingAppointments.length} à venir`,
+        badge: t("dashboardPage.upcoming", { count: upcomingAppointments.length }),
         trend: "up",
-        summary: `${patients.filter((item) => item.status === "traitement" || item.status === "hospitalise").length} sous surveillance`,
-        detail: "Base vivante des dossiers suivis au cabinet",
+        summary: t("dashboardPage.underSurveillance", {
+          count: patients.filter((item) => item.status === "traitement" || item.status === "hospitalise").length,
+        }),
+        detail: t("dashboardPage.liveRecords"),
         icon: UserGroupIcon,
       },
       {
-        title: "Revenus encaissés",
+        title: t("dashboardPage.cashIn"),
         value: formatMoneyDa(currentIncome),
         badge: `${incomeDelta >= 0 ? "+" : ""}${incomeDelta}%`,
         trend: incomeDelta >= 0 ? "up" : "down",
-        summary: "Encaissements consolidés",
-        detail: "Comparaison avec les 30 jours précédents",
+        summary: t("dashboardPage.consolidatedCashIn"),
+        detail: t("dashboardPage.compare30"),
         icon: Invoice03Icon,
       },
       {
-        title: "Stock critique",
+        title: t("dashboardPage.criticalStock"),
         value: String(lowStock),
-        badge: `${lowStock} alerte${lowStock > 1 ? "s" : ""}`,
+        badge: t("dashboardPage.stockAlerts", { count: lowStock }),
         trend: lowStock > 0 ? "down" : "up",
-        summary: "Produits sous le seuil minimum",
-        detail: "Ordonnances et consommables à surveiller",
+        summary: t("dashboardPage.belowMin"),
+        detail: t("dashboardPage.stockWatch"),
         icon: Package02Icon,
       },
     ]
@@ -365,7 +380,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           patient: patient?.name || appointment.title,
           owner: owner
             ? `${owner.firstName} ${owner.lastName}`.trim()
-            : "Propriétaire non lié",
+            : t("dashboardPage.ownerNotLinked"),
           type: appointment.type,
           appointmentAt: start.toLocaleDateString("fr-FR", {
             day: "numeric",
@@ -375,14 +390,12 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             minute: "2-digit",
           }),
           status:
-            patient?.status === "hospitalise" &&
-            appointment.status !== "completed"
-              ? "Hospitalisé"
-              : appointment.type === "Urgence" &&
-                  appointment.status !== "completed"
-                ? "Urgence"
+            patient?.status === "hospitalise" && appointment.status !== "completed"
+              ? "Hospitalized"
+              : appointment.type === "Urgence" && appointment.status !== "completed"
+                ? "Emergency"
                 : mapStatus(appointment.status),
-          veterinarian: veterinarian?.displayName || "Vétérinaire local",
+          veterinarian: veterinarian?.displayName || t("dashboardPage.localVet"),
           summary: appointment.reason || appointment.title,
           notes: appointment.notes || patient?.generalNotes || "",
           diagnosis: appointment.diagnosis || patient?.chronicConditions || "",
@@ -395,7 +408,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
   const weeklyActivity = useMemo(() => {
     return chartData.slice(-7).map((item) => ({
-      label: new Date(item.date).toLocaleDateString("fr-FR", {
+      label: new Date(item.date).toLocaleDateString(currentLocale, {
         weekday: "short",
       }),
       consultations: item.consultations,
@@ -408,7 +421,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
     return Array.from({ length: 7 }, (_, index) => {
       const day = addDays(weekStart, index)
-      const label = day.toLocaleDateString("fr-FR", { weekday: "short" })
+      const label = day.toLocaleDateString(currentLocale, { weekday: "short" })
       const dayAppointments = appointments.filter((item) => {
         const date = new Date(item.startTime)
         return (
@@ -436,7 +449,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         referenceDate.getMonth() - (5 - index),
         1
       )
-      const monthLabel = monthDate.toLocaleDateString("fr-FR", {
+      const monthLabel = monthDate.toLocaleDateString(currentLocale, {
         month: "short",
       })
       const revenue = transactions
@@ -540,8 +553,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       pendingTasks: pendingTasks.length,
       currentIncome: currIncome,
       previousIncome: prevIncome,
+      translate: t,
     })
-  }, [appointments, products, tasks, transactions, referenceDate])
+  }, [appointments, products, tasks, transactions, referenceDate, t])
 
   const activityFeed = useMemo(() => {
     const items: Array<{id: string; type: string; label: string; detail: string; time: Date}> = []
@@ -559,22 +573,24 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           id: `apt-${a.id}`,
           type: "appointment",
           label: `${patient?.name || a.title} — ${a.type}`,
-          detail: `Consultation terminée`,
+          detail: t("dashboardPage.completedConsultation"),
           time: new Date(a.startTime),
         })
       })
 
     transactions
-      .filter((t) => t.type === "income" && t.status === "paid")
+      .filter((tx) => tx.type === "income" && tx.status === "paid")
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 3)
-      .forEach((t) => {
+      .forEach((tx) => {
         items.push({
-          id: `tx-${t.id}`,
+          id: `tx-${tx.id}`,
           type: "transaction",
-          label: `${formatMoneyDa(t.amount)} encaissé`,
-          detail: t.description || "Paiement reçu",
-          time: new Date(t.date),
+          label: t("dashboardPage.cashCollected", {
+            amount: formatMoneyDa(tx.amount),
+          }),
+          detail: tx.description || t("dashboardPage.paymentReceived"),
+          time: new Date(tx.date),
         })
       })
 
@@ -588,8 +604,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         items.push({
           id: `pat-${p.id}`,
           type: "patient",
-          label: `${p.name} ajouté`,
-          detail: p.species || "Nouveau dossier",
+          label: t("dashboardPage.patientAdded", { name: p.name }),
+          detail: p.species || t("dashboardPage.newRecord"),
           time: new Date(p.createdAt),
         })
       })
@@ -604,7 +620,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         reportReferenceDate.getMonth() - (5 - index),
         1
       )
-      const label = monthDate.toLocaleDateString("fr-FR", { month: "short" })
+      const label = monthDate.toLocaleDateString(currentLocale, { month: "short" })
       const monthIncome = transactions
         .filter((item) => {
           const date = new Date(item.date)
@@ -639,7 +655,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     const weekStart = startOfDay(addDays(reportReferenceDate, -6))
     const week = Array.from({ length: 7 }, (_, index) => {
       const day = addDays(weekStart, index)
-      const label = day.toLocaleDateString("fr-FR", { weekday: "short" })
+      const label = day.toLocaleDateString(currentLocale, { weekday: "short" })
       const dayIncome = transactions
         .filter((item) => {
           const date = new Date(item.date)
@@ -723,7 +739,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         reportReferenceDate.getMonth() - (5 - index),
         1
       )
-      const label = monthDate.toLocaleDateString("fr-FR", { month: "short" })
+      const label = monthDate.toLocaleDateString(currentLocale, { month: "short" })
       const newPatients = patients.filter((item) => {
         const createdAt = new Date(item.createdAt)
         return (
@@ -750,7 +766,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     const weekStart = startOfDay(addDays(reportReferenceDate, -6))
     const week = Array.from({ length: 7 }, (_, index) => {
       const day = addDays(weekStart, index)
-      const label = day.toLocaleDateString("fr-FR", { weekday: "short" })
+      const label = day.toLocaleDateString(currentLocale, { weekday: "short" })
 
       return {
         label: label.charAt(0).toUpperCase() + label.slice(1, 3),
@@ -809,7 +825,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         reportReferenceDate.getMonth() - (5 - index),
         1
       )
-      const label = monthDate.toLocaleDateString("fr-FR", { month: "short" })
+      const label = monthDate.toLocaleDateString(currentLocale, { month: "short" })
       const activePatients = patients.filter((item) => {
         const createdAt = new Date(item.createdAt)
         return createdAt <= endOfDay(monthDate) && item.status !== "decede"
@@ -871,7 +887,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         id: `stock-${item.id}`,
         title: `${item.name} sous le seuil`,
         description: `${item.quantity} restant(s) · minimum ${item.minStock}`,
-        actionLabel: "Ouvrir le stock",
+        actionLabel: t("dashboard.actions.openStock"),
         onClick: () => onNavigate("stock"),
       }))
 
@@ -884,9 +900,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       .slice(0, 4)
       .map((item) => ({
         id: `appointment-${item.id}`,
-        title: `Urgence en attente`,
+        title: t("dashboard.notifications.pendingEmergency"),
         description: `${item.title} · ${new Date(item.startTime).toLocaleString(
-          "fr-FR",
+          currentLocale,
           {
             day: "numeric",
             month: "short",
@@ -894,7 +910,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             minute: "2-digit",
           }
         )}`,
-        actionLabel: "Voir l'agenda",
+        actionLabel: t("dashboard.actions.viewAgenda"),
         onClick: () => onNavigate("agenda"),
       }))
 
@@ -905,9 +921,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         id: `task-${task.id}`,
         title: task.title,
         description: task.dueDate
-          ? `Échéance ${new Date(task.dueDate).toLocaleDateString("fr-FR")}`
-          : "Tâche à suivre aujourd’hui",
-        actionLabel: "Voir les rappels",
+          ? `${t("dashboard.notifications.duePrefix")} ${new Date(task.dueDate).toLocaleDateString(currentLocale)}`
+          : t("dashboard.notifications.taskToday"),
+        actionLabel: t("dashboard.actions.viewReminders"),
         onClick: () => onNavigate("taches"),
       }))
 
@@ -943,21 +959,21 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     const doc = new jsPDF()
     const reportTitle =
       period === "daily"
-        ? "Rapport quotidien"
+        ? t("dashboard.reports.dailyTitle")
         : period === "weekly"
-          ? "Rapport hebdomadaire"
-          : "Rapport mensuel"
+          ? t("dashboard.reports.weeklyTitle")
+          : t("dashboard.reports.monthlyTitle")
 
     doc.setFontSize(18)
     doc.text(`Vetera · ${reportTitle}`, 20, 20)
     doc.setFontSize(11)
     doc.text(
-      `Période: ${start.toLocaleDateString("fr-FR")} - ${end.toLocaleDateString("fr-FR")}`,
+      `${t("dashboard.reports.period")}: ${start.toLocaleDateString(currentLocale)} - ${end.toLocaleDateString(currentLocale)}`,
       20,
       30
     )
     doc.text(
-      `Généré le ${new Date().toLocaleDateString("fr-FR")} pour ${currentUser?.displayName || "la clinique"}`,
+      `${t("dashboard.reports.generatedOn")} ${new Date().toLocaleDateString(currentLocale)} ${t("dashboard.reports.for")} ${currentUser?.displayName || t("dashboard.reports.clinic")}`,
       20,
       38
     )
@@ -972,7 +988,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     ]
 
     doc.setFontSize(13)
-    doc.text("Synthèse", 20, 54)
+    doc.text(t("dashboard.reports.summary"), 20, 54)
     doc.setFontSize(11)
     summaryLines.forEach((line, index) => {
       doc.text(`• ${line}`, 24, 64 + index * 8)
@@ -980,29 +996,29 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
     const topAppointments = periodAppointments.slice(0, 5)
     doc.setFontSize(13)
-    doc.text("Rendez-vous clés", 20, 122)
+    doc.text(t("dashboard.reports.keyAppointments"), 20, 122)
     doc.setFontSize(11)
     topAppointments.forEach((item, index) => {
       doc.text(
-        `• ${item.title} · ${new Date(item.startTime).toLocaleString("fr-FR")} · ${mapStatus(item.status)}`,
+        `• ${item.title} · ${new Date(item.startTime).toLocaleString(currentLocale)} · ${mapStatus(item.status)}`,
         24,
         132 + index * 8
       )
     })
 
     doc.save(
-      `vetera-${period === "daily" ? "quotidien" : period === "weekly" ? "hebdomadaire" : "mensuel"}.pdf`
+      `vetera-${period === "daily" ? "daily" : period === "weekly" ? "weekly" : "monthly"}.pdf`
     )
-    toast.success(`${reportTitle} téléchargé.`)
+    toast.success(t("dashboard.reports.downloaded", { reportTitle }))
   }
 
   const dashboardTabs = [
-    { value: "overview", label: "Vue d'ensemble", icon: DashboardSquare01Icon, count: null },
-    { value: "analytics", label: "Analyse", icon: ChartUpIcon, count: null },
-    { value: "reports", label: "Rapports", icon: File01Icon, count: null },
+    { value: "overview", label: t("dashboard.tabs.overview"), icon: DashboardSquare01Icon, count: null },
+    { value: "analytics", label: t("dashboard.tabs.analytics"), icon: ChartUpIcon, count: null },
+    { value: "reports", label: t("dashboard.tabs.reports"), icon: File01Icon, count: null },
     {
       value: "notifications",
-      label: "Notifications",
+      label: t("dashboard.tabs.notifications"),
       icon: Notification02Icon,
       count: dashboardNotifications.length,
     },
@@ -1155,23 +1171,23 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                     strokeWidth={2}
                     data-icon="inline-start"
                   />
-                  Télécharger
+                  {t("dashboard.actions.download")}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-64">
                   <DropdownMenuItem
                     onClick={() => void exportDashboardReport("daily")}
                   >
-                    Rapport quotidien
+                    {t("dashboard.reports.dailyTitle")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => void exportDashboardReport("weekly")}
                   >
-                    Rapport hebdomadaire
+                    {t("dashboard.reports.weeklyTitle")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => void exportDashboardReport("monthly")}
                   >
-                    Rapport mensuel
+                    {t("dashboard.reports.monthlyTitle")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -1189,7 +1205,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                     strokeWidth={2}
                     data-icon="inline-start"
                   />
-                  {reportReferenceDate.toLocaleDateString("fr-FR", {
+                  {reportReferenceDate.toLocaleDateString(currentLocale, {
                     day: "numeric",
                     month: "short",
                     year: "numeric",
@@ -1225,6 +1241,10 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   onNavigate={() => onNavigate("finances")}
                 />
               </div>
+            </div>
+
+            <div className="px-6">
+              <QuickActionsBar onNavigate={onNavigate} />
             </div>
 
             <div className="px-6">
@@ -1291,10 +1311,6 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 onCreate={() => onNavigate("agenda")}
               />
             </div>
-
-            <div className="px-6">
-              <QuickActionsBar onNavigate={onNavigate} />
-            </div>
           </TabsContent>
 
           <TabsContent value="analytics">
@@ -1313,29 +1329,26 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {[
                 {
                   id: "daily",
-                  title: "Rapport quotidien",
-                  description:
-                    "Synthèse des consultations, encaissements et urgences du jour.",
-                  cta: "Télécharger le quotidien",
+                  title: t("dashboard.reports.dailyTitle"),
+                  description: t("dashboard.reports.dailyDesc"),
+                  cta: t("dashboard.reports.dailyCta"),
                 },
                 {
                   id: "weekly",
-                  title: "Rapport hebdomadaire",
-                  description:
-                    "Vue consolidée de la semaine clinique avec activité et trésorerie.",
-                  cta: "Télécharger l’hebdomadaire",
+                  title: t("dashboard.reports.weeklyTitle"),
+                  description: t("dashboard.reports.weeklyDesc"),
+                  cta: t("dashboard.reports.weeklyCta"),
                 },
                 {
                   id: "monthly",
-                  title: "Rapport mensuel",
-                  description:
-                    "Bilan global du mois avec revenus, stock critique et suivi patient.",
-                  cta: "Télécharger le mensuel",
+                  title: t("dashboard.reports.monthlyTitle"),
+                  description: t("dashboard.reports.monthlyDesc"),
+                  cta: t("dashboard.reports.monthlyCta"),
                 },
               ].map((report) => (
                 <Card key={report.id}>
                   <CardHeader>
-                    <CardDescription>Export PDF</CardDescription>
+                    <CardDescription>{t("dashboard.reports.exportPdf")}</CardDescription>
                     <CardTitle>{report.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -1369,7 +1382,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 dashboardNotifications.map((item) => (
                   <Card key={item.id}>
                     <CardHeader>
-                      <CardDescription>Notification métier</CardDescription>
+                      <CardDescription>{t("dashboard.notifications.business")}</CardDescription>
                       <CardTitle className="text-xl">{item.title}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -1390,9 +1403,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               ) : (
                 <Card className="lg:col-span-2">
                   <CardHeader>
-                    <CardTitle>Aucune alerte prioritaire</CardTitle>
+                    <CardTitle>{t("dashboard.notifications.noneTitle")}</CardTitle>
                     <CardDescription>
-                      Les notifications critiques du cabinet apparaîtront ici.
+                      {t("dashboard.notifications.noneDesc")}
                     </CardDescription>
                   </CardHeader>
                 </Card>

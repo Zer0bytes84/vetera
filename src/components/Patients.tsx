@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -1873,8 +1874,28 @@ const Patients: React.FC = () => {
             </div>
 
             {loadingPatients ? (
-              <div className="flex flex-1 items-center justify-center px-6 pb-6">
-                <Spinner className="size-6 text-muted-foreground" />
+              <div className="flex flex-1 flex-col gap-3 px-6 pb-6">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <Skeleton className="h-12 rounded-2xl" />
+                  <Skeleton className="h-12 rounded-2xl" />
+                  <Skeleton className="h-12 rounded-2xl" />
+                  <Skeleton className="h-12 rounded-2xl" />
+                </div>
+                <div className="overflow-hidden rounded-lg border border-border/70">
+                  <div className="space-y-0">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <div
+                        key={`patients-skeleton-row-${index}`}
+                        className="grid grid-cols-4 gap-3 border-b border-border/60 p-4 last:border-b-0"
+                      >
+                        <Skeleton className="h-4 w-3/4 rounded-md" />
+                        <Skeleton className="h-4 w-2/3 rounded-md" />
+                        <Skeleton className="h-4 w-1/2 rounded-md" />
+                        <Skeleton className="h-4 w-16 rounded-md justify-self-end" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : visiblePatients.length === 0 ? (
               <div className="flex flex-1 px-6 pb-6">

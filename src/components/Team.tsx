@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Empty,
@@ -241,10 +242,7 @@ const Team: React.FC = () => {
           subtitle="Gestion du personnel, des rôles et des accès"
         />
         {canManageTeam && (
-          <Button
-            onClick={() => handleOpenModal()}
-            className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] px-4 shadow-[0_18px_35px_rgba(49,108,255,0.24)]"
-          >
+          <Button onClick={() => handleOpenModal()}>
             <HugeiconsIcon
               icon={Add01Icon}
               strokeWidth={2}
@@ -285,8 +283,25 @@ const Team: React.FC = () => {
         {/* Users List */}
         <CardContent className="flex-1 overflow-auto">
           {loading ? (
-            <div className="flex h-64 items-center justify-center">
-              <Spinner className="size-8 text-primary" />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={`team-skeleton-card-${index}`}
+                  className="rounded-xl border border-border bg-muted/20 p-5"
+                >
+                  <div className="mb-4 flex items-center gap-4">
+                    <Skeleton className="size-14 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-32 rounded-md" />
+                      <Skeleton className="h-3 w-24 rounded-md" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-3.5 w-full rounded-md" />
+                    <Skeleton className="h-3.5 w-4/5 rounded-md" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredUsers.length === 0 ? (
             <Empty>
@@ -583,7 +598,6 @@ const Team: React.FC = () => {
             <Button
               onClick={handleSave}
               disabled={isSubmitting}
-              className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] px-4 shadow-[0_18px_35px_rgba(49,108,255,0.24)]"
             >
               {isSubmitting && <Spinner className="size-4" />}
               {editingId ? "Mettre à jour" : "Ajouter"}

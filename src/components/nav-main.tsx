@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { SparklesIcon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "react-i18next"
 
 export function NavMain({
   title,
@@ -27,6 +28,7 @@ export function NavMain({
   onPrimaryAction?: () => void
   onAssistant?: () => void
 }) {
+  const { t } = useTranslation()
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:mt-0">
       <SidebarGroupContent>
@@ -47,12 +49,12 @@ export function NavMain({
           {onAssistant ? (
             <SidebarMenuItem>
               <SidebarMenuButton
-                tooltip="Assistant"
+                tooltip={t("nav.assistant")}
                 render={<button type="button" onClick={onAssistant} />}
                 className="text-primary hover:text-primary hover:bg-primary/10"
               >
                 <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} className="size-4" />
-                <span className="group-data-[collapsible=icon]:hidden">Assistant</span>
+                <span className="group-data-[collapsible=icon]:hidden">{t("nav.assistant")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ) : null}

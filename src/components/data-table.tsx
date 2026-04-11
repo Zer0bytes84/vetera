@@ -35,6 +35,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Add01Icon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "react-i18next"
 
 export type DashboardRow = {
   id: string | number
@@ -51,16 +52,9 @@ export type DashboardRow = {
   tab: "planning" | "aujourdhui" | "attention" | "termine"
 }
 
-const tabs: Array<{ value: DashboardRow["tab"]; label: string }> = [
-  { value: "planning", label: "Planning" },
-  { value: "aujourdhui", label: "Aujourd'hui" },
-  { value: "attention", label: "Attention" },
-  { value: "termine", label: "Terminé" },
-]
-
 function statusVariant(status: string): "default" | "secondary" | "outline" {
   if (status === "Urgence") return "default"
-  if (status === "Terminé") return "secondary"
+  if (status === "Terminé" || status === "Completed") return "secondary"
   return "outline"
 }
 
@@ -71,8 +65,15 @@ export function DataTable({
   data: DashboardRow[]
   onCreate?: () => void
 }) {
+  const { t } = useTranslation()
   const [query, setQuery] = React.useState("")
   const [view, setView] = React.useState<DashboardRow["tab"]>("planning")
+  const tabs: Array<{ value: DashboardRow["tab"]; label: string }> = [
+    { value: "planning", label: t("dataTable.tabs.planning") },
+    { value: "aujourdhui", label: t("dataTable.tabs.today") },
+    { value: "attention", label: t("dataTable.tabs.attention") },
+    { value: "termine", label: t("dataTable.tabs.done") },
+  ]
 
   const filtered = React.useMemo(() => {
     const needle = query.trim().toLowerCase()
@@ -101,9 +102,9 @@ export function DataTable({
       <CardHeader className="border-b px-6 py-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <CardDescription>Registre clinique</CardDescription>
+            <CardDescription>{t("dataTable.description")}</CardDescription>
             <CardTitle className="text-2xl tracking-[-0.04em]">
-              Activité des dossiers
+              {t("dataTable.title")}
             </CardTitle>
           </div>
           <CardAction className="self-start lg:self-auto">
@@ -113,7 +114,7 @@ export function DataTable({
               strokeWidth={2}
               data-icon="inline-start"
             />
-            Nouveau rendez-vous
+            {t("dataTable.newAppointment")}
             </Button>
           </CardAction>
         </div>
@@ -136,7 +137,7 @@ export function DataTable({
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Rechercher un patient, un propriétaire ou un statut..."
+              placeholder={t("dataTable.searchPlaceholder")}
               className="w-full xl:max-w-sm"
             />
           </div>
@@ -147,15 +148,15 @@ export function DataTable({
             <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[30%] pl-6">Patient</TableHead>
+                  <TableHead className="w-[30%] pl-6">{t("dataTable.headers.patient")}</TableHead>
                   <TableHead className="hidden w-[20%] xl:table-cell">
-                    Propriétaire
+                    {t("dataTable.headers.owner")}
                   </TableHead>
-                  <TableHead className="w-[16%]">Acte</TableHead>
-                  <TableHead className="w-[18%]">Créneau</TableHead>
-                  <TableHead className="w-[10%]">Statut</TableHead>
+                  <TableHead className="w-[16%]">{t("dataTable.headers.act")}</TableHead>
+                  <TableHead className="w-[18%]">{t("dataTable.headers.slot")}</TableHead>
+                  <TableHead className="w-[10%]">{t("dataTable.headers.status")}</TableHead>
                   <TableHead className="w-[12%] pr-6 text-right">
-                    Action
+                    {t("dataTable.headers.action")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -209,7 +210,7 @@ export function DataTable({
                               />
                             }
                           >
-                            Consulter
+                            {t("dataTable.consult")}
                           </DialogTrigger>
                           <DialogContent className="max-w-2xl">
                             <DialogHeader>
@@ -221,7 +222,7 @@ export function DataTable({
                             <div className="grid gap-4 py-2 sm:grid-cols-2">
                               <div className="rounded-xl border p-4">
                                 <div className="text-sm font-medium">
-                                  Propriétaire
+                                  {t("dataTable.headers.owner")}
                                 </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
                                   {row.owner}
@@ -229,32 +230,32 @@ export function DataTable({
                               </div>
                               <div className="rounded-xl border p-4">
                                 <div className="text-sm font-medium">
-                                  Vétérinaire
+                                  {t("dataTable.veterinarian")}
                                 </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
                                   {row.veterinarian}
                                 </div>
                               </div>
                               <div className="rounded-xl border p-4 sm:col-span-2">
-                                <div className="text-sm font-medium">Notes</div>
+                                <div className="text-sm font-medium">{t("dataTable.notes")}</div>
                                 <div className="mt-1 text-sm text-muted-foreground">
-                                  {row.notes || "Aucune note clinique."}
+                                  {row.notes || t("dataTable.noClinicalNote")}
                                 </div>
                               </div>
                               <div className="rounded-xl border p-4">
                                 <div className="text-sm font-medium">
-                                  Diagnostic
+                                  {t("dataTable.diagnosis")}
                                 </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
-                                  {row.diagnosis || "Non renseigné"}
+                                  {row.diagnosis || t("dataTable.notProvided")}
                                 </div>
                               </div>
                               <div className="rounded-xl border p-4">
                                 <div className="text-sm font-medium">
-                                  Traitement
+                                  {t("dataTable.treatment")}
                                 </div>
                                 <div className="mt-1 text-sm text-muted-foreground">
-                                  {row.treatment || "Non renseigné"}
+                                  {row.treatment || t("dataTable.notProvided")}
                                 </div>
                               </div>
                             </div>

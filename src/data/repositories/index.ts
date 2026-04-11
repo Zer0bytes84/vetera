@@ -2,7 +2,17 @@ import { useSQLite } from "@/hooks/useSQLite"
 import * as AppSettingsService from "@/services/appSettingsService"
 import * as AuthService from "@/services/sqlite/auth"
 import { toCentimes } from "@/utils/currency"
-import type { Appointment, Note, Owner, Patient, Product, Task, Transaction, User } from "@/types/db"
+import type {
+  Appointment,
+  ConsultationDocument,
+  Note,
+  Owner,
+  Patient,
+  Product,
+  Task,
+  Transaction,
+  User,
+} from "@/types/db"
 
 export const authRepository = {
   getCurrentUser: AuthService.getCurrentUser,
@@ -277,4 +287,8 @@ export function useNotesRepository() {
     ...notesStore,
     createEmptyNote,
   }
+}
+
+export function useConsultationDocumentsRepository() {
+  return useSQLite<ConsultationDocument>("consultation_documents")
 }

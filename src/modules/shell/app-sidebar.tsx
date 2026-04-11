@@ -1,5 +1,6 @@
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { useTranslation } from "react-i18next"
 
 import Logo from "@/components/Logo"
 import { cn } from "@/lib/utils"
@@ -22,6 +23,7 @@ export function AppSidebar({
   onToggleCollapsed: () => void
   themeMode: ThemeMode
 }) {
+  const { t } = useTranslation()
   const { data: tasks } = useTasksRepository()
   const { data: products } = useProductsRepository()
 
@@ -77,7 +79,7 @@ export function AppSidebar({
                 key={`nav-${item.view}`}
                 type="button"
                 onClick={() => onNavigate(item.view)}
-                title={collapsed ? item.label : undefined}
+                title={collapsed ? t(item.labelKey) : undefined}
                 className={cn(
                   "group relative flex w-full items-center rounded-2xl text-left transition-all duration-200",
                   collapsed ? "justify-center px-0 py-3" : "gap-3 px-3.5 py-3",
@@ -98,7 +100,7 @@ export function AppSidebar({
 
                 {!collapsed ? (
                   <>
-                    <span className="min-w-0 flex-1 truncate text-[0.95rem] font-medium">{item.label}</span>
+                    <span className="min-w-0 flex-1 truncate text-[0.95rem] font-medium">{t(item.labelKey)}</span>
                     {badge ? (
                       <span className="flex min-w-5 items-center justify-center rounded-full bg-[var(--primary)] px-1.5 py-0.5 text-[10px] font-bold text-white">
                         {badge}
@@ -117,7 +119,7 @@ export function AppSidebar({
           <button
             type="button"
             onClick={() => onNavigate(settingsItem.view)}
-            title={collapsed ? settingsItem.label : undefined}
+            title={collapsed ? t(settingsItem.labelKey) : undefined}
             className={cn(
               "group flex w-full items-center rounded-2xl transition-all duration-200",
               collapsed ? "justify-center px-0 py-3" : "gap-3 px-3.5 py-3",
@@ -135,7 +137,7 @@ export function AppSidebar({
             >
               <HugeiconsIcon icon={settingsItem.icon} strokeWidth={2} />
             </span>
-            {!collapsed ? <span className="min-w-0 flex-1 truncate text-[0.95rem] font-medium">{settingsItem.label}</span> : null}
+            {!collapsed ? <span className="min-w-0 flex-1 truncate text-[0.95rem] font-medium">{t(settingsItem.labelKey)}</span> : null}
           </button>
         </div>
       ) : null}

@@ -181,6 +181,32 @@ CREATE INDEX idx_notes_user_id ON notes(user_id);
 CREATE INDEX idx_notes_is_favorite ON notes(is_favorite);
 
 -- ============================================
+-- Pièces jointes de consultation
+-- ============================================
+CREATE TABLE IF NOT EXISTS consultation_documents (
+    id TEXT PRIMARY KEY,
+    appointment_id TEXT NOT NULL,
+    patient_id TEXT NOT NULL,
+    owner_id TEXT,
+    file_name TEXT NOT NULL,
+    mime_type TEXT NOT NULL,
+    size_bytes INTEGER NOT NULL,
+    category TEXT NOT NULL CHECK(category IN ('pdf', 'image', 'other')),
+    data_url TEXT NOT NULL,
+    description TEXT,
+    created_by TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_consultation_documents_appointment_id ON consultation_documents(appointment_id);
+CREATE INDEX IF NOT EXISTS idx_consultation_documents_patient_id ON consultation_documents(patient_id);
+CREATE INDEX IF NOT EXISTS idx_consultation_documents_created_at ON consultation_documents(created_at);
+
+-- ============================================
 -- Table des tâches
 -- ============================================
 CREATE TABLE IF NOT EXISTS tasks (
@@ -243,6 +269,11 @@ END;
 CREATE TRIGGER update_notes_timestamp AFTER UPDATE ON notes
 BEGIN
     UPDATE notes SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+CREATE TRIGGER update_consultation_documents_timestamp AFTER UPDATE ON consultation_documents
+BEGIN
+    UPDATE consultation_documents SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;
 
 CREATE TRIGGER update_tasks_timestamp AFTER UPDATE ON tasks

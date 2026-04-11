@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "react-i18next"
 
 const chartConfig: ChartConfig = {
   consultations: {
@@ -38,6 +39,7 @@ export function ConsultationsChart({
   data: ConsultationPoint[]
   onNavigate: () => void
 }) {
+  const { t } = useTranslation()
   const totals = React.useMemo(
     () =>
       data.reduce(
@@ -56,7 +58,7 @@ export function ConsultationsChart({
       <CardHeader>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <CardTitle>Activité clinique</CardTitle>
+            <CardTitle>{t("dashboard.consultations.title", { defaultValue: "Activité clinique" })}</CardTitle>
             <div className="flex gap-1.5">
               <Badge variant="secondary" className="text-xs">
                 <span className="mr-1 size-2 rounded-full bg-[var(--chart-1)]" />
@@ -64,15 +66,15 @@ export function ConsultationsChart({
               </Badge>
               <Badge variant="secondary" className="text-xs">
                 <span className="mr-1 size-2 rounded-full bg-[var(--chart-2)]" />
-                {totals.chirurgies} chir.
+                {totals.chirurgies} {t("dashboard.consultations.surgeriesShort", { defaultValue: "chir." })}
               </Badge>
               <Badge variant="secondary" className="text-xs">
                 <span className="mr-1 size-2 rounded-full bg-[var(--chart-4)]" />
-                {totals.urgences} urg.
+                {totals.urgences} {t("dashboard.consultations.emergenciesShort", { defaultValue: "urg." })}
               </Badge>
             </div>
           </div>
-          <CardDescription>Répartition des actes sur la journée</CardDescription>
+          <CardDescription>{t("dashboard.consultations.description", { defaultValue: "Répartition des actes sur la journée" })}</CardDescription>
         </div>
         <CardAction>
           <Button
@@ -81,7 +83,7 @@ export function ConsultationsChart({
             className="gap-1 text-muted-foreground"
             onClick={onNavigate}
           >
-            Voir agenda
+            {t("dashboardWidgets.viewAgenda")}
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-4" />
           </Button>
         </CardAction>

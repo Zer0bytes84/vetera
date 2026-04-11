@@ -455,16 +455,19 @@ export function AIAgentPanel({
             </p>
             <div className="mt-4 w-full space-y-1.5">
               {quickPrompts.map((prompt) => (
-                <button
+                <Button
                   key={prompt}
+                  type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => {
                     setInput(prompt)
                     inputRef.current?.focus()
                   }}
-                  className="w-full rounded-lg border border-border bg-card px-3 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="h-auto w-full justify-start py-2 text-left text-xs text-muted-foreground hover:text-foreground"
                 >
                   {prompt}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

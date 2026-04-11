@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 export type NextAppointmentData = {
   id: string
@@ -35,6 +36,18 @@ export function NextAppointmentCard({
   appointment: NextAppointmentData | null
   onNavigate: () => void
 }) {
+  const { t, i18n } = useTranslation()
+  const currentLocale = i18n.language.startsWith("ar")
+    ? "ar"
+    : i18n.language.startsWith("en")
+      ? "en-US"
+      : i18n.language.startsWith("es")
+        ? "es-ES"
+        : i18n.language.startsWith("pt")
+          ? "pt-PT"
+          : i18n.language.startsWith("de")
+            ? "de-DE"
+            : "fr-FR"
   const [now, setNow] = useState(new Date())
 
   useEffect(() => {
@@ -45,7 +58,7 @@ export function NextAppointmentCard({
   const timeUntil = useMemo(() => {
     if (!appointment) return null
     const diff = appointment.startTime.getTime() - now.getTime()
-    if (diff <= 0) return { label: "En cours", urgent: true }
+    if (diff <= 0) return { label: t("dashboard.next.inProgress", { defaultValue: "En cours" }), urgent: true }
 
     const minutes = Math.floor(diff / 60_000)
     if (minutes < 60) return { label: `${minutes} min`, urgent: minutes < 15 }
@@ -61,7 +74,7 @@ export function NextAppointmentCard({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Prochain RDV</CardTitle>
+        <CardTitle className="text-sm font-medium">{t("dashboard.next.title", { defaultValue: "Prochain RDV" })}</CardTitle>
         {timeUntil && (
           <Badge
             variant={timeUntil.urgent ? "destructive" : "default"}
@@ -102,7 +115,7 @@ export function NextAppointmentCard({
                   className="size-3.5 shrink-0"
                 />
                 <span>
-                  {appointment.startTime.toLocaleTimeString("fr-FR", {
+                  {appointment.startTime.toLocaleTimeString(currentLocale, {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -115,7 +128,7 @@ export function NextAppointmentCard({
               className="w-full gap-1 text-xs"
               onClick={onNavigate}
             >
-              Ouvrir le dossier
+              {t("dashboard.next.openRecord", { defaultValue: "Ouvrir le dossier" })}
               <HugeiconsIcon
                 icon={ArrowRight01Icon}
                 strokeWidth={2}
@@ -132,9 +145,9 @@ export function NextAppointmentCard({
                 className="size-4 text-muted-foreground"
               />
             </div>
-            <p className="text-sm font-medium">Aucun RDV à venir</p>
+            <p className="text-sm font-medium">{t("dashboard.next.none", { defaultValue: "Aucun RDV à venir" })}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Libre pour planifier
+              {t("dashboard.next.freeToPlan", { defaultValue: "Libre pour planifier" })}
             </p>
             <Button
               variant="outline"
@@ -142,7 +155,7 @@ export function NextAppointmentCard({
               className="mt-3 h-7 text-xs"
               onClick={onNavigate}
             >
-              Planifier
+              {t("dashboard.next.plan", { defaultValue: "Planifier" })}
             </Button>
           </div>
         )}

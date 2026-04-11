@@ -31,6 +31,7 @@ const ALLOWED_TABLES = new Set([
   "products",
   "transactions",
   "notes",
+  "consultation_documents",
   "tasks",
   "app_settings",
   "migrations",

@@ -1,5 +1,5 @@
 import Database from "@tauri-apps/plugin-sql"
-import { MIGRATION_001_SQL } from "./schema"
+import { MIGRATION_001_SQL, MIGRATION_002_SQL } from "./schema"
 
 let db: Database | null = null
 
@@ -64,43 +64,7 @@ async function runMigrations(database: Database): Promise<void> {
     if (lastVersion < "001") {
       console.log("[DB] Applying migration 001...")
 
-      // Split SQL more carefully to handle triggers and multi-line statements
-      const lines = MIGRATION_001_SQL.split("\n")
-      let currentStatement = ""
-      const statements: string[] = []
-      let inTrigger = false
-
-      for (const line of lines) {
-        const trimmed = line.trim()
-
-        // Skip comments
-        if (trimmed.startsWith("--") || trimmed.length === 0) {
-          continue
-        }
-
-        // Track when we're inside a trigger
-        if (trimmed.toUpperCase().startsWith("CREATE TRIGGER")) {
-          inTrigger = true
-        }
-
-        currentStatement += line + "\n"
-
-        // End of statement
-        if (trimmed.endsWith(";")) {
-          // For triggers, wait for END;
-          if (inTrigger) {
-            if (trimmed.toUpperCase() === "END;") {
-              statements.push(currentStatement.trim())
-              currentStatement = ""
-              inTrigger = false
-            }
-          } else {
-            // Regular statement
-            statements.push(currentStatement.trim())
-            currentStatement = ""
-          }
-        }
-      }
+      const statements = parseSqlStatements(MIGRATION_001_SQL)
 
       console.log("[DB] Executing", statements.length, "SQL statements...")
 
@@ -133,10 +97,61 @@ async function runMigrations(database: Database): Promise<void> {
     } else {
       console.log("[DB] Database up to date")
     }
+
+    if (lastVersion < "002") {
+      console.log("[DB] Applying migration 002...")
+
+      const migrationStatements = parseSqlStatements(MIGRATION_002_SQL)
+
+      for (const statement of migrationStatements) {
+        await database.execute(statement)
+      }
+
+      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
+        "002",
+      ])
+      console.log("[DB] Migration 002 applied successfully")
+    }
   } catch (error) {
     console.error("[DB] Migration error:", error)
     throw error
   }
+}
+
+function parseSqlStatements(sql: string): string[] {
+  const lines = sql.split("\n")
+  let currentStatement = ""
+  const statements: string[] = []
+  let inTrigger = false
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    if (trimmed.startsWith("--") || trimmed.length === 0) {
+      continue
+    }
+
+    if (trimmed.toUpperCase().startsWith("CREATE TRIGGER")) {
+      inTrigger = true
+    }
+
+    currentStatement += line + "\n"
+
+    if (trimmed.endsWith(";")) {
+      if (inTrigger) {
+        if (trimmed.toUpperCase() === "END;") {
+          statements.push(currentStatement.trim())
+          currentStatement = ""
+          inTrigger = false
+        }
+      } else {
+        statements.push(currentStatement.trim())
+        currentStatement = ""
+      }
+    }
+  }
+
+  return statements
 }
 
 async function applyDatabaseSafetyPragmas(database: Database): Promise<void> {
@@ -194,6 +209,13 @@ async function repairRelationalIntegrity(database: Database): Promise<void> {
         `SELECT COUNT(*) as count FROM tasks t
                  LEFT JOIN patients p ON p.id = t.patient_id
                  WHERE t.patient_id IS NOT NULL AND p.id IS NULL`
+      ),
+      orphanConsultationDocuments: await countRows(
+        database,
+        `SELECT COUNT(*) as count FROM consultation_documents d
+                 LEFT JOIN appointments a ON a.id = d.appointment_id
+                 LEFT JOIN patients p ON p.id = d.patient_id
+                 WHERE a.id IS NULL OR p.id IS NULL`
       ),
       mismatchedAppointmentOwner: await countRows(
         database,
@@ -254,6 +276,12 @@ async function repairRelationalIntegrity(database: Database): Promise<void> {
              SET patient_id = NULL
              WHERE patient_id IS NOT NULL
                AND patient_id NOT IN (SELECT id FROM patients)`
+    )
+
+    await database.execute(
+      `DELETE FROM consultation_documents
+             WHERE appointment_id NOT IN (SELECT id FROM appointments)
+                OR patient_id NOT IN (SELECT id FROM patients)`
     )
 
     console.log("[DB] Relational integrity repair completed.")

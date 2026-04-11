@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
-import { Badge } from "@/components/ui/badge"
 import { useAuth } from "../contexts/AuthContext"
 
 interface MotivationalHeaderProps {
@@ -24,88 +24,129 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   title,
   subtitle,
 }) => {
+  const { t, i18n } = useTranslation()
   const { currentUser } = useAuth()
   const userName = currentUser?.displayName?.split(" ")[0] || "Docteur"
+  const currentLocale = i18n.language.startsWith("ar")
+    ? "ar"
+    : i18n.language.startsWith("en")
+      ? "en-US"
+      : i18n.language.startsWith("es")
+        ? "es-ES"
+        : i18n.language.startsWith("pt")
+          ? "pt-PT"
+          : i18n.language.startsWith("de")
+            ? "de-DE"
+            : "fr-FR"
 
   const headerCopy = useMemo(() => {
-    switch (section) {
-      case "dashboard": {
-        const today = new Intl.DateTimeFormat("fr-FR", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-        }).format(new Date())
-        return { eyebrow: today, text: `Bonjour ${userName}`, emoji: "👋", compact: false }
+    const sectionCopy: Record<
+      MotivationalHeaderProps["section"],
+      {
+        eyebrowKey: string
+        titleKey: string
+        subtitleKey: string
+        emoji: string
       }
-      case "agenda":
-        return {
-          eyebrow: "Agenda",
-          text: `Organisation au top, ${userName}.`,
-          emoji: "🗓️",
-          compact: false,
-        }
-      case "clinique":
-        return {
-          eyebrow: "Clinique",
-          text: `Le flux clinique reste parfaitement cadré.`,
-          emoji: "🩺",
-          compact: false,
-        }
-      case "patients":
-        return {
-          eyebrow: "Patients",
-          text: `Les dossiers sont prêts pour la consultation.`,
-          emoji: "🐾",
-          compact: false,
-        }
-      case "stock":
-        return {
-          eyebrow: "Produits",
-          text: `Les mouvements et les seuils restent sous contrôle.`,
-          emoji: "📦",
-          compact: false,
-        }
-      case "finances":
-        return {
-          eyebrow: "Finances",
-          text: `La trésorerie reste sous contrôle.`,
-          emoji: "💳",
-          compact: false,
-        }
-      case "equipe":
-        return {
-          eyebrow: "Equipe",
-          text: `L'équipe avance avec une charge bien répartie.`,
-          emoji: "👥",
-          compact: false,
-        }
-      case "notes":
-        return {
-          eyebrow: "Notes",
-          text: `Centralisez les informations importantes.`,
-          emoji: "📝",
-          compact: false,
-        }
-      case "taches":
-        return {
-          eyebrow: "Taches",
-          text: `Gardez le cap sur les priorités.`,
-          emoji: "⏰",
-          compact: false,
-        }
-      case "parametres":
-        return {
-          eyebrow: "Configuration",
-          text: `Ajustez l'application à votre pratique.`,
-          emoji: "🎛️",
-          compact: false,
-        }
-      default:
-        return { eyebrow: "Vue", text: `Bonjour ${userName}.`, emoji: "✨", compact: false }
+    > = {
+      dashboard: {
+        eyebrowKey: "motivation.dashboard.eyebrow",
+        titleKey: "motivation.dashboard.title",
+        subtitleKey: "motivation.dashboard.subtitle",
+        emoji: "👋",
+      },
+      agenda: {
+        eyebrowKey: "motivation.agenda.eyebrow",
+        titleKey: "motivation.agenda.title",
+        subtitleKey: "motivation.agenda.subtitle",
+        emoji: "🗓️",
+      },
+      clinique: {
+        eyebrowKey: "motivation.clinique.eyebrow",
+        titleKey: "motivation.clinique.title",
+        subtitleKey: "motivation.clinique.subtitle",
+        emoji: "🩺",
+      },
+      patients: {
+        eyebrowKey: "motivation.patients.eyebrow",
+        titleKey: "motivation.patients.title",
+        subtitleKey: "motivation.patients.subtitle",
+        emoji: "🐾",
+      },
+      stock: {
+        eyebrowKey: "motivation.stock.eyebrow",
+        titleKey: "motivation.stock.title",
+        subtitleKey: "motivation.stock.subtitle",
+        emoji: "📦",
+      },
+      finances: {
+        eyebrowKey: "motivation.finances.eyebrow",
+        titleKey: "motivation.finances.title",
+        subtitleKey: "motivation.finances.subtitle",
+        emoji: "💳",
+      },
+      equipe: {
+        eyebrowKey: "motivation.equipe.eyebrow",
+        titleKey: "motivation.equipe.title",
+        subtitleKey: "motivation.equipe.subtitle",
+        emoji: "👥",
+      },
+      notes: {
+        eyebrowKey: "motivation.notes.eyebrow",
+        titleKey: "motivation.notes.title",
+        subtitleKey: "motivation.notes.subtitle",
+        emoji: "📝",
+      },
+      taches: {
+        eyebrowKey: "motivation.taches.eyebrow",
+        titleKey: "motivation.taches.title",
+        subtitleKey: "motivation.taches.subtitle",
+        emoji: "⏰",
+      },
+      parametres: {
+        eyebrowKey: "motivation.parametres.eyebrow",
+        titleKey: "motivation.parametres.title",
+        subtitleKey: "motivation.parametres.subtitle",
+        emoji: "🎛️",
+      },
     }
-  }, [section, userName])
 
-  const heading = title || headerCopy.text
+    if (section === "dashboard") {
+      const today = new Intl.DateTimeFormat(currentLocale, {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      }).format(new Date())
+      return {
+        eyebrow: today,
+        text: t(sectionCopy.dashboard.titleKey, { name: userName }),
+        subtitle: t(sectionCopy.dashboard.subtitleKey),
+        emoji: sectionCopy.dashboard.emoji,
+        compact: false,
+      }
+    }
+
+    const copy = sectionCopy[section]
+    if (!copy) {
+      return {
+        eyebrow: t("motivation.default.eyebrow"),
+        text: t("motivation.default.title", { name: userName }),
+        subtitle: t("motivation.default.subtitle"),
+        emoji: "✨",
+        compact: false,
+      }
+    }
+
+    return {
+      eyebrow: t(copy.eyebrowKey),
+      text: t(copy.titleKey, { name: userName }),
+      subtitle: t(copy.subtitleKey),
+      emoji: copy.emoji,
+      compact: false,
+    }
+  }, [currentLocale, section, t, userName])
+  const heading = headerCopy.text || title
+  const resolvedSubtitle = subtitle || headerCopy.subtitle
 
   return (
     <div className="flex flex-col gap-1.5 lg:gap-2">
@@ -121,9 +162,9 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
             {headerCopy.emoji}
           </span>
         </h1>
-        {subtitle && (
+        {resolvedSubtitle && (
           <p className="max-w-[60ch] text-sm leading-6 text-[var(--text-muted)]">
-            {subtitle}
+            {resolvedSubtitle}
           </p>
         )}
       </div>

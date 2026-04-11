@@ -18,7 +18,8 @@ import {
   StethoscopeIcon,
   UserCircle02Icon,
 } from "@hugeicons/core-free-icons"
-import { fr } from "date-fns/locale"
+import { ar, de, enUS, es, fr, pt } from "date-fns/locale"
+import { useTranslation } from "react-i18next"
 
 import MotivationalHeader from "@/components/MotivationalHeader"
 import { SectionCards, type SectionCardItem } from "@/components/section-cards"
@@ -69,6 +70,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
@@ -86,6 +88,7 @@ import {
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories"
+import i18n from "@/i18n/config"
 import { cn } from "@/lib/utils"
 import type { Appointment, Owner, Patient, User as AppUser } from "@/types/db"
 
@@ -114,20 +117,6 @@ const QUICK_TIMES = [
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120]
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
-const MONTH_NAMES = [
-  "Janvier",
-  "Février",
-  "Mars",
-  "Avril",
-  "Mai",
-  "Juin",
-  "Juillet",
-  "Août",
-  "Septembre",
-  "Octobre",
-  "Novembre",
-  "Décembre",
-]
 const CALENDAR_START_HOUR = 7
 const CALENDAR_END_HOUR = 21
 const HOUR_BLOCKS = Array.from(
@@ -260,10 +249,28 @@ function isSameDay(left: Date, right: Date) {
   return startOfDay(left).getTime() === startOfDay(right).getTime()
 }
 
+function getCurrentLocale() {
+  if (i18n.language.startsWith("ar")) return "ar"
+  if (i18n.language.startsWith("en")) return "en-US"
+  if (i18n.language.startsWith("es")) return "es-ES"
+  if (i18n.language.startsWith("pt")) return "pt-PT"
+  if (i18n.language.startsWith("de")) return "de-DE"
+  return "fr-FR"
+}
+
+function getDateFnsLocale() {
+  if (i18n.language.startsWith("ar")) return ar
+  if (i18n.language.startsWith("en")) return enUS
+  if (i18n.language.startsWith("es")) return es
+  if (i18n.language.startsWith("pt")) return pt
+  if (i18n.language.startsWith("de")) return de
+  return fr
+}
+
 function formatTime(value?: string | Date | null) {
   const date = normalizeDate(value)
   if (!date) return "--:--"
-  return date.toLocaleTimeString("fr-FR", {
+  return date.toLocaleTimeString(getCurrentLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   })
@@ -285,13 +292,13 @@ function formatDateLabel(
     month: "long",
   }
 ) {
-  return value.toLocaleDateString("fr-FR", options)
+  return value.toLocaleDateString(getCurrentLocale(), options)
 }
 
 function formatDateTimeLabel(value?: string | Date | null) {
   const date = normalizeDate(value)
-  if (!date) return "Créneau non défini"
-  return `${date.toLocaleDateString("fr-FR", {
+  if (!date) return "Slot undefined"
+  return `${date.toLocaleDateString(getCurrentLocale(), {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -923,6 +930,7 @@ function AgendaMonthView({
 }
 
 const Agenda: React.FC = () => {
+  const { t } = useTranslation()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [viewMode, setViewMode] = useState<ViewMode>("day")
@@ -1160,28 +1168,42 @@ const Agenda: React.FC = () => {
 
     return [
       {
-        title: "Créneaux du jour",
+        title: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux du jour" }),
         value: String(dailyAppointments.length),
         badge: delta === 0 ? undefined : `${deltaPrefix}${delta}`,
         trend: delta === 0 ? "neutral" : delta > 0 ? "up" : "down",
-        summary: `${dailyAppointments.filter((item) => item.status === "completed").length} consultation${dailyAppointments.filter((item) => item.status === "completed").length > 1 ? "s" : ""} clôturée${dailyAppointments.filter((item) => item.status === "completed").length > 1 ? "s" : ""}`,
-        detail: "Comparaison avec la veille clinique",
+        summary: t("agenda.overview.closedConsultations", {
+          count: dailyAppointments.filter((item) => item.status === "completed").length,
+          defaultValue_one: "{{count}} consultation clôturée",
+          defaultValue_other: "{{count}} consultations clôturées",
+        }),
+        detail: t("agenda.overview.compareYesterday", {
+          defaultValue: "Comparaison avec la veille clinique",
+        }),
         icon: Calendar01Icon,
       },
       {
-        title: "Urgences ouvertes",
+        title: t("agenda.overview.openEmergencies", { defaultValue: "Urgences ouvertes" }),
         value: String(urgentOpenCount),
         badge:
           urgentOpenCount === 0
             ? undefined
-            : `${urgentOpenCount} alerte${urgentOpenCount > 1 ? "s" : ""}`,
+            : t("agenda.overview.alerts", {
+              count: urgentOpenCount,
+              defaultValue_one: "{{count}} alerte",
+              defaultValue_other: "{{count}} alertes",
+            }),
         trend: urgentOpenCount === 0 ? "neutral" : "down",
-        summary: "Cas à surveiller en priorité",
-        detail: "Toujours visibles dans l’onglet attention",
+        summary: t("agenda.overview.priorityCases", {
+          defaultValue: "Cas à surveiller en priorité",
+        }),
+        detail: t("agenda.overview.attentionTab", {
+          defaultValue: "Toujours visibles dans l’onglet attention",
+        }),
         icon: Alert02Icon,
       },
       {
-        title: "Temps planifié",
+        title: t("agenda.overview.plannedTime", { defaultValue: "Temps planifié" }),
         value: formatDuration(totalPlannedMinutes),
         badge:
           totalPlannedMinutes === 0
@@ -1193,24 +1215,32 @@ const Agenda: React.FC = () => {
             : occupancy >= 65
               ? "up"
               : "down",
-        summary: `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""}`,
-        detail: "Charge répartie sur la journée sélectionnée",
+        summary: t("agenda.overview.engagedVets", {
+          count: engagedVetsCount,
+          defaultValue_one: "{{count}} praticien mobilisé",
+          defaultValue_other: "{{count}} praticiens mobilisés",
+        }),
+        detail: t("agenda.overview.dailyWorkload", {
+          defaultValue: "Charge répartie sur la journée sélectionnée",
+        }),
         icon: StethoscopeIcon,
       },
       {
-        title: "Prochain rendez-vous",
+        title: t("agenda.overview.nextAppointment", { defaultValue: "Prochain rendez-vous" }),
         value: nextAppointment
           ? formatTimeCompact(nextAppointment.startTime)
-          : "Libre",
+          : t("agenda.overview.free", { defaultValue: "Libre" }),
         badge: nextAppointment ? nextAppointment.type : undefined,
         trend: nextAppointment ? "up" : "neutral",
         summary: nextAppointment
           ? patientsById.get(nextAppointment.patientId)?.name ||
             nextAppointment.title
-          : "Aucun créneau imminent",
+          : t("agenda.overview.noUpcomingSlot", { defaultValue: "Aucun créneau imminent" }),
         detail: nextAppointment
           ? formatDateTimeLabel(nextAppointment.startTime)
-          : "Le planning à venir est actuellement vide",
+          : t("agenda.overview.emptyUpcomingPlanning", {
+            defaultValue: "Le planning à venir est actuellement vide",
+          }),
         icon: UserCircle02Icon,
       },
     ]
@@ -1223,6 +1253,7 @@ const Agenda: React.FC = () => {
     totalPlannedMinutes,
     urgentOpenCount,
     vets.length,
+    t,
   ])
 
   const selectedDateSubtitle = useMemo(() => {
@@ -1233,12 +1264,19 @@ const Agenda: React.FC = () => {
       year: "numeric",
     })
 
-    return `${dailyAppointments.length} rendez-vous planifié${dailyAppointments.length > 1 ? "s" : ""} pour ${dateLabel}. Le planning reste synchronisé avec les vues jour, semaine et mois.`
-  }, [dailyAppointments.length, selectedDate])
+    return t("agenda.subtitle", {
+      count: dailyAppointments.length,
+      date: dateLabel,
+      defaultValue_one:
+        "{{count}} rendez-vous planifié pour {{date}}. Le planning reste synchronisé avec les vues jour, semaine et mois.",
+      defaultValue_other:
+        "{{count}} rendez-vous planifiés pour {{date}}. Le planning reste synchronisé avec les vues jour, semaine et mois.",
+    })
+  }, [dailyAppointments.length, selectedDate, t])
 
   const periodLabel = useMemo(() => {
     if (viewMode === "month") {
-      return `${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`
+      return formatDateLabel(selectedDate, { month: "long", year: "numeric" })
     }
 
     if (viewMode === "week") {
@@ -1601,7 +1639,7 @@ const Agenda: React.FC = () => {
 
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button variant="outline" onClick={() => setSelectedDate(new Date())}>
-            Aujourd&apos;hui
+            {t("agenda.today")}
           </Button>
           <Button onClick={() => handleOpenCreate()}>
             <HugeiconsIcon
@@ -1609,7 +1647,7 @@ const Agenda: React.FC = () => {
               strokeWidth={2}
               data-icon="inline-start"
             />
-            Nouveau rendez-vous
+            {t("agenda.newAppointment")}
           </Button>
         </div>
       </div>
@@ -1619,14 +1657,13 @@ const Agenda: React.FC = () => {
       <div className="grid gap-4">
         <Card className="min-h-[780px]">
           <CardHeader className="border-b">
-            <CardDescription>Planning clinique</CardDescription>
+            <CardDescription>{t("agenda.planning")}</CardDescription>
             <CardTitle className="text-2xl tracking-[-0.04em]">
-              Agenda des consultations
+              {t("agenda.consultationsAgenda")}
             </CardTitle>
             <CardAction>
               <Badge variant="outline">
-                {dailyAppointments.length} créneau
-                {dailyAppointments.length > 1 ? "x" : ""}
+                {t("agenda.slot", { count: dailyAppointments.length })}
               </Badge>
             </CardAction>
           </CardHeader>
@@ -1672,7 +1709,7 @@ const Agenda: React.FC = () => {
                     >
                       <Calendar
                         mode="single"
-                        locale={fr}
+                        locale={getDateFnsLocale()}
                         selected={selectedDate}
                         onSelect={(date) => {
                           if (date) setSelectedDate(date)
@@ -1687,21 +1724,27 @@ const Agenda: React.FC = () => {
                       variant="outline"
                       className="border-transparent bg-primary/10 text-primary"
                     >
-                      Aujourd&apos;hui
+                      {t("agenda.today")}
                     </Badge>
                   ) : null}
                 </div>
 
                 <TabsList>
-                  <TabsTrigger value="day">Jour</TabsTrigger>
-                  <TabsTrigger value="week">Semaine</TabsTrigger>
-                  <TabsTrigger value="month">Mois</TabsTrigger>
+                  <TabsTrigger value="day">{t("agenda.day")}</TabsTrigger>
+                  <TabsTrigger value="week">{t("agenda.week")}</TabsTrigger>
+                  <TabsTrigger value="month">{t("agenda.month")}</TabsTrigger>
                 </TabsList>
               </div>
 
               {loadingAppointments ? (
-                <div className="flex flex-1 items-center justify-center px-6 pb-6">
-                  <Spinner className="size-6 text-muted-foreground" />
+                <div className="flex flex-1 flex-col gap-3 px-6 pb-6">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <Skeleton className="h-24 rounded-3xl" />
+                    <Skeleton className="h-24 rounded-3xl" />
+                    <Skeleton className="h-24 rounded-3xl" />
+                    <Skeleton className="h-24 rounded-3xl" />
+                  </div>
+                  <Skeleton className="h-[460px] w-full rounded-3xl" />
                 </div>
               ) : (
                 <>

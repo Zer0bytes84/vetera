@@ -33,6 +33,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
@@ -243,11 +244,7 @@ const Notes: React.FC = () => {
           <CardHeader className="border-b px-4 py-4">
             <CardTitle className="text-lg font-bold">Notes</CardTitle>
             <CardAction>
-              <Button
-                size="icon-sm"
-                onClick={handleCreateNote}
-                className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] shadow-[0_18px_35px_rgba(49,108,255,0.24)] transition-all duration-300 hover:scale-105 hover:shadow-[0_18px_35px_rgba(49,108,255,0.32)] active:scale-95"
-              >
+              <Button size="icon-sm" onClick={handleCreateNote}>
                 <HugeiconsIcon
                   icon={Add01Icon}
                   strokeWidth={2}
@@ -298,8 +295,17 @@ const Notes: React.FC = () => {
           {/* Notes List */}
           <ScrollArea className="flex-1">
             {loading ? (
-              <div className="flex justify-center p-8">
-                <Spinner className="size-5 text-muted-foreground" />
+              <div className="space-y-1 p-4">
+                {Array.from({ length: 7 }).map((_, index) => (
+                  <div
+                    key={`notes-skeleton-item-${index}`}
+                    className="rounded-lg border border-border/60 p-4"
+                  >
+                    <Skeleton className="mb-2 h-4 w-2/3 rounded-md" />
+                    <Skeleton className="mb-2 h-3 w-4/5 rounded-md" />
+                    <Skeleton className="h-3 w-1/3 rounded-md" />
+                  </div>
+                ))}
               </div>
             ) : filteredNotes.length === 0 ? (
               <div className="p-6">
@@ -483,10 +489,7 @@ const Notes: React.FC = () => {
                   </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent>
-                  <Button
-                    onClick={handleCreateNote}
-                    className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] px-6 py-3 shadow-[0_18px_35px_rgba(49,108,255,0.24)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_18px_35px_rgba(49,108,255,0.32)] active:scale-95"
-                  >
+                  <Button onClick={handleCreateNote} size="lg">
                     <HugeiconsIcon
                       icon={Add01Icon}
                       strokeWidth={2}

@@ -22,8 +22,9 @@ import {
   useTasksRepository,
   useUsersRepository,
 } from "../../data/repositories"
-import { viewTitles } from "../../app/config/navigation"
+import { getViewTitle } from "../../app/config/navigation"
 import { Input } from "../../shared/ui/input"
+import { useTranslation } from "react-i18next"
 
 export function AppHeader({
   isScrolled,
@@ -50,6 +51,7 @@ export function AppHeader({
   onToggleTheme: () => void
   onLogout: () => Promise<void>
 }) {
+  const { t } = useTranslation()
   const { data: users } = useUsersRepository()
   const { data: tasks } = useTasksRepository()
   const { data: products } = useProductsRepository()
@@ -66,7 +68,7 @@ export function AppHeader({
     "Utilisateur"
   const userName =
     userLabelSource.split("@")[0].trim().split(/\s+/)[0] || "Utilisateur"
-  const pageTitle = viewTitles[currentView] ?? "Vetera"
+  const pageTitle = getViewTitle(currentView, t)
   const notificationItems = useMemo(() => {
     const urgentTasks = tasks
       .filter(

@@ -27,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
 
@@ -169,8 +170,17 @@ const Editor: React.FC<EditorProps> = ({
 
   if (!editor) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <Spinner className="size-6 text-muted-foreground" />
+      <div className="h-64 space-y-3 rounded-xl border border-border/60 p-4">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-8 w-8 rounded-md" />
+          <Skeleton className="h-8 w-8 rounded-md" />
+          <Skeleton className="h-8 w-8 rounded-md" />
+          <Skeleton className="h-8 w-24 rounded-md" />
+        </div>
+        <Skeleton className="h-4 w-3/4 rounded-md" />
+        <Skeleton className="h-4 w-2/3 rounded-md" />
+        <Skeleton className="h-4 w-4/5 rounded-md" />
+        <Skeleton className="h-4 w-1/2 rounded-md" />
       </div>
     )
   }

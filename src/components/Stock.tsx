@@ -52,6 +52,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import {
   useProductsRepository,
@@ -508,10 +509,7 @@ const Stock: React.FC = () => {
           title=""
           subtitle="Stock, ruptures, expirations et valorisation dans une vue opérationnelle immédiatement exploitable."
         />
-        <Button
-          onClick={handleOpenAdd}
-          className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] px-4 shadow-[0_18px_35px_rgba(49,108,255,0.24)] hover:bg-[linear-gradient(135deg,#285fe7,#6472ff)]"
-        >
+        <Button onClick={handleOpenAdd}>
           <HugeiconsIcon icon={Add01Icon} strokeWidth={2} className="size-4" />
           Nouveau produit
         </Button>
@@ -625,8 +623,21 @@ const Stock: React.FC = () => {
 
           <div className="flex-1 overflow-auto p-4">
             {loading ? (
-              <div className="flex flex-1 items-center justify-center py-20">
-                <Spinner className="size-6 text-muted-foreground" />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <div
+                    key={`stock-skeleton-card-${index}`}
+                    className="rounded-xl border border-border/60 p-4"
+                  >
+                    <div className="mb-3 flex items-center justify-between">
+                      <Skeleton className="h-5 w-24 rounded-md" />
+                      <Skeleton className="h-5 w-12 rounded-md" />
+                    </div>
+                    <Skeleton className="mb-2 h-4 w-3/4 rounded-md" />
+                    <Skeleton className="mb-4 h-3 w-2/3 rounded-md" />
+                    <Skeleton className="h-2 w-full rounded-full" />
+                  </div>
+                ))}
               </div>
             ) : filteredProducts.length === 0 ? (
               <Empty className="border border-dashed border-border/80 bg-muted/20">
@@ -1182,7 +1193,6 @@ const Stock: React.FC = () => {
             <Button
               onClick={handleSaveProduct}
               disabled={isSubmitting}
-              className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] shadow-[0_18px_35px_rgba(49,108,255,0.24)]"
             >
               {isSubmitting ? (
                 <Spinner className="size-4" />
@@ -1259,7 +1269,6 @@ const Stock: React.FC = () => {
             <Button
               onClick={handleRestockSubmit}
               disabled={isSubmitting || restockQty <= 0}
-              className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] shadow-[0_18px_35px_rgba(49,108,255,0.24)]"
             >
               {isSubmitting ? (
                 <Spinner className="size-4" />

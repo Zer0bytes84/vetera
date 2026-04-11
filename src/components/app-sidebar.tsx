@@ -4,6 +4,7 @@ import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { SparklesIcon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "react-i18next"
 
 import Logo from "@/components/Logo"
 import { NavDocuments } from "@/components/nav-documents"
@@ -52,6 +53,7 @@ export function AppSidebar({
   onOpenAIAgent,
   ...props
 }: AppSidebarProps) {
+  const { t } = useTranslation()
   const { state } = useSidebar()
   const isCollapsed = state === "collapsed"
   const { data: users } = useUsersRepository()
@@ -102,7 +104,7 @@ export function AppSidebar({
     ...(overviewSection?.items ?? []),
     ...(patientSection?.items.slice(0, 4) ?? []),
   ].map((item) => ({
-    title: item.label,
+    title: t(item.labelKey),
     icon: <HugeiconsIcon icon={item.icon} strokeWidth={2} />,
     isActive: currentView === item.view,
     onClick: () => onNavigate(item.view),
@@ -112,13 +114,13 @@ export function AppSidebar({
     ...(patientSection?.items.slice(4) ?? []),
     ...(operationsSection?.items ?? []),
   ].map((item) => ({
-    name: item.label,
+    name: t(item.labelKey),
     icon: <HugeiconsIcon icon={item.icon} strokeWidth={2} />,
     onClick: () => onNavigate(item.view),
   }))
 
   const secondaryItems = (configSection?.items ?? []).map((item) => ({
-    title: item.label,
+    title: t(item.labelKey),
     icon: <HugeiconsIcon icon={item.icon} strokeWidth={2} />,
     isActive: currentView === item.view,
     onClick: () => onNavigate(item.view),
@@ -153,12 +155,13 @@ export function AppSidebar({
       <SidebarContent className="scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent overflow-y-auto">
         <div className="flex min-h-full flex-1 flex-col gap-2 [@media(max-height:820px)]:gap-1.5">
           <NavMain
-            title="Parcours patient"
+            title={t("nav.sections.patientJourney")}
             items={mainItems}
             onPrimaryAction={() => onNavigate("patients")}
             onAssistant={onOpenAIAgent}
           />
           <NavDocuments
+            title={t("nav.sections.operations")}
             items={documents.map((item) => ({
               name: item.name,
               icon: item.icon,
@@ -166,7 +169,7 @@ export function AppSidebar({
             }))}
           />
           <div className="mt-auto pt-3 [@media(max-height:820px)]:pt-2">
-            <NavSecondary title="Configuration" items={secondaryItems} />
+            <NavSecondary title={t("nav.sections.configuration")} items={secondaryItems} />
           </div>
         </div>
       </SidebarContent>

@@ -31,6 +31,7 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import type { View } from "@/types"
+import { useTranslation } from "react-i18next"
 
 // ============================================================================
 // SMART INSIGHTS WIDGET - Style moderne avec icônes colorées
@@ -79,6 +80,8 @@ export function InsightsWidget({
   insights: SmartInsight[]
   onNavigate: (view: View) => void
 }) {
+  const { t } = useTranslation()
+
   if (insights.length === 0) {
     return (
       <Card className="h-full">
@@ -88,8 +91,8 @@ export function InsightsWidget({
               <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} className="size-4 text-violet-600" />
             </div>
             <div>
-              <CardTitle className="text-sm font-semibold">Insights IA</CardTitle>
-              <CardDescription className="text-xs">Suggestions intelligentes</CardDescription>
+              <CardTitle className="text-sm font-semibold">{t("dashboardWidgets.aiInsights")}</CardTitle>
+              <CardDescription className="text-xs">{t("dashboardWidgets.smartSuggestions")}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -98,8 +101,8 @@ export function InsightsWidget({
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-5 text-muted-foreground" />
             </div>
-            <p className="mt-3 text-sm font-medium">Tout va bien</p>
-            <p className="text-xs text-muted-foreground">Aucune suggestion pour le moment</p>
+            <p className="mt-3 text-sm font-medium">{t("dashboardWidgets.allGood")}</p>
+            <p className="text-xs text-muted-foreground">{t("dashboardWidgets.noSuggestion")}</p>
           </div>
         </CardContent>
       </Card>
@@ -115,12 +118,12 @@ export function InsightsWidget({
               <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} className="size-4 text-violet-600" />
             </div>
             <div>
-              <CardTitle className="text-sm font-semibold">Insights IA</CardTitle>
-              <CardDescription className="text-xs">{insights.length} suggestion{insights.length > 1 ? "s" : ""}</CardDescription>
+              <CardTitle className="text-sm font-semibold">{t("dashboardWidgets.aiInsights")}</CardTitle>
+              <CardDescription className="text-xs">{t("dashboardWidgets.suggestionsCount", { count: insights.length })}</CardDescription>
             </div>
           </div>
           <Badge variant="secondary" className="text-[10px]">
-            Local
+            {t("dashboardWidgets.local")}
           </Badge>
         </div>
       </CardHeader>
@@ -173,6 +176,7 @@ export function TasksWidget({
   tasks: TaskItem[]
   onNavigate: () => void
 }) {
+  const { t } = useTranslation()
   const stats = useMemo(() => {
     const total = tasks.length
     const done = tasks.filter((t) => t.status === "done").length
@@ -197,8 +201,8 @@ export function TasksWidget({
               <HugeiconsIcon icon={Task01Icon} strokeWidth={2} className="size-4 text-blue-600" />
             </div>
             <div>
-              <CardTitle className="text-sm font-semibold">Tâches</CardTitle>
-              <CardDescription className="text-xs">{stats.pending} en attente</CardDescription>
+              <CardTitle className="text-sm font-semibold">{t("dashboardWidgets.tasks")}</CardTitle>
+              <CardDescription className="text-xs">{t("dashboardWidgets.pendingCount", { count: stats.pending })}</CardDescription>
             </div>
           </div>
           <div className="text-right">
@@ -240,11 +244,11 @@ export function TasksWidget({
             <div className="flex size-8 items-center justify-center rounded-full bg-emerald-500/10">
               <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-4 text-emerald-600" />
             </div>
-            <p className="mt-2 text-xs font-medium">Tout est à jour</p>
+            <p className="mt-2 text-xs font-medium">{t("dashboardWidgets.allGood")}</p>
           </div>
         )}
         <Button variant="ghost" size="sm" className="w-full gap-1 text-xs mt-1" onClick={onNavigate}>
-          Voir toutes les tâches
+          {t("dashboardWidgets.insight.viewTasks")}
           <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-3" />
         </Button>
       </CardContent>
@@ -271,6 +275,7 @@ export function StockAlertsWidget({
   products: StockItem[]
   onNavigate: () => void
 }) {
+  const { t } = useTranslation()
   const lowStock = useMemo(() => {
     return products
       .filter((p) => p.quantity <= p.minStock)
@@ -324,7 +329,7 @@ export function StockAlertsWidget({
               </div>
             ))}
             <Button variant="ghost" size="sm" className="w-full gap-1 text-xs" onClick={onNavigate}>
-              Gérer le stock
+              {t("dashboardWidgets.insight.viewStock")}
               <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-3" />
             </Button>
           </>
@@ -361,6 +366,7 @@ export function NextAppointmentWidget({
   appointment: NextAppointment | null
   onNavigate: () => void
 }) {
+  const { t } = useTranslation()
   const timeUntil = useMemo(() => {
     if (!appointment) return null
     const diff = appointment.startTime.getTime() - Date.now()
@@ -384,7 +390,7 @@ export function NextAppointmentWidget({
             </div>
             <div>
               <CardTitle className="text-sm font-semibold">Prochain RDV</CardTitle>
-              <CardDescription className="text-xs">Aucun rendez-vous</CardDescription>
+              <CardDescription className="text-xs">{t("dashboardWidgets.noSuggestion")}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -393,7 +399,7 @@ export function NextAppointmentWidget({
             <div className="flex size-8 items-center justify-center rounded-full bg-muted">
               <HugeiconsIcon icon={Clock01Icon} strokeWidth={2} className="size-4 text-muted-foreground" />
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">Pas de rendez-vous prévu</p>
+            <p className="mt-2 text-xs text-muted-foreground">{t("dashboardWidgets.insight.lowBookingsMessage")}</p>
             <Button variant="ghost" size="sm" className="mt-2 text-xs" onClick={onNavigate}>
               Planifier
             </Button>
@@ -428,7 +434,7 @@ export function NextAppointmentWidget({
           <p className="text-[10px] text-muted-foreground mt-1">Dr. {appointment.vetName}</p>
         </div>
         <Button variant="ghost" size="sm" className="w-full gap-1 text-xs" onClick={onNavigate}>
-          Voir l'agenda
+          {t("dashboardWidgets.viewAgenda")}
           <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-3" />
         </Button>
       </CardContent>
@@ -451,6 +457,7 @@ export function QuickStatsWidget({
   todayRevenue: number
   onNavigate: (view: View) => void
 }) {
+  const { t } = useTranslation()
   const formatMoney = (amount: number) => {
     if (amount >= 100000) return `${(amount / 1000).toFixed(0)}k DA`
     if (amount >= 1000) return `${(amount / 1000).toFixed(1)}k DA`
@@ -459,7 +466,7 @@ export function QuickStatsWidget({
 
   const stats = [
     {
-      label: "Consultations",
+      label: t("dashboardWidgets.consultations"),
       value: todayAppointments,
       icon: StethoscopeIcon,
       color: "text-blue-600",
@@ -467,7 +474,7 @@ export function QuickStatsWidget({
       view: "agenda" as View,
     },
     {
-      label: "Patients",
+      label: t("dashboardWidgets.patients"),
       value: activePatients,
       icon: UserGroupIcon,
       color: "text-violet-600",
@@ -475,7 +482,7 @@ export function QuickStatsWidget({
       view: "patients" as View,
     },
     {
-      label: "Revenus",
+      label: t("dashboardWidgets.revenues"),
       value: formatMoney(todayRevenue),
       icon: Invoice03Icon,
       color: "text-emerald-600",
@@ -492,8 +499,8 @@ export function QuickStatsWidget({
             <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-4 text-muted-foreground" />
           </div>
           <div>
-            <CardTitle className="text-sm font-semibold">Aujourd'hui</CardTitle>
-            <CardDescription className="text-xs">Vue d'ensemble</CardDescription>
+            <CardTitle className="text-sm font-semibold">{t("dashboardWidgets.today")}</CardTitle>
+            <CardDescription className="text-xs">{t("dashboardWidgets.overview")}</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -530,6 +537,7 @@ export function generateInsights({
   pendingTasks,
   currentIncome,
   previousIncome,
+  translate,
 }: {
   todayAppointments: number
   upcomingAppointments: number
@@ -537,6 +545,7 @@ export function generateInsights({
   pendingTasks: number
   currentIncome: number
   previousIncome: number
+  translate: (key: string, options?: Record<string, unknown>) => string
 }): SmartInsight[] {
   const insights: SmartInsight[] = []
 
@@ -545,9 +554,13 @@ export function generateInsights({
     insights.push({
       id: "stock-low",
       type: "warning",
-      title: "Stock critique",
-      message: `${lowStockProducts.length} produits nécessitent un réapprovisionnement. ${first.name} n'a plus que ${first.quantity} unité(s).`,
-      action: "Voir le stock",
+      title: translate("dashboardWidgets.insight.stockCritical"),
+      message: translate("dashboardWidgets.insight.stockCriticalMessage", {
+        count: lowStockProducts.length,
+        name: first.name,
+        quantity: first.quantity,
+      }),
+      action: translate("dashboardWidgets.insight.viewStock"),
       view: "stock",
     })
   }
@@ -556,9 +569,11 @@ export function generateInsights({
     insights.push({
       id: "tasks-pending",
       type: "info",
-      title: "Tâches en attente",
-      message: `${pendingTasks} tâche${pendingTasks > 1 ? "s" : ""} nécessite${pendingTasks > 1 ? "nt" : ""} votre attention.`,
-      action: "Voir les tâches",
+      title: translate("dashboardWidgets.insight.pendingTasks"),
+      message: translate("dashboardWidgets.insight.pendingTasksMessage", {
+        count: pendingTasks,
+      }),
+      action: translate("dashboardWidgets.insight.viewTasks"),
       view: "taches",
     })
   }
@@ -569,16 +584,20 @@ export function generateInsights({
       insights.push({
         id: "income-up",
         type: "success",
-        title: "Revenus en hausse",
-        message: `+${delta.toFixed(0)}% par rapport au mois précédent. Excellente dynamique !`,
+        title: translate("dashboardWidgets.insight.risingRevenue"),
+        message: translate("dashboardWidgets.insight.risingRevenueMessage", {
+          delta: delta.toFixed(0),
+        }),
       })
     } else if (delta < -10) {
       insights.push({
         id: "income-down",
         type: "trend",
-        title: "Revenus en baisse",
-        message: `${delta.toFixed(0)}% par rapport au mois précédent. Surveillez la trésorerie.`,
-        action: "Finances",
+        title: translate("dashboardWidgets.insight.fallingRevenue"),
+        message: translate("dashboardWidgets.insight.fallingRevenueMessage", {
+          delta: delta.toFixed(0),
+        }),
+        action: translate("dashboardWidgets.insight.finances"),
         view: "finances",
       })
     }
@@ -588,9 +607,9 @@ export function generateInsights({
     insights.push({
       id: "low-bookings",
       type: "info",
-      title: "Faible réservation",
-      message: "Peu de rendez-vous à venir. Pensez à relancer vos clients.",
-      action: "Voir agenda",
+      title: translate("dashboardWidgets.insight.lowBookings"),
+      message: translate("dashboardWidgets.insight.lowBookingsMessage"),
+      action: translate("dashboardWidgets.viewAgenda"),
       view: "agenda",
     })
   }

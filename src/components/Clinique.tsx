@@ -1,4 +1,4 @@
-import React, { useDeferredValue, useEffect, useMemo, useState } from "react"
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from "react"
 import QRCode from "qrcode"
 import { jsPDF } from "jspdf"
 import { toast } from "sonner"
@@ -26,13 +26,14 @@ import Avatar from "@/components/Avatar"
 import MotivationalHeader from "@/components/MotivationalHeader"
 import {
   useAppointmentsRepository,
+  useConsultationDocumentsRepository,
   useOwnersRepository,
   usePatientsRepository,
 } from "@/data/repositories"
 import { getSetting } from "@/services/appSettingsService"
 import { cn } from "@/lib/utils"
 import type { View } from "@/types"
-import type { Appointment, Owner, Patient } from "@/types/db"
+import type { Appointment, ConsultationDocument, Owner, Patient } from "@/types/db"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -72,8 +73,8 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   NativeSelect,
   NativeSelectOption,
@@ -113,6 +114,16 @@ type ConsultationDraftPayload = {
   appointmentPatch: Partial<Appointment>
   patientPatch: Partial<Patient>
 }
+
+const MAX_DOCUMENT_SIZE_BYTES = 12 * 1024 * 1024
+const ALLOWED_DOCUMENT_MIME = new Set([
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+])
 
 const LIST_TABS: Array<{ value: ListTab; label: string }> = [
   { value: "all", label: "Tous" },
@@ -216,6 +227,36 @@ function normalizeDate(value?: string | Date | null) {
   if (value instanceof Date) return value
   const parsed = new Date(value)
   return Number.isNaN(parsed.getTime()) ? null : parsed
+}
+
+function getDocumentCategory(mimeType: string): ConsultationDocument["category"] {
+  if (mimeType === "application/pdf") return "pdf"
+  if (mimeType.startsWith("image/")) return "image"
+  return "other"
+}
+
+function formatFileSize(sizeBytes: number) {
+  if (!Number.isFinite(sizeBytes) || sizeBytes <= 0) return "0 B"
+  const units = ["B", "KB", "MB", "GB"]
+  const power = Math.min(Math.floor(Math.log(sizeBytes) / Math.log(1024)), units.length - 1)
+  const value = sizeBytes / 1024 ** power
+  const rounded = value >= 10 ? value.toFixed(0) : value.toFixed(1)
+  return `${rounded} ${units[power]}`
+}
+
+async function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        reject(new Error("Lecture du fichier impossible."))
+        return
+      }
+      resolve(reader.result)
+    }
+    reader.onerror = () => reject(reader.error ?? new Error("Lecture du fichier impossible."))
+    reader.readAsDataURL(file)
+  })
 }
 
 function isToday(date: Date) {
@@ -597,17 +638,23 @@ function ConsultationSessionDialog({
   patient,
   owner,
   patientName,
+  documents,
   onClose,
   onSaveDraft,
   onComplete,
+  onUploadDocument,
+  onDeleteDocument,
 }: {
   appointment: Appointment
   patient: Patient
   owner?: Owner
   patientName: string
+  documents: ConsultationDocument[]
   onClose: () => void
   onSaveDraft: (payload: ConsultationDraftPayload) => Promise<void>
   onComplete: (payload: ConsultationDraftPayload) => Promise<void>
+  onUploadDocument: (file: File, description?: string) => Promise<void>
+  onDeleteDocument: (documentId: string) => Promise<void>
 }) {
   const [patientNameValue, setPatientNameValue] = useState(patient.name)
   const [patientSpecies, setPatientSpecies] = useState(patient.species || "Chien")
@@ -627,6 +674,9 @@ function ConsultationSessionDialog({
   const [consultationNotes, setConsultationNotes] = useState(
     appointment.notes || ""
   )
+  const [documentDescription, setDocumentDescription] = useState("")
+  const [isUploadingDocument, setIsUploadingDocument] = useState(false)
+  const uploadInputRef = useRef<HTMLInputElement | null>(null)
   const [startedAt, setStartedAt] = useState(() => {
     if (typeof window === "undefined") return new Date().toISOString()
     const key = `vetera:consultation-start:${appointment.id}`
@@ -698,6 +748,40 @@ function ConsultationSessionDialog({
       generalNotes: generalNotes.trim(),
     },
   })
+
+  const triggerDocumentPicker = () => {
+    uploadInputRef.current?.click()
+  }
+
+  const handleDocumentSelection = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) return
+
+    if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
+      toast.error("Le fichier dépasse 12 Mo. Réduisez sa taille puis réessayez.")
+      return
+    }
+
+    if (!ALLOWED_DOCUMENT_MIME.has(file.type)) {
+      toast.error("Format non pris en charge. Utilisez PDF, JPG, PNG ou WebP.")
+      return
+    }
+
+    try {
+      setIsUploadingDocument(true)
+      await onUploadDocument(file, documentDescription.trim())
+      setDocumentDescription("")
+      toast.success("Document ajouté à la consultation.")
+    } catch (error) {
+      console.error(error)
+      toast.error("Impossible d'ajouter ce document.")
+    } finally {
+      setIsUploadingDocument(false)
+    }
+  }
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -911,6 +995,90 @@ function ConsultationSessionDialog({
                     <FieldDescription>
                       Gardez cette zone ouverte pendant la consultation pour saisir vos observations.
                     </FieldDescription>
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Documents de consultation</FieldLabel>
+                    <div className="grid gap-3 rounded-3xl border border-border/70 bg-muted/20 p-4">
+                      <Input
+                        value={documentDescription}
+                        onChange={(event) =>
+                          setDocumentDescription(event.target.value)
+                        }
+                        placeholder="Description rapide (ex: radio thorax, bilan sanguin)"
+                      />
+                      <input
+                        ref={uploadInputRef}
+                        type="file"
+                        accept=".pdf,image/png,image/jpeg,image/webp,image/heic,image/heif"
+                        className="hidden"
+                        onChange={handleDocumentSelection}
+                      />
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={triggerDocumentPicker}
+                          disabled={isUploadingDocument}
+                        >
+                          <HugeiconsIcon
+                            icon={Add01Icon}
+                            strokeWidth={2}
+                            data-icon="inline-start"
+                          />
+                          {isUploadingDocument ? "Import..." : "Importer PDF / photo"}
+                        </Button>
+                        <p className="self-center text-xs text-muted-foreground">
+                          Historique patient centralisé, accessible depuis l’onglet Historique.
+                        </p>
+                      </div>
+
+                      {documents.length > 0 ? (
+                        <div className="grid gap-2">
+                          {documents.map((document) => (
+                            <div
+                              key={document.id}
+                              className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border bg-background/80 px-3 py-2"
+                            >
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-foreground">
+                                  {document.fileName}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatFileSize(Number(document.sizeBytes))} ·{" "}
+                                  {formatShortDate(document.createdAt)}
+                                  {document.description
+                                    ? ` · ${document.description}`
+                                    : ""}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="xs"
+                                  onClick={() => window.open(document.dataUrl, "_blank")}
+                                >
+                                  Ouvrir
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="xs"
+                                  onClick={() => void onDeleteDocument(document.id)}
+                                >
+                                  Supprimer
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">
+                          Aucun document attaché pour cette consultation.
+                        </p>
+                      )}
+                    </div>
                   </Field>
 
                   <Field>
@@ -1220,6 +1388,11 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   } = useAppointmentsRepository()
   const { data: patients, update: updatePatient } = usePatientsRepository()
   const { data: owners } = useOwnersRepository()
+  const {
+    data: consultationDocuments,
+    add: addConsultationDocument,
+    remove: removeConsultationDocument,
+  } = useConsultationDocumentsRepository()
 
   const patientsById = useMemo(
     () => new Map(patients.map((patient) => [patient.id, patient])),
@@ -1325,6 +1498,27 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       )
       .slice(0, 6)
   }, [appointments, selectedPatient])
+
+  const selectedPatientDocuments = useMemo(() => {
+    if (!selectedPatient) return []
+    return consultationDocuments
+      .filter((document) => document.patientId === selectedPatient.id)
+      .sort(
+        (left, right) =>
+          new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
+      )
+      .slice(0, 24)
+  }, [consultationDocuments, selectedPatient])
+
+  const activeConsultationDocuments = useMemo(() => {
+    if (!activeConsultation) return []
+    return consultationDocuments
+      .filter((document) => document.appointmentId === activeConsultation.id)
+      .sort(
+        (left, right) =>
+          new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
+      )
+  }, [activeConsultation, consultationDocuments])
 
   const stats = useMemo(
     () => ({
@@ -1459,6 +1653,41 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       console.error(error)
       toast.error("Impossible de clôturer la consultation.")
     }
+  }
+
+  const handleConsultationDocumentUpload = async (
+    file: File,
+    description?: string
+  ) => {
+    if (!activeConsultation) {
+      throw new Error("Aucune consultation active.")
+    }
+
+    const patient = getPatient(activeConsultation.patientId)
+    if (!patient) {
+      throw new Error("Patient introuvable pour ce document.")
+    }
+
+    const dataUrl = await readFileAsDataUrl(file)
+    const owner = getOwner(activeConsultation)
+
+    await addConsultationDocument({
+      appointmentId: activeConsultation.id,
+      patientId: activeConsultation.patientId,
+      ownerId: owner?.id,
+      fileName: file.name,
+      mimeType: file.type || "application/octet-stream",
+      sizeBytes: file.size,
+      category: getDocumentCategory(file.type || ""),
+      dataUrl,
+      description: description?.trim() || undefined,
+      createdBy: "local",
+    } as Omit<ConsultationDocument, "id" | "createdAt" | "updatedAt">)
+  }
+
+  const handleConsultationDocumentDelete = async (documentId: string) => {
+    await removeConsultationDocument(documentId)
+    toast.success("Document supprimé.")
   }
 
   const handleBillingConfirm = async (items: BillingItem[]) => {
@@ -1665,8 +1894,23 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
             <Separator />
 
             {loadingAppointments ? (
-              <div className="flex flex-1 items-center justify-center px-6 pb-6">
-                <Spinner className="size-6 text-muted-foreground" />
+              <div className="px-6 pb-6">
+                <div className="overflow-hidden rounded-lg border border-border/70">
+                  <div className="space-y-0">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <div
+                        key={`clinique-skeleton-row-${index}`}
+                        className="grid grid-cols-[34%_20%_20%_14%_12%] gap-3 border-b border-border/60 p-4 last:border-b-0"
+                      >
+                        <Skeleton className="h-4 w-3/4 rounded-md" />
+                        <Skeleton className="h-4 w-2/3 rounded-md" />
+                        <Skeleton className="h-4 w-2/3 rounded-md" />
+                        <Skeleton className="h-4 w-1/2 rounded-md" />
+                        <Skeleton className="h-4 w-12 rounded-md justify-self-end" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : visibleCount === 0 ? (
               <div className="flex flex-1 px-6 pb-6">
@@ -2157,39 +2401,85 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                 </TabsContent>
 
                 <TabsContent value="history" className="min-h-0 flex-1">
-                  {patientHistory.length > 0 ? (
-                    <div className="grid gap-3">
-                      {patientHistory.map((appointment) => (
-                        <Card key={appointment.id} size="sm">
+                  {patientHistory.length > 0 || selectedPatientDocuments.length > 0 ? (
+                    <div className="grid gap-4">
+                      {patientHistory.length > 0 ? (
+                        <div className="grid gap-3">
+                          {patientHistory.map((appointment) => (
+                            <Card key={appointment.id} size="sm">
+                              <CardHeader>
+                                <CardTitle className="text-base">
+                                  {appointment.type}
+                                </CardTitle>
+                                <CardDescription>
+                                  {formatShortDate(appointment.startTime)} ·{" "}
+                                  {formatTime(appointment.startTime)}
+                                </CardDescription>
+                              </CardHeader>
+                              <CardContent className="grid gap-3">
+                                <div>
+                                  <p className="text-sm text-muted-foreground">
+                                    Diagnostic
+                                  </p>
+                                  <p className="mt-1 text-foreground">
+                                    {appointment.diagnosis || "Non renseigné"}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">
+                                    Traitement
+                                  </p>
+                                  <p className="mt-1 text-foreground">
+                                    {appointment.treatment || "Non renseigné"}
+                                  </p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      ) : null}
+
+                      {selectedPatientDocuments.length > 0 ? (
+                        <Card size="sm">
                           <CardHeader>
                             <CardTitle className="text-base">
-                              {appointment.type}
+                              Documents archivés
                             </CardTitle>
                             <CardDescription>
-                              {formatShortDate(appointment.startTime)} ·{" "}
-                              {formatTime(appointment.startTime)}
+                              PDF et images importés pendant les consultations.
                             </CardDescription>
                           </CardHeader>
-                          <CardContent className="grid gap-3">
-                            <div>
-                              <p className="text-sm text-muted-foreground">
-                                Diagnostic
-                              </p>
-                              <p className="mt-1 text-foreground">
-                                {appointment.diagnosis || "Non renseigné"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">
-                                Traitement
-                              </p>
-                              <p className="mt-1 text-foreground">
-                                {appointment.treatment || "Non renseigné"}
-                              </p>
-                            </div>
+                          <CardContent className="grid gap-2">
+                            {selectedPatientDocuments.map((document) => (
+                              <div
+                                key={document.id}
+                                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border px-3 py-2"
+                              >
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-medium">
+                                    {document.fileName}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {formatShortDate(document.createdAt)} ·{" "}
+                                    {formatFileSize(Number(document.sizeBytes))}
+                                    {document.description
+                                      ? ` · ${document.description}`
+                                      : ""}
+                                  </p>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="xs"
+                                  onClick={() => window.open(document.dataUrl, "_blank")}
+                                >
+                                  Ouvrir
+                                </Button>
+                              </div>
+                            ))}
                           </CardContent>
                         </Card>
-                      ))}
+                      ) : null}
                     </div>
                   ) : (
                     <Empty className="border border-dashed border-border/80 bg-muted/20">
@@ -2238,9 +2528,12 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
             patientsById.get(activeConsultation.patientId)?.name ||
             "Patient local"
           }
+          documents={activeConsultationDocuments}
           onClose={() => setActiveConsultation(null)}
           onSaveDraft={handleConsultationSaveDraft}
           onComplete={handleConsultationComplete}
+          onUploadDocument={handleConsultationDocumentUpload}
+          onDeleteDocument={handleConsultationDocumentDelete}
         />
       ) : null}
 

@@ -60,6 +60,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Table,
@@ -836,8 +837,19 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
 
           {/* Table */}
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Spinner className="size-6 text-muted-foreground" />
+            <div className="space-y-2 py-3">
+              {Array.from({ length: 7 }).map((_, index) => (
+                <div
+                  key={`finances-skeleton-row-${index}`}
+                  className="grid grid-cols-[40%_18%_12%_18%_12%] items-center gap-3 rounded-md border border-border/60 p-3"
+                >
+                  <Skeleton className="h-4 w-3/4 rounded-md" />
+                  <Skeleton className="h-4 w-4/5 rounded-md" />
+                  <Skeleton className="h-4 w-3/4 rounded-md" />
+                  <Skeleton className="h-4 w-2/3 rounded-md justify-self-end" />
+                  <Skeleton className="h-4 w-16 rounded-md justify-self-end" />
+                </div>
+              ))}
             </div>
           ) : visibleTransactions.length === 0 ? (
             <Empty className="border border-dashed border-border/80 bg-muted/20 py-12">

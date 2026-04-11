@@ -16,20 +16,24 @@ import {
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreHorizontalCircle01Icon, Folder01Icon, Share01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "react-i18next"
 
 export function NavDocuments({
+  title,
   items,
 }: {
+  title?: string
   items: {
     name: string
     icon: React.ReactNode
     onClick?: () => void
   }[]
 }) {
+  const { t } = useTranslation()
   const { isMobile } = useSidebar()
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:mt-0">
-      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Exploitation</SidebarGroupLabel>
+      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{title ?? t("nav.sections.operations")}</SidebarGroupLabel>
       <SidebarMenu className="group-data-[collapsible=icon]:gap-2">
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -47,7 +51,7 @@ export function NavDocuments({
                 }
               >
                 <HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2} />
-                <span className="sr-only">More</span>
+                <span className="sr-only">{t("nav.menu.more")}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-24"
@@ -56,16 +60,16 @@ export function NavDocuments({
               >
                 <DropdownMenuItem>
                   <HugeiconsIcon icon={Folder01Icon} strokeWidth={2} />
-                  <span>Ouvrir</span>
+                  <span>{t("nav.menu.open")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <HugeiconsIcon icon={Share01Icon} strokeWidth={2} />
-                  <span>Partager</span>
+                  <span>{t("nav.menu.share")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">
                   <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
-                  <span>Supprimer</span>
+                  <span>{t("nav.menu.delete")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

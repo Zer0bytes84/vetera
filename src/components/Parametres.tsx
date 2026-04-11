@@ -71,6 +71,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
@@ -744,9 +745,26 @@ const BackupSettings: React.FC = () => {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-8">
-              <Spinner className="mb-2 size-6 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">Chargement...</p>
+            <div className="space-y-3 py-2">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={`backup-skeleton-row-${index}`}
+                  className="flex items-center justify-between rounded-2xl border border-border/60 p-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="size-10 rounded-xl" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-40 rounded-md" />
+                      <Skeleton className="h-3 w-28 rounded-md" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : backups.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
