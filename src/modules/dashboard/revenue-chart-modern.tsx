@@ -22,7 +22,9 @@ const chartConfig: ChartConfig = {
 }
 
 function formatAmount(value: number) {
-  return `${(value / 1000).toFixed(1)}k`
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
+  if (value >= 1000) return `${(value / 1000).toFixed(0)}k`
+  return `${value}`
 }
 
 type RevenuePoint = {
@@ -31,7 +33,7 @@ type RevenuePoint = {
   depenses: number
 }
 
-export function RevenueChart({
+export function RevenueChartModern({
   data,
   onNavigate,
 }: {
@@ -39,14 +41,16 @@ export function RevenueChart({
   onNavigate: () => void
 }) {
   const { t } = useTranslation()
-  const totalEncaissements = React.useMemo(
-    () => data.reduce((sum, d) => sum + d.encaissements, 0),
-    [data]
-  )
-  const totalDepenses = React.useMemo(
-    () => data.reduce((sum, d) => sum + d.depenses, 0),
-    [data]
-  )
+  
+  const totals = React.useMemo(() => {
+    return data.reduce(
+      (acc, d) => ({
+        encaissements: acc.encaissements + d.encaissements,
+        depenses: acc.depenses + d.depenses,
+      }),
+      { encaissements: 0, depenses: 0 }
+    )
+  }, [data])
 
   return (
     <Card className="overflow-hidden transition-shadow hover:shadow-md">
@@ -71,14 +75,14 @@ export function RevenueChart({
                     className="gap-1.5 border-0 bg-emerald-500/10 text-emerald-600 text-xs font-medium"
                   >
                     <span className="size-2 rounded-full bg-emerald-500" />
-                    +{formatAmount(totalEncaissements)}k
+                    +{formatAmount(totals.encaissements)}k
                   </Badge>
                   <Badge
                     variant="secondary"
                     className="gap-1.5 border-0 bg-rose-500/10 text-rose-600 text-xs font-medium"
                   >
                     <span className="size-2 rounded-full bg-rose-500" />
-                    -{formatAmount(totalDepenses)}k
+                    -{formatAmount(totals.depenses)}k
                   </Badge>
                 </div>
               </div>
@@ -102,7 +106,7 @@ export function RevenueChart({
       </CardHeader>
       <CardContent className="p-4">
         <ChartContainer config={chartConfig} className="h-[220px] w-full">
-          <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="time"
@@ -136,13 +140,13 @@ export function RevenueChart({
               dataKey="depenses"
               fill="var(--color-depenses)"
               radius={[4, 4, 0, 0]}
-              barSize={20}
+              barSize={16}
             />
             <Bar
               dataKey="encaissements"
               fill="var(--color-encaissements)"
               radius={[4, 4, 0, 0]}
-              barSize={20}
+              barSize={16}
             />
           </BarChart>
         </ChartContainer>

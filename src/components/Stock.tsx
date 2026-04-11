@@ -58,6 +58,8 @@ import {
   useProductsRepository,
   useTransactionsRepository,
 } from "@/data/repositories"
+import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
+import { TrendingUp, TrendingDown } from "@hugeicons/core-free-icons"
 import MotivationalHeader from "./MotivationalHeader"
 import { Product } from "../types/db"
 import { formatDZD, toCentimes } from "../utils/currency"
@@ -330,6 +332,55 @@ const Stock: React.FC = () => {
     value: formatDZD(stockValue),
   }
 
+  // Section Cards for Stock
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
+    const generateSparkline = (base: number) => 
+      Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 4) - 2)
+    
+    return [
+      {
+        title: "Total Produits",
+        value: String(totalProducts),
+        badge: `${products.length} réf.`,
+        trend: "neutral",
+        summary: "Catalogue complet",
+        icon: Package02Icon,
+        sparklineData: generateSparkline(totalProducts),
+        color: "blue",
+      },
+      {
+        title: "Stock Bas",
+        value: String(lowStock),
+        badge: lowStock > 0 ? "à réapprovisionner" : "OK",
+        trend: lowStock > 5 ? "down" : "neutral",
+        summary: "Seuil minimum atteint",
+        icon: ArrowDown01Icon,
+        sparklineData: generateSparkline(lowStock),
+        color: "amber",
+      },
+      {
+        title: "Ruptures",
+        value: String(outOfStock),
+        badge: outOfStock > 0 ? "critique" : "aucune",
+        trend: outOfStock > 0 ? "down" : "up",
+        summary: "Stock épuisé",
+        icon: Alert02Icon,
+        sparklineData: generateSparkline(outOfStock),
+        color: "rose",
+      },
+      {
+        title: "Valeur Stock",
+        value: formatDZD(stockValue),
+        badge: "valorisation",
+        trend: "neutral",
+        summary: "Coût d'acquisition total",
+        icon: ShoppingCart01Icon,
+        sparklineData: generateSparkline(Math.round(stockValue / 1000)),
+        color: "emerald",
+      },
+    ]
+  }, [totalProducts, lowStock, outOfStock, stockValue, products.length])
+
   // Filtering
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -515,42 +566,8 @@ const Stock: React.FC = () => {
         </Button>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        {STAT_ITEMS.map((stat) => {
-          return (
-            <Card key={stat.key} size="sm" className="justify-between bg-card shadow-xs">
-              <CardContent className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "flex size-10 shrink-0 items-center justify-center rounded-2xl",
-                    stat.colorClass
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={stat.icon}
-                    strokeWidth={2}
-                    className="size-5"
-                  />
-                </div>
-                <div>
-                  <p
-                    className={cn(
-                      "font-semibold text-foreground tabular-nums",
-                      stat.key === "value" ? "text-xl" : "text-2xl"
-                    )}
-                  >
-                    {statValues[stat.key]}
-                  </p>
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase">
-                    {stat.label}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+      {/* Section Cards */}
+      <SectionCardsPremium items={sectionCards} />
 
       {/* Main Table Card */}
       <Card className="flex min-h-[540px] flex-col">

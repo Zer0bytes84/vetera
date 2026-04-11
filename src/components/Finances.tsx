@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react"
 import { jsPDF } from "jspdf"
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
   ArrowDown01Icon,
@@ -72,19 +72,10 @@ import {
 } from "@/components/ui/table"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import type { View } from "@/types"
+import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 
 type TimeRange = "today" | "week" | "month" | "year"
 type TransactionFilter = "all" | "income" | "expense"
-
-type FinanceMetricItem = {
-  title: string
-  value: string
-  badge: string
-  summary: string
-  detail: string
-  icon: IconSvgElement
-  accentColor: string
-}
 
 type TransactionDraft = {
   description: string
@@ -423,34 +414,6 @@ function TransactionStatusBadge({
   )
 }
 
-function FinanceMetricCard({
-  title,
-  value,
-  badge,
-  summary,
-  detail,
-  icon,
-  accentColor,
-}: FinanceMetricItem) {
-  return (
-    <Card size="sm" className="bg-card shadow-xs">
-      <CardHeader>
-        <CardDescription>{title}</CardDescription>
-        <CardTitle className="text-3xl font-semibold tracking-tight tabular-nums">
-          {value}
-        </CardTitle>
-        <CardAction className="flex items-center gap-2">
-          <Badge variant="secondary">{badge}</Badge>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="grid gap-1">
-        <p className="text-sm font-medium text-foreground">{summary}</p>
-        <p className="text-xs text-muted-foreground">{detail}</p>
-      </CardContent>
-    </Card>
-  )
-}
-
 const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
   onNavigate,
 }) => {
@@ -570,43 +533,50 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       .slice(0, 5)
   }, [transactionsInRange])
 
-  const overviewItems = useMemo<FinanceMetricItem[]>(() => {
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
+    const generateSparkline = (base: number) => 
+      Array.from({ length: 8 }, () => base + Math.floor(Math.random() * base * 0.1) - Math.floor(base * 0.05))
+    
     return [
       {
         title: "Encaissé",
         value: formatDZD(stats.income),
         badge: `${stats.paidIncomeCount} réglé${stats.paidIncomeCount > 1 ? "s" : ""}`,
+        trend: stats.income > stats.expense ? "up" : "neutral",
         summary: "Recettes confirmées",
-        detail: `Montants réellement encaissés sur ${rangeLabel.toLowerCase()}.`,
         icon: ArrowUp01Icon,
-        accentColor: "text-emerald-600 dark:text-emerald-400",
+        sparklineData: generateSparkline(Math.round(stats.income / 100)),
+        color: "emerald",
       },
       {
         title: "Dépensé",
         value: formatDZD(stats.expense),
         badge: `${stats.paidExpenseCount} sortie${stats.paidExpenseCount > 1 ? "s" : ""}`,
+        trend: stats.expense > stats.income ? "down" : "neutral",
         summary: "Décaissements validés",
-        detail: "Achats et charges déjà comptabilisés dans la période.",
         icon: ArrowDown01Icon,
-        accentColor: "text-rose-600 dark:text-rose-400",
+        sparklineData: generateSparkline(Math.round(stats.expense / 100)),
+        color: "rose",
       },
       {
         title: "Solde net",
         value: formatDZD(stats.net),
         badge: stats.net >= 0 ? "positif" : "à surveiller",
+        trend: stats.net >= 0 ? "up" : "down",
         summary: "Vue nette de la période",
-        detail: "Différence entre revenus payés et dépenses réglées.",
         icon: LandmarkIcon,
-        accentColor: "text-foreground",
+        sparklineData: generateSparkline(Math.round(stats.net / 100)),
+        color: stats.net >= 0 ? "blue" : "amber",
       },
       {
         title: "Encours",
         value: formatDZD(stats.pending),
         badge: `${stats.pendingCount} attente${stats.pendingCount > 1 ? "s" : ""}`,
-        summary: "Écritures encore ouvertes",
-        detail: "Montants qui attendent une validation ou un paiement.",
+        trend: "neutral",
+        summary: "Écritures ouvertes",
         icon: Clock01Icon,
-        accentColor: "text-amber-600 dark:text-amber-400",
+        sparklineData: generateSparkline(Math.round(stats.pending / 100)),
+        color: "amber",
       },
     ]
   }, [rangeLabel, stats])
@@ -757,12 +727,8 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         </div>
       </div>
 
-      {/* Metric Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {overviewItems.map((item) => (
-          <FinanceMetricCard key={item.title} {...item} />
-        ))}
-      </div>
+      {/* Section Cards */}
+      <SectionCardsPremium items={sectionCards} />
 
       {/* Main Table Card */}
       <Card>

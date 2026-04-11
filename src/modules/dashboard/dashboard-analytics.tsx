@@ -12,6 +12,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { 
+  UserGroupIcon, 
+  UserAddIcon, 
+  ArrowRight01Icon,
+  TrendingUp,
+  UserMultipleIcon,
+  File01Icon,
+} from "@hugeicons/core-free-icons"
 
 import {
   Card,
@@ -125,19 +134,52 @@ const customerConfig = {
   },
 } satisfies ChartConfig
 
-function MetricCardView({ metric }: { metric: MetricCard }) {
+import type { IconSvgElement } from "@hugeicons/react"
+
+function MetricCardView({ 
+  metric, 
+  icon, 
+  color = "blue",
+  subtitle 
+}: { 
+  metric: MetricCard
+  icon?: IconSvgElement
+  color?: "blue" | "emerald" | "violet" | "amber"
+  subtitle?: string
+}) {
+  const colorClasses = {
+    blue: "bg-blue-500/10 text-blue-600",
+    emerald: "bg-emerald-500/10 text-emerald-600",
+    violet: "bg-violet-500/10 text-violet-600",
+    amber: "bg-amber-500/10 text-amber-600",
+  }
+  
   return (
-    <div className="rounded-2xl border bg-muted/25 p-4">
-      <div className="text-sm font-medium text-muted-foreground">
-        {metric.label}
-      </div>
-      <div className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
-        {metric.value}
+    <div className="rounded-xl border bg-muted/20 p-3.5 hover:bg-muted/30 transition-colors">
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            {metric.label}
+          </div>
+          <div className="mt-1 text-2xl font-bold tracking-tight">
+            {metric.value}
+          </div>
+          {subtitle && (
+            <div className="text-[10px] text-muted-foreground mt-0.5">
+              {subtitle}
+            </div>
+          )}
+        </div>
+        {icon && (
+          <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg", colorClasses[color])}>
+            <HugeiconsIcon icon={icon} strokeWidth={1.5} className="h-4 w-4" />
+          </div>
+        )}
       </div>
       <div
         className={cn(
-          "mt-2 text-sm",
-          metric.positive ? "text-emerald-600" : "text-destructive"
+          "mt-2 text-xs font-medium",
+          metric.positive ? "text-emerald-600" : "text-rose-600"
         )}
       >
         {metric.delta}
@@ -241,12 +283,17 @@ export function DashboardAnalytics({
       </Card>
 
       <Card>
-        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-          <div className="grid flex-1 gap-1">
-            <CardTitle>Flux patients</CardTitle>
-            <CardDescription>
-              Nouveaux dossiers et patients de retour dans le temps.
-            </CardDescription>
+        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row bg-gradient-to-r from-blue-500/5 to-transparent">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10">
+              <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="h-5 w-5 text-blue-600" />
+            </div>
+            <div className="grid flex-1 gap-0.5">
+              <CardTitle>Registre clinique</CardTitle>
+              <CardDescription>
+                Nouveaux dossiers et patients de retour dans le temps.
+              </CardDescription>
+            </div>
           </div>
           <Select value={visitorsView} onValueChange={(value) => setVisitorsView(value as "month" | "week")}>
             <SelectTrigger className="w-[132px] rounded-lg sm:ml-auto" size="sm">
@@ -262,10 +309,38 @@ export function DashboardAnalytics({
             </SelectContent>
           </Select>
         </CardHeader>
-        <CardContent className="grid gap-5 px-6 py-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+        <CardContent className="grid gap-5 px-6 py-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
           <div className="grid gap-4">
-            <MetricCardView metric={visitorsSeries.primary} />
-            <MetricCardView metric={visitorsSeries.secondary} />
+            <MetricCardView 
+              metric={visitorsSeries.primary} 
+              icon={UserAddIcon} 
+              color="blue"
+              subtitle="Nouveaux ce mois"
+            />
+            <MetricCardView 
+              metric={visitorsSeries.secondary} 
+              icon={UserGroupIcon} 
+              color="emerald"
+              subtitle="Patients récurrents"
+            />
+            {/* Ratio indicator */}
+            <div className="flex items-center justify-between rounded-xl border bg-muted/30 p-3">
+              <span className="text-xs text-muted-foreground">Ratio nouveaux/fidèles</span>
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-1">
+                  <div className="h-5 w-5 rounded-full bg-blue-500/20 border border-white" />
+                  <div className="h-5 w-5 rounded-full bg-emerald-500/20 border border-white" />
+                </div>
+                <span className="text-sm font-semibold">
+                  {(() => {
+                    const newP = parseInt(visitorsSeries.primary.value.replace(/\D/g, '')) || 0
+                    const retP = parseInt(visitorsSeries.secondary.value.replace(/\D/g, '')) || 0
+                    const total = newP + retP
+                    return total > 0 ? `${Math.round((newP / total) * 100)}%` : '0%'
+                  })()}
+                </span>
+              </div>
+            </div>
           </div>
           <ChartContainer
             config={visitorsConfig}

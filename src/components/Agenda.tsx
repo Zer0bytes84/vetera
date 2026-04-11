@@ -22,7 +22,7 @@ import { ar, de, enUS, es, fr, pt } from "date-fns/locale"
 import { useTranslation } from "react-i18next"
 
 import MotivationalHeader from "@/components/MotivationalHeader"
-import { SectionCards, type SectionCardItem } from "@/components/section-cards"
+import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -1160,11 +1160,14 @@ const Agenda: React.FC = () => {
     (vet) => (appointmentsByVet.get(vet.id) ?? []).length > 0
   ).length
 
-  const overviewItems = useMemo<SectionCardItem[]>(() => {
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
     const delta = dailyAppointments.length - previousDayAppointments.length
     const deltaPrefix = delta > 0 ? "+" : ""
     const occupancyTarget = Math.max(1, vets.length) * 8 * 60
     const occupancy = Math.round((totalPlannedMinutes / occupancyTarget) * 100)
+    
+    const generateSparkline = (base: number) => 
+      Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 5) - 2)
 
     return [
       {
@@ -1177,10 +1180,9 @@ const Agenda: React.FC = () => {
           defaultValue_one: "{{count}} consultation clôturée",
           defaultValue_other: "{{count}} consultations clôturées",
         }),
-        detail: t("agenda.overview.compareYesterday", {
-          defaultValue: "Comparaison avec la veille clinique",
-        }),
         icon: Calendar01Icon,
+        sparklineData: generateSparkline(dailyAppointments.length),
+        color: "blue",
       },
       {
         title: t("agenda.overview.openEmergencies", { defaultValue: "Urgences ouvertes" }),
@@ -1197,10 +1199,9 @@ const Agenda: React.FC = () => {
         summary: t("agenda.overview.priorityCases", {
           defaultValue: "Cas à surveiller en priorité",
         }),
-        detail: t("agenda.overview.attentionTab", {
-          defaultValue: "Toujours visibles dans l’onglet attention",
-        }),
         icon: Alert02Icon,
+        sparklineData: generateSparkline(urgentOpenCount),
+        color: "rose",
       },
       {
         title: t("agenda.overview.plannedTime", { defaultValue: "Temps planifié" }),
@@ -1220,10 +1221,9 @@ const Agenda: React.FC = () => {
           defaultValue_one: "{{count}} praticien mobilisé",
           defaultValue_other: "{{count}} praticiens mobilisés",
         }),
-        detail: t("agenda.overview.dailyWorkload", {
-          defaultValue: "Charge répartie sur la journée sélectionnée",
-        }),
         icon: StethoscopeIcon,
+        sparklineData: generateSparkline(Math.round(totalPlannedMinutes / 60)),
+        color: "violet",
       },
       {
         title: t("agenda.overview.nextAppointment", { defaultValue: "Prochain rendez-vous" }),
@@ -1236,12 +1236,9 @@ const Agenda: React.FC = () => {
           ? patientsById.get(nextAppointment.patientId)?.name ||
             nextAppointment.title
           : t("agenda.overview.noUpcomingSlot", { defaultValue: "Aucun créneau imminent" }),
-        detail: nextAppointment
-          ? formatDateTimeLabel(nextAppointment.startTime)
-          : t("agenda.overview.emptyUpcomingPlanning", {
-            defaultValue: "Le planning à venir est actuellement vide",
-          }),
         icon: UserCircle02Icon,
+        sparklineData: generateSparkline(nextAppointment ? 1 : 0),
+        color: "emerald",
       },
     ]
   }, [
@@ -1652,7 +1649,7 @@ const Agenda: React.FC = () => {
         </div>
       </div>
 
-      <SectionCards items={overviewItems} className="xl:grid-cols-4" />
+      <SectionCardsPremium items={sectionCards} />
 
       <div className="grid gap-4">
         <Card className="min-h-[780px]">

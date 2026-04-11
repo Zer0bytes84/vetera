@@ -16,8 +16,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import { type ClinicalActivityPoint } from "@/components/chart-area-interactive"
-import { DataTable, type DashboardRow } from "@/components/data-table"
-import { SectionCards, type SectionCardItem } from "@/components/section-cards"
+import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -42,20 +41,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/contexts/AuthContext"
 import type { View } from "@/types"
 
-import { DashboardAnalytics } from "./dashboard-analytics"
+import { DashboardAnalyticsV2 } from "./dashboard-analytics-v2"
 import { DashboardOverviewAnalytics } from "./dashboard-overview-analytics"
-import { QuickActionsBar } from "./quick-actions-bar"
-import { RevenueChart } from "./revenue-chart"
+import { RevenueChartModern } from "./revenue-chart-modern"
 import { ConsultationsChart } from "./consultations-chart"
 import {
-  InsightsWidget,
-  TasksWidget,
-  StockAlertsWidget,
-  NextAppointmentWidget,
-  QuickStatsWidget,
   generateInsights,
-  type SmartInsight,
 } from "./dashboard-widgets"
+import {
+  NextAppointmentWidgetLumaV2,
+  TasksWidgetLumaV2,
+  StockAlertsWidgetLumaV2,
+  InsightsWidgetLumaV2,
+  RecentActivityWidgetLumaV2,
+  PerformanceWidgetLumaV2,
+  type NextAppointment,
+  type SmartInsight,
+  type Activity,
+} from "./widgets-luma-v2"
+import { RecentConsultationsWidget } from "./recent-consultations-widget"
+import { MeshGradient } from "./mesh-gradient"
 
 import {
   useAppointmentsRepository,
@@ -190,6 +195,36 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     const previous30Start = startOfDay(addDays(reportReferenceDate, -59))
     const previous30End = endOfDay(addDays(reportReferenceDate, -30))
 
+    // Generate sparkline data for last 7 days for each metric
+    const last7Days = Array.from({ length: 7 }, (_, i) => addDays(todayStart, -6 + i))
+
+    const appointments7Days = last7Days.map((day) =>
+      appointments.filter((item) => {
+        const date = new Date(item.startTime)
+        return isSameDay(date, day) && !["cancelled", "no_show"].includes(item.status)
+      }).length
+    )
+
+    const income7Days = last7Days.map((day) =>
+      transactions
+        .filter((item) => {
+          const date = new Date(item.date)
+          return item.type === "income" && item.status === "paid" && isSameDay(date, day)
+        })
+        .reduce((sum, item) => sum + item.amount, 0)
+    )
+
+    const activePatientsHistory = last7Days.map((day) =>
+      patients.filter((item) => {
+        const created = new Date(item.createdAt || Date.now())
+        return created <= day && item.status !== "decede"
+      }).length
+    )
+
+    const lowStockHistory = last7Days.map((day) =>
+      products.filter((item) => Number(item.quantity) <= Number(item.minStock)).length
+    )
+
     const todayAppointments = appointments.filter((item) => {
       const date = new Date(item.startTime)
       return (
@@ -262,6 +297,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         summary: t("dashboardPage.urgencyFollowUp", { count: urgentOpen }),
         detail: t("dashboardPage.plannedSlots"),
         icon: StethoscopeIcon,
+        sparklineData: appointments7Days,
+        color: "blue",
       },
       {
         title: t("dashboardPage.activePatients"),
@@ -273,6 +310,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         }),
         detail: t("dashboardPage.liveRecords"),
         icon: UserGroupIcon,
+        sparklineData: activePatientsHistory,
+        color: "violet",
       },
       {
         title: t("dashboardPage.cashIn"),
@@ -282,6 +321,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         summary: t("dashboardPage.consolidatedCashIn"),
         detail: t("dashboardPage.compare30"),
         icon: Invoice03Icon,
+        sparklineData: income7Days.map((v) => Math.max(v / 1000, 1)), // Scale down for sparkline
+        color: "emerald",
       },
       {
         title: t("dashboardPage.criticalStock"),
@@ -291,6 +332,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         summary: t("dashboardPage.belowMin"),
         detail: t("dashboardPage.stockWatch"),
         icon: Package02Icon,
+        sparklineData: lowStockHistory,
+        color: lowStock > 0 ? "amber" : "emerald",
       },
     ]
   }, [appointments, patients, products, reportReferenceDate, transactions])
@@ -344,67 +387,6 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       { date: "2026-03-30", consultations: 21, interventions: 4 },
     ]
   }, [appointments, referenceDate])
-
-  const dashboardRows = useMemo<DashboardRow[]>(() => {
-    const today = startOfDay(referenceDate)
-
-    return appointments
-      .slice()
-      .sort(
-        (left, right) =>
-          new Date(right.startTime).getTime() -
-          new Date(left.startTime).getTime()
-      )
-      .map((appointment) => {
-        const patient = patients.find(
-          (item) => item.id === appointment.patientId
-        )
-        const owner = owners.find((item) => item.id === appointment.ownerId)
-        const veterinarian = users.find((item) => item.id === appointment.vetId)
-        const start = new Date(appointment.startTime)
-
-        let tab: DashboardRow["tab"] = "planning"
-        if (
-          appointment.type === "Urgence" &&
-          !["completed", "cancelled"].includes(appointment.status)
-        ) {
-          tab = "attention"
-        } else if (appointment.status === "completed") {
-          tab = "termine"
-        } else if (isSameDay(start, today)) {
-          tab = "aujourdhui"
-        }
-
-        return {
-          id: appointment.id,
-          patient: patient?.name || appointment.title,
-          owner: owner
-            ? `${owner.firstName} ${owner.lastName}`.trim()
-            : t("dashboardPage.ownerNotLinked"),
-          type: appointment.type,
-          appointmentAt: start.toLocaleDateString("fr-FR", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          status:
-            patient?.status === "hospitalise" && appointment.status !== "completed"
-              ? "Hospitalized"
-              : appointment.type === "Urgence" && appointment.status !== "completed"
-                ? "Emergency"
-                : mapStatus(appointment.status),
-          veterinarian: veterinarian?.displayName || t("dashboardPage.localVet"),
-          summary: appointment.reason || appointment.title,
-          notes: appointment.notes || patient?.generalNotes || "",
-          diagnosis: appointment.diagnosis || patient?.chronicConditions || "",
-          treatment: appointment.treatment || patient?.allergies || "",
-          tab,
-        }
-      })
-      .slice(0, 16)
-  }, [appointments, owners, patients, referenceDate, users])
 
   const weeklyActivity = useMemo(() => {
     return chartData.slice(-7).map((item) => ({
@@ -1196,58 +1178,38 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             </div>
           </div>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="px-6">
-              <SectionCards items={sectionCards} />
+          <TabsContent value="overview" className="space-y-6 relative">
+            {/* Beautiful mesh gradient background */}
+            <MeshGradient className="fixed inset-0" />
+            
+            <div className="relative z-10 px-6">
+              <SectionCardsPremium items={sectionCards} />
             </div>
 
-            <div className="px-6">
+            <div className="relative z-10 px-6">
               <div className="grid gap-6 xl:grid-cols-2">
                 <ConsultationsChart
                   data={consultationSeries}
                   onNavigate={() => onNavigate("agenda")}
                 />
-                <RevenueChart
+                <RevenueChartModern
                   data={revenueChartSeries}
                   onNavigate={() => onNavigate("finances")}
                 />
               </div>
             </div>
 
-            <div className="px-6">
-              <QuickActionsBar onNavigate={onNavigate} />
-            </div>
-
-            <div className="px-6">
+            <div className="relative z-10 px-6">
               <DashboardOverviewAnalytics
                 data={chartData}
                 referenceDate={referenceDate.toISOString()}
               />
             </div>
 
-            {/* Widgets modernisés en tête */}
-            <div className="px-6">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <QuickStatsWidget
-                  todayAppointments={(() => {
-                    const todayStart = startOfDay(referenceDate)
-                    const todayEnd = endOfDay(referenceDate)
-                    return appointments.filter((a) => {
-                      const d = new Date(a.startTime)
-                      return d >= todayStart && d <= todayEnd && !["cancelled", "no_show"].includes(a.status)
-                    }).length
-                  })()}
-                  activePatients={patients.filter((p) => p.status !== "decede").length}
-                  todayRevenue={(() => {
-                    const todayStart = startOfDay(referenceDate)
-                    const todayEnd = endOfDay(referenceDate)
-                    return transactions
-                      .filter((t) => t.type === "income" && t.status === "paid" && new Date(t.date) >= todayStart && new Date(t.date) <= todayEnd)
-                      .reduce((sum, t) => sum + t.amount, 0)
-                  })()}
-                  onNavigate={onNavigate}
-                />
-                <NextAppointmentWidget
+            {/* Widgets style Luma - Grille homogène */}
+            <div className="relative z-10 px-6">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <NextAppointmentWidgetLumaV2
                   appointment={nextAppointmentCard ? {
                     id: nextAppointmentCard.id,
                     patient: nextAppointmentCard.patient,
@@ -1257,46 +1219,119 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   } : null}
                   onNavigate={() => onNavigate("agenda")}
                 />
-                <TasksWidget
-                  tasks={tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, priority: t.priority, dueDate: t.dueDate }))}
+                <TasksWidgetLumaV2
+                  tasks={tasks.map((t) => ({ 
+                    id: t.id, 
+                    title: t.title, 
+                    status: t.status === "done" ? "completed" : t.status === "in_progress" ? "pending" : "pending", 
+                    priority: t.priority, 
+                    dueDate: t.dueDate ? new Date(t.dueDate) : undefined 
+                  }))}
                   onNavigate={() => onNavigate("taches")}
                 />
-                <StockAlertsWidget
+                <StockAlertsWidgetLumaV2
                   products={products.map((p) => ({ id: p.id, name: p.name, quantity: Number(p.quantity), minStock: Number(p.minStock), unit: p.unit }))}
                   onNavigate={() => onNavigate("stock")}
+                />
+                <RecentActivityWidgetLumaV2
+                  activities={(() => {
+                    const acts: Activity[] = []
+                    // Recent appointments
+                    appointments.slice(0, 2).forEach((a) => {
+                      const patient = patients.find((p) => p.id === a.patientId)
+                      acts.push({
+                        id: `apt-${a.id}`,
+                        type: "appointment",
+                        title: patient?.name || a.title,
+                        description: a.type,
+                        time: new Date(a.startTime).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
+                      })
+                    })
+                    // Recent patients
+                    patients.slice(-2).forEach((p) => {
+                      acts.push({
+                        id: `pat-${p.id}`,
+                        type: "patient",
+                        title: p.name,
+                        description: "Nouveau patient",
+                        time: "Aujourd'hui",
+                      })
+                    })
+                    return acts.slice(0, 4)
+                  })()}
+                  onNavigate={() => onNavigate("agenda")}
+                />
+                <InsightsWidgetLumaV2
+                  insights={smartInsights.map(s => ({ 
+                    ...s, 
+                    description: s.message || "",
+                    type: s.type === "trend" ? "success" : s.type as "warning" | "info" | "success"
+                  }))}
+                  onNavigate={(view) => onNavigate(view as View)}
+                />
+                <PerformanceWidgetLumaV2
+                  todayAppointments={(() => {
+                    const todayStart = startOfDay(referenceDate)
+                    const todayEnd = endOfDay(referenceDate)
+                    return appointments.filter((a) => {
+                      const d = new Date(a.startTime)
+                      return d >= todayStart && d <= todayEnd && !["cancelled", "no_show"].includes(a.status)
+                    }).length
+                  })()}
+                  completedAppointments={(() => {
+                    const todayStart = startOfDay(referenceDate)
+                    const todayEnd = endOfDay(referenceDate)
+                    return appointments.filter((a) => {
+                      const d = new Date(a.startTime)
+                      return d >= todayStart && d <= todayEnd && a.status === "completed"
+                    }).length
+                  })()}
+                  activePatients={patients.filter((p) => p.status !== "decede").length}
                 />
               </div>
             </div>
 
-            {/* Insights IA en dessous */}
-            <div className="px-6">
-              <InsightsWidget
-                insights={smartInsights}
-                onNavigate={(view) => onNavigate(view as View)}
-              />
-            </div>
-
-            <div className="px-6">
-              <DataTable
-                data={dashboardRows}
-                onCreate={() => onNavigate("agenda")}
+            {/* Recent Consultations Widget - Full Width */}
+            <div className="relative z-10 px-6">
+              <RecentConsultationsWidget
+                consultations={appointments.slice(0, 8).map((a) => {
+                  const patient = patients.find((p) => p.id === a.patientId)
+                  const owner = owners.find((o) => o.id === (patient?.ownerId || a.ownerId))
+                  const vet = users.find((u) => u.id === a.vetId)
+                  return {
+                    id: a.id,
+                    patientName: patient?.name || "Patient inconnu",
+                    patientSubtext: patient?.species ? `${patient.species} - ${patient.breed || "Race non précisée"}` : undefined,
+                    ownerName: owner ? `${owner.firstName} ${owner.lastName}`.trim() : "Propriétaire inconnu",
+                    vetName: vet ? vet.displayName : undefined,
+                    type: a.type,
+                    date: new Date(a.startTime).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+                    time: new Date(a.startTime).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
+                    status: a.status as "scheduled" | "in_progress" | "completed" | "cancelled" | "no_show",
+                  }
+                })}
+                onNavigate={() => onNavigate("clinique")}
               />
             </div>
           </TabsContent>
 
-          <TabsContent value="analytics">
-            <DashboardAnalytics
-              financeSeries={financeAnalytics}
-              visitorsSeries={visitorsAnalytics}
-              trafficSources={trafficSources}
-              customerTrend={customerTrend}
-              profileShare={profileShare}
-              onNavigate={onNavigate}
-            />
+          <TabsContent value="analytics" className="relative">
+            <MeshGradient className="fixed inset-0" />
+            <div className="relative z-10">
+              <DashboardAnalyticsV2
+                financeSeries={financeAnalytics}
+                visitorsSeries={visitorsAnalytics}
+                trafficSources={trafficSources}
+                customerTrend={customerTrend}
+                profileShare={profileShare}
+                onNavigate={onNavigate}
+              />
+            </div>
           </TabsContent>
 
-          <TabsContent value="reports">
-            <div className="grid gap-6 px-4 lg:grid-cols-3 lg:px-6">
+          <TabsContent value="reports" className="relative">
+            <MeshGradient className="fixed inset-0" />
+            <div className="relative z-10 grid gap-6 px-4 lg:grid-cols-3 lg:px-6">
               {[
                 {
                   id: "daily",
@@ -1347,8 +1382,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             </div>
           </TabsContent>
 
-          <TabsContent value="notifications">
-            <div className="grid gap-6 px-4 lg:grid-cols-2 lg:px-6">
+          <TabsContent value="notifications" className="relative">
+            <MeshGradient className="fixed inset-0" />
+            <div className="relative z-10 grid gap-6 px-4 lg:grid-cols-2 lg:px-6">
               {dashboardNotifications.length > 0 ? (
                 dashboardNotifications.map((item) => (
                   <Card key={item.id}>

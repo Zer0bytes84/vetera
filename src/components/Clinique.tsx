@@ -2,7 +2,7 @@ import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from "r
 import QRCode from "qrcode"
 import { jsPDF } from "jspdf"
 import { toast } from "sonner"
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
   BirdIcon,
@@ -20,10 +20,17 @@ import {
   SearchIcon,
   StethoscopeIcon,
   WorkHistoryIcon,
+  Activity01Icon,
+  TimerIcon,
+  CheckmarkCircle01Icon,
+  HourglassIcon,
+  UserGroupIcon,
+  ArrowRight01Icon,
 } from "@hugeicons/core-free-icons"
 
 import Avatar from "@/components/Avatar"
 import MotivationalHeader from "@/components/MotivationalHeader"
+import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
@@ -102,14 +109,6 @@ type BillingItem = {
 type ListTab = "all" | "scheduled" | "in_progress" | "completed"
 type DetailTab = "overview" | "history"
 
-type CliniqueMetricItem = {
-  title: string
-  value: string
-  badge: string
-  summary: string
-  detail: string
-}
-
 type ConsultationDraftPayload = {
   appointmentPatch: Partial<Appointment>
   patientPatch: Partial<Patient>
@@ -125,11 +124,11 @@ const ALLOWED_DOCUMENT_MIME = new Set([
   "image/heif",
 ])
 
-const LIST_TABS: Array<{ value: ListTab; label: string }> = [
-  { value: "all", label: "Tous" },
-  { value: "scheduled", label: "À lancer" },
-  { value: "in_progress", label: "En cours" },
-  { value: "completed", label: "Terminés" },
+const LIST_TABS: Array<{ value: ListTab; label: string; icon: typeof StethoscopeIcon }> = [
+  { value: "all", label: "Planning", icon: Calendar01Icon },
+  { value: "scheduled", label: "À venir", icon: HourglassIcon },
+  { value: "in_progress", label: "En cours", icon: TimerIcon },
+  { value: "completed", label: "Terminés", icon: CheckmarkCircle01Icon },
 ]
 
 const STATUS_META: Record<
@@ -309,7 +308,7 @@ function formatElapsedDuration(ms: number) {
     .join(":")
 }
 
-function getSpeciesIcon(_species?: string): IconSvgElement {
+function getSpeciesIcon(_species?: string) {
   return BirdIcon
 }
 
@@ -380,39 +379,6 @@ function AppointmentStatusBadge({
     >
       {meta.label}
     </Badge>
-  )
-}
-
-function CliniqueMetricCard({
-  title,
-  value,
-  badge,
-  summary,
-  detail,
-}: CliniqueMetricItem) {
-  return (
-    <Card
-      size="sm"
-      className="justify-between bg-card"
-    >
-      <CardHeader>
-        <CardDescription>{title}</CardDescription>
-        <CardTitle className="text-[2rem] font-semibold tracking-[-0.05em] tabular-nums">
-          {value}
-        </CardTitle>
-        <CardAction>
-          <Badge variant="outline" className="bg-background/80">
-            {badge}
-          </Badge>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="grid gap-1.5">
-          <p className="font-medium text-foreground">{summary}</p>
-          <p className="text-sm leading-6 text-muted-foreground">{detail}</p>
-        </div>
-      </CardContent>
-    </Card>
   )
 }
 
@@ -1536,39 +1502,53 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     [todaysAppointments]
   )
 
-  const overviewItems = useMemo<CliniqueMetricItem[]>(
-    () => [
+  const generateSparkline = (base: number) => 
+    Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 3) - 1)
+
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
+    return [
       {
         title: "Consultations du jour",
         value: String(stats.total),
-        badge: `${stats.total}`,
-        summary: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""}`,
-        detail: "Volume global du flux clinique sélectionné aujourd’hui",
+        badge: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""}`,
+        trend: stats.total > 0 ? "up" : "neutral",
+        summary: "Volume global du flux clinique",
+        icon: Activity01Icon,
+        sparklineData: generateSparkline(stats.total),
+        color: "blue",
       },
       {
         title: "En cours",
         value: String(stats.inProgress),
-        badge: `${stats.inProgress}`,
+        badge: `${stats.inProgress} active${stats.inProgress > 1 ? "s" : ""}`,
+        trend: stats.inProgress > 0 ? "up" : "neutral",
         summary: "Consultations à documenter",
-        detail: "Dossiers actifs à finaliser puis facturer",
+        icon: TimerIcon,
+        sparklineData: generateSparkline(stats.inProgress),
+        color: "amber",
       },
       {
         title: "Terminés",
         value: String(stats.completed),
-        badge: `${stats.completed}`,
-        summary: "Consultations déjà clôturées",
-        detail: "Inclut historique, diagnostic et encaissement validés",
+        badge: `${stats.completed} finie${stats.completed > 1 ? "s" : ""}`,
+        trend: stats.completed > 0 ? "up" : "neutral",
+        summary: "Consultations clôturées",
+        icon: CheckmarkCircle01Icon,
+        sparklineData: generateSparkline(stats.completed),
+        color: "emerald",
       },
       {
         title: "En attente",
         value: String(stats.pending),
-        badge: `${stats.pending}`,
+        badge: `${stats.pending} en salle`,
+        trend: stats.pending > 3 ? "down" : "neutral",
         summary: "Créneaux à lancer",
-        detail: "Patients encore en salle d’attente ou à appeler",
+        icon: HourglassIcon,
+        sparklineData: generateSparkline(stats.pending),
+        color: "violet",
       },
-    ],
-    [stats.completed, stats.inProgress, stats.pending, stats.total]
-  )
+    ]
+  }, [stats.completed, stats.inProgress, stats.pending, stats.total])
 
   const getPatient = (patientId: string) => patientsById.get(patientId)
   const getOwner = (appointment: Appointment) => {
@@ -1840,22 +1820,26 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {overviewItems.map((item) => (
-          <CliniqueMetricCard key={item.title} {...item} />
-        ))}
-      </div>
+      <SectionCardsPremium items={sectionCards} />
 
       <div className="grid gap-4">
-        <Card className="min-h-[760px]">
-          <CardHeader className="border-b">
-            <CardDescription>Flux clinique</CardDescription>
-            <CardTitle className="text-2xl tracking-[-0.04em]">
-              Consultations du jour
-            </CardTitle>
+        <Card className="relative min-h-[760px] overflow-hidden">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-violet-500/[0.05] via-violet-500/[0.02] to-transparent" />
+          <CardHeader className="relative border-b border-border/35 bg-transparent">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10">
+                <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={2} className="h-5 w-5 text-violet-600" />
+              </div>
+              <div className="grid flex-1 gap-0.5">
+                <CardDescription>Registre clinique</CardDescription>
+                <CardTitle className="text-2xl tracking-[-0.04em]">
+                  Activité des dossiers
+                </CardTitle>
+              </div>
+            </div>
             <CardAction>
-              <Badge variant="outline">
-                {visibleCount} visible{visibleCount > 1 ? "s" : ""}
+              <Badge variant="outline" className="bg-background/80">
+                {visibleCount} consultation{visibleCount > 1 ? "s" : ""}
               </Badge>
             </CardAction>
           </CardHeader>
@@ -1867,12 +1851,29 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                 onValueChange={(value) => setListTab(value as ListTab)}
                 className="gap-3"
               >
-                <TabsList>
-                  {LIST_TABS.map((tab) => (
-                    <TabsTrigger key={tab.value} value={tab.value}>
-                      {tab.label}
-                    </TabsTrigger>
-                  ))}
+                <TabsList className="bg-muted/50 p-1">
+                  {LIST_TABS.map((tab) => {
+                    const count = tab.value === "all" 
+                      ? filteredAppointments.length 
+                      : tab.value === "scheduled"
+                      ? stats.pending
+                      : tab.value === "in_progress"
+                      ? stats.inProgress
+                      : stats.completed
+                    return (
+                      <TabsTrigger 
+                        key={tab.value} 
+                        value={tab.value}
+                        className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                      >
+                        <HugeiconsIcon icon={tab.icon} className="h-4 w-4" />
+                        <span>{tab.label}</span>
+                        <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-xs">
+                          {count}
+                        </Badge>
+                      </TabsTrigger>
+                    )
+                  })}
                 </TabsList>
               </Tabs>
 
@@ -1951,15 +1952,43 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                 <div className="overflow-hidden rounded-lg border">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[34%]">Patient</TableHead>
-                        <TableHead className="hidden w-[20%] xl:table-cell">
-                          Propriétaire
+                      <TableRow className="bg-muted/30 hover:bg-muted/30">
+                        <TableHead className="w-[34%] pl-4">
+                          <div className="flex items-center gap-2">
+                            <HugeiconsIcon icon={StethoscopeIcon} className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-semibold">Patient</span>
+                          </div>
                         </TableHead>
-                        <TableHead className="w-[20%]">Créneau</TableHead>
-                        <TableHead className="w-[12%]">Acte</TableHead>
-                        <TableHead className="w-[14%]">Statut</TableHead>
-                        <TableHead className="w-[20%]">Action</TableHead>
+                        <TableHead className="hidden w-[20%] xl:table-cell">
+                          <div className="flex items-center gap-2">
+                            <HugeiconsIcon icon={UserGroupIcon} className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-semibold">Propriétaire</span>
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[20%]">
+                          <div className="flex items-center gap-2">
+                            <HugeiconsIcon icon={Clock01Icon} className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-semibold">Horaire</span>
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[12%]">
+                          <div className="flex items-center gap-2">
+                            <HugeiconsIcon icon={Activity01Icon} className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-semibold">Type</span>
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[14%]">
+                          <div className="flex items-center gap-2">
+                            <HugeiconsIcon icon={CheckmarkCircle01Icon} className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-semibold">État</span>
+                          </div>
+                        </TableHead>
+                        <TableHead className="w-[20%]">
+                          <div className="flex items-center gap-2">
+                            <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-semibold">Action</span>
+                          </div>
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -2147,8 +2176,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden">
-          <CardHeader className="border-b">
+        <Card className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-emerald-500/[0.035] via-emerald-500/[0.015] to-transparent" />
+          <CardHeader className="relative border-b border-border/35 bg-transparent">
             <CardDescription>Dossier sélectionné</CardDescription>
             <CardTitle className="text-xl tracking-[-0.04em]">
               {selectedPatient?.name || "Sélectionnez une consultation"}

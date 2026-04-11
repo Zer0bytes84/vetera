@@ -7,8 +7,16 @@ import {
   Edit01Icon,
   SaveIcon,
   SearchIcon,
+  UserGroupIcon,
+  HeartPulse,
+  CalendarCheckInIcon,
+  Notification02Icon,
+  Activity01Icon,
+  TrendingUp,
+  TrendingDown,
 } from "@hugeicons/core-free-icons"
 import { toast } from "sonner"
+import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 
 import MotivationalHeader from "@/components/MotivationalHeader"
 import { Badge } from "@/components/ui/badge"
@@ -306,40 +314,6 @@ function PatientStatusBadge({ status }: { status: Patient["status"] }) {
     <Badge variant="secondary" className={meta.className}>
       {meta.label}
     </Badge>
-  )
-}
-
-function OverviewStatCard({
-  title,
-  value,
-  badge,
-  summary,
-  detail,
-}: {
-  title: string
-  value: string
-  badge: string
-  summary: string
-  detail: string
-}) {
-  return (
-    <Card size="sm">
-      <CardHeader className="pb-2">
-        <CardDescription>{title}</CardDescription>
-        <CardTitle className="text-3xl font-semibold tracking-tight tabular-nums">
-          {value}
-        </CardTitle>
-        <CardAction className="flex items-center gap-2">
-          <Badge variant="secondary" className="rounded-2xl">
-            {badge}
-          </Badge>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="grid gap-1">
-        <p className="text-sm font-medium text-foreground">{summary}</p>
-        <p className="text-xs text-muted-foreground">{detail}</p>
-      </CardContent>
-    </Card>
   )
 }
 
@@ -1671,7 +1645,7 @@ const Patients: React.FC = () => {
     ).sort((left, right) => left.localeCompare(right, "fr"))
   }, [patients])
 
-  const overviewStats = useMemo(() => {
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
     const activePatients = patients.filter(
       (patient) => patient.status !== "decede"
     ).length
@@ -1697,34 +1671,50 @@ const Patients: React.FC = () => {
       return Date.now() - lastVisit.getTime() > 1000 * 60 * 60 * 24 * 90
     }).length
 
+    // Generate sparkline data (random variations around the actual values for visual effect)
+    const generateSparkline = (base: number) => 
+      Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 5) - 2)
+
     return [
       {
         title: "Dossiers actifs",
         value: String(activePatients),
         badge: `${owners.length} foyers`,
-        summary: "Base clinique disponible",
-        detail: "Patients actuellement suivis dans l'application",
+        trend: "neutral",
+        summary: "Patients suivis dans la base",
+        icon: UserGroupIcon,
+        sparklineData: generateSparkline(activePatients),
+        color: "blue",
       },
       {
         title: "Suivi clinique",
         value: String(monitoredPatients),
         badge: monitoredPatients > 0 ? "à surveiller" : "stable",
-        summary: "Traitements et hospitalisations",
-        detail: "Patients qui nécessitent une vigilance renforcée",
+        trend: monitoredPatients > 0 ? "up" : "neutral",
+        summary: "Traitements en cours",
+        icon: HeartPulse,
+        sparklineData: generateSparkline(monitoredPatients),
+        color: "rose",
       },
       {
         title: "Rendez-vous à venir",
         value: String(scheduledPatients),
-        badge: "prochaine file",
-        summary: "Créneaux déjà planifiés",
-        detail: "Patients attendus dans les prochains jours",
+        badge: "planifiés",
+        trend: scheduledPatients > 0 ? "up" : "neutral",
+        summary: "Patients attendus",
+        icon: CalendarCheckInIcon,
+        sparklineData: generateSparkline(scheduledPatients),
+        color: "violet",
       },
       {
         title: "Relances à prévoir",
         value: String(stalePatients),
-        badge: "suivi calme",
-        summary: "Visites anciennes ou manquantes",
-        detail: "Dossiers sans passage récent à rappeler au besoin",
+        badge: "sans visite",
+        trend: stalePatients > 5 ? "down" : "neutral",
+        summary: "90+ jours sans passage",
+        icon: Notification02Icon,
+        sparklineData: generateSparkline(stalePatients),
+        color: "amber",
       },
     ]
   }, [appointments, owners.length, patients])
@@ -1807,11 +1797,7 @@ const Patients: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {overviewStats.map((item) => (
-          <OverviewStatCard key={item.title} {...item} />
-        ))}
-      </div>
+      <SectionCardsPremium items={sectionCards} />
 
       <div className="min-h-0 flex-1">
         <Card className="min-h-[640px]">

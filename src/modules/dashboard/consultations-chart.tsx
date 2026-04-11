@@ -7,7 +7,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { ArrowRight01Icon, Activity01Icon } from "@hugeicons/core-free-icons"
 import { useTranslation } from "react-i18next"
 
 const chartConfig: ChartConfig = {
@@ -54,43 +54,67 @@ export function ConsultationsChart({
   )
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <CardTitle>{t("dashboard.consultations.title", { defaultValue: "Activité clinique" })}</CardTitle>
-            <div className="flex gap-1.5">
-              <Badge variant="secondary" className="text-xs">
-                <span className="mr-1 size-2 rounded-full bg-[var(--chart-1)]" />
-                {totals.consultations}
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                <span className="mr-1 size-2 rounded-full bg-[var(--chart-2)]" />
-                {totals.chirurgies} {t("dashboard.consultations.surgeriesShort", { defaultValue: "chir." })}
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                <span className="mr-1 size-2 rounded-full bg-[var(--chart-4)]" />
-                {totals.urgences} {t("dashboard.consultations.emergenciesShort", { defaultValue: "urg." })}
-              </Badge>
+    <Card className="overflow-hidden transition-shadow hover:shadow-md">
+      <CardHeader className="border-b bg-muted/20 pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10">
+              <HugeiconsIcon
+                icon={Activity01Icon}
+                strokeWidth={2}
+                className="size-5 text-violet-600"
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-base">
+                  {t("dashboard.consultations.title", { defaultValue: "Activité clinique" })}
+                </CardTitle>
+                <div className="flex gap-1.5">
+                  <Badge
+                    variant="secondary"
+                    className="gap-1.5 border-0 bg-violet-500/10 text-violet-600 text-xs font-medium"
+                  >
+                    <span className="size-2 rounded-full bg-violet-500" />
+                    {totals.consultations}
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="gap-1.5 border-0 bg-emerald-500/10 text-emerald-600 text-xs font-medium"
+                  >
+                    <span className="size-2 rounded-full bg-emerald-500" />
+                    {totals.chirurgies}
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="gap-1.5 border-0 bg-amber-500/10 text-amber-600 text-xs font-medium"
+                  >
+                    <span className="size-2 rounded-full bg-amber-500" />
+                    {totals.urgences}
+                  </Badge>
+                </div>
+              </div>
+              <CardDescription className="text-xs">
+                {t("dashboard.consultations.description", { defaultValue: "Répartition des actes sur la journée" })}
+              </CardDescription>
             </div>
           </div>
-          <CardDescription>{t("dashboard.consultations.description", { defaultValue: "Répartition des actes sur la journée" })}</CardDescription>
+          <CardAction>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 text-muted-foreground hover:text-foreground"
+              onClick={onNavigate}
+            >
+              {t("dashboard.viewDetails", { defaultValue: "Voir détails" })}
+              <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-4" />
+            </Button>
+          </CardAction>
         </div>
-        <CardAction>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1 text-muted-foreground"
-            onClick={onNavigate}
-          >
-            {t("dashboardWidgets.viewAgenda")}
-            <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="size-4" />
-          </Button>
-        </CardAction>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[250px] w-full">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+      <CardContent className="p-4">
+        <ChartContainer config={chartConfig} className="h-[220px] w-full">
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="fillConsultations" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="var(--color-consultations)" stopOpacity={0.3} />

@@ -254,7 +254,7 @@ const resources = {
         },
       },
       dashboardPage: {
-        consultationsOfDay: "Consultations du jour",
+        consultationsOfDay: "RDV du jour",
         urgencyFollowUp_one: "{{count}} urgence en suivi",
         urgencyFollowUp: "{{count}} urgence en suivi",
         urgencyFollowUp_other: "{{count}} urgences en suivi",
