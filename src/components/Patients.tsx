@@ -323,20 +323,22 @@ function OverviewStatCard({
   detail: string
 }) {
   return (
-    <Card size="sm" className="bg-card shadow-xs">
-      <CardHeader>
+    <Card size="sm">
+      <CardHeader className="pb-2">
         <CardDescription>{title}</CardDescription>
-        <CardTitle className="text-2xl font-semibold tabular-nums">
+        <CardTitle className="text-3xl font-semibold tracking-tight tabular-nums">
           {value}
         </CardTitle>
-        <CardAction>
-          <Badge variant="outline">{badge}</Badge>
+        <CardAction className="flex items-center gap-2">
+          <Badge variant="secondary" className="rounded-2xl">
+            {badge}
+          </Badge>
         </CardAction>
       </CardHeader>
-      <CardFooter className="flex-col items-start gap-1.5 text-sm">
-        <div className="font-medium text-foreground">{summary}</div>
-        <div className="text-muted-foreground">{detail}</div>
-      </CardFooter>
+      <CardContent className="grid gap-1">
+        <p className="text-sm font-medium text-foreground">{summary}</p>
+        <p className="text-xs text-muted-foreground">{detail}</p>
+      </CardContent>
     </Card>
   )
 }
@@ -1845,7 +1847,7 @@ const Patients: React.FC = () => {
               <NativeSelect
                 value={speciesFilter}
                 onChange={(event) => setSpeciesFilter(event.target.value)}
-                className="w-full"
+                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:pl-4"
               >
                 <NativeSelectOption value="all">
                   Toutes les espèces
@@ -1860,7 +1862,7 @@ const Patients: React.FC = () => {
               <NativeSelect
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value)}
-                className="w-full"
+                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:pl-4"
               >
                 <NativeSelectOption value="all">
                   Tous les statuts

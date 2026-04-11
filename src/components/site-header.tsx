@@ -92,18 +92,20 @@ export function SiteHeader({
     de: t("language.german"),
   }
   const iconButtonClass =
-    "relative inline-flex size-9 items-center justify-center rounded-xl border-border/80 bg-background/60 text-foreground/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] hover:bg-background/75"
+    "relative inline-flex size-9 items-center justify-center rounded-xl border-black/8 bg-white/14 text-foreground/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl hover:bg-white/22 dark:border-white/8 dark:bg-black/12 dark:hover:bg-black/22"
 
   return (
     <header
       ref={headerRef}
       onMouseDown={handleMouseDown}
       className={cn(
-        "sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 border-b pl-4 pr-3 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:pl-6 lg:pr-4",
+        "site-header-frame sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 overflow-hidden border-b pl-4 pr-3 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:pl-6 lg:pr-4",
         "site-header-glass border-black/[0.06] dark:border-white/[0.04]",
         !isScrolled && "shadow-none border-transparent"
       )}
     >
+      <div aria-hidden="true" className="site-header-sheen" />
+      <div aria-hidden="true" className="site-header-tint" />
       <div className="flex w-full items-center gap-2">
         <SidebarTrigger className="-ml-1" />
         <Separator
@@ -118,7 +120,7 @@ export function SiteHeader({
           <Button
             type="button"
             variant="outline"
-            className="h-8 w-[280px] items-center justify-between rounded-lg border-border/70 bg-background/45 px-3 text-sm text-muted-foreground shadow-sm backdrop-blur-md transition-all hover:bg-background/65"
+            className="h-8 w-[280px] items-center justify-between rounded-lg border-black/8 bg-white/14 px-3 text-sm text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl transition-all hover:bg-white/22 dark:border-white/8 dark:bg-black/12 dark:hover:bg-black/22"
             onClick={onOpenPalette}
           >
             <div className="flex items-center gap-2">

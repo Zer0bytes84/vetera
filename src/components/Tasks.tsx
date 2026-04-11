@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react"
+import { ar, de, enUS, es, fr, pt } from "date-fns/locale"
 import MotivationalHeader from "./MotivationalHeader"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -11,6 +12,7 @@ import {
   Flag01Icon,
   LayoutGridIcon,
   ListPlusIcon,
+  MoreVerticalCircle01Icon,
   Notification02Icon,
 } from "@hugeicons/core-free-icons"
 import { useTasksRepository } from "@/data/repositories"
@@ -20,6 +22,7 @@ import KanbanBoard from "./KanbanBoard"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Empty,
@@ -30,7 +33,27 @@ import {
 } from "@/components/ui/empty"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { useTranslation } from "react-i18next"
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "bg-red-500/10 text-red-700 border-red-200 dark:text-red-300",
@@ -42,6 +65,13 @@ const PRIORITY_LABELS: Record<string, string> = {
   high: "Urgent",
   medium: "Normal",
   low: "Faible",
+}
+
+const PRIORITY_TABLE_BADGES: Record<string, string> = {
+  high: "border-red-200 bg-red-500/12 text-red-700 dark:border-red-500/30 dark:bg-red-500/18 dark:text-red-300",
+  medium:
+    "border-amber-200 bg-amber-500/12 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/18 dark:text-amber-300",
+  low: "border-sky-200 bg-sky-500/12 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/18 dark:text-sky-300",
 }
 
 // Helper to generate time slots
@@ -57,7 +87,22 @@ const generateTimeSlots = () => {
 
 const TIME_SLOTS = generateTimeSlots()
 
+const formatDateInput = (value: Date) => {
+  const year = value.getFullYear()
+  const month = `${value.getMonth() + 1}`.padStart(2, "0")
+  const day = `${value.getDate()}`.padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+const parseDateInput = (value?: string) => {
+  if (!value) return null
+  const [year, month, day] = value.split("-").map(Number)
+  if (!year || !month || !day) return null
+  return new Date(year, month - 1, day, 12, 0, 0, 0)
+}
+
 const Tasks: React.FC = () => {
+  const { i18n } = useTranslation()
   const { currentUser } = useAuth()
   const {
     data: tasks,
@@ -69,7 +114,38 @@ const Tasks: React.FC = () => {
   const [newTaskTitle, setNewTaskTitle] = useState("")
   const [isAdding, setIsAdding] = useState(false)
   const [filter, setFilter] = useState<"all" | "mine">("mine")
-  const [viewMode, setViewMode] = useState<"list" | "kanban">("kanban")
+  const [viewMode, setViewMode] = useState<"list" | "kanban">("list")
+  const [taskSearch, setTaskSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "todo" | "in_progress" | "done"
+  >("all")
+  const [priorityFilter, setPriorityFilter] = useState<
+    "all" | "high" | "medium" | "low"
+  >("all")
+  const [favoriteTaskIds, setFavoriteTaskIds] = useState<string[]>([])
+  const [taskLabels, setTaskLabels] = useState<Record<string, string[]>>({})
+  const currentLocale = i18n.language.startsWith("ar")
+    ? "ar"
+    : i18n.language.startsWith("en")
+      ? "en-US"
+      : i18n.language.startsWith("es")
+        ? "es-ES"
+        : i18n.language.startsWith("pt")
+          ? "pt-PT"
+          : i18n.language.startsWith("de")
+            ? "de-DE"
+            : "fr-FR"
+  const calendarLocale = i18n.language.startsWith("ar")
+    ? ar
+    : i18n.language.startsWith("en")
+      ? enUS
+      : i18n.language.startsWith("es")
+        ? es
+        : i18n.language.startsWith("pt")
+          ? pt
+          : i18n.language.startsWith("de")
+            ? de
+            : fr
 
   // Extended form state
   const [newTaskDetails, setNewTaskDetails] = useState<{
@@ -133,6 +209,51 @@ const Tasks: React.FC = () => {
           (err.message || JSON.stringify(err))
       )
     }
+  }
+
+  const handleEditTask = async (task: Task) => {
+    const nextTitle = window.prompt("Modifier le titre de la tâche", task.title)
+    if (!nextTitle || nextTitle.trim() === task.title) return
+    await updateTask(task.id, { title: nextTitle.trim() })
+  }
+
+  const handleDuplicateTask = async (task: Task) => {
+    await addTask({
+      title: `${task.title} (copie)`,
+      status: task.status,
+      priority: task.priority,
+      dueDate: task.dueDate,
+      startTime: task.startTime,
+      endTime: task.endTime,
+      isReminder: task.isReminder,
+      assignedTo: task.assignedTo || currentUser?.uid,
+      patientId: task.patientId,
+    } as any)
+  }
+
+  const toggleFavoriteTask = (taskId: string) => {
+    setFavoriteTaskIds((prev) =>
+      prev.includes(taskId)
+        ? prev.filter((id) => id !== taskId)
+        : [...prev, taskId]
+    )
+  }
+
+  const setTaskLabel = (taskId: string, label: string) => {
+    setTaskLabels((prev) => {
+      const labels = prev[taskId] ?? []
+      if (labels.includes(label)) return prev
+      return {
+        ...prev,
+        [taskId]: [...labels, label],
+      }
+    })
+  }
+
+  const setCustomTaskLabel = (taskId: string) => {
+    const input = window.prompt("Nouvelle étiquette")
+    if (!input || !input.trim()) return
+    setTaskLabel(taskId, input.trim())
   }
 
   const toggleStatus = async (task: Task) => {
@@ -200,6 +321,20 @@ const Tasks: React.FC = () => {
 
     return groups
   }, [filteredTasks])
+
+  const tableTasks = useMemo(() => {
+    return filteredTasks.filter((task) => {
+      const search = taskSearch.trim().toLowerCase()
+      const matchesSearch =
+        search.length === 0 ||
+        task.title.toLowerCase().includes(search) ||
+        task.id.toLowerCase().includes(search)
+      const matchesStatus = statusFilter === "all" || task.status === statusFilter
+      const matchesPriority =
+        priorityFilter === "all" || task.priority === priorityFilter
+      return matchesSearch && matchesStatus && matchesPriority
+    })
+  }, [filteredTasks, priorityFilter, statusFilter, taskSearch])
 
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
@@ -296,7 +431,8 @@ const Tasks: React.FC = () => {
               {isAdding && (
                 <Button
                   type="submit"
-                  className="rounded-[0.95rem] bg-[linear-gradient(135deg,#316CFF,#6F7CFF)] px-4 shadow-[0_18px_35px_rgba(49,108,255,0.24)]"
+                  variant="default"
+                  className="rounded-[0.95rem] px-4"
                 >
                   Ajouter
                 </Button>
@@ -306,24 +442,50 @@ const Tasks: React.FC = () => {
             {isAdding && (
               <div className="flex animate-in flex-wrap items-center gap-3 border-t border-border pt-4 pl-9 fade-in slide-in-from-top-2">
                 {/* Date Picker */}
-                <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5">
-                  <HugeiconsIcon
-                    icon={Calendar01Icon}
-                    strokeWidth={2}
-                    className="size-3.5 text-muted-foreground"
-                  />
-                  <input
-                    type="date"
-                    value={newTaskDetails.dueDate}
-                    onChange={(e) =>
-                      setNewTaskDetails({
-                        ...newTaskDetails,
-                        dueDate: e.target.value,
-                      })
+                <Popover>
+                  <PopoverTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 rounded-3xl bg-muted/30 px-3 text-xs font-normal hover:bg-muted/50"
+                      />
                     }
-                    className="border-none bg-transparent text-xs text-foreground outline-none"
-                  />
-                </div>
+                  >
+                    <HugeiconsIcon
+                      icon={Calendar01Icon}
+                      strokeWidth={2}
+                      className="size-3.5 text-muted-foreground"
+                    />
+                    {(parseDateInput(newTaskDetails.dueDate) ?? new Date()).toLocaleDateString(
+                      currentLocale,
+                      {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      }
+                    )}
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    sideOffset={10}
+                    className="w-auto rounded-[1.35rem] p-2.5"
+                  >
+                    <Calendar
+                      mode="single"
+                      locale={calendarLocale}
+                      selected={parseDateInput(newTaskDetails.dueDate) ?? new Date()}
+                      onSelect={(date) => {
+                        if (!date) return
+                        setNewTaskDetails({
+                          ...newTaskDetails,
+                          dueDate: formatDateInput(date),
+                        })
+                      }}
+                      className="rounded-[1.05rem] [--cell-size:--spacing(8.6)]"
+                    />
+                  </PopoverContent>
+                </Popover>
 
                 {/* Time Range Selector */}
                 <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5">
@@ -444,85 +606,239 @@ const Tasks: React.FC = () => {
                 await removeTask(taskId)
               }
             }}
-            onToggleStatus={toggleStatus}
           />
         </div>
       ) : (
-        /* Tasks List Groups */
-        <div className="flex-1 space-y-6">
-          {/* Overdue */}
-          {groupedTasks.overdue.length > 0 && (
-            <TaskGroup
-              title="En Retard"
-              tasks={groupedTasks.overdue}
-              color="text-red-600 dark:text-red-400"
-              onToggle={toggleStatus}
-              onDelete={removeTask}
-            />
-          )}
+        <div className="flex-1 space-y-4">
+          <Card size="sm">
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <Input
+                  value={taskSearch}
+                  onChange={(e) => setTaskSearch(e.target.value)}
+                  placeholder="Filtrer les rappels..."
+                  className="h-9 max-w-sm"
+                />
+                <NativeSelect
+                  value={statusFilter}
+                  onChange={(e) =>
+                    setStatusFilter(
+                      e.target.value as "all" | "todo" | "in_progress" | "done"
+                    )
+                  }
+                  size="sm"
+                  className="w-[170px]"
+                >
+                  <NativeSelectOption value="all">Statut</NativeSelectOption>
+                  <NativeSelectOption value="todo">À faire</NativeSelectOption>
+                  <NativeSelectOption value="in_progress">
+                    En cours
+                  </NativeSelectOption>
+                  <NativeSelectOption value="done">Terminé</NativeSelectOption>
+                </NativeSelect>
+                <NativeSelect
+                  value={priorityFilter}
+                  onChange={(e) =>
+                    setPriorityFilter(
+                      e.target.value as "all" | "high" | "medium" | "low"
+                    )
+                  }
+                  size="sm"
+                  className="w-[170px]"
+                >
+                  <NativeSelectOption value="all">Priorité</NativeSelectOption>
+                  <NativeSelectOption value="high">Urgent</NativeSelectOption>
+                  <NativeSelectOption value="medium">Normal</NativeSelectOption>
+                  <NativeSelectOption value="low">Faible</NativeSelectOption>
+                </NativeSelect>
+                <div className="ml-auto text-xs text-muted-foreground">
+                  {tableTasks.length} rappel{tableTasks.length > 1 ? "s" : ""}
+                </div>
+              </div>
 
-          {/* Today */}
-          <TaskGroup
-            title="Aujourd'hui"
-            tasks={groupedTasks.today}
-            color="text-primary"
-            onToggle={toggleStatus}
-            onDelete={removeTask}
-          />
-
-          {/* Tomorrow */}
-          {groupedTasks.tomorrow.length > 0 && (
-            <TaskGroup
-              title="Demain"
-              tasks={groupedTasks.tomorrow}
-              color="text-muted-foreground"
-              onToggle={toggleStatus}
-              onDelete={removeTask}
-            />
-          )}
-
-          {/* Upcoming */}
-          {groupedTasks.upcoming.length > 0 && (
-            <TaskGroup
-              title="Plus tard"
-              tasks={groupedTasks.upcoming}
-              color="text-muted-foreground"
-              onToggle={toggleStatus}
-              onDelete={removeTask}
-            />
-          )}
-
-          {/* Completed */}
-          {groupedTasks.completed.length > 0 && (
-            <div className="opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0">
-              <TaskGroup
-                title="Terminées"
-                tasks={groupedTasks.completed}
-                color="text-green-600 dark:text-green-400"
-                onToggle={toggleStatus}
-                onDelete={removeTask}
-                isCompletedGroup
-              />
-            </div>
-          )}
-
-          {filteredTasks.length === 0 && (
-            <Empty className="border border-dashed border-border/80 bg-muted/20 py-20">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <HugeiconsIcon
-                    icon={CheckmarkCircle02Icon}
-                    strokeWidth={2}
-                    className="size-5"
-                  />
-                </EmptyMedia>
-                <EmptyTitle>Tout est à jour !</EmptyTitle>
-                <EmptyDescription>
-                  Aucune tâche en attente. Profitez-en pour prendre une pause.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          )}
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[120px]">ID</TableHead>
+                    <TableHead>Titre</TableHead>
+                    <TableHead className="w-[140px]">Statut</TableHead>
+                    <TableHead className="w-[120px]">Priorité</TableHead>
+                    <TableHead className="w-[130px]">Horaire</TableHead>
+                    <TableHead className="w-[130px] text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {tableTasks.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        className="py-10 text-center text-muted-foreground"
+                      >
+                        Aucun rappel trouvé.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    tableTasks.map((task) => (
+                      <TableRow key={task.id}>
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          TASK-{task.id.slice(-4).toUpperCase()}
+                        </TableCell>
+                        <TableCell className="max-w-[420px] truncate font-medium">
+                          <div className="flex items-center gap-2">
+                            {favoriteTaskIds.includes(task.id) ? (
+                              <span className="text-amber-500">★</span>
+                            ) : null}
+                            <span className="truncate">{task.title}</span>
+                            {(taskLabels[task.id] ?? []).slice(0, 1).map((label) => (
+                              <Badge
+                                key={`${task.id}-${label}`}
+                                variant="outline"
+                                className="text-[10px]"
+                              >
+                                {label}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="secondary"
+                            className={cn(
+                              task.status === "done" &&
+                                "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                              task.status === "in_progress" &&
+                                "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+                              task.status === "todo" &&
+                                "bg-muted text-muted-foreground"
+                            )}
+                          >
+                            {task.status === "done"
+                              ? "Terminé"
+                              : task.status === "in_progress"
+                                ? "En cours"
+                                : "À faire"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
+                              PRIORITY_TABLE_BADGES[task.priority]
+                            )}
+                          >
+                            {PRIORITY_LABELS[task.priority]}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {task.startTime
+                            ? `${task.startTime}${task.endTime ? ` - ${task.endTime}` : ""}`
+                            : "--"}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant={
+                                task.status === "done" ? "secondary" : "default"
+                              }
+                              size="sm"
+                              onClick={() => toggleStatus(task)}
+                              className={cn(
+                                "h-8 rounded-xl px-3 text-xs font-semibold"
+                              )}
+                            >
+                              {task.status === "done" ? "Réouvrir" : "Terminer"}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              onClick={() => removeTask(task.id)}
+                            >
+                              <HugeiconsIcon
+                                icon={Delete01Icon}
+                                strokeWidth={2}
+                                className="size-4"
+                              />
+                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger
+                                render={
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    aria-label="Plus d'actions"
+                                  />
+                                }
+                              >
+                                <HugeiconsIcon
+                                  icon={MoreVerticalCircle01Icon}
+                                  strokeWidth={2}
+                                  className="size-4"
+                                />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" sideOffset={6}>
+                                <DropdownMenuItem onClick={() => handleEditTask(task)}>
+                                  Modifier
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDuplicateTask(task)}
+                                >
+                                  Dupliquer
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => toggleFavoriteTask(task.id)}
+                                >
+                                  {favoriteTaskIds.includes(task.id)
+                                    ? "Retirer des favoris"
+                                    : "Ajouter aux favoris"}
+                                </DropdownMenuItem>
+                                <DropdownMenuSub>
+                                  <DropdownMenuSubTrigger>
+                                    Étiquettes
+                                  </DropdownMenuSubTrigger>
+                                  <DropdownMenuSubContent>
+                                    <DropdownMenuItem
+                                      onClick={() => setTaskLabel(task.id, "Suivi")}
+                                    >
+                                      Suivi
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => setTaskLabel(task.id, "Urgent")}
+                                    >
+                                      Urgent
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        setTaskLabel(task.id, "Consultation")
+                                      }
+                                    >
+                                      Consultation
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => setCustomTaskLabel(task.id)}
+                                    >
+                                      Personnalisé…
+                                    </DropdownMenuItem>
+                                  </DropdownMenuSubContent>
+                                </DropdownMenuSub>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  variant="destructive"
+                                  onClick={() => removeTask(task.id)}
+                                >
+                                  Supprimer
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

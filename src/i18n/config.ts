@@ -57,7 +57,7 @@ const resources = {
       },
       views: {
         dashboard: "Tableau de bord",
-        agenda: "Agenda clinique",
+        agenda: "Agenda",
         clinique: "Clinique",
         patients: "Patients",
         notes: "Notes",
@@ -66,7 +66,7 @@ const resources = {
         finances_analytics: "Analyse financière",
         equipe: "Équipe",
         parametres: "Configuration",
-        taches: "Tâches & rappels",
+        taches: "Rappels",
         aide: "Centre d'aide",
       },
       dashboard: {
@@ -322,7 +322,7 @@ const resources = {
       },
       views: {
         dashboard: "Dashboard",
-        agenda: "Clinical Agenda",
+        agenda: "Agenda",
         clinique: "Clinic",
         patients: "Patients",
         notes: "Notes",
@@ -331,7 +331,7 @@ const resources = {
         finances_analytics: "Financial Analytics",
         equipe: "Team",
         parametres: "Settings",
-        taches: "Tasks & Reminders",
+        taches: "Reminders",
         aide: "Help Center",
       },
       dashboard: {
@@ -585,7 +585,7 @@ const resources = {
       },
       views: {
         dashboard: "لوحة التحكم",
-        agenda: "الجدول السريري",
+        agenda: "الأجندة",
         clinique: "العيادة",
         patients: "المرضى",
         notes: "الملاحظات",
@@ -594,7 +594,7 @@ const resources = {
         finances_analytics: "تحليل مالي",
         equipe: "الفريق",
         parametres: "الإعدادات",
-        taches: "المهام والتذكيرات",
+        taches: "التذكيرات",
         aide: "مركز المساعدة",
       },
       dashboard: {
@@ -689,7 +689,7 @@ const resources = {
       },
       views: {
         dashboard: "Panel",
-        agenda: "Agenda clínica",
+        agenda: "Agenda",
         clinique: "Clínica",
         patients: "Pacientes",
         notes: "Notas",
@@ -698,7 +698,7 @@ const resources = {
         finances_analytics: "Análisis financiero",
         equipe: "Equipo",
         parametres: "Configuración",
-        taches: "Tareas y recordatorios",
+        taches: "Recordatorios",
         aide: "Centro de ayuda",
       },
       dashboard: {
@@ -793,7 +793,7 @@ const resources = {
       },
       views: {
         dashboard: "Painel",
-        agenda: "Agenda clínica",
+        agenda: "Agenda",
         clinique: "Clínica",
         patients: "Pacientes",
         notes: "Notas",
@@ -802,7 +802,7 @@ const resources = {
         finances_analytics: "Análise financeira",
         equipe: "Equipe",
         parametres: "Configurações",
-        taches: "Tarefas e lembretes",
+        taches: "Lembretes",
         aide: "Central de ajuda",
       },
       dashboard: {
@@ -897,7 +897,7 @@ const resources = {
       },
       views: {
         dashboard: "Dashboard",
-        agenda: "Klinischer Kalender",
+        agenda: "Agenda",
         clinique: "Klinik",
         patients: "Patienten",
         notes: "Notizen",
@@ -906,7 +906,7 @@ const resources = {
         finances_analytics: "Finanzanalyse",
         equipe: "Team",
         parametres: "Einstellungen",
-        taches: "Aufgaben & Erinnerungen",
+        taches: "Erinnerungen",
         aide: "Hilfecenter",
       },
       dashboard: {
