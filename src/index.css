@@ -4,6 +4,9 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist";
 
+/* BlockNote shadcn integration — required for Tailwind to generate BlockNote's utility classes */
+@source "../node_modules/@blocknote/shadcn";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -169,6 +172,9 @@
   * {
     @apply border-border outline-ring/50;
   }
+  .bn-shadcn * {
+    @apply border-border outline-ring/50;
+  }
   body {
     @apply bg-background text-foreground;
   }
@@ -183,10 +189,6 @@
     min-height: 100vh;
     background-color: var(--bg-app);
     padding-top: env(titlebar-area-height, 0px);
-  }
-  #root {
-    min-height: 100vh;
-    isolation: isolate;
   }
   #root {
     min-height: 100vh;

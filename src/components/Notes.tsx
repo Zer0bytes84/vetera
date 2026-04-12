@@ -12,16 +12,15 @@ import {
 import { useNotesRepository } from "@/data/repositories"
 import { useAuth } from "../contexts/AuthContext"
 import { Note } from "../types/db"
-import Editor from "./Editor"
+import { BlockNoteShadcnEditor } from "./blocknote-editor"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Empty,
   EmptyContent,
@@ -36,6 +35,7 @@ import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Badge } from "@/components/ui/badge"
 
 // Helper to normalize date
 const normalizeDate = (dateInput: any): Date => {
@@ -47,6 +47,48 @@ const formatDate = (dateInput: any) => {
   if (!dateInput) return ""
   const date = normalizeDate(dateInput)
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
+}
+
+const formatDetailedDate = (dateInput: any) => {
+  if (!dateInput) return ""
+  const date = normalizeDate(dateInput)
+  return date.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
+
+const extractNotePreview = (content: string) => {
+  if (!content) return "Aucun contenu pour le moment."
+
+  try {
+    const parsed = JSON.parse(content)
+    if (Array.isArray(parsed)) {
+      const text = parsed
+        .map((block) => {
+          if (typeof block?.content === "string") return block.content
+          if (Array.isArray(block?.content)) {
+            return block.content
+              .map((item: any) =>
+                typeof item === "string" ? item : item?.text || ""
+              )
+              .join("")
+          }
+          return ""
+        })
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim()
+
+      return text || "Aucun contenu pour le moment."
+    }
+  } catch {
+    // Fallback below for legacy HTML/plaintext content.
+  }
+
+  const plain = content.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim()
+  return plain || "Aucun contenu pour le moment."
 }
 
 const FILTER_OPTIONS = [
@@ -224,9 +266,11 @@ const Notes: React.FC = () => {
     }
   }
 
-  const toggleFavorite = async (note: Note, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const toggleFavorite = async (note: Note, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     await updateNote(note.id, { isFavorite: !note.isFavorite })
   }
 
@@ -238,24 +282,27 @@ const Notes: React.FC = () => {
         subtitle="Gardez une trace de tout."
       />
 
-      <div className="flex min-h-0 flex-1 gap-4">
-        {/* Sidebar List */}
-        <Card className="flex w-[320px] shrink-0 flex-col overflow-hidden rounded-2xl py-0">
-          <CardHeader className="border-b px-4 py-4">
-            <CardTitle className="text-lg font-bold">Notes</CardTitle>
-            <CardAction>
-              <Button size="icon-sm" onClick={handleCreateNote}>
-                <HugeiconsIcon
-                  icon={Add01Icon}
-                  strokeWidth={2}
-                  className="size-4.5"
-                />
-              </Button>
-            </CardAction>
-          </CardHeader>
+      <div className="flex min-h-[calc(100vh-18rem)] flex-1 rounded-[30px] border border-border/60 bg-background/85 shadow-[0_20px_60px_-28px_hsl(var(--foreground)/0.18)] backdrop-blur-xl">
+        <aside className="flex w-[320px] shrink-0 flex-col bg-background/55">
+          <div className="flex items-center justify-between px-5 pt-5 pb-4">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.26em] text-muted-foreground uppercase">
+                Notes
+              </p>
+              <h2 className="mt-2 text-xl font-semibold tracking-tight">
+                Espace clinique
+              </h2>
+            </div>
+            <Button size="icon-sm" onClick={handleCreateNote}>
+              <HugeiconsIcon
+                icon={Add01Icon}
+                strokeWidth={2}
+                className="size-4.5"
+              />
+            </Button>
+          </div>
 
-          <CardContent className="flex flex-col gap-3 px-4 py-4">
-            {/* Search */}
+          <div className="space-y-3 px-5 pb-4">
             <div className="relative">
               <HugeiconsIcon
                 icon={SearchIcon}
@@ -265,12 +312,11 @@ const Notes: React.FC = () => {
               <Input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Rechercher..."
-                className="h-9 pl-9"
+                placeholder="Rechercher une note..."
+                className="h-10 rounded-2xl border-border/70 bg-background/80 pl-9 shadow-none"
               />
             </div>
 
-            {/* Tabs */}
             <ToggleGroup
               multiple={false}
               value={[filterFavorites ? "favorites" : "all"]}
@@ -280,7 +326,7 @@ const Notes: React.FC = () => {
               variant="outline"
               size="sm"
               spacing={0}
-              className="w-fit rounded-3xl bg-muted/30 p-0.5"
+              className="w-fit rounded-2xl bg-muted/40 p-0.5"
             >
               {FILTER_OPTIONS.map((option) => (
                 <ToggleGroupItem key={option.value} value={option.value}>
@@ -288,18 +334,26 @@ const Notes: React.FC = () => {
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
-          </CardContent>
 
-          <Separator />
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs text-muted-foreground">
+                {filteredNotes.length} note{filteredNotes.length > 1 ? "s" : ""}
+              </span>
+              {filterFavorites ? (
+                <Badge variant="secondary" className="rounded-full">
+                  Favoris
+                </Badge>
+              ) : null}
+            </div>
+          </div>
 
-          {/* Notes List */}
-          <ScrollArea className="flex-1">
+          <ScrollArea className="min-h-0 flex-1">
             {loading ? (
-              <div className="space-y-1 p-4">
+              <div className="space-y-2 px-3 pb-4">
                 {Array.from({ length: 7 }).map((_, index) => (
                   <div
                     key={`notes-skeleton-item-${index}`}
-                    className="rounded-lg border border-border/60 p-4"
+                    className="rounded-2xl px-3 py-3"
                   >
                     <Skeleton className="mb-2 h-4 w-2/3 rounded-md" />
                     <Skeleton className="mb-2 h-3 w-4/5 rounded-md" />
@@ -308,8 +362,8 @@ const Notes: React.FC = () => {
                 ))}
               </div>
             ) : filteredNotes.length === 0 ? (
-              <div className="p-6">
-                <Empty className="border border-dashed border-border/80 bg-muted/20">
+              <div className="p-5">
+                <Empty className="rounded-3xl border border-dashed border-border/80 bg-muted/20">
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
                       <HugeiconsIcon
@@ -320,86 +374,68 @@ const Notes: React.FC = () => {
                     </EmptyMedia>
                     <EmptyTitle>Aucune note trouvée</EmptyTitle>
                     <EmptyDescription>
-                      Créez une nouvelle note pour commencer.
+                      Créez une note pour commencer.
                     </EmptyDescription>
                   </EmptyHeader>
                 </Empty>
               </div>
             ) : (
-              <div className="divide-y divide-border">
-                {filteredNotes.map((note) => (
-                  <div
-                    key={note.id}
-                    onClick={() => setSelectedNoteId(note.id)}
-                    className={cn(
-                      "group relative cursor-pointer border-l-4 p-4 pr-12 transition-colors hover:bg-muted/30",
-                      selectedNoteId === note.id
-                        ? "border-l-primary bg-muted/20 shadow-sm"
-                        : "border-l-transparent"
-                    )}
-                  >
-                    <div className="mb-1 flex items-start justify-between gap-2">
-                      <h3
-                        className={cn(
-                          "truncate text-sm font-semibold",
-                          selectedNoteId === note.id
-                            ? "text-foreground"
-                            : "text-muted-foreground"
-                        )}
-                      >
-                        {note.title || "Sans titre"}
-                      </h3>
-                      <span className="shrink-0 text-[10px] whitespace-nowrap text-muted-foreground">
-                        {formatDate(note.updatedAt)}
-                      </span>
-                    </div>
-                    <p className="h-4 truncate text-xs text-muted-foreground">
-                      {note.content.replace(/<[^>]*>?/gm, "") || "Vide..."}
-                    </p>
+              <div className="px-3 pb-4">
+                {filteredNotes.map((note) => {
+                  const isActive = selectedNoteId === note.id
 
-                    {/* Quick Actions */}
-                    <div className="absolute top-1/2 right-2 z-10 flex -translate-y-1/2 flex-col gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={(e) => toggleFavorite(note, e)}
-                        className={cn(
-                          "transition-all",
-                          note.isFavorite
-                            ? "text-amber-400 opacity-100"
-                            : "text-muted-foreground opacity-0 group-hover:opacity-100"
-                        )}
-                      >
-                        <HugeiconsIcon
-                          icon={StarIcon}
-                          strokeWidth={2}
-                          className="size-3.5"
-                          fill={note.isFavorite ? "currentColor" : "none"}
-                        />
-                      </Button>
+                  return (
+                    <button
+                      key={note.id}
+                      type="button"
+                      onClick={() => setSelectedNoteId(note.id)}
+                      className={cn(
+                        "group w-full rounded-2xl px-3 py-3 text-left transition-colors",
+                        isActive
+                          ? "bg-muted/70 shadow-[inset_0_0_0_1px_hsl(var(--border)/0.9)]"
+                          : "hover:bg-muted/35"
+                      )}
+                    >
+                      <div className="mb-1 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p
+                            className={cn(
+                              "truncate text-sm font-medium",
+                              isActive ? "text-foreground" : "text-foreground/88"
+                            )}
+                          >
+                            {note.title || "Sans titre"}
+                          </p>
+                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
+                            {extractNotePreview(note.content)}
+                          </p>
+                        </div>
 
-                      <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={(e) => handleDeleteNote(note.id, e)}
-                        className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <HugeiconsIcon
-                          icon={Delete01Icon}
-                          strokeWidth={2}
-                          className="size-3.5"
-                        />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                        <div className="flex shrink-0 items-center gap-1">
+                          {note.isFavorite ? (
+                            <HugeiconsIcon
+                              icon={StarIcon}
+                              strokeWidth={2}
+                              className="size-3.5 text-amber-400"
+                              fill="currentColor"
+                            />
+                          ) : null}
+                          <span className="text-[11px] whitespace-nowrap text-muted-foreground">
+                            {formatDate(note.updatedAt)}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </ScrollArea>
-        </Card>
+        </aside>
 
-        {/* Main Editor Area */}
-        <Card className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl py-0">
+        <Separator orientation="vertical" className="h-auto bg-border/60" />
+
+        <section className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-r-[30px] bg-background/35">
           {isSyncingSelection ? (
             <div className="flex flex-1 animate-in flex-col items-center justify-center duration-200 fade-in">
               <Spinner className="mb-2 size-8 text-primary" />
@@ -409,62 +445,108 @@ const Notes: React.FC = () => {
             </div>
           ) : selectedNoteId ? (
             <>
-              {/* Toolbar / Header */}
-              <CardHeader className="flex h-16 shrink-0 flex-row items-center justify-between border-b px-8 py-0">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  {isSaving ? (
-                    <>
-                      <Spinner className="size-3" /> Enregistrement...
-                    </>
-                  ) : (
-                    <>
-                      <HugeiconsIcon
-                        icon={Clock01Icon}
-                        strokeWidth={2}
-                        className="size-3"
-                      />{" "}
-                      Sauvegardé à{" "}
-                      {lastSaved?.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </>
-                  )}
+              <div className="flex items-center justify-between border-b border-border/50 px-8 py-5">
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold tracking-[0.24em] text-muted-foreground uppercase">
+                    Note active
+                  </p>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span>Modifiée le {formatDetailedDate(activeNote?.updatedAt)}</span>
+                    {activeNote?.isFavorite ? (
+                      <Badge variant="secondary" className="rounded-full">
+                        Favorite
+                      </Badge>
+                    ) : null}
+                    {isSaving ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Spinner className="size-3" />
+                        Enregistrement...
+                      </span>
+                    ) : lastSaved ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <HugeiconsIcon
+                          icon={Clock01Icon}
+                          strokeWidth={2}
+                          className="size-3"
+                        />
+                        Sauvegardé à{" "}
+                        {lastSaved.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
-                <CardAction>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      activeNote && handleDeleteNote(activeNote.id)
-                    }
-                    className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                    title="Supprimer la note"
-                  >
-                    <HugeiconsIcon
-                      icon={Delete01Icon}
-                      strokeWidth={2}
-                      className="size-4.5"
-                    />
-                  </Button>
-                </CardAction>
-              </CardHeader>
+                <div className="flex items-center gap-2">
+                  {activeNote ? (
+                    <Button variant="ghost" size="sm" onClick={() => toggleFavorite(activeNote)}>
+                      <HugeiconsIcon
+                        icon={StarIcon}
+                        strokeWidth={2}
+                        className="size-4"
+                        fill={activeNote.isFavorite ? "currentColor" : "none"}
+                      />
+                      {activeNote.isFavorite ? "Retirer" : "Favori"}
+                    </Button>
+                  ) : null}
 
-              {/* Note Content */}
-              <CardContent className="flex-1 overflow-y-auto px-0">
-                <div className="mx-auto max-w-3xl px-8 py-12">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={<Button variant="ghost" size="sm" type="button" />}
+                    >
+                      <span>
+                        Actions
+                      </span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {activeNote ? (
+                        <DropdownMenuItem onClick={() => toggleFavorite(activeNote)}>
+                          {activeNote.isFavorite
+                            ? "Retirer des favoris"
+                            : "Ajouter aux favoris"}
+                        </DropdownMenuItem>
+                      ) : null}
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() =>
+                          activeNote && handleDeleteNote(activeNote.id)
+                        }
+                      >
+                        Supprimer la note
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-[72rem] flex-col px-14 py-10 lg:px-16">
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => handleTitleChange(e.target.value)}
-                    placeholder="Titre de la note médicale..."
-                    className="mb-8 w-full border-none bg-transparent text-4xl font-bold text-foreground outline-none placeholder:text-muted-foreground/40"
+                    placeholder="Titre de la note"
+                    className="w-full border-none bg-transparent text-[2.85rem] leading-[1.02] font-semibold tracking-[-0.045em] text-foreground outline-none placeholder:text-muted-foreground/35"
                   />
 
-                  <Editor content={content} onUpdate={handleContentChange} />
+                  <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="rounded-full px-3 py-1">
+                      Bloc-notes clinique
+                    </Badge>
+                    <span>Tapez “/” pour les commandes et l’IA locale.</span>
+                  </div>
+
+                  <div className="mt-8 min-h-[520px]">
+                    <BlockNoteShadcnEditor
+                      initialContent={content}
+                      onChange={handleContentChange}
+                      editable={true}
+                    />
+                  </div>
                 </div>
-              </CardContent>
+              </div>
             </>
           ) : (
             <div className="flex flex-1 items-center justify-center p-8">
@@ -484,8 +566,8 @@ const Notes: React.FC = () => {
                     Aucune note sélectionnée
                   </EmptyTitle>
                   <EmptyDescription className="max-w-sm leading-relaxed">
-                    Sélectionnez une note dans la liste latérale ou créez-en une
-                    nouvelle pour commencer à rédiger avec l'aide de l'IA.
+                    Choisissez une note à gauche ou créez-en une nouvelle pour
+                    retrouver une expérience de rédaction plus proche de Notion.
                   </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent>
@@ -502,7 +584,7 @@ const Notes: React.FC = () => {
               </Empty>
             </div>
           )}
-        </Card>
+        </section>
       </div>
     </div>
   )
