@@ -1,5 +1,6 @@
 import type { ChatCompletionMessageParam, MLCEngine } from "@mlc-ai/web-llm"
 
+import { APP_NAME } from "@/lib/brand"
 import { vetKnowledgeService } from "./vetKnowledgeService"
 
 export interface ProgressReport {
@@ -12,7 +13,7 @@ export interface LocalChatTurn {
   text: string
 }
 
-const DEFAULT_SYSTEM_PROMPT = `Tu es l'assistant clinique de Vetera.
+const DEFAULT_SYSTEM_PROMPT = `Tu es l'assistant clinique de ${APP_NAME}.
 Tu aides une clinique veterinaire locale a mieux travailler.
 
 Regles:

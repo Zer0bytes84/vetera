@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react"
-import MotivationalHeader from "./MotivationalHeader"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
@@ -18,13 +17,25 @@ import {
   StethoscopeIcon,
 } from "@hugeicons/core-free-icons"
 import { updatePassword } from "../services/sqlite/auth"
+import { DashboardPageIntro } from "@/components/dashboard-page-intro"
+import {
+  MetricOverviewStrip,
+  type MetricOverviewItem,
+} from "@/components/metric-overview-strip"
 import { useUsersRepository } from "@/data/repositories"
 import { User, UserRole } from "../types/db"
 import { useAuth } from "../contexts/AuthContext"
 import Avatar from "./Avatar"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
@@ -80,6 +91,20 @@ const ROLE_CONFIG: Record<
     bg: "bg-muted/50",
     icon: GraduationScrollIcon,
   },
+}
+
+const buildTeamSparkline = (
+  base: number,
+  pattern: "steady" | "rise" | "watch" | "stable"
+) => {
+  const deltas = {
+    steady: [-1, 0, 1, 0, 1, 1, 2, 2],
+    rise: [0, 1, 1, 2, 2, 3, 3, 4],
+    watch: [2, 1, 3, 2, 4, 3, 5, 4],
+    stable: [1, 1, 0, 1, 0, 1, 0, 0],
+  }[pattern]
+
+  return deltas.map((delta) => Math.max(base + delta, 0))
 }
 
 const Team: React.FC = () => {
@@ -232,17 +257,65 @@ const Team: React.FC = () => {
     )
   }, [users, searchTerm])
 
+  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
+    const activeUsers = users.filter((user) => user.status === "active").length
+    const vets = users.filter((user) =>
+      ["vet_principal", "vet_adjoint"].includes(user.role || "")
+    ).length
+    const support = users.filter((user) =>
+      ["assistant", "stagiaire"].includes(user.role || "")
+    ).length
+    const accessReview = users.filter((user) => user.status !== "active").length
+
+    return [
+      {
+        label: "Équipe active",
+        value: String(activeUsers),
+        meta: `${users.length} compte${users.length > 1 ? "s" : ""}`,
+        note: "Présence",
+        icon: BankIcon,
+        tone: "blue",
+        sparklineData: buildTeamSparkline(activeUsers, "steady"),
+      },
+      {
+        label: "Vétérinaires",
+        value: String(vets),
+        meta: "pratique clinique",
+        note: "Capacité",
+        icon: StethoscopeIcon,
+        tone: "orange",
+        sparklineData: buildTeamSparkline(vets, "rise"),
+      },
+      {
+        label: "Support & relève",
+        value: String(support),
+        meta: "assistant·e·s et stagiaires",
+        note: "Couverture",
+        icon: Briefcase01Icon,
+        tone: "emerald",
+        sparklineData: buildTeamSparkline(support, "stable"),
+      },
+      {
+        label: "Accès à revoir",
+        value: String(accessReview),
+        meta: accessReview > 0 ? "statut inactif" : "tout est OK",
+        note: "Permissions",
+        icon: Key01Icon,
+        tone: accessReview > 0 ? "amber" : "slate",
+        sparklineData: buildTeamSparkline(accessReview, "watch"),
+      },
+    ]
+  }, [users])
+
   return (
-    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <MotivationalHeader
-          section="equipe"
-          title=""
-          subtitle="Gestion du personnel, des rôles et des accès"
-        />
-        {canManageTeam && (
-          <Button onClick={() => handleOpenModal()}>
+    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+      <DashboardPageIntro
+        eyebrow="Organisation clinique"
+        title="Équipe"
+        subtitle="Gestion du personnel, des rôles et des accès dans une vue plus claire pour piloter l'activité interne."
+        actions={
+          canManageTeam ? (
+          <Button className="h-10 rounded-xl px-4" onClick={() => handleOpenModal()}>
             <HugeiconsIcon
               icon={Add01Icon}
               strokeWidth={2}
@@ -250,11 +323,27 @@ const Team: React.FC = () => {
             />
             <span>Nouveau Membre</span>
           </Button>
-        )}
-      </div>
+          ) : null
+        }
+      />
+
+      <MetricOverviewStrip items={overviewCards} />
 
       {/* Main Card */}
-      <Card className="flex flex-1 flex-col overflow-hidden">
+      <Card className="flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+        <CardHeader className="border-b border-border px-6 py-5">
+          <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+            Annuaire interne
+          </CardDescription>
+          <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
+            Coordination de l'équipe
+          </CardTitle>
+          <CardAction>
+            <Badge variant="outline" className="rounded-full px-3 py-1">
+              {filteredUsers.length} visible{filteredUsers.length > 1 ? "s" : ""}
+            </Badge>
+          </CardAction>
+        </CardHeader>
         {/* Toolbar */}
         <div className="flex flex-col items-center justify-between gap-4 border-b border-border px-6 py-4 md:flex-row">
           <div className="relative w-full md:w-[400px]">
@@ -268,7 +357,7 @@ const Team: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Rechercher un membre..."
-              className="pl-9"
+              className="h-10 rounded-xl pl-9"
             />
           </div>
 

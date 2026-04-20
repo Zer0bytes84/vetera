@@ -82,7 +82,7 @@ export function NavUser({
               <AvatarImage src={normalizedAvatar} alt={user.name} />
               <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight [@media(max-height:820px)]:text-[13px] group-data-[collapsible=icon]:hidden">
+            <div className="grid flex-1 text-start text-sm leading-tight [@media(max-height:820px)]:text-[13px] group-data-[collapsible=icon]:hidden">
               <span className="truncate font-medium">{user.name}</span>
               <span className="truncate text-xs text-foreground/70 [@media(max-height:820px)]:text-[11px]">
                 {user.email}
@@ -91,7 +91,7 @@ export function NavUser({
             <HugeiconsIcon
               icon={MoreVerticalCircle01Icon}
               strokeWidth={2}
-              className="ml-auto size-4 [@media(max-height:820px)]:size-3.5 group-data-[collapsible=icon]:hidden"
+              className="ms-auto size-4 [@media(max-height:820px)]:size-3.5 group-data-[collapsible=icon]:hidden"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -107,7 +107,7 @@ export function NavUser({
                     <AvatarImage src={normalizedAvatar} alt={user.name} />
                     <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
                   </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
+                  <div className="grid flex-1 text-start text-sm leading-tight">
                     <span className="truncate font-medium">{user.name}</span>
                     <span className="truncate text-xs text-muted-foreground">
                       {user.email}

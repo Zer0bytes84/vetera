@@ -21,8 +21,6 @@ import {
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale"
 import { useTranslation } from "react-i18next"
 
-import MotivationalHeader from "@/components/MotivationalHeader"
-import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -82,6 +80,7 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import { Sparkline } from "@/components/ui/sparkline"
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -492,6 +491,100 @@ function AppointmentStatusBadge({
   )
 }
 
+type AgendaOverviewCard = {
+  label: string
+  value: string
+  meta: string
+  note: string
+  icon: typeof Calendar01Icon
+  tone: "blue" | "orange" | "emerald" | "slate"
+  sparklineData: number[]
+}
+
+const agendaToneMap: Record<AgendaOverviewCard["tone"], { bg: string; text: string; spark: string }> = {
+  blue: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-600",
+    spark: "#f97316",
+  },
+  orange: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-600",
+    spark: "#f97316",
+  },
+  emerald: {
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-600",
+    spark: "#10b981",
+  },
+  slate: {
+    bg: "bg-slate-500/10",
+    text: "text-slate-600",
+    spark: "#64748b",
+  },
+}
+
+function buildAgendaSparkline(
+  base: number,
+  pattern: "steady" | "rise" | "watch" | "stable"
+) {
+  const deltas = {
+    steady: [-2, -1, 0, 1, 0, 1, 1, 2],
+    rise: [-3, -2, -1, 0, 1, 2, 2, 3],
+    watch: [2, 3, 4, 5, 3, 4, 5, 6],
+    stable: [1, 1, 0, 1, 0, 1, 0, 0],
+  }[pattern]
+
+  return deltas.map((delta) => Math.max(base + delta, 0))
+}
+
+function AgendaOverviewStrip({ items }: { items: AgendaOverviewCard[] }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {items.map((item) => {
+        const tone = agendaToneMap[item.tone]
+
+        return (
+          <Card key={item.label} className="overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+            <CardContent className="flex min-h-[154px] flex-col justify-between p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <p className="text-[11px] text-muted-foreground">{item.label}</p>
+                  <p className="text-[24px] font-medium tracking-[-0.04em] text-foreground">{item.value}</p>
+                  <div className="flex items-center gap-1.5 text-[10px]">
+                    <span className="font-mono text-foreground/70">{item.meta}</span>
+                    <span className="font-mono uppercase tracking-[0.04em] text-muted-foreground">{item.note}</span>
+                  </div>
+                </div>
+                <div
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 aspect-square items-center justify-center rounded-xl border border-border/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]",
+                    tone.bg
+                  )}
+                >
+                  <HugeiconsIcon icon={item.icon} strokeWidth={1.5} className={cn("size-[18px]", tone.text)} />
+                </div>
+              </div>
+
+              <div className="flex items-end justify-between gap-3">
+                <p className="max-w-[20ch] text-[12px] leading-[1.45] text-muted-foreground">{item.note}</p>
+                <Sparkline
+                  data={item.sparklineData}
+                  width={74}
+                  height={28}
+                  color={tone.spark}
+                  strokeWidth={1.5}
+                  fillOpacity={0.08}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
 function calculateOverlapMap(appointments: Appointment[]) {
   const layout = new Map<string, { column: number; totalColumns: number }>()
 
@@ -580,7 +673,7 @@ function AgendaDayView({
         <Empty className="border border-dashed border-border/80 bg-muted/20">
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={2} />
+              <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
             </EmptyMedia>
             <EmptyTitle>Aucun vétérinaire actif</EmptyTitle>
             <EmptyDescription>
@@ -1160,85 +1253,73 @@ const Agenda: React.FC = () => {
     (vet) => (appointmentsByVet.get(vet.id) ?? []).length > 0
   ).length
 
-  const sectionCards = useMemo<SectionCardItem[]>(() => {
+  const overviewCards = useMemo<AgendaOverviewCard[]>(() => {
     const delta = dailyAppointments.length - previousDayAppointments.length
     const deltaPrefix = delta > 0 ? "+" : ""
     const occupancyTarget = Math.max(1, vets.length) * 8 * 60
     const occupancy = Math.round((totalPlannedMinutes / occupancyTarget) * 100)
-    
-    const generateSparkline = (base: number) => 
-      Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 5) - 2)
 
     return [
       {
-        title: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux du jour" }),
+        label: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux" }),
         value: String(dailyAppointments.length),
-        badge: delta === 0 ? undefined : `${deltaPrefix}${delta}`,
-        trend: delta === 0 ? "neutral" : delta > 0 ? "up" : "down",
-        summary: t("agenda.overview.closedConsultations", {
+        meta: delta === 0 ? "stable" : `${deltaPrefix}${delta}`,
+        note: t("agenda.overview.closedConsultations", {
           count: dailyAppointments.filter((item) => item.status === "completed").length,
-          defaultValue_one: "{{count}} consultation clôturée",
-          defaultValue_other: "{{count}} consultations clôturées",
+          defaultValue_one: "{{count}} clôturée",
+          defaultValue_other: "{{count}} clôturées",
         }),
         icon: Calendar01Icon,
-        sparklineData: generateSparkline(dailyAppointments.length),
-        color: "blue",
+        sparklineData: buildAgendaSparkline(dailyAppointments.length, "steady"),
+        tone: "blue",
       },
       {
-        title: t("agenda.overview.openEmergencies", { defaultValue: "Urgences ouvertes" }),
+        label: t("agenda.overview.openEmergencies", { defaultValue: "Urgences ouvertes" }),
         value: String(urgentOpenCount),
-        badge:
+        meta:
           urgentOpenCount === 0
-            ? undefined
+            ? "stable"
             : t("agenda.overview.alerts", {
-              count: urgentOpenCount,
-              defaultValue_one: "{{count}} alerte",
-              defaultValue_other: "{{count}} alertes",
-            }),
-        trend: urgentOpenCount === 0 ? "neutral" : "down",
-        summary: t("agenda.overview.priorityCases", {
+                count: urgentOpenCount,
+                defaultValue_one: "{{count}} alerte",
+                defaultValue_other: "{{count}} alertes",
+              }),
+        note: t("agenda.overview.priorityCases", {
           defaultValue: "Cas à surveiller en priorité",
         }),
         icon: Alert02Icon,
-        sparklineData: generateSparkline(urgentOpenCount),
-        color: "rose",
+        sparklineData: buildAgendaSparkline(urgentOpenCount, "watch"),
+        tone: "orange",
       },
       {
-        title: t("agenda.overview.plannedTime", { defaultValue: "Temps planifié" }),
+        label: t("agenda.overview.plannedTime", { defaultValue: "Temps planifié" }),
         value: formatDuration(totalPlannedMinutes),
-        badge:
+        meta:
           totalPlannedMinutes === 0
-            ? undefined
+            ? "0%"
             : `${Number.isFinite(occupancy) ? occupancy : 0}%`,
-        trend:
-          totalPlannedMinutes === 0
-            ? "neutral"
-            : occupancy >= 65
-              ? "up"
-              : "down",
-        summary: t("agenda.overview.engagedVets", {
+        note: t("agenda.overview.engagedVets", {
           count: engagedVetsCount,
           defaultValue_one: "{{count}} praticien mobilisé",
           defaultValue_other: "{{count}} praticiens mobilisés",
         }),
         icon: StethoscopeIcon,
-        sparklineData: generateSparkline(Math.round(totalPlannedMinutes / 60)),
-        color: "violet",
+        sparklineData: buildAgendaSparkline(Math.round(totalPlannedMinutes / 60), "rise"),
+        tone: "emerald",
       },
       {
-        title: t("agenda.overview.nextAppointment", { defaultValue: "Prochain rendez-vous" }),
+        label: t("agenda.overview.nextAppointment", { defaultValue: "Prochain rendez-vous" }),
         value: nextAppointment
           ? formatTimeCompact(nextAppointment.startTime)
           : t("agenda.overview.free", { defaultValue: "Libre" }),
-        badge: nextAppointment ? nextAppointment.type : undefined,
-        trend: nextAppointment ? "up" : "neutral",
-        summary: nextAppointment
+        meta: nextAppointment ? nextAppointment.type : "aucun",
+        note: nextAppointment
           ? patientsById.get(nextAppointment.patientId)?.name ||
             nextAppointment.title
           : t("agenda.overview.noUpcomingSlot", { defaultValue: "Aucun créneau imminent" }),
         icon: UserCircle02Icon,
-        sparklineData: generateSparkline(nextAppointment ? 1 : 0),
-        color: "emerald",
+        sparklineData: buildAgendaSparkline(nextAppointment ? 2 : 0, "stable"),
+        tone: "slate",
       },
     ]
   }, [
@@ -1626,22 +1707,28 @@ const Agenda: React.FC = () => {
   const visibleRowsCount = tableRowsByTab[tableTab].length
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
+    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <MotivationalHeader
-          section="agenda"
-          title=""
-          subtitle={selectedDateSubtitle}
-        />
+        <div className="space-y-2">
+          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+            Planning clinique
+          </p>
+          <h1 className="text-[28px] font-normal tracking-[-0.04em] text-foreground">
+            Agenda
+          </h1>
+          <p className="max-w-[72ch] text-sm text-muted-foreground">
+            {selectedDateSubtitle}
+          </p>
+        </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button variant="outline" onClick={() => setSelectedDate(new Date())}>
+          <Button variant="outline" className="h-10 rounded-xl px-4" onClick={() => setSelectedDate(new Date())}>
             {t("agenda.today")}
           </Button>
-          <Button onClick={() => handleOpenCreate()}>
+          <Button className="h-10 rounded-xl px-4" onClick={() => handleOpenCreate()}>
             <HugeiconsIcon
               icon={Add01Icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
               data-icon="inline-start"
             />
             {t("agenda.newAppointment")}
@@ -1649,17 +1736,17 @@ const Agenda: React.FC = () => {
         </div>
       </div>
 
-      <SectionCardsPremium items={sectionCards} />
+      <AgendaOverviewStrip items={overviewCards} />
 
       <div className="grid gap-4">
-        <Card className="min-h-[780px]">
-          <CardHeader className="border-b">
-            <CardDescription>{t("agenda.planning")}</CardDescription>
-            <CardTitle className="text-2xl tracking-[-0.04em]">
+        <Card className="min-h-[780px] rounded-[24px] border border-border bg-card shadow-none">
+          <CardHeader className="border-b border-border px-6 py-5">
+            <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">{t("agenda.planning")}</CardDescription>
+            <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
               {t("agenda.consultationsAgenda")}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline">
+              <Badge variant="outline" className="rounded-full px-3 py-1">
                 {t("agenda.slot", { count: dailyAppointments.length })}
               </Badge>
             </CardAction>
@@ -1671,33 +1758,16 @@ const Agenda: React.FC = () => {
               onValueChange={(value) => setViewMode(value as ViewMode)}
               className="flex min-h-0 flex-1 gap-4"
             >
-              <div className="flex flex-col gap-3 border-b px-6 pt-1 pb-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex flex-col gap-3 border-b border-border px-6 pt-5 pb-4 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center rounded-full bg-muted p-1">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="rounded-full"
-                      onClick={() => navigate(-1)}
-                    >
-                      <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="rounded-full"
-                      onClick={() => navigate(1)}
-                    >
-                      <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-                    </Button>
-                  </div>
-
                   <Popover>
-                    <PopoverTrigger
-                      render={<Button variant="outline" className="gap-2" />}
-                    >
-                      <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
-                      {periodLabel}
+                    <PopoverTrigger>
+                      <div className="inline-flex items-center rounded-full bg-[var(--color-surface-soft)] p-1">
+                        <Button variant="outline" className="h-10 gap-2 rounded-xl">
+                          <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
+                          {periodLabel}
+                        </Button>
+                      </div>
                     </PopoverTrigger>
                     <PopoverContent
                       align="start"
@@ -1719,7 +1789,7 @@ const Agenda: React.FC = () => {
                   {isSameDay(selectedDate, new Date()) ? (
                     <Badge
                       variant="outline"
-                      className="border-transparent bg-primary/10 text-primary"
+                      className="rounded-full border-transparent bg-primary/10 text-primary"
                     >
                       {t("agenda.today")}
                     </Badge>
@@ -1877,7 +1947,7 @@ const Agenda: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <HugeiconsIcon
                         icon={StethoscopeIcon}
-                        strokeWidth={2}
+                        strokeWidth={1.5}
                         className="size-4 text-muted-foreground"
                       />
                       <p className="font-medium text-foreground">Patient</p>
@@ -1906,7 +1976,7 @@ const Agenda: React.FC = () => {
                 <Empty className="border border-dashed border-border/80 bg-muted/20 p-8">
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
+                      <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
                     </EmptyMedia>
                     <EmptyTitle>Sélectionnez un rendez-vous</EmptyTitle>
                     <EmptyDescription>
@@ -1918,7 +1988,7 @@ const Agenda: React.FC = () => {
                     <Button onClick={() => handleOpenCreate()}>
                       <HugeiconsIcon
                         icon={Add01Icon}
-                        strokeWidth={2}
+                        strokeWidth={1.5}
                         data-icon="inline-start"
                       />
                       Nouveau rendez-vous
@@ -2067,7 +2137,7 @@ const Agenda: React.FC = () => {
                 <div className="relative">
                   <HugeiconsIcon
                     icon={SearchIcon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
                   />
                   <Input
@@ -2124,11 +2194,11 @@ const Agenda: React.FC = () => {
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
                           {tab.value === "attention" ? (
-                            <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} />
+                            <HugeiconsIcon icon={Alert02Icon} strokeWidth={1.5} />
                           ) : (
                             <HugeiconsIcon
                               icon={Calendar01Icon}
-                              strokeWidth={2}
+                              strokeWidth={1.5}
                             />
                           )}
                         </EmptyMedia>
@@ -2154,7 +2224,7 @@ const Agenda: React.FC = () => {
                         <Button onClick={() => handleOpenCreate()}>
                           <HugeiconsIcon
                             icon={Add01Icon}
-                            strokeWidth={2}
+                            strokeWidth={1.5}
                             data-icon="inline-start"
                           />
                           Nouveau rendez-vous
@@ -2603,4 +2673,4 @@ const Agenda: React.FC = () => {
   )
 }
 
-export default Agenda
+export default React.memo(Agenda)

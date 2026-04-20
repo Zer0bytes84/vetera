@@ -1,0 +1,57 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e8]:
+          - img [ref=e9]
+          - generic [ref=e13]: Vetera
+        - heading "Rejoignez la nouvelle ère de votre clinique." [level=1] [ref=e14]:
+          - text: Rejoignez
+          - text: la nouvelle ère
+          - text: de votre clinique.
+        - paragraph [ref=e15]: Activez votre compte pour découvrir une plateforme ultra-moderne conçue pour redéfinir la gestion vétérinaire.
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - img "Professionnel" [ref=e19]
+          - img "Professionnel" [ref=e21]
+          - img "Professionnel" [ref=e23]
+          - img "Professionnel" [ref=e25]
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - img [ref=e28]
+            - img [ref=e30]
+            - img [ref=e32]
+            - img [ref=e34]
+            - img [ref=e36]
+          - generic [ref=e38]: Déjà activé par
+          - generic [ref=e39]: +2,000 cliniques leaders
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - heading "Activation de Vetera" [level=1] [ref=e43]
+        - paragraph [ref=e44]: Préparez-vous à transformer votre pratique.
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]: "1"
+          - generic [ref=e49]: "2"
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]: Adresse email
+            - generic [ref=e53]:
+              - img [ref=e54]
+              - textbox "Adresse email" [ref=e57]:
+                - /placeholder: docteur@clinique.com
+          - generic [ref=e58]:
+            - generic [ref=e59]: Clé de licence
+            - generic [ref=e60]:
+              - img [ref=e61]
+              - textbox "Clé de licence" [ref=e64]:
+                - /placeholder: XXXX-XXXX-XXXX-XXXX
+          - button "Vérifier l'accès" [ref=e65]:
+            - text: Vérifier l'accès
+            - img
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - img [ref=e68]
+          - text: Crypté & Sécurisé
+        - generic [ref=e71]: Support Vetera
+  - region "Notifications alt+T"

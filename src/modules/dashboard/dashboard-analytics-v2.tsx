@@ -109,37 +109,37 @@ export type DashboardAnalyticsV2Props = {
 const financeConfig = {
   revenue: {
     label: "Encaissements",
-    color: "#10b981",
+    color: "oklch(0.65 0.18 150)",
   },
   expenses: {
     label: "Décaissements",
-    color: "#94a3b8",
+    color: "oklch(0.50 0.02 230)",
   },
   net: {
     label: "Solde net",
-    color: "#3b82f6",
+    color: "oklch(0.65 0.15 35)",
   },
 } satisfies ChartConfig
 
 const visitorsConfig = {
   newPatients: {
     label: "Nouveaux patients",
-    color: "#3b82f6",
+    color: "oklch(0.65 0.15 35)",
   },
   returningPatients: {
     label: "Patients de retour",
-    color: "#06b6d4",
+    color: "oklch(0.65 0.12 220)",
   },
 } satisfies ChartConfig
 
 const customerConfig = {
   activePatients: {
     label: "Patients actifs",
-    color: "#06b6d4",
+    color: "oklch(0.65 0.12 220)",
   },
   completedAppointments: {
     label: "Consultations clôturées",
-    color: "#8b5cf6",
+    color: "oklch(0.60 0.18 280)",
   },
 } satisfies ChartConfig
 

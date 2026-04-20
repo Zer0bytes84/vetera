@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useCallback, useTransition } from "react"
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { AIAgentPanel } from "@/components/ai-agent-panel"
 import CommandPalette from "@/components/CommandPalette"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/contexts/AuthContext"
 import { LayoutProvider, useLayout } from "@/contexts/layout-provider"
 import type { View } from "@/types"
@@ -29,9 +30,23 @@ function AppShellInner() {
   const [currentView, setCurrentView] = useState<View>("dashboard")
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [aiAgentOpen, setAiAgentOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [isNavigating, setIsNavigating] = useState(false)
   const { currentUser, logout } = useAuth()
   const { themeMode, setThemeMode } = useThemeMode()
   const { variant, collapsible } = useLayout()
+
+  // Navigation avec skeleton loading
+  const handleNavigate = useCallback((view: View) => {
+    setIsNavigating(true)
+    startTransition(() => {
+      setCurrentView(view)
+      // Petit délai pour montrer le skeleton (minimum 300ms pour éviter le flash)
+      setTimeout(() => {
+        setIsNavigating(false)
+      }, 300)
+    })
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -54,11 +69,51 @@ function AppShellInner() {
   const content = useMemo(
     () =>
       renderView(currentView, {
-        onNavigate: setCurrentView,
+        onNavigate: handleNavigate,
         currentTheme: themeMode,
         onThemeChange: setThemeMode,
       }),
-    [currentView, setThemeMode, themeMode]
+    [currentView, handleNavigate, setThemeMode, themeMode]
+  )
+
+  // Skeleton de chargement pendant la navigation
+  const NavigationSkeleton = () => (
+    <div className="flex h-full w-full flex-col gap-6 p-6">
+      {/* Header skeleton */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton variant="shimmer" className="h-8 w-48" />
+          <Skeleton variant="shimmer" className="h-4 w-64" />
+        </div>
+        <Skeleton variant="shimmer" className="h-10 w-32 rounded-lg" />
+      </div>
+      
+      {/* Content skeleton grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex min-h-[358px] flex-col overflow-hidden rounded-[24px] border border-border bg-card p-4">
+            <div className="relative min-h-[186px] overflow-hidden rounded-[18px] border border-border/50 bg-muted/30 px-4 py-4">
+              <div className="mb-3 space-y-2">
+                <Skeleton variant="shimmer" className="h-2 w-20" />
+                <Skeleton variant="shimmer" className="h-5 w-24" />
+              </div>
+              <Skeleton variant="shimmer" className="h-[100px] w-full" />
+            </div>
+            <div className="mt-auto space-y-2 px-1.5 pt-5">
+              <Skeleton variant="shimmer" className="h-4 w-3/4" />
+              <Skeleton variant="shimmer" className="h-3 w-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Secondary content skeleton */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Skeleton variant="shimmer" className="h-[300px] w-full rounded-[24px]" />
+        <Skeleton variant="shimmer" className="h-[300px] w-full rounded-[24px]" />
+        <Skeleton variant="shimmer" className="h-[300px] w-full rounded-[24px]" />
+      </div>
+    </div>
   )
 
   const currentUserName =
@@ -71,9 +126,9 @@ function AppShellInner() {
       className={cn("!min-h-0 h-svh overflow-hidden", isRtl && "rtl-shell")}
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--sidebar-width-icon": "calc(var(--spacing) * 16)",
-          "--header-height": "calc(var(--spacing) * 12)",
+          "--sidebar-width": "16rem",
+          "--sidebar-width-icon": "3rem",
+          "--header-height": "calc(var(--spacing) * 14)",
         } as React.CSSProperties
       }
     >
@@ -82,7 +137,7 @@ function AppShellInner() {
         variant={variant}
         collapsible={collapsible}
         currentView={currentView}
-        onNavigate={setCurrentView}
+        onNavigate={handleNavigate}
         currentUserName={currentUserName}
         currentUserEmail={currentUserEmail}
         currentUserAvatar={currentUser?.avatarUrl}
@@ -91,50 +146,27 @@ function AppShellInner() {
         onOpenAIAgent={() => setAiAgentOpen(true)}
       />
       <SidebarInset className="relative isolate flex min-h-0 flex-col overflow-y-auto">
-        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-          <div
-            aria-hidden="true"
-            className="absolute -top-32 right-0 transform-gpu blur-[80px] sm:-top-40"
-          >
-            <div
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-              className="relative right-0 aspect-[1155/678] w-[24rem] translate-x-1/4 rotate-[30deg] mix-blend-multiply bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:w-[48rem] sm:translate-x-1/3 dark:mix-blend-screen dark:opacity-[0.12]"
-            />
-          </div>
-
-          <div
-            aria-hidden="true"
-            className="absolute top-[30%] right-0 transform-gpu blur-[80px]"
-          >
-            <div
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-              className="relative right-0 aspect-[1155/678] w-[24rem] translate-x-1/4 mix-blend-multiply bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:w-[48rem] sm:translate-x-1/3 dark:mix-blend-screen dark:opacity-[0.12]"
-            />
-          </div>
-        </div>
+        <div className="pointer-events-none fixed inset-0 -z-10 bg-background" />
         <SiteHeader
           title={getViewTitle(currentView, t)}
+          variant="default"
           currentUserName={currentUserName}
           currentUserEmail={currentUserEmail}
           currentUserAvatar={currentUser?.avatarUrl}
           onLogout={logout}
           onOpenPalette={() => setPaletteOpen(true)}
-          onNavigate={setCurrentView}
+          onNavigate={handleNavigate}
         />
-        <div className="flex flex-1 flex-col">{content}</div>
+        <div className="flex flex-1 flex-col">
+          {isNavigating ? <NavigationSkeleton /> : content}
+        </div>
       </SidebarInset>
 
       {/* Command Palette */}
       <CommandPalette
         isOpen={paletteOpen}
         onClose={() => setPaletteOpen(false)}
-        onNavigate={(view) => setCurrentView(view)}
+        onNavigate={handleNavigate}
       />
 
       {/* AI Agent Slide-over Panel */}

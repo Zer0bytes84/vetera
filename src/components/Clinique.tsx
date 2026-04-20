@@ -29,8 +29,12 @@ import {
 } from "@hugeicons/core-free-icons"
 
 import Avatar from "@/components/Avatar"
-import MotivationalHeader from "@/components/MotivationalHeader"
-import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
+import { DashboardPageIntro } from "@/components/dashboard-page-intro"
+import {
+  MetricOverviewStrip,
+  type MetricOverviewItem,
+} from "@/components/metric-overview-strip"
+import { APP_NAME } from "@/lib/brand"
 import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
@@ -395,7 +399,7 @@ const generateInvoicePDF = async (data: {
   const doc = new jsPDF()
   const primaryColor = "#2563EB"
   const grayColor = "#52525B"
-  const clinicName = data.clinicName?.trim() || "Vetera"
+  const clinicName = data.clinicName?.trim() || APP_NAME
 
   doc.setFontSize(22)
   doc.setTextColor(primaryColor)
@@ -513,7 +517,7 @@ const generatePrescriptionPDF = (data: {
 
   doc.setFontSize(22)
   doc.setTextColor(primaryColor)
-  doc.text("Vetera", 20, 20)
+  doc.text(APP_NAME, 20, 20)
 
   doc.setFontSize(10)
   doc.setTextColor(grayColor)
@@ -589,7 +593,7 @@ const generatePrescriptionPDF = (data: {
 
   doc.setFontSize(9)
   doc.setTextColor(150, 150, 150)
-  doc.text("Vetera · Prescription clinique", 105, 270, { align: "center" })
+  doc.text(`${APP_NAME} · Prescription clinique`, 105, 270, { align: "center" })
   doc.text("Valable 3 mois à compter de la date d'émission.", 105, 280, {
     align: "center",
   })
@@ -1173,7 +1177,7 @@ function BillingDialog({
       .map((item) => `- ${item.desc}: ${item.amount} DA`)
       .join("\n")
     const body = encodeURIComponent(
-      `Bonjour,\n\nVeuillez trouver le détail de la consultation pour ${patientName}.\n\n${itemList}\n\nTOTAL: ${total} DA\n\nCordialement,\nL'équipe Vetera`
+      `Bonjour,\n\nVeuillez trouver le détail de la consultation pour ${patientName}.\n\n${itemList}\n\nTOTAL: ${total} DA\n\nCordialement,\nL'équipe ${APP_NAME}`
     )
 
     window.open(`mailto:${ownerEmail}?subject=${subject}&body=${body}`)
@@ -1505,47 +1509,43 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const generateSparkline = (base: number) => 
     Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 3) - 1)
 
-  const sectionCards = useMemo<SectionCardItem[]>(() => {
+  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
     return [
       {
-        title: "Consultations du jour",
+        label: "Consultations",
         value: String(stats.total),
-        badge: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""}`,
-        trend: stats.total > 0 ? "up" : "neutral",
-        summary: "Volume global du flux clinique",
+        meta: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""}`,
+        note: "Flux du jour",
         icon: Activity01Icon,
         sparklineData: generateSparkline(stats.total),
-        color: "blue",
+        tone: "blue",
       },
       {
-        title: "En cours",
+        label: "En cours",
         value: String(stats.inProgress),
-        badge: `${stats.inProgress} active${stats.inProgress > 1 ? "s" : ""}`,
-        trend: stats.inProgress > 0 ? "up" : "neutral",
-        summary: "Consultations à documenter",
+        meta: `${stats.inProgress} active${stats.inProgress > 1 ? "s" : ""}`,
+        note: "À documenter",
         icon: TimerIcon,
         sparklineData: generateSparkline(stats.inProgress),
-        color: "amber",
+        tone: "amber",
       },
       {
-        title: "Terminés",
+        label: "Terminés",
         value: String(stats.completed),
-        badge: `${stats.completed} finie${stats.completed > 1 ? "s" : ""}`,
-        trend: stats.completed > 0 ? "up" : "neutral",
-        summary: "Consultations clôturées",
+        meta: `${stats.completed} finie${stats.completed > 1 ? "s" : ""}`,
+        note: "Clôturées",
         icon: CheckmarkCircle01Icon,
         sparklineData: generateSparkline(stats.completed),
-        color: "emerald",
+        tone: "emerald",
       },
       {
-        title: "En attente",
+        label: "En attente",
         value: String(stats.pending),
-        badge: `${stats.pending} en salle`,
-        trend: stats.pending > 3 ? "down" : "neutral",
-        summary: "Créneaux à lancer",
+        meta: `${stats.pending} en salle`,
+        note: "À lancer",
         icon: HourglassIcon,
         sparklineData: generateSparkline(stats.pending),
-        color: "violet",
+        tone: "violet",
       },
     ]
   }, [stats.completed, stats.inProgress, stats.pending, stats.total])
@@ -1688,7 +1688,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         (await getSetting("clinic_name")) ||
         (await getSetting("cabinet_name")) ||
         (await getSetting("practice_name")) ||
-        "Vetera"
+        APP_NAME
 
       await generateInvoicePDF({
         patientName: patient?.name || "Patient local",
@@ -1765,15 +1765,13 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     : undefined
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <MotivationalHeader
-          section="clinique"
-          title=""
-          subtitle={`${todaysAppointments.length} consultation${todaysAppointments.length > 1 ? "s" : ""} prévues pour ${todayLabel}. Les actes, diagnostics et encaissements restent regroupés dans le même flux.`}
-        />
-
-        <div className="flex flex-col gap-2 sm:flex-row">
+    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+      <DashboardPageIntro
+        eyebrow="Flux clinique"
+        title="Clinique"
+        subtitle={`${todaysAppointments.length} consultation${todaysAppointments.length > 1 ? "s" : ""} prévues pour ${todayLabel}. Les actes, diagnostics et encaissements restent regroupés dans le même flux.`}
+        actions={
+          <>
           <Button variant="outline" onClick={() => onNavigate?.("agenda")}>
             <HugeiconsIcon
               icon={Calendar01Icon}
@@ -1817,28 +1815,28 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
               )}
             </Button>
           ) : null}
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      <SectionCardsPremium items={sectionCards} />
+      <MetricOverviewStrip items={overviewCards} />
 
       <div className="grid gap-4">
-        <Card className="relative min-h-[760px] overflow-hidden">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-violet-500/[0.05] via-violet-500/[0.02] to-transparent" />
-          <CardHeader className="relative border-b border-border/35 bg-transparent">
+        <Card className="relative min-h-[760px] overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+          <CardHeader className="relative border-b border-border px-6 py-5 bg-transparent">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10">
                 <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={2} className="h-5 w-5 text-violet-600" />
               </div>
               <div className="grid flex-1 gap-0.5">
-                <CardDescription>Registre clinique</CardDescription>
-                <CardTitle className="text-2xl tracking-[-0.04em]">
+                <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">Registre clinique</CardDescription>
+                <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
                   Activité des dossiers
                 </CardTitle>
               </div>
             </div>
             <CardAction>
-              <Badge variant="outline" className="bg-background/80">
+              <Badge variant="outline" className="rounded-full bg-background/80 px-3 py-1">
                 {visibleCount} consultation{visibleCount > 1 ? "s" : ""}
               </Badge>
             </CardAction>
@@ -1846,6 +1844,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
 
           <CardContent className="flex min-h-0 flex-1 flex-col px-0 pb-0">
             <div className="flex flex-col gap-3 px-6 pt-1 pb-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex-1" />
               <Tabs
                 value={listTab}
                 onValueChange={(value) => setListTab(value as ListTab)}
@@ -1877,7 +1876,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                 </TabsList>
               </Tabs>
 
-              <div className="relative w-full xl:max-w-[440px]">
+              <div className="relative w-full xl:max-w-[440px] xl:flex-1">
                 <HugeiconsIcon
                   icon={SearchIcon}
                   strokeWidth={2}
@@ -1926,7 +1925,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                       de nouveaux créneaux.
                     </EmptyDescription>
                   </EmptyHeader>
-                  <EmptyContent className="sm:flex-row">
+                  <EmptyContent className="sm:flex-row justify-center">
                     <Button
                       variant="outline"
                       onClick={() => {
@@ -2583,4 +2582,4 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   )
 }
 
-export default Clinique
+export default React.memo(Clinique)

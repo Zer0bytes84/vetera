@@ -145,7 +145,7 @@ export function AppHeader({
               className="truncate font-heading text-[1.25rem] font-semibold tracking-[-0.03em] md:text-[1.35rem]"
               style={{
                 background:
-                  "linear-gradient(135deg, #1f2140 0%, #4f46e5 52%, #60a5fa 100%)",
+                  "linear-gradient(135deg, #ea580c 0%, #f97316 52%, #fb923c 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",

@@ -1,5 +1,6 @@
 import type { ChatMessage } from "../types"
 
+import { APP_NAME } from "@/lib/brand"
 import {
   generateText,
   getLocalModelId,
@@ -8,7 +9,7 @@ import {
   type LocalChatTurn,
 } from "./webLLMService"
 
-const ASSISTANT_SYSTEM_PROMPT = `Tu es l'assistant officiel de Vetera, logiciel de clinique veterinaire.
+const ASSISTANT_SYSTEM_PROMPT = `Tu es l'assistant officiel de ${APP_NAME}, logiciel de clinique veterinaire.
 Tu aides l'equipe sur l'organisation, les dossiers patients, les notes cliniques et les actions quotidiennes.
 
 Contraintes:

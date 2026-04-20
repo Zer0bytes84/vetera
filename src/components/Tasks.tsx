@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react"
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale"
-import MotivationalHeader from "./MotivationalHeader"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
@@ -16,6 +15,11 @@ import {
   Notification02Icon,
 } from "@hugeicons/core-free-icons"
 import { useTasksRepository } from "@/data/repositories"
+import { DashboardPageIntro } from "@/components/dashboard-page-intro"
+import {
+  MetricOverviewStrip,
+  type MetricOverviewItem,
+} from "@/components/metric-overview-strip"
 import { Task } from "../types/db"
 import { useAuth } from "../contexts/AuthContext"
 import KanbanBoard from "./KanbanBoard"
@@ -23,7 +27,14 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Empty,
   EmptyDescription,
@@ -99,6 +110,20 @@ const parseDateInput = (value?: string) => {
   const [year, month, day] = value.split("-").map(Number)
   if (!year || !month || !day) return null
   return new Date(year, month - 1, day, 12, 0, 0, 0)
+}
+
+const buildTaskSparkline = (
+  base: number,
+  pattern: "steady" | "rise" | "watch" | "stable"
+) => {
+  const deltas = {
+    steady: [-2, -1, 0, 1, 0, 1, 1, 2],
+    rise: [-1, 0, 1, 2, 1, 2, 3, 4],
+    watch: [3, 2, 4, 5, 4, 6, 5, 7],
+    stable: [1, 1, 0, 1, 0, 1, 0, 0],
+  }[pattern]
+
+  return deltas.map((delta) => Math.max(base + delta, 0))
 }
 
 const Tasks: React.FC = () => {
@@ -336,17 +361,68 @@ const Tasks: React.FC = () => {
     })
   }, [filteredTasks, priorityFilter, statusFilter, taskSearch])
 
-  return (
-    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <MotivationalHeader
-          section="taches"
-          title=""
-          subtitle="Gérez vos priorités et ne manquez rien."
-        />
+  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
+    const openTasks = filteredTasks.filter((task) => task.status !== "done").length
+    const urgentTasks = filteredTasks.filter(
+      (task) => task.status !== "done" && task.priority === "high"
+    ).length
+    const completedTasks = filteredTasks.filter((task) => task.status === "done").length
 
-        <div className="flex items-center gap-3">
+    return [
+      {
+        label: "Tâches ouvertes",
+        value: String(openTasks),
+        meta: filter === "mine" ? "vue perso" : "équipe complète",
+        note: "Charge active à absorber",
+        icon: ListPlusIcon,
+        tone: "blue",
+        sparklineData: buildTaskSparkline(openTasks, "steady"),
+      },
+      {
+        label: "À traiter aujourd'hui",
+        value: String(groupedTasks.today.length),
+        meta: `${groupedTasks.overdue.length} en retard`,
+        note: "Priorités immédiates",
+        icon: Calendar01Icon,
+        tone: "orange",
+        sparklineData: buildTaskSparkline(groupedTasks.today.length, "rise"),
+      },
+      {
+        label: "Alertes prioritaires",
+        value: String(urgentTasks),
+        meta: `${groupedTasks.tomorrow.length} demain`,
+        note: "Actions à surveiller",
+        icon: Notification02Icon,
+        tone: "amber",
+        sparklineData: buildTaskSparkline(urgentTasks, "watch"),
+      },
+      {
+        label: "Clôturées",
+        value: String(completedTasks),
+        meta: `${tableTasks.length} dans la vue`,
+        note: "Suivi",
+        icon: CheckmarkCircle02Icon,
+        tone: "emerald",
+        sparklineData: buildTaskSparkline(completedTasks, "stable"),
+      },
+    ]
+  }, [
+    filter,
+    filteredTasks,
+    groupedTasks.overdue.length,
+    groupedTasks.today.length,
+    groupedTasks.tomorrow.length,
+    tableTasks.length,
+  ])
+
+  return (
+    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+      <DashboardPageIntro
+        eyebrow="Pilotage interne"
+        title="Tâches"
+        subtitle={`${filteredTasks.length} tâche${filteredTasks.length > 1 ? "s" : ""} dans la vue ${filter === "mine" ? "personnelle" : "équipe"} pour garder rappels, urgences et suivi dans le même flux.`}
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
           {/* Filter toggle */}
           <ToggleGroup
             multiple={false}
@@ -392,15 +468,18 @@ const Tasks: React.FC = () => {
               />
             </ToggleGroupItem>
           </ToggleGroup>
-        </div>
-      </div>
+          </div>
+        }
+      />
+
+      <MetricOverviewStrip items={overviewCards} />
 
       {/* Quick Add Bar */}
       <Card
         size="sm"
-        className="transition-all focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/20"
+        className="rounded-[24px] border border-border bg-card shadow-none transition-all focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/20"
       >
-        <CardContent>
+        <CardContent className="p-5">
           <form onSubmit={handleAddTask} className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div
@@ -610,14 +689,27 @@ const Tasks: React.FC = () => {
         </div>
       ) : (
         <div className="flex-1 space-y-4">
-          <Card size="sm">
-            <CardContent className="space-y-4">
+          <Card size="sm" className="rounded-[24px] border border-border bg-card shadow-none">
+            <CardHeader className="border-b border-border px-6 py-5">
+              <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+                Registre des rappels
+              </CardDescription>
+              <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
+                Vue liste des tâches
+              </CardTitle>
+              <CardAction>
+                <Badge variant="outline" className="rounded-full px-3 py-1">
+                  {tableTasks.length} rappel{tableTasks.length > 1 ? "s" : ""}
+                </Badge>
+              </CardAction>
+            </CardHeader>
+            <CardContent className="space-y-4 px-6 py-5">
               <div className="flex flex-wrap items-center gap-3">
                 <Input
                   value={taskSearch}
                   onChange={(e) => setTaskSearch(e.target.value)}
                   placeholder="Filtrer les rappels..."
-                  className="h-9 max-w-sm"
+                  className="h-10 max-w-sm rounded-xl"
                 />
                 <NativeSelect
                   value={statusFilter}
@@ -651,9 +743,6 @@ const Tasks: React.FC = () => {
                   <NativeSelectOption value="medium">Normal</NativeSelectOption>
                   <NativeSelectOption value="low">Faible</NativeSelectOption>
                 </NativeSelect>
-                <div className="ml-auto text-xs text-muted-foreground">
-                  {tableTasks.length} rappel{tableTasks.length > 1 ? "s" : ""}
-                </div>
               </div>
 
               <Table>
@@ -859,7 +948,7 @@ const TaskGroup: React.FC<{
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <h3 className={cn("text-sm font-bold tracking-wider uppercase", color)}>
+        <h3 className={cn("text-sm font-semibold tracking-wider uppercase", color)}>
           {title}
         </h3>
         <Badge variant="secondary" className="text-[10px]">
@@ -935,7 +1024,7 @@ const TaskGroup: React.FC<{
                         new Date(task.dueDate) < new Date() &&
                           task.dueDate !==
                             new Date().toISOString().split("T")[0]
-                          ? "font-bold text-red-500"
+                          ? "font-semibold text-red-500"
                           : "text-muted-foreground"
                       )}
                     >

@@ -93,15 +93,17 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
       style={{ top: position.top, left: position.left }}
     >
       <Button
+        type="button"
         variant={editor.isActive("bold") ? "default" : "ghost"}
         size="icon-sm"
         onClick={() => editor.chain().focus().toggleBold().run()}
         title="Gras"
       >
-        <HugeiconsIcon icon={TextBoldIcon} strokeWidth={2} className="size-4" />
+        <HugeiconsIcon icon={TextBoldIcon} strokeWidth={1.5} className="size-4" />
       </Button>
 
       <Button
+        type="button"
         variant={editor.isActive("italic") ? "default" : "ghost"}
         size="icon-sm"
         onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -109,12 +111,13 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
       >
         <HugeiconsIcon
           icon={TextItalicIcon}
-          strokeWidth={2}
+          strokeWidth={1.5}
           className="size-4"
         />
       </Button>
 
       <Button
+        type="button"
         variant={editor.isActive("strike") ? "default" : "ghost"}
         size="icon-sm"
         onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -122,7 +125,7 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
       >
         <HugeiconsIcon
           icon={TextStrikethroughIcon}
-          strokeWidth={2}
+          strokeWidth={1.5}
           className="size-4"
         />
       </Button>
@@ -130,6 +133,7 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
       <div className="mx-1 h-6 w-px bg-border" />
 
       <Button
+        type="button"
         variant={editor.isActive("heading", { level: 1 }) ? "default" : "ghost"}
         size="icon-sm"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -137,12 +141,13 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
       >
         <HugeiconsIcon
           icon={Heading01Icon}
-          strokeWidth={2}
+          strokeWidth={1.5}
           className="size-4"
         />
       </Button>
 
       <Button
+        type="button"
         variant={editor.isActive("heading", { level: 2 }) ? "default" : "ghost"}
         size="icon-sm"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -150,7 +155,7 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
       >
         <HugeiconsIcon
           icon={Heading02Icon}
-          strokeWidth={2}
+          strokeWidth={1.5}
           className="size-4"
         />
       </Button>
@@ -165,13 +170,13 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
         >
           <HugeiconsIcon
             icon={SparklesIcon}
-            strokeWidth={2}
+            strokeWidth={1.5}
             className="size-3.5"
           />
           <span>IA</span>
           <HugeiconsIcon
             icon={ArrowDown01Icon}
-            strokeWidth={2}
+            strokeWidth={1.5}
             className={`size-3 transition-transform ${showAiMenu ? "rotate-180" : ""}`}
           />
         </Button>
@@ -186,7 +191,7 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
               >
                 <HugeiconsIcon
                   icon={item.icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                   className="size-3.5 text-violet-500"
                 />
                 {item.label}

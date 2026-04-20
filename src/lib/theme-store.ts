@@ -275,8 +275,8 @@ export const DENSITY_MAP: Record<
 }
 
 export const DEFAULT_THEME: ThemeConfig = {
-  accent: "mist",
-  radius: "lg",
+  accent: "orange",
+  radius: "md",
   density: "comfortable",
   font: "geist",
   sidebarStyle: "inset",
@@ -287,13 +287,13 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const accent = ACCENT_THEMES[config.accent]
   const mode = isDark ? accent.dark : accent.light
 
-  root.style.setProperty("--primary", mode.primary)
-  root.style.setProperty("--primary-foreground", mode.primaryForeground)
-  root.style.setProperty("--ring", mode.ring)
-  root.style.setProperty("--muted", mode.muted)
-  root.style.setProperty("--muted-foreground", mode.mutedForeground)
-  root.style.setProperty("--accent", mode.primary)
-  root.style.setProperty("--radius", RADIUS_MAP[config.radius])
+  root.style.setProperty("--primary", mode.primary, "important")
+  root.style.setProperty("--primary-foreground", mode.primaryForeground, "important")
+  root.style.setProperty("--ring", mode.ring, "important")
+  root.style.setProperty("--muted", mode.muted, "important")
+  root.style.setProperty("--muted-foreground", mode.mutedForeground, "important")
+  root.style.setProperty("--accent", mode.primary, "important")
+  root.style.setProperty("--radius", RADIUS_MAP[config.radius], "important")
 
   if (config.accent === "mist") {
     if (isDark) {

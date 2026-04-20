@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { APP_NAME } from "@/lib/brand"
 import { cn } from "@/lib/utils"
 
 const sections = [
@@ -223,7 +224,7 @@ const sections = [
     description: "Configuration de l'application selon vos besoins.",
     content: (
       <div className="space-y-4">
-        <p>Personnalisez votre expérience Vetera :</p>
+        <p>{`Personnalisez votre expérience ${APP_NAME} :`}</p>
         <ul className="list-disc space-y-2 pl-5 text-muted-foreground">
           <li>Modification de votre profil et mot de passe.</li>
           <li>Choix du thème (Clair, Sombre, Système).</li>
@@ -253,13 +254,13 @@ const Help: React.FC = () => {
       <Card className="relative overflow-hidden rounded-none border-x-0 border-t-0 shadow-sm">
         <div className="pointer-events-none absolute top-0 right-0 -mt-16 -mr-16 h-64 w-64 rounded-full bg-gradient-to-br from-primary/10 to-purple-500/10 blur-3xl" />
         <CardContent className="relative z-10 max-w-2xl px-8 py-4">
-          <h1 className="mb-2 flex items-center gap-3 text-3xl font-bold text-foreground">
+          <h1 className="mb-2 flex items-center gap-3 text-3xl font-semibold text-foreground">
             <HugeiconsIcon
               icon={HelpCircleIcon}
               strokeWidth={2}
               className="size-8 text-primary"
             />
-            Centre d'Aide Vetera
+            {`Centre d'Aide ${APP_NAME}`}
           </h1>
           <p className="mb-6 text-lg text-muted-foreground">
             Tout ce que vous devez savoir pour maîtriser votre logiciel
@@ -288,7 +289,7 @@ const Help: React.FC = () => {
         {/* Sidebar Menu */}
         <ScrollArea className="hidden w-72 border-r border-border bg-card md:block">
           <div className="space-y-1 p-4">
-            <p className="mb-2 px-3 py-2 text-xs font-bold tracking-wider text-muted-foreground uppercase">
+            <p className="mb-2 px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Sommaire
             </p>
             {filteredSections.map((section) => {
@@ -340,7 +341,7 @@ const Help: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold">
+                      <CardTitle className="text-2xl font-semibold">
                         {activeSection.title}
                       </CardTitle>
                       <CardDescription>

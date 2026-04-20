@@ -65,7 +65,7 @@ export function DashboardSecondaryWidgets({
       <Card className="min-h-[220px]">
         <CardHeader>
           <WidgetMeta
-            icon={<HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />}
+            icon={<HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />}
             label="Pilotage temps réel"
           />
           <CardTitle className="text-2xl font-semibold tracking-[-0.04em]">
@@ -112,7 +112,7 @@ export function DashboardSecondaryWidgets({
         <Card size="sm">
           <CardHeader>
             <WidgetMeta
-              icon={<HugeiconsIcon icon={UserGroupIcon} strokeWidth={2} />}
+              icon={<HugeiconsIcon icon={UserGroupIcon} strokeWidth={1.5} />}
               label="Charge équipe"
             />
             <CardTitle className="text-xl font-semibold tracking-[-0.03em]">
@@ -134,7 +134,7 @@ export function DashboardSecondaryWidgets({
         <Card size="sm">
           <CardHeader>
             <WidgetMeta
-              icon={<HugeiconsIcon icon={Package02Icon} strokeWidth={2} />}
+              icon={<HugeiconsIcon icon={Package02Icon} strokeWidth={1.5} />}
               label="Vigilance stock"
             />
             <CardTitle className="text-xl font-semibold tracking-[-0.03em]">

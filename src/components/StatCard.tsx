@@ -37,10 +37,10 @@ const StatCard: React.FC<StatCardProps> = ({
       <CardContent className="p-5">
         <div className="mb-4 flex items-start justify-between">
           <div className="flex flex-col">
-            <p className="mb-1 text-xs font-bold tracking-wider text-muted-foreground uppercase">
+            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               {title}
             </p>
-            <h3 className="text-3xl font-bold tracking-tight text-foreground">
+            <h3 className="text-3xl font-semibold tracking-tight text-foreground">
               {value}
             </h3>
           </div>
@@ -58,7 +58,7 @@ const StatCard: React.FC<StatCardProps> = ({
             <Badge
               variant="secondary"
               className={cn(
-                "rounded-full px-2 py-0.5 text-xs font-bold",
+                "rounded-full px-2 py-0.5 text-xs font-semibold",
                 trendColor
               )}
             >

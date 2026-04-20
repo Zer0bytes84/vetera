@@ -124,7 +124,7 @@ const Avatar: React.FC<AvatarProps> = ({
         />
         <div
           className={cn(
-            "hidden size-full items-center justify-center rounded-full bg-muted font-bold text-muted-foreground",
+            "hidden size-full items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground",
             size === "sm"
               ? "text-xs"
               : size === "md"
@@ -149,7 +149,7 @@ const Avatar: React.FC<AvatarProps> = ({
     return (
       <div
         className={cn(
-          "flex items-center justify-center rounded-full font-bold text-white",
+          "flex items-center justify-center rounded-full font-semibold text-white",
           `bg-gradient-to-br ${gradientClass}`,
           sizeClass,
           className
@@ -184,7 +184,7 @@ const Avatar: React.FC<AvatarProps> = ({
     <ShadAvatar className={cn(sizeClass, className)}>
       <AvatarFallback
         className={cn(
-          "font-bold",
+          "font-semibold",
           size === "sm"
             ? "text-xs"
             : size === "md"

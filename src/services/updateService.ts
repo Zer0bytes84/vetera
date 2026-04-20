@@ -2,6 +2,7 @@ import { check, type Update } from "@tauri-apps/plugin-updater"
 import { relaunch } from "@tauri-apps/plugin-process"
 import { toast } from "sonner"
 
+import { APP_NAME } from "@/lib/brand"
 import { isTauriRuntime } from "@/services/browser-store"
 import { getSetting, setSetting } from "@/services/appSettingsService"
 
@@ -13,7 +14,7 @@ let installInFlight = false
 
 function summarizeNotes(notes?: string | null) {
   if (!notes) {
-    return "Une nouvelle version de Vetera est disponible."
+    return `Une nouvelle version de ${APP_NAME} est disponible.`
   }
 
   const normalized = notes.replace(/\s+/g, " ").trim()
@@ -38,7 +39,7 @@ async function installUpdate(update: Update) {
   }
 
   installInFlight = true
-  const loadingToastId = toast.loading(`Installation de Vetera ${update.version}...`, {
+  const loadingToastId = toast.loading(`Installation de ${APP_NAME} ${update.version}...`, {
     description: "Telechargement de la mise a jour en cours.",
     duration: Infinity,
     closeButton: true,
@@ -68,7 +69,7 @@ async function installUpdate(update: Update) {
 }
 
 function notifyAboutUpdate(update: Update) {
-  toast.info(`Vetera ${update.version} est disponible`, {
+  toast.info(`${APP_NAME} ${update.version} est disponible`, {
     description: summarizeNotes(update.body),
     duration: 20000,
     closeButton: true,
@@ -99,7 +100,7 @@ export async function checkForAppUpdates(options?: { userInitiated?: boolean }) 
 
   if (!update) {
     if (userInitiated) {
-      toast.success("Vous utilisez deja la derniere version de Vetera.", {
+      toast.success(`Vous utilisez deja la derniere version de ${APP_NAME}.`, {
         duration: 5000,
         closeButton: true,
       })

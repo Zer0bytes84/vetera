@@ -11,17 +11,17 @@ interface LogoProps {
 }
 
 const SIZE_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
-  sm: "!size-7.5",
-  md: "!size-8",
-  lg: "!size-11",
-  xl: "!size-14",
+  sm: "size-6",
+  md: "size-7",
+  lg: "size-8",
+  xl: "size-9",
 }
 
 const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
-  sm: "text-[1.0625rem]",
-  md: "text-[1.125rem]",
-  lg: "text-[1.5rem]",
-  xl: "text-[1.875rem]",
+  sm: "text-[13px] leading-[20px]",
+  md: "text-[15px] leading-[22px] font-semibold",
+  lg: "text-[18px] leading-[26px] font-semibold",
+  xl: "text-[22px] leading-[30px] font-semibold",
 }
 
 function VeteraMark({ iconClassName }: { iconClassName: string }) {
@@ -29,35 +29,18 @@ function VeteraMark({ iconClassName }: { iconClassName: string }) {
     <svg
       viewBox="0 0 32 32"
       aria-hidden="true"
-      className={iconClassName}
-      fill="none"
+      className={cn("text-foreground", iconClassName)}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Outer large layer - soft and highly translucent glass */}
-      <rect 
-        x="16" y="2.5" 
-        width="18" height="18" rx="4.5" 
-        transform="rotate(45 16 2.5)" 
-        fill="currentColor" 
-        className="opacity-[0.14] dark:opacity-[0.18]" 
-      />
-      
-      {/* Medium center layer - defining the shape */}
-      <rect 
-        x="16" y="11" 
-        width="12" height="12" rx="3" 
-        transform="rotate(45 16 11)" 
-        fill="currentColor" 
-        className="opacity-[0.45] dark:opacity-[0.55]" 
-      />
-      
-      {/* Inner core - sharp, solid apex */}
-      <rect 
-        x="16" y="19.5" 
-        width="6" height="6" rx="1.5" 
-        transform="rotate(45 16 19.5)" 
-        fill="currentColor" 
-        className="opacity-95 dark:opacity-100" 
+      {/* Elegant minimalist 'deformed stroke' SaaS Logo */}
+      <path
+        d="M 4 18 C 12 2, 20 30, 28 14"
+        stroke="currentColor"
+        strokeWidth="3.25"
+        strokeLinecap="round"
+        fill="none"
+        className="opacity-95 dark:opacity-100"
+        style={{ vectorEffect: "non-scaling-stroke" }}
       />
     </svg>
   )
@@ -72,21 +55,18 @@ const Logo: React.FC<LogoProps> = ({
   const wordmarkClass = WORDMARK_CLASS_MAP[size]
 
   return (
-    <div
-      className={cn(
-        "flex items-center select-none text-current",
-        className
-      )}
-    >
-      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-2")}>
-        <VeteraMark iconClassName={cn(iconSizeClass, "shrink-0")} />
+    <div className={cn("flex items-center select-none text-current", className)}>
+      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-2.5")}>
+        <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-accent/50">
+          <VeteraMark iconClassName="size-5 shrink-0" />
+        </div>
         {!collapsed ? (
           <span
             className={cn(
-              "-ml-0.5 translate-y-[1px] truncate font-heading font-semibold leading-none tracking-[-0.045em]",
+              "truncate font-semibold tracking-normal font-sans",
               wordmarkClass
             )}
-            style={{ color: "currentColor" }}
+            style={{ color: "currentColor", fontFamily: '"Geist Variable", "Geist", "Geist Fallback", sans-serif' }}
           >
             {APP_NAME}
           </span>

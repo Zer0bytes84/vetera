@@ -21,7 +21,7 @@ export function TitleBar() {
         <button
           type="button"
           onClick={() => appWindow?.close()}
-          className="group flex size-3 items-center justify-center rounded-full bg-[#ff5f57] transition-all hover:bg-[#ff3b30]"
+          className="group flex size-3 items-center justify-center rounded-full bg-[#ea580c] transition-all hover:bg-[#dc2626]"
         >
           <svg
             width="8"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Alert02Icon,
@@ -27,9 +27,10 @@ import {
 } from "@hugeicons/core-free-icons"
 import { useAuth } from "../contexts/AuthContext"
 import { useUsersRepository } from "@/data/repositories"
+import { DashboardPageIntro } from "@/components/dashboard-page-intro"
+import { APP_NAME } from "@/lib/brand"
 import { writeCachedProfile } from "@/lib/profile-cache"
 import Avatar from "./Avatar"
-import MotivationalHeader from "./MotivationalHeader"
 import { ThemeModeToggle } from "./theme-mode-toggle"
 import { updatePassword } from "../services/sqlite/auth"
 import {
@@ -211,7 +212,7 @@ const IASettings: React.FC = () => {
               <Button
                 onClick={handleDownloadModel}
                 disabled={isInitializing}
-                className="rounded-[0.95rem] bg-[linear-gradient(135deg,#8B5CF6,#D946EF)]"
+                className="rounded-[0.95rem] bg-[linear-gradient(135deg,#ea580c,#f97316)]"
               >
                 {isInitializing ? (
                   <Spinner className="size-4" />
@@ -425,11 +426,7 @@ const BackupSettings: React.FC = () => {
     setFeedbackMessage(null)
     try {
       const success = await restoreBackup(filename)
-      console.log("[BackupSettings] Restore result:", success)
       if (success) {
-        console.log(
-          "[BackupSettings] Restore successful, closing app in 2 seconds..."
-        )
         setFeedbackMessage({
           type: "success",
           text: "✅ Restauration réussie ! Redémarrage automatique...",
@@ -1133,15 +1130,7 @@ const Parametres: React.FC<ParametresProps> = ({
     }
   }
 
-  const animalPresets = [
-    "dog",
-    "cat",
-    "rabbit",
-    "bird",
-    "fish",
-    "turtle",
-    "paw",
-  ]
+  const roleLabel = getRoleDisplay()
 
   const renderContent = () => {
     switch (activeTab) {
@@ -1222,177 +1211,6 @@ const Parametres: React.FC<ParametresProps> = ({
                 </CardContent>
               </Card>
             )}
-
-            {/* Avatar Gallery */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Photo de profil ✨</CardTitle>
-                <CardDescription>
-                  Choisissez un avatar ou uploadez votre propre photo
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col gap-6">
-                  <input
-                    id="profile-photo-upload"
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                  />
-                  <div className="flex items-center gap-4">
-                    <div className="shrink-0">
-                      <Avatar src={avatarUrl} name={displayName} size="lg" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">
-                        Votre avatar
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        JPG, PNG, WebP. Max 1 Mo.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                        <span>🐾</span> Animaux
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          {
-                            id: "dog1",
-                            url: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=80&h=80&fit=crop",
-                          },
-                          {
-                            id: "dog2",
-                            url: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=80&h=80&fit=crop",
-                          },
-                          {
-                            id: "cat1",
-                            url: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=80&h=80&fit=crop",
-                          },
-                          {
-                            id: "cat2",
-                            url: "https://images.unsplash.com/photo-1495360010541-f48722b34f7d?w=80&h=80&fit=crop",
-                          },
-                          {
-                            id: "rabbit",
-                            url: "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?w=80&h=80&fit=crop",
-                          },
-                          {
-                            id: "bird",
-                            url: "https://images.unsplash.com/photo-1551884831-bbf3cdc6469e?w=80&h=80&fit=crop",
-                          },
-                          {
-                            id: "horse",
-                            url: "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=80&h=80&fit=crop",
-                          },
-                          {
-                            id: "hamster",
-                            url: "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=80&h=80&fit=crop",
-                          },
-                        ].map((animal) => (
-                          <button
-                            key={animal.id}
-                            onClick={() => setAvatarUrl(animal.url)}
-                            className={cn(
-                              "h-10 w-10 overflow-hidden rounded-full border-2 transition-all hover:scale-110",
-                              avatarUrl === animal.url
-                                ? "scale-110 border-primary ring-2 ring-primary/30"
-                                : "border-transparent hover:border-border"
-                            )}
-                          >
-                            <img
-                              src={animal.url}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                        <span>🎨</span> Stylisés
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {animalPresets.map((animal) => (
-                          <button
-                            key={animal}
-                            onClick={() => setAvatarUrl(`animal:${animal}`)}
-                            className={cn(
-                              "rounded-full border-2 p-0.5 transition-all hover:scale-110",
-                              avatarUrl === `animal:${animal}`
-                                ? "scale-110 border-primary ring-2 ring-primary/30"
-                                : "border-transparent hover:border-border"
-                            )}
-                          >
-                            <Avatar
-                              src={`animal:${animal}`}
-                              name=""
-                              size="sm"
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                        <span>🌈</span> Dégradés
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          {
-                            id: "grad-emerald",
-                            gradient: "from-emerald-400 to-teal-500",
-                          },
-                          {
-                            id: "grad-blue",
-                            gradient: "from-blue-400 to-indigo-500",
-                          },
-                          {
-                            id: "grad-purple",
-                            gradient: "from-purple-400 to-pink-500",
-                          },
-                          {
-                            id: "grad-rose",
-                            gradient: "from-rose-400 to-red-500",
-                          },
-                          {
-                            id: "grad-amber",
-                            gradient: "from-amber-400 to-orange-500",
-                          },
-                          {
-                            id: "grad-cyan",
-                            gradient: "from-cyan-400 to-blue-500",
-                          },
-                        ].map((grad) => (
-                          <button
-                            key={grad.id}
-                            onClick={() =>
-                              setAvatarUrl(`gradient:${grad.gradient}`)
-                            }
-                            className={cn(
-                              "flex h-9 w-9 items-center justify-center rounded-full border-2 bg-gradient-to-br text-xs font-bold text-white transition-all hover:scale-110",
-                              grad.gradient,
-                              avatarUrl === `gradient:${grad.gradient}`
-                                ? "scale-110 border-foreground ring-2 ring-foreground/20 dark:border-white dark:ring-white/20"
-                                : "border-transparent"
-                            )}
-                          >
-                            {displayName?.charAt(0)?.toUpperCase() || "?"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Form Fields */}
             <Card size="sm">
@@ -1544,7 +1362,7 @@ const Parametres: React.FC<ParametresProps> = ({
                         )}
                       >
                         {key === "noir" ? (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-current text-[10px] font-bold transition-transform group-hover:scale-110">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-current text-[10px] font-semibold transition-transform group-hover:scale-110">
                             Aa
                           </div>
                         ) : (
@@ -1767,102 +1585,6 @@ const Parametres: React.FC<ParametresProps> = ({
 
             {/* Sidebar Layout */}
             <SidebarLayoutSettings />
-
-            {/* Preview */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Aperçu</CardTitle>
-                <CardDescription>
-                  Prévisualisation de votre thème actuel
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="h-10 w-10 rounded-full bg-gradient-to-br shadow-md"
-                        style={{
-                          backgroundImage: `linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 70%, black))`,
-                        }}
-                      />
-                      <div>
-                        <div className="text-sm font-semibold text-foreground">
-                          {ACCENT_THEMES[themeConfig.accent].label}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {ACCENT_THEMES[themeConfig.accent].description}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-all hover:opacity-90"
-                        style={{
-                          borderRadius:
-                            themeConfig.radius === "full"
-                              ? "9999px"
-                              : `${themeConfig.radius === "sm" ? "0.375" : themeConfig.radius === "md" ? "0.5" : themeConfig.radius === "lg" ? "0.75" : "1"}rem`,
-                        }}
-                      >
-                        Primaire
-                      </button>
-                      <button
-                        className="rounded-lg border border-border bg-card px-4 py-2 text-xs font-medium text-foreground transition-all hover:bg-muted"
-                        style={{
-                          borderRadius:
-                            themeConfig.radius === "full"
-                              ? "9999px"
-                              : `${themeConfig.radius === "sm" ? "0.375" : themeConfig.radius === "md" ? "0.5" : themeConfig.radius === "lg" ? "0.75" : "1"}rem`,
-                        }}
-                      >
-                        Secondaire
-                      </button>
-                      <div
-                        className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground"
-                        style={{
-                          borderRadius:
-                            themeConfig.radius === "full"
-                              ? "9999px"
-                              : `${themeConfig.radius === "sm" ? "0.375" : themeConfig.radius === "md" ? "0.5" : themeConfig.radius === "lg" ? "0.75" : "1"}rem`,
-                        }}
-                      >
-                        Badge
-                      </div>
-                    </div>
-                    <div
-                      className="rounded-xl border border-primary/20 bg-primary/5 p-4"
-                      style={{
-                        borderRadius: `calc(${themeConfig.radius === "full" ? "9999" : themeConfig.radius === "sm" ? "0.375" : themeConfig.radius === "md" ? "0.5" : themeConfig.radius === "lg" ? "0.75" : "1"}rem * 1.5)`,
-                      }}
-                    >
-                      <p className="text-xs font-medium text-primary">
-                        {ACCENT_THEMES[themeConfig.accent].description} —
-                        Densité {themeConfig.density}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                      <Badge variant="outline" className="text-[9px]">
-                        {ACCENT_THEMES[themeConfig.accent].label}
-                      </Badge>
-                      <Badge variant="outline" className="text-[9px]">
-                        {themeConfig.font === "geist"
-                          ? "Geist"
-                          : themeConfig.font === "inter"
-                            ? "Inter"
-                            : "Système"}
-                      </Badge>
-                      <Badge variant="outline" className="text-[9px]">
-                        {themeConfig.radius}
-                      </Badge>
-                      <Badge variant="outline" className="text-[9px]">
-                        {themeConfig.density}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         )
       case "notifications":
@@ -2085,11 +1807,11 @@ const Parametres: React.FC<ParametresProps> = ({
             </div>
             <Card size="sm">
               <CardContent className="flex items-center gap-6 pt-6">
-                <div className="flex size-16 items-center justify-center rounded-2xl bg-primary text-xl font-bold text-primary-foreground">
-                  V+
+                <div className="flex size-16 items-center justify-center rounded-2xl bg-primary text-xl font-semibold text-primary-foreground">
+                  A
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">Vetera</h3>
+                  <h3 className="text-lg font-semibold text-foreground">{APP_NAME}</h3>
                   <p className="text-sm text-muted-foreground">
                     Logiciel de gestion vétérinaire
                   </p>
@@ -2109,15 +1831,20 @@ const Parametres: React.FC<ParametresProps> = ({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 lg:px-8">
-      <MotivationalHeader
-        section="parametres"
-        title=""
-        subtitle="Optimisez votre expérience."
+    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+      <DashboardPageIntro
+        eyebrow="Préférences de l'application"
+        title="Paramètres"
+        subtitle={`Optimisez l'expérience, la sécurité et la personnalisation de ${APP_NAME} depuis un panneau unique.`}
+        actions={
+          <Badge variant="outline" className="h-10 rounded-xl px-4 text-sm font-normal">
+            {roleLabel}
+          </Badge>
+        }
       />
 
       {/* Tab Navigation */}
-      <div className="scrollbar-hide flex overflow-x-auto border-b border-border pb-0">
+      <div className="scrollbar-hide flex overflow-x-auto rounded-[24px] border border-border bg-card p-2 shadow-none">
         {navItems.map((item) => {
           const isActive = activeTab === item.id
           return (
@@ -2125,10 +1852,10 @@ const Parametres: React.FC<ParametresProps> = ({
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={cn(
-                "relative flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all",
+                "relative flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium whitespace-nowrap transition-all",
                 isActive
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  ? "bg-[var(--color-surface-soft)] text-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
               )}
             >
               <HugeiconsIcon
@@ -2262,4 +1989,4 @@ function SidebarLayoutSettings() {
   )
 }
 
-export default Parametres
+export default React.memo(Parametres)

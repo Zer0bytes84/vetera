@@ -58,9 +58,12 @@ import {
   useProductsRepository,
   useTransactionsRepository,
 } from "@/data/repositories"
-import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 import { TrendingUp, TrendingDown } from "@hugeicons/core-free-icons"
-import MotivationalHeader from "./MotivationalHeader"
+import { DashboardPageIntro } from "@/components/dashboard-page-intro"
+import {
+  MetricOverviewStrip,
+  type MetricOverviewItem,
+} from "@/components/metric-overview-strip"
 import { Product } from "../types/db"
 import { formatDZD, toCentimes } from "../utils/currency"
 
@@ -333,50 +336,46 @@ const Stock: React.FC = () => {
   }
 
   // Section Cards for Stock
-  const sectionCards = useMemo<SectionCardItem[]>(() => {
+  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
     const generateSparkline = (base: number) => 
       Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 4) - 2)
     
     return [
       {
-        title: "Total Produits",
+        label: "Produits",
         value: String(totalProducts),
-        badge: `${products.length} réf.`,
-        trend: "neutral",
-        summary: "Catalogue complet",
+        meta: `${products.length} réf.`,
+        note: "Catalogue",
         icon: Package02Icon,
         sparklineData: generateSparkline(totalProducts),
-        color: "blue",
+        tone: "blue",
       },
       {
-        title: "Stock Bas",
+        label: "Stock bas",
         value: String(lowStock),
-        badge: lowStock > 0 ? "à réapprovisionner" : "OK",
-        trend: lowStock > 5 ? "down" : "neutral",
-        summary: "Seuil minimum atteint",
+        meta: lowStock > 0 ? "à réapprovisionner" : "OK",
+        note: "Seuil atteint",
         icon: ArrowDown01Icon,
         sparklineData: generateSparkline(lowStock),
-        color: "amber",
+        tone: "amber",
       },
       {
-        title: "Ruptures",
+        label: "Ruptures",
         value: String(outOfStock),
-        badge: outOfStock > 0 ? "critique" : "aucune",
-        trend: outOfStock > 0 ? "down" : "up",
-        summary: "Stock épuisé",
+        meta: outOfStock > 0 ? "critique" : "aucune",
+        note: "Stock épuisé",
         icon: Alert02Icon,
         sparklineData: generateSparkline(outOfStock),
-        color: "rose",
+        tone: "rose",
       },
       {
-        title: "Valeur Stock",
+        label: "Valeur stock",
         value: formatDZD(stockValue),
-        badge: "valorisation",
-        trend: "neutral",
-        summary: "Coût d'acquisition total",
+        meta: "valorisation",
+        note: "Coût d'acquisition total",
         icon: ShoppingCart01Icon,
         sparklineData: generateSparkline(Math.round(stockValue / 1000)),
-        color: "emerald",
+        tone: "emerald",
       },
     ]
   }, [totalProducts, lowStock, outOfStock, stockValue, products.length])
@@ -494,7 +493,7 @@ const Stock: React.FC = () => {
                 status: "paid",
               } as any)
             } catch (txError) {
-              console.warn("Could not create expense transaction:", txError)
+              // Transaction creation failed silently
             }
           }
         }
@@ -552,32 +551,30 @@ const Stock: React.FC = () => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
-      {/* Header */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <MotivationalHeader
-          section="stock"
-          title=""
-          subtitle="Stock, ruptures, expirations et valorisation dans une vue opérationnelle immédiatement exploitable."
-        />
-        <Button onClick={handleOpenAdd}>
+    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+      <DashboardPageIntro
+        eyebrow="Pharmacie & inventaire"
+        title="Stock"
+        subtitle="Stock, ruptures, expirations et valorisation dans une vue opérationnelle immédiatement exploitable."
+        actions={
+          <Button className="h-10 rounded-xl px-4" onClick={handleOpenAdd}>
           <HugeiconsIcon icon={Add01Icon} strokeWidth={2} className="size-4" />
           Nouveau produit
-        </Button>
-      </div>
+          </Button>
+        }
+      />
 
-      {/* Section Cards */}
-      <SectionCardsPremium items={sectionCards} />
+      <MetricOverviewStrip items={overviewCards} />
 
       {/* Main Table Card */}
-      <Card className="flex min-h-[540px] flex-col">
-        <CardHeader className="border-b">
-          <CardDescription>Inventaire</CardDescription>
-          <CardTitle className="text-xl tracking-[-0.04em]">
+      <Card className="flex min-h-[540px] flex-col rounded-[24px] border border-border bg-card shadow-none">
+        <CardHeader className="border-b border-border px-6 py-5">
+          <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">Inventaire</CardDescription>
+          <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
             Catalogue produits
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
+            <Badge variant="outline" className="rounded-full px-3 py-1">
               {filteredProducts.length} produit
               {filteredProducts.length > 1 ? "s" : ""}
             </Badge>
@@ -585,7 +582,7 @@ const Stock: React.FC = () => {
         </CardHeader>
 
         <CardContent className="flex min-h-0 flex-1 flex-col px-0 pb-0">
-          <div className="flex flex-col gap-3 px-6 pt-4 pb-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-3 px-6 pt-5 pb-4 sm:flex-row sm:items-center">
             <div className="relative max-w-sm flex-1">
               <HugeiconsIcon
                 icon={SearchIcon}
@@ -596,7 +593,7 @@ const Stock: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Rechercher un produit, une catégorie..."
-                className="h-10 rounded-3xl bg-input/50 pl-11"
+                className="h-10 rounded-xl bg-input/50 pl-11"
               />
             </div>
 
@@ -758,7 +755,7 @@ const Stock: React.FC = () => {
                           </span>
                           <span
                             className={cn(
-                              "text-xs font-bold",
+                              "text-xs font-semibold",
                               isOut
                                 ? "text-red-600"
                                 : isLow

@@ -69,7 +69,7 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
     return (
       <div className="max-h-[320px] min-w-[280px] overflow-hidden overflow-y-auto rounded-xl border border-border bg-popover shadow-xl">
         <div className="border-b border-border bg-muted p-2">
-          <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
             Commandes
           </p>
         </div>
@@ -90,7 +90,7 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
                 {item.icon}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold">{item.title}</p>
+                <p className="truncate text-sm font-semibold">{item.title}</p>
                 <p className="truncate text-xs text-muted-foreground opacity-90">
                   {item.description}
                 </p>

@@ -4,15 +4,16 @@ import { Spinner } from "@/components/ui/spinner"
 import type { View } from "@/types"
 
 import type { ThemeMode } from "../hooks/use-theme-mode"
-import { DashboardPage } from "../../modules/dashboard/dashboard-page"
+import {
+  DashboardV2Page,
+  FinancialAnalyticsV2Page,
+} from "../../modules/v2/prototype-pages"
 
 const AgendaPage = lazy(() => import("@/components/Agenda"))
 const CliniquePage = lazy(() => import("@/components/Clinique"))
 const FinancesPage = lazy(() => import("@/components/Finances"))
-const FinancialAnalyticsPage = lazy(
-  () => import("@/modules/finances/financial-analytics-page")
-)
 const HelpPage = lazy(() => import("@/components/Help"))
+// Notes temporairement désactivé - en refonte
 const NotesPage = lazy(() => import("@/components/Notes"))
 const ParametresPage = lazy(() => import("@/components/Parametres"))
 const PatientsPage = lazy(() => import("@/components/Patients"))
@@ -44,7 +45,7 @@ function renderLazyView(node: ReactNode) {
 export function renderView(view: View, props: ViewRegistryProps) {
   switch (view) {
     case "dashboard":
-      return <DashboardPage onNavigate={props.onNavigate} />
+      return <DashboardV2Page onNavigate={props.onNavigate} />
     case "agenda":
       return renderLazyView(<AgendaPage />)
     case "clinique":
@@ -58,20 +59,21 @@ export function renderView(view: View, props: ViewRegistryProps) {
     case "finances":
       return renderLazyView(<FinancesPage onNavigate={props.onNavigate} />)
     case "finances_analytics":
-      return renderLazyView(
-        <FinancialAnalyticsPage onNavigate={props.onNavigate} />
-      )
+      return <FinancialAnalyticsV2Page onNavigate={props.onNavigate} />
     case "equipe":
       return renderLazyView(<TeamPage />)
     case "parametres":
       return renderLazyView(
-        <ParametresPage currentTheme={props.currentTheme} onThemeChange={props.onThemeChange} />
+        <ParametresPage
+          currentTheme={props.currentTheme}
+          onThemeChange={props.onThemeChange}
+        />
       )
     case "taches":
       return renderLazyView(<TasksPage />)
     case "aide":
       return renderLazyView(<HelpPage />)
     default:
-      return <DashboardPage onNavigate={props.onNavigate} />
+      return <DashboardV2Page onNavigate={props.onNavigate} />
   }
 }

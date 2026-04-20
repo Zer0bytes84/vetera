@@ -1,591 +1,654 @@
-import React, { useState, useEffect, useMemo, useRef } from "react"
-import MotivationalHeader from "./MotivationalHeader"
-import { HugeiconsIcon } from "@hugeicons/react"
-import {
-  Add01Icon,
-  Clock01Icon,
-  Delete01Icon,
-  File01Icon,
-  SearchIcon,
-  StarIcon,
-} from "@hugeicons/core-free-icons"
+import React, { useState, useMemo, useCallback, useEffect, useRef } from "react"
 import { useNotesRepository } from "@/data/repositories"
 import { useAuth } from "../contexts/AuthContext"
 import { Note } from "../types/db"
-import { BlockNoteShadcnEditor } from "./blocknote-editor"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Add01Icon,
+  File01Icon,
+  SearchIcon,
+  StarIcon,
+  MoreVerticalIcon,
+  Delete01Icon,
+  Clock01Icon,
+  CheckmarkCircle02Icon,
+  TextBoldIcon,
+  TextItalicIcon,
+  TextStrikethroughIcon,
+  Link01Icon,
+  Heading01Icon,
+  LeftToRightListBulletIcon,
+  LeftToRightListNumberIcon,
+  TextAlignLeft01Icon,
+} from "@hugeicons/core-free-icons"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Spinner } from "@/components/ui/spinner"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Badge } from "@/components/ui/badge"
 
-// Helper to normalize date
-const normalizeDate = (dateInput: any): Date => {
-  if (!dateInput) return new Date()
-  if (dateInput instanceof Date) return dateInput
-  return new Date(dateInput)
-}
+// Utils
+const normalizeDate = (dateInput: any): Date =>
+  !dateInput
+    ? new Date()
+    : dateInput instanceof Date
+      ? dateInput
+      : new Date(dateInput)
+
 const formatDate = (dateInput: any) => {
   if (!dateInput) return ""
-  const date = normalizeDate(dateInput)
-  return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
-}
-
-const formatDetailedDate = (dateInput: any) => {
-  if (!dateInput) return ""
-  const date = normalizeDate(dateInput)
-  return date.toLocaleDateString("fr-FR", {
+  return normalizeDate(dateInput).toLocaleDateString("fr-FR", {
     day: "numeric",
-    month: "long",
-    year: "numeric",
+    month: "short",
   })
 }
 
-const extractNotePreview = (content: string) => {
-  if (!content) return "Aucun contenu pour le moment."
-
-  try {
-    const parsed = JSON.parse(content)
-    if (Array.isArray(parsed)) {
-      const text = parsed
-        .map((block) => {
-          if (typeof block?.content === "string") return block.content
-          if (Array.isArray(block?.content)) {
-            return block.content
-              .map((item: any) =>
-                typeof item === "string" ? item : item?.text || ""
-              )
-              .join("")
-          }
-          return ""
-        })
-        .join(" ")
-        .replace(/\s+/g, " ")
-        .trim()
-
-      return text || "Aucun contenu pour le moment."
-    }
-  } catch {
-    // Fallback below for legacy HTML/plaintext content.
-  }
-
-  const plain = content.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim()
-  return plain || "Aucun contenu pour le moment."
+const formatFullDate = (dateInput: any) => {
+  if (!dateInput) return ""
+  return normalizeDate(dateInput).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
 }
 
-const FILTER_OPTIONS = [
-  { value: "all", label: "Toutes" },
-  { value: "favorites", label: "Favoris" },
-]
+const extractPreview = (content: string) => {
+  if (!content) return ""
+  return (
+    content
+      .replace(/<[^>]*>?/gm, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 100) || ""
+  )
+}
+
+// Filter types
+type FilterType = "all" | "favorites" | "recent"
 
 const Notes: React.FC = () => {
   const { currentUser } = useAuth()
   const {
     data: notes,
-    loading,
+    createEmptyNote,
     update: updateNote,
     remove: removeNote,
-    createEmptyNote,
   } = useNotesRepository()
 
+  // State
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterFavorites, setFilterFavorites] = useState(false)
-
-  // Editor State
+  const [filter, setFilter] = useState<FilterType>("all")
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Refs for logic safety
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const isDeletingRef = useRef(false)
-
-  // Filter Logic
+  // Filter logic
   const filteredNotes = useMemo(() => {
-    return notes
-      .filter((n) => n.userId === currentUser?.uid) // Only my notes
-      .filter((n) => (filterFavorites ? n.isFavorite : true))
-      .filter(
-        (n) =>
-          n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          n.content.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .sort((a, b) => {
-        // Sort by updated descending
-        const da = normalizeDate(a.updatedAt).getTime()
-        const db = normalizeDate(b.updatedAt).getTime()
-        return db - da
-      })
-  }, [notes, searchTerm, filterFavorites, currentUser])
+    let result = notes.filter((n) => n.userId === currentUser?.uid)
 
-  // Handle Note Selection Data Sync
+    // Apply filter
+    if (filter === "favorites") {
+      result = result.filter((n) => n.isFavorite)
+    } else if (filter === "recent") {
+      const oneWeekAgo = new Date()
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+      result = result.filter((n) => new Date(n.updatedAt) > oneWeekAgo)
+    }
+
+    // Apply search
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase()
+      result = result.filter(
+        (n) =>
+          n.title.toLowerCase().includes(term) ||
+          n.content.toLowerCase().includes(term)
+      )
+    }
+
+    // Sort by updated date desc
+    return result.sort(
+      (a, b) =>
+        normalizeDate(b.updatedAt).getTime() -
+        normalizeDate(a.updatedAt).getTime()
+    )
+  }, [notes, filter, searchTerm, currentUser])
+
   const activeNote = useMemo(
     () => notes.find((n) => n.id === selectedNoteId),
     [notes, selectedNoteId]
   )
 
-  // Loading state for creation/selection sync
-  const isSyncingSelection = selectedNoteId && !activeNote
-
-  useEffect(() => {
-    if (activeNote) {
-      setTitle(activeNote.title)
-      setContent(activeNote.content)
-    } else if (!selectedNoteId) {
-      setTitle("")
-      setContent("")
-      setLastSaved(null)
+  // Select note
+  const handleSelectNote = (noteId: string) => {
+    const note = notes.find((n) => n.id === noteId)
+    if (note) {
+      setSelectedNoteId(noteId)
+      setTitle(note.title)
+      setContent(note.content)
+      setLastSaved(new Date(note.updatedAt))
     }
-  }, [activeNote, selectedNoteId])
-
-  // Auto-Save Logic
-  const handleContentChange = (newContent: string) => {
-    // Avoid updating state if we are in the process of deleting
-    if (isDeletingRef.current) return
-    setContent(newContent)
-    triggerAutoSave(title, newContent)
   }
+
+  // Auto-save
+  const triggerSave = useCallback(
+    (newTitle: string, newContent: string) => {
+      if (!selectedNoteId) return
+
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+
+      setIsSaving(true)
+      saveTimeoutRef.current = setTimeout(async () => {
+        await updateNote(selectedNoteId, {
+          title: newTitle,
+          content: newContent,
+        })
+        setIsSaving(false)
+        setLastSaved(new Date())
+      }, 800)
+    },
+    [selectedNoteId, updateNote]
+  )
 
   const handleTitleChange = (newTitle: string) => {
-    if (isDeletingRef.current) return
     setTitle(newTitle)
-    triggerAutoSave(newTitle, content)
+    triggerSave(newTitle, content)
   }
 
-  const triggerAutoSave = (t: string, c: string) => {
-    if (!selectedNoteId || isDeletingRef.current) return
-
-    setIsSaving(true)
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
-
-    saveTimerRef.current = setTimeout(async () => {
-      if (isDeletingRef.current) return // Double check inside timeout
-
-      await updateNote(selectedNoteId, {
-        title: t,
-        content: c,
-      })
-      setIsSaving(false)
-      setLastSaved(new Date())
-    }, 1500) // 1.5s debounce
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent)
+    triggerSave(title, newContent)
   }
 
+  // Handle Enter key for auto-list continuation
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== "Enter") return
+
+    const textarea = e.currentTarget
+    const cursorPos = textarea.selectionStart
+    const textBeforeCursor = content.substring(0, cursorPos)
+    const textAfterCursor = content.substring(cursorPos)
+    const lines = textBeforeCursor.split("\n")
+    const currentLine = lines[lines.length - 1]
+
+    // Check for numbered list (1. 2. 3. etc)
+    const numberedMatch = currentLine.match(/^(\s*)(\d+)\.\s/)
+    if (numberedMatch) {
+      e.preventDefault()
+      const [, indent, num] = numberedMatch
+      const nextNum = parseInt(num) + 1
+      const newLine = `${indent}${nextNum}. `
+      const newContent = textBeforeCursor + "\n" + newLine + textAfterCursor
+      handleContentChange(newContent)
+      setTimeout(() => {
+        const newCursorPos = cursorPos + 1 + newLine.length
+        textarea.setSelectionRange(newCursorPos, newCursorPos)
+      }, 0)
+      return
+    }
+
+    // Check for bullet list (- or *)
+    const bulletMatch = currentLine.match(/^(\s*)([-*])\s/)
+    if (bulletMatch) {
+      e.preventDefault()
+      const [, indent, bullet] = bulletMatch
+      const newLine = `${indent}${bullet} `
+      const newContent = textBeforeCursor + "\n" + newLine + textAfterCursor
+      handleContentChange(newContent)
+      setTimeout(() => {
+        const newCursorPos = cursorPos + 1 + newLine.length
+        textarea.setSelectionRange(newCursorPos, newCursorPos)
+      }, 0)
+      return
+    }
+
+    // Check for checkbox list (- [ ] or * [ ])
+    const checkboxMatch = currentLine.match(/^(\s*)([-*])\s\[([ x])\]\s/)
+    if (checkboxMatch) {
+      e.preventDefault()
+      const [, indent, bullet] = checkboxMatch
+      const newLine = `${indent}${bullet} [ ] `
+      const newContent = textBeforeCursor + "\n" + newLine + textAfterCursor
+      handleContentChange(newContent)
+      setTimeout(() => {
+        const newCursorPos = cursorPos + 1 + newLine.length
+        textarea.setSelectionRange(newCursorPos, newCursorPos)
+      }, 0)
+      return
+    }
+  }
+
+  // Create note
   const handleCreateNote = async () => {
     if (!currentUser) return
-
-    // Clear search to show the new note
-    setSearchTerm("")
-    setFilterFavorites(false)
-
-    try {
-      const newNote = await createEmptyNote(currentUser.uid)
-
-      if (newNote) {
-        setSelectedNoteId(newNote.id)
-      }
-    } catch (err: any) {
-      console.error("Failed to create note:", err)
-      alert(
-        "Erreur lors de la création de la note: " +
-          (err.message || JSON.stringify(err))
-      )
+    const newNote = await createEmptyNote(currentUser.uid)
+    if (newNote) {
+      setSelectedNoteId(newNote.id)
+      setTitle("Nouvelle note")
+      setContent("")
+      setLastSaved(new Date())
     }
   }
 
-  const handleDeleteNote = async (id: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-
-    const noteToDelete = notes.find((n) => n.id === id)
-
-    const isDefaultTitle =
-      !noteToDelete?.title ||
-      noteToDelete.title === "" ||
-      noteToDelete.title === "Nouvelle Note" ||
-      noteToDelete.title === "Sans titre"
-    const contentText =
-      noteToDelete?.content?.replace(/<[^>]*>?/gm, "").trim() || ""
-    const isContentEmpty =
-      !noteToDelete?.content ||
-      noteToDelete?.content === "<p></p>" ||
-      contentText === ""
-
-    // Auto-delete if it looks like an untouched draft or empty note
-    const shouldDeleteWithoutConfirm =
-      isContentEmpty || (isDefaultTitle && contentText.length < 20)
-
-    if (
-      shouldDeleteWithoutConfirm ||
-      window.confirm("Supprimer cette note définitivement ?")
-    ) {
-      // 1. Set Flag to prevent Auto-save from resurrecting the note
-      isDeletingRef.current = true
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
-
-      try {
-        // 2. Optimistic UI clear if it's the selected one
-        if (selectedNoteId === id) {
-          setSelectedNoteId(null)
-          setTitle("")
-          setContent("")
-        }
-
-        // 3. Perform Delete
-        await removeNote(id)
-      } catch (err) {
-        console.error("Failed to delete note", err)
-        alert("Erreur lors de la suppression.")
-      } finally {
-        // 4. Reset Flag
-        setTimeout(() => {
-          isDeletingRef.current = false
-        }, 500)
-      }
-    }
-  }
-
+  // Toggle favorite
   const toggleFavorite = async (note: Note, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
+    e?.stopPropagation()
     await updateNote(note.id, { isFavorite: !note.isFavorite })
   }
 
+  // Delete note
+  const handleDeleteNote = async (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    if (window.confirm("Supprimer cette note ?")) {
+      await removeNote(id)
+      if (selectedNoteId === id) {
+        setSelectedNoteId(null)
+        setTitle("")
+        setContent("")
+      }
+    }
+  }
+
+  // Editor formatting
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const insertFormatting = (before: string, after: string = "") => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const selectedText = content.substring(start, end)
+    const newContent =
+      content.substring(0, start) +
+      before +
+      selectedText +
+      after +
+      content.substring(end)
+
+    handleContentChange(newContent)
+
+    setTimeout(() => {
+      textarea.focus()
+      const newCursorPos = start + before.length + selectedText.length
+      textarea.setSelectionRange(newCursorPos, newCursorPos)
+    }, 0)
+  }
+
+  const formatButtons = [
+    { icon: TextBoldIcon, action: () => insertFormatting("**", "**"), label: "Gras" },
+    { icon: TextItalicIcon, action: () => insertFormatting("*", "*"), label: "Italique" },
+    { icon: TextStrikethroughIcon, action: () => insertFormatting("~~", "~~"), label: "Barré" },
+    { icon: Heading01Icon, action: () => insertFormatting("# ", ""), label: "Titre" },
+    { icon: LeftToRightListBulletIcon, action: () => insertFormatting("\n- ", ""), label: "Liste" },
+    { icon: LeftToRightListNumberIcon, action: () => insertFormatting("\n1. ", ""), label: "Numérotée" },
+    { icon: TextAlignLeft01Icon, action: () => insertFormatting("> ", ""), label: "Citation" },
+    { icon: Link01Icon, action: () => insertFormatting("[", "](url)"), label: "Lien" },
+  ]
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedNoteId) return
+      const modifier = e.metaKey || e.ctrlKey
+      if (!modifier) return
+
+      switch (e.key.toLowerCase()) {
+        case "b":
+          e.preventDefault()
+          insertFormatting("**", "**")
+          break
+        case "i":
+          e.preventDefault()
+          insertFormatting("*", "*")
+          break
+        case "k":
+          e.preventDefault()
+          insertFormatting("[", "](url)")
+          break
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [selectedNoteId, content])
+
+  // Stats
+  const stats = useMemo(() => {
+    const total = notes.filter((n) => n.userId === currentUser?.uid).length
+    const favorites = notes.filter(
+      (n) => n.userId === currentUser?.uid && n.isFavorite
+    ).length
+    const recent = notes.filter((n) => {
+      if (n.userId !== currentUser?.uid) return false
+      const oneWeekAgo = new Date()
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+      return new Date(n.updatedAt) > oneWeekAgo
+    }).length
+    return { total, favorites, recent }
+  }, [notes, currentUser])
+
   return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
-      <MotivationalHeader
-        section="notes"
-        title=""
-        subtitle="Gardez une trace de tout."
-      />
-
-      <div className="flex min-h-[calc(100vh-18rem)] flex-1 rounded-[30px] border border-border/60 bg-background/85 shadow-[0_20px_60px_-28px_hsl(var(--foreground)/0.18)] backdrop-blur-xl">
-        <aside className="flex w-[320px] shrink-0 flex-col bg-background/55">
-          <div className="flex items-center justify-between px-5 pt-5 pb-4">
-            <div>
-              <p className="text-[11px] font-semibold tracking-[0.26em] text-muted-foreground uppercase">
-                Notes
-              </p>
-              <h2 className="mt-2 text-xl font-semibold tracking-tight">
-                Espace clinique
-              </h2>
-            </div>
-            <Button size="icon-sm" onClick={handleCreateNote}>
-              <HugeiconsIcon
-                icon={Add01Icon}
-                strokeWidth={2}
-                className="size-4.5"
-              />
-            </Button>
+    <div className="flex h-full w-full">
+      {/* Sidebar */}
+      <aside className="flex w-[320px] shrink-0 flex-col border-r border-border bg-background">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4">
+          <div>
+            <h2 className="text-base font-semibold">Notes</h2>
+            <p className="text-xs text-muted-foreground">{stats.total} notes</p>
           </div>
+          <Button
+            size="icon"
+            onClick={handleCreateNote}
+            className="size-8 rounded-full"
+          >
+            <HugeiconsIcon icon={Add01Icon} className="size-4" />
+          </Button>
+        </div>
 
-          <div className="space-y-3 px-5 pb-4">
-            <div className="relative">
-              <HugeiconsIcon
-                icon={SearchIcon}
-                strokeWidth={2}
-                className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground"
-              />
-              <Input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Rechercher une note..."
-                className="h-10 rounded-2xl border-border/70 bg-background/80 pl-9 shadow-none"
-              />
-            </div>
+        {/* Search */}
+        <div className="px-3 pb-2">
+          <div className="relative">
+            <HugeiconsIcon
+              icon={SearchIcon}
+              className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground/50"
+            />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Rechercher..."
+              className="h-9 rounded-lg border-border/50 bg-muted/40 pl-9 text-sm placeholder:text-muted-foreground/50 focus:bg-background"
+            />
+          </div>
+        </div>
 
-            <ToggleGroup
-              multiple={false}
-              value={[filterFavorites ? "favorites" : "all"]}
-              onValueChange={(value) => {
-                setFilterFavorites(value[0] === "favorites")
-              }}
-              variant="outline"
-              size="sm"
-              spacing={0}
-              className="w-fit rounded-2xl bg-muted/40 p-0.5"
+        {/* Filters */}
+        <div className="flex gap-4 px-3 pb-3">
+          {[
+            { id: "all", label: "Toutes", count: stats.total },
+            { id: "favorites", label: "Favoris", count: stats.favorites },
+            { id: "recent", label: "Récents", count: stats.recent },
+          ].map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id as FilterType)}
+              className={cn(
+                "py-1.5 text-xs transition-colors",
+                filter === f.id
+                  ? "font-semibold text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              {FILTER_OPTIONS.map((option) => (
-                <ToggleGroupItem key={option.value} value={option.value}>
-                  {option.label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+              {f.label}
+              {f.count > 0 && (
+                <span className="ml-1 opacity-60">({f.count})</span>
+              )}
+            </button>
+          ))}
+        </div>
 
-            <div className="flex items-center justify-between px-1">
-              <span className="text-xs text-muted-foreground">
-                {filteredNotes.length} note{filteredNotes.length > 1 ? "s" : ""}
-              </span>
-              {filterFavorites ? (
-                <Badge variant="secondary" className="rounded-full">
-                  Favoris
-                </Badge>
-              ) : null}
-            </div>
-          </div>
-
-          <ScrollArea className="min-h-0 flex-1">
-            {loading ? (
-              <div className="space-y-2 px-3 pb-4">
-                {Array.from({ length: 7 }).map((_, index) => (
-                  <div
-                    key={`notes-skeleton-item-${index}`}
-                    className="rounded-2xl px-3 py-3"
-                  >
-                    <Skeleton className="mb-2 h-4 w-2/3 rounded-md" />
-                    <Skeleton className="mb-2 h-3 w-4/5 rounded-md" />
-                    <Skeleton className="h-3 w-1/3 rounded-md" />
-                  </div>
-                ))}
-              </div>
-            ) : filteredNotes.length === 0 ? (
-              <div className="p-5">
-                <Empty className="rounded-3xl border border-dashed border-border/80 bg-muted/20">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon
-                        icon={File01Icon}
-                        strokeWidth={2}
-                        className="size-5"
-                      />
-                    </EmptyMedia>
-                    <EmptyTitle>Aucune note trouvée</EmptyTitle>
-                    <EmptyDescription>
-                      Créez une note pour commencer.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              </div>
-            ) : (
-              <div className="px-3 pb-4">
-                {filteredNotes.map((note) => {
-                  const isActive = selectedNoteId === note.id
-
-                  return (
-                    <button
-                      key={note.id}
-                      type="button"
-                      onClick={() => setSelectedNoteId(note.id)}
-                      className={cn(
-                        "group w-full rounded-2xl px-3 py-3 text-left transition-colors",
-                        isActive
-                          ? "bg-muted/70 shadow-[inset_0_0_0_1px_hsl(var(--border)/0.9)]"
-                          : "hover:bg-muted/35"
-                      )}
-                    >
-                      <div className="mb-1 flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p
-                            className={cn(
-                              "truncate text-sm font-medium",
-                              isActive ? "text-foreground" : "text-foreground/88"
-                            )}
-                          >
-                            {note.title || "Sans titre"}
-                          </p>
-                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
-                            {extractNotePreview(note.content)}
-                          </p>
-                        </div>
-
-                        <div className="flex shrink-0 items-center gap-1">
-                          {note.isFavorite ? (
-                            <HugeiconsIcon
-                              icon={StarIcon}
-                              strokeWidth={2}
-                              className="size-3.5 text-amber-400"
-                              fill="currentColor"
-                            />
-                          ) : null}
-                          <span className="text-[11px] whitespace-nowrap text-muted-foreground">
-                            {formatDate(note.updatedAt)}
-                          </span>
-                        </div>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            )}
-          </ScrollArea>
-        </aside>
-
-        <Separator orientation="vertical" className="h-auto bg-border/60" />
-
-        <section className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-r-[30px] bg-background/35">
-          {isSyncingSelection ? (
-            <div className="flex flex-1 animate-in flex-col items-center justify-center duration-200 fade-in">
-              <Spinner className="mb-2 size-8 text-primary" />
+        {/* Notes List */}
+        <ScrollArea className="flex-1 px-2">
+          {filteredNotes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <HugeiconsIcon
+                icon={File01Icon}
+                className="mb-2 size-10 text-muted-foreground/30"
+              />
               <p className="text-sm text-muted-foreground">
-                Chargement de la note...
+                {searchTerm ? "Aucune note trouvée" : "Aucune note"}
               </p>
+              {searchTerm && (
+                <p className="text-xs text-muted-foreground/60">
+                  Essayez une autre recherche
+                </p>
+              )}
             </div>
-          ) : selectedNoteId ? (
-            <>
-              <div className="flex items-center justify-between border-b border-border/50 px-8 py-5">
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold tracking-[0.24em] text-muted-foreground uppercase">
-                    Note active
-                  </p>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span>Modifiée le {formatDetailedDate(activeNote?.updatedAt)}</span>
-                    {activeNote?.isFavorite ? (
-                      <Badge variant="secondary" className="rounded-full">
-                        Favorite
-                      </Badge>
-                    ) : null}
-                    {isSaving ? (
-                      <span className="inline-flex items-center gap-1.5">
-                        <Spinner className="size-3" />
-                        Enregistrement...
-                      </span>
-                    ) : lastSaved ? (
-                      <span className="inline-flex items-center gap-1.5">
-                        <HugeiconsIcon
-                          icon={Clock01Icon}
-                          strokeWidth={2}
-                          className="size-3"
-                        />
-                        Sauvegardé à{" "}
-                        {lastSaved.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {activeNote ? (
-                    <Button variant="ghost" size="sm" onClick={() => toggleFavorite(activeNote)}>
-                      <HugeiconsIcon
-                        icon={StarIcon}
-                        strokeWidth={2}
-                        className="size-4"
-                        fill={activeNote.isFavorite ? "currentColor" : "none"}
-                      />
-                      {activeNote.isFavorite ? "Retirer" : "Favori"}
-                    </Button>
-                  ) : null}
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={<Button variant="ghost" size="sm" type="button" />}
-                    >
-                      <span>
-                        Actions
-                      </span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {activeNote ? (
-                        <DropdownMenuItem onClick={() => toggleFavorite(activeNote)}>
-                          {activeNote.isFavorite
-                            ? "Retirer des favoris"
-                            : "Ajouter aux favoris"}
-                        </DropdownMenuItem>
-                      ) : null}
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
-                        onClick={() =>
-                          activeNote && handleDeleteNote(activeNote.id)
-                        }
-                      >
-                        Supprimer la note
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                <div className="mx-auto flex w-full max-w-[72rem] flex-col px-14 py-10 lg:px-16">
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => handleTitleChange(e.target.value)}
-                    placeholder="Titre de la note"
-                    className="w-full border-none bg-transparent text-[2.85rem] leading-[1.02] font-semibold tracking-[-0.045em] text-foreground outline-none placeholder:text-muted-foreground/35"
-                  />
-
-                  <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                    <Badge variant="secondary" className="rounded-full px-3 py-1">
-                      Bloc-notes clinique
-                    </Badge>
-                    <span>Tapez “/” pour les commandes et l’IA locale.</span>
-                  </div>
-
-                  <div className="mt-8 min-h-[520px]">
-                    <BlockNoteShadcnEditor
-                      initialContent={content}
-                      onChange={handleContentChange}
-                      editable={true}
-                    />
-                  </div>
-                </div>
-              </div>
-            </>
           ) : (
-            <div className="flex flex-1 items-center justify-center p-8">
-              <Empty className="animate-in duration-500 fade-in">
-                <EmptyHeader>
-                  <EmptyMedia
-                    variant="icon"
-                    className="size-20 rotate-3 rounded-3xl"
+            <div className="space-y-0.5">
+              {filteredNotes.map((note) => {
+                const isSelected = selectedNoteId === note.id
+                const preview = extractPreview(note.content)
+
+                return (
+                  <button
+                    key={note.id}
+                    onClick={() => handleSelectNote(note.id)}
+                    className={cn(
+                      "group relative flex w-full flex-col gap-1 rounded-lg p-3 text-left transition-all",
+                      isSelected
+                        ? "bg-muted dark:bg-muted/80"
+                        : "hover:bg-muted/50"
+                    )}
                   >
-                    <HugeiconsIcon
-                      icon={File01Icon}
-                      strokeWidth={1}
-                      className="size-10"
-                    />
-                  </EmptyMedia>
-                  <EmptyTitle className="text-xl">
-                    Aucune note sélectionnée
-                  </EmptyTitle>
-                  <EmptyDescription className="max-w-sm leading-relaxed">
-                    Choisissez une note à gauche ou créez-en une nouvelle pour
-                    retrouver une expérience de rédaction plus proche de Notion.
-                  </EmptyDescription>
-                </EmptyHeader>
-                <EmptyContent>
-                  <Button onClick={handleCreateNote} size="lg">
-                    <HugeiconsIcon
-                      icon={Add01Icon}
-                      strokeWidth={2}
-                      data-icon="inline-start"
-                      className="size-5"
-                    />
-                    Créer une note
-                  </Button>
-                </EmptyContent>
-              </Empty>
+                    {/* Title row */}
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="flex-1 truncate text-sm font-medium">
+                        {note.title || "Sans titre"}
+                      </p>
+                      {note.isFavorite && (
+                        <HugeiconsIcon
+                          icon={StarIcon}
+                          className="size-3.5 shrink-0 text-amber-500"
+                          fill="currentColor"
+                        />
+                      )}
+                    </div>
+
+                    {/* Preview */}
+                    {preview && (
+                      <p className="line-clamp-2 text-xs text-muted-foreground">
+                        {preview}
+                      </p>
+                    )}
+
+                    {/* Meta */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-muted-foreground/60">
+                        {formatDate(note.updatedAt)}
+                      </span>
+
+                      {/* Actions on hover */}
+                      <div
+                        className={cn(
+                          "flex items-center gap-0.5 transition-opacity",
+                          isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                        )}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="size-6 hover:bg-background"
+                          onClick={(e) => toggleFavorite(note, e)}
+                        >
+                          <HugeiconsIcon
+                            icon={StarIcon}
+                            className={cn(
+                              "size-3",
+                              note.isFavorite
+                                ? "text-amber-500"
+                                : "text-muted-foreground"
+                            )}
+                            fill={note.isFavorite ? "currentColor" : "none"}
+                          />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            className="size-6 hover:bg-background"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <HugeiconsIcon
+                              icon={MoreVerticalIcon}
+                              className="size-3 text-muted-foreground"
+                            />
+                          </Button>
+                        </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteNote(note.id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <HugeiconsIcon
+                                icon={Delete01Icon}
+                                className="mr-2 size-4"
+                              />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           )}
-        </section>
-      </div>
+        </ScrollArea>
+      </aside>
+
+      {/* Editor */}
+      <main className="flex min-w-0 flex-1 flex-col bg-background">
+        {selectedNoteId && activeNote ? (
+          <div className="flex flex-1 flex-col">
+            {/* Simple toolbar */}
+            <div className="flex items-center justify-between border-b border-border/50 px-6 py-2">
+              <div className="flex items-center gap-1">
+                {formatButtons.map((btn) => (
+                  <Button
+                    key={btn.label}
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={btn.action}
+                    title={`${btn.label} (Ctrl+${btn.label[0]})`}
+                    className="size-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+                  >
+                    <HugeiconsIcon icon={btn.icon} className="size-4" />
+                  </Button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-3">
+                {isSaving ? (
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <HugeiconsIcon icon={Clock01Icon} className="size-3.5" />
+                    Sauvegarde...
+                  </span>
+                ) : lastSaved ? (
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground/60">
+                    <HugeiconsIcon
+                      icon={CheckmarkCircle02Icon}
+                      className="size-3.5"
+                    />
+                    Sauvegardé
+                  </span>
+                ) : null}
+
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => toggleFavorite(activeNote)}
+                  className={cn(
+                    "size-8 rounded-md",
+                    activeNote.isFavorite
+                      ? "text-amber-500 hover:text-amber-600"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <HugeiconsIcon
+                    icon={StarIcon}
+                    className="size-4"
+                    fill={activeNote.isFavorite ? "currentColor" : "none"}
+                  />
+                </Button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="size-8 rounded-md text-muted-foreground hover:text-foreground"
+                    >
+                      <HugeiconsIcon icon={MoreVerticalIcon} className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => handleDeleteNote(activeNote.id)}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <HugeiconsIcon icon={Delete01Icon} className="mr-2 size-4" />
+                      Supprimer
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+
+            {/* Editor content */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="mx-auto max-w-3xl px-8 py-6">
+                {/* Title - no background, clean */}
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  placeholder="Titre de la note"
+                  className="w-full bg-transparent text-2xl font-semibold tracking-tight outline-none placeholder:text-muted-foreground/30"
+                />
+
+                {/* Date */}
+                <p className="mt-1 text-xs text-muted-foreground/60">
+                  {formatFullDate(activeNote.updatedAt)}
+                </p>
+
+                {/* Content */}
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={(e) => handleContentChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Commencez à écrire... (Markdown supporté)"
+                  className="mt-4 min-h-[calc(100vh-300px)] w-full resize-none bg-transparent font-mono text-base leading-relaxed outline-none placeholder:text-muted-foreground/30"
+                  spellCheck={false}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Empty state */
+          <div className="flex flex-1 flex-col items-center justify-center p-8">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/50">
+              <HugeiconsIcon
+                icon={File01Icon}
+                className="size-8 text-muted-foreground/40"
+              />
+            </div>
+            <h3 className="mt-4 text-lg font-medium">Sélectionnez une note</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Choisissez une note dans la liste ou créez-en une nouvelle
+            </p>
+            <Button onClick={handleCreateNote} className="mt-4 rounded-lg">
+              <HugeiconsIcon icon={Add01Icon} className="mr-2 size-4" />
+              Créer une note
+            </Button>
+          </div>
+        )}
+      </main>
     </div>
   )
 }

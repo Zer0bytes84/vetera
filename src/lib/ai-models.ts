@@ -7,6 +7,8 @@ import {
   Brain02Icon,
 } from "@hugeicons/core-free-icons"
 
+import { APP_NAME } from "@/lib/brand"
+
 export type ModelTier = "fast" | "smart" | "vision"
 
 export interface AIModel {
@@ -33,7 +35,7 @@ export const AI_MODELS: AIModel[] = [
     vramMB: 2037,
     downloadSizeMB: 950,
     contextWindow: 4096,
-    systemPrompt: `Tu es l'assistant clinique de Vetera. Tu aides une clinique vétérinaire locale à mieux travailler.
+    systemPrompt: `Tu es l'assistant clinique de ${APP_NAME}. Tu aides une clinique vétérinaire locale à mieux travailler.
 Tu es rapide et concis. Réponds en francais.
 Si question médicale: structure en "Evaluation", "Hypotheses", "Actions".
 Si une info est incertaine, signale-le simplement.`,
@@ -48,7 +50,7 @@ Si une info est incertaine, signale-le simplement.`,
     vramMB: 2505,
     downloadSizeMB: 1400,
     contextWindow: 4096,
-    systemPrompt: `Tu es l'assistant clinique de Vetera. Tu aides une clinique vétérinaire locale à mieux travailler.
+    systemPrompt: `Tu es l'assistant clinique de ${APP_NAME}. Tu aides une clinique vétérinaire locale à mieux travailler.
 
 Regles:
 - Reponds en francais.
@@ -68,7 +70,7 @@ Regles:
     vramMB: 3432,
     downloadSizeMB: 2100,
     contextWindow: 4096,
-    systemPrompt: `Tu es l'assistant clinique senior de Vetera. Tu as une expertise approfondie en médecine vétérinaire.
+    systemPrompt: `Tu es l'assistant clinique senior de ${APP_NAME}. Tu as une expertise approfondie en médecine vétérinaire.
 
 Regles:
 - Reponds en francais avec un ton professionnel.
@@ -89,7 +91,7 @@ Regles:
     vramMB: 3952,
     downloadSizeMB: 2200,
     contextWindow: 4096,
-    systemPrompt: `Tu es l'assistant visuel de Vetera. Tu peux analyser des images veterinaires.
+    systemPrompt: `Tu es l'assistant visuel de ${APP_NAME}. Tu peux analyser des images veterinaires.
 
 Capacites:
 - Analyser des radiographies, photos de lesions, documents

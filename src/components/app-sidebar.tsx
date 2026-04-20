@@ -28,6 +28,7 @@ import {
 } from "@/lib/profile-cache"
 import { isTauriRuntime } from "@/services/browser-store"
 import type { View } from "@/types"
+import { cn } from "@/lib/utils"
 
 import { navigationSections } from "@/app/config/navigation"
 
@@ -130,7 +131,7 @@ export function AppSidebar({
     <Sidebar {...props}>
       {isDesktopRuntime ? (
         <div
-          className="flex h-10 items-center px-4 [@media(max-height:820px)]:h-8 [@media(max-height:820px)]:px-3"
+          className="flex h-8 items-center px-4 [@media(max-height:820px)]:h-7 [@media(max-height:820px)]:px-3"
           data-tauri-drag-region
         >
           <div className="flex items-center gap-2">
@@ -138,14 +139,13 @@ export function AppSidebar({
           </div>
         </div>
       ) : null}
-      <SidebarHeader className="flex shrink-0 flex-row items-center justify-between px-4 [@media(max-height:820px)]:p-1.5">
-        <SidebarMenu>
+      <SidebarHeader className={cn("flex shrink-0 flex-row items-center px-3", isDesktopRuntime ? "py-2" : "py-1", "[@media(max-height:820px)]:p-1")}>
+        <SidebarMenu className="w-full">
           <SidebarMenuItem>
             <SidebarMenuButton
-              className="data-[slot=sidebar-menu-button]:p-1.5! [@media(max-height:820px)]:data-[slot=sidebar-menu-button]:p-1!"
-              render={
-                <button type="button" onClick={() => onNavigate("dashboard")} />
-              }
+              tooltip="Vetera"
+              className="w-full justify-start"
+              render={<button type="button" onClick={() => onNavigate("dashboard")} />}
             >
               <Logo size="md" collapsed={isCollapsed} className="text-sidebar-foreground" />
             </SidebarMenuButton>
@@ -157,7 +157,15 @@ export function AppSidebar({
           <NavMain
             title={t("nav.sections.patientJourney")}
             items={mainItems}
-            onPrimaryAction={() => onNavigate("patients")}
+            onPrimaryAction={() => {
+              if (currentView !== "patients") {
+                onNavigate("patients")
+                setTimeout(() => window.dispatchEvent(new CustomEvent("vetera:new-patient")), 150)
+              } else {
+                window.dispatchEvent(new CustomEvent("vetera:new-patient"))
+              }
+            }}
+            onSecondaryAction={() => onNavigate("agenda")}
             onAssistant={onOpenAIAgent}
           />
           <NavDocuments

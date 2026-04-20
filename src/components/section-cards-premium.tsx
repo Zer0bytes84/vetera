@@ -20,53 +20,53 @@ export type SectionCardItem = {
   detail?: string
   icon?: IconSvgElement
   sparklineData?: number[]
-  color?: "blue" | "violet" | "emerald" | "amber" | "rose" | "cyan"
+  color?: "orange" | "amber" | "emerald" | "red" | "slate" | "violet"
   onClick?: () => void
   accentVisible?: boolean
 }
 
 const colorMap = {
-  blue: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-600",
-    gradient: "from-blue-500/10 via-blue-500/5 to-transparent",
-    sparkline: "#2563eb",
-    badge: "bg-blue-500/10 text-blue-600",
-  },
-  violet: {
-    bg: "bg-violet-500/10",
-    text: "text-violet-600",
-    gradient: "from-violet-500/10 via-violet-500/5 to-transparent",
-    sparkline: "#7c3aed",
-    badge: "bg-violet-500/10 text-violet-600",
-  },
-  emerald: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-600",
-    gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
-    sparkline: "#059669",
-    badge: "bg-emerald-500/10 text-emerald-600",
+  orange: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-600",
+    gradient: "from-orange-500/10 via-orange-500/5 to-transparent",
+    sparkline: "#f97316",
+    badge: "bg-orange-500/10 text-orange-600",
   },
   amber: {
     bg: "bg-amber-500/10",
     text: "text-amber-600",
     gradient: "from-amber-500/10 via-amber-500/5 to-transparent",
-    sparkline: "#d97706",
+    sparkline: "#f59e0b",
     badge: "bg-amber-500/10 text-amber-600",
   },
-  rose: {
-    bg: "bg-rose-500/10",
-    text: "text-rose-600",
-    gradient: "from-rose-500/10 via-rose-500/5 to-transparent",
-    sparkline: "#e11d48",
-    badge: "bg-rose-500/10 text-rose-600",
+  emerald: {
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-600",
+    gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
+    sparkline: "#10b981",
+    badge: "bg-emerald-500/10 text-emerald-600",
   },
-  cyan: {
-    bg: "bg-cyan-500/10",
-    text: "text-cyan-600",
-    gradient: "from-cyan-500/10 via-cyan-500/5 to-transparent",
-    sparkline: "#0891b2",
-    badge: "bg-cyan-500/10 text-cyan-600",
+  red: {
+    bg: "bg-red-500/10",
+    text: "text-red-600",
+    gradient: "from-red-500/10 via-red-500/5 to-transparent",
+    sparkline: "#ef4444",
+    badge: "bg-red-500/10 text-red-600",
+  },
+  slate: {
+    bg: "bg-slate-500/10",
+    text: "text-slate-600",
+    gradient: "from-slate-500/10 via-slate-500/5 to-transparent",
+    sparkline: "#64748b",
+    badge: "bg-slate-500/10 text-slate-600",
+  },
+  violet: {
+    bg: "bg-violet-500/10",
+    text: "text-violet-600",
+    gradient: "from-violet-500/10 via-violet-500/5 to-transparent",
+    sparkline: "#8b5cf6",
+    badge: "bg-violet-500/10 text-violet-600",
   },
 }
 
@@ -119,7 +119,7 @@ export function SectionCardsPremium({
                   {item.icon && (
                     <HugeiconsIcon
                       icon={item.icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                       className={cn("size-5", colors.text)}
                     />
                   )}
@@ -143,7 +143,7 @@ export function SectionCardsPremium({
                       {item.trend && item.trend !== "neutral" && (
                         <HugeiconsIcon
                           icon={trendIcon}
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                           className="mr-0.5 size-3"
                         />
                       )}
@@ -158,7 +158,7 @@ export function SectionCardsPremium({
               <div className="flex items-end justify-between">
                 <div>
                   {/* Main value */}
-                  <div className="text-2xl font-bold tabular-nums tracking-tight">
+                  <div className="text-2xl font-semibold tabular-nums tracking-tight">
                     {item.value}
                   </div>
 
@@ -178,7 +178,7 @@ export function SectionCardsPremium({
                       width={70}
                       height={28}
                       color={colors.sparkline}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                       fillOpacity={0.15}
                     />
                   </div>

@@ -46,7 +46,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
               )}
             >
               {key === "noir" ? (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-current text-xs font-bold transition-transform group-hover:scale-110">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-current text-xs font-semibold transition-transform group-hover:scale-110">
                   Aa
                 </div>
               ) : (

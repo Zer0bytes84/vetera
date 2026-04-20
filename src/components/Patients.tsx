@@ -1,4 +1,4 @@
-import React, { useDeferredValue, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
@@ -14,11 +14,11 @@ import {
   Activity01Icon,
   TrendingUp,
   TrendingDown,
+  StethoscopeIcon,
+  WorkHistoryIcon,
 } from "@hugeicons/core-free-icons"
 import { toast } from "sonner"
-import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 
-import MotivationalHeader from "@/components/MotivationalHeader"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -66,6 +66,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { Spinner } from "@/components/ui/spinner"
+import { Sparkline } from "@/components/ui/sparkline"
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -300,6 +301,36 @@ function getSpeciesTone(species?: string) {
   return "bg-muted text-muted-foreground"
 }
 
+function getSpeciesIcon(species?: string): string {
+  const normalized = species?.toLowerCase() ?? ""
+
+  if (normalized.includes("chien")) {
+    return "🐕"
+  }
+
+  if (normalized.includes("chat")) {
+    return "🐱"
+  }
+
+  if (normalized.includes("nac")) {
+    return "🐹"
+  }
+
+  if (normalized.includes("cheval")) {
+    return "🐴"
+  }
+
+  if (normalized.includes("lapin")) {
+    return "🐰"
+  }
+
+  if (normalized.includes("oiseau")) {
+    return "🐦"
+  }
+
+  return "🐾" // Icône par défaut
+}
+
 function getBreedSuggestions(species?: string) {
   const normalized = species?.toLowerCase() ?? ""
   if (normalized.includes("chien")) return DOG_BREEDS
@@ -314,6 +345,100 @@ function PatientStatusBadge({ status }: { status: Patient["status"] }) {
     <Badge variant="secondary" className={meta.className}>
       {meta.label}
     </Badge>
+  )
+}
+
+type PatientOverviewCard = {
+  label: string
+  value: string
+  meta: string
+  note: string
+  icon: typeof UserGroupIcon
+  tone: "blue" | "orange" | "emerald" | "slate"
+  sparklineData: number[]
+}
+
+const patientToneMap: Record<PatientOverviewCard["tone"], { bg: string; text: string; spark: string }> = {
+  blue: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-600",
+    spark: "#f97316",
+  },
+  orange: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-600",
+    spark: "#f97316",
+  },
+  emerald: {
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-600",
+    spark: "#10b981",
+  },
+  slate: {
+    bg: "bg-slate-500/10",
+    text: "text-slate-600",
+    spark: "#64748b",
+  },
+}
+
+function buildPatientSparkline(
+  base: number,
+  pattern: "steady" | "rise" | "watch" | "stable"
+) {
+  const deltas = {
+    steady: [-2, -1, 0, 1, 0, 1, 1, 2],
+    rise: [-3, -2, -1, 0, 1, 2, 2, 3],
+    watch: [3, 2, 4, 5, 4, 6, 5, 7],
+    stable: [1, 1, 0, 1, 0, 1, 0, 0],
+  }[pattern]
+
+  return deltas.map((delta) => Math.max(base + delta, 0))
+}
+
+function PatientOverviewStrip({ items }: { items: PatientOverviewCard[] }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {items.map((item) => {
+        const tone = patientToneMap[item.tone]
+
+        return (
+          <Card key={item.label} className="overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+            <CardContent className="flex min-h-[154px] flex-col justify-between p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <p className="text-[11px] text-muted-foreground">{item.label}</p>
+                  <p className="text-[24px] font-medium tracking-[-0.04em] text-foreground">{item.value}</p>
+                  <div className="flex items-center gap-1.5 text-[10px]">
+                    <span className="font-mono text-foreground/70">{item.meta}</span>
+                    <span className="font-mono uppercase tracking-[0.04em] text-muted-foreground">{item.note}</span>
+                  </div>
+                </div>
+                <div
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 aspect-square items-center justify-center rounded-xl border border-border/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]",
+                    tone.bg
+                  )}
+                >
+                  <HugeiconsIcon icon={item.icon} strokeWidth={2} className={cn("size-[18px]", tone.text)} />
+                </div>
+              </div>
+
+              <div className="flex items-end justify-between gap-3">
+                <p className="max-w-[20ch] text-[12px] leading-[1.45] text-muted-foreground">{item.note}</p>
+                <Sparkline
+                  data={item.sparklineData}
+                  width={74}
+                  height={28}
+                  color={tone.spark}
+                  strokeWidth={2}
+                  fillOpacity={0.08}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })}
+    </div>
   )
 }
 
@@ -446,7 +571,7 @@ function PatientDetailsDialog({
       })[0]
   }, [history])
 
-  const handleSaveAll = async () => {
+  const handleSaveAll = useCallback(async () => {
     if (!patientData.name.trim()) {
       toast.error("Le nom du patient est obligatoire.")
       return
@@ -495,7 +620,7 @@ function PatientDetailsDialog({
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [patientData, selectedOwnerId, ownerData, onUpdatePatient, onUpdateOwner])
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -506,15 +631,11 @@ function PatientDetailsDialog({
               <div className="flex items-start gap-3">
                 <div
                   className={cn(
-                    "flex size-12 items-center justify-center rounded-2xl",
+                    "flex size-12 items-center justify-center rounded-2xl text-2xl",
                     getSpeciesTone(patient.species)
                   )}
                 >
-                  <HugeiconsIcon
-                    icon={BirdIcon}
-                    strokeWidth={2}
-                    className="size-5"
-                  />
+                  {getSpeciesIcon(patient.species)}
                 </div>
                 <div className="space-y-1">
                   <DialogTitle className="text-2xl tracking-[-0.05em]">
@@ -630,11 +751,20 @@ function PatientDetailsDialog({
           >
             <TabsList
               variant="line"
-              className="w-full justify-start rounded-none p-0"
+              className="w-full justify-start rounded-lg border-b bg-background/50 p-1 backdrop-blur"
             >
-              <TabsTrigger value="info">Informations</TabsTrigger>
-              <TabsTrigger value="medical">Dossier médical</TabsTrigger>
-              <TabsTrigger value="history">Historique</TabsTrigger>
+              <TabsTrigger value="info" className="rounded-md px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                <HugeiconsIcon icon={BirdIcon} strokeWidth={2} className="mr-2 size-4" />
+                Informations
+              </TabsTrigger>
+              <TabsTrigger value="medical" className="rounded-md px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={2} className="mr-2 size-4" />
+                Dossier médical
+              </TabsTrigger>
+              <TabsTrigger value="history" className="rounded-md px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={2} className="mr-2 size-4" />
+                Historique
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="info">
@@ -1194,7 +1324,7 @@ function PatientCreateDialog({
     [newPatient.species]
   )
 
-  const handleCreate = async () => {
+  const handleCreate = useCallback(async () => {
     if (!newPatient.name?.trim()) {
       toast.error("Le nom du patient est obligatoire.")
       return
@@ -1221,7 +1351,7 @@ function PatientCreateDialog({
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }, [newPatient, selectedOwnerId, newOwner, onCreate])
 
   const ownerOptions = useMemo(
     () =>
@@ -1636,6 +1766,17 @@ const Patients: React.FC = () => {
     }
   }, [patients, selectedPatientId])
 
+  // Listen for new patient event from sidebar
+  useEffect(() => {
+    const handleNewPatient = () => {
+      setIsCreateOpen(true)
+    }
+    window.addEventListener("vetera:new-patient", handleNewPatient)
+    return () => {
+      window.removeEventListener("vetera:new-patient", handleNewPatient)
+    }
+  }, [])
+
   const selectedPatient =
     patients.find((patient) => patient.id === selectedPatientId) ?? null
 
@@ -1645,7 +1786,7 @@ const Patients: React.FC = () => {
     ).sort((left, right) => left.localeCompare(right, "fr"))
   }, [patients])
 
-  const sectionCards = useMemo<SectionCardItem[]>(() => {
+  const overviewCards = useMemo<PatientOverviewCard[]>(() => {
     const activePatients = patients.filter(
       (patient) => patient.status !== "decede"
     ).length
@@ -1670,51 +1811,48 @@ const Patients: React.FC = () => {
       if (!lastVisit) return true
       return Date.now() - lastVisit.getTime() > 1000 * 60 * 60 * 24 * 90
     }).length
-
-    // Generate sparkline data (random variations around the actual values for visual effect)
-    const generateSparkline = (base: number) => 
-      Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 5) - 2)
+    const recentAdmissions = patients.filter((patient) => {
+      const createdAt = normalizeDate(patient.createdAt)
+      if (!createdAt) return false
+      return Date.now() - createdAt.getTime() <= 1000 * 60 * 60 * 24 * 30
+    }).length
 
     return [
       {
-        title: "Dossiers actifs",
+        label: "Patients actifs",
         value: String(activePatients),
-        badge: `${owners.length} foyers`,
-        trend: "neutral",
-        summary: "Patients suivis dans la base",
+        meta: `${owners.length} foyers`,
+        note: "Patients suivis",
         icon: UserGroupIcon,
-        sparklineData: generateSparkline(activePatients),
-        color: "blue",
+        sparklineData: buildPatientSparkline(activePatients, "steady"),
+        tone: "blue",
       },
       {
-        title: "Suivi clinique",
+        label: "Suivi clinique",
         value: String(monitoredPatients),
-        badge: monitoredPatients > 0 ? "à surveiller" : "stable",
-        trend: monitoredPatients > 0 ? "up" : "neutral",
-        summary: "Traitements en cours",
+        meta: monitoredPatients > 0 ? "a surveiller" : "stable",
+        note: "Traitements en cours",
         icon: HeartPulse,
-        sparklineData: generateSparkline(monitoredPatients),
-        color: "rose",
+        sparklineData: buildPatientSparkline(monitoredPatients, "watch"),
+        tone: "orange",
       },
       {
-        title: "Rendez-vous à venir",
+        label: "Rendez-vous à venir",
         value: String(scheduledPatients),
-        badge: "planifiés",
-        trend: scheduledPatients > 0 ? "up" : "neutral",
-        summary: "Patients attendus",
+        meta: `${recentAdmissions} nouveaux`,
+        note: "Prochaines visites",
         icon: CalendarCheckInIcon,
-        sparklineData: generateSparkline(scheduledPatients),
-        color: "violet",
+        sparklineData: buildPatientSparkline(scheduledPatients, "rise"),
+        tone: "emerald",
       },
       {
-        title: "Relances à prévoir",
+        label: "Relances à prévoir",
         value: String(stalePatients),
-        badge: "sans visite",
-        trend: stalePatients > 5 ? "down" : "neutral",
-        summary: "90+ jours sans passage",
+        meta: "90+ jours",
+        note: "Dossiers inactifs",
         icon: Notification02Icon,
-        sparklineData: generateSparkline(stalePatients),
-        color: "amber",
+        sparklineData: buildPatientSparkline(stalePatients, "stable"),
+        tone: "slate",
       },
     ]
   }, [appointments, owners.length, patients])
@@ -1730,7 +1868,7 @@ const Patients: React.FC = () => {
     setStatusFilter("all")
   }
 
-  const handleCreatePatient = async ({
+  const handleCreatePatient = useCallback(async ({
     selectedOwnerId,
     owner,
     patient,
@@ -1771,22 +1909,29 @@ const Patients: React.FC = () => {
       console.error(error)
       toast.error("Impossible de créer le dossier patient.")
     }
-  }
+  }, [createWithOwner])
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 pt-4 pb-6 lg:px-6">
+    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <MotivationalHeader
-          section="patients"
-          title=""
-          subtitle={`${patients.length} dossier${patients.length > 1 ? "s" : ""} centralisé${patients.length > 1 ? "s" : ""} pour garder la consultation, le suivi et le contact propriétaire dans la même interface.`}
-        />
+        <div className="space-y-2">
+          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+            Registre patients
+          </p>
+          <h1 className="text-[28px] font-normal tracking-[-0.04em] text-foreground">
+            Dossiers patients
+          </h1>
+          <p className="max-w-[72ch] text-sm text-muted-foreground">
+            {patients.length} dossier{patients.length > 1 ? "s" : ""} centralisé{patients.length > 1 ? "s" : ""} pour garder la consultation,
+            le suivi clinique et le contact propriétaire dans la même interface.
+          </p>
+        </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button variant="outline" onClick={resetFilters}>
+          <Button variant="outline" className="h-10 rounded-xl px-4" onClick={resetFilters}>
             Réinitialiser
           </Button>
-          <Button onClick={() => setIsCreateOpen(true)}>
+          <Button className="h-10 rounded-xl px-4" onClick={() => setIsCreateOpen(true)}>
             <HugeiconsIcon
               icon={Add01Icon}
               strokeWidth={2}
@@ -1797,17 +1942,19 @@ const Patients: React.FC = () => {
         </div>
       </div>
 
-      <SectionCardsPremium items={sectionCards} />
+      <PatientOverviewStrip items={overviewCards} />
 
       <div className="min-h-0 flex-1">
-        <Card className="min-h-[640px]">
-          <CardHeader className="border-b">
-            <CardDescription>Registre clinique</CardDescription>
-            <CardTitle className="text-2xl tracking-[-0.04em]">
+        <Card className="min-h-[640px] rounded-[24px] border border-border bg-card shadow-none">
+          <CardHeader className="border-b border-border px-6 py-5">
+            <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+              Registre clinique
+            </CardDescription>
+            <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
               Tableau des dossiers patients
             </CardTitle>
             <CardAction>
-              <Badge variant="outline">
+              <Badge variant="outline" className="rounded-full px-3 py-1">
                 {visiblePatients.length} visible
                 {visiblePatients.length > 1 ? "s" : ""}
               </Badge>
@@ -1815,7 +1962,7 @@ const Patients: React.FC = () => {
           </CardHeader>
 
           <CardContent className="flex min-h-0 flex-1 flex-col gap-4 px-0 pb-0">
-            <div className="grid gap-3 px-6 pt-1 lg:grid-cols-[minmax(0,1fr)_200px_220px]">
+            <div className="grid gap-3 px-6 pt-5 lg:grid-cols-[minmax(0,1fr)_200px_220px]">
               <div className="relative">
                 <HugeiconsIcon
                   icon={SearchIcon}
@@ -1826,14 +1973,14 @@ const Patients: React.FC = () => {
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder="Rechercher un patient, un propriétaire ou un téléphone..."
-                  className="h-11 rounded-3xl bg-input/50 pl-11"
+                  className="h-11 rounded-2xl border-border bg-[var(--color-surface-soft)] pl-11 shadow-none"
                 />
               </div>
 
               <NativeSelect
                 value={speciesFilter}
                 onChange={(event) => setSpeciesFilter(event.target.value)}
-                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:pl-4"
+                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:rounded-2xl [&>[data-slot=native-select]]:border-border [&>[data-slot=native-select]]:bg-[var(--color-surface-soft)] [&>[data-slot=native-select]]:pl-4"
               >
                 <NativeSelectOption value="all">
                   Toutes les espèces
@@ -1848,7 +1995,7 @@ const Patients: React.FC = () => {
               <NativeSelect
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value)}
-                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:pl-4"
+                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:rounded-2xl [&>[data-slot=native-select]]:border-border [&>[data-slot=native-select]]:bg-[var(--color-surface-soft)] [&>[data-slot=native-select]]:pl-4"
               >
                 <NativeSelectOption value="all">
                   Tous les statuts
@@ -1915,7 +2062,7 @@ const Patients: React.FC = () => {
               </div>
             ) : (
               <div className="px-6 pb-6">
-                <div className="overflow-hidden rounded-lg border">
+                <div className="overflow-hidden rounded-[18px] border border-border bg-card">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1932,7 +2079,7 @@ const Patients: React.FC = () => {
                         return (
                           <TableRow
                             key={entry.patient.id}
-                            className="cursor-pointer"
+                            className="cursor-pointer transition-colors hover:bg-[var(--color-surface-soft)]"
                             onClick={() =>
                               openPatientDetails(entry.patient, "info")
                             }
@@ -1941,15 +2088,11 @@ const Patients: React.FC = () => {
                               <div className="flex items-center gap-3">
                                 <div
                                   className={cn(
-                                    "flex size-10 items-center justify-center rounded-2xl",
+                                    "flex size-10 items-center justify-center rounded-2xl text-xl",
                                     getSpeciesTone(entry.patient.species)
                                   )}
                                 >
-                                  <HugeiconsIcon
-                                    icon={BirdIcon}
-                                    strokeWidth={2}
-                                    className="size-4"
-                                  />
+                                  {getSpeciesIcon(entry.patient.species)}
                                 </div>
                                 <div className="min-w-0">
                                   <p className="truncate font-medium text-foreground">
@@ -2048,4 +2191,4 @@ const Patients: React.FC = () => {
   )
 }
 
-export default Patients
+export default React.memo(Patients)

@@ -53,7 +53,7 @@ export function ThemeModeToggle({
           >
             <HugeiconsIcon
               icon={option.icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
               className="size-3.5"
             />
             <span className="hidden sm:inline">{option.label}</span>

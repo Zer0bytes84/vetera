@@ -19,8 +19,13 @@ import {
   Wallet01Icon,
 } from "@hugeicons/core-free-icons"
 
-import MotivationalHeader from "./MotivationalHeader"
+import { DashboardPageIntro } from "@/components/dashboard-page-intro"
+import {
+  MetricOverviewStrip,
+  type MetricOverviewItem,
+} from "@/components/metric-overview-strip"
 import { useTransactionsRepository } from "@/data/repositories"
+import { APP_NAME } from "@/lib/brand"
 import { cn } from "@/lib/utils"
 import type { Transaction } from "@/types/db"
 import { formatDZD, toCentimes } from "@/utils/currency"
@@ -72,7 +77,6 @@ import {
 } from "@/components/ui/table"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import type { View } from "@/types"
-import { SectionCardsPremium, type SectionCardItem } from "@/components/section-cards-premium"
 
 type TimeRange = "today" | "week" | "month" | "year"
 type TransactionFilter = "all" | "income" | "expense"
@@ -249,12 +253,12 @@ function generateFinancialReportPDF({
   filterLabel: string
 }) {
   const doc = new jsPDF()
-  const primaryColor = "#2563EB"
-  const mutedColor = "#6B7280"
+  const primaryColor = "#f97316"
+  const mutedColor = "#64748b"
 
   doc.setFontSize(22)
   doc.setTextColor(primaryColor)
-  doc.text("Vetera", 20, 20)
+  doc.text(APP_NAME, 20, 20)
 
   doc.setFontSize(16)
   doc.setTextColor(17, 24, 39)
@@ -533,53 +537,49 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       .slice(0, 5)
   }, [transactionsInRange])
 
-  const sectionCards = useMemo<SectionCardItem[]>(() => {
+  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
     const generateSparkline = (base: number) => 
       Array.from({ length: 8 }, () => base + Math.floor(Math.random() * base * 0.1) - Math.floor(base * 0.05))
     
     return [
       {
-        title: "Encaissé",
+        label: "Encaissé",
         value: formatDZD(stats.income),
-        badge: `${stats.paidIncomeCount} réglé${stats.paidIncomeCount > 1 ? "s" : ""}`,
-        trend: stats.income > stats.expense ? "up" : "neutral",
-        summary: "Recettes confirmées",
+        meta: `${stats.paidIncomeCount} réglé${stats.paidIncomeCount > 1 ? "s" : ""}`,
+        note: "Recettes confirmées",
         icon: ArrowUp01Icon,
         sparklineData: generateSparkline(Math.round(stats.income / 100)),
-        color: "emerald",
+        tone: "emerald",
       },
       {
-        title: "Dépensé",
+        label: "Dépensé",
         value: formatDZD(stats.expense),
-        badge: `${stats.paidExpenseCount} sortie${stats.paidExpenseCount > 1 ? "s" : ""}`,
-        trend: stats.expense > stats.income ? "down" : "neutral",
-        summary: "Décaissements validés",
+        meta: `${stats.paidExpenseCount} sortie${stats.paidExpenseCount > 1 ? "s" : ""}`,
+        note: "Décaissements validés",
         icon: ArrowDown01Icon,
         sparklineData: generateSparkline(Math.round(stats.expense / 100)),
-        color: "rose",
+        tone: "rose",
       },
       {
-        title: "Solde net",
+        label: "Solde net",
         value: formatDZD(stats.net),
-        badge: stats.net >= 0 ? "positif" : "à surveiller",
-        trend: stats.net >= 0 ? "up" : "down",
-        summary: "Vue nette de la période",
+        meta: stats.net >= 0 ? "positif" : "à surveiller",
+        note: "Vue nette",
         icon: LandmarkIcon,
         sparklineData: generateSparkline(Math.round(stats.net / 100)),
-        color: stats.net >= 0 ? "blue" : "amber",
+        tone: stats.net >= 0 ? "blue" : "amber",
       },
       {
-        title: "Encours",
+        label: "Encours",
         value: formatDZD(stats.pending),
-        badge: `${stats.pendingCount} attente${stats.pendingCount > 1 ? "s" : ""}`,
-        trend: "neutral",
-        summary: "Écritures ouvertes",
+        meta: `${stats.pendingCount} attente${stats.pendingCount > 1 ? "s" : ""}`,
+        note: "Écritures ouvertes",
         icon: Clock01Icon,
         sparklineData: generateSparkline(Math.round(stats.pending / 100)),
-        color: "amber",
+        tone: "amber",
       },
     ]
-  }, [rangeLabel, stats])
+  }, [stats])
 
   const subtitle = `${transactionsInRange.length} mouvement${transactionsInRange.length > 1 ? "s" : ""} sur ${rangeLabel.toLowerCase()} pour suivre recettes, dépenses et encours dans la même vue.`
 
@@ -684,79 +684,79 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-6 px-4 py-6 lg:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <MotivationalHeader
-          section="finances"
-          title=""
-          subtitle={subtitle}
-        />
-
-        <div className="flex flex-col gap-2 sm:flex-row">
+    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+      <DashboardPageIntro
+        eyebrow="Pilotage financier"
+        title="Finances"
+        subtitle={subtitle}
+        actions={
+          <>
           <Button
             variant="outline"
+            className="h-10 rounded-xl px-4"
             onClick={() => onNavigate?.("finances_analytics")}
           >
             <HugeiconsIcon
               icon={ArrowRight01Icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
               className="size-4"
             />
             Vue analytique
           </Button>
           <Button
             variant="outline"
+            className="h-10 rounded-xl px-4"
             onClick={handleExport}
             disabled={visibleTransactions.length === 0}
           >
             <HugeiconsIcon
               icon={Download01Icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
               className="size-4"
             />
             Exporter
           </Button>
-          <Button onClick={() => setIsDialogOpen(true)}>
+          <Button className="h-10 rounded-xl px-4" onClick={() => setIsDialogOpen(true)}>
             <HugeiconsIcon
               icon={Add01Icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
               className="size-4"
             />
             Nouvelle écriture
           </Button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      {/* Section Cards */}
-      <SectionCardsPremium items={sectionCards} />
+      <MetricOverviewStrip items={overviewCards} />
 
       {/* Main Table Card */}
-      <Card>
-        <CardHeader>
-          <CardDescription>Registre financier</CardDescription>
-          <CardTitle>Journal des écritures</CardTitle>
+      <Card className="rounded-[24px] border border-border bg-card shadow-none">
+        <CardHeader className="border-b border-border px-6 py-5">
+          <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">Registre financier</CardDescription>
+          <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">Journal des écritures</CardTitle>
           <CardAction className="flex items-center gap-2">
-            <Badge variant="outline">{rangeLabel}</Badge>
-            <Badge variant="outline">
+            <Badge variant="outline" className="rounded-full px-3 py-1">{rangeLabel}</Badge>
+            <Badge variant="outline" className="rounded-full px-3 py-1">
               {visibleTransactions.length} visible
               {visibleTransactions.length > 1 ? "s" : ""}
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-6 py-5">
           {/* Filters */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <HugeiconsIcon
                 icon={SearchIcon}
-                strokeWidth={2}
+                strokeWidth={1.5}
                 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
               />
               <Input
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Rechercher..."
-                className="pl-9"
+                className="h-10 rounded-xl pl-9"
               />
             </div>
 
@@ -823,7 +823,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                 <EmptyMedia variant="icon">
                   <HugeiconsIcon
                     icon={ReceiptTextIcon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     className="size-5"
                   />
                 </EmptyMedia>
@@ -846,7 +846,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                 <Button onClick={() => setIsDialogOpen(true)}>
                   <HugeiconsIcon
                     icon={Add01Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     className="size-4"
                   />
                   Nouvelle écriture
@@ -974,12 +974,12 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       {/* Bottom Widgets */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Category Breakdown */}
-        <Card>
-          <CardHeader>
+        <Card className="rounded-[24px] border border-border bg-card shadow-none">
+          <CardHeader className="border-b border-border px-6 py-5">
             <CardDescription>Lecture rapide</CardDescription>
             <CardTitle>Postes dominants</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 px-6 py-5">
             {categoryBreakdown.length > 0 ? (
               categoryBreakdown.map((entry) => (
                 <div
@@ -1033,12 +1033,12 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         </Card>
 
         {/* Pending Transactions */}
-        <Card>
-          <CardHeader>
+        <Card className="rounded-[24px] border border-border bg-card shadow-none">
+          <CardHeader className="border-b border-border px-6 py-5">
             <CardDescription>Suivi court terme</CardDescription>
             <CardTitle>Encours à valider</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 px-6 py-5">
             {pendingTransactions.length > 0 ? (
               pendingTransactions.map((transaction) => (
                 <div
@@ -1287,4 +1287,4 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
   )
 }
 
-export default Finances
+export default React.memo(Finances)

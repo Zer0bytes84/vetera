@@ -99,26 +99,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
         {/* Spectacular Geometric Mesh only inside the left panel */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_1px,transparent_1.5px)] bg-[length:24px_24px]" />
         
-        {/* Top Glow */}
-        <div className="pointer-events-none absolute inset-x-0 -top-40 transform-gpu overflow-hidden blur-[80px] sm:-top-80">
-          <div
-            className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-40 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem] animate-[pulse_8s_ease-in-out_infinite]"
-            style={{
-              clipPath:
-                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-            }}
-          />
-        </div>
-
-        {/* Bottom Glow */}
-        <div className="pointer-events-none absolute inset-x-0 top-[calc(100%-25rem)] transform-gpu overflow-hidden blur-[90px] sm:top-[calc(100%-40rem)]">
-          <div
-            className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tl from-[#3b82f6] to-[#ec4899] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem] animate-[pulse_10s_ease-in-out_infinite_reverse]"
-            style={{
-              clipPath:
-                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-            }}
-          />
+        {/* Top Glow & Drift - Toned down */}
+        <div className="pointer-events-none absolute inset-0 transform-gpu overflow-hidden">
+          <div className="absolute top-[-10%] right-[-10%] w-[70%] aspect-square rounded-full mix-blend-screen filter blur-[100px] opacity-15 animate-mesh-drift bg-gradient-to-tr from-rose-400/50 via-fuchsia-500/50 to-indigo-500/50" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[80%] aspect-square rounded-full mix-blend-screen filter blur-[120px] opacity-10 animate-mesh-drift-slow bg-gradient-to-tl from-cyan-400/50 via-blue-500/50 to-purple-600/50" />
+          <div className="absolute top-[30%] left-[20%] w-[50%] aspect-square rounded-full mix-blend-screen filter blur-[110px] opacity-[0.08] animate-mesh-drift bg-gradient-to-br from-amber-300/50 to-orange-500/50" />
         </div>
 
         {/* Left Content */}
@@ -176,7 +161,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
         <div className="w-full max-w-md flex-col items-center">
           <div className="mb-8 flex flex-col items-center text-center">
             <h1 className="font-heading text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
-              {step === 1 ? "Activation de Vetera" : "Bienvenue, Docteur."}
+              {step === 1 ? `Activation de ${APP_NAME}` : "Bienvenue, Docteur."}
             </h1>
             <p className="mt-3 text-sm tracking-wide text-muted-foreground/80 sm:text-base">
               {step === 1
@@ -190,7 +175,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             <div className="mb-8 flex items-center justify-center gap-3">
               <div
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-500",
+                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-500",
                   step >= 1
                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                     : "bg-muted text-muted-foreground"
@@ -210,7 +195,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               />
               <div
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-500",
+                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-500",
                   step >= 2
                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                     : "bg-background border-2 border-muted-foreground/20 text-muted-foreground"
@@ -354,7 +339,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
           <div className="mt-10 flex items-center justify-center gap-6 text-sm font-medium text-muted-foreground/60">
             <span className="flex items-center gap-1.5 hover:text-foreground transition-colors"><HugeiconsIcon icon={Shield01Icon} strokeWidth={2} className="size-4" /> Crypté & Sécurisé</span>
             <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-            <span className="hover:text-foreground transition-colors">Support Vetera</span>
+            <span className="hover:text-foreground transition-colors">{`Support ${APP_NAME}`}</span>
           </div>
         </div>
       </div>

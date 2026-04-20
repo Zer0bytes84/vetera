@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Area, AreaChart, CartesianGrid, Line, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
@@ -7,6 +7,7 @@ import MotivationalHeader from "@/components/MotivationalHeader"
 import { Button } from "@/components/ui/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -14,11 +15,19 @@ import {
 } from "@/components/ui/card"
 import {
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useTransactionsRepository } from "@/data/repositories"
 import type { View } from "@/types"
 import { formatDZD } from "@/utils/currency"
@@ -33,10 +42,6 @@ const chartConfig = {
   expense: {
     label: "Décaissements",
     color: "var(--chart-2)",
-  },
-  net: {
-    label: "Solde net",
-    color: "var(--chart-3)",
   },
 } satisfies ChartConfig
 
@@ -125,95 +130,130 @@ export default function FinancialAnalyticsPage({
         </Button>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardHeader className="border-b">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-2">
-              <CardDescription>Bloc analytique</CardDescription>
-              <CardTitle className="text-2xl tracking-[-0.04em]">
-                Activité financière multi-lignes
-              </CardTitle>
-              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                <span>Encaissements: {formatDZD(totals.income * 100)}</span>
-                <span>Décaissements: {formatDZD(totals.expense * 100)}</span>
-                <span>Solde net: {formatDZD(totals.net * 100)}</span>
-              </div>
-            </div>
-            <Tabs value={range} onValueChange={(value) => setRange(value as RangeKey)}>
-              <TabsList>
-                <TabsTrigger value="7d">7J</TabsTrigger>
-                <TabsTrigger value="30d">30J</TabsTrigger>
-                <TabsTrigger value="90d">90J</TabsTrigger>
-              </TabsList>
-            </Tabs>
+      <Card className="overflow-hidden pt-0">
+        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1">
+            <CardTitle>Encaissements</CardTitle>
+            <CardDescription>
+              Lecture journalière des encaissements réglés et décaissements sur la période active.
+            </CardDescription>
           </div>
+          <CardAction>
+            <Select value={range} onValueChange={(value) => setRange(value as RangeKey)}>
+              <SelectTrigger
+                className="hidden w-[170px] rounded-lg sm:ml-auto sm:flex"
+                aria-label="Sélectionner une période"
+              >
+                <SelectValue placeholder="30 derniers jours" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="90d" className="rounded-lg">
+                  90 derniers jours
+                </SelectItem>
+                <SelectItem value="30d" className="rounded-lg">
+                  30 derniers jours
+                </SelectItem>
+                <SelectItem value="7d" className="rounded-lg">
+                  7 derniers jours
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </CardAction>
         </CardHeader>
-        <CardContent className="space-y-6 pt-6">
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card className="bg-card shadow-xs">
-              <CardContent className="pt-6">
-                <div className="text-sm text-muted-foreground">Encaissements</div>
-                <div className="mt-2 text-3xl font-semibold tracking-tight">
-                  {formatDZD(totals.income * 100)}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-card shadow-xs">
-              <CardContent className="pt-6">
-                <div className="text-sm text-muted-foreground">Décaissements</div>
-                <div className="mt-2 text-3xl font-semibold tracking-tight">
-                  {formatDZD(totals.expense * 100)}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-card shadow-xs">
-              <CardContent className="pt-6">
-                <div className="text-sm text-muted-foreground">Pic de solde</div>
-                <div className="mt-2 text-3xl font-semibold tracking-tight">
-                  {formatDZD(peakNet * 100)}
-                </div>
-              </CardContent>
-            </Card>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <div className="mb-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border/70 bg-muted/20 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                Encaissements
+              </p>
+              <p className="mt-2 text-2xl font-medium tracking-[-0.04em]">
+                {formatDZD(totals.income * 100)}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-muted/20 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                Décaissements
+              </p>
+              <p className="mt-2 text-2xl font-medium tracking-[-0.04em]">
+                {formatDZD(totals.expense * 100)}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-muted/20 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                Pic de solde
+              </p>
+              <p className="mt-2 text-2xl font-medium tracking-[-0.04em]">
+                {formatDZD(peakNet * 100)}
+              </p>
+            </div>
           </div>
 
           <ChartContainer
             config={chartConfig}
-            className="h-[420px] w-full"
-            initialDimension={{ width: 960, height: 420 }}
+            className="aspect-auto h-[320px] w-full"
+            initialDimension={{ width: 960, height: 320 }}
           >
-            <AreaChart accessibilityLayer data={chartData} margin={{ left: 12, right: 12, top: 16, bottom: 0 }}>
+            <AreaChart accessibilityLayer data={chartData}>
               <defs>
                 <linearGradient id="finance-income-fill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-income)" stopOpacity={0.18} />
-                  <stop offset="95%" stopColor="var(--color-income)" stopOpacity={0.02} />
+                  <stop offset="5%" stopColor="var(--color-income)" stopOpacity={0.72} />
+                  <stop offset="95%" stopColor="var(--color-income)" stopOpacity={0.08} />
+                </linearGradient>
+                <linearGradient id="finance-expense-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--color-expense)" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="var(--color-expense)" stopOpacity={0.06} />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={10} minTickGap={24} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => {
+                  const date = new Date(value)
+                  return date.toLocaleDateString("fr-FR", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                }}
+              />
               <ChartTooltip
                 cursor={false}
                 content={
                   <ChartTooltipContent
-                    formatter={(value, name) => (
-                      <div className="flex min-w-[150px] items-center justify-between gap-3">
-                        <span>{name}</span>
-                        <span className="font-mono font-medium tabular-nums">
-                          {formatDZD(Number(value) * 100)}
-                        </span>
-                      </div>
-                    )}
+                    labelFormatter={(value) =>
+                      new Date(value).toLocaleDateString("fr-FR", {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }
+                    indicator="dot"
+                    formatter={(value, name) => [
+                      formatDZD(Number(value) * 100),
+                      name,
+                    ]}
                   />
                 }
               />
               <Area
-                type="monotone"
-                dataKey="income"
-                stroke="var(--color-income)"
-                fill="url(#finance-income-fill)"
-                strokeWidth={2.5}
+                dataKey="expense"
+                type="natural"
+                fill="url(#finance-expense-fill)"
+                stroke="var(--color-expense)"
+                stackId="a"
+                strokeWidth={2}
               />
-              <Line type="monotone" dataKey="expense" stroke="var(--color-expense)" strokeWidth={2.5} dot={false} />
-              <Line type="monotone" dataKey="net" stroke="var(--color-net)" strokeWidth={2.5} dot={false} />
+              <Area
+                dataKey="income"
+                type="natural"
+                fill="url(#finance-income-fill)"
+                stroke="var(--color-income)"
+                stackId="a"
+                strokeWidth={2.2}
+              />
+              <ChartLegend content={<ChartLegendContent />} />
             </AreaChart>
           </ChartContainer>
         </CardContent>
