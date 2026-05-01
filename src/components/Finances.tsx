@@ -19,7 +19,6 @@ import {
   Wallet01Icon,
 } from "@hugeicons/core-free-icons"
 
-import { DashboardPageIntro } from "@/components/dashboard-page-intro"
 import {
   MetricOverviewStrip,
   type MetricOverviewItem,
@@ -581,8 +580,6 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
     ]
   }, [stats])
 
-  const subtitle = `${transactionsInRange.length} mouvement${transactionsInRange.length > 1 ? "s" : ""} sur ${rangeLabel.toLowerCase()} pour suivre recettes, dépenses et encours dans la même vue.`
-
   const resetDraft = () => {
     setDraft(getDefaultDraft())
   }
@@ -685,12 +682,8 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <DashboardPageIntro
-        eyebrow="Pilotage financier"
-        title="Finances"
-        subtitle={subtitle}
-        actions={
-          <>
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Button
             variant="outline"
             className="h-10 rounded-xl px-4"
@@ -724,14 +717,13 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
             />
             Nouvelle écriture
           </Button>
-          </>
-        }
-      />
+        </div>
+      </div>
 
       <MetricOverviewStrip items={overviewCards} />
 
       {/* Main Table Card */}
-      <Card className="rounded-[24px] border border-border bg-card shadow-none">
+      <Card className="card-vibrant card-hover-lift rounded-[24px] border border-border bg-card shadow-none">
         <CardHeader className="border-b border-border px-6 py-5">
           <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">Registre financier</CardDescription>
           <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">Journal des écritures</CardTitle>
@@ -974,7 +966,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       {/* Bottom Widgets */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Category Breakdown */}
-        <Card className="rounded-[24px] border border-border bg-card shadow-none">
+        <Card className="card-hover-lift rounded-[24px] border border-border bg-card shadow-none">
           <CardHeader className="border-b border-border px-6 py-5">
             <CardDescription>Lecture rapide</CardDescription>
             <CardTitle>Postes dominants</CardTitle>
@@ -1033,7 +1025,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         </Card>
 
         {/* Pending Transactions */}
-        <Card className="rounded-[24px] border border-border bg-card shadow-none">
+        <Card className="card-hover-lift rounded-[24px] border border-border bg-card shadow-none">
           <CardHeader className="border-b border-border px-6 py-5">
             <CardDescription>Suivi court terme</CardDescription>
             <CardTitle>Encours à valider</CardTitle>

@@ -4,15 +4,15 @@ import StarterKit from "@tiptap/starter-kit"
 import Placeholder from "@tiptap/extension-placeholder"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Undo02Icon, Redo02Icon } from "@hugeicons/core-free-icons"
-import { assistWithNote } from "../services/geminiService"
+import { assistWithNote } from "@/services/geminiService"
 import {
   initializeWebLLM,
   isWebLLMReady,
   isWebLLMLoading,
-  ProgressReport,
+  type ProgressReport,
   subscribeToProgress,
   getCurrentProgress,
-} from "../services/webLLMService"
+} from "@/services/webLLMService"
 import SlashCommands, {
   createSlashCommandsSuggestion,
 } from "./SlashCommandsExtension"
@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
-import { cn } from "@/lib/utils"
 
 interface EditorProps {
   content: string
@@ -45,12 +44,8 @@ const Editor: React.FC<EditorProps> = ({
   const [isAiLoading, setIsAiLoading] = useState(false)
   const [writeModalOpen, setWriteModalOpen] = useState(false)
   const [writeTopicInput, setWriteTopicInput] = useState("")
-
-  const [isModelLoading, setIsModelLoading] = useState(false)
-  const [modelProgress, setModelProgress] = useState<ProgressReport>({
-    progress: 0,
-    text: "Initializing...",
-  })
+  const [aiReady, setAiReady] = useState(false)
+  const [aiInitializing, setAiInitializing] = useState(false)
 
   const handleAiAction = async (instruction: string) => {
     if (!editor) return
@@ -89,12 +84,12 @@ const Editor: React.FC<EditorProps> = ({
       let errorMessage = "Erreur IA."
       if (e.message?.includes("not initialized")) {
         errorMessage =
-          "Le modèle IA est en cours de chargement. Veuillez attendre quelques secondes."
+          "L'assistant est en cours de préparation. Veuillez attendre quelques secondes."
       } else if (e.message?.includes("WebGPU")) {
         errorMessage =
-          "WebGPU n'est pas disponible. Vérifiez que votre navigateur le supporte."
+          "Fonctionnalité non supportée par votre navigateur."
       } else {
-        errorMessage = `Erreur IA: ${e.message || "Vérifiez votre connexion."}`
+        errorMessage = `Erreur: ${e.message || "Vérifiez votre connexion."}`
       }
 
       alert(errorMessage)
@@ -113,30 +108,29 @@ const Editor: React.FC<EditorProps> = ({
 
   useEffect(() => {
     if (isWebLLMReady()) {
-      setIsModelLoading(false)
+      setAiReady(true)
+      setAiInitializing(false)
     } else if (isWebLLMLoading()) {
-      setIsModelLoading(true)
-      setModelProgress(getCurrentProgress())
+      setAiInitializing(true)
     }
 
     const unsubscribe = subscribeToProgress((report) => {
-      setModelProgress(report)
-      if (report.progress === 1 && report.text === "Completed") {
-        setIsModelLoading(false)
+      if (report.progress === 1) {
+        setAiReady(true)
+        setAiInitializing(false)
       }
     })
 
     const init = async () => {
       if (!isWebLLMReady() && !isWebLLMLoading()) {
-        setIsModelLoading(true)
+        setAiInitializing(true)
         try {
-          await initializeWebLLM((report) => {
-            setModelProgress(report)
-          })
+          await initializeWebLLM()
+          setAiReady(true)
         } catch (error) {
-          console.error("[Editor] WebLLM initialization failed:", error)
+          console.error("[Editor] AI initialization failed:", error)
         } finally {
-          setIsModelLoading(false)
+          setAiInitializing(false)
         }
       }
     }
@@ -187,44 +181,30 @@ const Editor: React.FC<EditorProps> = ({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-border bg-muted/25 px-4 py-2">
-        <div className="flex items-center gap-2">
-          {isModelLoading ? (
-            <div className="flex items-center gap-2 rounded-md bg-blue-500/10 px-2 py-1 text-xs">
-              <Spinner className="size-3 text-blue-600 dark:text-blue-400" />
-              <span className="font-medium text-blue-600 dark:text-blue-400">
-                IA {(modelProgress.progress * 100).toFixed(0)}%
-              </span>
-            </div>
-          ) : isWebLLMReady() ? (
-            <div className="flex items-center gap-2 rounded-md bg-emerald-500/10 px-2 py-1 text-xs">
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                IA Locale
-              </span>
-            </div>
-          ) : null}
-
+      {/* Minimal toolbar — undo/redo + discreet AI status */}
+      <div className="flex items-center justify-between border-b border-border/40 px-4 py-1.5 dark:border-border/30">
+        <div className="flex items-center gap-1.5">
           {isAiLoading && (
-            <div className="flex items-center gap-2 rounded-md bg-violet-500/10 px-2 py-1 text-xs">
-              <Spinner className="size-3 text-violet-600" />
-              <span className="font-medium text-violet-600">Génération...</span>
+            <div className="flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-0.5 text-[11px] text-primary dark:bg-primary/15">
+              <Spinner className="size-2.5" />
+              <span className="font-medium">Génération...</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <Button
             variant="ghost"
             size="icon-sm"
             onClick={() => editor.chain().focus().undo().run()}
             disabled={!editor.can().undo()}
             title="Annuler (Ctrl+Z)"
+            className="size-7 rounded-md"
           >
             <HugeiconsIcon
               icon={Undo02Icon}
               strokeWidth={2}
-              className="size-4"
+              className="size-3.5"
             />
           </Button>
           <Button
@@ -233,11 +213,12 @@ const Editor: React.FC<EditorProps> = ({
             onClick={() => editor.chain().focus().redo().run()}
             disabled={!editor.can().redo()}
             title="Rétablir (Ctrl+Y)"
+            className="size-7 rounded-md"
           >
             <HugeiconsIcon
               icon={Redo02Icon}
               strokeWidth={2}
-              className="size-4"
+              className="size-3.5"
             />
           </Button>
         </div>
@@ -251,12 +232,27 @@ const Editor: React.FC<EditorProps> = ({
         />
       </div>
 
-      <div className="border-t border-border bg-muted/25 px-4 py-2 text-xs text-muted-foreground">
-        Tapez{" "}
-        <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-foreground">
-          /
-        </kbd>{" "}
-        pour les commandes • Sélectionnez du texte pour le formater
+      {/* Subtle footer hint */}
+      <div className="flex items-center justify-between border-t border-border/40 px-4 py-1.5 text-[11px] text-muted-foreground/50 dark:border-border/30">
+        <span>
+          Tapez{" "}
+          <kbd className="rounded bg-muted/70 px-1 py-px font-mono text-[10px] text-muted-foreground dark:bg-muted/40">
+            /
+          </kbd>{" "}
+          pour les commandes
+        </span>
+        {aiReady && (
+          <span className="flex items-center gap-1">
+            <span className="size-1.5 rounded-full bg-emerald-500" />
+            Assistant prêt
+          </span>
+        )}
+        {aiInitializing && !aiReady && (
+          <span className="flex items-center gap-1">
+            <Spinner className="size-2" />
+            Préparation...
+          </span>
+        )}
       </div>
 
       <Dialog open={writeModalOpen} onOpenChange={setWriteModalOpen}>
@@ -264,7 +260,7 @@ const Editor: React.FC<EditorProps> = ({
           <DialogHeader>
             <DialogTitle>Que voulez-vous écrire ?</DialogTitle>
             <DialogDescription>
-              Décrivez le sujet et l'IA rédigera le contenu pour vous.
+              Décrivez le sujet et l'assistant rédigera le contenu pour vous.
             </DialogDescription>
           </DialogHeader>
           <Input

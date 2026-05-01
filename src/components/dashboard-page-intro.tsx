@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 
 type DashboardPageIntroProps = {
   eyebrow: string
-  title: string
+  title: React.ReactNode
   subtitle: string
   actions?: React.ReactNode
   className?: string

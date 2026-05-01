@@ -39,7 +39,7 @@ const notifyProgress = (report: ProgressReport) => {
 }
 
 export const getLocalModelId = () =>
-  activeModelId || "Qwen2.5-3B-Instruct-q4f16_1-MLC"
+  activeModelId || "Qwen3-1.7B-q4f16_1-MLC"
 
 export const getActiveModelId = () => activeModelId
 
@@ -63,10 +63,10 @@ export const initializeWebLLM = async (
   let callback: ((report: ProgressReport) => void) | undefined
 
   if (typeof modelIdOrCallback === "function") {
-    modelId = "Qwen2.5-3B-Instruct-q4f16_1-MLC"
+    modelId = "Qwen3-1.7B-q4f16_1-MLC"
     callback = modelIdOrCallback
   } else {
-    modelId = modelIdOrCallback || "Qwen2.5-3B-Instruct-q4f16_1-MLC"
+    modelId = modelIdOrCallback || "Qwen3-1.7B-q4f16_1-MLC"
     callback = onProgress
   }
 
@@ -93,9 +93,8 @@ export const initializeWebLLM = async (
           callback?.(progress)
         },
       })
-      notifyProgress({ progress: 1, text: "Termine" })
-      callback?.({ progress: 1, text: "Termine" })
-      console.log(`[WebLLM] Modele pret: ${modelId}`)
+      notifyProgress({ progress: 1, text: "Completed" })
+      callback?.({ progress: 1, text: "Completed" })
     } catch (error) {
       notifyProgress({ progress: 0, text: "Erreur de chargement" })
       console.error("[WebLLM] Echec du chargement:", error)

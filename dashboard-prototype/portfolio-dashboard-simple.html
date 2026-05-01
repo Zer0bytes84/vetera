@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Dashboard - bAItari</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #fafafa; color: #0a0a0a; }
+    .dark body { background: #0a0a0a; color: #e5e5e5; }
+    .card { background: white; border-radius: 16px; border: 1px solid #e5e5e5; transition: all 0.2s; }
+    .dark .card { background: #141414; border-color: #1f1f1f; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+    .accent-green { color: #22c55e; }
+    .bg-accent-green { background: #22c55e; }
+    .gradient-green { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+    .gradient-violet { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    .gradient-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .gradient-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+  </style>
+</head>
+<body>
+  <div class="min-h-screen p-6 md:p-10 max-w-7xl mx-auto">
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="fixed top-6 right-6 z-50 w-12 h-12 rounded-full bg-white dark:bg-[#141414] border border-gray-200 dark:border-gray-800 shadow-lg flex items-center justify-center">
+      <span id="themeIcon">🌙</span>
+    </button>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl gradient-green flex items-center justify-center text-white font-bold text-lg shadow-lg">
+          bA
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">bAItari</h1>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Portfolio Dashboard</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+          <a href="#" class="text-gray-500 hover:text-green-500 transition">Dashboard</a>
+          <a href="#" class="text-gray-500 hover:text-green-500 transition">Markets</a>
+          <a href="#" class="text-green-500 font-medium">Portfolio</a>
+          <a href="#" class="text-gray-500 hover:text-green-500 transition">Watchlist</a>
+        </nav>
+        <div class="w-10 h-10 rounded-full gradient-violet flex items-center justify-center text-white text-sm font-bold shadow-lg">
+          Z
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Value -->
+    <div class="mb-8">
+      <div class="flex items-baseline gap-4 mb-2">
+        <h2 class="text-5xl font-bold tracking-tight">150,000</h2>
+        <span class="text-2xl text-gray-400">DA</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-500">Current Value</span>
+        <span class="flex items-center gap-1 text-green-500 font-medium">
+          ↗ 12.45%
+        </span>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="mb-8 card p-6">
+      <svg class="w-full h-32" viewBox="0 0 800 120" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.2"/>
+            <stop offset="100%" stopColor="#22c55e" stopOpacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,100 C50,90 100,95 150,80 C200,65 250,70 300,50 C350,30 400,35 450,25 C500,15 550,20 600,10 C650,0 700,5 750,15 L800,10 L800,120 L0,120 Z" fill="url(#grad)"/>
+        <path d="M0,100 C50,90 100,95 150,80 C200,65 250,70 300,50 C350,30 400,35 450,25 C500,15 550,20 600,10 C650,0 700,5 750,15" 
+              fill="none" stroke="#22c55e" strokeWidth="2"/>
+        <circle cx="800" cy="10" r="4" fill="#22c55e"/>
+      </svg>
+      <div class="flex justify-between text-xs text-gray-400 mt-2">
+        <span>Current Value</span>
+        <div class="flex gap-4">
+          <span class="hover:text-green-500 cursor-pointer">1M</span>
+          <span class="hover:text-green-500 cursor-pointer">6M</span>
+          <span class="hover:text-green-500 cursor-pointer">1Y</span>
+          <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">All</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="card p-4">
+        <p class="text-2xl font-bold">12</p>
+        <p class="text-xs text-gray-500">Companies</p>
+        <p class="text-[10px] text-green-500 mt-1">Actives</p>
+      </div>
+      <div class="card p-4">
+        <p class="text-2xl font-bold">8,000</p>
+        <p class="text-xs text-gray-500">Cash Balance</p>
+        <p class="text-[10px] text-green-500 mt-1">DA disponible</p>
+      </div>
+      <div class="card p-4">
+        <p class="text-2xl font-bold">5,000</p>
+        <p class="text-xs text-gray-500">Committed Cash</p>
+        <p class="text-[10px] text-green-500 mt-1">En attente</p>
+      </div>
+    </div>
+
+    <!-- Popular Assets -->
+    <div class="mb-8">
+      <h3 class="font-semibold mb-4">Actifs Populaires</h3>
+      <div class="flex gap-4 overflow-x-auto pb-2">
+        
+        <div class="card p-5 min-w-[280px]">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl gradient-green flex items-center justify-center text-white text-xl font-bold shadow">At</div>
+              <div>
+                <h4 class="font-semibold">Airtable</h4>
+                <p class="text-xs text-gray-500">Investi 30K</p>
+              </div>
+            </div>
+            <span class="text-xs text-green-500 font-medium">+156% ↗</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-lg font-bold">45,000 DA</p>
+              <p class="text-xs text-gray-500">SaaS · Croissance</p>
+            </div>
+            <button class="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-green-500 hover:text-white text-xs font-medium rounded-lg transition">Détails</button>
+          </div>
+        </div>
+
+        <div class="card p-5 min-w-[280px]">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl gradient-violet flex items-center justify-center text-white text-xl font-bold shadow">St</div>
+              <div>
+                <h4 class="font-semibold">Stripe</h4>
+                <p class="text-xs text-gray-500">Investi 25K</p>
+              </div>
+            </div>
+            <span class="text-xs text-green-500 font-medium">+89% ↗</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-lg font-bold">38,000 DA</p>
+              <p class="text-xs text-gray-500">Fintech · Série D</p>
+            </div>
+            <button class="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-green-500 hover:text-white text-xs font-medium rounded-lg transition">Détails</button>
+          </div>
+        </div>
+
+        <div class="card p-5 min-w-[280px]">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl gradient-orange flex items-center justify-center text-white text-xl font-bold shadow">Rp</div>
+              <div>
+                <h4 class="font-semibold">Rippling</h4>
+                <p class="text-xs text-gray-500">Investi 20K</p>
+              </div>
+            </div>
+            <span class="text-xs text-green-500 font-medium">+45% ↗</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-lg font-bold">28,000 DA</p>
+              <p class="text-xs text-gray-500">HR Tech · Série C</p>
+            </div>
+            <button class="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-green-500 hover:text-white text-xs font-medium rounded-lg transition">Détails</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="grid md:grid-cols-2 gap-6">
+      
+      <!-- Holdings -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">Mes Participations</h3>
+          <a href="#" class="text-xs text-green-500 hover:underline">Voir tout</a>
+        </div>
+        <div class="space-y-3">
+          <div class="card p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center text-white text-sm font-bold">An</div>
+              <div>
+                <h4 class="font-medium text-sm">Anthropic</h4>
+                <p class="text-xs text-gray-500">100 Units</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-sm">50,000 DA</p>
+              <p class="text-xs text-green-500">+12.45%</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 text-xs text-yellow-600 dark:text-yellow-400">Pending</span>
+          </div>
+
+          <div class="card p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white text-sm font-bold">OS</div>
+              <div>
+                <h4 class="font-medium text-sm">OpenSea</h4>
+                <p class="text-xs text-gray-500">200 Units</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-sm">25,000 DA</p>
+              <p class="text-xs text-green-500">+8.32%</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 text-xs text-yellow-600 dark:text-yellow-400">Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchlist -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">Liste de surveillance</h3>
+          <a href="#" class="text-xs text-green-500 hover:underline">Voir tout</a>
+        </div>
+        <div class="space-y-2">
+          <div class="card p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">Px</div>
+              <div>
+                <h4 class="font-medium text-sm">Perplexity</h4>
+                <p class="text-xs text-gray-500">AI Search</p>
+              </div>
+            </div>
+            <button class="px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition">Investir</button>
+          </div>
+
+          <div class="card p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xs font-bold">Wm</div>
+              <div>
+                <h4 class="font-medium text-sm">Waymo</h4>
+                <p class="text-xs text-gray-500">Autonomous</p>
+              </div>
+            </div>
+            <button class="px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition">Investir</button>
+          </div>
+
+          <div class="card p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center text-white text-xs font-bold">Rp</div>
+              <div>
+                <h4 class="font-medium text-sm">Ramp</h4>
+                <p class="text-xs text-gray-500">Fintech</p>
+              </div>
+            </div>
+            <button class="px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition">Investir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme toggle
+    const toggle = document.getElementById('themeToggle');
+    const icon = document.getElementById('themeIcon');
+    const html = document.documentElement;
+    
+    toggle.addEventListener('click', () => {
+      html.classList.toggle('dark');
+      icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
+    });
+  </script>
+</body>
+</html>

@@ -10,13 +10,34 @@ fn main() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .setup(|_app| {
+        .setup(|app| {
             // DevTools only in debug mode
             #[cfg(debug_assertions)]
             {
-                let window = _app.get_webview_window("main").unwrap();
+                let window = app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
+
+            // Handle window events to prevent freezing after sleep/wake
+            let window = app.get_webview_window("main").unwrap();
+            let window_clone = window.clone();
+
+            window.on_window_event(move |event| {
+                match event {
+                    tauri::WindowEvent::Focused(true) => {
+                        // Window regained focus - refresh to prevent freezing
+                        let _ = window_clone.eval("window.location.reload()");
+                    }
+                    tauri::WindowEvent::Resized(_) => {
+                        // Window resized - ensure proper state
+                    }
+                    tauri::WindowEvent::ScaleFactorChanged { .. } => {
+                        // Handle scale factor changes (display changes)
+                    }
+                    _ => {}
+                }
+            });
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -30,7 +51,7 @@ fn main() {
 
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Bonjour, {}! Bienvenue sur Vetera", name)
+    format!("Bonjour, {}! Bienvenue sur bAItari", name)
 }
 
 #[tauri::command]

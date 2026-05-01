@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import Logo from "./Logo"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {

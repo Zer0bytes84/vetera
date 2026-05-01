@@ -4,6 +4,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react"
+import { cn } from "@/lib/utils"
 import { SlashCommandItem } from "./SlashCommandsExtension"
 
 interface SlashCommandMenuProps {
@@ -58,7 +59,7 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
 
     if (items.length === 0) {
       return (
-        <div className="min-w-[280px] rounded-xl border border-border bg-popover p-3 shadow-xl">
+        <div className="min-w-[280px] rounded-lg border border-border bg-popover p-3 shadow-md">
           <p className="text-sm text-muted-foreground">
             Aucune commande trouvée
           </p>
@@ -66,37 +67,81 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
       )
     }
 
-    return (
-      <div className="max-h-[320px] min-w-[280px] overflow-hidden overflow-y-auto rounded-xl border border-border bg-popover shadow-xl">
-        <div className="border-b border-border bg-muted p-2">
-          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            Commandes
+    const formatItems = items.filter((item) => item.group === "format")
+    const aiItems = items.filter((item) => item.group === "ai")
+    const ungroupedItems = items.filter((item) => !item.group)
+
+    const renderItem = (item: SlashCommandItem, globalIndex: number) => (
+      <button
+        key={item.title}
+        onClick={() => selectItem(globalIndex)}
+        className={cn(
+          "flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors",
+          globalIndex === selectedIndex
+            ? "bg-accent text-accent-foreground"
+            : "text-foreground hover:bg-accent/50"
+        )}
+      >
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-background text-base">
+          {item.icon}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{item.title}</p>
+          <p className="truncate text-xs text-muted-foreground">
+            {item.description}
           </p>
         </div>
-        <div className="p-1">
-          {items.map((item, index) => (
-            <button
-              key={item.title}
-              onClick={() => selectItem(index)}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all ${
-                index === selectedIndex
-                  ? "bg-muted text-foreground"
-                  : "text-foreground hover:bg-muted"
-              } `}
-            >
-              <span
-                className={`flex h-8 w-8 items-center justify-center rounded-lg text-xl ${index === selectedIndex ? "bg-muted" : "bg-muted"}`}
-              >
-                {item.icon}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold">{item.title}</p>
-                <p className="truncate text-xs text-muted-foreground opacity-90">
-                  {item.description}
-                </p>
-              </div>
-            </button>
-          ))}
+      </button>
+    )
+
+    const getGlobalIndex = (item: SlashCommandItem) =>
+      items.findIndex((i) => i.title === item.title)
+
+    const hasGroups = formatItems.length > 0 || aiItems.length > 0
+
+    return (
+      <div className="max-h-[320px] min-w-[280px] overflow-hidden overflow-y-auto rounded-lg border border-border bg-popover shadow-md">
+        <div className="flex flex-col gap-0.5 p-1">
+          {hasGroups ? (
+            <>
+              {formatItems.length > 0 && (
+                <div>
+                  <p className="px-2 pt-1.5 pb-1 text-xs font-medium text-muted-foreground">
+                    Formatage
+                  </p>
+                  <div className="flex flex-col gap-0.5">
+                    {formatItems.map((item) =>
+                      renderItem(item, getGlobalIndex(item))
+                    )}
+                  </div>
+                </div>
+              )}
+              {aiItems.length > 0 && (
+                <div>
+                  {formatItems.length > 0 && (
+                    <div className="mx-2 my-1 border-t border-border" />
+                  )}
+                  <p className="px-2 pt-1.5 pb-1 text-xs font-medium text-muted-foreground">
+                    Assistant
+                  </p>
+                  <div className="flex flex-col gap-0.5">
+                    {aiItems.map((item) =>
+                      renderItem(item, getGlobalIndex(item))
+                    )}
+                  </div>
+                </div>
+              )}
+              {ungroupedItems.length > 0 && (
+                <div className="flex flex-col gap-0.5">
+                  {ungroupedItems.map((item) =>
+                    renderItem(item, getGlobalIndex(item))
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            items.map((item, index) => renderItem(item, index))
+          )}
         </div>
       </div>
     )

@@ -6,9 +6,9 @@ import Logo from "@/components/Logo"
 import { cn } from "@/lib/utils"
 import type { View } from "@/types"
 
-import { navigationItems } from "../../app/config/navigation"
-import { useProductsRepository, useTasksRepository } from "../../data/repositories"
-import type { ThemeMode } from "../../app/hooks/use-theme-mode"
+import { navigationItems } from "@/app/config/navigation"
+import { useProductsRepository, useTasksRepository } from "@/data/repositories"
+import type { ThemeMode } from "@/app/hooks/use-theme-mode"
 
 export function AppSidebar({
   currentView,

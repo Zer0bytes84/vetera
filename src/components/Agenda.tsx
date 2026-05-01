@@ -503,9 +503,9 @@ type AgendaOverviewCard = {
 
 const agendaToneMap: Record<AgendaOverviewCard["tone"], { bg: string; text: string; spark: string }> = {
   blue: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-600",
-    spark: "#f97316",
+    bg: "bg-blue-500/10",
+    text: "text-blue-600",
+    spark: "#3b82f6",
   },
   orange: {
     bg: "bg-orange-500/10",
@@ -545,7 +545,7 @@ function AgendaOverviewStrip({ items }: { items: AgendaOverviewCard[] }) {
         const tone = agendaToneMap[item.tone]
 
         return (
-          <Card key={item.label} className="overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+          <Card key={item.label} className={cn("overflow-hidden rounded-[24px] border border-border bg-card shadow-none card-vibrant", `metric-glow-${item.tone}`)}>
             <CardContent className="flex min-h-[154px] flex-col justify-between p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
@@ -1334,24 +1334,6 @@ const Agenda: React.FC = () => {
     t,
   ])
 
-  const selectedDateSubtitle = useMemo(() => {
-    const dateLabel = formatDateLabel(selectedDate, {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
-
-    return t("agenda.subtitle", {
-      count: dailyAppointments.length,
-      date: dateLabel,
-      defaultValue_one:
-        "{{count}} rendez-vous planifié pour {{date}}. Le planning reste synchronisé avec les vues jour, semaine et mois.",
-      defaultValue_other:
-        "{{count}} rendez-vous planifiés pour {{date}}. Le planning reste synchronisé avec les vues jour, semaine et mois.",
-    })
-  }, [dailyAppointments.length, selectedDate, t])
-
   const periodLabel = useMemo(() => {
     if (viewMode === "month") {
       return formatDateLabel(selectedDate, { month: "long", year: "numeric" })
@@ -1510,7 +1492,11 @@ const Agenda: React.FC = () => {
     if (!confirmed) return
 
     try {
-      await remove(appointment.id)
+      const removed = await remove(appointment.id)
+      if (!removed) {
+        toast.error("Le rendez-vous n'a pas pu être supprimé.")
+        return
+      }
       toast.success("Le rendez-vous a été supprimé du planning.")
 
       if (selectedAppointmentId === appointment.id) {
@@ -1708,19 +1694,7 @@ const Agenda: React.FC = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
-            Planning clinique
-          </p>
-          <h1 className="text-[28px] font-normal tracking-[-0.04em] text-foreground">
-            Agenda
-          </h1>
-          <p className="max-w-[72ch] text-sm text-muted-foreground">
-            {selectedDateSubtitle}
-          </p>
-        </div>
-
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button variant="outline" className="h-10 rounded-xl px-4" onClick={() => setSelectedDate(new Date())}>
             {t("agenda.today")}
@@ -1739,7 +1713,7 @@ const Agenda: React.FC = () => {
       <AgendaOverviewStrip items={overviewCards} />
 
       <div className="grid gap-4">
-        <Card className="min-h-[780px] rounded-[24px] border border-border bg-card shadow-none">
+        <Card className="card-vibrant card-hover-lift min-h-[780px] rounded-[24px] border border-border bg-card shadow-none">
           <CardHeader className="border-b border-border px-6 py-5">
             <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">{t("agenda.planning")}</CardDescription>
             <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
@@ -1943,7 +1917,7 @@ const Agenda: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid gap-3 rounded-4xl border border-border/80 bg-card p-4">
+                  <div className="grid gap-3 rounded-4xl border border-border/80 bg-card p-4 transition-all duration-200 ease-out hover:border-border/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                     <div className="flex items-center gap-2">
                       <HugeiconsIcon
                         icon={StethoscopeIcon}
@@ -1984,7 +1958,7 @@ const Agenda: React.FC = () => {
                       ci-dessous pour afficher la fiche contextuelle.
                     </EmptyDescription>
                   </EmptyHeader>
-                  <EmptyContent className="sm:flex-row">
+                  <EmptyContent className="sm:flex-row justify-center">
                     <Button onClick={() => handleOpenCreate()}>
                       <HugeiconsIcon
                         icon={Add01Icon}
@@ -2053,7 +2027,7 @@ const Agenda: React.FC = () => {
                 )}
               </div>
 
-              <div className="grid gap-2 rounded-4xl border border-border/80 bg-card p-4">
+              <div className="grid gap-2 rounded-4xl border border-border/80 bg-card p-4 transition-all duration-200 ease-out hover:border-border/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm text-muted-foreground">
                     Charge planifiée

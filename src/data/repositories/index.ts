@@ -111,21 +111,36 @@ export function useAppointmentsRepository() {
     const totalAmountDa = items.reduce((sum, item) => sum + Math.max(0, Number(item.amount) || 0), 0)
     const totalAmount = toCentimes(totalAmountDa)
 
-    if (totalAmount > 0) {
-      await transactionsStore.add({
-        amount: totalAmount,
-        type: "income",
-        category: category ?? "Consultation",
-        description: `Prestation: ${appointment.title}`,
-        referenceId: appointment.id,
-        method: method ?? "cash",
-        status: "paid",
-        date: new Date().toISOString(),
-      } as Omit<Transaction, "id" | "createdAt" | "updatedAt">)
+    // Ordre: RDV d'abord (essentiel), puis patient, puis transaction (peut être refaite)
+    // Si la transaction échoue, on peut la recréer manuellement plus tard
+    const appointmentUpdated = await appointmentsStore.update(appointment.id, { status: "completed" })
+    if (!appointmentUpdated) {
+      throw new Error("Impossible de mettre à jour le rendez-vous.")
     }
 
-    await appointmentsStore.update(appointment.id, { status: "completed" })
-    await patientsStore.update(appointment.patientId, { lastVisit: new Date().toISOString() } as Partial<Patient>)
+    const patientUpdated = await patientsStore.update(appointment.patientId, { lastVisit: new Date().toISOString() } as Partial<Patient>)
+    if (!patientUpdated) {
+      console.warn("[completeWithBilling] Patient non mis à jour, mais rendez-vous complété")
+    }
+
+    if (totalAmount > 0) {
+      try {
+        await transactionsStore.add({
+          amount: totalAmount,
+          type: "income",
+          category: category ?? "Consultation",
+          description: `Prestation: ${appointment.title}`,
+          referenceId: appointment.id,
+          method: method ?? "cash",
+          status: "paid",
+          date: new Date().toISOString(),
+        } as Omit<Transaction, "id" | "createdAt" | "updatedAt">)
+      } catch (err) {
+        console.error("[completeWithBilling] Erreur lors de la création de la transaction:", err)
+        // On ne bloque pas le flow car le RDV est déjà complété
+        // L'utilisateur pourra créer la transaction manuellement depuis Finances
+      }
+    }
 
     return { totalAmount, totalAmountDa }
   }
@@ -153,7 +168,10 @@ export function usePatientsRepository() {
     let finalOwnerId = ownerId ?? null
 
     if (finalOwnerId) {
-      await ownersStore.update(finalOwnerId, owner as Partial<Owner>)
+      const existingOwner = ownersStore.data.find((entry) => entry.id === finalOwnerId)
+      if (!existingOwner) {
+        throw new Error("Propriétaire introuvable. Réessayez après actualisation de la liste.")
+      }
     } else {
       const createdOwner = await ownersStore.add(owner as Omit<Owner, "id" | "createdAt" | "updatedAt">)
       finalOwnerId = createdOwner?.id ?? null

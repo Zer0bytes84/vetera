@@ -10,6 +10,7 @@ export interface SlashCommandItem {
     icon: React.ReactNode;
     command: (editor: any) => void;
     keywords?: string[];
+    group?: string;
 }
 
 const SlashCommands = Extension.create({
@@ -43,6 +44,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Grand titre de section',
         icon: '📌',
         keywords: ['h1', 'heading', 'titre'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
@@ -50,6 +52,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Sous-titre',
         icon: '📎',
         keywords: ['h2', 'heading', 'titre'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
@@ -57,6 +60,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Petit titre',
         icon: '📍',
         keywords: ['h3', 'heading', 'titre'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleHeading({ level: 3 }).run(),
     },
     {
@@ -64,6 +68,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Mettre en gras',
         icon: '𝐁',
         keywords: ['bold', 'gras', 'strong'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleBold().run(),
     },
     {
@@ -71,6 +76,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Mettre en italique',
         icon: '𝐼',
         keywords: ['italic', 'italique'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleItalic().run(),
     },
     {
@@ -78,6 +84,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Créer une liste à puces',
         icon: '•',
         keywords: ['bullet', 'list', 'puces'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleBulletList().run(),
     },
     {
@@ -85,6 +92,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Créer une liste numérotée',
         icon: '1.',
         keywords: ['numbered', 'list', 'numérotée'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleOrderedList().run(),
     },
     {
@@ -92,6 +100,7 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Ajouter une citation',
         icon: '❝',
         keywords: ['quote', 'citation', 'blockquote'],
+        group: 'format',
         command: (editor) => editor.chain().focus().toggleBlockquote().run(),
     },
     {
@@ -99,34 +108,39 @@ export const getSlashCommandItems = (onAiAction: (action: string) => void): Slas
         description: 'Ligne horizontale',
         icon: '—',
         keywords: ['divider', 'hr', 'ligne'],
+        group: 'format',
         command: (editor) => editor.chain().focus().setHorizontalRule().run(),
     },
     {
-        title: '✨ IA - Corriger',
+        title: 'Corriger',
         description: "Corriger l'orthographe et la grammaire",
         icon: '🔧',
         keywords: ['ai', 'ia', 'corriger', 'orthographe'],
+        group: 'ai',
         command: () => onAiAction("Corrige l'orthographe et la grammaire"),
     },
     {
-        title: '✨ IA - Reformuler',
+        title: 'Reformuler',
         description: 'Reformuler de manière professionnelle',
         icon: '✏️',
         keywords: ['ai', 'ia', 'reformuler', 'professionnel'],
+        group: 'ai',
         command: () => onAiAction("Reformule de manière professionnelle"),
     },
     {
-        title: '✨ IA - Résumer',
+        title: 'Résumer',
         description: 'Résumer en points clés',
         icon: '📋',
         keywords: ['ai', 'ia', 'résumer', 'summary'],
+        group: 'ai',
         command: () => onAiAction("Résume en points clés"),
     },
     {
-        title: '✨ IA - Rédiger',
-        description: 'Demander à l\'IA d\'écrire du contenu',
+        title: 'Rédiger avec l\'IA',
+        description: 'L\'assistant rédige du contenu pour vous',
         icon: '✍️',
         keywords: ['ai', 'ia', 'rédiger', 'écrire', 'write', 'generate'],
+        group: 'ai',
         command: () => onAiAction("__WRITE_MODE__"),
     },
 ];

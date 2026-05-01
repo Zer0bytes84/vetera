@@ -6,10 +6,10 @@ import {
   Logout01Icon,
   Menu01Icon,
   Moon02Icon,
-  Notification02Icon,
   SearchIcon,
   Settings01Icon,
   Sun03Icon,
+  Task01Icon,
   User02Icon,
 } from "@hugeicons/core-free-icons"
 
@@ -21,9 +21,9 @@ import {
   useProductsRepository,
   useTasksRepository,
   useUsersRepository,
-} from "../../data/repositories"
-import { getViewTitle } from "../../app/config/navigation"
-import { Input } from "../../shared/ui/input"
+} from "@/data/repositories"
+import { getViewTitle } from "@/app/config/navigation"
+import { Input } from "@/shared/ui/input"
 import { useTranslation } from "react-i18next"
 
 export function AppHeader({
@@ -198,7 +198,7 @@ export function AppHeader({
               className="relative size-10 rounded-2xl border border-black/6 bg-white/70 text-muted-foreground hover:bg-white hover:text-foreground dark:border-white/8 dark:bg-white/6 dark:hover:bg-white/10"
             >
               <HugeiconsIcon
-                icon={Notification02Icon}
+                icon={Task01Icon}
                 strokeWidth={2}
                 className="size-[18px]"
               />

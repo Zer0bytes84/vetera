@@ -8,6 +8,7 @@ import {
   Download01Icon,
   File01Icon,
   Notification02Icon,
+  SparklesIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
@@ -59,26 +60,27 @@ import {
   useTasksRepository,
   useTransactionsRepository,
   useUsersRepository,
-} from "../../data/repositories"
-import MotivationalHeader from "@/components/MotivationalHeader"
+} from "@/data/repositories"
 import { useTranslation } from "react-i18next"
 
 // Import flat design components from v2
 import {
+  buildDashboardMetrics,
+  type InsightCardData,
+  type DashboardMetrics,
   DashboardSection,
-  InsightCard,
   LeadMetricStrip,
   LeadRevenuePanel,
   LeadSegmentationPanel,
   LeadStatusPanel,
   WebVisitsPanel,
-  buildDashboardMetrics,
-  type InsightCardData,
-  type DashboardMetrics,
-} from "../v2/prototype-pages"
+} from "@/modules/v2/prototype-pages"
+import { DashboardSecondaryWidgets } from "@/components/dashboard-secondary-widgets"
+import { SectionCardsPremium } from "@/components/section-cards-premium"
 
 type DashboardPageProps = {
   onNavigate: (view: View) => void
+  onOpenAIAgent?: () => void
 }
 
 function addDays(date: Date, amount: number) {
@@ -130,7 +132,14 @@ function mapStatus(status: string) {
   }
 }
 
-export function DashboardPage({ onNavigate }: DashboardPageProps) {
+function getOverviewGreeting(date: Date) {
+  const hour = date.getHours()
+  if (hour < 12) return { text: "Bonjour", emoji: "☀️" }
+  if (hour < 18) return { text: "Bon apres-midi", emoji: "🌤️" }
+  return { text: "Bonsoir", emoji: "🌙" }
+}
+
+export function DashboardPage({ onNavigate, onOpenAIAgent }: DashboardPageProps) {
   const { t, i18n } = useTranslation()
   const currentLocale = i18n.language.startsWith("ar")
     ? "ar"
@@ -165,6 +174,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
   const referenceDate = metrics.referenceDate
   const reportReferenceDate = selectedReportDate ?? referenceDate
+  const greeting = getOverviewGreeting(referenceDate)
+  const headerName = currentUser?.displayName?.trim() || "Docteur"
 
   // Calculate deltas for insight cards
   const incomeTodayDelta = percentageDelta(metrics.summary.incomeToday, metrics.summary.incomeYesterday)
@@ -381,7 +392,14 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       >
         <div className="flex flex-col gap-4 px-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex flex-col gap-4">
-            <MotivationalHeader section="dashboard" onNavigate={(view) => onNavigate(view as View)} />
+            {dashboardTab === "overview" ? (
+              <div className="space-y-1">
+                <p className="text-[11px] font-medium text-muted-foreground">Vue d&apos;ensemble</p>
+                <h1 className="text-xl font-semibold tracking-[-0.02em] text-foreground">
+                  {greeting.text} {headerName} {greeting.emoji}
+                </h1>
+              </div>
+            ) : null}
             <TabsList className="h-auto w-fit gap-1 rounded-xl bg-muted/70 p-1">
               {dashboardTabs.map((tab) => (
                 <TabsTrigger
@@ -1348,6 +1366,7 @@ function WorldMap({
           })()}
         </div>
       )}
+
     </div>
   )
 }

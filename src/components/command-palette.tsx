@@ -53,26 +53,10 @@ interface CommandItemData {
 export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPaletteProps) {
   const { t } = useTranslation()
   const [search, setSearch] = React.useState("")
-  const isClosingRef = React.useRef(false)
-
-  // Raccourci clavier Cmd+K
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        if (!isClosingRef.current) {
-          onOpenChange(!open)
-        }
-      }
-    }
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [open])
 
   // Reset search quand le dialog s'ouvre
   React.useEffect(() => {
     if (open) {
-      isClosingRef.current = false
       setSearch("")
     }
   }, [open])
@@ -174,24 +158,10 @@ export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPalett
   ]
 
   const handleSelect = (command: CommandItemData) => {
-    if (isClosingRef.current) return
-    isClosingRef.current = true
-    
-    // Naviguer d'abord, puis fermer
     if (onNavigate) {
       onNavigate(command.href.replace("/", ""))
     }
     onOpenChange(false)
-    // Ne pas reset search ici - attendre que le dialog se ferme complètement
-  }
-  
-  // Gestion de la touche ESC - fermeture simple sans animation complexe
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape" && !isClosingRef.current) {
-      e.preventDefault()
-      isClosingRef.current = true
-      onOpenChange(false)
-    }
   }
 
   // Grouper par catégorie
@@ -204,26 +174,20 @@ export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPalett
   }, {} as Record<string, CommandItemData[]>)
 
   return (
-    <Dialog open={open} onOpenChange={(newOpen) => {
-      // Seulement permettre la fermeture si on est pas déjà en train de fermer
-      if (!newOpen && isClosingRef.current) return
-      onOpenChange(newOpen)
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
           "overflow-hidden p-0",
           "max-w-[640px] w-[calc(100%-2rem)]",
-          "rounded-[24px] border border-border bg-card shadow-2xl"
+          "rounded-[24px] border border-border bg-card shadow-2xl",
+          "data-closed:animate-none data-closed:fade-out-100 data-closed:zoom-out-100"
         )}
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">
           {t("commandPalette.title", { defaultValue: "Recherche rapide" })}
         </DialogTitle>
-        <Command 
-          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
-          onKeyDown={handleKeyDown}
-        >
+        <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
           <div className="flex items-center border-b border-border px-4">
             <HugeiconsIcon
               icon={Home04Icon}

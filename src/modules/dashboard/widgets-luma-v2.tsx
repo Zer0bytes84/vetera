@@ -91,8 +91,8 @@ export function NextAppointmentWidgetLumaV2({ appointment, onNavigate }: NextApp
     : null
 
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <Card className="overflow-hidden transition-all card-vibrant widget-mesh widget-mesh-violet">
+      <CardHeader className="relative z-[1] flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500/10">
             <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} className="h-4 w-4 text-violet-600" />
@@ -182,8 +182,8 @@ export function TasksWidgetLumaV2({ tasks, onNavigate }: TasksWidgetProps) {
   const completionRate = tasks.length > 0 ? Math.round((tasks.filter((t) => t.status === "completed").length / tasks.length) * 100) : 0
 
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <Card className="overflow-hidden transition-all card-vibrant widget-mesh widget-mesh-warm">
+      <CardHeader className="relative z-[1] flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10">
             <HugeiconsIcon icon={Task01Icon} strokeWidth={1.5} className="h-4 w-4 text-amber-600" />
@@ -273,7 +273,7 @@ export function StockAlertsWidgetLumaV2({ products, onNavigate }: StockAlertsWid
   const critical = alerts.filter((p) => p.quantity <= p.minStock * 0.5)
 
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden transition-all card-vibrant">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/10">
@@ -311,16 +311,16 @@ export function StockAlertsWidgetLumaV2({ products, onNavigate }: StockAlertsWid
             </span>
           </div>
           <div className="flex gap-1 h-2">
-            <div 
-              className="bg-emerald-500 rounded-full" 
+            <div
+              className="bg-emerald-500 rounded-full"
               style={{ width: `${((products.length - alerts.length) / products.length) * 100}%` }}
             />
-            <div 
-              className="bg-amber-500 rounded-full" 
+            <div
+              className="bg-amber-500 rounded-full"
               style={{ width: `${((alerts.length - critical.length) / products.length) * 100}%` }}
             />
-            <div 
-              className="bg-rose-500 rounded-full" 
+            <div
+              className="bg-rose-500 rounded-full"
               style={{ width: `${(critical.length / products.length) * 100}%` }}
             />
           </div>
@@ -364,7 +364,7 @@ const activityConfig: Record<Activity["type"], { icon: IconSvgElement; bg: strin
 
 export function RecentActivityWidgetLumaV2({ activities, onNavigate }: RecentActivityWidgetProps) {
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden transition-all card-vibrant">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10">
@@ -449,7 +449,7 @@ const insightConfig: Record<SmartInsight["type"], { bg: string; border: string; 
 
 export function InsightsWidgetLumaV2({ insights, onNavigate }: InsightsWidgetProps) {
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden transition-all card-vibrant">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10">
@@ -545,7 +545,7 @@ export function PerformanceWidgetLumaV2({ todayAppointments, completedAppointmen
   const completionRate = todayAppointments > 0 ? Math.round((completedAppointments / todayAppointments) * 100) : 0
 
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden transition-all card-vibrant">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-teal-500/10">

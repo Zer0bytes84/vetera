@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import * as AuthService from '../services/sqlite/auth';
+import * as AuthService from '@/services/sqlite/auth';
 
 interface AuthUser {
   id: string;
@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshCurrentUser = useCallback(async () => {
     try {
+      setLoading(true);
       const user = await AuthService.getCurrentUser();
       if (user) {
         setCurrentUser({
@@ -55,6 +56,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error: any) {
       console.error('Error refreshing user:', error);
       setError(error.message || 'Failed to refresh user');
+    } finally {
+      setLoading(false);
     }
   }, []);
 

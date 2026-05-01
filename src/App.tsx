@@ -8,7 +8,8 @@ import { useAuth } from "@/contexts/AuthContext"
 import { appSettingsRepository } from "@/data/repositories"
 import { applyTheme, getThemeConfig } from "@/lib/theme-store"
 import { checkAutoBackup } from "@/services/backupService"
-import { seedDemoDataIfNeeded } from "@/services/demo-data"
+import { purgeDemoDataInTauriIfNeeded, seedDemoDataIfNeeded } from "@/services/demo-data"
+import { isTauriRuntime } from "@/services/browser-store"
 import i18n, { isRtlLanguage } from "@/i18n/config"
 import { saveLicenseInfo } from "@/services/appSettingsService"
 import { startAppUpdateCheck } from "@/services/updateService"
@@ -53,6 +54,13 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    if (isTauriRuntime()) {
+      purgeDemoDataInTauriIfNeeded().catch((error) => {
+        console.error("[App] Demo data purge failed:", error)
+      })
+      return
+    }
+
     seedDemoDataIfNeeded(currentUser ?? null).catch((error) => {
       console.error("[App] Demo seed failed:", error)
     })

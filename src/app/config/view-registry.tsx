@@ -3,18 +3,17 @@ import { lazy, Suspense, type ReactNode } from "react"
 import { Spinner } from "@/components/ui/spinner"
 import type { View } from "@/types"
 
-import type { ThemeMode } from "../hooks/use-theme-mode"
+import type { ThemeMode } from "@/app/hooks/use-theme-mode"
 import {
   DashboardV2Page,
   FinancialAnalyticsV2Page,
-} from "../../modules/v2/prototype-pages"
+} from "@/modules/v2/prototype-pages"
 
 const AgendaPage = lazy(() => import("@/components/Agenda"))
 const CliniquePage = lazy(() => import("@/components/Clinique"))
 const FinancesPage = lazy(() => import("@/components/Finances"))
 const HelpPage = lazy(() => import("@/components/Help"))
-// Notes temporairement désactivé - en refonte
-const NotesPage = lazy(() => import("@/components/Notes"))
+const NotesPage = lazy(() => import("@/components/NotesPro"))
 const ParametresPage = lazy(() => import("@/components/Parametres"))
 const PatientsPage = lazy(() => import("@/components/Patients"))
 const StockPage = lazy(() => import("@/components/Stock"))
@@ -25,6 +24,7 @@ type ViewRegistryProps = {
   onNavigate: (view: View) => void
   currentTheme: ThemeMode
   onThemeChange: (mode: ThemeMode) => void
+  onOpenAIAgent?: () => void
 }
 
 function ViewLoadingState() {
@@ -45,7 +45,7 @@ function renderLazyView(node: ReactNode) {
 export function renderView(view: View, props: ViewRegistryProps) {
   switch (view) {
     case "dashboard":
-      return <DashboardV2Page onNavigate={props.onNavigate} />
+      return <DashboardV2Page onNavigate={props.onNavigate} onOpenAIAgent={props.onOpenAIAgent} />
     case "agenda":
       return renderLazyView(<AgendaPage />)
     case "clinique":

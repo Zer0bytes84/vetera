@@ -8,12 +8,18 @@ import {
   Heading01Icon,
   Heading02Icon,
   SparklesIcon,
-  ArrowDown01Icon,
   CheckmarkCircle02Icon,
   MagicWand01Icon,
   CheckListIcon,
 } from "@hugeicons/core-free-icons"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Separator } from "@/components/ui/separator"
 
 interface SelectionBubbleMenuProps {
   editor: Editor
@@ -24,7 +30,6 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
   editor,
   onAiAction,
 }) => {
-  const [showAiMenu, setShowAiMenu] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const menuRef = useRef<HTMLDivElement>(null)
@@ -79,7 +84,6 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
   }, [editor])
 
   const handleAiAction = (action: string) => {
-    setShowAiMenu(false)
     setIsVisible(false)
     onAiAction(action)
   }
@@ -130,7 +134,7 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
         />
       </Button>
 
-      <div className="mx-1 h-6 w-px bg-border" />
+      <Separator orientation="vertical" className="mx-1 h-6" />
 
       <Button
         type="button"
@@ -160,46 +164,36 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
         />
       </Button>
 
-      <div className="mx-1 h-6 w-px bg-border" />
+      <Separator orientation="vertical" className="mx-1 h-6" />
 
-      <div className="relative">
-        <Button
-          onClick={() => setShowAiMenu(!showAiMenu)}
-          className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
-          size="sm"
-        >
-          <HugeiconsIcon
-            icon={SparklesIcon}
-            strokeWidth={1.5}
-            className="size-3.5"
-          />
-          <span>IA</span>
-          <HugeiconsIcon
-            icon={ArrowDown01Icon}
-            strokeWidth={1.5}
-            className={`size-3 transition-transform ${showAiMenu ? "rotate-180" : ""}`}
-          />
-        </Button>
-
-        {showAiMenu && (
-          <div className="absolute top-full left-0 z-50 mt-2 min-w-[180px] overflow-hidden rounded-xl border border-border bg-popover shadow-xl">
-            {aiActions.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => handleAiAction(item.action)}
-                className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-muted"
-              >
-                <HugeiconsIcon
-                  icon={item.icon}
-                  strokeWidth={1.5}
-                  className="size-3.5 text-violet-500"
-                />
-                {item.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={(
+            <Button variant="secondary" size="icon-sm" title="IA">
+              <HugeiconsIcon
+                icon={SparklesIcon}
+                strokeWidth={1.5}
+                className="size-4 text-primary"
+              />
+            </Button>
+          )}
+        />
+        <DropdownMenuContent align="start">
+          {aiActions.map((item) => (
+            <DropdownMenuItem
+              key={item.label}
+              onClick={() => handleAiAction(item.action)}
+            >
+              <HugeiconsIcon
+                icon={item.icon}
+                strokeWidth={1.5}
+                className="size-4 text-primary"
+              />
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }

@@ -154,12 +154,15 @@ export function updateBrowserRow<T extends BrowserRow>(
   return true
 }
 
-export function removeBrowserRow(tableName: BrowserTableName, id: string) {
+export function removeBrowserRow(tableName: BrowserTableName, id: string): boolean {
   const state = readState()
+  const originalLength = state.tables[tableName].length
   state.tables[tableName] = state.tables[tableName].filter(
     (row) => row.id !== id
   )
+  const removed = state.tables[tableName].length < originalLength
   writeState(state)
+  return removed
 }
 
 export function setBrowserRow<T extends BrowserRow>(

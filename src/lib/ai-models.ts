@@ -138,7 +138,7 @@ export const MODEL_CATEGORIES: {
   },
 ]
 
-export const DEFAULT_MODEL_ID = "Qwen2.5-3B-Instruct-q4f16_1-MLC"
+export const DEFAULT_MODEL_ID = "Qwen3-1.7B-q4f16_1-MLC"
 
 export function getModelById(id: string): AIModel | undefined {
   return AI_MODELS.find((m) => m.id === id)

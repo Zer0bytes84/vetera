@@ -62,7 +62,7 @@ export function DashboardSecondaryWidgets({
 }: DashboardSecondaryWidgetsProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.95fr)]">
-      <Card className="min-h-[220px]">
+      <Card className="min-h-[220px] card-vibrant">
         <CardHeader>
           <WidgetMeta
             icon={<HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />}
@@ -109,7 +109,7 @@ export function DashboardSecondaryWidgets({
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-        <Card size="sm">
+        <Card size="sm" className="card-vibrant">
           <CardHeader>
             <WidgetMeta
               icon={<HugeiconsIcon icon={UserGroupIcon} strokeWidth={1.5} />}
@@ -131,7 +131,7 @@ export function DashboardSecondaryWidgets({
           </CardFooter>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="card-vibrant">
           <CardHeader>
             <WidgetMeta
               icon={<HugeiconsIcon icon={Package02Icon} strokeWidth={1.5} />}

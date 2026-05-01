@@ -216,7 +216,7 @@ export function DashboardAnalyticsV2({
         summary: "Décaissements",
         icon: ArrowDown01Icon,
         sparklineData: generateSparkline(parseInt(financeSeries.secondary.value.replace(/\D/g, '')) / 100 || 30),
-        color: "rose",
+        color: "red",
       },
       {
         title: "Nouveaux pts",
@@ -226,7 +226,7 @@ export function DashboardAnalyticsV2({
         summary: "Acquisitions",
         icon: UserMultipleIcon,
         sparklineData: generateSparkline(parseInt(visitorsSeries.primary.value) || 10),
-        color: "blue",
+        color: "slate",
       },
       {
         title: "Fidèles",

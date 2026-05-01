@@ -17,7 +17,7 @@ interface UseSQLiteResult<T> {
   error: string | null
   add: (item: Omit<T, "id" | "createdAt" | "updatedAt">) => Promise<T | null>
   update: (id: string, updates: Partial<T>) => Promise<boolean>
-  remove: (id: string) => Promise<void>
+  remove: (id: string) => Promise<boolean>
   set: (id: string, item: Partial<T>) => Promise<void>
   refresh: () => Promise<void>
 }
@@ -224,24 +224,37 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
   )
 
   const remove = useCallback(
-    async (id: string): Promise<void> => {
+    async (id: string): Promise<boolean> => {
       if (!safeTableName) {
         throw new Error(`Table non autorisée: ${tableName}`)
       }
 
-      if (!isTauriRuntime()) {
-        removeBrowserRow(safeTableName as BrowserTableName, id)
+      try {
+        if (!isTauriRuntime()) {
+          const removed = removeBrowserRow(safeTableName as BrowserTableName, id)
+          if (!removed) {
+            throw new Error(`Élément non trouvé: ${id}`)
+          }
+          await loadData()
+          emitSQLiteDataChanged(safeTableName)
+          return true
+        }
+
+        const db = await getDatabase()
+        const result = await db.execute(`DELETE FROM ${safeTableName} WHERE id = ?`, [id])
+        if (result.rowsAffected === 0) {
+          throw new Error(`Élément non trouvé: ${id}`)
+        }
         await loadData()
         emitSQLiteDataChanged(safeTableName)
-        return
+        return true
+      } catch (err) {
+        console.error(`[useSQLite] Error removing from ${safeTableName}:`, err)
+        setError(err instanceof Error ? err.message : `Erreur lors de la suppression`)
+        return false
       }
-
-      const db = await getDatabase()
-      await db.execute(`DELETE FROM ${safeTableName} WHERE id = ?`, [id])
-      await loadData()
-      emitSQLiteDataChanged(safeTableName)
     },
-    [loadData, safeTableName, tableName]
+    [loadData, safeTableName, tableName, setError]
   )
 
   const set = useCallback(

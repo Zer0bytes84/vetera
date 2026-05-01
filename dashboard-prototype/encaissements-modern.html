@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bAItari - Encaissements Modern</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      background: #0a0a0a; 
+      color: #e5e5e5; 
+      padding: 60px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .widget {
+      background: #141414;
+      border-radius: 28px;
+      padding: 28px;
+      width: 480px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .title-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    
+    .title-group h2 {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+    
+    .subtitle {
+      font-size: 11px;
+      color: #666;
+    }
+    
+    .more-btn {
+      width: 32px;
+      height: 32px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: #666;
+    }
+    
+    .chart-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      height: 200px;
+      margin-bottom: 20px;
+      padding: 0 8px;
+    }
+    
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .dot.green { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+    .dot.orange { background: #f97316; box-shadow: 0 0 8px rgba(249, 115, 22, 0.4); }
+    .dot.white { background: #e5e5e5; }
+    .dot.small { width: 6px; height: 6px; }
+    
+    .bar {
+      width: 28px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .bar-value {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 1px;
+    }
+    
+    .bar.green { 
+      background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+    }
+    
+    .bar.orange { 
+      background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+      color: white;
+    }
+    
+    .bar.white { 
+      background: linear-gradient(180deg, #e5e5e5 0%, #d4d4d4 100%);
+      color: #0a0a0a;
+    }
+    
+    .bar.dim { 
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .bar-label {
+      font-size: 9px;
+      color: #666;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #888;
+    }
+    
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .legend-dot.green { background: #22c55e; }
+    .legend-dot.orange { background: #f97316; }
+    .legend-dot.white { background: #e5e5e5; }
+    
+    .total {
+      margin-left: auto;
+      font-size: 11px;
+      color: #888;
+    }
+    
+    .total span {
+      color: #e5e5e5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+    <div class="header">
+      <div class="title-section">
+        <div class="icon">💰</div>
+        <div class="title-group">
+          <h2>ENCAISSEMENTS</h2>
+          <div class="subtitle">Revenus mensuels 2026</div>
+        </div>
+      </div>
+      <div class="more-btn">⋯</div>
+    </div>
+    
+    <div class="chart-container">
+      <!-- JAN -->
+      <div class="bar-group">
+        <div class="dot small white"></div>
+        <div class="bar white" style="height: 45px;">
+          <span class="bar-value">52</span>
+        </div>
+        <div class="bar-label">JAN</div>
+      </div>
+      
+      <!-- FÉV -->
+      <div class="bar-group">
+        <div class="dot green"></div>
+        <div class="bar green" style="height: 85px;">
+          <span class="bar-value">96</span>
+        </div>
+        <div class="bar-label">FÉV</div>
+      </div>
+      
+      <!-- MAR -->
+      <div class="bar-group">
+        <div class="dot orange"></div>
+        <div class="bar orange" style="height: 55px;">
+          <span class="bar-value">61</span>
+        </div>
+        <div class="bar-label">MAR</div>
+      </div>
+      
+      <!-- AVR (Current) -->
+      <div class="bar-group">
+        <div class="dot green"></div>
+        <div class="bar green" style="height: 110px; box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);">
+          <span class="bar-value">128</span>
+        </div>
+        <div class="bar-label" style="color: #22c55e; font-weight: 600;">AVR</div>
+      </div>
+      
+      <!-- MAI -->
+      <div class="bar-group">
+        <div class="dot white"></div>
+        <div class="bar white" style="height: 38px;">
+          <span class="bar-value">42</span>
+        </div>
+        <div class="bar-label">MAI</div>
+      </div>
+      
+      <!-- JUN -->
+      <div class="bar-group">
+        <div class="dot orange"></div>
+        <div class="bar orange" style="height: 48px;">
+          <span class="bar-value">54</span>
+        </div>
+        <div class="bar-label">JUN</div>
+      </div>
+      
+      <!-- JUI -->
+      <div class="bar-group">
+        <div class="dot small white"></div>
+        <div class="bar dim" style="height: 20px;"></div>
+        <div class="bar-label">JUI</div>
+      </div>
+      
+      <!-- AOÛ -->
+      <div class="bar-group">
+        <div class="dot small white"></div>
+        <div class="bar dim" style="height: 20px;"></div>
+        <div class="bar-label">AOÛ</div>
+      </div>
+    </div>
+    
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot green"></div>
+        <span>Objectif atteint</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot orange"></div>
+        <span>En progression</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot white"></div>
+        <span>Stable</span>
+      </div>
+      <div class="total">
+        Total: <span>1 024 000 DA</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

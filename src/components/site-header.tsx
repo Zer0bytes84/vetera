@@ -2,8 +2,8 @@ import { useEffect, useState } from "react"
 import {
   CheckmarkCircle02Icon,
   LanguageCircleIcon,
-  Notification02Icon,
   SearchIcon,
+  Task01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
@@ -125,7 +125,7 @@ export function SiteHeader({
   }
 
   const iconButtonClass =
-    "relative inline-flex size-9 items-center justify-center rounded-xl border border-border/60 bg-background/50 text-primary shadow-xs backdrop-blur-[2px] transition-all hover:border-primary hover:bg-primary/10"
+    "relative inline-flex size-9 items-center justify-center rounded-xl border border-border/40 bg-background/40 text-foreground/70 shadow-xs backdrop-blur-md transition-all duration-200 ease-out hover:border-border/80 hover:bg-muted/80 hover:text-foreground hover:shadow-sm hover:scale-105"
 
   if (variant === "prototype") {
     return (
@@ -133,14 +133,24 @@ export function SiteHeader({
         ref={headerRef}
         onMouseDown={handleMouseDown}
         className={cn(
-          "sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background/92 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/82 lg:px-6",
-          "transition-[width,height] duration-300 ease-linear",
-          isScrolled ? "border-border" : "border-border/70"
+          "sticky top-0 z-30 flex h-[64px] shrink-0 items-center gap-2 px-4 lg:px-6",
+          "transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          // Liquid glass (macOS / iOS) — translucent surface + heavy blur + high saturation
+          "relative isolate bg-background/35 supports-[backdrop-filter]:bg-background/22",
+          "backdrop-blur-[32px] backdrop-saturate-[180%]",
+          // Glass top highlight (the soft shine seen on macOS toolbars)
+          "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px",
+          "before:bg-gradient-to-r before:from-transparent before:via-white/55 before:to-transparent",
+          "dark:before:via-white/12",
+          // Hairline divider
+          "border-b border-black/[0.06] dark:border-white/[0.08]",
+          isScrolled
+            ? "shadow-[0_1px_0_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.18)] border-black/[0.10] dark:border-white/[0.12]"
+            : "shadow-none border-transparent"
         )}
       >
         <div className="flex w-full items-center gap-1 lg:gap-2">
           <SidebarTrigger className="-ms-1" />
-          <Separator orientation="vertical" className="mx-2 h-4 data-vertical:self-auto" />
           <h1 className="text-sm font-medium text-foreground sm:text-base">
             {title}
           </h1>
@@ -153,7 +163,7 @@ export function SiteHeader({
             <Button
               type="button"
               variant="outline"
-              className="hidden h-9 w-[200px] lg:w-[240px] items-center justify-between rounded-full border-border/50 bg-muted/30 px-3 text-[13px] font-normal text-muted-foreground shadow-xs backdrop-blur-[2px] transition-all hover:bg-muted/50 hover:border-border md:flex"
+              className="hidden h-9 w-[200px] lg:w-[260px] items-center justify-between rounded-full border border-border/40 bg-background/40 px-3 text-[13px] font-normal text-muted-foreground shadow-xs backdrop-blur-md transition-all hover:bg-muted/60 hover:text-foreground hover:border-border/60 hover:shadow-sm md:flex"
               onClick={onOpenPalette}
             >
               <div className="flex items-center gap-2">
@@ -195,19 +205,30 @@ export function SiteHeader({
       ref={headerRef}
       onMouseDown={handleMouseDown}
       className={cn(
-        "sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 overflow-hidden border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ps-4 pe-3 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:ps-6 lg:pe-4",
-        "border-black/[0.06] dark:border-white/[0.04]"
+        "sticky top-0 z-30 flex h-[64px] shrink-0 items-center gap-2 ps-4 pe-3 lg:ps-6 lg:pe-4",
+        "transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]",
+        // Liquid glass (macOS / iOS) — translucent surface + heavy blur + high saturation
+        "relative isolate bg-background/35 supports-[backdrop-filter]:bg-background/22",
+        "backdrop-blur-[32px] backdrop-saturate-[180%]",
+        // Glass top highlight (soft shine like macOS toolbars)
+        "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px",
+        "before:bg-gradient-to-r before:from-transparent before:via-white/55 before:to-transparent",
+        "dark:before:via-white/12",
+        // Hairline divider
+        "border-b border-black/[0.06] dark:border-white/[0.08]",
+        isScrolled
+          ? "shadow-[0_1px_0_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.18)] border-black/[0.10] dark:border-white/[0.12]"
+          : "shadow-none"
       )}
     >
       <div className="flex w-full items-center gap-2">
         <SidebarTrigger className="-ms-1" />
-        <Separator orientation="vertical" className="mx-2 h-5 data-vertical:self-auto" />
         <div className="flex-1" />
         <div className={cn("ms-auto flex items-center gap-2.5 pe-0.5 transition-transform duration-300")}>
           <Button
             type="button"
             variant="outline"
-            className="h-9 w-[200px] lg:w-[240px] items-center justify-between rounded-full border-border/50 bg-muted/30 px-3 text-[13px] font-normal text-muted-foreground shadow-xs backdrop-blur-[2px] transition-all hover:bg-muted/50 hover:border-border"
+            className="focus-ring-vibrant h-9 w-[200px] lg:w-[260px] items-center justify-between rounded-full border border-border/40 bg-background/40 px-3 text-[13px] font-normal text-muted-foreground shadow-xs backdrop-blur-md transition-all hover:bg-muted/60 hover:text-foreground hover:border-border/60 hover:shadow-sm"
             onClick={onOpenPalette}
           >
             <div className="flex items-center gap-2">
@@ -229,11 +250,11 @@ export function SiteHeader({
             aria-label={t("header.notifications")}
           >
             <HugeiconsIcon
-              icon={Notification02Icon}
+              icon={Task01Icon}
               strokeWidth={2}
               className="size-4 text-foreground/85"
             />
-            <span className="absolute top-1.5 end-1.5 size-2 rounded-full border border-background/90 bg-rose-500 shadow-[0_0_0_1px_rgba(255,255,255,0.22)]" />
+            <span className="absolute top-1.5 end-1.5 size-2 rounded-full border border-background/90 bg-rose-500 shadow-[0_0_0_1px_rgba(255,255,255,0.22)] status-dot-alive" />
             <span className="sr-only">{t("header.notifications")}</span>
           </Button>
           <Button
@@ -260,7 +281,7 @@ export function SiteHeader({
               <HugeiconsIcon icon={LanguageCircleIcon} strokeWidth={2} className="size-4 translate-y-[0.5px]" />
               <span className="sr-only">{t("language.label")}</span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-56" align={isRtl ? "start" : "end"} sideOffset={8}>
+            <DropdownMenuContent className="min-w-56" align="end" sideOffset={8}>
               {SUPPORTED_LANGUAGES.map((language) => {
                 const active = i18n.language.startsWith(language.code)
                 return (

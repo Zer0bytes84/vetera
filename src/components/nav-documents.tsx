@@ -17,6 +17,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreHorizontalCircle01Icon, Folder01Icon, Share01Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 import { useTranslation } from "react-i18next"
+import { cn } from "@/lib/utils"
 
 export function NavDocuments({
   title,
@@ -36,8 +37,16 @@ export function NavDocuments({
       <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{title ?? t("nav.sections.operations")}</SidebarGroupLabel>
       <SidebarMenu className="group-data-[collapsible=icon]:gap-2">
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton render={<button type="button" onClick={item.onClick} />} tooltip={item.name}>
+          <SidebarMenuItem key={item.name} className="group/item">
+            <SidebarMenuButton
+              render={<button type="button" onClick={item.onClick} />}
+              tooltip={item.name}
+              className={cn(
+                "transition-all duration-200 ease-out",
+                "hover:bg-muted/50 hover:translate-x-0.5 hover:shadow-[0_0_0_1px_rgba(15,23,42,0.06)]",
+                "group-data-[variant=sidebar]:h-10 group-data-[variant=sidebar]:rounded-xl group-data-[variant=sidebar]:px-3 group-data-[variant=sidebar]:text-[15px] group-data-[variant=sidebar]:hover:translate-x-0"
+              )}
+            >
               {item.icon}
               <span className="group-data-[collapsible=icon]:hidden">{item.name}</span>
             </SidebarMenuButton>
@@ -46,11 +55,11 @@ export function NavDocuments({
                 render={
                   <SidebarMenuAction
                     showOnHover
-                    className="aria-expanded:bg-muted"
+                    className="transition-all duration-200 ease-out hover:bg-muted/60 aria-expanded:bg-muted"
                   />
                 }
               >
-                <HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2} />
+                <HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2} className="text-muted-foreground transition-all duration-200 group-hover:text-foreground" />
                 <span className="sr-only">{t("nav.menu.more")}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent

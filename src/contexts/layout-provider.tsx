@@ -6,7 +6,7 @@ type Variant = "inset" | "sidebar" | "floating"
 const LAYOUT_COLLAPSIBLE_KEY = "layout_collapsible"
 const LAYOUT_VARIANT_KEY = "layout_variant"
 
-const DEFAULT_VARIANT: Variant = "inset"
+const DEFAULT_VARIANT: Variant = "sidebar"
 const DEFAULT_COLLAPSIBLE: Collapsible = "icon"
 
 type LayoutContextType = {
@@ -34,6 +34,8 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
   const [variant, _setVariant] = useState<Variant>(() => {
     try {
       const saved = localStorage.getItem(LAYOUT_VARIANT_KEY)
+      // Migrate legacy default "inset" to the new default "sidebar".
+      if (saved === "inset") return "sidebar"
       return (saved as Variant) || DEFAULT_VARIANT
     } catch {
       return DEFAULT_VARIANT

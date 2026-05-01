@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { StethoscopeIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { cn } from "@/lib/utils"
 import { APP_NAME } from "@/lib/brand"
 import { Button } from "@/components/ui/button"

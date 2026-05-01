@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Dashboard - bAItari</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            dark: { bg: '#0a0a0a', card: '#141414', border: '#1f1f1f', hover: '#1a1a1a' },
+            accent: { green: '#22c55e', orange: '#f97316' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    .card { background: #141414; border: 1px solid #1f1f1f; border-radius: 16px; }
+    .card-hover:hover { background: #1a1a1a; border-color: #2a2a2a; }
+    .text-muted { color: #666; }
+    .gradient-green { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+    .gradient-icon { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #444; }
+    /* Light mode */
+    html:not(.dark) body { background: #fafafa; color: #0a0a0a; }
+    html:not(.dark) .card { background: white; border-color: #e5e5e5; }
+    html:not(.dark) .card-hover:hover { background: #f5f5f5; }
+    html:not(.dark) .text-muted { color: #888; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="max-w-7xl mx-auto p-6 md:p-10">
+    
+    <!-- Theme Toggle -->
+    <button onclick="toggleTheme()" class="fixed top-6 right-6 z-50 w-10 h-10 rounded-lg card flex items-center justify-center hover:scale-105 transition">
+      <span id="themeIcon">☀️</span>
+    </button>
+
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-10">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 gradient-icon rounded-lg flex items-center justify-center text-white font-bold text-sm">
+          bA
+        </div>
+        <span class="text-lg font-semibold">bAItari</span>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="hidden md:flex items-center gap-8 text-sm">
+        <a href="#" class="text-muted hover:text-white transition">Dashboard</a>
+        <a href="#" class="text-muted hover:text-white transition">Markets</a>
+        <a href="#" class="text-white font-medium">Portfolio</a>
+        <a href="#" class="text-muted hover:text-white transition">Watchlist</a>
+      </nav>
+      
+      <!-- Right side -->
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:block text-right">
+          <p class="text-xs text-muted">Value</p>
+          <p class="text-sm font-medium">150K-180K DA</p>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center text-white text-xs font-medium">
+          Z
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Value Section -->
+    <section class="mb-6">
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-2">150,000</h1>
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-muted">Current Value</span>
+        <span class="flex items-center gap-1 text-accent-green">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+          </svg>
+          12.45%
+        </span>
+      </div>
+    </section>
+
+    <!-- KPI Cards -->
+    <div class="flex gap-6 mb-8 text-sm">
+      <div>
+        <p class="text-2xl font-semibold">12</p>
+        <p class="text-muted">Companies</p>
+      </div>
+      <div>
+        <p class="text-2xl font-semibold">8,000</p>
+        <p class="text-muted">Cash Balance</p>
+      </div>
+      <div>
+        <p class="text-2xl font-semibold">5,000</p>
+        <p class="text-muted">Committed Cash</p>
+      </div>
+    </div>
+
+    <!-- Line Chart -->
+    <div class="mb-10">
+      <div class="h-40 relative">
+        <svg class="w-full h-full" viewBox="0 0 800 160" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#22c55e" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Area -->
+          <path d="M0,140 C100,130 200,135 300,110 C400,85 500,90 600,60 C700,30 750,40 800,25 L800,160 L0,160 Z" fill="url(#chartGrad)"/>
+          <!-- Line -->
+          <path d="M0,140 C100,130 200,135 300,110 C400,85 500,90 600,60 C700,30 750,40 800,25" 
+                fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"/>
+          <!-- Dot at end -->
+          <circle cx="800" cy="25" r="5" fill="#22c55e"/>
+          <circle cx="800" cy="25" r="8" fill="#22c55e" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="w-2 h-2 rounded-full bg-accent-green"></span>
+          <span class="text-muted">Current Value</span>
+        </div>
+        <div class="flex gap-4 text-xs">
+          {['1M','6M','1Y','3Y','All'].map(p => (
+            <button className={`px-3 py-1.5 rounded-full transition ${p==='All'?'bg-[#1f1f1f] text-white':'text-muted hover:text-white'}`}>
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular Assets -->
+    <section class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Popular Assets</h2>
+        <div class="flex gap-2">
+          <button class="p-2 rounded-lg card text-muted hover:text-white">‹</button>
+          <button class="p-2 rounded-lg card text-muted hover:text-white">›</button>
+        </div>
+      </div>
+      
+      <div class="flex gap-4 overflow-x-auto pb-2" style="scrollbar-width: none;">
+        <!-- Card 1 -->
+        <div class="card card-hover p-5 min-w-[280px] flex-shrink-0">
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 gradient-icon rounded-xl flex items-center justify-center text-white font-bold text-sm">
+              At
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold">Airtable</h3>
+              <p class="text-xs text-muted">$30-$40 per share</p>
+            </div>
+            <span class="text-xs text-accent-green font-medium flex items-center gap-1">
+              +156% <span class="text-[10px]">YOY</span>
+            </span>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex-1 py-2 bg-white text-black text-xs font-medium rounded-lg hover:bg-gray-100 transition">
+              Invest
+            </button>
+            <button class="flex-1 py-2 bg-[#1f1f1f] text-white text-xs font-medium rounded-lg hover:bg-[#2a2a2a] transition">
+              Learn More
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card card-hover p-5 min-w-[280px] flex-shrink-0">
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 bg-[#635BFF] rounded-xl flex items-center justify-center text-white font-bold text-sm">
+              St
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold">Stripe</h3>
+              <p class="text-xs text-muted">$100M, Series D</p>
+            </div>
+          </div>
+          <p class="text-xs text-muted mb-3">$5B Valuation</p>
+          <button class="w-full py-2 bg-[#1f1f1f] text-white text-xs font-medium rounded-lg hover:bg-[#2a2a2a] transition">
+            Learn More
+          </button>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card card-hover p-5 min-w-[280px] flex-shrink-0">
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 bg-[#F59E0B] rounded-xl flex items-center justify-center text-white font-bold text-sm">
+              Rp
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold">Rippling</h3>
+              <p class="text-xs text-muted">$100M, Series D</p>
+            </div>
+          </div>
+          <p class="text-xs text-muted mb-3">$5B Valuation</p>
+          <button class="w-full py-2 bg-[#1f1f1f] text-white text-xs font-medium rounded-lg hover:bg-[#2a2a2a] transition">
+            Learn More
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two Column: Holdings & Watchlist -->
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- My Holdings -->
+      <section>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold">My Holdings</h2>
+          <a href="#" class="text-xs text-muted hover:text-white flex items-center gap-1">
+            See All <span>›</span>
+          </a>
+        </div>
+        <div class="space-y-2">
+          <!-- Holding 1 -->
+          <div class="card card-hover p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-black border border-gray-700 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-sm">Anthropic</p>
+                <p class="text-xs text-muted">100 Units</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-medium text-sm">$50,000.00</p>
+              <p class="text-[10px] px-2 py-0.5 bg-yellow-500/10 text-yellow-500 rounded-full inline-block">Pending</p>
+            </div>
+          </div>
+
+          <!-- Holding 2 -->
+          <div class="card card-hover p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-[#2081E2] rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-sm">OpenSea</p>
+                <p class="text-xs text-muted">200 Units</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-medium text-sm">$25,000.00</p>
+              <p class="text-[10px] px-2 py-0.5 bg-yellow-500/10 text-yellow-500 rounded-full inline-block">Pending</p>
+            </div>
+          </div>
+
+          <!-- More holdings collapsed -->
+          <div class="card card-hover p-4 opacity-60">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-[#10A37F] rounded-lg flex items-center justify-center text-white text-xs font-bold">OA</div>
+              <p class="font-medium text-sm">OpenAI</p>
+              <span class="ml-auto text-xs text-muted">50 Units · $30,000</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Watchlist -->
+      <section>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold">Watchlist</h2>
+          <a href="#" class="text-xs text-muted hover:text-white flex items-center gap-1">
+            See All <span>›</span>
+          </a>
+        </div>
+        <div class="space-y-2">
+          <!-- Watchlist 1 -->
+          <div class="card card-hover p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-[#6366F1] rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="12" r="10"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-sm">Perplexity</p>
+                <p class="text-xs text-muted">AI Search</p>
+              </div>
+            </div>
+            <button class="px-3 py-1.5 bg-white text-black text-xs font-medium rounded-lg hover:bg-gray-100 transition">
+              Invest
+            </button>
+          </div>
+
+          <!-- Watchlist 2 -->
+          <div class="card card-hover p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-[#3B82F6] rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-sm">Waymo</p>
+                <p class="text-xs text-muted">Autonomous</p>
+              </div>
+            </div>
+            <button class="px-3 py-1.5 bg-white text-black text-xs font-medium rounded-lg hover:bg-gray-100 transition">
+              Invest
+            </button>
+          </div>
+
+          <!-- Watchlist 3 -->
+          <div class="card card-hover p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-[#22C55E] rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="4" y="4" width="16" height="16" rx="2"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-sm">Ramp</p>
+                <p class="text-xs text-muted">Fintech</p>
+              </div>
+            </div>
+            <button class="px-3 py-1.5 bg-white text-black text-xs font-medium rounded-lg hover:bg-gray-100 transition">
+              Invest
+            </button>
+          </div>
+
+          <!-- More items -->
+          <div class="card card-hover p-3 opacity-60 flex items-center gap-3">
+            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">AH</div>
+            <p class="font-medium text-sm">Andreessen Horowitz</p>
+          </div>
+          <div class="card card-hover p-3 opacity-60 flex items-center gap-3">
+            <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">AI</div>
+            <p class="font-medium text-sm">Artificial Intelligence (AI)</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById('themeIcon');
+      html.classList.toggle('dark');
+      icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
+    }
+  </script>
+</body>
+</html>

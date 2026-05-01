@@ -25,23 +25,22 @@ import {
   DatabaseIcon,
   Notification02Icon,
 } from "@hugeicons/core-free-icons"
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { useUsersRepository } from "@/data/repositories"
-import { DashboardPageIntro } from "@/components/dashboard-page-intro"
 import { APP_NAME } from "@/lib/brand"
 import { writeCachedProfile } from "@/lib/profile-cache"
 import Avatar from "./Avatar"
+import Logo from "./Logo"
 import { ThemeModeToggle } from "./theme-mode-toggle"
-import { updatePassword } from "../services/sqlite/auth"
+import { updatePassword } from "@/services/sqlite/auth"
 import {
   getCurrentProgress,
-  getLocalModelId,
   initializeWebLLM,
   isWebLLMLoading,
   isWebLLMReady,
   ProgressReport,
   subscribeToProgress,
-} from "../services/webLLMService"
+} from "@/services/webLLMService"
 import {
   createBackup,
   listBackups,
@@ -52,7 +51,7 @@ import {
   getLastBackupDate,
   deleteBackup,
   BackupInfo,
-} from "../services/backupService"
+} from "@/services/backupService"
 import { relaunch } from "@tauri-apps/plugin-process"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -97,9 +96,7 @@ type SettingsTab =
   | "ia"
   | "sauvegarde"
   | "apropos"
-const modelLabel = getLocalModelId()
-
-// WebLLM IA Settings Component
+// IA Settings Component
 const IASettings: React.FC = () => {
   const [modelStatus, setModelStatus] = useState<
     "not_downloaded" | "downloading" | "ready" | "error"
@@ -153,10 +150,10 @@ const IASettings: React.FC = () => {
     <div className="animate-in space-y-6 duration-300 fade-in">
       <div>
         <h2 className="mb-1 text-xl font-medium text-foreground">
-          Intelligence Artificielle Locale
+          Assistant intelligent
         </h2>
         <p className="text-sm text-muted-foreground">
-          {modelLabel} - Modèle IA 100% local pour usage hors ligne
+          Assistant IA intégré, fonctionne 100% en local et hors ligne
         </p>
       </div>
 
@@ -171,14 +168,14 @@ const IASettings: React.FC = () => {
           </div>
           <div className="flex-1">
             <h3 className="mb-1 text-lg font-medium text-foreground">
-              {modelLabel}
+              Assistant IA
             </h3>
             <p className="mb-3 text-sm text-muted-foreground">
-              Modèle IA optimisé pour la correction, reformulation et résumé de
-              textes en français.
+              Correction, reformulation et résumé de textes en français.
+              Fonctionne directement sur votre appareil.
             </p>
             <div className="flex flex-wrap gap-2">
-              {["~2 GB", "100% Local", "Hors ligne", "WebGPU"].map((tag) => (
+              {["100% Local", "Hors ligne", "Privé"].map((tag) => (
                 <Badge key={tag} variant="outline">
                   {tag}
                 </Badge>
@@ -203,11 +200,11 @@ const IASettings: React.FC = () => {
             </div>
             <div className="flex-1">
               <h3 className="mb-1 text-sm font-semibold text-amber-800 dark:text-amber-400">
-                Modèle non téléchargé
+                Assistant non installé
               </h3>
               <p className="mb-3 text-xs text-amber-700 dark:text-amber-500">
-                Téléchargez {modelLabel} pour utiliser l'assistant IA hors
-                ligne. Le modèle sera mis en cache dans votre navigateur.
+                Installez l'assistant pour utiliser les fonctions IA hors
+                ligne. Les données restent sur votre appareil.
               </p>
               <Button
                 onClick={handleDownloadModel}
@@ -223,7 +220,7 @@ const IASettings: React.FC = () => {
                     className="size-4"
                   />
                 )}
-                Télécharger {modelLabel} (~2 GB)
+                Installer l'assistant
               </Button>
             </div>
           </CardContent>
@@ -270,10 +267,10 @@ const IASettings: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-green-800 dark:text-green-400">
-                Modèle prêt
+                Assistant prêt
               </h3>
               <p className="text-xs text-green-700 dark:text-green-500">
-                {modelLabel} est chargé et prêt à l'emploi. Fonctionne même hors
+                L'assistant est actif et prêt à l'emploi. Fonctionne même hors
                 ligne !
               </p>
             </div>
@@ -1153,6 +1150,13 @@ const Parametres: React.FC<ParametresProps> = ({
                       className="size-3.5"
                     />
                   </label>
+                  <input
+                    id="profile-photo-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -1806,19 +1810,63 @@ const Parametres: React.FC<ParametresProps> = ({
               </p>
             </div>
             <Card size="sm">
-              <CardContent className="flex items-center gap-6 pt-6">
-                <div className="flex size-16 items-center justify-center rounded-2xl bg-primary text-xl font-semibold text-primary-foreground">
-                  A
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-5">
+                  <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-muted/20 shadow-xs">
+                    <Logo size="lg" collapsed flatMark />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold tracking-tight text-foreground">{APP_NAME}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Logiciel de gestion vétérinaire
+                    </p>
+                    <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
+                      <span>Version 2.0.0</span>
+                      <span>•</span>
+                      <span>19 avril 2026</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">{APP_NAME}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Logiciel de gestion vétérinaire
-                  </p>
-                  <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
-                    <span>Version 1.5.0</span>
-                    <span>•</span>
-                    <span>6 décembre 2024</span>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
+                    <p className="text-[11px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                      Developpement
+                    </p>
+                    <div className="mt-3 flex items-center gap-3">
+                      <Avatar
+                        src={sanitizeAvatarValue(userDoc?.avatarUrl || currentUser?.avatarUrl || avatarUrl)}
+                        name="Zouhir Kherroubi"
+                        size="lg"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          Zouhir Kherroubi
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Developpeur de bAItari
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
+                    <p className="text-[11px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                      Contribution medicale
+                    </p>
+                    <div className="mt-3 flex items-center gap-3">
+                      <Avatar
+                        src="/dr-aissa-zeghouini.jpg"
+                        name="Dr Aissa Zeghouini"
+                        size="lg"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          Dr Aissa Zeghouini
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Contributeur cite dans la conception et l'evolution clinique de bAItari.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -1832,16 +1880,13 @@ const Parametres: React.FC<ParametresProps> = ({
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <DashboardPageIntro
-        eyebrow="Préférences de l'application"
-        title="Paramètres"
-        subtitle={`Optimisez l'expérience, la sécurité et la personnalisation de ${APP_NAME} depuis un panneau unique.`}
-        actions={
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Badge variant="outline" className="h-10 rounded-xl px-4 text-sm font-normal">
             {roleLabel}
           </Badge>
-        }
-      />
+        </div>
+      </div>
 
       {/* Tab Navigation */}
       <div className="scrollbar-hide flex overflow-x-auto rounded-[24px] border border-border bg-card p-2 shadow-none">
@@ -1918,18 +1963,37 @@ function SidebarLayoutSettings() {
                       : "border-border bg-card hover:border-primary/30"
                   )}
                 >
-                  <div className="flex h-10 w-14 items-stretch gap-0.5 overflow-hidden rounded-md border border-border/60">
-                    <div
-                      className={cn(
-                        "w-3.5 shrink-0",
-                        v.value === "floating"
-                          ? "m-0.5 rounded-sm bg-muted-foreground/20"
-                          : v.value === "inset"
-                            ? "bg-muted-foreground/15"
-                            : "bg-muted-foreground/20"
-                      )}
-                    />
-                    <div className="flex-1 bg-muted-foreground/5" />
+                  <div className="flex h-10 w-14 items-stretch gap-0.5 overflow-hidden rounded-md border border-border/60 bg-muted-foreground/[0.04]">
+                    {v.value === "sidebar" ? (
+                      <>
+                        <div className="flex w-5 shrink-0 flex-col border-e border-border/60 bg-muted-foreground/[0.13]">
+                          <div className="mx-1 mt-1 h-1.5 rounded-full bg-muted-foreground/35" />
+                          <div className="mx-1 mt-0.5 h-1 rounded-full bg-muted-foreground/25" />
+                          <div className="mx-1 mt-1 h-[1px] bg-border/70" />
+                          <div className="mx-1 mt-1 h-1 rounded-full bg-muted-foreground/25" />
+                          <div className="mx-1 mt-0.5 h-1 rounded-full bg-muted-foreground/20" />
+                        </div>
+                        <div className="flex flex-1 flex-col">
+                          <div className="h-2 border-b border-border/70 bg-muted-foreground/[0.08]" />
+                          <div className="mx-1 mt-1 h-1 rounded-full bg-muted-foreground/25" />
+                          <div className="mx-1 mt-0.5 h-1 rounded-full bg-muted-foreground/20" />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className={cn(
+                            "w-3.5 shrink-0",
+                            v.value === "floating"
+                              ? "m-0.5 rounded-sm bg-muted-foreground/20"
+                              : v.value === "inset"
+                                ? "bg-muted-foreground/15"
+                                : "bg-muted-foreground/20"
+                          )}
+                        />
+                        <div className="flex-1 bg-muted-foreground/5" />
+                      </>
+                    )}
                   </div>
                   <span className="text-[10px] font-medium text-muted-foreground">
                     {v.label}

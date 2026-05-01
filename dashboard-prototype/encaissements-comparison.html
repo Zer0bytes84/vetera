@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bAItari - Encaissements Variations</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      background: #0a0a0a; 
+      color: #e5e5e5; 
+      padding: 40px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 40px;
+    }
+    
+    .variations {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 32px;
+    }
+    
+    .variation-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    
+    /* ========== V1: MODERN DOTS (Style référence) ========== */
+    .widget-v1 {
+      background: #141414;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    
+    .widget-v1 .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .widget-v1 .title-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .widget-v1 .icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    
+    .widget-v1 .title-group h2 {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    
+    .widget-v1 .subtitle {
+      font-size: 11px;
+      color: #666;
+    }
+    
+    .widget-v1 .chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      height: 180px;
+      margin-bottom: 20px;
+    }
+    
+    .widget-v1 .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .widget-v1 .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .widget-v1 .dot.green { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+    .widget-v1 .dot.orange { background: #f97316; box-shadow: 0 0 8px rgba(249, 115, 22, 0.4); }
+    .widget-v1 .dot.white { background: #e5e5e5; }
+    
+    .widget-v1 .bar {
+      width: 28px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    
+    .widget-v1 .bar-value {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 1px;
+    }
+    
+    .widget-v1 .bar.green { 
+      background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+    }
+    
+    .widget-v1 .bar.orange { 
+      background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+      color: white;
+    }
+    
+    .widget-v1 .bar.white { 
+      background: linear-gradient(180deg, #e5e5e5 0%, #d4d4d4 100%);
+      color: #0a0a0a;
+    }
+    
+    .widget-v1 .bar.dim { 
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .widget-v1 .bar-label {
+      font-size: 9px;
+      color: #666;
+      text-transform: uppercase;
+    }
+    
+    .widget-v1 .legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 11px;
+      color: #888;
+    }
+    
+    /* ========== V2: MINIMAL CAPSULES ========== */
+    .widget-v2 {
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 24px;
+    }
+    
+    .widget-v2 .header {
+      margin-bottom: 20px;
+    }
+    
+    .widget-v2 .label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4);
+    }
+    
+    .widget-v2 .value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    
+    .widget-v2 .value {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    
+    .widget-v2 .delta {
+      font-size: 13px;
+      font-weight: 600;
+      color: #10b981;
+    }
+    
+    .widget-v2 .chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 140px;
+      margin-bottom: 20px;
+    }
+    
+    .widget-v2 .bar-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .widget-v2 .bar {
+      width: 100%;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      transition: all 0.3s ease;
+    }
+    
+    .widget-v2 .bar:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    
+    .widget-v2 .bar.active {
+      background: #10b981;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+    
+    .widget-v2 .bar-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+    
+    .widget-v2 .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .widget-v2 .kpi-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+    }
+    
+    .widget-v2 .kpi-value {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    
+    /* ========== V3: GRID CARDS ========== */
+    .widget-v3 {
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 24px;
+    }
+    
+    .widget-v3 .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .widget-v3 .header-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    
+    .widget-v3 .header-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .widget-v3 .header-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #10b981;
+    }
+    
+    .widget-v3 .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .widget-v3 .month-card {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 14px 8px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .widget-v3 .month-card:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .widget-v3 .month-card.active {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .widget-v3 .month-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+    }
+    
+    .widget-v3 .month-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .widget-v3 .month-value.active {
+      color: #10b981;
+    }
+    
+    .widget-v3 .month-bar {
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    
+    .widget-v3 .month-bar-fill {
+      height: 100%;
+      background: #10b981;
+      border-radius: 2px;
+    }
+    
+    .widget-v3 .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .widget-v3 .kpi-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+    }
+    
+    .widget-v3 .kpi-value {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Widget Encaissements - 3 Variations</h1>
+    <p class="subtitle">Choisis ton style préféré pour bAItari</p>
+    
+    <div class="variations">
+      <!-- V1: Modern Dots (Style référence) -->
+      <div>
+        <div class="variation-label">V1: Modern Dots</div>
+        <div class="widget-v1">
+          <div class="header">
+            <div class="title-section">
+              <div class="icon">💰</div>
+              <div class="title-group">
+                <h2>ENCAISSEMENTS</h2>
+                <div class="subtitle">Revenus mensuels 2026</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="chart">
+            <div class="bar-group">
+              <div class="dot white"></div>
+              <div class="bar white" style="height: 45px;"><span class="bar-value">52</span></div>
+              <div class="bar-label">JAN</div>
+            </div>
+            <div class="bar-group">
+              <div class="dot green"></div>
+              <div class="bar green" style="height: 85px;"><span class="bar-value">96</span></div>
+              <div class="bar-label">FÉV</div>
+            </div>
+            <div class="bar-group">
+              <div class="dot orange"></div>
+              <div class="bar orange" style="height: 55px;"><span class="bar-value">61</span></div>
+              <div class="bar-label">MAR</div>
+            </div>
+            <div class="bar-group">
+              <div class="dot green"></div>
+              <div class="bar green" style="height: 110px; box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);"><span class="bar-value">128</span></div>
+              <div class="bar-label" style="color: #22c55e; font-weight: 600;">AVR</div>
+            </div>
+            <div class="bar-group">
+              <div class="dot white"></div>
+              <div class="bar white" style="height: 38px;"><span class="bar-value">42</span></div>
+              <div class="bar-label">MAI</div>
+            </div>
+            <div class="bar-group">
+              <div class="dot orange"></div>
+              <div class="bar orange" style="height: 48px;"><span class="bar-value">54</span></div>
+              <div class="bar-label">JUN</div>
+            </div>
+            <div class="bar-group">
+              <div class="dot white"></div>
+              <div class="bar dim" style="height: 20px;"></div>
+              <div class="bar-label">JUI</div>
+            </div>
+            <div class="bar-group">
+              <div class="dot white"></div>
+              <div class="bar dim" style="height: 20px;"></div>
+              <div class="bar-label">AOÛ</div>
+            </div>
+          </div>
+          
+          <div class="legend">
+            <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>Objectif</span>
+            <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f97316;"></span>Progression</span>
+            <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #e5e5e5;"></span>Stable</span>
+            <span style="margin-left: auto; color: #888;">Total: <span style="color: #e5e5e5; font-weight: 600;">1 024 000 DA</span></span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- V2: Minimal Capsules -->
+      <div>
+        <div class="variation-label">V2: Minimal Capsules</div>
+        <div class="widget-v2">
+          <div class="header">
+            <div class="label">Encaissements</div>
+            <div class="value-row">
+              <div class="value">1 024 000 DA</div>
+              <div class="delta">+12.5%</div>
+            </div>
+          </div>
+          
+          <div class="chart">
+            <div class="bar-wrapper"><div class="bar" style="height: 40%;"></div><div class="bar-label">JAN</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 55%;"></div><div class="bar-label">FÉV</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 70%;"></div><div class="bar-label">MAR</div></div>
+            <div class="bar-wrapper"><div class="bar active" style="height: 85%;"></div><div class="bar-label">AVR</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">MAI</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">JUN</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">JUI</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">AOÛ</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">SEP</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">OCT</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">NOV</div></div>
+            <div class="bar-wrapper"><div class="bar" style="height: 20%;"></div><div class="bar-label">DÉC</div></div>
+          </div>
+          
+          <div class="kpi-row">
+            <div><div class="kpi-label">Aujourd'hui</div><div class="kpi-value">45 200 DA</div></div>
+            <div><div class="kpi-label">Panier moyen</div><div class="kpi-value">8 500 DA</div></div>
+            <div><div class="kpi-label">30 jours</div><div class="kpi-value">312 000 DA</div></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- V3: Grid Cards -->
+      <div>
+        <div class="variation-label">V3: Grid Cards</div>
+        <div class="widget-v3">
+          <div class="header">
+            <div class="header-icon">💰</div>
+            <div>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.5);">Encaissements</div>
+              <div class="header-value">1 024 000 DA</div>
+            </div>
+          </div>
+          
+          <div class="grid">
+            <div class="month-card">
+              <div class="month-label">JAN</div>
+              <div class="month-value">52K</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 40%;"></div></div>
+            </div>
+            <div class="month-card">
+              <div class="month-label">FÉV</div>
+              <div class="month-value">96K</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 75%;"></div></div>
+            </div>
+            <div class="month-card">
+              <div class="month-label">MAR</div>
+              <div class="month-value">61K</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 48%;"></div></div>
+            </div>
+            <div class="month-card active">
+              <div class="month-label">AVR</div>
+              <div class="month-value active">128K</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="month-card">
+              <div class="month-label">MAI</div>
+              <div class="month-value">42K</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 33%;"></div></div>
+            </div>
+            <div class="month-card">
+              <div class="month-label">JUN</div>
+              <div class="month-value">54K</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 42%;"></div></div>
+            </div>
+            <div class="month-card">
+              <div class="month-label">JUI</div>
+              <div class="month-value">-</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 0%;"></div></div>
+            </div>
+            <div class="month-card">
+              <div class="month-label">AOÛ</div>
+              <div class="month-value">-</div>
+              <div class="month-bar"><div class="month-bar-fill" style="width: 0%;"></div></div>
+            </div>
+          </div>
+          
+          <div class="kpi-row">
+            <div><div class="kpi-label">Aujourd'hui</div><div class="kpi-value">45 200 DA</div></div>
+            <div><div class="kpi-label">Panier moyen</div><div class="kpi-value">8 500 DA</div></div>
+            <div><div class="kpi-label">30 jours</div><div class="kpi-value">312 000 DA</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

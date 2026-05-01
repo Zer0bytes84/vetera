@@ -4,7 +4,7 @@ import {
   replaceBrowserTable,
   setBrowserRow,
 } from "@/services/browser-store"
-import { generateId } from "@/services/sqlite/database"
+import { generateId, getDatabase } from "@/services/sqlite/database"
 import type { Appointment, Note, Owner, Patient, Product, Task, Transaction, User } from "@/types/db"
 
 type CurrentUser = {
@@ -545,4 +545,26 @@ export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
     "tasks",
     "notes",
   ].forEach(emitTableChanged)
+}
+
+export async function purgeDemoDataInTauriIfNeeded() {
+  if (!isTauriRuntime()) return
+
+  const db = await getDatabase()
+  await db.execute("BEGIN")
+  try {
+    await db.execute("DELETE FROM consultation_documents WHERE id LIKE 'demo_%' OR appointment_id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%'")
+    await db.execute("DELETE FROM appointments WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%' OR vet_id LIKE 'demo_%'")
+    await db.execute("DELETE FROM tasks WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR assigned_to LIKE 'demo_%'")
+    await db.execute("DELETE FROM transactions WHERE id LIKE 'demo_%' OR reference_id LIKE 'demo_%'")
+    await db.execute("DELETE FROM notes WHERE id LIKE 'demo_%'")
+    await db.execute("DELETE FROM products WHERE id LIKE 'demo_%'")
+    await db.execute("DELETE FROM patients WHERE id LIKE 'demo_%' OR owner_id LIKE 'demo_%'")
+    await db.execute("DELETE FROM owners WHERE id LIKE 'demo_%'")
+    await db.execute("DELETE FROM users WHERE id LIKE 'demo_%'")
+    await db.execute("COMMIT")
+  } catch (error) {
+    await db.execute("ROLLBACK")
+    throw error
+  }
 }

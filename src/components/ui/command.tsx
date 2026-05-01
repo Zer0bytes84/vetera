@@ -50,8 +50,9 @@ function CommandDialog({
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <DialogContent
+        overlayClassName="duration-100 data-closed:animate-none data-closed:opacity-0"
         className={cn(
-          "top-[20%] translate-y-0 overflow-hidden rounded-3xl! p-0 sm:max-w-[700px] border border-border/40 bg-background/70 backdrop-blur-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] dark:bg-background/40 dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] !duration-300",
+          "top-[20%] translate-y-0 overflow-hidden rounded-3xl! p-0 sm:max-w-[700px] border border-border/40 bg-background/88 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] dark:bg-background/86 dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] !duration-100 data-closed:animate-none data-closed:opacity-100 data-closed:scale-100",
           className
         )}
         showCloseButton={showCloseButton}

@@ -29,7 +29,6 @@ import {
 } from "@hugeicons/core-free-icons"
 
 import Avatar from "@/components/Avatar"
-import { DashboardPageIntro } from "@/components/dashboard-page-intro"
 import {
   MetricOverviewStrip,
   type MetricOverviewItem,
@@ -796,25 +795,25 @@ function ConsultationSessionDialog({
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                     <p className="text-sm text-muted-foreground">Patient</p>
                     <p className="mt-1 font-medium text-foreground">
                       {patient.name}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                     <p className="text-sm text-muted-foreground">Propriétaire</p>
                     <p className="mt-1 font-medium text-foreground">
                       {formatOwnerName(owner)}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                     <p className="text-sm text-muted-foreground">Heure de début</p>
                     <p className="mt-1 font-medium text-foreground">
                       {formatTime(startedAt)}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                     <p className="text-sm text-muted-foreground">Téléphone</p>
                     <p className="mt-1 font-medium text-foreground">
                       {owner?.phone || "Non renseigné"}
@@ -1748,13 +1747,6 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     toast.success("Ordonnance générée et téléchargée.")
   }
 
-  const todayLabel = new Date().toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  })
-
   const visibleCount = filteredAppointments.length
   const SelectedSpeciesIcon = getSpeciesIcon(selectedPatient?.species)
   const activeConsultationPatient = activeConsultation
@@ -1766,13 +1758,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <DashboardPageIntro
-        eyebrow="Flux clinique"
-        title="Clinique"
-        subtitle={`${todaysAppointments.length} consultation${todaysAppointments.length > 1 ? "s" : ""} prévues pour ${todayLabel}. Les actes, diagnostics et encaissements restent regroupés dans le même flux.`}
-        actions={
-          <>
-          <Button variant="outline" onClick={() => onNavigate?.("agenda")}>
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button className="h-10 rounded-xl px-4" onClick={() => onNavigate?.("agenda")}>
             <HugeiconsIcon
               icon={Calendar01Icon}
               strokeWidth={2}
@@ -1815,14 +1803,13 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
               )}
             </Button>
           ) : null}
-          </>
-        }
-      />
+        </div>
+      </div>
 
       <MetricOverviewStrip items={overviewCards} />
 
       <div className="grid gap-4">
-        <Card className="relative min-h-[760px] overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+        <Card className="card-vibrant card-hover-lift relative min-h-[760px] overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
           <CardHeader className="relative border-b border-border px-6 py-5 bg-transparent">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10">
@@ -2175,7 +2162,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden">
+        <Card className="card-hover-lift relative overflow-hidden">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-emerald-500/[0.035] via-emerald-500/[0.015] to-transparent" />
           <CardHeader className="relative border-b border-border/35 bg-transparent">
             <CardDescription>Dossier sélectionné</CardDescription>
@@ -2252,7 +2239,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                        <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                           <p className="text-sm text-muted-foreground">
                             Espèce
                           </p>
@@ -2260,19 +2247,19 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                             {selectedPatient.species}
                           </p>
                         </div>
-                        <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                        <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                           <p className="text-sm text-muted-foreground">Race</p>
                           <p className="mt-1 font-medium text-foreground">
                             {selectedPatient.breed || "Non renseignée"}
                           </p>
                         </div>
-                        <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                        <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                           <p className="text-sm text-muted-foreground">Âge</p>
                           <p className="mt-1 font-medium text-foreground">
                             {getPatientAge(selectedPatient.dateOfBirth)}
                           </p>
                         </div>
-                        <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                        <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                           <p className="text-sm text-muted-foreground">
                             Statut
                           </p>
@@ -2292,7 +2279,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                             </Badge>
                           </div>
                         </div>
-                        <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                        <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                           <p className="text-sm text-muted-foreground">
                             Dernière visite
                           </p>
@@ -2302,7 +2289,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                               : "Non renseignée"}
                           </p>
                         </div>
-                        <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                        <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                           <p className="text-sm text-muted-foreground">
                             Acte du jour
                           </p>
@@ -2348,7 +2335,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                         </div>
 
                         <div className="grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                          <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                             <p className="text-sm text-muted-foreground">
                               Téléphone
                             </p>
@@ -2356,7 +2343,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                               {selectedOwner?.phone || "Non renseigné"}
                             </p>
                           </div>
-                          <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                          <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                             <p className="text-sm text-muted-foreground">
                               Ville
                             </p>
@@ -2369,7 +2356,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                         <Separator />
 
                         <div className="grid gap-3">
-                          <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                          <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                             <p className="text-sm text-muted-foreground">
                               Motif
                             </p>
@@ -2378,7 +2365,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                                 "Motif non renseigné"}
                             </p>
                           </div>
-                          <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                          <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                             <p className="text-sm text-muted-foreground">
                               Diagnostic
                             </p>
@@ -2387,7 +2374,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                                 "Diagnostic à compléter"}
                             </p>
                           </div>
-                          <div className="rounded-3xl bg-muted/30 px-4 py-3">
+                          <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                             <p className="text-sm text-muted-foreground">
                               Traitement
                             </p>

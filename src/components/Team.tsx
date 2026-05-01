@@ -16,15 +16,14 @@ import {
   SmartPhone01Icon,
   StethoscopeIcon,
 } from "@hugeicons/core-free-icons"
-import { updatePassword } from "../services/sqlite/auth"
-import { DashboardPageIntro } from "@/components/dashboard-page-intro"
+import { updatePassword } from "@/services/sqlite/auth"
 import {
   MetricOverviewStrip,
   type MetricOverviewItem,
 } from "@/components/metric-overview-strip"
 import { useUsersRepository } from "@/data/repositories"
-import { User, UserRole } from "../types/db"
-import { useAuth } from "../contexts/AuthContext"
+import { User, UserRole } from "@/types/db"
+import { useAuth } from "@/contexts/AuthContext"
 import Avatar from "./Avatar"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -309,28 +308,25 @@ const Team: React.FC = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <DashboardPageIntro
-        eyebrow="Organisation clinique"
-        title="Équipe"
-        subtitle="Gestion du personnel, des rôles et des accès dans une vue plus claire pour piloter l'activité interne."
-        actions={
-          canManageTeam ? (
-          <Button className="h-10 rounded-xl px-4" onClick={() => handleOpenModal()}>
-            <HugeiconsIcon
-              icon={Add01Icon}
-              strokeWidth={2}
-              className="size-4"
-            />
-            <span>Nouveau Membre</span>
-          </Button>
-          ) : null
-        }
-      />
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
+        <div className="flex flex-col gap-2 sm:flex-row">
+          {canManageTeam ? (
+            <Button className="h-10 rounded-xl px-4" onClick={() => handleOpenModal()}>
+              <HugeiconsIcon
+                icon={Add01Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              <span>Nouveau Membre</span>
+            </Button>
+          ) : null}
+        </div>
+      </div>
 
       <MetricOverviewStrip items={overviewCards} />
 
       {/* Main Card */}
-      <Card className="flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+      <Card className="card-vibrant card-hover-lift flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
         <CardHeader className="border-b border-border px-6 py-5">
           <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
             Annuaire interne

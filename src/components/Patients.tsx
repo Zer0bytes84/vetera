@@ -360,9 +360,9 @@ type PatientOverviewCard = {
 
 const patientToneMap: Record<PatientOverviewCard["tone"], { bg: string; text: string; spark: string }> = {
   blue: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-600",
-    spark: "#f97316",
+    bg: "bg-blue-500/10",
+    text: "text-blue-600",
+    spark: "#3b82f6",
   },
   orange: {
     bg: "bg-orange-500/10",
@@ -402,7 +402,7 @@ function PatientOverviewStrip({ items }: { items: PatientOverviewCard[] }) {
         const tone = patientToneMap[item.tone]
 
         return (
-          <Card key={item.label} className="overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
+          <Card key={item.label} className={cn("overflow-hidden rounded-[24px] border border-border bg-card shadow-none card-vibrant", `metric-glow-${item.tone}`)}>
             <CardContent className="flex min-h-[154px] flex-col justify-between p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
@@ -450,7 +450,7 @@ function ReadOnlyDetail({
   value: React.ReactNode
 }) {
   return (
-    <div className="rounded-3xl border border-border/80 bg-muted/25 p-4">
+    <div className="rounded-3xl border border-border/80 bg-muted/25 p-4 transition-all duration-200 ease-out hover:border-border/60 hover:bg-muted/30 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
       <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
         {label}
       </p>
@@ -681,7 +681,7 @@ function PatientDetailsDialog({
             </div>
 
             <div className="grid gap-3 md:grid-cols-3">
-              <div className="rounded-3xl bg-muted p-4">
+              <div className="rounded-3xl bg-muted p-4 transition-all duration-200 ease-out hover:bg-muted/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                 <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   Dernière visite
                 </p>
@@ -706,7 +706,7 @@ function PatientDetailsDialog({
                 </p>
               </div>
 
-              <div className="rounded-3xl bg-muted p-4">
+              <div className="rounded-3xl bg-muted p-4 transition-all duration-200 ease-out hover:bg-muted/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                 <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   Prochain créneau
                 </p>
@@ -722,7 +722,7 @@ function PatientDetailsDialog({
                 </p>
               </div>
 
-              <div className="rounded-3xl bg-muted p-4">
+              <div className="rounded-3xl bg-muted p-4 transition-all duration-200 ease-out hover:bg-muted/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
                 <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
                   Repère clinique
                 </p>
@@ -1345,7 +1345,7 @@ function PatientCreateDialog({
     try {
       await onCreate({
         selectedOwnerId: selectedOwnerId === "new" ? null : selectedOwnerId,
-        owner: newOwner,
+        owner: selectedOwnerId === "new" ? newOwner : {},
         patient: newPatient,
       })
     } finally {
@@ -1409,7 +1409,7 @@ function PatientCreateDialog({
                     <FieldDescription>
                       {selectedOwnerId === "new"
                         ? "Un nouveau propriétaire sera créé avec ce dossier."
-                        : "Les informations ci-dessous mettront aussi à jour le propriétaire sélectionné."}
+                        : "Le patient sera rattaché à ce propriétaire (sans modifier sa fiche)."}
                     </FieldDescription>
                   </Field>
 
@@ -1418,6 +1418,7 @@ function PatientCreateDialog({
                       <FieldLabel>Nom</FieldLabel>
                       <Input
                         value={newOwner.lastName || ""}
+                        disabled={selectedOwnerId !== "new"}
                         onChange={(event) =>
                           setNewOwner((current) => ({
                             ...current,
@@ -1431,6 +1432,7 @@ function PatientCreateDialog({
                       <FieldLabel>Prénom</FieldLabel>
                       <Input
                         value={newOwner.firstName || ""}
+                        disabled={selectedOwnerId !== "new"}
                         onChange={(event) =>
                           setNewOwner((current) => ({
                             ...current,
@@ -1444,6 +1446,7 @@ function PatientCreateDialog({
                       <FieldLabel>Téléphone</FieldLabel>
                       <Input
                         value={newOwner.phone || ""}
+                        disabled={selectedOwnerId !== "new"}
                         onChange={(event) =>
                           setNewOwner((current) => ({
                             ...current,
@@ -1458,6 +1461,7 @@ function PatientCreateDialog({
                       <Input
                         type="email"
                         value={newOwner.email || ""}
+                        disabled={selectedOwnerId !== "new"}
                         onChange={(event) =>
                           setNewOwner((current) => ({
                             ...current,
@@ -1470,11 +1474,12 @@ function PatientCreateDialog({
 
                   <Field>
                     <FieldLabel>Adresse</FieldLabel>
-                    <Input
-                      value={newOwner.address || ""}
-                      onChange={(event) =>
-                        setNewOwner((current) => ({
-                          ...current,
+                      <Input
+                        value={newOwner.address || ""}
+                        disabled={selectedOwnerId !== "new"}
+                        onChange={(event) =>
+                          setNewOwner((current) => ({
+                            ...current,
                           address: event.target.value,
                         }))
                       }
@@ -1483,11 +1488,12 @@ function PatientCreateDialog({
 
                   <Field>
                     <FieldLabel>Ville</FieldLabel>
-                    <Input
-                      value={newOwner.city || ""}
-                      onChange={(event) =>
-                        setNewOwner((current) => ({
-                          ...current,
+                      <Input
+                        value={newOwner.city || ""}
+                        disabled={selectedOwnerId !== "new"}
+                        onChange={(event) =>
+                          setNewOwner((current) => ({
+                            ...current,
                           city: event.target.value,
                         }))
                       }
@@ -1907,26 +1913,13 @@ const Patients: React.FC = () => {
       setSelectedPatientId(createdPatient.id)
     } catch (error) {
       console.error(error)
-      toast.error("Impossible de créer le dossier patient.")
+      toast.error(error instanceof Error ? error.message : "Impossible de créer le dossier patient.")
     }
   }, [createWithOwner])
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
-            Registre patients
-          </p>
-          <h1 className="text-[28px] font-normal tracking-[-0.04em] text-foreground">
-            Dossiers patients
-          </h1>
-          <p className="max-w-[72ch] text-sm text-muted-foreground">
-            {patients.length} dossier{patients.length > 1 ? "s" : ""} centralisé{patients.length > 1 ? "s" : ""} pour garder la consultation,
-            le suivi clinique et le contact propriétaire dans la même interface.
-          </p>
-        </div>
-
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button variant="outline" className="h-10 rounded-xl px-4" onClick={resetFilters}>
             Réinitialiser
@@ -1945,7 +1938,7 @@ const Patients: React.FC = () => {
       <PatientOverviewStrip items={overviewCards} />
 
       <div className="min-h-0 flex-1">
-        <Card className="min-h-[640px] rounded-[24px] border border-border bg-card shadow-none">
+        <Card className="card-vibrant card-hover-lift min-h-[640px] rounded-[24px] border border-border bg-card shadow-none">
           <CardHeader className="border-b border-border px-6 py-5">
             <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
               Registre clinique

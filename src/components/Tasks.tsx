@@ -15,13 +15,12 @@ import {
   Notification02Icon,
 } from "@hugeicons/core-free-icons"
 import { useTasksRepository } from "@/data/repositories"
-import { DashboardPageIntro } from "@/components/dashboard-page-intro"
 import {
   MetricOverviewStrip,
   type MetricOverviewItem,
 } from "@/components/metric-overview-strip"
-import { Task } from "../types/db"
-import { useAuth } from "../contexts/AuthContext"
+import { Task } from "@/types/db"
+import { useAuth } from "@/contexts/AuthContext"
 import KanbanBoard from "./KanbanBoard"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -417,12 +416,8 @@ const Tasks: React.FC = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <DashboardPageIntro
-        eyebrow="Pilotage interne"
-        title="Tâches"
-        subtitle={`${filteredTasks.length} tâche${filteredTasks.length > 1 ? "s" : ""} dans la vue ${filter === "mine" ? "personnelle" : "équipe"} pour garder rappels, urgences et suivi dans le même flux.`}
-        actions={
-          <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
+        <div className="flex flex-wrap items-center gap-3">
           {/* Filter toggle */}
           <ToggleGroup
             multiple={false}
@@ -433,7 +428,7 @@ const Tasks: React.FC = () => {
             variant="outline"
             size="sm"
             spacing={0}
-            className="w-fit rounded-3xl bg-muted/30 p-0.5"
+            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
           >
             <ToggleGroupItem value="mine">Mes Tâches</ToggleGroupItem>
             <ToggleGroupItem value="all">Tout l'équipe</ToggleGroupItem>
@@ -451,7 +446,7 @@ const Tasks: React.FC = () => {
             variant="outline"
             size="sm"
             spacing={0}
-            className="w-fit rounded-3xl bg-muted/30 p-0.5"
+            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
           >
             <ToggleGroupItem value="list" title="Vue liste">
               <HugeiconsIcon
@@ -468,16 +463,15 @@ const Tasks: React.FC = () => {
               />
             </ToggleGroupItem>
           </ToggleGroup>
-          </div>
-        }
-      />
+        </div>
+      </div>
 
       <MetricOverviewStrip items={overviewCards} />
 
       {/* Quick Add Bar */}
       <Card
         size="sm"
-        className="rounded-[24px] border border-border bg-card shadow-none transition-all focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/20"
+        className="card-vibrant rounded-[24px] border border-border bg-card shadow-none transition-all focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/20"
       >
         <CardContent className="p-5">
           <form onSubmit={handleAddTask} className="flex flex-col gap-4">
@@ -567,7 +561,7 @@ const Tasks: React.FC = () => {
                 </Popover>
 
                 {/* Time Range Selector */}
-                <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5">
+                <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/40">
                   <HugeiconsIcon
                     icon={Clock01Icon}
                     strokeWidth={2}
@@ -608,7 +602,7 @@ const Tasks: React.FC = () => {
                 </div>
 
                 {/* Priority Selector */}
-                <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5">
+                <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/40">
                   <HugeiconsIcon
                     icon={Flag01Icon}
                     strokeWidth={2}
@@ -962,10 +956,13 @@ const TaskGroup: React.FC<{
             <div
               key={task.id}
               className={cn(
-                "group flex items-start gap-3 rounded-3xl px-4 py-3 transition-all duration-200",
+                "group flex items-start gap-3 rounded-3xl px-4 py-3 transition-all duration-200 ease-out",
                 isCompletedGroup
                   ? "bg-muted/20"
-                  : "hover:-translate-y-0.5 hover:bg-muted/30"
+                  : "hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]",
+                !isCompletedGroup && task.priority === "high" && "priority-bar-high",
+                !isCompletedGroup && task.priority === "medium" && "priority-bar-medium",
+                !isCompletedGroup && task.priority === "low" && "priority-bar-low"
               )}
             >
               <button
@@ -981,7 +978,7 @@ const TaskGroup: React.FC<{
                   <HugeiconsIcon
                     icon={CheckmarkCircle02Icon}
                     strokeWidth={2}
-                    className="size-5"
+                    className="size-5 status-dot-alive"
                   />
                 ) : (
                   <HugeiconsIcon

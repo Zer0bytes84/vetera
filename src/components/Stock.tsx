@@ -59,13 +59,12 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories"
 import { TrendingUp, TrendingDown } from "@hugeicons/core-free-icons"
-import { DashboardPageIntro } from "@/components/dashboard-page-intro"
 import {
   MetricOverviewStrip,
   type MetricOverviewItem,
 } from "@/components/metric-overview-strip"
-import { Product } from "../types/db"
-import { formatDZD, toCentimes } from "../utils/currency"
+import { Product } from "@/types/db"
+import { formatDZD, toCentimes } from "@/utils/currency"
 
 // --- CATEGORY ICONS MAPPING ---
 const getCategoryIcon = (category: string) => {
@@ -552,22 +551,19 @@ const Stock: React.FC = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
-      <DashboardPageIntro
-        eyebrow="Pharmacie & inventaire"
-        title="Stock"
-        subtitle="Stock, ruptures, expirations et valorisation dans une vue opérationnelle immédiatement exploitable."
-        actions={
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Button className="h-10 rounded-xl px-4" onClick={handleOpenAdd}>
           <HugeiconsIcon icon={Add01Icon} strokeWidth={2} className="size-4" />
           Nouveau produit
           </Button>
-        }
-      />
+        </div>
+      </div>
 
       <MetricOverviewStrip items={overviewCards} />
 
       {/* Main Table Card */}
-      <Card className="flex min-h-[540px] flex-col rounded-[24px] border border-border bg-card shadow-none">
+      <Card className="card-vibrant card-hover-lift flex min-h-[540px] flex-col rounded-[24px] border border-border bg-card shadow-none">
         <CardHeader className="border-b border-border px-6 py-5">
           <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">Inventaire</CardDescription>
           <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">

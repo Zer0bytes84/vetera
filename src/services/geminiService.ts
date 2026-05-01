@@ -96,7 +96,7 @@ export const sendMessageToGemini = async (
     return response
   } catch (error) {
     console.error("[LocalAI] Erreur assistant:", error)
-    return `Une erreur s'est produite avec le modele local (${getLocalModelId()}).`
+    return "Une erreur s'est produite. Veuillez réessayer."
   }
 }
 

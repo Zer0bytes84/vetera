@@ -197,7 +197,7 @@ jobs:
 
           payload = {
               "version": version,
-              "notes": f"Vetera {version}",
+            "notes": f"bAItari {version}",
               "pub_date": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
               "platforms": platforms,
           }
@@ -218,6 +218,6 @@ jobs:
           else
             gh release create "$GITHUB_REF_NAME" latest.json "${files[@]}" \
               --verify-tag \
-              --title "Vetera $VERSION" \
-              --notes "Release Vetera $VERSION"
+              --title "bAItari $VERSION" \
+              --notes "Release bAItari $VERSION"
           fi

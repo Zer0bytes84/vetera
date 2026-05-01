@@ -29,9 +29,9 @@ const metricToneMap: Record<
   { bg: string; text: string; spark: string }
 > = {
   blue: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-600",
-    spark: "#f97316",
+    bg: "bg-blue-500/10",
+    text: "text-blue-600",
+    spark: "#3b82f6",
   },
   orange: {
     bg: "bg-orange-500/10",
@@ -74,7 +74,10 @@ export function MetricOverviewStrip({ items }: { items: MetricOverviewItem[] }) 
         return (
           <Card
             key={item.label}
-            className="overflow-hidden rounded-[24px] border border-border bg-card shadow-none"
+            className={cn(
+              "overflow-hidden rounded-[24px] border border-border bg-card shadow-none card-vibrant",
+              `metric-glow-${item.tone}`
+            )}
           >
             <CardContent className="flex min-h-[154px] flex-col justify-between p-4">
               <div className="flex items-start justify-between gap-3">

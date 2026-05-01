@@ -99,7 +99,11 @@ const Avatar: React.FC<AvatarProps> = ({
 
   if (
     normalizedSrc &&
-    (normalizedSrc.startsWith("http") || normalizedSrc.startsWith("data:"))
+    (
+      normalizedSrc.startsWith("http") ||
+      normalizedSrc.startsWith("data:") ||
+      normalizedSrc.startsWith("/")
+    )
   ) {
     return (
       <div

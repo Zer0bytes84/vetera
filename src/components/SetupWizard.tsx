@@ -16,7 +16,7 @@ import {
 import {
   validateLicenseKey,
   formatLicenseKey,
-} from "../services/licenseService"
+} from "@/services/licenseService"
 import Logo from "./Logo"
 import { APP_NAME, APP_TAGLINE } from "@/lib/brand"
 import { Input } from "@/components/ui/input"
