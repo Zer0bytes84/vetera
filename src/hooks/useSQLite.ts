@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import {
   type BrowserTableName,
@@ -91,6 +91,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
   const [data, setData] = useState<T[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const hasLoadedOnceRef = useRef(false)
 
   const safeTableName = ALLOWED_TABLES.has(tableName) ? tableName : null
 
@@ -99,7 +100,12 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
       if (!safeTableName) {
         throw new Error(`Table non autorisée: ${tableName}`)
       }
-      setLoading(true)
+      // Only show the loading skeleton on the very first load.
+      // Subsequent refreshes (data-changed events, focus/blur on Windows, etc.)
+      // should not flash the skeleton over already-rendered data.
+      if (!hasLoadedOnceRef.current) {
+        setLoading(true)
+      }
       setError(null)
 
       if (!isTauriRuntime()) {
@@ -119,6 +125,7 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
       console.error(`Error loading ${tableName}:`, err)
       setError(err instanceof Error ? err.message : "Unknown error")
     } finally {
+      hasLoadedOnceRef.current = true
       setLoading(false)
     }
   }, [safeTableName, tableName])

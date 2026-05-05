@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import * as AuthService from '@/services/sqlite/auth';
 
 interface AuthUser {
@@ -35,10 +35,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasInitializedRef = useRef(false);
 
   const refreshCurrentUser = useCallback(async () => {
     try {
-      setLoading(true);
+      // Only show the global loading skeleton on the very first load.
+      // Background refreshes (e.g. on sqlite-data-changed) must not blank out
+      // the whole app on Windows when WebView2 fires focus/visibility changes.
+      if (!hasInitializedRef.current) {
+        setLoading(true);
+      }
       const user = await AuthService.getCurrentUser();
       if (user) {
         setCurrentUser({
@@ -57,6 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error refreshing user:', error);
       setError(error.message || 'Failed to refresh user');
     } finally {
+      hasInitializedRef.current = true;
       setLoading(false);
     }
   }, []);
@@ -70,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Error loading user:', error);
         setError(error.message || 'Failed to load user');
       } finally {
+        hasInitializedRef.current = true;
         setLoading(false);
       }
     };

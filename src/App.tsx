@@ -26,8 +26,20 @@ type SetupPayload = {
 export function App() {
   const [isCheckingSetup, setIsCheckingSetup] = useState(true)
   const [needsSetup, setNeedsSetup] = useState(false)
+  const [hasBootstrapped, setHasBootstrapped] = useState(false)
   const { currentUser, loading, login } = useAuth()
   const { theme } = useTheme()
+
+  // Once the auth context has finished its initial load AND the setup check
+  // has finished, we consider the app "bootstrapped". From then on, even if
+  // `loading` flips back to true (e.g. background refresh), we no longer
+  // show the full-page skeleton — that prevents the flicker on Windows when
+  // the WebView2 is minimized, moved or when focus changes.
+  useEffect(() => {
+    if (!hasBootstrapped && !isCheckingSetup && !loading) {
+      setHasBootstrapped(true)
+    }
+  }, [hasBootstrapped, isCheckingSetup, loading])
 
   useEffect(() => {
     const checkSetup = async () => {
@@ -101,7 +113,7 @@ export function App() {
     setNeedsSetup(false)
   }
 
-  if (isCheckingSetup || loading) {
+  if (!hasBootstrapped && (isCheckingSetup || loading)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--bg-app)] px-6">
         <div className="w-full max-w-md rounded-3xl border border-border/70 bg-card/70 p-6 shadow-sm">
