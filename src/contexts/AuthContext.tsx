@@ -38,11 +38,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const hasInitializedRef = useRef(false);
 
   const refreshCurrentUser = useCallback(async () => {
+    const isInitialLoad = !hasInitializedRef.current;
     try {
       // Only show the global loading skeleton on the very first load.
       // Background refreshes (e.g. on sqlite-data-changed) must not blank out
       // the whole app on Windows when WebView2 fires focus/visibility changes.
-      if (!hasInitializedRef.current) {
+      if (isInitialLoad) {
         setLoading(true);
       }
       const user = await AuthService.getCurrentUser();
@@ -55,13 +56,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           role: user.role,
           avatarUrl: user.avatarUrl ?? null,
         });
-      } else {
+      } else if (isInitialLoad) {
+        // Only clear the user on the initial load. After bootstrap,
+        // a transient null result (StrictMode double-invoke, race condition,
+        // momentary DB unavailability) must NOT bump the user back to the
+        // login screen — they should remain logged in until they explicitly
+        // logout or their token is missing.
+        setCurrentUser(null);
+      } else if (!localStorage.getItem("auth_token")) {
+        // No token at all → really logged out.
         setCurrentUser(null);
       }
       setError(null);
     } catch (error: any) {
       console.error('Error refreshing user:', error);
       setError(error.message || 'Failed to refresh user');
+      // Never null out the user on a transient error after bootstrap.
     } finally {
       hasInitializedRef.current = true;
       setLoading(false);
