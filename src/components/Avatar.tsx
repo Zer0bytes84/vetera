@@ -1,7 +1,11 @@
 import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "lucide-react";
 import type React from "react";
 
-import { AvatarFallback, Avatar as ShadAvatar } from "@/components/ui/avatar";
+import {
+  AvatarFallback,
+  AvatarImage,
+  Avatar as ShadAvatar,
+} from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 export type AvatarSize = "sm" | "md" | "lg" | "xl" | "2xl";
@@ -92,6 +96,19 @@ const normalizeAvatarSrc = (src?: string | null) => {
   return value;
 };
 
+const isRenderableAvatarSrc = (src: string) => {
+  return (
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("data:") ||
+    src.startsWith("blob:") ||
+    src.startsWith("file://") ||
+    src.startsWith("asset:") ||
+    src.startsWith("tauri:") ||
+    src.startsWith("/")
+  );
+};
+
 const normalizeName = (name?: string | null) => {
   if (typeof name !== "string") {
     return "Utilisateur";
@@ -131,9 +148,8 @@ function renderImageAvatar({
 
   return (
     <ShadAvatar className={cn("rounded-full bg-muted", sizeClass, className)}>
-      <img
+      <AvatarImage
         alt={safeName}
-        className="size-full object-cover"
         draggable={false}
         height={pixelSize}
         src={normalizedSrc}
@@ -161,12 +177,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const safeName = normalizeName(name);
   const normalizedSrc = normalizeAvatarSrc(src);
 
-  if (
-    normalizedSrc &&
-    (normalizedSrc.startsWith("http") ||
-      normalizedSrc.startsWith("data:") ||
-      normalizedSrc.startsWith("/"))
-  ) {
+  if (normalizedSrc && isRenderableAvatarSrc(normalizedSrc)) {
     return renderImageAvatar({
       className,
       normalizedSrc,

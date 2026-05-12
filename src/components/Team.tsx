@@ -445,6 +445,14 @@ const Team: React.FC = () => {
                 const config =
                   ROLE_CONFIG[effectiveRole] || ROLE_CONFIG["stagiaire"];
                 const RoleIcon = config.icon || GraduationScrollIcon;
+                const isCurrentUserRow =
+                  user.email?.trim().toLowerCase() ===
+                  currentUser?.email?.trim().toLowerCase();
+                const resolvedAvatar =
+                  user.avatarUrl ||
+                  (isCurrentUserRow
+                    ? (currentUser?.avatarUrl ?? "")
+                    : "");
 
                 const isResetting =
                   resetStatus.loading && resetStatus.userId === user.id;
@@ -460,7 +468,7 @@ const Team: React.FC = () => {
                         <Avatar
                           name={user.displayName}
                           size="lg"
-                          src={user.avatarUrl}
+                          src={resolvedAvatar}
                         />
                         <div>
                           <h3 className="font-bold text-base text-foreground leading-tight">
