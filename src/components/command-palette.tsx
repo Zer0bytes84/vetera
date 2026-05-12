@@ -1,20 +1,3 @@
-import * as React from "react"
-import { useTranslation } from "react-i18next"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
 import {
   Calendar01Icon,
   ChartLineData01Icon,
@@ -29,37 +12,54 @@ import {
   StethoscopeIcon,
   UserIcon,
   UserMultipleIcon,
-} from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface CommandPaletteProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onNavigate: (view: string) => void
+  onNavigate: (view: string) => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type HugeiconType = any
+type HugeiconType = any;
 
 interface CommandItemData {
-  id: string
-  label: string
-  icon: HugeiconType
-  shortcut?: string
-  href: string
-  category: string
+  category: string;
+  href: string;
+  icon: HugeiconType;
+  id: string;
+  label: string;
+  shortcut?: string;
 }
 
-export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPaletteProps) {
-  const { t } = useTranslation()
-  const [search, setSearch] = React.useState("")
+export function CommandPalette({
+  open,
+  onOpenChange,
+  onNavigate,
+}: CommandPaletteProps) {
+  const { t } = useTranslation();
+  const [search, setSearch] = React.useState("");
 
   // Reset search quand le dialog s'ouvre
   React.useEffect(() => {
     if (open) {
-      setSearch("")
+      setSearch("");
     }
-  }, [open])
+  }, [open]);
 
   const commands: CommandItemData[] = [
     // Navigation principale
@@ -98,14 +98,18 @@ export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPalett
     // Actions rapides
     {
       id: "new-consultation",
-      label: t("commandPalette.newConsultation", { defaultValue: "Nouvelle consultation" }),
+      label: t("commandPalette.newConsultation", {
+        defaultValue: "Nouvelle consultation",
+      }),
       icon: Doctor01Icon,
       href: "/clinique",
       category: t("commandPalette.actions", { defaultValue: "Actions" }),
     },
     {
       id: "new-patient",
-      label: t("commandPalette.newPatient", { defaultValue: "Nouveau patient" }),
+      label: t("commandPalette.newPatient", {
+        defaultValue: "Nouveau patient",
+      }),
       icon: UserIcon,
       href: "/patients",
       category: t("commandPalette.actions", { defaultValue: "Actions" }),
@@ -123,21 +127,27 @@ export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPalett
       label: t("commandPalette.finances", { defaultValue: "Finances" }),
       icon: Money01Icon,
       href: "/finances",
-      category: t("commandPalette.exploitation", { defaultValue: "Exploitation" }),
+      category: t("commandPalette.exploitation", {
+        defaultValue: "Exploitation",
+      }),
     },
     {
       id: "stock",
       label: t("commandPalette.stock", { defaultValue: "Stock" }),
       icon: Folder01Icon,
       href: "/stock",
-      category: t("commandPalette.exploitation", { defaultValue: "Exploitation" }),
+      category: t("commandPalette.exploitation", {
+        defaultValue: "Exploitation",
+      }),
     },
     {
       id: "rapports",
       label: t("commandPalette.reports", { defaultValue: "Rapports" }),
       icon: ChartLineData01Icon,
       href: "/rapports",
-      category: t("commandPalette.exploitation", { defaultValue: "Exploitation" }),
+      category: t("commandPalette.exploitation", {
+        defaultValue: "Exploitation",
+      }),
     },
     // Paramètres
     {
@@ -150,37 +160,42 @@ export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPalett
     },
     {
       id: "help",
-      label: t("commandPalette.help", { defaultValue: "Aide et documentation" }),
+      label: t("commandPalette.help", {
+        defaultValue: "Aide et documentation",
+      }),
       icon: File01Icon,
       href: "/aide",
       category: t("commandPalette.settingsCat", { defaultValue: "Paramètres" }),
     },
-  ]
+  ];
 
   const handleSelect = (command: CommandItemData) => {
     if (onNavigate) {
-      onNavigate(command.href.replace("/", ""))
+      onNavigate(command.href.replace("/", ""));
     }
-    onOpenChange(false)
-  }
+    onOpenChange(false);
+  };
 
   // Grouper par catégorie
-  const groupedCommands = commands.reduce((acc, command) => {
-    if (!acc[command.category]) {
-      acc[command.category] = []
-    }
-    acc[command.category].push(command)
-    return acc
-  }, {} as Record<string, CommandItemData[]>)
+  const groupedCommands = commands.reduce(
+    (acc, command) => {
+      if (!acc[command.category]) {
+        acc[command.category] = [];
+      }
+      acc[command.category].push(command);
+      return acc;
+    },
+    {} as Record<string, CommandItemData[]>
+  );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent
         className={cn(
           "overflow-hidden p-0",
-          "max-w-[640px] w-[calc(100%-2rem)]",
+          "w-[calc(100%-2rem)] max-w-[640px]",
           "rounded-[24px] border border-border bg-card shadow-2xl",
-          "data-closed:animate-none data-closed:fade-out-100 data-closed:zoom-out-100"
+          "data-closed:fade-out-100 data-closed:zoom-out-100 data-closed:animate-none"
         )}
         showCloseButton={false}
       >
@@ -188,48 +203,55 @@ export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPalett
           {t("commandPalette.title", { defaultValue: "Recherche rapide" })}
         </DialogTitle>
         <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
-          <div className="flex items-center border-b border-border px-4">
+          <div className="flex items-center border-border border-b px-4">
             <HugeiconsIcon
+              className="mr-2 h-5 w-5 shrink-0 text-muted-foreground"
               icon={Home04Icon}
               strokeWidth={2}
-              className="mr-2 h-5 w-5 shrink-0 text-muted-foreground"
             />
             <CommandInput
-              placeholder={t("commandPalette.placeholder", { defaultValue: "Rechercher une commande ou naviguer..." })}
-              value={search}
-              onValueChange={setSearch}
               className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              onValueChange={setSearch}
+              placeholder={t("commandPalette.placeholder", {
+                defaultValue: "Rechercher une commande ou naviguer...",
+              })}
+              value={search}
             />
-            <kbd className="pointer-events-none ml-2 hidden h-7 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 sm:flex">
+            <kbd className="pointer-events-none ml-2 hidden h-7 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-medium font-mono text-[10px] text-muted-foreground opacity-100 sm:flex">
               <span className="text-xs">⌘</span>K
             </kbd>
           </div>
           <CommandList className="max-h-[400px] overflow-y-auto py-2">
-            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-              {t("commandPalette.noResults", { defaultValue: "Aucune commande trouvée." })}
+            <CommandEmpty className="py-6 text-center text-muted-foreground text-sm">
+              {t("commandPalette.noResults", {
+                defaultValue: "Aucune commande trouvée.",
+              })}
             </CommandEmpty>
             {Object.entries(groupedCommands).map(([category, items], index) => (
               <React.Fragment key={category}>
                 {index > 0 && <CommandSeparator className="my-1" />}
-                <CommandGroup heading={category} className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <CommandGroup
+                  className="px-2 py-1.5 font-medium text-muted-foreground text-xs uppercase tracking-wider"
+                  heading={category}
+                >
                   {items.map((item) => (
                     <CommandItem
-                      key={item.id}
-                      onSelect={() => handleSelect(item)}
                       className={cn(
                         "flex items-center gap-3 rounded-xl px-3 py-2.5",
                         "cursor-pointer select-none",
-                        "text-sm text-foreground",
+                        "text-foreground text-sm",
                         "transition-colors duration-150",
                         "data-[selected=true]:bg-muted data-[selected=true]:text-foreground",
                         "hover:bg-muted hover:text-foreground"
                       )}
+                      key={item.id}
+                      onSelect={() => handleSelect(item)}
                     >
                       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted/80">
                         <HugeiconsIcon
+                          className="h-4 w-4 text-muted-foreground"
                           icon={item.icon}
                           strokeWidth={2}
-                          className="h-4 w-4 text-muted-foreground"
                         />
                       </div>
                       <span className="flex-1">{item.label}</span>
@@ -244,21 +266,31 @@ export function CommandPalette({ open, onOpenChange, onNavigate }: CommandPalett
               </React.Fragment>
             ))}
           </CommandList>
-          <div className="flex items-center justify-between border-t border-border px-4 py-3 text-xs text-muted-foreground">
+          <div className="flex items-center justify-between border-border border-t px-4 py-3 text-muted-foreground text-xs">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
-                <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">↑↓</kbd>
-                <span>{t("commandPalette.navigate", { defaultValue: "Naviguer" })}</span>
+                <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">
+                  ↑↓
+                </kbd>
+                <span>
+                  {t("commandPalette.navigate", { defaultValue: "Naviguer" })}
+                </span>
               </div>
               <div className="flex items-center gap-1">
-                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">↵</kbd>
-                <span>{t("commandPalette.select", { defaultValue: "Sélectionner" })}</span>
+                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">
+                  ↵
+                </kbd>
+                <span>
+                  {t("commandPalette.select", { defaultValue: "Sélectionner" })}
+                </span>
               </div>
             </div>
-            <span>{t("commandPalette.close", { defaultValue: "ESC pour fermer" })}</span>
+            <span>
+              {t("commandPalette.close", { defaultValue: "ESC pour fermer" })}
+            </span>
           </div>
         </Command>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

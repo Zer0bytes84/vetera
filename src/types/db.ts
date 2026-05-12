@@ -1,135 +1,139 @@
 // Types pour les données locales SQLite
 // Remplace les types Firebase Firestore
 
-export type UserRole = 'admin' | 'vet_principal' | 'vet_adjoint' | 'assistant' | 'stagiaire';
+export type UserRole =
+  | "admin"
+  | "vet_principal"
+  | "vet_adjoint"
+  | "assistant"
+  | "stagiaire";
 
 export interface Owner {
-  id: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email?: string;
   address?: string;
   city?: string;
   createdAt: string; // ISO string
+  email?: string;
+  firstName: string;
+  id: string;
+  lastName: string;
+  phone: string;
 }
 
 export interface Patient {
-  id: string;
-  ownerId: string;
-  name: string;
-  species: 'Chien' | 'Chat' | 'NAC' | 'Cheval' | string;
+  allergies?: string;
   breed?: string;
-  sex: 'M' | 'F';
+  chronicConditions?: string; // Maladies chroniques
+
+  createdAt: string;
   dateOfBirth?: string; // ISO string YYYY-MM-DD
-  weightHistory?: string; // JSON string
-  status: 'sante' | 'traitement' | 'hospitalise' | 'decede';
+  generalNotes?: string; // Notes générales
+  id: string;
 
   // Champs Médicaux
   lastVisit?: string; // ISO string
-  allergies?: string;
-  chronicConditions?: string; // Maladies chroniques
-  generalNotes?: string; // Notes générales
-
-  createdAt: string;
+  name: string;
+  ownerId: string;
+  sex: "M" | "F";
+  species: "Chien" | "Chat" | "NAC" | "Cheval" | string;
+  status: "sante" | "traitement" | "hospitalise" | "decede";
+  weightHistory?: string; // JSON string
 }
 
 export interface User {
-  id: string;
-  displayName: string;
-  email: string;
-  role: UserRole;
-  phone?: string;
-  specialty?: string;
-  status: 'active' | 'inactive';
   avatarUrl?: string;
   createdAt: string;
+  displayName: string;
+  email: string;
+  id: string;
+  phone?: string;
+  role: UserRole;
+  specialty?: string;
+  status: "active" | "inactive";
 }
 
 export interface Product {
-  id: string;
-  name: string;
   category: string;
-  subCategory?: string;
-  quantity: number;
-  unit: string;
-  minStock: number;
-  purchasePriceAmount: number; // In centimes
-  salePriceAmount: number; // In centimes
-  expiryDate?: string;
   createdAt: string;
+  expiryDate?: string;
+  id: string;
+  minStock: number;
+  name: string;
+  purchasePriceAmount: number; // In centimes
+  quantity: number;
+  salePriceAmount: number; // In centimes
+  subCategory?: string;
+  unit: string;
 }
 
 export interface Appointment {
-  id: string;
-  patientId: string;
-  ownerId: string;
-  vetId: string;
-  title: string;
-  startTime: string; // ISO string
+  createdAt: string;
+  diagnosis?: string;
   endTime: string; // ISO string
-  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
-  type: 'Consultation' | 'Vaccin' | 'Chirurgie' | 'Urgence' | 'Contrôle';
+  id: string;
+  notes?: string;
+  ownerId: string;
+  patientId: string;
 
   reason?: string;
-  diagnosis?: string;
+  startTime: string; // ISO string
+  status: "scheduled" | "in_progress" | "completed" | "cancelled" | "no_show";
+  title: string;
   treatment?: string;
-  notes?: string;
-
-  createdAt: string;
+  type: "Consultation" | "Vaccin" | "Chirurgie" | "Urgence" | "Contrôle";
+  vetId: string;
 }
 
 export interface Transaction {
-  id: string;
-  date: string; // ISO string
   amount: number; // In centimes
-  type: 'income' | 'expense';
   category: string;
-  description: string;
-  referenceId?: string;
-  method: 'cash' | 'card';
-  status: 'paid' | 'pending';
   createdAt: string;
+  date: string; // ISO string
+  description: string;
+  id: string;
+  method: "cash" | "card";
+  referenceId?: string;
+  status: "paid" | "pending";
+  type: "income" | "expense";
 }
 
 export interface Note {
-  id: string;
-  userId: string;
-  title: string;
   content: string; // HTML string from TipTap
+  createdAt: string;
+  id: string;
   isFavorite: boolean;
   tags?: string; // JSON string
-  createdAt: string;
+  title: string;
   updatedAt: string;
+  userId: string;
 }
 
 export interface ConsultationDocument {
-  id: string;
   appointmentId: string;
-  patientId: string;
-  ownerId?: string;
-  fileName: string;
-  mimeType: string;
-  sizeBytes: number;
   category: "pdf" | "image" | "other";
+  createdAt: string;
+  createdBy?: string;
   dataUrl: string;
   description?: string;
-  createdBy?: string;
-  createdAt: string;
+  fileName: string;
+  id: string;
+  mimeType: string;
+  ownerId?: string;
+  patientId: string;
+  sizeBytes: number;
   updatedAt: string;
 }
 
 export interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  status: 'todo' | 'in_progress' | 'done';
-  priority: 'low' | 'medium' | 'high';
-  dueDate?: string; // ISO Date YYYY-MM-DD
-  startTime?: string; // HH:mm
-  endTime?: string; // HH:mm
-  isReminder: boolean;
   assignedTo?: string;
-  patientId?: string;
   createdAt: string;
+  description?: string;
+  dueDate?: string; // ISO Date YYYY-MM-DD
+  endTime?: string; // HH:mm
+  id: string;
+  isReminder: boolean;
+  patientId?: string;
+  priority: "low" | "medium" | "high";
+  startTime?: string; // HH:mm
+  status: "todo" | "in_progress" | "done";
+  title: string;
 }

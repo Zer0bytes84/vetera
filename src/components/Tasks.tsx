@@ -1,6 +1,3 @@
-import React, { useState, useMemo } from "react"
-import { ar, de, enUS, es, fr, pt } from "date-fns/locale"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
   Calendar01Icon,
@@ -13,19 +10,19 @@ import {
   ListPlusIcon,
   MoreVerticalCircle01Icon,
   Notification02Icon,
-} from "@hugeicons/core-free-icons"
-import { useTasksRepository } from "@/data/repositories"
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
+import type React from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  MetricOverviewStrip,
   type MetricOverviewItem,
-} from "@/components/metric-overview-strip"
-import { Task } from "@/types/db"
-import { useAuth } from "@/contexts/AuthContext"
-import KanbanBoard from "./KanbanBoard"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+  MetricOverviewStrip,
+} from "@/components/metric-overview-strip";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardAction,
@@ -33,16 +30,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
-import { Input } from "@/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,8 +40,17 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -61,55 +58,63 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { useTranslation } from "react-i18next"
+} from "@/components/ui/table";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTasksRepository } from "@/data/repositories";
+import { cn } from "@/lib/utils";
+import type { Task } from "@/types/db";
+import KanbanBoard from "./KanbanBoard";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "bg-red-500/10 text-red-700 border-red-200 dark:text-red-300",
   medium: "bg-amber-500/10 text-amber-700 border-amber-200 dark:text-amber-300",
   low: "bg-blue-500/10 text-blue-700 border-blue-200 dark:text-blue-300",
-}
+};
 
 const PRIORITY_LABELS: Record<string, string> = {
   high: "Urgent",
   medium: "Normal",
   low: "Faible",
-}
+};
 
 const PRIORITY_TABLE_BADGES: Record<string, string> = {
   high: "border-red-200 bg-red-500/12 text-red-700 dark:border-red-500/30 dark:bg-red-500/18 dark:text-red-300",
   medium:
     "border-amber-200 bg-amber-500/12 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/18 dark:text-amber-300",
   low: "border-sky-200 bg-sky-500/12 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/18 dark:text-sky-300",
-}
+};
 
 // Helper to generate time slots
 const generateTimeSlots = () => {
-  const slots = []
+  const slots: string[] = [];
   for (let i = 7; i <= 20; i++) {
-    const hour = i.toString().padStart(2, "0")
-    slots.push(`${hour}:00`)
-    slots.push(`${hour}:30`)
+    const hour = i.toString().padStart(2, "0");
+    slots.push(`${hour}:00`);
+    slots.push(`${hour}:30`);
   }
-  return slots
-}
+  return slots;
+};
 
-const TIME_SLOTS = generateTimeSlots()
+const TIME_SLOTS = generateTimeSlots();
 
 const formatDateInput = (value: Date) => {
-  const year = value.getFullYear()
-  const month = `${value.getMonth() + 1}`.padStart(2, "0")
-  const day = `${value.getDate()}`.padStart(2, "0")
-  return `${year}-${month}-${day}`
-}
+  const year = value.getFullYear();
+  const month = `${value.getMonth() + 1}`.padStart(2, "0");
+  const day = `${value.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 const parseDateInput = (value?: string) => {
-  if (!value) return null
-  const [year, month, day] = value.split("-").map(Number)
-  if (!year || !month || !day) return null
-  return new Date(year, month - 1, day, 12, 0, 0, 0)
-}
+  if (!value) {
+    return null;
+  }
+  const [year, month, day] = value.split("-").map(Number);
+  if (!(year && month && day)) {
+    return null;
+  }
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+};
 
 const buildTaskSparkline = (
   base: number,
@@ -120,34 +125,34 @@ const buildTaskSparkline = (
     rise: [-1, 0, 1, 2, 1, 2, 3, 4],
     watch: [3, 2, 4, 5, 4, 6, 5, 7],
     stable: [1, 1, 0, 1, 0, 1, 0, 0],
-  }[pattern]
+  }[pattern];
 
-  return deltas.map((delta) => Math.max(base + delta, 0))
-}
+  return deltas.map((delta) => Math.max(base + delta, 0));
+};
 
 const Tasks: React.FC = () => {
-  const { i18n } = useTranslation()
-  const { currentUser } = useAuth()
+  const { i18n } = useTranslation();
+  const { currentUser } = useAuth();
   const {
     data: tasks,
     add: addTask,
     update: updateTask,
     remove: removeTask,
-  } = useTasksRepository()
+  } = useTasksRepository();
 
-  const [newTaskTitle, setNewTaskTitle] = useState("")
-  const [isAdding, setIsAdding] = useState(false)
-  const [filter, setFilter] = useState<"all" | "mine">("mine")
-  const [viewMode, setViewMode] = useState<"list" | "kanban">("list")
-  const [taskSearch, setTaskSearch] = useState("")
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+  const [filter, setFilter] = useState<"all" | "mine">("mine");
+  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+  const [taskSearch, setTaskSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "todo" | "in_progress" | "done"
-  >("all")
+  >("all");
   const [priorityFilter, setPriorityFilter] = useState<
     "all" | "high" | "medium" | "low"
-  >("all")
-  const [favoriteTaskIds, setFavoriteTaskIds] = useState<string[]>([])
-  const [taskLabels, setTaskLabels] = useState<Record<string, string[]>>({})
+  >("all");
+  const [favoriteTaskIds, setFavoriteTaskIds] = useState<string[]>([]);
+  const [taskLabels, setTaskLabels] = useState<Record<string, string[]>>({});
   const currentLocale = i18n.language.startsWith("ar")
     ? "ar"
     : i18n.language.startsWith("en")
@@ -158,7 +163,7 @@ const Tasks: React.FC = () => {
           ? "pt-PT"
           : i18n.language.startsWith("de")
             ? "de-DE"
-            : "fr-FR"
+            : "fr-FR";
   const calendarLocale = i18n.language.startsWith("ar")
     ? ar
     : i18n.language.startsWith("en")
@@ -169,43 +174,47 @@ const Tasks: React.FC = () => {
           ? pt
           : i18n.language.startsWith("de")
             ? de
-            : fr
+            : fr;
 
   // Extended form state
   const [newTaskDetails, setNewTaskDetails] = useState<{
-    priority: "low" | "medium" | "high"
-    dueDate: string
-    startTime: string
-    endTime: string
-    isReminder: boolean
+    priority: "low" | "medium" | "high";
+    dueDate: string;
+    startTime: string;
+    endTime: string;
+    isReminder: boolean;
   }>({
     priority: "medium",
     dueDate: new Date().toISOString().split("T")[0],
     startTime: "08:00",
     endTime: "09:00",
     isReminder: false,
-  })
+  });
 
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newStart = e.target.value
-    let newEnd = newTaskDetails.endTime
-    const startIndex = TIME_SLOTS.indexOf(newStart)
+    const newStart = e.target.value;
+    let newEnd = newTaskDetails.endTime;
+    const startIndex = TIME_SLOTS.indexOf(newStart);
     if (startIndex !== -1 && startIndex + 2 < TIME_SLOTS.length) {
-      newEnd = TIME_SLOTS[startIndex + 2]
+      newEnd = TIME_SLOTS[startIndex + 2];
     } else if (startIndex !== -1 && startIndex + 1 < TIME_SLOTS.length) {
-      newEnd = TIME_SLOTS[startIndex + 1]
+      newEnd = TIME_SLOTS[startIndex + 1];
     }
 
     setNewTaskDetails((prev) => ({
       ...prev,
       startTime: newStart,
       endTime: newEnd > newStart ? newEnd : newStart,
-    }))
-  }
+    }));
+  };
 
   const handleAddTask = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
-    if (!newTaskTitle.trim()) return
+    if (e) {
+      e.preventDefault();
+    }
+    if (!newTaskTitle.trim()) {
+      return;
+    }
 
     try {
       await addTask({
@@ -217,29 +226,34 @@ const Tasks: React.FC = () => {
         endTime: newTaskDetails.endTime,
         isReminder: newTaskDetails.isReminder,
         assignedTo: currentUser?.uid,
-      } as any)
+      } as any);
 
-      setNewTaskTitle("")
-      setIsAdding(false)
+      setNewTaskTitle("");
+      setIsAdding(false);
       setNewTaskDetails((prev) => ({
         ...prev,
         startTime: "08:00",
         endTime: "09:00",
-      }))
+      }));
     } catch (err: any) {
-      console.error(err)
+      console.error(err);
       alert(
         "Erreur lors de la création de la tâche: " +
           (err.message || JSON.stringify(err))
-      )
+      );
     }
-  }
+  };
 
   const handleEditTask = async (task: Task) => {
-    const nextTitle = window.prompt("Modifier le titre de la tâche", task.title)
-    if (!nextTitle || nextTitle.trim() === task.title) return
-    await updateTask(task.id, { title: nextTitle.trim() })
-  }
+    const nextTitle = window.prompt(
+      "Modifier le titre de la tâche",
+      task.title
+    );
+    if (!nextTitle || nextTitle.trim() === task.title) {
+      return;
+    }
+    await updateTask(task.id, { title: nextTitle.trim() });
+  };
 
   const handleDuplicateTask = async (task: Task) => {
     await addTask({
@@ -252,66 +266,78 @@ const Tasks: React.FC = () => {
       isReminder: task.isReminder,
       assignedTo: task.assignedTo || currentUser?.uid,
       patientId: task.patientId,
-    } as any)
-  }
+    } as any);
+  };
 
   const toggleFavoriteTask = (taskId: string) => {
     setFavoriteTaskIds((prev) =>
       prev.includes(taskId)
         ? prev.filter((id) => id !== taskId)
         : [...prev, taskId]
-    )
-  }
+    );
+  };
 
   const setTaskLabel = (taskId: string, label: string) => {
     setTaskLabels((prev) => {
-      const labels = prev[taskId] ?? []
-      if (labels.includes(label)) return prev
+      const labels = prev[taskId] ?? [];
+      if (labels.includes(label)) {
+        return prev;
+      }
       return {
         ...prev,
         [taskId]: [...labels, label],
-      }
-    })
-  }
+      };
+    });
+  };
 
   const setCustomTaskLabel = (taskId: string) => {
-    const input = window.prompt("Nouvelle étiquette")
-    if (!input || !input.trim()) return
-    setTaskLabel(taskId, input.trim())
-  }
+    const input = window.prompt("Nouvelle étiquette");
+    if (!(input && input.trim())) {
+      return;
+    }
+    setTaskLabel(taskId, input.trim());
+  };
 
   const toggleStatus = async (task: Task) => {
-    const newStatus = task.status === "done" ? "todo" : "done"
-    await updateTask(task.id, { status: newStatus })
-  }
+    const newStatus = task.status === "done" ? "todo" : "done";
+    await updateTask(task.id, { status: newStatus });
+  };
 
   const filteredTasks = useMemo(() => {
-    let filtered = tasks
+    let filtered = tasks;
 
     if (filter === "mine" && currentUser?.uid) {
       filtered = filtered.filter(
         (task) => task.assignedTo === currentUser.uid || !task.assignedTo
-      )
+      );
     }
 
     return filtered.sort((a, b) => {
-      if (a.status === "done" && b.status !== "done") return 1
-      if (a.status !== "done" && b.status === "done") return -1
+      if (a.status === "done" && b.status !== "done") {
+        return 1;
+      }
+      if (a.status !== "done" && b.status === "done") {
+        return -1;
+      }
 
-      const dateA = a.dueDate || "9999-99-99"
-      const dateB = b.dueDate || "9999-99-99"
-      if (dateA !== dateB) return dateA.localeCompare(dateB)
+      const dateA = a.dueDate || "9999-99-99";
+      const dateB = b.dueDate || "9999-99-99";
+      if (dateA !== dateB) {
+        return dateA.localeCompare(dateB);
+      }
 
-      const timeA = a.startTime || "00:00"
-      const timeB = b.startTime || "00:00"
-      return timeA.localeCompare(timeB)
-    })
-  }, [tasks, filter, currentUser])
+      const timeA = a.startTime || "00:00";
+      const timeB = b.startTime || "00:00";
+      return timeA.localeCompare(timeB);
+    });
+  }, [tasks, filter, currentUser]);
 
   // Group by Date buckets
   const groupedTasks = useMemo(() => {
-    const today = new Date().toISOString().split("T")[0]
-    const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0]
+    const today = new Date().toISOString().split("T")[0];
+    const tomorrow = new Date(Date.now() + 86_400_000)
+      .toISOString()
+      .split("T")[0];
 
     const groups = {
       overdue: [] as Task[],
@@ -319,53 +345,60 @@ const Tasks: React.FC = () => {
       tomorrow: [] as Task[],
       upcoming: [] as Task[],
       completed: [] as Task[],
-    }
+    };
 
     filteredTasks.forEach((task) => {
       if (task.status === "done") {
-        groups.completed.push(task)
-        return
+        groups.completed.push(task);
+        return;
       }
 
       if (!task.dueDate) {
-        groups.upcoming.push(task)
-        return
+        groups.upcoming.push(task);
+        return;
       }
 
       if (task.dueDate < today) {
-        groups.overdue.push(task)
+        groups.overdue.push(task);
       } else if (task.dueDate === today) {
-        groups.today.push(task)
+        groups.today.push(task);
       } else if (task.dueDate === tomorrow) {
-        groups.tomorrow.push(task)
+        groups.tomorrow.push(task);
       } else {
-        groups.upcoming.push(task)
+        groups.upcoming.push(task);
       }
-    })
+    });
 
-    return groups
-  }, [filteredTasks])
+    return groups;
+  }, [filteredTasks]);
 
-  const tableTasks = useMemo(() => {
-    return filteredTasks.filter((task) => {
-      const search = taskSearch.trim().toLowerCase()
-      const matchesSearch =
-        search.length === 0 ||
-        task.title.toLowerCase().includes(search) ||
-        task.id.toLowerCase().includes(search)
-      const matchesStatus = statusFilter === "all" || task.status === statusFilter
-      const matchesPriority =
-        priorityFilter === "all" || task.priority === priorityFilter
-      return matchesSearch && matchesStatus && matchesPriority
-    })
-  }, [filteredTasks, priorityFilter, statusFilter, taskSearch])
+  const tableTasks = useMemo(
+    () =>
+      filteredTasks.filter((task) => {
+        const search = taskSearch.trim().toLowerCase();
+        const matchesSearch =
+          search.length === 0 ||
+          task.title.toLowerCase().includes(search) ||
+          task.id.toLowerCase().includes(search);
+        const matchesStatus =
+          statusFilter === "all" || task.status === statusFilter;
+        const matchesPriority =
+          priorityFilter === "all" || task.priority === priorityFilter;
+        return matchesSearch && matchesStatus && matchesPriority;
+      }),
+    [filteredTasks, priorityFilter, statusFilter, taskSearch]
+  );
 
   const overviewCards = useMemo<MetricOverviewItem[]>(() => {
-    const openTasks = filteredTasks.filter((task) => task.status !== "done").length
+    const openTasks = filteredTasks.filter(
+      (task) => task.status !== "done"
+    ).length;
     const urgentTasks = filteredTasks.filter(
       (task) => task.status !== "done" && task.priority === "high"
-    ).length
-    const completedTasks = filteredTasks.filter((task) => task.status === "done").length
+    ).length;
+    const completedTasks = filteredTasks.filter(
+      (task) => task.status === "done"
+    ).length;
 
     return [
       {
@@ -404,7 +437,7 @@ const Tasks: React.FC = () => {
         tone: "emerald",
         sparklineData: buildTaskSparkline(completedTasks, "stable"),
       },
-    ]
+    ];
   }, [
     filter,
     filteredTasks,
@@ -412,7 +445,7 @@ const Tasks: React.FC = () => {
     groupedTasks.today.length,
     groupedTasks.tomorrow.length,
     tableTasks.length,
-  ])
+  ]);
 
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
@@ -420,15 +453,15 @@ const Tasks: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           {/* Filter toggle */}
           <ToggleGroup
+            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
             multiple={false}
-            value={[filter]}
             onValueChange={(value) => {
-              setFilter((value[0] as "all" | "mine" | undefined) ?? "mine")
+              setFilter((value[0] as "all" | "mine" | undefined) ?? "mine");
             }}
-            variant="outline"
             size="sm"
             spacing={0}
-            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
+            value={[filter]}
+            variant="outline"
           >
             <ToggleGroupItem value="mine">Mes Tâches</ToggleGroupItem>
             <ToggleGroupItem value="all">Tout l'équipe</ToggleGroupItem>
@@ -436,30 +469,30 @@ const Tasks: React.FC = () => {
 
           {/* View toggle */}
           <ToggleGroup
+            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
             multiple={false}
-            value={[viewMode]}
             onValueChange={(value) => {
               setViewMode(
                 (value[0] as "list" | "kanban" | undefined) ?? "kanban"
-              )
+              );
             }}
-            variant="outline"
             size="sm"
             spacing={0}
-            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
+            value={[viewMode]}
+            variant="outline"
           >
-            <ToggleGroupItem value="list" title="Vue liste">
+            <ToggleGroupItem title="Vue liste" value="list">
               <HugeiconsIcon
+                className="size-4"
                 icon={ListPlusIcon}
                 strokeWidth={2}
-                className="size-4"
               />
             </ToggleGroupItem>
-            <ToggleGroupItem value="kanban" title="Vue Kanban">
+            <ToggleGroupItem title="Vue Kanban" value="kanban">
               <HugeiconsIcon
+                className="size-4"
                 icon={LayoutGridIcon}
                 strokeWidth={2}
-                className="size-4"
               />
             </ToggleGroupItem>
           </ToggleGroup>
@@ -470,11 +503,11 @@ const Tasks: React.FC = () => {
 
       {/* Quick Add Bar */}
       <Card
-        size="sm"
         className="card-vibrant rounded-[24px] border border-border bg-card shadow-none transition-all focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/20"
+        size="sm"
       >
         <CardContent className="p-5">
-          <form onSubmit={handleAddTask} className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleAddTask}>
             <div className="flex items-center gap-3">
               <div
                 className={cn(
@@ -483,29 +516,31 @@ const Tasks: React.FC = () => {
                 )}
               >
                 <HugeiconsIcon
-                  icon={Add01Icon}
-                  strokeWidth={2}
                   className={cn(
                     "size-3.5",
                     isAdding ? "text-primary" : "text-muted-foreground/50"
                   )}
+                  icon={Add01Icon}
+                  strokeWidth={2}
                 />
               </div>
               <Input
-                type="text"
-                value={newTaskTitle}
+                className="flex-1 border-none bg-transparent shadow-none focus-visible:ring-0"
                 onChange={(e) => {
-                  setNewTaskTitle(e.target.value)
-                  if (!isAdding) setIsAdding(true)
+                  setNewTaskTitle(e.target.value);
+                  if (!isAdding) {
+                    setIsAdding(true);
+                  }
                 }}
                 placeholder="Ajouter une nouvelle tâche..."
-                className="flex-1 border-none bg-transparent shadow-none focus-visible:ring-0"
+                type="text"
+                value={newTaskTitle}
               />
               {isAdding && (
                 <Button
+                  className="rounded-[0.95rem] px-4"
                   type="submit"
                   variant="default"
-                  className="rounded-[0.95rem] px-4"
                 >
                   Ajouter
                 </Button>
@@ -513,49 +548,52 @@ const Tasks: React.FC = () => {
             </div>
 
             {isAdding && (
-              <div className="flex animate-in flex-wrap items-center gap-3 border-t border-border pt-4 pl-9 fade-in slide-in-from-top-2">
+              <div className="fade-in slide-in-from-top-2 flex animate-in flex-wrap items-center gap-3 border-border border-t pt-4 pl-9">
                 {/* Date Picker */}
                 <Popover>
                   <PopoverTrigger
                     render={
                       <Button
-                        variant="ghost"
+                        className="h-8 rounded-3xl bg-muted/30 px-3 font-normal text-xs hover:bg-muted/50"
                         size="sm"
-                        className="h-8 rounded-3xl bg-muted/30 px-3 text-xs font-normal hover:bg-muted/50"
+                        variant="ghost"
                       />
                     }
                   >
                     <HugeiconsIcon
+                      className="size-3.5 text-muted-foreground"
                       icon={Calendar01Icon}
                       strokeWidth={2}
-                      className="size-3.5 text-muted-foreground"
                     />
-                    {(parseDateInput(newTaskDetails.dueDate) ?? new Date()).toLocaleDateString(
-                      currentLocale,
-                      {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      }
-                    )}
+                    {(
+                      parseDateInput(newTaskDetails.dueDate) ?? new Date()
+                    ).toLocaleDateString(currentLocale, {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
                   </PopoverTrigger>
                   <PopoverContent
                     align="start"
-                    sideOffset={10}
                     className="w-auto rounded-[1.35rem] p-2.5"
+                    sideOffset={10}
                   >
                     <Calendar
-                      mode="single"
+                      className="rounded-[1.05rem] [--cell-size:--spacing(8.6)]"
                       locale={calendarLocale}
-                      selected={parseDateInput(newTaskDetails.dueDate) ?? new Date()}
+                      mode="single"
                       onSelect={(date) => {
-                        if (!date) return
+                        if (!date) {
+                          return;
+                        }
                         setNewTaskDetails({
                           ...newTaskDetails,
                           dueDate: formatDateInput(date),
-                        })
+                        });
                       }}
-                      className="rounded-[1.05rem] [--cell-size:--spacing(8.6)]"
+                      selected={
+                        parseDateInput(newTaskDetails.dueDate) ?? new Date()
+                      }
                     />
                   </PopoverContent>
                 </Popover>
@@ -563,15 +601,15 @@ const Tasks: React.FC = () => {
                 {/* Time Range Selector */}
                 <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/40">
                   <HugeiconsIcon
+                    className="size-3.5 text-muted-foreground"
                     icon={Clock01Icon}
                     strokeWidth={2}
-                    className="size-3.5 text-muted-foreground"
                   />
                   <NativeSelect
-                    value={newTaskDetails.startTime}
+                    className="w-auto"
                     onChange={handleStartTimeChange}
                     size="sm"
-                    className="w-auto"
+                    value={newTaskDetails.startTime}
                   >
                     <NativeSelectOption value="">Début</NativeSelectOption>
                     {TIME_SLOTS.map((t) => (
@@ -580,9 +618,9 @@ const Tasks: React.FC = () => {
                       </NativeSelectOption>
                     ))}
                   </NativeSelect>
-                  <span className="text-xs text-muted-foreground">-</span>
+                  <span className="text-muted-foreground text-xs">-</span>
                   <NativeSelect
-                    value={newTaskDetails.endTime}
+                    className="w-auto"
                     onChange={(e) =>
                       setNewTaskDetails({
                         ...newTaskDetails,
@@ -590,7 +628,7 @@ const Tasks: React.FC = () => {
                       })
                     }
                     size="sm"
-                    className="w-auto"
+                    value={newTaskDetails.endTime}
                   >
                     <NativeSelectOption value="">Fin</NativeSelectOption>
                     {TIME_SLOTS.map((t) => (
@@ -604,17 +642,17 @@ const Tasks: React.FC = () => {
                 {/* Priority Selector */}
                 <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/40">
                   <HugeiconsIcon
-                    icon={Flag01Icon}
-                    strokeWidth={2}
                     className={cn(
                       "size-3.5",
                       newTaskDetails.priority === "high"
                         ? "text-red-500"
                         : "text-muted-foreground"
                     )}
+                    icon={Flag01Icon}
+                    strokeWidth={2}
                   />
                   <NativeSelect
-                    value={newTaskDetails.priority}
+                    className="w-auto"
                     onChange={(e) =>
                       setNewTaskDetails({
                         ...newTaskDetails,
@@ -622,7 +660,7 @@ const Tasks: React.FC = () => {
                       })
                     }
                     size="sm"
-                    className="w-auto"
+                    value={newTaskDetails.priority}
                   >
                     <NativeSelectOption value="low">
                       Priorité Basse
@@ -638,25 +676,25 @@ const Tasks: React.FC = () => {
 
                 {/* Reminder Toggle */}
                 <Button
-                  type="button"
-                  variant={newTaskDetails.isReminder ? "outline" : "ghost"}
-                  size="sm"
+                  className={cn(
+                    "gap-1.5 rounded-3xl text-xs",
+                    newTaskDetails.isReminder &&
+                      "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300"
+                  )}
                   onClick={() =>
                     setNewTaskDetails({
                       ...newTaskDetails,
                       isReminder: !newTaskDetails.isReminder,
                     })
                   }
-                  className={cn(
-                    "gap-1.5 rounded-3xl text-xs",
-                    newTaskDetails.isReminder &&
-                      "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300"
-                  )}
+                  size="sm"
+                  type="button"
+                  variant={newTaskDetails.isReminder ? "outline" : "ghost"}
                 >
                   <HugeiconsIcon
+                    className="size-3.5"
                     icon={Notification02Icon}
                     strokeWidth={2}
-                    className="size-3.5"
                   />
                   Rappel
                 </Button>
@@ -670,29 +708,32 @@ const Tasks: React.FC = () => {
       {viewMode === "kanban" ? (
         <div className="flex-1">
           <KanbanBoard
-            tasks={filteredTasks}
-            onStatusChange={async (taskId, newStatus) => {
-              await updateTask(taskId, { status: newStatus })
-            }}
             onDelete={async (taskId) => {
               if (window.confirm("Supprimer cette tâche ?")) {
-                await removeTask(taskId)
+                await removeTask(taskId);
               }
             }}
+            onStatusChange={async (taskId, newStatus) => {
+              await updateTask(taskId, { status: newStatus });
+            }}
+            tasks={filteredTasks}
           />
         </div>
       ) : (
         <div className="flex-1 space-y-4">
-          <Card size="sm" className="rounded-[24px] border border-border bg-card shadow-none">
-            <CardHeader className="border-b border-border px-6 py-5">
+          <Card
+            className="rounded-[24px] border border-border bg-card shadow-none"
+            size="sm"
+          >
+            <CardHeader className="border-border border-b px-6 py-5">
               <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
                 Registre des rappels
               </CardDescription>
-              <CardTitle className="text-[22px] font-normal tracking-[-0.04em]">
+              <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
                 Vue liste des tâches
               </CardTitle>
               <CardAction>
-                <Badge variant="outline" className="rounded-full px-3 py-1">
+                <Badge className="rounded-full px-3 py-1" variant="outline">
                   {tableTasks.length} rappel{tableTasks.length > 1 ? "s" : ""}
                 </Badge>
               </CardAction>
@@ -700,20 +741,20 @@ const Tasks: React.FC = () => {
             <CardContent className="space-y-4 px-6 py-5">
               <div className="flex flex-wrap items-center gap-3">
                 <Input
-                  value={taskSearch}
+                  className="h-10 max-w-sm rounded-xl"
                   onChange={(e) => setTaskSearch(e.target.value)}
                   placeholder="Filtrer les rappels..."
-                  className="h-10 max-w-sm rounded-xl"
+                  value={taskSearch}
                 />
                 <NativeSelect
-                  value={statusFilter}
+                  className="w-[170px]"
                   onChange={(e) =>
                     setStatusFilter(
                       e.target.value as "all" | "todo" | "in_progress" | "done"
                     )
                   }
                   size="sm"
-                  className="w-[170px]"
+                  value={statusFilter}
                 >
                   <NativeSelectOption value="all">Statut</NativeSelectOption>
                   <NativeSelectOption value="todo">À faire</NativeSelectOption>
@@ -723,14 +764,14 @@ const Tasks: React.FC = () => {
                   <NativeSelectOption value="done">Terminé</NativeSelectOption>
                 </NativeSelect>
                 <NativeSelect
-                  value={priorityFilter}
+                  className="w-[170px]"
                   onChange={(e) =>
                     setPriorityFilter(
                       e.target.value as "all" | "high" | "medium" | "low"
                     )
                   }
                   size="sm"
-                  className="w-[170px]"
+                  value={priorityFilter}
                 >
                   <NativeSelectOption value="all">Priorité</NativeSelectOption>
                   <NativeSelectOption value="high">Urgent</NativeSelectOption>
@@ -747,15 +788,17 @@ const Tasks: React.FC = () => {
                     <TableHead className="w-[140px]">Statut</TableHead>
                     <TableHead className="w-[120px]">Priorité</TableHead>
                     <TableHead className="w-[130px]">Horaire</TableHead>
-                    <TableHead className="w-[130px] text-right">Actions</TableHead>
+                    <TableHead className="w-[130px] text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {tableTasks.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={6}
                         className="py-10 text-center text-muted-foreground"
+                        colSpan={6}
                       >
                         Aucun rappel trouvé.
                       </TableCell>
@@ -763,7 +806,7 @@ const Tasks: React.FC = () => {
                   ) : (
                     tableTasks.map((task) => (
                       <TableRow key={task.id}>
-                        <TableCell className="font-mono text-xs text-muted-foreground">
+                        <TableCell className="font-mono text-muted-foreground text-xs">
                           TASK-{task.id.slice(-4).toUpperCase()}
                         </TableCell>
                         <TableCell className="max-w-[420px] truncate font-medium">
@@ -772,20 +815,21 @@ const Tasks: React.FC = () => {
                               <span className="text-amber-500">★</span>
                             ) : null}
                             <span className="truncate">{task.title}</span>
-                            {(taskLabels[task.id] ?? []).slice(0, 1).map((label) => (
-                              <Badge
-                                key={`${task.id}-${label}`}
-                                variant="outline"
-                                className="text-[10px]"
-                              >
-                                {label}
-                              </Badge>
-                            ))}
+                            {(taskLabels[task.id] ?? [])
+                              .slice(0, 1)
+                              .map((label) => (
+                                <Badge
+                                  className="text-[10px]"
+                                  key={`${task.id}-${label}`}
+                                  variant="outline"
+                                >
+                                  {label}
+                                </Badge>
+                              ))}
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant="secondary"
                             className={cn(
                               task.status === "done" &&
                                 "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
@@ -794,6 +838,7 @@ const Tasks: React.FC = () => {
                               task.status === "todo" &&
                                 "bg-muted text-muted-foreground"
                             )}
+                            variant="secondary"
                           >
                             {task.status === "done"
                               ? "Terminé"
@@ -804,16 +849,16 @@ const Tasks: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant="outline"
                             className={cn(
-                              "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
+                              "rounded-full px-2.5 py-0.5 font-semibold text-[11px]",
                               PRIORITY_TABLE_BADGES[task.priority]
                             )}
+                            variant="outline"
                           >
                             {PRIORITY_LABELS[task.priority]}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
+                        <TableCell className="text-muted-foreground text-xs">
                           {task.startTime
                             ? `${task.startTime}${task.endTime ? ` - ${task.endTime}` : ""}`
                             : "--"}
@@ -821,46 +866,48 @@ const Tasks: React.FC = () => {
                         <TableCell>
                           <div className="flex items-center justify-end gap-1">
                             <Button
+                              className={cn(
+                                "h-8 rounded-xl px-3 font-semibold text-xs"
+                              )}
+                              onClick={() => toggleStatus(task)}
+                              size="sm"
                               variant={
                                 task.status === "done" ? "secondary" : "default"
                               }
-                              size="sm"
-                              onClick={() => toggleStatus(task)}
-                              className={cn(
-                                "h-8 rounded-xl px-3 text-xs font-semibold"
-                              )}
                             >
                               {task.status === "done" ? "Réouvrir" : "Terminer"}
                             </Button>
                             <Button
-                              variant="ghost"
-                              size="icon-sm"
                               onClick={() => removeTask(task.id)}
+                              size="icon-sm"
+                              variant="ghost"
                             >
                               <HugeiconsIcon
+                                className="size-4"
                                 icon={Delete01Icon}
                                 strokeWidth={2}
-                                className="size-4"
                               />
                             </Button>
                             <DropdownMenu>
                               <DropdownMenuTrigger
                                 render={
                                   <Button
-                                    variant="ghost"
-                                    size="icon-sm"
                                     aria-label="Plus d'actions"
+                                    size="icon-sm"
+                                    variant="ghost"
                                   />
                                 }
                               >
                                 <HugeiconsIcon
+                                  className="size-4"
                                   icon={MoreVerticalCircle01Icon}
                                   strokeWidth={2}
-                                  className="size-4"
                                 />
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" sideOffset={6}>
-                                <DropdownMenuItem onClick={() => handleEditTask(task)}>
+                                <DropdownMenuItem
+                                  onClick={() => handleEditTask(task)}
+                                >
                                   Modifier
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
@@ -881,12 +928,16 @@ const Tasks: React.FC = () => {
                                   </DropdownMenuSubTrigger>
                                   <DropdownMenuSubContent>
                                     <DropdownMenuItem
-                                      onClick={() => setTaskLabel(task.id, "Suivi")}
+                                      onClick={() =>
+                                        setTaskLabel(task.id, "Suivi")
+                                      }
                                     >
                                       Suivi
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                      onClick={() => setTaskLabel(task.id, "Urgent")}
+                                      onClick={() =>
+                                        setTaskLabel(task.id, "Urgent")
+                                      }
                                     >
                                       Urgent
                                     </DropdownMenuItem>
@@ -898,7 +949,9 @@ const Tasks: React.FC = () => {
                                       Consultation
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                      onClick={() => setCustomTaskLabel(task.id)}
+                                      onClick={() =>
+                                        setCustomTaskLabel(task.id)
+                                      }
                                     >
                                       Personnalisé…
                                     </DropdownMenuItem>
@@ -906,8 +959,8 @@ const Tasks: React.FC = () => {
                                 </DropdownMenuSub>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                  variant="destructive"
                                   onClick={() => removeTask(task.id)}
+                                  variant="destructive"
                                 >
                                   Supprimer
                                 </DropdownMenuItem>
@@ -925,27 +978,34 @@ const Tasks: React.FC = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 // Sub-component for a group of tasks
 const TaskGroup: React.FC<{
-  title: string
-  tasks: Task[]
-  color: string
-  onToggle: (t: Task) => void
-  onDelete: (id: string) => void
-  isCompletedGroup?: boolean
+  title: string;
+  tasks: Task[];
+  color: string;
+  onToggle: (t: Task) => void;
+  onDelete: (id: string) => void;
+  isCompletedGroup?: boolean;
 }> = ({ title, tasks, color, onToggle, onDelete, isCompletedGroup }) => {
-  if (tasks.length === 0) return null
+  if (tasks.length === 0) {
+    return null;
+  }
 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <h3 className={cn("text-sm font-semibold tracking-wider uppercase", color)}>
+        <h3
+          className={cn(
+            "font-semibold text-sm uppercase tracking-wider",
+            color
+          )}
+        >
           {title}
         </h3>
-        <Badge variant="secondary" className="text-[10px]">
+        <Badge className="text-[10px]" variant="secondary">
           {tasks.length}
         </Badge>
       </div>
@@ -954,37 +1014,43 @@ const TaskGroup: React.FC<{
         <CardContent className="grid gap-0.5 p-1">
           {tasks.map((task) => (
             <div
-              key={task.id}
               className={cn(
                 "group flex items-start gap-3 rounded-3xl px-4 py-3 transition-all duration-200 ease-out",
                 isCompletedGroup
                   ? "bg-muted/20"
                   : "hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]",
-                !isCompletedGroup && task.priority === "high" && "priority-bar-high",
-                !isCompletedGroup && task.priority === "medium" && "priority-bar-medium",
-                !isCompletedGroup && task.priority === "low" && "priority-bar-low"
+                !isCompletedGroup &&
+                  task.priority === "high" &&
+                  "priority-bar-high",
+                !isCompletedGroup &&
+                  task.priority === "medium" &&
+                  "priority-bar-medium",
+                !isCompletedGroup &&
+                  task.priority === "low" &&
+                  "priority-bar-low"
               )}
+              key={task.id}
             >
               <button
-                onClick={() => onToggle(task)}
                 className={cn(
                   "mt-0.5 shrink-0 transition-colors",
                   task.status === "done"
                     ? "text-green-500"
                     : "text-muted-foreground hover:text-primary"
                 )}
+                onClick={() => onToggle(task)}
               >
                 {task.status === "done" ? (
                   <HugeiconsIcon
+                    className="status-dot-alive size-5"
                     icon={CheckmarkCircle02Icon}
                     strokeWidth={2}
-                    className="size-5 status-dot-alive"
                   />
                 ) : (
                   <HugeiconsIcon
+                    className="size-5"
                     icon={CircleIcon}
                     strokeWidth={2}
-                    className="size-5"
                   />
                 )}
               </button>
@@ -992,7 +1058,7 @@ const TaskGroup: React.FC<{
               <div className="min-w-0 flex-1">
                 <p
                   className={cn(
-                    "text-sm font-medium",
+                    "font-medium text-sm",
                     task.status === "done"
                       ? "text-muted-foreground line-through decoration-border"
                       : "text-foreground"
@@ -1004,11 +1070,11 @@ const TaskGroup: React.FC<{
                 <div className="mt-1.5 flex flex-wrap items-center gap-2">
                   {task.priority !== "medium" && !isCompletedGroup && (
                     <Badge
-                      variant="outline"
                       className={cn(
                         "text-[10px]",
                         PRIORITY_COLORS[task.priority]
                       )}
+                      variant="outline"
                     >
                       {PRIORITY_LABELS[task.priority]}
                     </Badge>
@@ -1026,9 +1092,9 @@ const TaskGroup: React.FC<{
                       )}
                     >
                       <HugeiconsIcon
+                        className="size-2.5"
                         icon={Calendar01Icon}
                         strokeWidth={2}
-                        className="size-2.5"
                       />
                       {new Date(task.dueDate).toLocaleDateString("fr-FR", {
                         day: "numeric",
@@ -1040,13 +1106,13 @@ const TaskGroup: React.FC<{
                   {/* Time Range Display */}
                   {task.startTime && !isCompletedGroup && (
                     <Badge
-                      variant="outline"
                       className="gap-1 text-[10px] text-muted-foreground"
+                      variant="outline"
                     >
                       <HugeiconsIcon
+                        className="size-2.5"
                         icon={Clock01Icon}
                         strokeWidth={2}
-                        className="size-2.5"
                       />
                       {task.startTime} {task.endTime ? `- ${task.endTime}` : ""}
                     </Badge>
@@ -1054,13 +1120,13 @@ const TaskGroup: React.FC<{
 
                   {task.isReminder && (
                     <Badge
-                      variant="outline"
                       className="gap-1 border-amber-200 bg-amber-500/10 text-[10px] text-amber-700 dark:text-amber-300"
+                      variant="outline"
                     >
                       <HugeiconsIcon
+                        className="size-2.5"
                         icon={Notification02Icon}
                         strokeWidth={2}
-                        className="size-2.5"
                       />{" "}
                       Rappel
                     </Badge>
@@ -1069,15 +1135,15 @@ const TaskGroup: React.FC<{
               </div>
 
               <Button
-                variant="ghost"
-                size="icon-sm"
+                className="shrink-0 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 dark:hover:bg-red-500/10"
                 onClick={() => onDelete(task.id)}
-                className="shrink-0 opacity-0 transition-all group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
+                size="icon-sm"
+                variant="ghost"
               >
                 <HugeiconsIcon
+                  className="size-4"
                   icon={Delete01Icon}
                   strokeWidth={2}
-                  className="size-4"
                 />
               </Button>
             </div>
@@ -1085,7 +1151,7 @@ const TaskGroup: React.FC<{
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Tasks
+export default Tasks;

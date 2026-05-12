@@ -1,8 +1,15 @@
-import { getPayloadConfigFromPayload, getColorsCount, useChart } from "@/components/evilcharts/ui/chart";
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
-import * as RechartsPrimitive from "recharts";
-import { cn } from "@/lib/utils";
 import * as React from "react";
+import * as RechartsPrimitive from "recharts";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
+import {
+  getColorsCount,
+  getPayloadConfigFromPayload,
+  useChart,
+} from "@/components/evilcharts/ui/chart";
+import { cn } from "@/lib/utils";
 
 type TooltipRoundness = "sm" | "md" | "lg" | "xl";
 type TooltipVariant = "default" | "frosted-glass";
@@ -60,11 +67,15 @@ function ChartTooltipContent({
     const key = `${labelKey ?? item?.dataKey ?? item?.name ?? "value"}`;
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
-      !labelKey && typeof label === "string" ? (config[label]?.label ?? label) : itemConfig?.label;
+      !labelKey && typeof label === "string"
+        ? (config[label]?.label ?? label)
+        : itemConfig?.label;
 
     if (labelFormatter) {
       return (
-        <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload)}</div>
+        <div className={cn("font-medium", labelClassName)}>
+          {labelFormatter(value, payload)}
+        </div>
       );
     }
 
@@ -73,9 +84,17 @@ function ChartTooltipContent({
     }
 
     return <div className={cn("font-medium", labelClassName)}>{value}</div>;
-  }, [label, labelFormatter, payload, hideLabel, labelClassName, config, labelKey]);
+  }, [
+    label,
+    labelFormatter,
+    payload,
+    hideLabel,
+    labelClassName,
+    config,
+    labelKey,
+  ]);
 
-  if (!active || !payload?.length) {
+  if (!(active && payload?.length)) {
     // Empty tooltip - to prevent position getting 0.0 so it doesnt animate tooltip every time from 0.0 origin
     return <span className="p-4" />;
   }
@@ -85,13 +104,13 @@ function ChartTooltipContent({
   return (
     <div
       className={cn(
-        "border-border/50 grid min-w-32 items-start gap-1.5 border px-2.5 py-1.5 text-xs shadow-xl",
+        "grid min-w-32 items-start gap-1.5 border border-border/50 px-2.5 py-1.5 text-xs shadow-xl",
         roundnessMap[roundness],
         variantMap[variant],
-        className,
+        className
       )}
     >
-      {!nestLabel ? tooltipLabel : null}
+      {nestLabel ? null : tooltipLabel}
       <div className="grid gap-1.5">
         {payload
           .filter((item) => item.type !== "none")
@@ -111,12 +130,12 @@ function ChartTooltipContent({
 
             return (
               <div
-                key={index}
                 className={cn(
-                  "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5",
+                  "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
                   indicator === "dot" && "items-center",
-                  selected != null && selected !== item.dataKey && "opacity-30",
+                  selected != null && selected !== item.dataKey && "opacity-30"
                 )}
+                key={index}
               >
                 {formatter && item?.value !== undefined && item.name ? (
                   formatter(item.value, item.name, item, index, item.payload)
@@ -141,7 +160,7 @@ function ChartTooltipContent({
                     <div
                       className={cn(
                         "flex flex-1 justify-between gap-4 leading-none",
-                        nestLabel ? "items-end" : "items-center",
+                        nestLabel ? "items-end" : "items-center"
                       )}
                     >
                       <div className="grid gap-1.5">
@@ -151,7 +170,7 @@ function ChartTooltipContent({
                         </span>
                       </div>
                       {item.value != null && (
-                        <span className="text-foreground font-mono font-medium tabular-nums">
+                        <span className="font-medium font-mono text-foreground tabular-nums">
                           {typeof item.value === "number"
                             ? item.value.toLocaleString()
                             : String(item.value)}
@@ -168,7 +187,10 @@ function ChartTooltipContent({
   );
 }
 
-function getIndicatorColorStyle(dataKey: string, colorsCount: number): React.CSSProperties {
+function getIndicatorColorStyle(
+  dataKey: string,
+  colorsCount: number
+): React.CSSProperties {
   if (colorsCount <= 1) {
     return { background: `var(--color-${dataKey}-0)` };
   }
@@ -189,5 +211,5 @@ const ChartTooltip = ({
   <RechartsPrimitive.Tooltip animationDuration={animationDuration} {...props} />
 );
 
-export { ChartTooltip, ChartTooltipContent };
 export type { TooltipRoundness, TooltipVariant };
+export { ChartTooltip, ChartTooltipContent };

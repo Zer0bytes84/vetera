@@ -1,10 +1,7 @@
-import React, { useState } from "react"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Book01Icon,
   Building01Icon,
   Calendar01Icon,
-  CheckmarkCircle02Icon,
   File01Icon,
   Grid02Icon,
   HelpCircleIcon,
@@ -17,21 +14,24 @@ import {
   Shield01Icon,
   User02Icon,
   Wallet01Icon,
-} from "@hugeicons/core-free-icons"
-import { Button } from "@/components/ui/button"
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import type React from "react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { APP_NAME } from "@/lib/brand"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { APP_NAME } from "@/lib/brand";
+import { cn } from "@/lib/utils";
 
 const sections = [
   {
@@ -53,11 +53,11 @@ const sections = [
         </ul>
         <div className="flex items-start gap-3 rounded-lg border border-blue-100 bg-blue-50/50 p-4 dark:border-blue-500/20 dark:bg-blue-500/10">
           <HugeiconsIcon
+            className="mt-0.5 size-4.5 shrink-0 text-primary"
             icon={InformationCircleIcon}
             strokeWidth={2}
-            className="mt-0.5 size-4.5 shrink-0 text-primary"
           />
-          <p className="text-sm text-blue-800 dark:text-blue-300">
+          <p className="text-blue-800 text-sm dark:text-blue-300">
             Les données se mettent à jour automatiquement à chaque action (fin
             de consultation, encaissement, etc.).
           </p>
@@ -233,20 +233,20 @@ const sections = [
       </div>
     ),
   },
-]
+];
 
 const Help: React.FC = () => {
-  const [activeSectionId, setActiveSectionId] = useState("dashboard")
-  const [searchQuery, setSearchQuery] = useState("")
+  const [activeSectionId, setActiveSectionId] = useState("dashboard");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredSections = sections.filter(
     (section) =>
       section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       section.description.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   const activeSection =
-    sections.find((s) => s.id === activeSectionId) || sections[0]
+    sections.find((s) => s.id === activeSectionId) || sections[0];
 
   return (
     <div className="mx-auto flex h-[calc(100vh-64px)] w-full max-w-[1600px] flex-col gap-0">
@@ -254,11 +254,11 @@ const Help: React.FC = () => {
       <Card className="relative overflow-hidden rounded-none border-x-0 border-t-0 shadow-sm">
         <div className="pointer-events-none absolute top-0 right-0 -mt-16 -mr-16 h-64 w-64 rounded-full bg-gradient-to-br from-primary/10 to-purple-500/10 blur-3xl" />
         <CardContent className="relative z-10 max-w-2xl px-8 py-4">
-          <h1 className="mb-2 flex items-center gap-3 text-3xl font-semibold text-foreground">
+          <h1 className="mb-2 flex items-center gap-3 font-semibold text-3xl text-foreground">
             <HugeiconsIcon
+              className="size-8 text-primary"
               icon={HelpCircleIcon}
               strokeWidth={2}
-              className="size-8 text-primary"
             />
             {`Centre d'Aide ${APP_NAME}`}
           </h1>
@@ -269,16 +269,16 @@ const Help: React.FC = () => {
 
           <div className="relative max-w-md">
             <HugeiconsIcon
+              className="absolute top-1/2 left-3 size-4.5 -translate-y-1/2 text-muted-foreground"
               icon={SearchIcon}
               strokeWidth={2}
-              className="absolute top-1/2 left-3 size-4.5 -translate-y-1/2 text-muted-foreground"
             />
             <Input
-              type="text"
-              placeholder="Rechercher dans l'aide..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
               className="h-11 w-full rounded-xl py-3 pr-4 pl-10"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Rechercher dans l'aide..."
+              type="text"
+              value={searchQuery}
             />
           </div>
         </CardContent>
@@ -287,41 +287,41 @@ const Help: React.FC = () => {
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar Menu */}
-        <ScrollArea className="hidden w-72 border-r border-border bg-card md:block">
+        <ScrollArea className="hidden w-72 border-border border-r bg-card md:block">
           <div className="space-y-1 p-4">
-            <p className="mb-2 px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <p className="mb-2 px-3 py-2 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
               Sommaire
             </p>
             {filteredSections.map((section) => {
-              const Icon = section.icon
-              const isActive = activeSectionId === section.id
+              const Icon = section.icon;
+              const isActive = activeSectionId === section.id;
               return (
                 <Button
-                  key={section.id}
-                  variant="ghost"
-                  onClick={() => setActiveSectionId(section.id)}
                   className={cn(
-                    "h-auto w-full justify-start gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
+                    "h-auto w-full justify-start gap-3 rounded-lg px-3 py-2.5 font-medium text-sm",
                     isActive
                       ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
                       : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
                   )}
+                  key={section.id}
+                  onClick={() => setActiveSectionId(section.id)}
+                  variant="ghost"
                 >
                   <HugeiconsIcon
+                    className="size-4.5"
                     icon={Icon}
                     strokeWidth={2}
-                    className="size-4.5"
                   />
                   <span>{section.title}</span>
                   {isActive && (
                     <HugeiconsIcon
+                      className="ml-auto size-4 opacity-50"
                       icon={Grid02Icon}
                       strokeWidth={2}
-                      className="ml-auto size-4 opacity-50"
                     />
                   )}
                 </Button>
-              )
+              );
             })}
           </div>
         </ScrollArea>
@@ -330,18 +330,18 @@ const Help: React.FC = () => {
         <ScrollArea className="flex-1 bg-background">
           <div className="p-8">
             <div className="mx-auto max-w-3xl">
-              <Card className="animate-in duration-500 fade-in slide-in-from-bottom-4">
+              <Card className="fade-in slide-in-from-bottom-4 animate-in duration-500">
                 <CardHeader>
                   <div className="flex items-center gap-4">
                     <div className="rounded-xl bg-primary/10 p-3 text-primary">
                       <HugeiconsIcon
+                        className="size-8"
                         icon={activeSection.icon}
                         strokeWidth={2}
-                        className="size-8"
                       />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-semibold">
+                      <CardTitle className="font-semibold text-2xl">
                         {activeSection.title}
                       </CardTitle>
                       <CardDescription>
@@ -362,12 +362,12 @@ const Help: React.FC = () => {
                 <Separator />
 
                 <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <Badge variant="secondary" className="gap-1.5">
+                  <div className="flex items-center justify-between text-muted-foreground text-sm">
+                    <Badge className="gap-1.5" variant="secondary">
                       <HugeiconsIcon
+                        className="size-3.5"
                         icon={Book01Icon}
                         strokeWidth={2}
-                        className="size-3.5"
                       />
                       Documentation officielle
                     </Badge>
@@ -382,7 +382,7 @@ const Help: React.FC = () => {
         </ScrollArea>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Help
+export default Help;

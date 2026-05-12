@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  DashboardSquare01Icon,
-  Calendar01Icon,
-  Task01Icon,
-  StethoscopeIcon,
-  ClinicIcon,
   BookOpenTextIcon,
+  Calendar01Icon,
+  ClinicIcon,
+  DashboardSquare01Icon,
   Package02Icon,
-  WalletIcon,
-  UserGroupIcon,
   Settings02Icon,
-} from "@hugeicons/core-free-icons"
-import type { IconSvgElement } from "@hugeicons/react"
+  StethoscopeIcon,
+  Task01Icon,
+  UserGroupIcon,
+  WalletIcon,
+} from "@hugeicons/core-free-icons";
+import type { IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Fragment } from "react";
 
 import {
   CommandDialog,
@@ -24,21 +24,21 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command"
-import type { View } from "@/types"
+} from "@/components/ui/command";
+import type { View } from "@/types";
 
-type CommandPaletteProps = {
-  isOpen: boolean
-  onClose: () => void
-  onNavigate: (view: View) => void
+interface CommandPaletteProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onNavigate: (view: View) => void;
 }
 
 const navigationActions: Array<{
-  id: View
-  label: string
-  sub: string
-  icon: IconSvgElement
-  category: string
+  id: View;
+  label: string;
+  sub: string;
+  icon: IconSvgElement;
+  category: string;
 }> = [
   {
     id: "dashboard",
@@ -110,7 +110,7 @@ const navigationActions: Array<{
     icon: Settings02Icon,
     category: "Configuration",
   },
-]
+];
 
 export default function CommandPalette({
   isOpen,
@@ -118,7 +118,7 @@ export default function CommandPalette({
   onNavigate,
 }: CommandPaletteProps) {
   return (
-    <CommandDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <CommandDialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
       <CommandInput placeholder="Que souhaitez-vous faire ?" />
       <CommandList>
         <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
@@ -126,65 +126,67 @@ export default function CommandPalette({
           (category) => {
             const items = navigationActions.filter(
               (a) => a.category === category
-            )
-            if (items.length === 0) return null
+            );
+            if (items.length === 0) {
+              return null;
+            }
             return (
-              <React.Fragment key={category}>
+              <Fragment key={category}>
                 <CommandGroup heading={category}>
                   {items.map((action) => (
                     <CommandItem
                       key={action.id}
                       onSelect={() => {
-                        onNavigate(action.id)
-                        onClose()
+                        onNavigate(action.id);
+                        onClose();
                       }}
                     >
                       <HugeiconsIcon
+                        className="shrink-0"
                         icon={action.icon}
                         strokeWidth={2}
-                        className="shrink-0"
                       />
                       <span>{action.label}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">
+                      <span className="ml-auto text-muted-foreground text-xs">
                         {action.sub}
                       </span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
                 <CommandSeparator />
-              </React.Fragment>
-            )
+              </Fragment>
+            );
           }
         )}
         <CommandGroup heading="Actions rapides">
           <CommandItem
             onSelect={() => {
-              onNavigate("patients")
-              onClose()
+              onNavigate("patients");
+              onClose();
             }}
           >
             <HugeiconsIcon
+              className="shrink-0"
               icon={StethoscopeIcon}
               strokeWidth={2}
-              className="shrink-0"
             />
             <span>Nouveau patient</span>
           </CommandItem>
           <CommandItem
             onSelect={() => {
-              onNavigate("agenda")
-              onClose()
+              onNavigate("agenda");
+              onClose();
             }}
           >
             <HugeiconsIcon
+              className="shrink-0"
               icon={Calendar01Icon}
               strokeWidth={2}
-              className="shrink-0"
             />
             <span>Nouveau rendez-vous</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>
     </CommandDialog>
-  )
+  );
 }

@@ -1,14 +1,14 @@
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
   ArrowDown01Icon,
   ArrowUp01Icon,
-  Package02Icon,
-} from "@hugeicons/core-free-icons"
+  type Package02Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { Badge } from "./badge"
-import { Card, CardContent } from "./card"
+import { Badge } from "./badge";
+import { Card, CardContent } from "./card";
 
 export function StatTile({
   title,
@@ -17,13 +17,13 @@ export function StatTile({
   trend,
   icon: Icon,
 }: {
-  title: string
-  value: string
-  detail: string
-  trend: number
-  icon: typeof Package02Icon
+  title: string;
+  value: string;
+  detail: string;
+  trend: number;
+  icon: typeof Package02Icon;
 }) {
-  const positive = trend >= 0
+  const positive = trend >= 0;
 
   return (
     <Card className="overflow-hidden">
@@ -31,32 +31,32 @@ export function StatTile({
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-4">
             <div className="space-y-1">
-              <p className="text-text-secondary text-sm font-medium">{title}</p>
-              <p className="text-3xl font-semibold tracking-[-0.04em]">
+              <p className="font-medium text-sm text-text-secondary">{title}</p>
+              <p className="font-semibold text-3xl tracking-[-0.04em]">
                 {value}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge
-                variant={positive ? "success" : "warning"}
                 className="gap-1"
+                variant={positive ? "success" : "warning"}
               >
                 {positive ? (
                   <HugeiconsIcon
+                    className="size-3"
                     icon={ArrowUp01Icon}
                     strokeWidth={2}
-                    className="size-3"
                   />
                 ) : (
                   <HugeiconsIcon
+                    className="size-3"
                     icon={ArrowDown01Icon}
                     strokeWidth={2}
-                    className="size-3"
                   />
                 )}
                 {Math.abs(trend).toFixed(0)}%
               </Badge>
-              <span className="text-sm text-muted-foreground">{detail}</span>
+              <span className="text-muted-foreground text-sm">{detail}</span>
             </div>
           </div>
           <div
@@ -67,10 +67,10 @@ export function StatTile({
                 : "text-amber-600 dark:text-amber-400"
             )}
           >
-            <HugeiconsIcon icon={Icon} strokeWidth={2} className="size-5" />
+            <HugeiconsIcon className="size-5" icon={Icon} strokeWidth={2} />
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

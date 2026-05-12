@@ -1,23 +1,43 @@
 "use client";
 
 import {
-  ChartTooltip,
-  ChartTooltipContent,
-  type TooltipRoundness,
-  type TooltipVariant,
-} from "@/components/evilcharts/ui/tooltip";
+  type ComponentProps,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+} from "react";
+import {
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+} from "recharts";
+import type { TypedDataKey } from "recharts/types/util/typedDataKey";
+import {
+  type BackgroundVariant,
+  ChartBackground,
+} from "@/components/evilcharts/ui/background";
 import {
   type ChartConfig,
   ChartContainer,
   getColorsCount,
   LoadingIndicator,
 } from "@/components/evilcharts/ui/chart";
-import { ChartLegend, ChartLegendContent, type ChartLegendVariant } from "@/components/evilcharts/ui/legend";
-import { useCallback, useEffect, useId, useMemo, useState, type ComponentProps } from "react";
-import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart } from "recharts";
-import { ChartBackground, type BackgroundVariant } from "@/components/evilcharts/ui/background";
-import type { TypedDataKey } from "recharts/types/util/typedDataKey";
-import { ChartDot, DotVariant } from "@/components/evilcharts/ui/dot";
+import { ChartDot, type DotVariant } from "@/components/evilcharts/ui/dot";
+import {
+  ChartLegend,
+  ChartLegendContent,
+  type ChartLegendVariant,
+} from "@/components/evilcharts/ui/legend";
+import {
+  ChartTooltip,
+  ChartTooltipContent,
+  type TooltipRoundness,
+  type TooltipVariant,
+} from "@/components/evilcharts/ui/tooltip";
 
 // Loading animation constants
 const LOADING_POINTS = 6;
@@ -94,7 +114,8 @@ type EvilRadarChartNotClickable = {
 type EvilRadarChartPropsWithCallback<
   TData extends Record<string, unknown>,
   TConfig extends Record<string, ChartConfig[string]>,
-> = EvilRadarChartProps<TData, TConfig> & (EvilRadarChartClickable | EvilRadarChartNotClickable);
+> = EvilRadarChartProps<TData, TConfig> &
+  (EvilRadarChartClickable | EvilRadarChartNotClickable);
 
 export function EvilRadarChart<
   TData extends Record<string, unknown>,
@@ -140,7 +161,7 @@ export function EvilRadarChart<
         onSelectionChange(newSelectedRadar);
       }
     },
-    [onSelectionChange, isClickable],
+    [onSelectionChange, isClickable]
   );
 
   // Get radar data keys from chartConfig
@@ -150,8 +171,8 @@ export function EvilRadarChart<
     <ChartContainer className={className} config={chartConfig}>
       <LoadingIndicator isLoading={isLoading} />
       <RadarChart
-        id="evil-charts-radar-chart"
         data={isLoading ? loadingData : data}
+        id="evil-charts-radar-chart"
         {...chartProps}
       >
         {backgroundVariant && <ChartBackground variant={backgroundVariant} />}
@@ -159,13 +180,13 @@ export function EvilRadarChart<
           <PolarGrid
             gridType={gridType}
             stroke="currentColor"
-            strokeOpacity={0.2}
             strokeDasharray="3 4"
+            strokeOpacity={0.2}
             {...polarGridProps}
           />
         )}
 
-        {!hideAngleAxis && !isLoading && (
+        {!(hideAngleAxis || isLoading) && (
           <PolarAngleAxis
             dataKey={dataKey as TypedDataKey<TData>}
             tick={{ fill: "currentColor", fontSize: 12 }}
@@ -173,63 +194,68 @@ export function EvilRadarChart<
           />
         )}
 
-        {!hideRadiusAxis && !isLoading && (
+        {!(hideRadiusAxis || isLoading) && (
           <PolarRadiusAxis
+            axisLine={false}
             tick={{ fill: "currentColor", fontSize: 10 }}
             tickLine={false}
-            axisLine={false}
           />
         )}
 
-        {!hideLegend && !isLoading && (
+        {!(hideLegend || isLoading) && (
           <ChartLegend
-            verticalAlign="bottom"
             align="center"
             content={
               <ChartLegendContent
-                selected={selectedRadar}
-                onSelectChange={handleSelectionChange}
                 isClickable={isClickable}
+                onSelectChange={handleSelectionChange}
+                selected={selectedRadar}
                 variant={legendVariant}
               />
             }
+            verticalAlign="bottom"
           />
         )}
 
-        {!hideTooltip && !isLoading && (
+        {!(hideTooltip || isLoading) && (
           <ChartTooltip
-            defaultIndex={tooltipDefaultIndex}
-            cursor={false}
             content={
               <ChartTooltipContent
-                selected={selectedRadar}
                 roundness={tooltipRoundness}
+                selected={selectedRadar}
                 variant={tooltipVariant}
               />
             }
+            cursor={false}
+            defaultIndex={tooltipDefaultIndex}
           />
         )}
 
         {/* Render radars for each data key in chartConfig */}
         {!isLoading &&
           radarDataKeys.map((radarKey) => {
-            const isGlowing = glowingRadars.includes(radarKey as NumericDataKeys<TData>);
-            const isSelected = selectedRadar === null || selectedRadar === radarKey;
+            const isGlowing = glowingRadars.includes(
+              radarKey as NumericDataKeys<TData>
+            );
+            const isSelected =
+              selectedRadar === null || selectedRadar === radarKey;
             const opacity = isClickable && !isSelected ? 0.2 : 1;
 
             const getFilter = () => {
-              if (isGlowing) return `url(#${chartId}-radar-glow-${radarKey})`;
-              return undefined;
+              if (isGlowing) {
+                return `url(#${chartId}-radar-glow-${radarKey})`;
+              }
+              return;
             };
 
             const showDots = !hideDots;
             const dot = showDots ? (
               dotVariant ? (
                 <ChartDot
+                  chartId={chartId}
+                  dataKey={radarKey}
                   fillOpacity={opacity}
                   type={dotVariant}
-                  dataKey={radarKey}
-                  chartId={chartId}
                 />
               ) : (
                 true
@@ -240,10 +266,10 @@ export function EvilRadarChart<
             const activeDot = showDots ? (
               activeDotVariant ? (
                 <ChartDot
+                  chartId={chartId}
+                  dataKey={radarKey}
                   fillOpacity={opacity}
                   type={activeDotVariant}
-                  dataKey={radarKey}
-                  chartId={chartId}
                 />
               ) : undefined
             ) : (
@@ -253,22 +279,30 @@ export function EvilRadarChart<
             return (
               <Radar
                 {...radarProps}
-                key={radarKey}
+                activeDot={activeDot}
+                className="transition-opacity duration-200"
                 dataKey={radarKey}
-                stroke={`url(#${chartId}-radar-stroke-${radarKey})`}
-                fill={variant === "filled" ? `url(#${chartId}-radar-fill-${radarKey})` : "none"}
+                dot={dot}
+                fill={
+                  variant === "filled"
+                    ? `url(#${chartId}-radar-fill-${radarKey})`
+                    : "none"
+                }
                 fillOpacity={variant === "filled" ? fillOpacity * opacity : 0}
+                filter={getFilter()}
+                key={radarKey}
+                onClick={() => {
+                  if (!isClickable) {
+                    return;
+                  }
+                  handleSelectionChange(
+                    selectedRadar === radarKey ? null : radarKey
+                  );
+                }}
+                stroke={`url(#${chartId}-radar-stroke-${radarKey})`}
                 strokeOpacity={opacity}
                 strokeWidth={1}
-                dot={dot}
-                activeDot={activeDot}
-                filter={getFilter()}
                 style={isClickable ? { cursor: "pointer" } : undefined}
-                onClick={() => {
-                  if (!isClickable) return;
-                  handleSelectionChange(selectedRadar === radarKey ? null : radarKey);
-                }}
-                className="transition-opacity duration-200"
               />
             );
           })}
@@ -276,30 +310,36 @@ export function EvilRadarChart<
         {/* Loading state radar */}
         {isLoading && (
           <Radar
-            dataKey="value"
-            stroke="currentColor"
-            fill="currentColor"
-            fillOpacity={0.1}
-            strokeOpacity={0.3}
-            strokeWidth={2}
-            dot={false}
-            isAnimationActive
             animationDuration={LOADING_ANIMATION_DURATION}
             animationEasing="ease-in-out"
+            dataKey="value"
+            dot={false}
+            fill="currentColor"
+            fillOpacity={0.1}
+            isAnimationActive
+            stroke="currentColor"
+            strokeOpacity={0.3}
+            strokeWidth={2}
           />
         )}
 
         {/* ======== CHART STYLES ======== */}
         <defs>
           {/* Shared horizontal color gradient for dots */}
-          <HorizontalColorGradientStyle chartConfig={chartConfig} chartId={chartId} />
+          <HorizontalColorGradientStyle
+            chartConfig={chartConfig}
+            chartId={chartId}
+          />
 
           {/* Stroke and fill gradients for each radar */}
           <RadarGradientStyle chartConfig={chartConfig} chartId={chartId} />
 
           {/* Glow filters */}
           {glowingRadars.length > 0 && (
-            <GlowFilterStyle chartId={chartId} glowingRadars={glowingRadars as string[]} />
+            <GlowFilterStyle
+              chartId={chartId}
+              glowingRadars={glowingRadars as string[]}
+            />
           )}
         </defs>
       </RadarChart>
@@ -320,7 +360,9 @@ function useLoadingData(isLoading: boolean, dataKey: string) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    if (!isLoading) return;
+    if (!isLoading) {
+      return;
+    }
 
     const interval = setInterval(() => {
       setRefreshKey((prev) => prev + 1);
@@ -330,7 +372,10 @@ function useLoadingData(isLoading: boolean, dataKey: string) {
   }, [isLoading]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadingData = useMemo(() => generateLoadingData(dataKey), [dataKey, refreshKey]);
+  const loadingData = useMemo(
+    () => generateLoadingData(dataKey),
+    [dataKey, refreshKey]
+  );
 
   return loadingData;
 }
@@ -351,7 +396,13 @@ const RadarGradientStyle = ({
         return (
           <g key={dataKey}>
             {/* Stroke gradient */}
-            <linearGradient id={`${chartId}-radar-stroke-${dataKey}`} x1="0" y1="0" x2="1" y2="1">
+            <linearGradient
+              id={`${chartId}-radar-stroke-${dataKey}`}
+              x1="0"
+              x2="1"
+              y1="0"
+              y2="1"
+            >
               {colorsCount === 1 ? (
                 <>
                   <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} />
@@ -369,11 +420,24 @@ const RadarGradientStyle = ({
             </linearGradient>
 
             {/* Fill gradient (radial for better effect) */}
-            <radialGradient id={`${chartId}-radar-fill-${dataKey}`} cx="50%" cy="50%" r="50%">
+            <radialGradient
+              cx="50%"
+              cy="50%"
+              id={`${chartId}-radar-fill-${dataKey}`}
+              r="50%"
+            >
               {colorsCount === 1 ? (
                 <>
-                  <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} stopOpacity={0.8} />
-                  <stop offset="100%" stopColor={`var(--color-${dataKey}-0)`} stopOpacity={0.3} />
+                  <stop
+                    offset="0%"
+                    stopColor={`var(--color-${dataKey}-0)`}
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={`var(--color-${dataKey}-0)`}
+                    stopOpacity={0.3}
+                  />
                 </>
               ) : (
                 Array.from({ length: colorsCount }, (_, index) => (
@@ -400,41 +464,39 @@ const HorizontalColorGradientStyle = ({
 }: {
   chartConfig: ChartConfig;
   chartId: string;
-}) => {
-  return (
-    <>
-      {Object.entries(chartConfig).map(([dataKey, config]) => {
-        const colorsCount = getColorsCount(config);
+}) => (
+  <>
+    {Object.entries(chartConfig).map(([dataKey, config]) => {
+      const colorsCount = getColorsCount(config);
 
-        return (
-          <linearGradient
-            key={`${chartId}-colors-${dataKey}`}
-            id={`${chartId}-colors-${dataKey}`}
-            x1="0"
-            y1="0"
-            x2="1"
-            y2="0"
-          >
-            {colorsCount === 1 ? (
-              <>
-                <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} />
-                <stop offset="100%" stopColor={`var(--color-${dataKey}-0)`} />
-              </>
-            ) : (
-              Array.from({ length: colorsCount }, (_, index) => (
-                <stop
-                  key={index}
-                  offset={`${(index / (colorsCount - 1)) * 100}%`}
-                  stopColor={`var(--color-${dataKey}-${index}, var(--color-${dataKey}-0))`}
-                />
-              ))
-            )}
-          </linearGradient>
-        );
-      })}
-    </>
-  );
-};
+      return (
+        <linearGradient
+          id={`${chartId}-colors-${dataKey}`}
+          key={`${chartId}-colors-${dataKey}`}
+          x1="0"
+          x2="1"
+          y1="0"
+          y2="0"
+        >
+          {colorsCount === 1 ? (
+            <>
+              <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} />
+              <stop offset="100%" stopColor={`var(--color-${dataKey}-0)`} />
+            </>
+          ) : (
+            Array.from({ length: colorsCount }, (_, index) => (
+              <stop
+                key={index}
+                offset={`${(index / (colorsCount - 1)) * 100}%`}
+                stopColor={`var(--color-${dataKey}-${index}, var(--color-${dataKey}-0))`}
+              />
+            ))
+          )}
+        </linearGradient>
+      );
+    })}
+  </>
+);
 
 // Apply soft glow filter effect to radar areas using SVG filters
 const GlowFilterStyle = ({
@@ -443,31 +505,29 @@ const GlowFilterStyle = ({
 }: {
   chartId: string;
   glowingRadars: string[];
-}) => {
-  return (
-    <>
-      {glowingRadars.map((radarKey) => (
-        <filter
-          key={`${chartId}-radar-glow-${radarKey}`}
-          id={`${chartId}-radar-glow-${radarKey}`}
-          x="-50%"
-          y="-50%"
-          width="200%"
-          height="200%"
-        >
-          <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-          <feColorMatrix
-            in="blur"
-            type="matrix"
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0"
-            result="glow"
-          />
-          <feMerge>
-            <feMergeNode in="glow" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      ))}
-    </>
-  );
-};
+}) => (
+  <>
+    {glowingRadars.map((radarKey) => (
+      <filter
+        height="200%"
+        id={`${chartId}-radar-glow-${radarKey}`}
+        key={`${chartId}-radar-glow-${radarKey}`}
+        width="200%"
+        x="-50%"
+        y="-50%"
+      >
+        <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="4" />
+        <feColorMatrix
+          in="blur"
+          result="glow"
+          type="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0"
+        />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    ))}
+  </>
+);

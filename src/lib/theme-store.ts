@@ -8,40 +8,40 @@ export type AccentColor =
   | "cyan"
   | "orange"
   | "teal"
-  | "noir"
+  | "noir";
 
-export type RadiusSize = "sm" | "md" | "lg" | "xl" | "full"
+export type RadiusSize = "sm" | "md" | "lg" | "xl" | "full";
 
-export type FontFamily = "geist" | "inter" | "system"
+export type FontFamily = "geist" | "inter" | "system";
 
 export interface ThemeConfig {
-  accent: AccentColor
-  radius: RadiusSize
-  density: "compact" | "comfortable" | "spacious"
-  font: FontFamily
-  sidebarStyle: "inset" | "floating" | "classic"
+  accent: AccentColor;
+  density: "compact" | "comfortable" | "spacious";
+  font: FontFamily;
+  radius: RadiusSize;
+  sidebarStyle: "inset" | "floating" | "classic";
 }
 
 export const ACCENT_THEMES: Record<
   AccentColor,
   {
-    label: string
-    description: string
+    label: string;
+    description: string;
     light: {
-      primary: string
-      primaryForeground: string
-      ring: string
-      muted: string
-      mutedForeground: string
-    }
+      primary: string;
+      primaryForeground: string;
+      ring: string;
+      muted: string;
+      mutedForeground: string;
+    };
     dark: {
-      primary: string
-      primaryForeground: string
-      ring: string
-      muted: string
-      mutedForeground: string
-    }
-    previewGradient: string
+      primary: string;
+      primaryForeground: string;
+      ring: string;
+      muted: string;
+      mutedForeground: string;
+    };
+    previewGradient: string;
   }
 > = {
   mist: {
@@ -234,7 +234,7 @@ export const ACCENT_THEMES: Record<
     },
     previewGradient: "from-zinc-900 to-zinc-950",
   },
-}
+};
 
 export const FONT_MAP: Record<
   FontFamily,
@@ -255,7 +255,7 @@ export const FONT_MAP: Record<
     css: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     description: "Natif et rapide",
   },
-}
+};
 
 export const RADIUS_MAP: Record<RadiusSize, string> = {
   sm: "0.375rem",
@@ -263,7 +263,7 @@ export const RADIUS_MAP: Record<RadiusSize, string> = {
   lg: "0.75rem",
   xl: "1rem",
   full: "9999px",
-}
+};
 
 export const DENSITY_MAP: Record<
   "compact" | "comfortable" | "spacious",
@@ -272,84 +272,115 @@ export const DENSITY_MAP: Record<
   compact: { padding: "0.5rem", gap: "0.5rem", spacing: "tight" },
   comfortable: { padding: "0.75rem", gap: "0.75rem", spacing: "normal" },
   spacious: { padding: "1rem", gap: "1rem", spacing: "loose" },
-}
+};
 
 export const DEFAULT_THEME: ThemeConfig = {
-  accent: "orange",
+  accent: "noir",
   radius: "md",
   density: "comfortable",
-  font: "geist",
-  sidebarStyle: "inset",
-}
+  font: "inter",
+  sidebarStyle: "classic",
+};
 
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
-  const root = document.documentElement
-  const accent = ACCENT_THEMES[config.accent]
-  const mode = isDark ? accent.dark : accent.light
+  const root = document.documentElement;
+  const accent = ACCENT_THEMES[config.accent];
+  const mode = isDark ? accent.dark : accent.light;
 
-  root.style.setProperty("--primary", mode.primary, "important")
-  root.style.setProperty("--primary-foreground", mode.primaryForeground, "important")
-  root.style.setProperty("--ring", mode.ring, "important")
-  root.style.setProperty("--muted", mode.muted, "important")
-  root.style.setProperty("--muted-foreground", mode.mutedForeground, "important")
-  root.style.setProperty("--accent", mode.primary, "important")
-  root.style.setProperty("--radius", RADIUS_MAP[config.radius], "important")
+  const darkDashboardMuted = "oklch(0.225 0.006 240)";
+  const darkDashboardMutedForeground = "oklch(0.68 0.006 240)";
+  const darkDashboardAccent = "oklch(0.255 0.008 240)";
+
+  const mutedValue = isDark ? darkDashboardMuted : mode.muted;
+  const mutedForegroundValue = isDark
+    ? darkDashboardMutedForeground
+    : mode.mutedForeground;
+  const accentValue = isDark ? darkDashboardAccent : mode.primary;
+
+  root.style.setProperty("--primary", mode.primary, "important");
+  root.style.setProperty(
+    "--primary-foreground",
+    mode.primaryForeground,
+    "important"
+  );
+  root.style.setProperty("--ring", mode.ring, "important");
+
+  // Keep dark surfaces globally coherent with dashboard visuals.
+  // In dark mode, avoid runtime accent overrides that create mismatched pages.
+  if (isDark) {
+    root.style.setProperty("--muted", darkDashboardMuted, "important");
+    root.style.setProperty(
+      "--muted-foreground",
+      darkDashboardMutedForeground,
+      "important"
+    );
+    root.style.setProperty("--accent", darkDashboardAccent, "important");
+  } else {
+    root.style.setProperty("--muted", mutedValue, "important");
+    root.style.setProperty(
+      "--muted-foreground",
+      mutedForegroundValue,
+      "important"
+    );
+    root.style.setProperty("--accent", accentValue, "important");
+  }
+  root.style.setProperty("--radius", RADIUS_MAP[config.radius], "important");
 
   if (config.accent === "mist") {
     if (isDark) {
-      root.style.setProperty("--chart-1", "oklch(0.72 0.086 248)")
-      root.style.setProperty("--chart-2", "oklch(0.8 0.055 196)")
-      root.style.setProperty("--chart-3", "oklch(0.68 0.03 230)")
-      root.style.setProperty("--chart-4", "oklch(0.56 0.025 228)")
-      root.style.setProperty("--chart-5", "oklch(0.84 0.018 228)")
+      root.style.setProperty("--chart-1", "oklch(0.72 0.086 248)");
+      root.style.setProperty("--chart-2", "oklch(0.8 0.055 196)");
+      root.style.setProperty("--chart-3", "oklch(0.68 0.03 230)");
+      root.style.setProperty("--chart-4", "oklch(0.56 0.025 228)");
+      root.style.setProperty("--chart-5", "oklch(0.84 0.018 228)");
     } else {
-      root.style.setProperty("--chart-1", "oklch(0.62 0.086 248)")
-      root.style.setProperty("--chart-2", "oklch(0.74 0.05 196)")
-      root.style.setProperty("--chart-3", "oklch(0.57 0.03 230)")
-      root.style.setProperty("--chart-4", "oklch(0.82 0.022 228)")
-      root.style.setProperty("--chart-5", "oklch(0.68 0.018 228)")
+      root.style.setProperty("--chart-1", "oklch(0.62 0.086 248)");
+      root.style.setProperty("--chart-2", "oklch(0.74 0.05 196)");
+      root.style.setProperty("--chart-3", "oklch(0.57 0.03 230)");
+      root.style.setProperty("--chart-4", "oklch(0.82 0.022 228)");
+      root.style.setProperty("--chart-5", "oklch(0.68 0.018 228)");
     }
   } else {
-    root.style.setProperty("--chart-1", mode.primary)
-    root.style.setProperty("--chart-2", mode.primaryForeground)
+    root.style.setProperty("--chart-1", mode.primary);
+    root.style.setProperty("--chart-2", mode.primaryForeground);
     root.style.setProperty(
       "--chart-3",
       isDark
         ? `color-mix(in oklch, ${mode.primary} 60%, white 40%)`
         : `color-mix(in oklch, ${mode.primary} 40%, black 60%)`
-    )
+    );
     root.style.setProperty(
       "--chart-4",
       isDark
         ? `color-mix(in oklch, ${mode.primary} 80%, white 20%)`
         : `color-mix(in oklch, ${mode.primary} 20%, black 80%)`
-    )
+    );
     root.style.setProperty(
       "--chart-5",
       `color-mix(in oklch, ${mode.primary} 30%, ${mode.mutedForeground})`
-    )
+    );
   }
 
-  const font = config.font || "geist"
-  root.style.setProperty("--font-sans", FONT_MAP[font].css)
-  root.style.setProperty("--font-heading", FONT_MAP[font].css)
+  const font = config.font || "geist";
+  root.style.setProperty("--font-sans", FONT_MAP[font].css);
+  root.style.setProperty("--font-heading", FONT_MAP[font].css);
 
-  const density = DENSITY_MAP[config.density]
-  root.style.setProperty("--density-padding", density.padding)
-  root.style.setProperty("--density-gap", density.gap)
+  const density = DENSITY_MAP[config.density];
+  root.style.setProperty("--density-padding", density.padding);
+  root.style.setProperty("--density-gap", density.gap);
 }
 
 export function getThemeConfig(): ThemeConfig {
   try {
-    const stored = localStorage.getItem("theme-config")
+    const stored = localStorage.getItem("theme-config");
     if (stored) {
-      const parsed = JSON.parse(stored) as ThemeConfig
-      return { ...DEFAULT_THEME, ...parsed }
+      const parsed = JSON.parse(stored) as ThemeConfig;
+      return { ...DEFAULT_THEME, ...parsed, accent: "noir", font: "inter" };
     }
   } catch {}
-  return { ...DEFAULT_THEME }
+  return { ...DEFAULT_THEME };
 }
 
 export function saveThemeConfig(config: ThemeConfig) {
-  localStorage.setItem("theme-config", JSON.stringify(config))
+  localStorage.setItem("theme-config", JSON.stringify(config));
 }

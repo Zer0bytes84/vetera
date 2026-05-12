@@ -1,5 +1,5 @@
-import i18n from "i18next"
-import { initReactI18next } from "react-i18next"
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
 export const SUPPORTED_LANGUAGES = [
   { code: "fr", shortcut: "1" },
@@ -8,12 +8,12 @@ export const SUPPORTED_LANGUAGES = [
   { code: "es", shortcut: "4" },
   { code: "pt", shortcut: "5" },
   { code: "de", shortcut: "6" },
-] as const
+] as const;
 
-export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]["code"]
+export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]["code"];
 
 export function isRtlLanguage(language: string) {
-  return language.startsWith("ar")
+  return language.startsWith("ar");
 }
 
 const resources = {
@@ -103,9 +103,12 @@ const resources = {
           keyAppointments: "Rendez-vous clés",
           downloaded: "{{reportTitle}} téléchargé.",
           exportPdf: "Export PDF",
-          dailyDesc: "Synthèse des consultations, encaissements et urgences du jour.",
-          weeklyDesc: "Vue consolidée de la semaine clinique avec activité et trésorerie.",
-          monthlyDesc: "Bilan global du mois avec revenus, stock critique et suivi patient.",
+          dailyDesc:
+            "Synthèse des consultations, encaissements et urgences du jour.",
+          weeklyDesc:
+            "Vue consolidée de la semaine clinique avec activité et trésorerie.",
+          monthlyDesc:
+            "Bilan global du mois avec revenus, stock critique et suivi patient.",
           dailyCta: "Télécharger le quotidien",
           weeklyCta: "Télécharger l’hebdomadaire",
           monthlyCta: "Télécharger le mensuel",
@@ -284,18 +287,21 @@ const resources = {
         welcome: {
           fallbackName: "Docteur",
           title: "Bonjour {{name}} 👋",
-          subtitle: "Retrouvez en un coup d'oeil l'activite du cabinet, les points de vigilance et les prochaines actions a lancer.",
+          subtitle:
+            "Retrouvez en un coup d'oeil l'activite du cabinet, les points de vigilance et les prochaines actions a lancer.",
           clinicLabel: "Cabinet",
           viewLabel: "Vue",
         },
         operational: {
           title: "Indicateurs opérationnels",
-          subtitle: "Lecture rapide des revenus, patients, activite clinique et zones de vigilance avec les donnees {{appName}}.",
+          subtitle:
+            "Lecture rapide des revenus, patients, activite clinique et zones de vigilance avec les donnees {{appName}}.",
         },
         analytics: {
           eyebrow: "Analyse financiere v2",
           title: "Vue analytique consolidée",
-          subtitle: "Les widgets de finance sont maintenant calibres sur le nouveau theme et relies aux vraies transactions {{appName}}.",
+          subtitle:
+            "Les widgets de finance sont maintenant calibres sur le nouveau theme et relies aux vraies transactions {{appName}}.",
           back: "Retour finances",
         },
         cards: {
@@ -303,49 +309,57 @@ const resources = {
             eyebrow: "Chiffre d'affaires",
             detail: "vs hier",
             title: "Tendance des encaissements",
-            description: "Comparer l'activite journaliere du cabinet a la veille sur une lecture plus compacte.",
+            description:
+              "Comparer l'activite journaliere du cabinet a la veille sur une lecture plus compacte.",
           },
           mix: {
             eyebrow: "Mix des revenus",
             detail: "categories",
             title: "Segmentation des canaux",
-            description: "Voir quels postes de revenu portent vraiment l'activite du cabinet.",
+            description:
+              "Voir quels postes de revenu portent vraiment l'activite du cabinet.",
           },
           procedures: {
             eyebrow: "Actes réalises",
             detail: "vs hier",
             title: "Demande par acte",
-            description: "Mesurer les types de rendez-vous qui occupent reellement le planning {{appName}}.",
+            description:
+              "Mesurer les types de rendez-vous qui occupent reellement le planning {{appName}}.",
           },
           cashflow: {
             eyebrow: "Cashflow net",
             detail: "vs veille",
             title: "Flux sur 14 jours",
-            description: "Lire l'amplitude des variations de tresorerie avec une courbe plus legere.",
+            description:
+              "Lire l'amplitude des variations de tresorerie avec une courbe plus legere.",
           },
           tasks: {
             eyebrow: "Taches finalisées",
             detail: "a traiter",
             title: "Cadence des rappels",
-            description: "Lire d'un coup d'oeil le rythme de clôture des tâches planifiées sur les 24 derniers jours.",
+            description:
+              "Lire d'un coup d'oeil le rythme de clôture des tâches planifiées sur les 24 derniers jours.",
           },
           retention: {
             eyebrow: "Retention patients",
             detail: "vs periode precedente",
             title: "Patients récurrents",
-            description: "La heatmap met en évidence les séquences de retour sur les 12 dernières semaines.",
+            description:
+              "La heatmap met en évidence les séquences de retour sur les 12 dernières semaines.",
           },
           load: {
             eyebrow: "Charge semaine",
             detail: "jour fort",
             title: "Pression clinique",
-            description: "Repérer les jours qui concentrent vraiment les consultations et les pics d'activité.",
+            description:
+              "Repérer les jours qui concentrent vraiment les consultations et les pics d'activité.",
           },
           cities: {
             eyebrow: "Bassins clients",
             detail: "ville dominante",
             title: "Zones actives",
-            description: "Voir les villes qui alimentent le plus le planning sans passer par une carte illustrative.",
+            description:
+              "Voir les villes qui alimentent le plus le planning sans passer par une carte illustrative.",
           },
         },
         metricStrip: {
@@ -543,8 +557,10 @@ const resources = {
           downloaded: "{{reportTitle}} downloaded.",
           exportPdf: "PDF export",
           dailyDesc: "Summary of consultations, income, and day emergencies.",
-          weeklyDesc: "Consolidated clinical week view with activity and cash flow.",
-          monthlyDesc: "Monthly summary with revenue, critical stock, and patient follow-up.",
+          weeklyDesc:
+            "Consolidated clinical week view with activity and cash flow.",
+          monthlyDesc:
+            "Monthly summary with revenue, critical stock, and patient follow-up.",
           dailyCta: "Download daily",
           weeklyCta: "Download weekly",
           monthlyCta: "Download monthly",
@@ -636,8 +652,7 @@ const resources = {
         description: "Clinical register",
         title: "Case activity",
         newAppointment: "New appointment",
-        searchPlaceholder:
-          "Search for a patient, owner, or status...",
+        searchPlaceholder: "Search for a patient, owner, or status...",
         headers: {
           patient: "Patient",
           owner: "Owner",
@@ -677,8 +692,7 @@ const resources = {
           viewStock: "View stock",
           pendingTasks: "Pending tasks",
           pendingTasksMessage_one: "{{count}} task needs your attention.",
-          pendingTasksMessage_other:
-            "{{count}} tasks need your attention.",
+          pendingTasksMessage_other: "{{count}} tasks need your attention.",
           viewTasks: "View tasks",
           risingRevenue: "Revenue is rising",
           risingRevenueMessage:
@@ -721,18 +735,21 @@ const resources = {
         welcome: {
           fallbackName: "Doctor",
           title: "Hello {{name}} 👋",
-          subtitle: "Get a quick look at clinic activity, watch points, and the next actions to launch.",
+          subtitle:
+            "Get a quick look at clinic activity, watch points, and the next actions to launch.",
           clinicLabel: "Clinic",
           viewLabel: "View",
         },
         operational: {
           title: "Operational indicators",
-          subtitle: "Quick read of revenue, patients, clinical activity, and risk zones using {{appName}} data.",
+          subtitle:
+            "Quick read of revenue, patients, clinical activity, and risk zones using {{appName}} data.",
         },
         analytics: {
           eyebrow: "Financial analytics v2",
           title: "Consolidated analytics view",
-          subtitle: "Finance widgets are now aligned with the new theme and connected to real {{appName}} transactions.",
+          subtitle:
+            "Finance widgets are now aligned with the new theme and connected to real {{appName}} transactions.",
           back: "Back to finances",
         },
         cards: {
@@ -740,19 +757,22 @@ const resources = {
             eyebrow: "Revenue",
             detail: "vs yesterday",
             title: "Collections trend",
-            description: "Compare daily clinic activity to the previous day in a more compact read.",
+            description:
+              "Compare daily clinic activity to the previous day in a more compact read.",
           },
           mix: {
             eyebrow: "Revenue mix",
             detail: "categories",
             title: "Channel segmentation",
-            description: "See which revenue sources really carry clinic activity.",
+            description:
+              "See which revenue sources really carry clinic activity.",
           },
           procedures: {
             eyebrow: "Procedures completed",
             detail: "vs yesterday",
             title: "Procedure demand",
-            description: "Measure which appointment types really occupy the {{appName}} schedule.",
+            description:
+              "Measure which appointment types really occupy the {{appName}} schedule.",
           },
           cashflow: {
             eyebrow: "Net cashflow",
@@ -764,25 +784,29 @@ const resources = {
             eyebrow: "Tasks completed",
             detail: "to process",
             title: "Reminder pace",
-            description: "Read at a glance how quickly scheduled tasks were closed over the last 24 days.",
+            description:
+              "Read at a glance how quickly scheduled tasks were closed over the last 24 days.",
           },
           retention: {
             eyebrow: "Patient retention",
             detail: "vs previous period",
             title: "Returning patients",
-            description: "The heatmap highlights repeat-visit sequences over the last 12 weeks.",
+            description:
+              "The heatmap highlights repeat-visit sequences over the last 12 weeks.",
           },
           load: {
             eyebrow: "Weekly load",
             detail: "peak day",
             title: "Clinical pressure",
-            description: "Spot which days truly concentrate consultations and activity peaks.",
+            description:
+              "Spot which days truly concentrate consultations and activity peaks.",
           },
           cities: {
             eyebrow: "Client regions",
             detail: "leading city",
             title: "Active zones",
-            description: "See which cities feed the schedule most without relying on an illustrative map.",
+            description:
+              "See which cities feed the schedule most without relying on an illustrative map.",
           },
         },
         metricStrip: {
@@ -999,18 +1023,21 @@ const resources = {
         welcome: {
           fallbackName: "الطبيب",
           title: "مرحباً {{name}} 👋",
-          subtitle: "اطّلع بسرعة على نشاط العيادة ونقاط الانتباه والإجراءات التالية المطلوب إطلاقها.",
+          subtitle:
+            "اطّلع بسرعة على نشاط العيادة ونقاط الانتباه والإجراءات التالية المطلوب إطلاقها.",
           clinicLabel: "العيادة",
           viewLabel: "العرض",
         },
         operational: {
           title: "المؤشرات التشغيلية",
-          subtitle: "قراءة سريعة للإيرادات والمرضى والنشاط السريري ومناطق الانتباه باستخدام بيانات {{appName}}.",
+          subtitle:
+            "قراءة سريعة للإيرادات والمرضى والنشاط السريري ومناطق الانتباه باستخدام بيانات {{appName}}.",
         },
         analytics: {
           eyebrow: "التحليل المالي v2",
           title: "عرض تحليلي موحّد",
-          subtitle: "تمت مواءمة عناصر التمويل مع النسق الجديد وربطها بمعاملات {{appName}} الحقيقية.",
+          subtitle:
+            "تمت مواءمة عناصر التمويل مع النسق الجديد وربطها بمعاملات {{appName}} الحقيقية.",
           back: "العودة إلى المالية",
         },
         cards: {
@@ -1018,7 +1045,8 @@ const resources = {
             eyebrow: "الإيرادات",
             detail: "مقارنة بالأمس",
             title: "اتجاه التحصيلات",
-            description: "قارن النشاط اليومي للعيادة باليوم السابق في قراءة أكثر تكثيفاً.",
+            description:
+              "قارن النشاط اليومي للعيادة باليوم السابق في قراءة أكثر تكثيفاً.",
           },
           mix: {
             eyebrow: "مزيج الإيرادات",
@@ -1042,25 +1070,29 @@ const resources = {
             eyebrow: "المهام المنجزة",
             detail: "قيد المعالجة",
             title: "وتيرة التذكيرات",
-            description: "قراءة سريعة لوتيرة إغلاق المهام المجدولة خلال آخر 24 يوماً.",
+            description:
+              "قراءة سريعة لوتيرة إغلاق المهام المجدولة خلال آخر 24 يوماً.",
           },
           retention: {
             eyebrow: "احتفاظ المرضى",
             detail: "مقارنة بالفترة السابقة",
             title: "المرضى المتكررون",
-            description: "تُبرز الخريطة الحرارية تسلسل الزيارات المتكررة خلال آخر 12 أسبوعاً.",
+            description:
+              "تُبرز الخريطة الحرارية تسلسل الزيارات المتكررة خلال آخر 12 أسبوعاً.",
           },
           load: {
             eyebrow: "الضغط الأسبوعي",
             detail: "اليوم الأكثر كثافة",
             title: "الضغط السريري",
-            description: "تحديد الأيام التي تتركز فيها الاستشارات والذروة التشغيلية فعلاً.",
+            description:
+              "تحديد الأيام التي تتركز فيها الاستشارات والذروة التشغيلية فعلاً.",
           },
           cities: {
             eyebrow: "مناطق العملاء",
             detail: "المدينة الأولى",
             title: "المناطق النشطة",
-            description: "معرفة المدن التي تغذي الجدول أكثر من غيرها بدون خريطة توضيحية.",
+            description:
+              "معرفة المدن التي تغذي الجدول أكثر من غيرها بدون خريطة توضيحية.",
           },
         },
         metricStrip: {
@@ -1258,8 +1290,10 @@ const resources = {
           downloaded: "{{reportTitle}} descargado.",
           exportPdf: "Exportar PDF",
           dailyDesc: "Resumen de consultas, cobros y urgencias del día.",
-          weeklyDesc: "Vista consolidada de la semana clínica con actividad y tesorería.",
-          monthlyDesc: "Resumen mensual con ingresos, stock crítico y seguimiento de pacientes.",
+          weeklyDesc:
+            "Vista consolidada de la semana clínica con actividad y tesorería.",
+          monthlyDesc:
+            "Resumen mensual con ingresos, stock crítico y seguimiento de pacientes.",
           dailyCta: "Descargar diario",
           weeklyCta: "Descargar semanal",
           monthlyCta: "Descargar mensual",
@@ -1270,25 +1304,29 @@ const resources = {
           taskToday: "Tarea para seguimiento hoy",
           business: "Notificación operativa",
           noneTitle: "Sin alertas prioritarias",
-          noneDesc: "Las notificaciones críticas de la clínica aparecerán aquí.",
+          noneDesc:
+            "Las notificaciones críticas de la clínica aparecerán aquí.",
         },
       },
       dashboardV2: {
         welcome: {
           fallbackName: "Doctor",
           title: "Hola {{name}} 👋",
-          subtitle: "Consulta de un vistazo la actividad de la clínica, los puntos de atención y las próximas acciones a lanzar.",
+          subtitle:
+            "Consulta de un vistazo la actividad de la clínica, los puntos de atención y las próximas acciones a lanzar.",
           clinicLabel: "Clínica",
           viewLabel: "Vista",
         },
         operational: {
           title: "Indicadores operativos",
-          subtitle: "Lectura rápida de ingresos, pacientes, actividad clínica y zonas de vigilancia con los datos de {{appName}}.",
+          subtitle:
+            "Lectura rápida de ingresos, pacientes, actividad clínica y zonas de vigilancia con los datos de {{appName}}.",
         },
         analytics: {
           eyebrow: "Análisis financiero v2",
           title: "Vista analítica consolidada",
-          subtitle: "Los widgets financieros ahora están alineados con el nuevo tema y conectados a las transacciones reales de {{appName}}.",
+          subtitle:
+            "Los widgets financieros ahora están alineados con el nuevo tema y conectados a las transacciones reales de {{appName}}.",
           back: "Volver a finanzas",
         },
         cards: {
@@ -1296,49 +1334,57 @@ const resources = {
             eyebrow: "Ingresos",
             detail: "vs ayer",
             title: "Tendencia de cobros",
-            description: "Comparar la actividad diaria de la clínica con la del día anterior en una lectura más compacta.",
+            description:
+              "Comparar la actividad diaria de la clínica con la del día anterior en una lectura más compacta.",
           },
           mix: {
             eyebrow: "Mix de ingresos",
             detail: "categorías",
             title: "Segmentación de canales",
-            description: "Ver qué fuentes de ingresos impulsan realmente la actividad de la clínica.",
+            description:
+              "Ver qué fuentes de ingresos impulsan realmente la actividad de la clínica.",
           },
           procedures: {
             eyebrow: "Actos realizados",
             detail: "vs ayer",
             title: "Demanda por acto",
-            description: "Medir qué tipos de citas ocupan realmente la agenda de {{appName}}.",
+            description:
+              "Medir qué tipos de citas ocupan realmente la agenda de {{appName}}.",
           },
           cashflow: {
             eyebrow: "Cashflow neto",
             detail: "vs día anterior",
             title: "Flujo de 14 días",
-            description: "Leer la amplitud de las variaciones de tesorería con una curva más ligera.",
+            description:
+              "Leer la amplitud de las variaciones de tesorería con una curva más ligera.",
           },
           tasks: {
             eyebrow: "Tareas finalizadas",
             detail: "por tratar",
             title: "Ritmo de recordatorios",
-            description: "Leer de un vistazo el ritmo de cierre de las tareas planificadas en los últimos 24 días.",
+            description:
+              "Leer de un vistazo el ritmo de cierre de las tareas planificadas en los últimos 24 días.",
           },
           retention: {
             eyebrow: "Retención de pacientes",
             detail: "vs periodo anterior",
             title: "Pacientes recurrentes",
-            description: "El mapa de calor destaca las secuencias de regreso durante las últimas 12 semanas.",
+            description:
+              "El mapa de calor destaca las secuencias de regreso durante las últimas 12 semanas.",
           },
           load: {
             eyebrow: "Carga semanal",
             detail: "día fuerte",
             title: "Presión clínica",
-            description: "Detectar los días que concentran realmente las consultas y los picos de actividad.",
+            description:
+              "Detectar los días que concentran realmente las consultas y los picos de actividad.",
           },
           cities: {
             eyebrow: "Zonas de clientes",
             detail: "ciudad líder",
             title: "Zonas activas",
-            description: "Ver las ciudades que más alimentan la agenda sin usar un mapa ilustrativo.",
+            description:
+              "Ver las ciudades que más alimentan la agenda sin usar un mapa ilustrativo.",
           },
         },
         metricStrip: {
@@ -1536,8 +1582,10 @@ const resources = {
           downloaded: "{{reportTitle}} baixado.",
           exportPdf: "Exportar PDF",
           dailyDesc: "Resumo de consultas, receitas e urgências do dia.",
-          weeklyDesc: "Visão consolidada da semana clínica com atividade e caixa.",
-          monthlyDesc: "Balanço mensal com receita, estoque crítico e acompanhamento de pacientes.",
+          weeklyDesc:
+            "Visão consolidada da semana clínica com atividade e caixa.",
+          monthlyDesc:
+            "Balanço mensal com receita, estoque crítico e acompanhamento de pacientes.",
           dailyCta: "Baixar diário",
           weeklyCta: "Baixar semanal",
           monthlyCta: "Baixar mensal",
@@ -1555,18 +1603,21 @@ const resources = {
         welcome: {
           fallbackName: "Doutor",
           title: "Olá {{name}} 👋",
-          subtitle: "Veja rapidamente a atividade da clínica, os pontos de atenção e as próximas ações a lançar.",
+          subtitle:
+            "Veja rapidamente a atividade da clínica, os pontos de atenção e as próximas ações a lançar.",
           clinicLabel: "Clínica",
           viewLabel: "Vista",
         },
         operational: {
           title: "Indicadores operacionais",
-          subtitle: "Leitura rápida de receitas, pacientes, atividade clínica e zonas de vigilância com os dados da {{appName}}.",
+          subtitle:
+            "Leitura rápida de receitas, pacientes, atividade clínica e zonas de vigilância com os dados da {{appName}}.",
         },
         analytics: {
           eyebrow: "Análise financeira v2",
           title: "Vista analítica consolidada",
-          subtitle: "Os widgets financeiros agora estão alinhados ao novo tema e ligados às transações reais da {{appName}}.",
+          subtitle:
+            "Os widgets financeiros agora estão alinhados ao novo tema e ligados às transações reais da {{appName}}.",
           back: "Voltar às finanças",
         },
         cards: {
@@ -1574,49 +1625,57 @@ const resources = {
             eyebrow: "Receita",
             detail: "vs ontem",
             title: "Tendência de recebimentos",
-            description: "Comparar a atividade diária da clínica com o dia anterior numa leitura mais compacta.",
+            description:
+              "Comparar a atividade diária da clínica com o dia anterior numa leitura mais compacta.",
           },
           mix: {
             eyebrow: "Mix de receitas",
             detail: "categorias",
             title: "Segmentação de canais",
-            description: "Ver quais fontes de receita realmente sustentam a atividade da clínica.",
+            description:
+              "Ver quais fontes de receita realmente sustentam a atividade da clínica.",
           },
           procedures: {
             eyebrow: "Atos realizados",
             detail: "vs ontem",
             title: "Procura por ato",
-            description: "Medir quais tipos de agendamento ocupam de facto o planeamento da {{appName}}.",
+            description:
+              "Medir quais tipos de agendamento ocupam de facto o planeamento da {{appName}}.",
           },
           cashflow: {
             eyebrow: "Cashflow líquido",
             detail: "vs dia anterior",
             title: "Fluxo em 14 dias",
-            description: "Ler a amplitude das variações de tesouraria com uma curva mais leve.",
+            description:
+              "Ler a amplitude das variações de tesouraria com uma curva mais leve.",
           },
           tasks: {
             eyebrow: "Tarefas concluídas",
             detail: "a tratar",
             title: "Ritmo dos lembretes",
-            description: "Ler rapidamente o ritmo de encerramento das tarefas planeadas nos últimos 24 dias.",
+            description:
+              "Ler rapidamente o ritmo de encerramento das tarefas planeadas nos últimos 24 dias.",
           },
           retention: {
             eyebrow: "Retenção de pacientes",
             detail: "vs período anterior",
             title: "Pacientes recorrentes",
-            description: "O mapa de calor destaca as sequências de retorno nas últimas 12 semanas.",
+            description:
+              "O mapa de calor destaca as sequências de retorno nas últimas 12 semanas.",
           },
           load: {
             eyebrow: "Carga semanal",
             detail: "dia forte",
             title: "Pressão clínica",
-            description: "Identificar os dias que realmente concentram consultas e picos de atividade.",
+            description:
+              "Identificar os dias que realmente concentram consultas e picos de atividade.",
           },
           cities: {
             eyebrow: "Bacias de clientes",
             detail: "cidade dominante",
             title: "Zonas ativas",
-            description: "Ver as cidades que mais alimentam o planeamento sem recorrer a um mapa ilustrativo.",
+            description:
+              "Ver as cidades que mais alimentam o planeamento sem recorrer a um mapa ilustrativo.",
           },
         },
         metricStrip: {
@@ -1813,9 +1872,12 @@ const resources = {
           keyAppointments: "Wichtige Termine",
           downloaded: "{{reportTitle}} heruntergeladen.",
           exportPdf: "PDF-Export",
-          dailyDesc: "Zusammenfassung der Konsultationen, Einnahmen und Notfälle des Tages.",
-          weeklyDesc: "Konsolidierte Wochenansicht mit Aktivität und Liquidität.",
-          monthlyDesc: "Monatsübersicht mit Einnahmen, kritischem Bestand und Patientenverfolgung.",
+          dailyDesc:
+            "Zusammenfassung der Konsultationen, Einnahmen und Notfälle des Tages.",
+          weeklyDesc:
+            "Konsolidierte Wochenansicht mit Aktivität und Liquidität.",
+          monthlyDesc:
+            "Monatsübersicht mit Einnahmen, kritischem Bestand und Patientenverfolgung.",
           dailyCta: "Täglich herunterladen",
           weeklyCta: "Wöchentlich herunterladen",
           monthlyCta: "Monatlich herunterladen",
@@ -1833,18 +1895,21 @@ const resources = {
         welcome: {
           fallbackName: "Doktor",
           title: "Hallo {{name}} 👋",
-          subtitle: "Erhalten Sie einen schnellen Überblick über Klinikaktivität, Aufmerksamkeitsbereiche und die nächsten auszulösenden Aktionen.",
+          subtitle:
+            "Erhalten Sie einen schnellen Überblick über Klinikaktivität, Aufmerksamkeitsbereiche und die nächsten auszulösenden Aktionen.",
           clinicLabel: "Klinik",
           viewLabel: "Ansicht",
         },
         operational: {
           title: "Betriebliche Kennzahlen",
-          subtitle: "Schneller Blick auf Umsatz, Patienten, klinische Aktivität und Risikozonen mit den Daten von {{appName}}.",
+          subtitle:
+            "Schneller Blick auf Umsatz, Patienten, klinische Aktivität und Risikozonen mit den Daten von {{appName}}.",
         },
         analytics: {
           eyebrow: "Finanzanalyse v2",
           title: "Konsolidierte Analyseansicht",
-          subtitle: "Die Finanz-Widgets sind jetzt auf das neue Theme abgestimmt und mit den echten Transaktionen von {{appName}} verbunden.",
+          subtitle:
+            "Die Finanz-Widgets sind jetzt auf das neue Theme abgestimmt und mit den echten Transaktionen von {{appName}} verbunden.",
           back: "Zurück zu Finanzen",
         },
         cards: {
@@ -1852,49 +1917,57 @@ const resources = {
             eyebrow: "Umsatz",
             detail: "vs gestern",
             title: "Einzahlungstrend",
-            description: "Vergleichen Sie die tägliche Klinikaktivität mit dem Vortag in einer kompakteren Ansicht.",
+            description:
+              "Vergleichen Sie die tägliche Klinikaktivität mit dem Vortag in einer kompakteren Ansicht.",
           },
           mix: {
             eyebrow: "Umsatzmix",
             detail: "Kategorien",
             title: "Kanalsegmentierung",
-            description: "Sehen Sie, welche Umsatzquellen die Klinikaktivität wirklich tragen.",
+            description:
+              "Sehen Sie, welche Umsatzquellen die Klinikaktivität wirklich tragen.",
           },
           procedures: {
             eyebrow: "Durchgeführte Leistungen",
             detail: "vs gestern",
             title: "Nachfrage nach Leistung",
-            description: "Messen Sie, welche Terminarten den Plan von {{appName}} tatsächlich belegen.",
+            description:
+              "Messen Sie, welche Terminarten den Plan von {{appName}} tatsächlich belegen.",
           },
           cashflow: {
             eyebrow: "Netto-Cashflow",
             detail: "vs Vortag",
             title: "14-Tage-Fluss",
-            description: "Lesen Sie die Ausschläge der Liquidität mit einer leichteren Kurve.",
+            description:
+              "Lesen Sie die Ausschläge der Liquidität mit einer leichteren Kurve.",
           },
           tasks: {
             eyebrow: "Abgeschlossene Aufgaben",
             detail: "zu bearbeiten",
             title: "Erinnerungsrhythmus",
-            description: "Erfassen Sie auf einen Blick das Abschlusstempo geplanter Aufgaben der letzten 24 Tage.",
+            description:
+              "Erfassen Sie auf einen Blick das Abschlusstempo geplanter Aufgaben der letzten 24 Tage.",
           },
           retention: {
             eyebrow: "Patientenbindung",
             detail: "vs Vorperiode",
             title: "Wiederkehrende Patienten",
-            description: "Die Heatmap zeigt Wiederkehr-Muster der letzten 12 Wochen.",
+            description:
+              "Die Heatmap zeigt Wiederkehr-Muster der letzten 12 Wochen.",
           },
           load: {
             eyebrow: "Wochenlast",
             detail: "stärkster Tag",
             title: "Klinischer Druck",
-            description: "Erkennen Sie die Tage, an denen sich Konsultationen und Aktivitätsspitzen wirklich ballen.",
+            description:
+              "Erkennen Sie die Tage, an denen sich Konsultationen und Aktivitätsspitzen wirklich ballen.",
           },
           cities: {
             eyebrow: "Kundengebiete",
             detail: "führende Stadt",
             title: "Aktive Zonen",
-            description: "Sehen Sie, welche Städte den Terminplan am stärksten speisen, ohne eine illustrative Karte zu verwenden.",
+            description:
+              "Sehen Sie, welche Städte den Terminplan am stärksten speisen, ohne eine illustrative Karte zu verwenden.",
           },
         },
         metricStrip: {
@@ -2005,10 +2078,10 @@ const resources = {
       },
     },
   },
-} as const
+} as const;
 
 const savedLanguage =
-  (localStorage.getItem("vetera.language") as SupportedLanguage | null) || "fr"
+  (localStorage.getItem("vetera.language") as SupportedLanguage | null) || "fr";
 
 void i18n.use(initReactI18next).init({
   resources,
@@ -2017,10 +2090,10 @@ void i18n.use(initReactI18next).init({
   interpolation: {
     escapeValue: false,
   },
-})
+});
 
 i18n.on("languageChanged", (language) => {
-  localStorage.setItem("vetera.language", language)
-})
+  localStorage.setItem("vetera.language", language);
+});
 
-export default i18n
+export default i18n;

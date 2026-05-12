@@ -1,28 +1,27 @@
-import type { IconSvgElement } from "@hugeicons/react"
 import {
+  Brain02Icon,
   CpuIcon,
-  SparklesIcon,
   EyeIcon,
   ZapIcon,
-  Brain02Icon,
-} from "@hugeicons/core-free-icons"
+} from "@hugeicons/core-free-icons";
+import type { IconSvgElement } from "@hugeicons/react";
 
-import { APP_NAME } from "@/lib/brand"
+import { APP_NAME } from "@/lib/brand";
 
-export type ModelTier = "fast" | "smart" | "vision"
+export type ModelTier = "fast" | "smart" | "vision";
 
 export interface AIModel {
-  id: string
-  name: string
-  shortName: string
-  description: string
-  tier: ModelTier
-  vramMB: number
-  downloadSizeMB: number
-  contextWindow: number
-  systemPrompt: string
-  icon: IconSvgElement
-  recommended?: boolean
+  contextWindow: number;
+  description: string;
+  downloadSizeMB: number;
+  icon: IconSvgElement;
+  id: string;
+  name: string;
+  recommended?: boolean;
+  shortName: string;
+  systemPrompt: string;
+  tier: ModelTier;
+  vramMB: number;
 }
 
 export const AI_MODELS: AIModel[] = [
@@ -106,14 +105,14 @@ Regles:
 - Signale toujours tes limites.`,
     icon: EyeIcon,
   },
-]
+];
 
 export const MODEL_CATEGORIES: {
-  key: ModelTier
-  label: string
-  description: string
-  icon: IconSvgElement
-  color: string
+  key: ModelTier;
+  label: string;
+  description: string;
+  icon: IconSvgElement;
+  color: string;
 }[] = [
   {
     key: "fast",
@@ -136,51 +135,57 @@ export const MODEL_CATEGORIES: {
     icon: EyeIcon,
     color: "text-blue-500",
   },
-]
+];
 
-export const DEFAULT_MODEL_ID = "Qwen3-1.7B-q4f16_1-MLC"
+export const DEFAULT_MODEL_ID = "Qwen3-1.7B-q4f16_1-MLC";
 
 export function getModelById(id: string): AIModel | undefined {
-  return AI_MODELS.find((m) => m.id === id)
+  return AI_MODELS.find((m) => m.id === id);
 }
 
 export function getModelsByTier(tier: ModelTier): AIModel[] {
-  return AI_MODELS.filter((m) => m.tier === tier)
+  return AI_MODELS.filter((m) => m.tier === tier);
 }
 
 export function formatVRAM(mb: number): string {
-  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} Go`
-  return `${mb} Mo`
+  if (mb >= 1024) {
+    return `${(mb / 1024).toFixed(1)} Go`;
+  }
+  return `${mb} Mo`;
 }
 
 export function formatSizeMB(mb: number): string {
-  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} Go`
-  return `${mb} Mo`
+  if (mb >= 1024) {
+    return `${(mb / 1024).toFixed(1)} Go`;
+  }
+  return `${mb} Mo`;
 }
 
 export interface ModelCacheStatus {
-  modelId: string
-  isCached: boolean
-  isLoading: boolean
-  progress: number
-  progressText: string
+  isCached: boolean;
+  isLoading: boolean;
+  modelId: string;
+  progress: number;
+  progressText: string;
 }
 
-const CACHE_KEY = "ai-model-preferences"
+const CACHE_KEY = "ai-model-preferences";
 
 export interface ModelPreferences {
-  defaultModelId: string
-  autoLoadOnStartup: boolean
+  autoLoadOnStartup: boolean;
+  defaultModelId: string;
 }
 
 export function getModelPreferences(): ModelPreferences {
   try {
-    const stored = localStorage.getItem(CACHE_KEY)
-    if (stored) return JSON.parse(stored) as ModelPreferences
+    const stored = localStorage.getItem(CACHE_KEY);
+    if (stored) {
+      return JSON.parse(stored) as ModelPreferences;
+    }
   } catch {}
-  return { defaultModelId: DEFAULT_MODEL_ID, autoLoadOnStartup: false }
+  return { defaultModelId: DEFAULT_MODEL_ID, autoLoadOnStartup: false };
 }
 
 export function saveModelPreferences(prefs: ModelPreferences) {
-  localStorage.setItem(CACHE_KEY, JSON.stringify(prefs))
+  localStorage.setItem(CACHE_KEY, JSON.stringify(prefs));
 }

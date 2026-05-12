@@ -1,16 +1,16 @@
-import type { ChatCompletionMessageParam, MLCEngine } from "@mlc-ai/web-llm"
+import type { ChatCompletionMessageParam, MLCEngine } from "@mlc-ai/web-llm";
 
-import { APP_NAME } from "@/lib/brand"
-import { vetKnowledgeService } from "./vetKnowledgeService"
+import { APP_NAME } from "@/lib/brand";
+import { vetKnowledgeService } from "./vetKnowledgeService";
 
 export interface ProgressReport {
-  progress: number
-  text: string
+  progress: number;
+  text: string;
 }
 
 export interface LocalChatTurn {
-  role: "user" | "assistant"
-  text: string
+  role: "user" | "assistant";
+  text: string;
 }
 
 const DEFAULT_SYSTEM_PROMPT = `Tu es l'assistant clinique de ${APP_NAME}.
@@ -21,125 +21,128 @@ Regles:
 - Sois clair, concis et actionnable.
 - Si question medicale: structure en "Evaluation", "Hypotheses", "Actions".
 - Si une info est incertaine, signale-le simplement.
-- Ne fournis jamais de conseils dangereux.`
+- Ne fournis jamais de conseils dangereux.`;
 
-const MODEL_CACHE_KEY = "webllm-active-model"
+const MODEL_CACHE_KEY = "webllm-active-model";
 
-let engine: MLCEngine | null = null
-let activeModelId: string | null = null
-let initPromise: Promise<void> | null = null
-let initializing = false
-let globalProgress: ProgressReport = { progress: 0, text: "Initialisation..." }
+let engine: MLCEngine | null = null;
+let activeModelId: string | null = null;
+let initPromise: Promise<void> | null = null;
+let initializing = false;
+let globalProgress: ProgressReport = { progress: 0, text: "Initialisation..." };
 
-const progressListeners = new Set<(report: ProgressReport) => void>()
+const progressListeners = new Set<(report: ProgressReport) => void>();
 
 const notifyProgress = (report: ProgressReport) => {
-  globalProgress = report
-  progressListeners.forEach((listener) => listener(report))
-}
+  globalProgress = report;
+  progressListeners.forEach((listener) => listener(report));
+};
 
-export const getLocalModelId = () =>
-  activeModelId || "Qwen3-1.7B-q4f16_1-MLC"
+export const getLocalModelId = () => activeModelId || "Qwen3-1.7B-q4f16_1-MLC";
 
-export const getActiveModelId = () => activeModelId
+export const getActiveModelId = () => activeModelId;
 
 export const subscribeToProgress = (
   callback: (report: ProgressReport) => void
 ): (() => void) => {
-  progressListeners.add(callback)
+  progressListeners.add(callback);
   if (initializing || globalProgress.progress > 0) {
-    callback(globalProgress)
+    callback(globalProgress);
   }
-  return () => progressListeners.delete(callback)
-}
+  return () => progressListeners.delete(callback);
+};
 
-export const getCurrentProgress = (): ProgressReport => globalProgress
+export const getCurrentProgress = (): ProgressReport => globalProgress;
 
 export const initializeWebLLM = async (
   modelIdOrCallback?: string | ((report: ProgressReport) => void),
   onProgress?: (report: ProgressReport) => void
 ): Promise<void> => {
-  let modelId: string
-  let callback: ((report: ProgressReport) => void) | undefined
+  let modelId: string;
+  let callback: ((report: ProgressReport) => void) | undefined;
 
   if (typeof modelIdOrCallback === "function") {
-    modelId = "Qwen3-1.7B-q4f16_1-MLC"
-    callback = modelIdOrCallback
+    modelId = "Qwen3-1.7B-q4f16_1-MLC";
+    callback = modelIdOrCallback;
   } else {
-    modelId = modelIdOrCallback || "Qwen3-1.7B-q4f16_1-MLC"
-    callback = onProgress
+    modelId = modelIdOrCallback || "Qwen3-1.7B-q4f16_1-MLC";
+    callback = onProgress;
   }
 
-  if (engine && activeModelId === modelId) return
-  if (initPromise && activeModelId === modelId) return initPromise
+  if (engine && activeModelId === modelId) {
+    return;
+  }
+  if (initPromise && activeModelId === modelId) {
+    return initPromise;
+  }
 
   if (engine && activeModelId !== modelId) {
-    engine = null
-    activeModelId = null
-    initPromise = null
+    engine = null;
+    activeModelId = null;
+    initPromise = null;
   }
 
-  initializing = true
-  activeModelId = modelId
-  notifyProgress({ progress: 0, text: "Preparation du modele..." })
+  initializing = true;
+  activeModelId = modelId;
+  notifyProgress({ progress: 0, text: "Preparation du modele..." });
 
   initPromise = (async () => {
     try {
-      const { CreateMLCEngine } = await import("@mlc-ai/web-llm")
+      const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
       engine = await CreateMLCEngine(modelId, {
         initProgressCallback: (report) => {
-          const progress = { progress: report.progress, text: report.text }
-          notifyProgress(progress)
-          callback?.(progress)
+          const progress = { progress: report.progress, text: report.text };
+          notifyProgress(progress);
+          callback?.(progress);
         },
-      })
-      notifyProgress({ progress: 1, text: "Completed" })
-      callback?.({ progress: 1, text: "Completed" })
+      });
+      notifyProgress({ progress: 1, text: "Completed" });
+      callback?.({ progress: 1, text: "Completed" });
     } catch (error) {
-      notifyProgress({ progress: 0, text: "Erreur de chargement" })
-      console.error("[WebLLM] Echec du chargement:", error)
-      throw error
+      notifyProgress({ progress: 0, text: "Erreur de chargement" });
+      console.error("[WebLLM] Echec du chargement:", error);
+      throw error;
     } finally {
-      initializing = false
-      initPromise = null
+      initializing = false;
+      initPromise = null;
     }
-  })()
+  })();
 
-  return initPromise
-}
+  return initPromise;
+};
 
 export const generateText = async (
   prompt: string,
   context: string,
   options?: {
-    history?: LocalChatTurn[]
-    systemPrompt?: string
-    temperature?: number
-    maxTokens?: number
+    history?: LocalChatTurn[];
+    systemPrompt?: string;
+    temperature?: number;
+    maxTokens?: number;
   }
 ): Promise<string> => {
   if (!engine) {
     const prefs = await import("@/lib/ai-models").then((m) =>
       m.getModelPreferences()
-    )
-    await initializeWebLLM(prefs.defaultModelId)
+    );
+    await initializeWebLLM(prefs.defaultModelId);
   }
 
   if (!engine) {
-    throw new Error("Le modele IA local n'a pas pu etre initialise.")
+    throw new Error("Le modele IA local n'a pas pu etre initialise.");
   }
 
   const knowledge = vetKnowledgeService.getContextForQuery(
     `${prompt}\n${context}`
-  )
-  const enrichedContext = [context, knowledge].filter(Boolean).join("\n\n")
+  );
+  const enrichedContext = [context, knowledge].filter(Boolean).join("\n\n");
 
   const historyMessages: ChatCompletionMessageParam[] = (
     options?.history ?? []
   ).map((turn) => ({
     role: turn.role,
     content: turn.text,
-  }))
+  }));
 
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: options?.systemPrompt ?? DEFAULT_SYSTEM_PROMPT },
@@ -151,35 +154,35 @@ export const generateText = async (
           ? `${prompt}\n\nContexte:\n${enrichedContext}`
           : prompt,
     },
-  ]
+  ];
 
   const response = await engine.chat.completions.create({
     messages,
     temperature: options?.temperature ?? 0.3,
     max_tokens: options?.maxTokens ?? 1024,
-  })
+  });
 
-  return response.choices?.[0]?.message?.content?.trim() || ""
-}
+  return response.choices?.[0]?.message?.content?.trim() || "";
+};
 
-export const isWebLLMReady = (): boolean => engine !== null
+export const isWebLLMReady = (): boolean => engine !== null;
 
-export const isWebLLMLoading = (): boolean => initializing
+export const isWebLLMLoading = (): boolean => initializing;
 
 export const resetWebLLM = async (): Promise<void> => {
   if (engine) {
-    engine = null
-    activeModelId = null
-    initPromise = null
-    initializing = false
+    engine = null;
+    activeModelId = null;
+    initPromise = null;
+    initializing = false;
   }
-}
+};
 
 export const hasModelInCache = async (modelId: string): Promise<boolean> => {
   try {
-    const { hasModelInCache: checkCache } = await import("@mlc-ai/web-llm")
-    return await checkCache(modelId)
+    const { hasModelInCache: checkCache } = await import("@mlc-ai/web-llm");
+    return await checkCache(modelId);
   } catch {
-    return false
+    return false;
   }
-}
+};

@@ -1,13 +1,11 @@
-import type { ChatMessage } from "../types"
-
-import { APP_NAME } from "@/lib/brand"
+import { APP_NAME } from "@/lib/brand";
+import type { ChatMessage } from "../types";
 import {
   generateText,
-  getLocalModelId,
   initializeWebLLM,
   isWebLLMReady,
   type LocalChatTurn,
-} from "./webLLMService"
+} from "./webLLMService";
 
 const ASSISTANT_SYSTEM_PROMPT = `Tu es l'assistant officiel de ${APP_NAME}, logiciel de clinique veterinaire.
 Tu aides l'equipe sur l'organisation, les dossiers patients, les notes cliniques et les actions quotidiennes.
@@ -15,16 +13,16 @@ Tu aides l'equipe sur l'organisation, les dossiers patients, les notes cliniques
 Contraintes:
 - Toujours repondre en francais.
 - Reponses courtes et precises.
-- Si risque clinique: proposer verification veterinaire avant action.`
+- Si risque clinique: proposer verification veterinaire avant action.`;
 
 const NOTE_ASSISTANT_PROMPT = `Tu es un assistant de redaction clinique.
 Ton objectif: produire un texte professionnel, lisible et exploitable en consultation.
 - Style direct.
 - Pas de blabla.
-- Utilise des puces si utile.`
+- Utilise des puces si utile.`;
 
 const convertMarkdownToHTML = (text: string): string => {
-  let html = text
+  let html = text;
 
   html = html
     .replace(/^### (.+)$/gm, "<h3>$1</h3>")
@@ -33,21 +31,25 @@ const convertMarkdownToHTML = (text: string): string => {
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/^[-*] (.+)$/gm, "<li>$1</li>")
-    .replace(/^(\d+)\. (.+)$/gm, "<li>$2</li>")
+    .replace(/^(\d+)\. (.+)$/gm, "<li>$2</li>");
 
-  html = html.replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>${match}</ul>`)
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>${match}</ul>`);
 
-  const lines = html.split("\n")
+  const lines = html.split("\n");
   return lines
     .map((line) => {
-      const trimmed = line.trim()
-      if (!trimmed) return ""
-      if (trimmed.startsWith("<")) return trimmed
-      return `<p>${trimmed}</p>`
+      const trimmed = line.trim();
+      if (!trimmed) {
+        return "";
+      }
+      if (trimmed.startsWith("<")) {
+        return trimmed;
+      }
+      return `<p>${trimmed}</p>`;
     })
     .filter(Boolean)
-    .join("\n")
-}
+    .join("\n");
+};
 
 const NOTE_PROMPTS: Record<string, (text: string) => string> = {
   "Corrige l'orthographe et la grammaire": (text) =>
@@ -56,22 +58,22 @@ const NOTE_PROMPTS: Record<string, (text: string) => string> = {
     `Reformule ce texte en style professionnel et clair (max 200 mots).\n\nTexte:\n${text}`,
   "Résume en points clés": (text) =>
     `Resumer en 3 a 6 points cles, format puces.\n\nTexte:\n${text}`,
-}
+};
 
 const isWriteInstruction = (instruction: string): boolean => {
-  const normalized = instruction.toLowerCase()
+  const normalized = instruction.toLowerCase();
   return (
     normalized.includes("redige") ||
     normalized.includes("ecris") ||
     normalized.includes("genere")
-  )
-}
+  );
+};
 
 const toLocalHistory = (history: ChatMessage[]): LocalChatTurn[] =>
   history.slice(-8).map((message) => ({
     role: message.role === "user" ? "user" : "assistant",
     text: message.text,
-  }))
+  }));
 
 export const sendMessageToGemini = async (
   history: ChatMessage[],
@@ -79,7 +81,7 @@ export const sendMessageToGemini = async (
 ): Promise<string> => {
   try {
     if (!isWebLLMReady()) {
-      await initializeWebLLM()
+      await initializeWebLLM();
     }
 
     const response = await generateText(newMessage, "", {
@@ -87,43 +89,43 @@ export const sendMessageToGemini = async (
       systemPrompt: ASSISTANT_SYSTEM_PROMPT,
       temperature: 0.25,
       maxTokens: 900,
-    })
+    });
 
     if (!response) {
-      return "Je n'ai pas pu generer une reponse utile. Peux-tu reformuler ?"
+      return "Je n'ai pas pu generer une reponse utile. Peux-tu reformuler ?";
     }
 
-    return response
+    return response;
   } catch (error) {
-    console.error("[LocalAI] Erreur assistant:", error)
-    return "Une erreur s'est produite. Veuillez réessayer."
+    console.error("[LocalAI] Erreur assistant:", error);
+    return "Une erreur s'est produite. Veuillez réessayer.";
   }
-}
+};
 
 export const assistWithNote = async (
   content: string,
   instruction: string
 ): Promise<string> => {
   if (!isWebLLMReady()) {
-    await initializeWebLLM()
+    await initializeWebLLM();
   }
 
-  const promptFn = NOTE_PROMPTS[instruction]
+  const promptFn = NOTE_PROMPTS[instruction];
 
-  let prompt = ""
+  let prompt = "";
   if (promptFn) {
-    prompt = promptFn(content)
+    prompt = promptFn(content);
   } else if (isWriteInstruction(instruction)) {
-    prompt = `${instruction}\n\nContraintes:\n- Texte court et clair\n- Structure avec titres/puces\n- Ton professionnel`
+    prompt = `${instruction}\n\nContraintes:\n- Texte court et clair\n- Structure avec titres/puces\n- Ton professionnel`;
   } else {
-    prompt = `${instruction}\n\nTexte:\n${content}`
+    prompt = `${instruction}\n\nTexte:\n${content}`;
   }
 
   const generated = await generateText(prompt, "", {
     systemPrompt: NOTE_ASSISTANT_PROMPT,
     temperature: 0.3,
     maxTokens: 1100,
-  })
+  });
 
-  return convertMarkdownToHTML(generated)
-}
+  return convertMarkdownToHTML(generated);
+};

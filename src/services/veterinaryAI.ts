@@ -4,12 +4,12 @@
  */
 
 export interface VeterinaryContext {
-  patientName?: string
-  species?: "chien" | "chat" | "NAC"
-  age?: string
-  weight?: string
-  currentView?: string
-  appointmentType?: string
+  age?: string;
+  appointmentType?: string;
+  currentView?: string;
+  patientName?: string;
+  species?: "chien" | "chat" | "NAC";
+  weight?: string;
 }
 
 export const SYSTEM_PROMPT = `Tu es un assistant vétérinaire professionnel. Tu assistes un vétérinaire dans son cabinet.
@@ -35,10 +35,12 @@ DOMAINE D'EXPERTISE:
 - Analgésie/anesthésie basique
 - Communication clientèle
 
-Tu réponds en français. Tu es factuel, tu évites le jargon inutile sauf si demandé.`
+Tu réponds en français. Tu es factuel, tu évites le jargon inutile sauf si demandé.`;
 
 export const PROMPT_TEMPLATES = {
-  fichePatient: (ctx: VeterinaryContext) => `Rédige une fiche patient professionnelle pour ${ctx.patientName || "le patient"}${ctx.species ? ` (${ctx.species})` : ""}.
+  fichePatient: (
+    ctx: VeterinaryContext
+  ) => `Rédige une fiche patient professionnelle pour ${ctx.patientName || "le patient"}${ctx.species ? ` (${ctx.species})` : ""}.
 
 Structure obligatoire:
 ## ANAMNÈSE
@@ -70,7 +72,9 @@ Structure obligatoire:
 
 Rédige de façon concise, prête à être complétée.`,
 
-  compteRendu: (ctx: VeterinaryContext) => `Rédige un compte-rendu de consultation pour ${ctx.patientName || "le patient"}.
+  compteRendu: (
+    ctx: VeterinaryContext
+  ) => `Rédige un compte-rendu de consultation pour ${ctx.patientName || "le patient"}.
 
 Format standard:
 **Date:** [Date]
@@ -154,7 +158,9 @@ Source: Protocols WSAVA 2022, ESCCAP guidelines`,
 **Tests préalables recommandés:**
 - Test FeLV/FIV chez chat adulte non vacciné avant primovaccination FeLV`,
 
-  smsRappelVaccin: (ctx: VeterinaryContext) => `Rédige un SMS de rappel de vaccin pour ${ctx.patientName || "[Nom animal]"}.
+  smsRappelVaccin: (
+    ctx: VeterinaryContext
+  ) => `Rédige un SMS de rappel de vaccin pour ${ctx.patientName || "[Nom animal]"}.
 
 Contraintes:
 - Maximum 160 caractères (1 SMS)
@@ -167,7 +173,9 @@ Modèle:
 
 (Compte les caractères et optimise)`,
 
-  smsRappelConsultation: (ctx: VeterinaryContext) => `Rédige un SMS de confirmation de rendez-vous.
+  smsRappelConsultation: (
+    ctx: VeterinaryContext
+  ) => `Rédige un SMS de confirmation de rendez-vous.
 
 Infos: ${ctx.appointmentType || "Consultation"} le [date/heure]
 
@@ -178,7 +186,10 @@ Doit inclure: date/heure, type de RDV, numéro pour modifier
 Exemple:
 "Rappel RDV ${ctx.appointmentType || "consultation"} [Nom] demain à [heure]. En cas d'empêchement, merci de nous prévenir au 0X XX XX XX XX. À demain! Clinique Vét. [Nom]"`,
 
-  explicationPathologie: (pathologie: string, ctx: VeterinaryContext) => `Explique la pathologie "${pathologie}" à un propriétaire inquiet pour ${ctx.patientName || "son animal"}.
+  explicationPathologie: (
+    pathologie: string,
+    ctx: VeterinaryContext
+  ) => `Explique la pathologie "${pathologie}" à un propriétaire inquiet pour ${ctx.patientName || "son animal"}.
 
 Consignes:
 - Évite le jargon médical (ou explique-le entre parenthèses)
@@ -196,7 +207,10 @@ Structure:
 
 Longueur: 4-5 phrases maximum. Ton rassurant.`,
 
-  aideDiagnostique: (symptomes: string, ctx: VeterinaryContext) => `Analyse des symptômes: ${symptomes}
+  aideDiagnostique: (
+    symptomes: string,
+    ctx: VeterinaryContext
+  ) => `Analyse des symptômes: ${symptomes}
 
 Contexte: ${ctx.patientName || "Patient"}${ctx.species ? ` (${ctx.species})` : ""}${ctx.age ? `, ${ctx.age}` : ""}
 
@@ -264,38 +278,72 @@ Fait à [Ville], le [Date]
 Signature et cachet:
 
 NB: Validité 10 jours maximum. Requis pour transport aérien international.`,
-}
+};
 
 export function generatePrompt(
   template: keyof typeof PROMPT_TEMPLATES,
   context: VeterinaryContext,
   customData?: string
 ): string {
-  const templateFn = PROMPT_TEMPLATES[template]
-  
+  const templateFn = PROMPT_TEMPLATES[template];
+
   if (typeof templateFn === "function") {
     if (customData) {
-      return (templateFn as Function)(customData, context)
+      return (templateFn as Function)(customData, context);
     }
-    return (templateFn as Function)(context)
+    return (templateFn as Function)(context);
   }
-  
-  return templateFn as string
+
+  return templateFn as string;
 }
 
-export function detectIntent(message: string): keyof typeof PROMPT_TEMPLATES | null {
-  const lower = message.toLowerCase()
-  
-  if (lower.includes("fiche") || lower.includes("dossier médical")) return "fichePatient"
-  if (lower.includes("compte-rendu") || lower.includes("cr") || lower.includes("rapport consultation")) return "compteRendu"
-  if (lower.includes("vaccin chien") || lower.includes("protocole chien")) return "protocoleVaccinChien"
-  if (lower.includes("vaccin chat") || lower.includes("protocole chat")) return "protocoleVaccinChat"
-  if (lower.includes("sms") && lower.includes("vaccin")) return "smsRappelVaccin"
-  if (lower.includes("sms") && lower.includes("rdv")) return "smsRappelConsultation"
-  if (lower.includes("explique") || lower.includes("c'est quoi") || lower.includes("qu'est-ce")) return "explicationPathologie"
-  if (lower.includes("symptôme") || lower.includes("diagnostic") || lower.includes("différentiel")) return "aideDiagnostique"
-  if (lower.includes("ordonnance")) return "ordonnance"
-  if (lower.includes("certificat") || lower.includes("bonne santé")) return "certificatBonneSante"
-  
-  return null
+export function detectIntent(
+  message: string
+): keyof typeof PROMPT_TEMPLATES | null {
+  const lower = message.toLowerCase();
+
+  if (lower.includes("fiche") || lower.includes("dossier médical")) {
+    return "fichePatient";
+  }
+  if (
+    lower.includes("compte-rendu") ||
+    lower.includes("cr") ||
+    lower.includes("rapport consultation")
+  ) {
+    return "compteRendu";
+  }
+  if (lower.includes("vaccin chien") || lower.includes("protocole chien")) {
+    return "protocoleVaccinChien";
+  }
+  if (lower.includes("vaccin chat") || lower.includes("protocole chat")) {
+    return "protocoleVaccinChat";
+  }
+  if (lower.includes("sms") && lower.includes("vaccin")) {
+    return "smsRappelVaccin";
+  }
+  if (lower.includes("sms") && lower.includes("rdv")) {
+    return "smsRappelConsultation";
+  }
+  if (
+    lower.includes("explique") ||
+    lower.includes("c'est quoi") ||
+    lower.includes("qu'est-ce")
+  ) {
+    return "explicationPathologie";
+  }
+  if (
+    lower.includes("symptôme") ||
+    lower.includes("diagnostic") ||
+    lower.includes("différentiel")
+  ) {
+    return "aideDiagnostique";
+  }
+  if (lower.includes("ordonnance")) {
+    return "ordonnance";
+  }
+  if (lower.includes("certificat") || lower.includes("bonne santé")) {
+    return "certificatBonneSante";
+  }
+
+  return null;
 }

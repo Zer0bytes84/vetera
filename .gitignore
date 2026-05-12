@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 .playwright-cli
+.playwright-mcp
 output
 src-tauri/target
 *.local

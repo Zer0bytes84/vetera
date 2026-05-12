@@ -1,19 +1,16 @@
-import React from "react"
-import { Dog, Cat, Bird, Fish, Rabbit, Turtle, PawPrint } from "lucide-react"
+import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "lucide-react";
+import type React from "react";
 
-import {
-  Avatar as ShadAvatar,
-  AvatarFallback,
-} from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
+import { AvatarFallback, Avatar as ShadAvatar } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
-export type AvatarSize = "sm" | "md" | "lg" | "xl" | "2xl"
+export type AvatarSize = "sm" | "md" | "lg" | "xl" | "2xl";
 
 interface AvatarProps {
-  src?: string
-  name: string
-  size?: AvatarSize
-  className?: string
+  className?: string;
+  name: string;
+  size?: AvatarSize;
+  src?: string;
 }
 
 const ANIMAL_ICONS: Record<
@@ -55,7 +52,7 @@ const ANIMAL_ICONS: Record<
     bg: "bg-purple-100 dark:bg-purple-500/20",
     text: "text-purple-600 dark:text-purple-400",
   },
-}
+};
 
 const SIZE_MAP: Record<AvatarSize, string> = {
   sm: "size-8",
@@ -63,28 +60,95 @@ const SIZE_MAP: Record<AvatarSize, string> = {
   lg: "size-12",
   xl: "size-20",
   "2xl": "size-32",
-}
+};
+
+const TEXT_SIZE_MAP: Record<AvatarSize, string> = {
+  sm: "text-xs",
+  md: "text-sm",
+  lg: "text-base",
+  xl: "text-2xl",
+  "2xl": "text-4xl",
+};
+
+const PIXEL_SIZE_MAP: Record<AvatarSize, number> = {
+  sm: 32,
+  md: 40,
+  lg: 48,
+  xl: 80,
+  "2xl": 128,
+};
 
 const normalizeAvatarSrc = (src?: string | null) => {
-  if (typeof src !== "string") return ""
-  const value = src.trim()
-  if (!value) return ""
-  if (["undefined", "null", "nan"].includes(value.toLowerCase())) return ""
-  return value
-}
+  if (typeof src !== "string") {
+    return "";
+  }
+  const value = src.trim();
+  if (!value) {
+    return "";
+  }
+  if (["undefined", "null", "nan"].includes(value.toLowerCase())) {
+    return "";
+  }
+  return value;
+};
 
 const normalizeName = (name?: string | null) => {
-  if (typeof name !== "string") return "Utilisateur"
-  const value = name.trim()
-  if (!value || value.toLowerCase() === "undefined") return "Utilisateur"
-  return value
-}
+  if (typeof name !== "string") {
+    return "Utilisateur";
+  }
+  const value = name.trim();
+  if (!value || value.toLowerCase() === "undefined") {
+    return "Utilisateur";
+  }
+  return value;
+};
 
 const getInitials = (name: string) => {
-  if (!name) return "?"
-  const parts = name.split(" ").filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-  return name.substring(0, 2).toUpperCase()
+  if (!name) {
+    return "?";
+  }
+  const parts = name.split(" ").filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+};
+
+function renderImageAvatar({
+  className,
+  normalizedSrc,
+  safeName,
+  size,
+  sizeClass,
+}: {
+  className?: string;
+  normalizedSrc: string;
+  safeName: string;
+  size: AvatarSize;
+  sizeClass: string;
+}) {
+  const pixelSize = PIXEL_SIZE_MAP[size];
+
+  return (
+    <ShadAvatar className={cn("rounded-full bg-muted", sizeClass, className)}>
+      <img
+        alt={safeName}
+        className="size-full object-cover"
+        draggable={false}
+        height={pixelSize}
+        src={normalizedSrc}
+        width={pixelSize}
+      />
+      <AvatarFallback
+        className={cn(
+          "size-full rounded-full bg-muted font-semibold text-muted-foreground",
+          TEXT_SIZE_MAP[size]
+        )}
+      >
+        {getInitials(safeName)}
+      </AvatarFallback>
+    </ShadAvatar>
+  );
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -93,62 +157,28 @@ const Avatar: React.FC<AvatarProps> = ({
   size = "md",
   className,
 }) => {
-  const sizeClass = SIZE_MAP[size]
-  const safeName = normalizeName(name)
-  const normalizedSrc = normalizeAvatarSrc(src)
+  const sizeClass = SIZE_MAP[size];
+  const safeName = normalizeName(name);
+  const normalizedSrc = normalizeAvatarSrc(src);
 
   if (
     normalizedSrc &&
-    (
-      normalizedSrc.startsWith("http") ||
+    (normalizedSrc.startsWith("http") ||
       normalizedSrc.startsWith("data:") ||
-      normalizedSrc.startsWith("/")
-    )
+      normalizedSrc.startsWith("/"))
   ) {
-    return (
-      <div
-        className={cn(
-          "overflow-hidden rounded-full bg-muted",
-          sizeClass,
-          className
-        )}
-      >
-        <img
-          src={normalizedSrc}
-          alt={safeName}
-          className="size-full object-cover"
-          draggable={false}
-          onError={(event) => {
-            event.currentTarget.style.display = "none"
-            const fallback = event.currentTarget.nextElementSibling as
-              | HTMLElement
-              | null
-            if (fallback) fallback.style.display = "flex"
-          }}
-        />
-        <div
-          className={cn(
-            "hidden size-full items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground",
-            size === "sm"
-              ? "text-xs"
-              : size === "md"
-                ? "text-sm"
-                : size === "lg"
-                  ? "text-base"
-                  : size === "xl"
-                    ? "text-2xl"
-                    : "text-4xl"
-          )}
-        >
-          {getInitials(safeName)}
-        </div>
-      </div>
-    )
+    return renderImageAvatar({
+      className,
+      normalizedSrc,
+      safeName,
+      size,
+      sizeClass,
+    });
   }
 
-  if (normalizedSrc && normalizedSrc.startsWith("gradient:")) {
-    const gradientClass = normalizedSrc.replace("gradient:", "")
-    const initials = getInitials(safeName)
+  if (normalizedSrc?.startsWith("gradient:")) {
+    const gradientClass = normalizedSrc.replace("gradient:", "");
+    const initials = getInitials(safeName);
 
     return (
       <div
@@ -161,13 +191,13 @@ const Avatar: React.FC<AvatarProps> = ({
       >
         {initials}
       </div>
-    )
+    );
   }
 
-  if (normalizedSrc && normalizedSrc.startsWith("animal:")) {
-    const animalKey = normalizedSrc.split(":")[1]
-    const config = ANIMAL_ICONS[animalKey] || ANIMAL_ICONS.paw
-    const Icon = config.icon
+  if (normalizedSrc?.startsWith("animal:")) {
+    const animalKey = normalizedSrc.split(":")[1];
+    const config = ANIMAL_ICONS[animalKey] || ANIMAL_ICONS.paw;
+    const Icon = config.icon;
 
     return (
       <div
@@ -181,29 +211,16 @@ const Avatar: React.FC<AvatarProps> = ({
       >
         <Icon className="size-[60%]" strokeWidth={2} />
       </div>
-    )
+    );
   }
 
   return (
     <ShadAvatar className={cn(sizeClass, className)}>
-      <AvatarFallback
-        className={cn(
-          "font-semibold",
-          size === "sm"
-            ? "text-xs"
-            : size === "md"
-              ? "text-sm"
-              : size === "lg"
-                ? "text-base"
-                : size === "xl"
-                  ? "text-2xl"
-                  : "text-4xl"
-        )}
-      >
+      <AvatarFallback className={cn("font-semibold", TEXT_SIZE_MAP[size])}>
         {getInitials(safeName)}
       </AvatarFallback>
     </ShadAvatar>
-  )
-}
+  );
+};
 
-export default Avatar
+export default Avatar;

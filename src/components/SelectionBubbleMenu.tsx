@@ -1,38 +1,39 @@
-import React, { useState, useEffect, useRef } from "react"
-import { Editor } from "@tiptap/react"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
+  CheckListIcon,
+  CheckmarkCircle02Icon,
+  Heading01Icon,
+  Heading02Icon,
+  MagicWand01Icon,
+  SparklesIcon,
   TextBoldIcon,
   TextItalicIcon,
   TextStrikethroughIcon,
-  Heading01Icon,
-  Heading02Icon,
-  SparklesIcon,
-  CheckmarkCircle02Icon,
-  MagicWand01Icon,
-  CheckListIcon,
-} from "@hugeicons/core-free-icons"
-import { Button } from "@/components/ui/button"
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import type { Editor } from "@tiptap/react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 
 interface SelectionBubbleMenuProps {
-  editor: Editor
-  onAiAction: (action: string) => void
+  editor: Editor;
+  onAiAction: (action: string) => void;
 }
 
 const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
   editor,
   onAiAction,
 }) => {
-  const [isVisible, setIsVisible] = useState(false)
-  const [position, setPosition] = useState({ top: 0, left: 0 })
-  const menuRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const aiActions = [
     {
@@ -46,137 +47,143 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
       icon: MagicWand01Icon,
     },
     { label: "Résumer", action: "Résume en points clés", icon: CheckListIcon },
-  ]
+  ];
 
   useEffect(() => {
     const updateMenu = () => {
-      const { selection } = editor.state
-      const { from, to } = selection
+      const { selection } = editor.state;
+      const { from, to } = selection;
 
       if (from === to) {
-        setIsVisible(false)
-        return
+        setIsVisible(false);
+        return;
       }
 
-      const { view } = editor
-      const start = view.coordsAtPos(from)
-      const end = view.coordsAtPos(to)
+      const { view } = editor;
+      const start = view.coordsAtPos(from);
+      const end = view.coordsAtPos(to);
 
-      const menuWidth = 340
-      const menuHeight = 50
+      const menuWidth = 340;
+      const menuHeight = 50;
 
-      let left = (start.left + end.left) / 2 - menuWidth / 2
-      left = Math.max(10, Math.min(left, window.innerWidth - menuWidth - 10))
+      let left = (start.left + end.left) / 2 - menuWidth / 2;
+      left = Math.max(10, Math.min(left, window.innerWidth - menuWidth - 10));
 
-      let top = start.top - menuHeight - 10
+      let top = start.top - menuHeight - 10;
       if (top < 10) {
-        top = end.bottom + 10
+        top = end.bottom + 10;
       }
 
-      setPosition({ top, left })
-      setIsVisible(true)
-    }
+      setPosition({ top, left });
+      setIsVisible(true);
+    };
 
-    editor.on("selectionUpdate", updateMenu)
+    editor.on("selectionUpdate", updateMenu);
     return () => {
-      editor.off("selectionUpdate", updateMenu)
-    }
-  }, [editor])
+      editor.off("selectionUpdate", updateMenu);
+    };
+  }, [editor]);
 
   const handleAiAction = (action: string) => {
-    setIsVisible(false)
-    onAiAction(action)
-  }
+    setIsVisible(false);
+    onAiAction(action);
+  };
 
-  if (!isVisible) return null
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <div
-      ref={menuRef}
       className="fixed z-50 flex items-center gap-0.5 rounded-xl border border-border bg-popover p-1.5 shadow-xl backdrop-blur-md"
+      ref={menuRef}
       style={{ top: position.top, left: position.left }}
     >
       <Button
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        size="icon-sm"
+        title="Gras"
         type="button"
         variant={editor.isActive("bold") ? "default" : "ghost"}
-        size="icon-sm"
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        title="Gras"
       >
-        <HugeiconsIcon icon={TextBoldIcon} strokeWidth={1.5} className="size-4" />
+        <HugeiconsIcon
+          className="size-4"
+          icon={TextBoldIcon}
+          strokeWidth={1.5}
+        />
       </Button>
 
       <Button
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        size="icon-sm"
+        title="Italique"
         type="button"
         variant={editor.isActive("italic") ? "default" : "ghost"}
-        size="icon-sm"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        title="Italique"
       >
         <HugeiconsIcon
+          className="size-4"
           icon={TextItalicIcon}
           strokeWidth={1.5}
-          className="size-4"
         />
       </Button>
 
       <Button
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+        size="icon-sm"
+        title="Barré"
         type="button"
         variant={editor.isActive("strike") ? "default" : "ghost"}
-        size="icon-sm"
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-        title="Barré"
       >
         <HugeiconsIcon
+          className="size-4"
           icon={TextStrikethroughIcon}
           strokeWidth={1.5}
-          className="size-4"
         />
       </Button>
 
-      <Separator orientation="vertical" className="mx-1 h-6" />
+      <Separator className="mx-1 h-6" orientation="vertical" />
 
       <Button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        size="icon-sm"
+        title="Titre 1"
         type="button"
         variant={editor.isActive("heading", { level: 1 }) ? "default" : "ghost"}
-        size="icon-sm"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        title="Titre 1"
       >
         <HugeiconsIcon
+          className="size-4"
           icon={Heading01Icon}
           strokeWidth={1.5}
-          className="size-4"
         />
       </Button>
 
       <Button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        size="icon-sm"
+        title="Titre 2"
         type="button"
         variant={editor.isActive("heading", { level: 2 }) ? "default" : "ghost"}
-        size="icon-sm"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        title="Titre 2"
       >
         <HugeiconsIcon
+          className="size-4"
           icon={Heading02Icon}
           strokeWidth={1.5}
-          className="size-4"
         />
       </Button>
 
-      <Separator orientation="vertical" className="mx-1 h-6" />
+      <Separator className="mx-1 h-6" orientation="vertical" />
 
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={(
-            <Button variant="secondary" size="icon-sm" title="IA">
+          render={
+            <Button size="icon-sm" title="IA" variant="secondary">
               <HugeiconsIcon
+                className="size-4 text-primary"
                 icon={SparklesIcon}
                 strokeWidth={1.5}
-                className="size-4 text-primary"
               />
             </Button>
-          )}
+          }
         />
         <DropdownMenuContent align="start">
           {aiActions.map((item) => (
@@ -185,9 +192,9 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
               onClick={() => handleAiAction(item.action)}
             >
               <HugeiconsIcon
+                className="size-4 text-primary"
                 icon={item.icon}
                 strokeWidth={1.5}
-                className="size-4 text-primary"
               />
               {item.label}
             </DropdownMenuItem>
@@ -195,7 +202,7 @@ const SelectionBubbleMenu: React.FC<SelectionBubbleMenuProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
-}
+  );
+};
 
-export default SelectionBubbleMenu
+export default SelectionBubbleMenu;

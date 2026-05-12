@@ -1,7 +1,6 @@
-import { useSQLite } from "@/hooks/useSQLite"
-import * as AppSettingsService from "@/services/appSettingsService"
-import * as AuthService from "@/services/sqlite/auth"
-import { toCentimes } from "@/utils/currency"
+import { useSQLite } from "@/hooks/useSQLite";
+import * as AppSettingsService from "@/services/appSettingsService";
+import * as AuthService from "@/services/sqlite/auth";
 import type {
   Appointment,
   ConsultationDocument,
@@ -12,7 +11,8 @@ import type {
   Task,
   Transaction,
   User,
-} from "@/types/db"
+} from "@/types/db";
+import { toCentimes } from "@/utils/currency";
 
 export const authRepository = {
   getCurrentUser: AuthService.getCurrentUser,
@@ -20,7 +20,7 @@ export const authRepository = {
   logout: AuthService.logout,
   register: AuthService.register,
   updatePassword: AuthService.updatePassword,
-}
+};
 
 export const appSettingsRepository = {
   getSetting: AppSettingsService.getSetting,
@@ -29,49 +29,54 @@ export const appSettingsRepository = {
   markSetupComplete: AppSettingsService.markSetupComplete,
   getLicenseInfo: AppSettingsService.getLicenseInfo,
   saveLicenseInfo: AppSettingsService.saveLicenseInfo,
-}
+};
 
 export function useUsersRepository() {
-  return useSQLite<User>("users")
+  return useSQLite<User>("users");
 }
 
 export function useOwnersRepository() {
-  return useSQLite<Owner>("owners")
+  return useSQLite<Owner>("owners");
 }
 
 export function useAppointmentsRepository() {
-  const appointmentsStore = useSQLite<Appointment>("appointments")
-  const patientsStore = useSQLite<Patient>("patients")
-  const usersStore = useSQLite<User>("users")
-  const transactionsStore = useSQLite<Transaction>("transactions")
+  const appointmentsStore = useSQLite<Appointment>("appointments");
+  const patientsStore = useSQLite<Patient>("patients");
+  const usersStore = useSQLite<User>("users");
+  const transactionsStore = useSQLite<Transaction>("transactions");
 
-  type AppointmentDraft = Omit<Appointment, "id" | "ownerId" | "startTime" | "endTime" | "createdAt"> & {
-    startTime: string | Date
-    endTime: string | Date
-    id?: string
-    ownerId?: string
-    vetId?: string
-    status?: Appointment["status"]
-  }
+  type AppointmentDraft = Omit<
+    Appointment,
+    "id" | "ownerId" | "startTime" | "endTime" | "createdAt"
+  > & {
+    startTime: string | Date;
+    endTime: string | Date;
+    id?: string;
+    ownerId?: string;
+    vetId?: string;
+    status?: Appointment["status"];
+  };
 
   const toIso = (value: string | Date) =>
-    value instanceof Date ? value.toISOString() : new Date(value).toISOString()
+    value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 
-  const saveAppointment = async (
-    input: AppointmentDraft
-  ) => {
-    const patient = patientsStore.data.find((entry) => entry.id === input.patientId)
+  const saveAppointment = async (input: AppointmentDraft) => {
+    const patient = patientsStore.data.find(
+      (entry) => entry.id === input.patientId
+    );
     if (!patient) {
-      throw new Error("Patient introuvable pour ce rendez-vous.")
+      throw new Error("Patient introuvable pour ce rendez-vous.");
     }
 
     const fallbackVet = usersStore.data.find(
-      (user) => user.status === "active" && (user.role === "vet_principal" || user.role === "vet_adjoint")
-    )
-    const finalVetId = input.vetId || fallbackVet?.id
+      (user) =>
+        user.status === "active" &&
+        (user.role === "vet_principal" || user.role === "vet_adjoint")
+    );
+    const finalVetId = input.vetId || fallbackVet?.id;
 
     if (!finalVetId) {
-      throw new Error("Aucun vétérinaire actif n'est disponible.")
+      throw new Error("Aucun vétérinaire actif n'est disponible.");
     }
 
     const payload = {
@@ -81,16 +86,22 @@ export function useAppointmentsRepository() {
       status: input.status ?? "scheduled",
       startTime: toIso(input.startTime),
       endTime: toIso(input.endTime),
-    } as Partial<Appointment>
+    } as Partial<Appointment>;
 
     if (input.id) {
-      const ok = await appointmentsStore.update(input.id, payload)
-      if (!ok) return null
-      return appointmentsStore.data.find((entry) => entry.id === input.id) ?? null
+      const ok = await appointmentsStore.update(input.id, payload);
+      if (!ok) {
+        return null;
+      }
+      return (
+        appointmentsStore.data.find((entry) => entry.id === input.id) ?? null
+      );
     }
 
-    return appointmentsStore.add(payload as Omit<Appointment, "id" | "createdAt" | "updatedAt">)
-  }
+    return appointmentsStore.add(
+      payload as Omit<Appointment, "id" | "createdAt" | "updatedAt">
+    );
+  };
 
   const completeWithBilling = async ({
     appointmentId,
@@ -98,29 +109,40 @@ export function useAppointmentsRepository() {
     category,
     method,
   }: {
-    appointmentId: string
-    items: Array<{ desc: string; amount: number }>
-    category?: string
-    method?: "cash" | "card"
+    appointmentId: string;
+    items: Array<{ desc: string; amount: number }>;
+    category?: string;
+    method?: "cash" | "card";
   }) => {
-    const appointment = appointmentsStore.data.find((entry) => entry.id === appointmentId)
+    const appointment = appointmentsStore.data.find(
+      (entry) => entry.id === appointmentId
+    );
     if (!appointment) {
-      throw new Error("Rendez-vous introuvable.")
+      throw new Error("Rendez-vous introuvable.");
     }
 
-    const totalAmountDa = items.reduce((sum, item) => sum + Math.max(0, Number(item.amount) || 0), 0)
-    const totalAmount = toCentimes(totalAmountDa)
+    const totalAmountDa = items.reduce(
+      (sum, item) => sum + Math.max(0, Number(item.amount) || 0),
+      0
+    );
+    const totalAmount = toCentimes(totalAmountDa);
 
     // Ordre: RDV d'abord (essentiel), puis patient, puis transaction (peut être refaite)
     // Si la transaction échoue, on peut la recréer manuellement plus tard
-    const appointmentUpdated = await appointmentsStore.update(appointment.id, { status: "completed" })
+    const appointmentUpdated = await appointmentsStore.update(appointment.id, {
+      status: "completed",
+    });
     if (!appointmentUpdated) {
-      throw new Error("Impossible de mettre à jour le rendez-vous.")
+      throw new Error("Impossible de mettre à jour le rendez-vous.");
     }
 
-    const patientUpdated = await patientsStore.update(appointment.patientId, { lastVisit: new Date().toISOString() } as Partial<Patient>)
+    const patientUpdated = await patientsStore.update(appointment.patientId, {
+      lastVisit: new Date().toISOString(),
+    } as Partial<Patient>);
     if (!patientUpdated) {
-      console.warn("[completeWithBilling] Patient non mis à jour, mais rendez-vous complété")
+      console.warn(
+        "[completeWithBilling] Patient non mis à jour, mais rendez-vous complété"
+      );
     }
 
     if (totalAmount > 0) {
@@ -134,97 +156,108 @@ export function useAppointmentsRepository() {
           method: method ?? "cash",
           status: "paid",
           date: new Date().toISOString(),
-        } as Omit<Transaction, "id" | "createdAt" | "updatedAt">)
+        } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
       } catch (err) {
-        console.error("[completeWithBilling] Erreur lors de la création de la transaction:", err)
+        console.error(
+          "[completeWithBilling] Erreur lors de la création de la transaction:",
+          err
+        );
         // On ne bloque pas le flow car le RDV est déjà complété
         // L'utilisateur pourra créer la transaction manuellement depuis Finances
       }
     }
 
-    return { totalAmount, totalAmountDa }
-  }
+    return { totalAmount, totalAmountDa };
+  };
 
   return {
     ...appointmentsStore,
     saveAppointment,
     completeWithBilling,
-  }
+  };
 }
 
 export function usePatientsRepository() {
-  const patientsStore = useSQLite<Patient>("patients")
-  const ownersStore = useSQLite<Owner>("owners")
+  const patientsStore = useSQLite<Patient>("patients");
+  const ownersStore = useSQLite<Owner>("owners");
 
   const createWithOwner = async ({
     ownerId,
     owner,
     patient,
   }: {
-    ownerId?: string | null
-    owner: Omit<Owner, "id" | "createdAt" | "updatedAt">
-    patient: Omit<Patient, "id" | "ownerId" | "createdAt" | "updatedAt">
+    ownerId?: string | null;
+    owner: Omit<Owner, "id" | "createdAt" | "updatedAt">;
+    patient: Omit<Patient, "id" | "ownerId" | "createdAt" | "updatedAt">;
   }) => {
-    let finalOwnerId = ownerId ?? null
+    let finalOwnerId = ownerId ?? null;
 
     if (finalOwnerId) {
-      const existingOwner = ownersStore.data.find((entry) => entry.id === finalOwnerId)
+      const existingOwner = ownersStore.data.find(
+        (entry) => entry.id === finalOwnerId
+      );
       if (!existingOwner) {
-        throw new Error("Propriétaire introuvable. Réessayez après actualisation de la liste.")
+        throw new Error(
+          "Propriétaire introuvable. Réessayez après actualisation de la liste."
+        );
       }
     } else {
-      const createdOwner = await ownersStore.add(owner as Omit<Owner, "id" | "createdAt" | "updatedAt">)
-      finalOwnerId = createdOwner?.id ?? null
+      const createdOwner = await ownersStore.add(
+        owner as Omit<Owner, "id" | "createdAt" | "updatedAt">
+      );
+      finalOwnerId = createdOwner?.id ?? null;
     }
 
     if (!finalOwnerId) {
-      throw new Error("Impossible de créer le propriétaire.")
+      throw new Error("Impossible de créer le propriétaire.");
     }
 
     return patientsStore.add({
       ...patient,
       ownerId: finalOwnerId,
-    } as Omit<Patient, "id" | "createdAt" | "updatedAt">)
-  }
+    } as Omit<Patient, "id" | "createdAt" | "updatedAt">);
+  };
 
   return {
     ...patientsStore,
     owners: ownersStore.data,
     createWithOwner,
-  }
+  };
 }
 
 export function useTransactionsRepository() {
-  const transactionsStore = useSQLite<Transaction>("transactions")
+  const transactionsStore = useSQLite<Transaction>("transactions");
 
   const recordIncome = async (
-    input: Omit<Transaction, "id" | "type" | "createdAt" | "updatedAt"> & { type?: "income" }
-  ) => {
-    return transactionsStore.add({
+    input: Omit<Transaction, "id" | "type" | "createdAt" | "updatedAt"> & {
+      type?: "income";
+    }
+  ) =>
+    transactionsStore.add({
       ...input,
       type: "income",
-    } as Omit<Transaction, "id" | "createdAt" | "updatedAt">)
-  }
+    } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
 
   const recordExpense = async (
-    input: Omit<Transaction, "id" | "type" | "createdAt" | "updatedAt"> & { type?: "expense" }
-  ) => {
-    return transactionsStore.add({
+    input: Omit<Transaction, "id" | "type" | "createdAt" | "updatedAt"> & {
+      type?: "expense";
+    }
+  ) =>
+    transactionsStore.add({
       ...input,
       type: "expense",
-    } as Omit<Transaction, "id" | "createdAt" | "updatedAt">)
-  }
+    } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
 
   return {
     ...transactionsStore,
     recordIncome,
     recordExpense,
-  }
+  };
 }
 
 export function useProductsRepository() {
-  const productsStore = useSQLite<Product>("products")
-  const transactionsStore = useSQLite<Transaction>("transactions")
+  const productsStore = useSQLite<Product>("products");
+  const transactionsStore = useSQLite<Transaction>("transactions");
 
   const restockProduct = async ({
     productId,
@@ -232,22 +265,24 @@ export function useProductsRepository() {
     unitCostAmount,
     createExpense = true,
   }: {
-    productId: string
-    quantity: number
-    unitCostAmount: number
-    createExpense?: boolean
+    productId: string;
+    quantity: number;
+    unitCostAmount: number;
+    createExpense?: boolean;
   }) => {
     if (quantity <= 0) {
-      throw new Error("La quantité de réapprovisionnement doit être supérieure à 0.")
+      throw new Error(
+        "La quantité de réapprovisionnement doit être supérieure à 0."
+      );
     }
 
-    const product = productsStore.data.find((entry) => entry.id === productId)
+    const product = productsStore.data.find((entry) => entry.id === productId);
     if (!product) {
-      throw new Error("Produit introuvable.")
+      throw new Error("Produit introuvable.");
     }
 
-    const newQuantity = Number(product.quantity) + Number(quantity)
-    await productsStore.update(product.id, { quantity: newQuantity })
+    const newQuantity = Number(product.quantity) + Number(quantity);
+    await productsStore.update(product.id, { quantity: newQuantity });
 
     if (createExpense && unitCostAmount > 0) {
       await transactionsStore.add({
@@ -259,54 +294,55 @@ export function useProductsRepository() {
         method: "cash",
         status: "paid",
         date: new Date().toISOString(),
-      } as Omit<Transaction, "id" | "createdAt" | "updatedAt">)
+      } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
     }
-  }
+  };
 
   return {
     ...productsStore,
     restockProduct,
-  }
+  };
 }
 
 export function useTasksRepository() {
-  const tasksStore = useSQLite<Task>("tasks")
-  const usersStore = useSQLite<User>("users")
+  const tasksStore = useSQLite<Task>("tasks");
+  const usersStore = useSQLite<User>("users");
 
   const assignTask = async (taskId: string, userId: string | null) => {
     if (userId) {
-      const user = usersStore.data.find((entry) => entry.id === userId)
+      const user = usersStore.data.find((entry) => entry.id === userId);
       if (!user) {
-        throw new Error("Utilisateur introuvable pour cette affectation.")
+        throw new Error("Utilisateur introuvable pour cette affectation.");
       }
     }
-    await tasksStore.update(taskId, { assignedTo: userId ?? undefined } as Partial<Task>)
-  }
+    await tasksStore.update(taskId, {
+      assignedTo: userId ?? undefined,
+    } as Partial<Task>);
+  };
 
   return {
     ...tasksStore,
     assignTask,
-  }
+  };
 }
 
 export function useNotesRepository() {
-  const notesStore = useSQLite<Note>("notes")
+  const notesStore = useSQLite<Note>("notes");
 
-  const createEmptyNote = async (userId: string) => {
-    return notesStore.add({
+  const createEmptyNote = async (userId: string) =>
+    notesStore.add({
       userId,
       title: "",
       content: "",
       isFavorite: false,
-    } as Omit<Note, "id" | "createdAt" | "updatedAt">)
-  }
+    } as Omit<Note, "id" | "createdAt" | "updatedAt">);
 
   return {
     ...notesStore,
     createEmptyNote,
-  }
+  };
 }
 
 export function useConsultationDocumentsRepository() {
-  return useSQLite<ConsultationDocument>("consultation_documents")
+  return useSQLite<ConsultationDocument>("consultation_documents");
 }

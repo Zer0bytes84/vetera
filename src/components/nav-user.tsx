@@ -1,10 +1,15 @@
-"use client"
+"use client";
 
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+  Logout01Icon,
+  MoreVerticalCircle01Icon,
+  Notification03Icon,
+  Settings02Icon,
+  UserCircle02Icon,
+  WalletIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,35 +18,26 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { HugeiconsIcon } from "@hugeicons/react"
-import {
-  Logout01Icon,
-  MoreVerticalCircle01Icon,
-  Notification03Icon,
-  Settings02Icon,
-  UserCircle02Icon,
-  WalletIcon,
-} from "@hugeicons/core-free-icons"
+} from "@/components/ui/sidebar";
 
 type NavUserProps = {
   user: {
-    name: string
-    email: string
-    avatar?: string | null
-  }
-  onProfile?: () => void
-  onSettings?: () => void
-  onFinances?: () => void
-  onNotifications?: () => void
-  onLogout?: () => void | Promise<void>
-}
+    name: string;
+    email: string;
+    avatar?: string | null;
+  };
+  onProfile?: () => void;
+  onSettings?: () => void;
+  onFinances?: () => void;
+  onNotifications?: () => void;
+  onLogout?: () => void | Promise<void>;
+};
 
 export function NavUser({
   user,
@@ -51,20 +47,20 @@ export function NavUser({
   onNotifications,
   onLogout,
 }: NavUserProps) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
   const normalizedAvatar =
     typeof user.avatar === "string" &&
     user.avatar.trim() &&
     !["undefined", "null", "nan"].includes(user.avatar.trim().toLowerCase())
       ? user.avatar.trim()
-      : undefined
+      : undefined;
   const fallback = user.name
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("")
-    .slice(0, 2)
+    .slice(0, 2);
 
   return (
     <SidebarMenu>
@@ -73,43 +69,45 @@ export function NavUser({
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
+                className="group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-muted [@media(max-height:820px)]:h-10"
                 size="lg"
-                className="aria-expanded:bg-muted [@media(max-height:820px)]:h-10 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0"
               />
             }
           >
             <Avatar className="size-8 rounded-lg [@media(max-height:820px)]:size-7">
-              <AvatarImage src={normalizedAvatar} alt={user.name} />
+              <AvatarImage alt={user.name} src={normalizedAvatar} />
               <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-start text-sm leading-tight [@media(max-height:820px)]:text-[13px] group-data-[collapsible=icon]:hidden">
+            <div className="grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:text-[13px]">
               <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-xs text-foreground/70 [@media(max-height:820px)]:text-[11px]">
+              <span className="truncate text-foreground/70 text-xs [@media(max-height:820px)]:text-[11px]">
                 {user.email}
               </span>
             </div>
             <HugeiconsIcon
+              className="ms-auto size-4 group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:size-3.5"
               icon={MoreVerticalCircle01Icon}
               strokeWidth={2}
-              className="ms-auto size-4 [@media(max-height:820px)]:size-3.5 group-data-[collapsible=icon]:hidden"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
+            align="end"
             className="min-w-56"
             side={isMobile ? "bottom" : "right"}
-            align="end"
             sideOffset={4}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="size-8 rounded-lg">
-                    <AvatarImage src={normalizedAvatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
+                    <AvatarImage alt={user.name} src={normalizedAvatar} />
+                    <AvatarFallback className="rounded-lg">
+                      {fallback}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-start text-sm leading-tight">
                     <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="truncate text-muted-foreground text-xs">
                       {user.email}
                     </span>
                   </div>
@@ -144,5 +142,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

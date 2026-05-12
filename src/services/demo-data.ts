@@ -3,44 +3,55 @@ import {
   isTauriRuntime,
   replaceBrowserTable,
   setBrowserRow,
-} from "@/services/browser-store"
-import { generateId, getDatabase } from "@/services/sqlite/database"
-import type { Appointment, Note, Owner, Patient, Product, Task, Transaction, User } from "@/types/db"
+} from "@/services/browser-store";
+import { getDatabase } from "@/services/sqlite/database";
+import type {
+  Appointment,
+  Note,
+  Owner,
+  Patient,
+  Product,
+  Task,
+  Transaction,
+  User,
+} from "@/types/db";
 
 type CurrentUser = {
-  id: string
-  email: string | null
-  displayName: string | null
-}
+  id: string;
+  email: string | null;
+  displayName: string | null;
+};
 
 function startOfDay(date: Date) {
-  const value = new Date(date)
-  value.setHours(0, 0, 0, 0)
-  return value
+  const value = new Date(date);
+  value.setHours(0, 0, 0, 0);
+  return value;
 }
 
 function addDays(date: Date, amount: number) {
-  const value = new Date(date)
-  value.setDate(value.getDate() + amount)
-  return value
+  const value = new Date(date);
+  value.setDate(value.getDate() + amount);
+  return value;
 }
 
 function withTime(date: Date, hours: number, minutes: number) {
-  const value = new Date(date)
-  value.setHours(hours, minutes, 0, 0)
-  return value
+  const value = new Date(date);
+  value.setHours(hours, minutes, 0, 0);
+  return value;
 }
 
 function emitTableChanged(tableName: string) {
-  window.dispatchEvent(new CustomEvent("sqlite-data-changed", { detail: { tableName } }))
+  window.dispatchEvent(
+    new CustomEvent("sqlite-data-changed", { detail: { tableName } })
+  );
 }
 
 function dedupeRowsById<T extends { id: string }>(rows: T[]) {
-  return Array.from(new Map(rows.map((row) => [row.id, row])).values())
+  return Array.from(new Map(rows.map((row) => [row.id, row])).values());
 }
 
 function buildDemoUsers(currentUser: CurrentUser): User[] {
-  const now = new Date().toISOString()
+  const now = new Date().toISOString();
 
   return [
     {
@@ -75,11 +86,11 @@ function buildDemoUsers(currentUser: CurrentUser): User[] {
       createdAt: now,
       avatarUrl: "",
     },
-  ]
+  ];
 }
 
 function buildDemoOwners(now: Date): Owner[] {
-  const createdAt = now.toISOString()
+  const createdAt = now.toISOString();
 
   return [
     {
@@ -122,7 +133,7 @@ function buildDemoOwners(now: Date): Owner[] {
       city: "Boumerdes",
       createdAt,
     },
-  ]
+  ];
 }
 
 function buildDemoPatients(baseDate: Date): Patient[] {
@@ -136,8 +147,14 @@ function buildDemoPatients(baseDate: Date): Patient[] {
       sex: "F",
       dateOfBirth: "2021-04-14",
       weightHistory: JSON.stringify([
-        { date: addDays(baseDate, -30).toISOString().slice(0, 10), weight: 27.4 },
-        { date: addDays(baseDate, -5).toISOString().slice(0, 10), weight: 27.9 },
+        {
+          date: addDays(baseDate, -30).toISOString().slice(0, 10),
+          weight: 27.4,
+        },
+        {
+          date: addDays(baseDate, -5).toISOString().slice(0, 10),
+          weight: 27.9,
+        },
       ]),
       status: "sante",
       lastVisit: addDays(baseDate, -5).toISOString(),
@@ -153,7 +170,10 @@ function buildDemoPatients(baseDate: Date): Patient[] {
       sex: "M",
       dateOfBirth: "2022-08-09",
       weightHistory: JSON.stringify([
-        { date: addDays(baseDate, -20).toISOString().slice(0, 10), weight: 4.6 },
+        {
+          date: addDays(baseDate, -20).toISOString().slice(0, 10),
+          weight: 4.6,
+        },
         { date: addDays(baseDate, -2).toISOString().slice(0, 10), weight: 4.7 },
       ]),
       status: "traitement",
@@ -170,7 +190,9 @@ function buildDemoPatients(baseDate: Date): Patient[] {
       breed: "Caniche",
       sex: "F",
       dateOfBirth: "2020-02-20",
-      weightHistory: JSON.stringify([{ date: addDays(baseDate, -1).toISOString().slice(0, 10), weight: 8.1 }]),
+      weightHistory: JSON.stringify([
+        { date: addDays(baseDate, -1).toISOString().slice(0, 10), weight: 8.1 },
+      ]),
       status: "sante",
       lastVisit: addDays(baseDate, -1).toISOString(),
       generalNotes: "Vaccinations a jour.",
@@ -184,7 +206,9 @@ function buildDemoPatients(baseDate: Date): Patient[] {
       breed: "British Shorthair",
       sex: "M",
       dateOfBirth: "2019-11-03",
-      weightHistory: JSON.stringify([{ date: baseDate.toISOString().slice(0, 10), weight: 5.0 }]),
+      weightHistory: JSON.stringify([
+        { date: baseDate.toISOString().slice(0, 10), weight: 5.0 },
+      ]),
       status: "hospitalise",
       lastVisit: baseDate.toISOString(),
       chronicConditions: "Insuffisance renale debutante",
@@ -199,18 +223,23 @@ function buildDemoPatients(baseDate: Date): Patient[] {
       breed: "Labrador",
       sex: "M",
       dateOfBirth: "2018-07-01",
-      weightHistory: JSON.stringify([{ date: addDays(baseDate, -10).toISOString().slice(0, 10), weight: 31.0 }]),
+      weightHistory: JSON.stringify([
+        {
+          date: addDays(baseDate, -10).toISOString().slice(0, 10),
+          weight: 31.0,
+        },
+      ]),
       status: "sante",
       lastVisit: addDays(baseDate, -10).toISOString(),
       chronicConditions: "Arthrose legere",
       generalNotes: "Suivi locomoteur trimestriel.",
       createdAt: addDays(baseDate, -140).toISOString(),
     },
-  ]
+  ];
 }
 
 function buildDemoProducts(baseDate: Date): Product[] {
-  const createdAt = addDays(baseDate, -45).toISOString()
+  const createdAt = addDays(baseDate, -45).toISOString();
 
   return [
     {
@@ -221,8 +250,8 @@ function buildDemoProducts(baseDate: Date): Product[] {
       quantity: 8,
       unit: "dose",
       minStock: 5,
-      purchasePriceAmount: 180000,
-      salePriceAmount: 260000,
+      purchasePriceAmount: 180_000,
+      salePriceAmount: 260_000,
       expiryDate: "2027-01-31",
       createdAt,
     },
@@ -234,8 +263,8 @@ function buildDemoProducts(baseDate: Date): Product[] {
       quantity: 3,
       unit: "dose",
       minStock: 5,
-      purchasePriceAmount: 170000,
-      salePriceAmount: 250000,
+      purchasePriceAmount: 170_000,
+      salePriceAmount: 250_000,
       expiryDate: "2026-11-30",
       createdAt,
     },
@@ -247,8 +276,8 @@ function buildDemoProducts(baseDate: Date): Product[] {
       quantity: 12,
       unit: "boite",
       minStock: 6,
-      purchasePriceAmount: 95000,
-      salePriceAmount: 150000,
+      purchasePriceAmount: 95_000,
+      salePriceAmount: 150_000,
       expiryDate: "2027-04-30",
       createdAt,
     },
@@ -260,8 +289,8 @@ function buildDemoProducts(baseDate: Date): Product[] {
       quantity: 4,
       unit: "unite",
       minStock: 10,
-      purchasePriceAmount: 12000,
-      salePriceAmount: 22000,
+      purchasePriceAmount: 12_000,
+      salePriceAmount: 22_000,
       expiryDate: "2028-06-30",
       createdAt,
     },
@@ -273,16 +302,16 @@ function buildDemoProducts(baseDate: Date): Product[] {
       quantity: 15,
       unit: "sachet",
       minStock: 8,
-      purchasePriceAmount: 45000,
-      salePriceAmount: 78000,
+      purchasePriceAmount: 45_000,
+      salePriceAmount: 78_000,
       expiryDate: "2027-08-15",
       createdAt,
     },
-  ]
+  ];
 }
 
 function buildDemoAppointments(baseDate: Date): Appointment[] {
-  const today = startOfDay(baseDate)
+  const today = startOfDay(baseDate);
 
   return [
     {
@@ -361,17 +390,17 @@ function buildDemoAppointments(baseDate: Date): Appointment[] {
       notes: "Pre-op a confirmer 24h avant.",
       createdAt: today.toISOString(),
     },
-  ]
+  ];
 }
 
 function buildDemoTransactions(baseDate: Date): Transaction[] {
-  const today = startOfDay(baseDate)
+  const today = startOfDay(baseDate);
 
   return [
     {
       id: "demo_tx_01",
       date: withTime(today, 9, 0).toISOString(),
-      amount: 450000,
+      amount: 450_000,
       type: "income",
       category: "Consultation",
       description: "Consultation Bella",
@@ -383,7 +412,7 @@ function buildDemoTransactions(baseDate: Date): Transaction[] {
     {
       id: "demo_tx_02",
       date: withTime(today, 10, 0).toISOString(),
-      amount: 320000,
+      amount: 320_000,
       type: "income",
       category: "Vaccination",
       description: "Vaccin Nala",
@@ -395,7 +424,7 @@ function buildDemoTransactions(baseDate: Date): Transaction[] {
     {
       id: "demo_tx_03",
       date: addDays(today, -7).toISOString(),
-      amount: 295000,
+      amount: 295_000,
       type: "expense",
       category: "Stock",
       description: "Commande vaccins et consommables",
@@ -406,7 +435,7 @@ function buildDemoTransactions(baseDate: Date): Transaction[] {
     {
       id: "demo_tx_04",
       date: addDays(today, -14).toISOString(),
-      amount: 740000,
+      amount: 740_000,
       type: "income",
       category: "Chirurgie",
       description: "Actes chirurgicaux",
@@ -414,12 +443,12 @@ function buildDemoTransactions(baseDate: Date): Transaction[] {
       status: "paid",
       createdAt: addDays(today, -14).toISOString(),
     },
-  ]
+  ];
 }
 
 function buildDemoTasks(baseDate: Date): Task[] {
-  const dueToday = baseDate.toISOString().slice(0, 10)
-  const dueTomorrow = addDays(baseDate, 1).toISOString().slice(0, 10)
+  const dueToday = baseDate.toISOString().slice(0, 10);
+  const dueTomorrow = addDays(baseDate, 1).toISOString().slice(0, 10);
 
   return [
     {
@@ -463,7 +492,7 @@ function buildDemoTasks(baseDate: Date): Task[] {
       assignedTo: "demo_vet_02",
       createdAt: withTime(baseDate, 9, 15).toISOString(),
     },
-  ]
+  ];
 }
 
 function buildDemoNotes(baseDate: Date, currentUser: CurrentUser): Note[] {
@@ -472,7 +501,8 @@ function buildDemoNotes(baseDate: Date, currentUser: CurrentUser): Note[] {
       id: "demo_note_01",
       userId: currentUser.id,
       title: "Brief equipe - aujourd'hui",
-      content: "<h2>Points du jour</h2><ul><li>Surveillance de Simba en hospitalisation</li><li>Preparer la chirurgie de Rex</li><li>Reassort vaccins felins</li></ul>",
+      content:
+        "<h2>Points du jour</h2><ul><li>Surveillance de Simba en hospitalisation</li><li>Preparer la chirurgie de Rex</li><li>Reassort vaccins felins</li></ul>",
       isFavorite: true,
       tags: JSON.stringify(["equipe", "brief"]),
       createdAt: withTime(baseDate, 7, 45).toISOString(),
@@ -482,60 +512,73 @@ function buildDemoNotes(baseDate: Date, currentUser: CurrentUser): Note[] {
       id: "demo_note_02",
       userId: currentUser.id,
       title: "Protocoles vaccination",
-      content: "<p>Rappel interne sur les protocoles vaccinaux canins et felins pour la consultation de routine.</p>",
+      content:
+        "<p>Rappel interne sur les protocoles vaccinaux canins et felins pour la consultation de routine.</p>",
       isFavorite: false,
       tags: JSON.stringify(["vaccins", "procedure"]),
       createdAt: addDays(baseDate, -2).toISOString(),
       updatedAt: addDays(baseDate, -2).toISOString(),
     },
-  ]
+  ];
 }
 
 export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
   if (!currentUser || isTauriRuntime()) {
-    return
+    return;
   }
 
-  const dedupeTable = <T extends { id: string }>(tableName: Parameters<typeof getBrowserTable>[0]) => {
-    const rows = getBrowserTable<T>(tableName)
-    const deduped = dedupeRowsById(rows)
+  const dedupeTable = <T extends { id: string }>(
+    tableName: Parameters<typeof getBrowserTable>[0]
+  ) => {
+    const rows = getBrowserTable<T>(tableName);
+    const deduped = dedupeRowsById(rows);
 
     if (deduped.length !== rows.length) {
-      replaceBrowserTable(tableName, deduped)
-      emitTableChanged(tableName)
+      replaceBrowserTable(tableName, deduped);
+      emitTableChanged(tableName);
     }
-  }
+  };
 
-  dedupeTable<User>("users")
-  dedupeTable<Owner>("owners")
-  dedupeTable<Patient>("patients")
-  dedupeTable<Product>("products")
-  dedupeTable<Appointment>("appointments")
-  dedupeTable<Transaction>("transactions")
-  dedupeTable<Task>("tasks")
-  dedupeTable<Note>("notes")
+  dedupeTable<User>("users");
+  dedupeTable<Owner>("owners");
+  dedupeTable<Patient>("patients");
+  dedupeTable<Product>("products");
+  dedupeTable<Appointment>("appointments");
+  dedupeTable<Transaction>("transactions");
+  dedupeTable<Task>("tasks");
+  dedupeTable<Note>("notes");
 
-  const existingPatients = getBrowserTable<Patient>("patients")
+  const existingPatients = getBrowserTable<Patient>("patients");
   if (existingPatients.length > 0) {
-    return
+    return;
   }
 
-  const now = new Date()
+  const now = new Date();
 
-  buildDemoUsers(currentUser).forEach((user) => setBrowserRow("users", user.id, user))
-  buildDemoOwners(now).forEach((owner) => setBrowserRow("owners", owner.id, owner))
-  buildDemoPatients(now).forEach((patient) => setBrowserRow("patients", patient.id, patient))
-  buildDemoProducts(now).forEach((product) => setBrowserRow("products", product.id, product))
+  buildDemoUsers(currentUser).forEach((user) =>
+    setBrowserRow("users", user.id, user)
+  );
+  buildDemoOwners(now).forEach((owner) =>
+    setBrowserRow("owners", owner.id, owner)
+  );
+  buildDemoPatients(now).forEach((patient) =>
+    setBrowserRow("patients", patient.id, patient)
+  );
+  buildDemoProducts(now).forEach((product) =>
+    setBrowserRow("products", product.id, product)
+  );
   buildDemoAppointments(now).forEach((appointment) =>
     setBrowserRow("appointments", appointment.id, appointment)
-  )
+  );
   buildDemoTransactions(now).forEach((transaction) =>
     setBrowserRow("transactions", transaction.id, transaction)
-  )
-  buildDemoTasks(now).forEach((task) => setBrowserRow("tasks", task.id, task))
-  buildDemoNotes(now, currentUser).forEach((note) => setBrowserRow("notes", note.id, note))
+  );
+  buildDemoTasks(now).forEach((task) => setBrowserRow("tasks", task.id, task));
+  buildDemoNotes(now, currentUser).forEach((note) =>
+    setBrowserRow("notes", note.id, note)
+  );
 
-  ;[
+  [
     "users",
     "owners",
     "patients",
@@ -544,27 +587,90 @@ export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
     "transactions",
     "tasks",
     "notes",
-  ].forEach(emitTableChanged)
+  ].forEach(emitTableChanged);
 }
 
 export async function purgeDemoDataInTauriIfNeeded() {
-  if (!isTauriRuntime()) return
+  if (!isTauriRuntime()) {
+    return;
+  }
 
-  const db = await getDatabase()
-  await db.execute("BEGIN")
-  try {
-    await db.execute("DELETE FROM consultation_documents WHERE id LIKE 'demo_%' OR appointment_id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%'")
-    await db.execute("DELETE FROM appointments WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%' OR vet_id LIKE 'demo_%'")
-    await db.execute("DELETE FROM tasks WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR assigned_to LIKE 'demo_%'")
-    await db.execute("DELETE FROM transactions WHERE id LIKE 'demo_%' OR reference_id LIKE 'demo_%'")
-    await db.execute("DELETE FROM notes WHERE id LIKE 'demo_%'")
-    await db.execute("DELETE FROM products WHERE id LIKE 'demo_%'")
-    await db.execute("DELETE FROM patients WHERE id LIKE 'demo_%' OR owner_id LIKE 'demo_%'")
-    await db.execute("DELETE FROM owners WHERE id LIKE 'demo_%'")
-    await db.execute("DELETE FROM users WHERE id LIKE 'demo_%'")
-    await db.execute("COMMIT")
-  } catch (error) {
-    await db.execute("ROLLBACK")
-    throw error
+  if (purgeDemoDataPromise) {
+    return purgeDemoDataPromise;
+  }
+
+  purgeDemoDataPromise = runPurgeDemoData().finally(() => {
+    purgeDemoDataPromise = null;
+  });
+
+  return purgeDemoDataPromise;
+}
+
+let purgeDemoDataPromise: Promise<void> | null = null;
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isDatabaseLockedError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.toLowerCase().includes("database is locked");
+}
+
+async function runPurgeDemoData() {
+  if (!isTauriRuntime()) {
+    return;
+  }
+
+  const db = await getDatabase();
+  const savepoint = `purge_demo_data_${Date.now()}`;
+  let savepointCreated = false;
+
+  const maxAttempts = 8;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await db.execute(`SAVEPOINT ${savepoint}`);
+      savepointCreated = true;
+      await db.execute(
+        "DELETE FROM consultation_documents WHERE id LIKE 'demo_%' OR appointment_id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%'"
+      );
+      await db.execute(
+        "DELETE FROM appointments WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%' OR vet_id LIKE 'demo_%'"
+      );
+      await db.execute(
+        "DELETE FROM tasks WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR assigned_to LIKE 'demo_%'"
+      );
+      await db.execute(
+        "DELETE FROM transactions WHERE id LIKE 'demo_%' OR reference_id LIKE 'demo_%'"
+      );
+      await db.execute("DELETE FROM notes WHERE id LIKE 'demo_%'");
+      await db.execute("DELETE FROM products WHERE id LIKE 'demo_%'");
+      await db.execute(
+        "DELETE FROM patients WHERE id LIKE 'demo_%' OR owner_id LIKE 'demo_%'"
+      );
+      await db.execute("DELETE FROM owners WHERE id LIKE 'demo_%'");
+      await db.execute("DELETE FROM users WHERE id LIKE 'demo_%'");
+      await db.execute(`RELEASE SAVEPOINT ${savepoint}`);
+      return;
+    } catch (error) {
+      if (savepointCreated) {
+        try {
+          await db.execute(`ROLLBACK TO SAVEPOINT ${savepoint}`);
+          await db.execute(`RELEASE SAVEPOINT ${savepoint}`);
+        } catch {
+          // Ignore secondary rollback errors; keep original error context.
+        }
+        savepointCreated = false;
+      }
+
+      if (attempt < maxAttempts && isDatabaseLockedError(error)) {
+        // Backoff for transient startup lock contention.
+        await wait(Math.min(250 * 2 ** (attempt - 1), 3000));
+        continue;
+      }
+
+      throw error;
+    }
   }
 }

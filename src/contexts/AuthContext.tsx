@@ -1,37 +1,80 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import * as AuthService from '@/services/sqlite/auth';
+import type React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import * as AuthService from "@/services/sqlite/auth";
 
 interface AuthUser {
-  id: string;
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  role?: string;
   avatarUrl?: string | null;
+  displayName: string | null;
+  email: string | null;
+  id: string;
+  role?: string;
+  uid: string;
 }
 
 interface AuthContextType {
   currentUser: AuthUser | null;
-  loading: boolean;
   error: string | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, displayName: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
   refreshCurrentUser: () => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    displayName: string
+  ) => Promise<AuthUser>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const SQLITE_DATA_CHANGED_EVENT = "sqlite-data-changed";
+const INITIAL_AUTH_TIMEOUT_MS = 2500;
+
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  message: string
+) {
+  return new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      reject(new Error(message));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        window.clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
+
+function isTransientDbError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  const lower = message.toLowerCase();
+  return lower.includes("database is locked") || lower.includes("timed out");
+}
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +89,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isInitialLoad) {
         setLoading(true);
       }
-      const user = await AuthService.getCurrentUser();
+      const user = isInitialLoad
+        ? await withTimeout(
+            AuthService.getCurrentUser(),
+            INITIAL_AUTH_TIMEOUT_MS,
+            "Auth initialization timed out"
+          )
+        : await AuthService.getCurrentUser();
       if (user) {
         setCurrentUser({
           id: user.id,
@@ -69,8 +118,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setError(null);
     } catch (error: any) {
-      console.error('Error refreshing user:', error);
-      setError(error.message || 'Failed to refresh user');
+      if (isTransientDbError(error)) {
+        setError(null);
+      } else {
+        console.error("Error refreshing user:", error);
+        setError(error.message || "Failed to refresh user");
+      }
       // Never null out the user on a transient error after bootstrap.
     } finally {
       hasInitializedRef.current = true;
@@ -84,8 +137,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         await refreshCurrentUser();
       } catch (error: any) {
-        console.error('Error loading user:', error);
-        setError(error.message || 'Failed to load user');
+        console.error("Error loading user:", error);
+        setError(error.message || "Failed to load user");
       } finally {
         hasInitializedRef.current = true;
         setLoading(false);
@@ -98,7 +151,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const handleDataChanged = (event: Event) => {
       const customEvent = event as CustomEvent<{ tableName?: string }>;
-      if (customEvent.detail?.tableName === "users" && localStorage.getItem("auth_token")) {
+      if (
+        customEvent.detail?.tableName === "users" &&
+        localStorage.getItem("auth_token")
+      ) {
         refreshCurrentUser().catch((error) => {
           console.error("Error syncing current user:", error);
         });
@@ -106,7 +162,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     window.addEventListener(SQLITE_DATA_CHANGED_EVENT, handleDataChanged);
-    return () => window.removeEventListener(SQLITE_DATA_CHANGED_EVENT, handleDataChanged);
+    return () =>
+      window.removeEventListener(SQLITE_DATA_CHANGED_EVENT, handleDataChanged);
   }, [refreshCurrentUser]);
 
   const login = async (email: string, password: string) => {
@@ -127,7 +184,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, displayName: string): Promise<AuthUser> => {
+  const register = async (
+    email: string,
+    password: string,
+    displayName: string
+  ): Promise<AuthUser> => {
     const user = await AuthService.register({ email, password, displayName });
     setCurrentUser({
       id: user.id,
@@ -162,9 +223,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshCurrentUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -1,5 +1,27 @@
 "use client";
 
+import { motion } from "motion/react";
+import {
+  type ComponentProps,
+  useCallback,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  Bar,
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  ReferenceLine,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  type BackgroundVariant,
+  ChartBackground,
+} from "@/components/evilcharts/ui/background";
 import {
   type ChartConfig,
   ChartContainer,
@@ -7,19 +29,23 @@ import {
   getLoadingData,
   LoadingIndicator,
 } from "@/components/evilcharts/ui/chart";
+import { ChartDot, type DotVariant } from "@/components/evilcharts/ui/dot";
+import {
+  EvilBrush,
+  type EvilBrushRange,
+  useEvilBrush,
+} from "@/components/evilcharts/ui/evil-brush";
+import {
+  ChartLegend,
+  ChartLegendContent,
+  type ChartLegendVariant,
+} from "@/components/evilcharts/ui/legend";
 import {
   ChartTooltip,
   ChartTooltipContent,
   type TooltipRoundness,
   type TooltipVariant,
 } from "@/components/evilcharts/ui/tooltip";
-import { ChartLegend, ChartLegendContent, type ChartLegendVariant } from "@/components/evilcharts/ui/legend";
-import { Bar, ComposedChart, CartesianGrid, Line, ReferenceLine, XAxis, YAxis } from "recharts";
-import { useCallback, useId, useMemo, useRef, useState, type ComponentProps } from "react";
-import { EvilBrush, useEvilBrush, type EvilBrushRange } from "@/components/evilcharts/ui/evil-brush";
-import { ChartBackground, type BackgroundVariant } from "@/components/evilcharts/ui/background";
-import { ChartDot, DotVariant } from "@/components/evilcharts/ui/dot";
-import { motion } from "motion/react";
 
 // Constants
 const STROKE_WIDTH = 2;
@@ -32,7 +58,13 @@ type XAxisProps = ComponentProps<typeof XAxis>;
 type YAxisProps = ComponentProps<typeof YAxis>;
 type LineType = ComponentProps<typeof Line>["type"];
 type StrokeVariant = "solid" | "dashed" | "animated-dashed";
-type BarVariant = "default" | "hatched" | "duotone" | "duotone-reverse" | "gradient" | "stripped";
+type BarVariant =
+  | "default"
+  | "hatched"
+  | "duotone"
+  | "duotone-reverse"
+  | "gradient"
+  | "stripped";
 
 // Validating Types to make sure user have provided valid data according to chartConfig
 type ValidateConfigKeys<TData, TConfig> = {
@@ -167,7 +199,9 @@ export function EvilComposedChart<
   onSelectionChange,
   backgroundVariant,
 }: EvilComposedChartPropsWithCallback<TData, TBarConfig, TLineConfig>) {
-  const [selectedDataKey, setSelectedDataKey] = useState<string | null>(defaultSelectedDataKey);
+  const [selectedDataKey, setSelectedDataKey] = useState<string | null>(
+    defaultSelectedDataKey
+  );
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { loadingData, onShimmerExit } = useLoadingData(isLoading, loadingBars);
   const chartId = useId().replace(/:/g, "");
@@ -184,7 +218,7 @@ export function EvilComposedChart<
         onSelectionChange(newSelectedDataKey);
       }
     },
-    [onSelectionChange, isClickable],
+    [onSelectionChange, isClickable]
   );
 
   // Combined config for legend and tooltip
@@ -198,18 +232,18 @@ export function EvilComposedChart<
         showBrush &&
         !isLoading && (
           <EvilBrush
-            data={data}
-            chartConfig={combinedConfig}
-            xDataKey={xDataKey}
-            variant="area"
-            curveType={curveType}
-            strokeVariant={strokeVariant}
-            connectNulls={connectNulls}
             barRadius={barRadius}
-            height={brushHeight}
-            formatLabel={brushFormatLabel}
-            skipStyle
+            chartConfig={combinedConfig}
             className="mt-1"
+            connectNulls={connectNulls}
+            curveType={curveType}
+            data={data}
+            formatLabel={brushFormatLabel}
+            height={brushHeight}
+            skipStyle
+            strokeVariant={strokeVariant}
+            variant="area"
+            xDataKey={xDataKey}
             {...brushProps}
             onChange={(range) => {
               brushProps.onChange(range);
@@ -221,103 +255,112 @@ export function EvilComposedChart<
     >
       <LoadingIndicator isLoading={isLoading} />
       <ComposedChart
-        id="evil-charts-composed-chart"
         accessibilityLayer
-        data={isLoading ? loadingData : displayData}
-        barGap={barGap}
         barCategoryGap={barCategoryGap}
+        barGap={barGap}
+        data={isLoading ? loadingData : displayData}
+        id="evil-charts-composed-chart"
         onMouseLeave={() => enableHoverHighlight && setHoveredIndex(null)}
         {...chartProps}
       >
         {backgroundVariant && <ChartBackground variant={backgroundVariant} />}
         <ReferenceLine color="white" />
-        {!hideCartesianGrid && !backgroundVariant && (
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        {!(hideCartesianGrid || backgroundVariant) && (
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
         )}
         {!hideLegend && (
           <ChartLegend
-            verticalAlign="top"
             align="right"
             content={
               <ChartLegendContent
-                selected={selectedDataKey}
-                onSelectChange={handleSelectionChange}
                 isClickable={isClickable}
+                onSelectChange={handleSelectionChange}
+                selected={selectedDataKey}
                 variant={legendVariant}
               />
             }
+            verticalAlign="top"
           />
         )}
         {xDataKey && !isLoading && (
           <XAxis
-            dataKey={xDataKey}
-            tickLine={false}
             axisLine={false}
-            tickMargin={8}
+            dataKey={xDataKey}
             minTickGap={tickGap}
+            tickLine={false}
+            tickMargin={8}
             {...xAxisProps}
           />
         )}
         {yDataKey && !isLoading && (
           <YAxis
-            dataKey={yDataKey}
-            tickLine={false}
             axisLine={false}
-            tickMargin={8}
+            dataKey={yDataKey}
             minTickGap={tickGap}
+            tickLine={false}
+            tickMargin={8}
             width="auto"
             {...yAxisProps}
           />
         )}
-        {!hideTooltip && !isLoading && (
+        {!(hideTooltip || isLoading) && (
           <ChartTooltip
-            defaultIndex={tooltipDefaultIndex}
+            content={
+              <ChartTooltipContent
+                roundness={tooltipRoundness}
+                selected={selectedDataKey}
+                variant={tooltipVariant}
+              />
+            }
             cursor={
               hideCursorLine
                 ? false
                 : {
                     strokeDasharray:
-                      strokeVariant === "dashed" || strokeVariant === "animated-dashed"
+                      strokeVariant === "dashed" ||
+                      strokeVariant === "animated-dashed"
                         ? "3 3"
                         : undefined,
                     strokeWidth: STROKE_WIDTH,
                   }
             }
-            content={
-              <ChartTooltipContent
-                selected={selectedDataKey}
-                roundness={tooltipRoundness}
-                variant={tooltipVariant}
-              />
-            }
+            defaultIndex={tooltipDefaultIndex}
           />
         )}
 
         {/* ======== BARS ======== */}
         {!isLoading &&
           Object.keys(barConfig).map((dataKey) => {
-            const isGlowing = glowingBars.includes(dataKey as NumericDataKeys<TData>);
-            const isSelectedDataKey = selectedDataKey === null || selectedDataKey === dataKey;
+            const isGlowing = glowingBars.includes(
+              dataKey as NumericDataKeys<TData>
+            );
+            const isSelectedDataKey =
+              selectedDataKey === null || selectedDataKey === dataKey;
 
             const getFilter = () => {
-              if (isGlowing) return `url(#${chartId}-bar-glow-${dataKey})`;
-              return undefined;
+              if (isGlowing) {
+                return `url(#${chartId}-bar-glow-${dataKey})`;
+              }
+              return;
             };
 
             return (
               <Bar
-                key={`bar-${dataKey}`}
                 dataKey={dataKey}
                 fill={`url(#${chartId}-bar-colors-${dataKey})`}
+                key={`bar-${dataKey}`}
                 radius={barRadius}
-                style={isClickable || enableHoverHighlight ? { cursor: "pointer" } : undefined}
                 shape={(props: unknown) => {
                   const barProps = props as BarShapeProps;
                   const index = barProps.index as number;
 
                   const getBarOpacity = () => {
                     const clickOpacity =
-                      isClickable && selectedDataKey !== null ? (isSelectedDataKey ? 1 : 0.3) : 1;
+                      isClickable && selectedDataKey !== null
+                        ? isSelectedDataKey
+                          ? 1
+                          : 0.3
+                        : 1;
 
                     if (enableHoverHighlight && hoveredIndex !== null) {
                       const isHovered = hoveredIndex === index;
@@ -330,24 +373,35 @@ export function EvilComposedChart<
                   return (
                     <CustomBar
                       {...barProps}
+                      barRadius={barRadius}
+                      barVariant={barVariant}
                       chartId={chartId}
                       dataKey={dataKey}
-                      barVariant={barVariant}
-                      barRadius={barRadius}
-                      filter={getFilter()}
-                      fillOpacity={getBarOpacity()}
-                      isClickable={isClickable}
                       enableHoverHighlight={enableHoverHighlight}
+                      fillOpacity={getBarOpacity()}
+                      filter={getFilter()}
+                      isClickable={isClickable}
                       onClick={() => {
-                        if (!isClickable) return;
-                        handleSelectionChange(selectedDataKey === dataKey ? null : dataKey);
+                        if (!isClickable) {
+                          return;
+                        }
+                        handleSelectionChange(
+                          selectedDataKey === dataKey ? null : dataKey
+                        );
                       }}
                       onMouseEnter={() => {
-                        if (enableHoverHighlight) setHoveredIndex(index);
+                        if (enableHoverHighlight) {
+                          setHoveredIndex(index);
+                        }
                       }}
                     />
                   );
                 }}
+                style={
+                  isClickable || enableHoverHighlight
+                    ? { cursor: "pointer" }
+                    : undefined
+                }
               />
             );
           })}
@@ -357,15 +411,21 @@ export function EvilComposedChart<
           Object.keys(lineConfig).map((dataKey) => {
             const _opacity = getOpacity(isClickable, selectedDataKey, dataKey);
             const hasSelection = selectedDataKey !== null;
-            const isGlowing = glowingLines.includes(dataKey as NumericDataKeys<TData>);
+            const isGlowing = glowingLines.includes(
+              dataKey as NumericDataKeys<TData>
+            );
 
             const getFilter = () => {
-              if (isGlowing) return `url(#${chartId}-line-glow-${dataKey})`;
-              return undefined;
+              if (isGlowing) {
+                return `url(#${chartId}-line-glow-${dataKey})`;
+              }
+              return;
             };
 
             const handleLineClick = () => {
-              if (!isClickable) return;
+              if (!isClickable) {
+                return;
+              }
               setSelectedDataKey(selectedDataKey === dataKey ? null : dataKey);
             };
 
@@ -374,52 +434,49 @@ export function EvilComposedChart<
                 {/* Invisible hit area for easier clicking */}
                 {isClickable && (
                   <Line
-                    type={curveType}
-                    dataKey={dataKey}
+                    activeDot={false}
                     connectNulls={connectNulls}
+                    dataKey={dataKey}
+                    dot={false}
+                    legendType="none"
+                    onClick={handleLineClick}
                     stroke="transparent"
                     strokeWidth={20}
-                    dot={false}
-                    activeDot={false}
-                    legendType="none"
-                    tooltipType="none"
                     style={{ cursor: "pointer" }}
-                    onClick={handleLineClick}
+                    tooltipType="none"
+                    type={curveType}
                   />
                 )}
                 {/* Visible line */}
                 <Line
-                  type={curveType}
-                  dataKey={dataKey}
-                  connectNulls={connectNulls}
-                  strokeOpacity={_opacity.stroke}
-                  stroke={`url(#${chartId}-line-colors-${dataKey})`}
-                  filter={getFilter()}
-                  dot={
-                    dotVariant ? (
-                      <ChartDot
-                        fillOpacity={_opacity.dot}
-                        type={dotVariant}
-                        dataKey={dataKey}
-                        chartId={`${chartId}-line`}
-                      />
-                    ) : (
-                      false
-                    )
-                  }
                   activeDot={
                     activeDotVariant ? (
                       <ChartDot
+                        chartId={`${chartId}-line`}
+                        dataKey={dataKey}
                         fillOpacity={_opacity.dot}
                         type={activeDotVariant}
-                        dataKey={dataKey}
-                        chartId={`${chartId}-line`}
                       />
                     ) : (
                       false
                     )
                   }
-                  strokeWidth={STROKE_WIDTH}
+                  connectNulls={connectNulls}
+                  dataKey={dataKey}
+                  dot={
+                    dotVariant ? (
+                      <ChartDot
+                        chartId={`${chartId}-line`}
+                        dataKey={dataKey}
+                        fillOpacity={_opacity.dot}
+                        type={dotVariant}
+                      />
+                    ) : (
+                      false
+                    )
+                  }
+                  filter={getFilter()}
+                  stroke={`url(#${chartId}-line-colors-${dataKey})`}
                   strokeDasharray={
                     strokeVariant === "dashed"
                       ? "5 5"
@@ -427,9 +484,18 @@ export function EvilComposedChart<
                         ? "5 5"
                         : undefined
                   }
-                  style={isClickable ? { cursor: "pointer", pointerEvents: "none" } : undefined}
+                  strokeOpacity={_opacity.stroke}
+                  strokeWidth={STROKE_WIDTH}
+                  style={
+                    isClickable
+                      ? { cursor: "pointer", pointerEvents: "none" }
+                      : undefined
+                  }
+                  type={curveType}
                 >
-                  {strokeVariant === "animated-dashed" && !hasSelection && <AnimatedDashedStyle />}
+                  {strokeVariant === "animated-dashed" && !hasSelection && (
+                    <AnimatedDashedStyle />
+                  )}
                 </Line>
               </g>
             );
@@ -441,22 +507,35 @@ export function EvilComposedChart<
             dataKey={LOADING_DATA_KEY}
             fill="currentColor"
             fillOpacity={0.15}
-            radius={barRadius}
             isAnimationActive={false}
             legendType="none"
+            radius={barRadius}
             style={{ mask: `url(#${chartId}-loading-mask)` }}
           />
         )}
 
         {/* ======== CHART STYLES ======== */}
         <defs>
-          {isLoading && <LoadingPatternStyle chartId={chartId} onShimmerExit={onShimmerExit} />}
+          {isLoading && (
+            <LoadingPatternStyle
+              chartId={chartId}
+              onShimmerExit={onShimmerExit}
+            />
+          )}
 
           {/* Bar color gradients (vertical) */}
-          <VerticalColorGradientStyle chartConfig={barConfig} chartId={chartId} prefix="bar" />
+          <VerticalColorGradientStyle
+            chartConfig={barConfig}
+            chartId={chartId}
+            prefix="bar"
+          />
 
           {/* Line color gradients (horizontal) */}
-          <HorizontalColorGradientStyle chartConfig={lineConfig} chartId={chartId} prefix="line" />
+          <HorizontalColorGradientStyle
+            chartConfig={lineConfig}
+            chartId={chartId}
+            prefix="line"
+          />
 
           {/* Bar variant styles */}
           {barVariant === "hatched" && (
@@ -466,7 +545,10 @@ export function EvilComposedChart<
             <DuotonePatternStyle chartConfig={barConfig} chartId={chartId} />
           )}
           {barVariant === "duotone-reverse" && (
-            <DuotoneReversePatternStyle chartConfig={barConfig} chartId={chartId} />
+            <DuotoneReversePatternStyle
+              chartConfig={barConfig}
+              chartId={chartId}
+            />
           )}
           {barVariant === "gradient" && (
             <GradientPatternStyle chartConfig={barConfig} chartId={chartId} />
@@ -477,12 +559,18 @@ export function EvilComposedChart<
 
           {/* Bar glow filters */}
           {glowingBars.length > 0 && (
-            <BarGlowFilterStyle chartId={chartId} glowingBars={glowingBars as string[]} />
+            <BarGlowFilterStyle
+              chartId={chartId}
+              glowingBars={glowingBars as string[]}
+            />
           )}
 
           {/* Line glow filters */}
           {glowingLines.length > 0 && (
-            <LineGlowFilterStyle chartId={chartId} glowingLines={glowingLines as string[]} />
+            <LineGlowFilterStyle
+              chartId={chartId}
+              glowingLines={glowingLines as string[]}
+            />
           )}
         </defs>
       </ComposedChart>
@@ -491,34 +579,38 @@ export function EvilComposedChart<
 }
 
 // Calculate opacity values for stroke and dot based on selection state
-const getOpacity = (isClickable: boolean, selectedDataKey: string | null, dataKey: string) => {
+const getOpacity = (
+  isClickable: boolean,
+  selectedDataKey: string | null,
+  dataKey: string
+) => {
   if (!isClickable || selectedDataKey === null) {
     return { stroke: 1, dot: 1 };
   }
-  return selectedDataKey === dataKey ? { stroke: 1, dot: 1 } : { stroke: 0.3, dot: 0.3 };
+  return selectedDataKey === dataKey
+    ? { stroke: 1, dot: 1 }
+    : { stroke: 0.3, dot: 0.3 };
 };
 
 // Animated dashed-stroke style for lines
-const AnimatedDashedStyle = () => {
-  return (
-    <>
-      <animate
-        attributeName="stroke-dasharray"
-        values="5 5; 0 5; 5 5"
-        dur="1s"
-        repeatCount="indefinite"
-        keyTimes="0;0.5;1"
-      />
-      <animate
-        attributeName="stroke-dashoffset"
-        values="0; -10"
-        dur="1s"
-        repeatCount="indefinite"
-        keyTimes="0;1"
-      />
-    </>
-  );
-};
+const AnimatedDashedStyle = () => (
+  <>
+    <animate
+      attributeName="stroke-dasharray"
+      dur="1s"
+      keyTimes="0;0.5;1"
+      repeatCount="indefinite"
+      values="5 5; 0 5; 5 5"
+    />
+    <animate
+      attributeName="stroke-dashoffset"
+      dur="1s"
+      keyTimes="0;1"
+      repeatCount="indefinite"
+      values="0; -10"
+    />
+  </>
+);
 
 // Custom bar shape component with support for variants, glow effects, and interactions
 type BarShapeProps = {
@@ -592,10 +684,11 @@ const CustomBar = ({
     if (barVariant === "stripped") {
       return `url(#${chartId}-stripped-mask-${dataKey})`;
     }
-    return undefined;
+    return;
   };
 
-  const cursorStyle = isClickable || enableHoverHighlight ? { cursor: "pointer" } : undefined;
+  const cursorStyle =
+    isClickable || enableHoverHighlight ? { cursor: "pointer" } : undefined;
   const hitAreaX = background?.x ?? x;
   const hitAreaY = background?.y ?? y;
   const hitAreaWidth = background?.width ?? width;
@@ -603,25 +696,36 @@ const CustomBar = ({
 
   if (barVariant === "stripped") {
     return (
-      <g style={cursorStyle} onClick={onClick}>
-        <g filter={filter} opacity={fillOpacity} className="transition-opacity duration-200">
-          <rect x={x} y={y} width={width} height={height} fill={getFill()} mask={getMask()} />
+      <g onClick={onClick} style={cursorStyle}>
+        <g
+          className="transition-opacity duration-200"
+          filter={filter}
+          opacity={fillOpacity}
+        >
           <rect
+            fill={getFill()}
+            height={height}
+            mask={getMask()}
+            width={width}
             x={x}
             y={y}
-            width={width}
-            height={2}
+          />
+          <rect
             fill={`url(#${chartId}-bar-colors-${dataKey})`}
+            height={2}
+            width={width}
+            x={x}
+            y={y}
           />
         </g>
         {enableHoverHighlight && (
           <rect
+            fill="transparent"
+            height={hitAreaHeight}
+            onMouseEnter={onMouseEnter}
+            width={hitAreaWidth}
             x={hitAreaX}
             y={hitAreaY}
-            width={hitAreaWidth}
-            height={hitAreaHeight}
-            fill="transparent"
-            onMouseEnter={onMouseEnter}
           />
         )}
       </g>
@@ -629,28 +733,28 @@ const CustomBar = ({
   }
 
   return (
-    <g style={cursorStyle} onClick={onClick}>
+    <g onClick={onClick} style={cursorStyle}>
       <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={barRadius}
-        ry={barRadius}
+        className="transition-opacity duration-200"
         fill={getFill()}
+        filter={filter}
+        height={height}
         mask={getMask()}
         opacity={fillOpacity}
-        filter={filter}
-        className="transition-opacity duration-200"
+        rx={barRadius}
+        ry={barRadius}
+        width={width}
+        x={x}
+        y={y}
       />
       {enableHoverHighlight && (
         <rect
+          fill="transparent"
+          height={hitAreaHeight}
+          onMouseEnter={onMouseEnter}
+          width={hitAreaWidth}
           x={hitAreaX}
           y={hitAreaY}
-          width={hitAreaWidth}
-          height={hitAreaHeight}
-          fill="transparent"
-          onMouseEnter={onMouseEnter}
         />
       )}
     </g>
@@ -666,19 +770,163 @@ const VerticalColorGradientStyle = ({
   chartConfig: ChartConfig;
   chartId: string;
   prefix: string;
-}) => {
-  return (
-    <>
-      {Object.entries(chartConfig).map(([dataKey, config]) => {
-        const colorsCount = getColorsCount(config);
+}) => (
+  <>
+    {Object.entries(chartConfig).map(([dataKey, config]) => {
+      const colorsCount = getColorsCount(config);
 
-        return (
+      return (
+        <linearGradient
+          id={`${chartId}-${prefix}-colors-${dataKey}`}
+          key={`${chartId}-${prefix}-colors-${dataKey}`}
+          x1="0"
+          x2="0"
+          y1="0"
+          y2="1"
+        >
+          {colorsCount === 1 ? (
+            <>
+              <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} />
+              <stop offset="100%" stopColor={`var(--color-${dataKey}-0)`} />
+            </>
+          ) : (
+            Array.from({ length: colorsCount }, (_, index) => (
+              <stop
+                key={index}
+                offset={`${(index / (colorsCount - 1)) * 100}%`}
+                stopColor={`var(--color-${dataKey}-${index}, var(--color-${dataKey}-0))`}
+              />
+            ))
+          )}
+        </linearGradient>
+      );
+    })}
+  </>
+);
+
+// Horizontal color gradient for lines (left to right)
+const HorizontalColorGradientStyle = ({
+  chartConfig,
+  chartId,
+  prefix,
+}: {
+  chartConfig: ChartConfig;
+  chartId: string;
+  prefix: string;
+}) => (
+  <>
+    {Object.entries(chartConfig).map(([dataKey, config]) => {
+      const colorsCount = getColorsCount(config);
+
+      return (
+        <linearGradient
+          id={`${chartId}-${prefix}-colors-${dataKey}`}
+          key={`${chartId}-${prefix}-colors-${dataKey}`}
+          x1="0"
+          x2="1"
+          y1="0"
+          y2="0"
+        >
+          {colorsCount === 1 ? (
+            <>
+              <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} />
+              <stop offset="100%" stopColor={`var(--color-${dataKey}-0)`} />
+            </>
+          ) : (
+            Array.from({ length: colorsCount }, (_, index) => (
+              <stop
+                key={index}
+                offset={`${(index / (colorsCount - 1)) * 100}%`}
+                stopColor={`var(--color-${dataKey}-${index}, var(--color-${dataKey}-0))`}
+              />
+            ))
+          )}
+        </linearGradient>
+      );
+    })}
+  </>
+);
+
+// Create hatched diagonal pattern style for bars using SVG masks
+const HatchedPatternStyle = ({
+  chartConfig,
+  chartId,
+}: {
+  chartConfig: ChartConfig;
+  chartId: string;
+}) => (
+  <>
+    <pattern
+      height="5"
+      id={`${chartId}-hatched-mask-pattern`}
+      patternTransform="rotate(-45)"
+      patternUnits="userSpaceOnUse"
+      width="5"
+      x="0"
+      y="0"
+    >
+      <rect fill="white" fillOpacity={0.3} height="5" width="5" />
+      <rect fill="white" fillOpacity={1} height="5" width="1.5" />
+    </pattern>
+
+    {Object.keys(chartConfig).map((dataKey) => (
+      <g key={`${chartId}-hatched-group-${dataKey}`}>
+        <mask id={`${chartId}-hatched-mask-${dataKey}`}>
+          <rect
+            fill={`url(#${chartId}-hatched-mask-pattern)`}
+            height="100%"
+            width="100%"
+          />
+        </mask>
+        <pattern
+          height="100%"
+          id={`${chartId}-hatched-${dataKey}`}
+          patternUnits="userSpaceOnUse"
+          width="100%"
+        >
+          <rect
+            fill={`url(#${chartId}-bar-colors-${dataKey})`}
+            height="100%"
+            mask={`url(#${chartId}-hatched-mask-${dataKey})`}
+            width="100%"
+          />
+        </pattern>
+      </g>
+    ))}
+  </>
+);
+
+const DuotonePatternStyle = ({
+  chartConfig,
+  chartId,
+}: {
+  chartConfig: ChartConfig;
+  chartId: string;
+}) => (
+  <>
+    {Object.entries(chartConfig).map(([dataKey, config]) => {
+      const colorsCount = getColorsCount(config);
+
+      return (
+        <g key={`${chartId}-duotone-group-${dataKey}`}>
           <linearGradient
-            key={`${chartId}-${prefix}-colors-${dataKey}`}
-            id={`${chartId}-${prefix}-colors-${dataKey}`}
+            gradientUnits="objectBoundingBox"
+            id={`${chartId}-duotone-mask-gradient-${dataKey}`}
             x1="0"
+            x2="1"
             y1="0"
+            y2="0"
+          >
+            <stop offset="50%" stopColor="white" stopOpacity={0.4} />
+            <stop offset="50%" stopColor="white" stopOpacity={1} />
+          </linearGradient>
+
+          <linearGradient
+            gradientUnits="objectBoundingBox"
+            id={`${chartId}-duotone-colors-${dataKey}`}
+            x1="0"
             x2="0"
+            y1="0"
             y2="1"
           >
             {colorsCount === 1 ? (
@@ -696,35 +944,74 @@ const VerticalColorGradientStyle = ({
               ))
             )}
           </linearGradient>
-        );
-      })}
-    </>
-  );
-};
 
-// Horizontal color gradient for lines (left to right)
-const HorizontalColorGradientStyle = ({
+          <mask
+            id={`${chartId}-duotone-mask-${dataKey}`}
+            maskContentUnits="objectBoundingBox"
+          >
+            <rect
+              fill={`url(#${chartId}-duotone-mask-gradient-${dataKey})`}
+              height="1"
+              width="1"
+              x="0"
+              y="0"
+            />
+          </mask>
+
+          <pattern
+            height="1"
+            id={`${chartId}-duotone-${dataKey}`}
+            patternContentUnits="objectBoundingBox"
+            patternUnits="objectBoundingBox"
+            width="1"
+          >
+            <rect
+              fill={`url(#${chartId}-duotone-colors-${dataKey})`}
+              height="1"
+              mask={`url(#${chartId}-duotone-mask-${dataKey})`}
+              width="1"
+              x="0"
+              y="0"
+            />
+          </pattern>
+        </g>
+      );
+    })}
+  </>
+);
+
+const DuotoneReversePatternStyle = ({
   chartConfig,
   chartId,
-  prefix,
 }: {
   chartConfig: ChartConfig;
   chartId: string;
-  prefix: string;
-}) => {
-  return (
-    <>
-      {Object.entries(chartConfig).map(([dataKey, config]) => {
-        const colorsCount = getColorsCount(config);
+}) => (
+  <>
+    {Object.entries(chartConfig).map(([dataKey, config]) => {
+      const colorsCount = getColorsCount(config);
 
-        return (
+      return (
+        <g key={`${chartId}-duotone-reverse-group-${dataKey}`}>
           <linearGradient
-            key={`${chartId}-${prefix}-colors-${dataKey}`}
-            id={`${chartId}-${prefix}-colors-${dataKey}`}
+            gradientUnits="objectBoundingBox"
+            id={`${chartId}-duotone-reverse-mask-gradient-${dataKey}`}
             x1="0"
-            y1="0"
             x2="1"
+            y1="0"
             y2="0"
+          >
+            <stop offset="50%" stopColor="white" stopOpacity={1} />
+            <stop offset="50%" stopColor="white" stopOpacity={0.4} />
+          </linearGradient>
+
+          <linearGradient
+            gradientUnits="objectBoundingBox"
+            id={`${chartId}-duotone-reverse-colors-${dataKey}`}
+            x1="0"
+            x2="0"
+            y1="0"
+            y2="1"
           >
             {colorsCount === 1 ? (
               <>
@@ -741,227 +1028,41 @@ const HorizontalColorGradientStyle = ({
               ))
             )}
           </linearGradient>
-        );
-      })}
-    </>
-  );
-};
 
-// Create hatched diagonal pattern style for bars using SVG masks
-const HatchedPatternStyle = ({
-  chartConfig,
-  chartId,
-}: {
-  chartConfig: ChartConfig;
-  chartId: string;
-}) => {
-  return (
-    <>
-      <pattern
-        id={`${chartId}-hatched-mask-pattern`}
-        x="0"
-        y="0"
-        width="5"
-        height="5"
-        patternUnits="userSpaceOnUse"
-        patternTransform="rotate(-45)"
-      >
-        <rect width="5" height="5" fill="white" fillOpacity={0.3} />
-        <rect width="1.5" height="5" fill="white" fillOpacity={1} />
-      </pattern>
-
-      {Object.keys(chartConfig).map((dataKey) => (
-        <g key={`${chartId}-hatched-group-${dataKey}`}>
-          <mask id={`${chartId}-hatched-mask-${dataKey}`}>
-            <rect width="100%" height="100%" fill={`url(#${chartId}-hatched-mask-pattern)`} />
-          </mask>
-          <pattern
-            id={`${chartId}-hatched-${dataKey}`}
-            patternUnits="userSpaceOnUse"
-            width="100%"
-            height="100%"
+          <mask
+            id={`${chartId}-duotone-reverse-mask-${dataKey}`}
+            maskContentUnits="objectBoundingBox"
           >
             <rect
-              width="100%"
-              height="100%"
-              fill={`url(#${chartId}-bar-colors-${dataKey})`}
-              mask={`url(#${chartId}-hatched-mask-${dataKey})`}
+              fill={`url(#${chartId}-duotone-reverse-mask-gradient-${dataKey})`}
+              height="1"
+              width="1"
+              x="0"
+              y="0"
+            />
+          </mask>
+
+          <pattern
+            height="1"
+            id={`${chartId}-duotone-reverse-${dataKey}`}
+            patternContentUnits="objectBoundingBox"
+            patternUnits="objectBoundingBox"
+            width="1"
+          >
+            <rect
+              fill={`url(#${chartId}-duotone-reverse-colors-${dataKey})`}
+              height="1"
+              mask={`url(#${chartId}-duotone-reverse-mask-${dataKey})`}
+              width="1"
+              x="0"
+              y="0"
             />
           </pattern>
         </g>
-      ))}
-    </>
-  );
-};
-
-const DuotonePatternStyle = ({
-  chartConfig,
-  chartId,
-}: {
-  chartConfig: ChartConfig;
-  chartId: string;
-}) => {
-  return (
-    <>
-      {Object.entries(chartConfig).map(([dataKey, config]) => {
-        const colorsCount = getColorsCount(config);
-
-        return (
-          <g key={`${chartId}-duotone-group-${dataKey}`}>
-            <linearGradient
-              id={`${chartId}-duotone-mask-gradient-${dataKey}`}
-              gradientUnits="objectBoundingBox"
-              x1="0"
-              y1="0"
-              x2="1"
-              y2="0"
-            >
-              <stop offset="50%" stopColor="white" stopOpacity={0.4} />
-              <stop offset="50%" stopColor="white" stopOpacity={1} />
-            </linearGradient>
-
-            <linearGradient
-              id={`${chartId}-duotone-colors-${dataKey}`}
-              gradientUnits="objectBoundingBox"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              {colorsCount === 1 ? (
-                <>
-                  <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} />
-                  <stop offset="100%" stopColor={`var(--color-${dataKey}-0)`} />
-                </>
-              ) : (
-                Array.from({ length: colorsCount }, (_, index) => (
-                  <stop
-                    key={index}
-                    offset={`${(index / (colorsCount - 1)) * 100}%`}
-                    stopColor={`var(--color-${dataKey}-${index}, var(--color-${dataKey}-0))`}
-                  />
-                ))
-              )}
-            </linearGradient>
-
-            <mask id={`${chartId}-duotone-mask-${dataKey}`} maskContentUnits="objectBoundingBox">
-              <rect
-                x="0"
-                y="0"
-                width="1"
-                height="1"
-                fill={`url(#${chartId}-duotone-mask-gradient-${dataKey})`}
-              />
-            </mask>
-
-            <pattern
-              id={`${chartId}-duotone-${dataKey}`}
-              patternUnits="objectBoundingBox"
-              patternContentUnits="objectBoundingBox"
-              width="1"
-              height="1"
-            >
-              <rect
-                x="0"
-                y="0"
-                width="1"
-                height="1"
-                fill={`url(#${chartId}-duotone-colors-${dataKey})`}
-                mask={`url(#${chartId}-duotone-mask-${dataKey})`}
-              />
-            </pattern>
-          </g>
-        );
-      })}
-    </>
-  );
-};
-
-const DuotoneReversePatternStyle = ({
-  chartConfig,
-  chartId,
-}: {
-  chartConfig: ChartConfig;
-  chartId: string;
-}) => {
-  return (
-    <>
-      {Object.entries(chartConfig).map(([dataKey, config]) => {
-        const colorsCount = getColorsCount(config);
-
-        return (
-          <g key={`${chartId}-duotone-reverse-group-${dataKey}`}>
-            <linearGradient
-              id={`${chartId}-duotone-reverse-mask-gradient-${dataKey}`}
-              gradientUnits="objectBoundingBox"
-              x1="0"
-              y1="0"
-              x2="1"
-              y2="0"
-            >
-              <stop offset="50%" stopColor="white" stopOpacity={1} />
-              <stop offset="50%" stopColor="white" stopOpacity={0.4} />
-            </linearGradient>
-
-            <linearGradient
-              id={`${chartId}-duotone-reverse-colors-${dataKey}`}
-              gradientUnits="objectBoundingBox"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              {colorsCount === 1 ? (
-                <>
-                  <stop offset="0%" stopColor={`var(--color-${dataKey}-0)`} />
-                  <stop offset="100%" stopColor={`var(--color-${dataKey}-0)`} />
-                </>
-              ) : (
-                Array.from({ length: colorsCount }, (_, index) => (
-                  <stop
-                    key={index}
-                    offset={`${(index / (colorsCount - 1)) * 100}%`}
-                    stopColor={`var(--color-${dataKey}-${index}, var(--color-${dataKey}-0))`}
-                  />
-                ))
-              )}
-            </linearGradient>
-
-            <mask
-              id={`${chartId}-duotone-reverse-mask-${dataKey}`}
-              maskContentUnits="objectBoundingBox"
-            >
-              <rect
-                x="0"
-                y="0"
-                width="1"
-                height="1"
-                fill={`url(#${chartId}-duotone-reverse-mask-gradient-${dataKey})`}
-              />
-            </mask>
-
-            <pattern
-              id={`${chartId}-duotone-reverse-${dataKey}`}
-              patternUnits="objectBoundingBox"
-              patternContentUnits="objectBoundingBox"
-              width="1"
-              height="1"
-            >
-              <rect
-                x="0"
-                y="0"
-                width="1"
-                height="1"
-                fill={`url(#${chartId}-duotone-reverse-colors-${dataKey})`}
-                mask={`url(#${chartId}-duotone-reverse-mask-${dataKey})`}
-              />
-            </pattern>
-          </g>
-        );
-      })}
-    </>
-  );
-};
+      );
+    })}
+  </>
+);
 
 const GradientPatternStyle = ({
   chartConfig,
@@ -969,22 +1070,36 @@ const GradientPatternStyle = ({
 }: {
   chartConfig: ChartConfig;
   chartId: string;
-}) => {
-  return (
-    <>
-      <linearGradient id={`${chartId}-gradient-mask-gradient`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="20%" stopColor="white" stopOpacity={1} />
-        <stop offset="90%" stopColor="white" stopOpacity={0} />
-      </linearGradient>
+}) => (
+  <>
+    <linearGradient
+      id={`${chartId}-gradient-mask-gradient`}
+      x1="0"
+      x2="0"
+      y1="0"
+      y2="1"
+    >
+      <stop offset="20%" stopColor="white" stopOpacity={1} />
+      <stop offset="90%" stopColor="white" stopOpacity={0} />
+    </linearGradient>
 
-      {Object.keys(chartConfig).map((dataKey) => (
-        <mask key={`${chartId}-gradient-mask-${dataKey}`} id={`${chartId}-gradient-mask-${dataKey}`} maskContentUnits="objectBoundingBox">
-          <rect x="0" y="0" width="1" height="1" fill={`url(#${chartId}-gradient-mask-gradient)`} />
-        </mask>
-      ))}
-    </>
-  );
-};
+    {Object.keys(chartConfig).map((dataKey) => (
+      <mask
+        id={`${chartId}-gradient-mask-${dataKey}`}
+        key={`${chartId}-gradient-mask-${dataKey}`}
+        maskContentUnits="objectBoundingBox"
+      >
+        <rect
+          fill={`url(#${chartId}-gradient-mask-gradient)`}
+          height="1"
+          width="1"
+          x="0"
+          y="0"
+        />
+      </mask>
+    ))}
+  </>
+);
 
 const StrippedPatternStyle = ({
   chartConfig,
@@ -992,22 +1107,36 @@ const StrippedPatternStyle = ({
 }: {
   chartConfig: ChartConfig;
   chartId: string;
-}) => {
-  return (
-    <>
-      <linearGradient id={`${chartId}-stripped-mask-gradient`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="white" stopOpacity={0.4} />
-        <stop offset="100%" stopColor="white" stopOpacity={0.1} />
-      </linearGradient>
+}) => (
+  <>
+    <linearGradient
+      id={`${chartId}-stripped-mask-gradient`}
+      x1="0"
+      x2="0"
+      y1="0"
+      y2="1"
+    >
+      <stop offset="0%" stopColor="white" stopOpacity={0.4} />
+      <stop offset="100%" stopColor="white" stopOpacity={0.1} />
+    </linearGradient>
 
-      {Object.keys(chartConfig).map((dataKey) => (
-        <mask key={`${chartId}-stripped-mask-${dataKey}`} id={`${chartId}-stripped-mask-${dataKey}`} maskContentUnits="objectBoundingBox">
-          <rect x="0" y="0" width="1" height="1" fill={`url(#${chartId}-stripped-mask-gradient)`} />
-        </mask>
-      ))}
-    </>
-  );
-};
+    {Object.keys(chartConfig).map((dataKey) => (
+      <mask
+        id={`${chartId}-stripped-mask-${dataKey}`}
+        key={`${chartId}-stripped-mask-${dataKey}`}
+        maskContentUnits="objectBoundingBox"
+      >
+        <rect
+          fill={`url(#${chartId}-stripped-mask-gradient)`}
+          height="1"
+          width="1"
+          x="0"
+          y="0"
+        />
+      </mask>
+    ))}
+  </>
+);
 
 // Apply soft glow filter effect to bars using SVG filters
 const BarGlowFilterStyle = ({
@@ -1016,34 +1145,32 @@ const BarGlowFilterStyle = ({
 }: {
   chartId: string;
   glowingBars: string[];
-}) => {
-  return (
-    <>
-      {glowingBars.map((dataKey) => (
-        <filter
-          key={`${chartId}-bar-glow-${dataKey}`}
-          id={`${chartId}-bar-glow-${dataKey}`}
-          x="-100%"
-          y="-100%"
-          width="300%"
-          height="300%"
-        >
-          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-          <feColorMatrix
-            in="blur"
-            type="matrix"
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0"
-            result="glow"
-          />
-          <feMerge>
-            <feMergeNode in="glow" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      ))}
-    </>
-  );
-};
+}) => (
+  <>
+    {glowingBars.map((dataKey) => (
+      <filter
+        height="300%"
+        id={`${chartId}-bar-glow-${dataKey}`}
+        key={`${chartId}-bar-glow-${dataKey}`}
+        width="300%"
+        x="-100%"
+        y="-100%"
+      >
+        <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="8" />
+        <feColorMatrix
+          in="blur"
+          result="glow"
+          type="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0"
+        />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    ))}
+  </>
+);
 
 const LineGlowFilterStyle = ({
   chartId,
@@ -1051,50 +1178,50 @@ const LineGlowFilterStyle = ({
 }: {
   chartId: string;
   glowingLines: string[];
-}) => {
-  return (
-    <>
-      {glowingLines.map((dataKey) => (
-        <filter
-          key={`${chartId}-line-glow-${dataKey}`}
-          id={`${chartId}-line-glow-${dataKey}`}
-          x="-50%"
-          y="-50%"
-          width="200%"
-          height="200%"
-        >
-          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-          <feColorMatrix
-            in="blur"
-            type="matrix"
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 2 0"
-            result="glow"
-          />
-          <feMerge>
-            <feMergeNode in="glow" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      ))}
-    </>
-  );
-};
+}) => (
+  <>
+    {glowingLines.map((dataKey) => (
+      <filter
+        height="200%"
+        id={`${chartId}-line-glow-${dataKey}`}
+        key={`${chartId}-line-glow-${dataKey}`}
+        width="200%"
+        x="-50%"
+        y="-50%"
+      >
+        <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10" />
+        <feColorMatrix
+          in="blur"
+          result="glow"
+          type="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 2 0"
+        />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    ))}
+  </>
+);
 
 // Generate gradient stops with smooth sine-based easing for loading animation
 const generateEasedGradientStops = (
-  steps: number = 17,
-  minOpacity: number = 0.05,
-  maxOpacity: number = 0.9,
-) => {
-  return Array.from({ length: steps }, (_, i) => {
+  steps = 17,
+  minOpacity = 0.05,
+  maxOpacity = 0.9
+) =>
+  Array.from({ length: steps }, (_, i) => {
     const t = i / (steps - 1);
     const eased = Math.sin(t * Math.PI) ** 2;
     const opacity = minOpacity + eased * (maxOpacity - minOpacity);
-    return { offset: `${(t * 100).toFixed(0)}%`, opacity: Number(opacity.toFixed(3)) };
+    return {
+      offset: `${(t * 100).toFixed(0)}%`,
+      opacity: Number(opacity.toFixed(3)),
+    };
   });
-};
 
-export function useLoadingData(isLoading: boolean, loadingBars: number = 12) {
+export function useLoadingData(isLoading: boolean, loadingBars = 12) {
   const [loadingDataKey, setLoadingDataKey] = useState(false);
 
   const onShimmerExit = useCallback(() => {
@@ -1106,7 +1233,7 @@ export function useLoadingData(isLoading: boolean, loadingBars: number = 12) {
   const loadingData = useMemo(
     () => getLoadingData(loadingBars, 20, 80),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [loadingBars, loadingDataKey],
+    [loadingBars, loadingDataKey]
   );
 
   return { loadingData, onShimmerExit };
@@ -1127,34 +1254,37 @@ const LoadingPatternStyle = ({
 
   return (
     <>
-      <linearGradient id={`${chartId}-loading-mask-gradient`} x1="0" y1="0" x2="1" y2="0">
+      <linearGradient
+        id={`${chartId}-loading-mask-gradient`}
+        x1="0"
+        x2="1"
+        y1="0"
+        y2="0"
+      >
         {gradientStops.map(({ offset, opacity }) => (
-          <stop key={offset} offset={offset} stopColor="white" stopOpacity={opacity} />
+          <stop
+            key={offset}
+            offset={offset}
+            stopColor="white"
+            stopOpacity={opacity}
+          />
         ))}
       </linearGradient>
       <pattern
+        height="1"
         id={`${chartId}-loading-mask-pattern`}
-        patternUnits="objectBoundingBox"
         patternContentUnits="objectBoundingBox"
         patternTransform="rotate(25)"
+        patternUnits="objectBoundingBox"
         width={patternWidth}
-        height="1"
         x="0"
         y="0"
       >
         <motion.rect
-          y="0"
-          width="1"
-          height="1"
-          fill={`url(#${chartId}-loading-mask-gradient)`}
-          initial={{ x: startX }}
           animate={{ x: endX }}
-          transition={{
-            duration: LOADING_ANIMATION_DURATION / 1000,
-            ease: "linear",
-            repeat: Infinity,
-            repeatType: "loop",
-          }}
+          fill={`url(#${chartId}-loading-mask-gradient)`}
+          height="1"
+          initial={{ x: startX }}
           onUpdate={(latest) => {
             const xValue = typeof latest.x === "number" ? latest.x : startX;
             const lastX = lastXRef.current;
@@ -1163,10 +1293,22 @@ const LoadingPatternStyle = ({
             }
             lastXRef.current = xValue;
           }}
+          transition={{
+            duration: LOADING_ANIMATION_DURATION / 1000,
+            ease: "linear",
+            repeat: Number.POSITIVE_INFINITY,
+            repeatType: "loop",
+          }}
+          width="1"
+          y="0"
         />
       </pattern>
       <mask id={`${chartId}-loading-mask`} maskUnits="userSpaceOnUse">
-        <rect width="100%" height="100%" fill={`url(#${chartId}-loading-mask-pattern)`} />
+        <rect
+          fill={`url(#${chartId}-loading-mask-pattern)`}
+          height="100%"
+          width="100%"
+        />
       </mask>
     </>
   );

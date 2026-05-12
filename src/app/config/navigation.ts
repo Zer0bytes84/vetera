@@ -10,11 +10,11 @@ import {
   Task01Icon,
   UserGroupIcon,
   WalletIcon,
-} from "@hugeicons/core-free-icons"
-import type { IconSvgElement } from "@hugeicons/react"
-import type { TFunction } from "i18next"
+} from "@hugeicons/core-free-icons";
+import type { IconSvgElement } from "@hugeicons/react";
+import type { TFunction } from "i18next";
 
-import type { View } from "@/types"
+import type { View } from "@/types";
 
 export const viewTitleKeys: Record<View, string> = {
   dashboard: "views.dashboard",
@@ -29,16 +29,20 @@ export const viewTitleKeys: Record<View, string> = {
   parametres: "views.parametres",
   taches: "views.taches",
   aide: "views.aide",
-}
+};
 
 export const navigationSections: Array<{
-  titleKey: string
-  items: Array<{ view: View; labelKey: string; icon: IconSvgElement }>
+  titleKey: string;
+  items: Array<{ view: View; labelKey: string; icon: IconSvgElement }>;
 }> = [
   {
     titleKey: "nav.sections.pilotage",
     items: [
-      { view: "dashboard", labelKey: "views.dashboard", icon: DashboardSquare01Icon },
+      {
+        view: "dashboard",
+        labelKey: "views.dashboard",
+        icon: DashboardSquare01Icon,
+      },
     ],
   },
   {
@@ -62,14 +66,20 @@ export const navigationSections: Array<{
   {
     titleKey: "nav.sections.configuration",
     items: [
-      { view: "parametres", labelKey: "views.parametres", icon: Settings02Icon },
+      {
+        view: "parametres",
+        labelKey: "views.parametres",
+        icon: Settings02Icon,
+      },
       { view: "aide", labelKey: "views.aide", icon: HelpCircleIcon },
     ],
   },
-]
+];
 
-export const navigationItems = navigationSections.flatMap((section) => section.items)
+export const navigationItems = navigationSections.flatMap(
+  (section) => section.items
+);
 
 export function getViewTitle(view: View, t: TFunction) {
-  return t(viewTitleKeys[view])
+  return t(viewTitleKeys[view]);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { EvilLineChart } from "@/components/evilcharts/charts/line-chart";
-import { type ChartConfig } from "@/components/evilcharts/ui/chart";
+import type { ChartConfig } from "@/components/evilcharts/ui/chart";
 
 const data = [
   { month: "January", desktop: 342, mobile: 184 },
@@ -22,15 +22,15 @@ const chartConfig = {
   desktop: {
     label: "Desktop",
     colors: {
-      light: ["#047857"],
-      dark: ["#10b981"],
+      light: ["#171717"],
+      dark: ["#fafafa"],
     },
   },
   mobile: {
     label: "Mobile",
     colors: {
-      light: ["#be123c"],
-      dark: ["#f43f5e"],
+      light: ["#737373"],
+      dark: ["#a3a3a3"],
     },
   },
 } satisfies ChartConfig;
@@ -38,17 +38,17 @@ const chartConfig = {
 export function EvilExampleLineChart() {
   return (
     <EvilLineChart
-      isClickable
-      enableBufferLine
-      className="h-full w-full p-4"
-      xDataKey="month"
-      strokeVariant="solid"
-      activeDotVariant="colored-border"
-      dotVariant="border"
-      data={data}
+      activeDotVariant="border"
       chartConfig={chartConfig}
-      xAxisProps={{ tickFormatter: (value) => value.substring(0, 3) }}
+      className="h-full w-full p-4"
+      data={data}
+      dotVariant="border"
+      enableBufferLine
+      isClickable
       showBrush
+      strokeVariant="solid"
+      xAxisProps={{ tickFormatter: (value) => value.substring(0, 3) }}
+      xDataKey="month"
     />
   );
 }
