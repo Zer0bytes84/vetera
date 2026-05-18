@@ -3,6 +3,7 @@ import {
   BirdIcon,
   Calendar01Icon,
   CalendarCheckInIcon,
+  CheckmarkCircle02Icon,
   Edit01Icon,
   HeartPulse,
   Notification02Icon,
@@ -61,14 +62,6 @@ import {
 } from "@/components/ui/native-select";
 import { Sparkline } from "@/components/ui/sparkline";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -187,6 +180,8 @@ type PatientRecord = {
   lastVisit?: string;
   searchIndex: string;
 };
+
+const PATIENTS_PAGE_SIZE = 12;
 
 function normalizeDate(value?: string | Date | null) {
   if (!value) {
@@ -514,6 +509,7 @@ function PatientDetailsDialog({
   appointments,
   initialTab,
   onClose,
+  onSaved,
   onUpdatePatient,
   onUpdateOwner,
 }: {
@@ -523,6 +519,7 @@ function PatientDetailsDialog({
   appointments: Appointment[];
   initialTab: DetailsTab;
   onClose: () => void;
+  onSaved?: (patientId: string) => void;
   onUpdatePatient: (id: string, data: Partial<Patient>) => Promise<boolean>;
   onUpdateOwner: (id: string, data: Partial<Owner>) => Promise<boolean>;
 }) {
@@ -667,13 +664,22 @@ function PatientDetailsDialog({
 
       toast.success("Le dossier patient a été mis à jour.");
       setIsEditing(false);
+      onSaved?.(patient.id);
     } catch (error) {
       console.error(error);
       toast.error("Impossible d'enregistrer les modifications.");
     } finally {
       setIsSaving(false);
     }
-  }, [patientData, selectedOwnerId, ownerData, onUpdatePatient, onUpdateOwner]);
+  }, [
+    patient.id,
+    patientData,
+    selectedOwnerId,
+    ownerData,
+    onSaved,
+    onUpdatePatient,
+    onUpdateOwner,
+  ]);
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
@@ -1344,6 +1350,7 @@ function PatientCreateDialog({
 }) {
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("new");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
   const [newOwner, setNewOwner] = useState<Partial<Owner>>({
     firstName: "",
     lastName: "",
@@ -1364,6 +1371,7 @@ function PatientCreateDialog({
     if (!open) {
       setSelectedOwnerId("new");
       setIsSubmitting(false);
+      setFormError("");
       setNewOwner({
         firstName: "",
         lastName: "",
@@ -1399,18 +1407,33 @@ function PatientCreateDialog({
   );
 
   const handleCreate = useCallback(async () => {
+    setFormError("");
+
     if (!newPatient.name?.trim()) {
-      toast.error("Le nom du patient est obligatoire.");
+      const message = "Le nom du patient est obligatoire.";
+      setFormError(message);
+      toast.error(message);
+      return;
+    }
+
+    if (!newPatient.species?.trim()) {
+      const message = "L'espèce du patient est obligatoire.";
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
     if (selectedOwnerId === "new" && !newOwner.lastName?.trim()) {
-      toast.error("Le nom du propriétaire est obligatoire.");
+      const message = "Le nom du propriétaire est obligatoire.";
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
     if (selectedOwnerId === "new" && !newOwner.phone?.trim()) {
-      toast.error("Le téléphone du propriétaire est obligatoire.");
+      const message = "Le téléphone du propriétaire est obligatoire.";
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
@@ -1422,6 +1445,13 @@ function PatientCreateDialog({
         owner: selectedOwnerId === "new" ? newOwner : {},
         patient: newPatient,
       });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Impossible de créer le dossier patient.";
+      setFormError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -1688,9 +1718,16 @@ function PatientCreateDialog({
         </div>
 
         <DialogFooter className="modal-medical-footer border-t px-6 py-4">
+          {formError ? (
+            <div className="mr-auto rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm">
+              {formError}
+            </div>
+          ) : null}
           <Button
             className="min-w-[120px]"
+            disabled={isSubmitting}
             onClick={() => onOpenChange(false)}
+            type="button"
             variant="outline"
           >
             Annuler
@@ -1699,6 +1736,7 @@ function PatientCreateDialog({
             className="min-w-[168px]"
             disabled={isSubmitting}
             onClick={handleCreate}
+            type="button"
           >
             {isSubmitting ? (
               <Spinner className="size-4" />
@@ -1721,7 +1759,18 @@ const Patients: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [speciesFilter, setSpeciesFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recentOwnersById, setRecentOwnersById] = useState<
+    Record<string, Owner>
+  >({});
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [createdPatientPrompt, setCreatedPatientPrompt] = useState<{
+    owner?: Owner;
+    patient: Patient;
+  } | null>(null);
+  const [recentlySavedPatientId, setRecentlySavedPatientId] = useState<
+    string | null
+  >(null);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(
     null
   );
@@ -1739,9 +1788,18 @@ const Patients: React.FC = () => {
   const { data: owners, update: updateOwner } = useOwnersRepository();
   const { data: appointments } = useAppointmentsRepository();
 
+  const hydratedOwners = useMemo(() => {
+    const merged = new Map<string, Owner>();
+    owners.forEach((owner) => merged.set(owner.id, owner));
+    Object.values(recentOwnersById).forEach((owner) =>
+      merged.set(owner.id, owner)
+    );
+    return Array.from(merged.values());
+  }, [owners, recentOwnersById]);
+
   const ownersMap = useMemo(
-    () => new Map(owners.map((owner) => [owner.id, owner])),
-    [owners]
+    () => new Map(hydratedOwners.map((owner) => [owner.id, owner])),
+    [hydratedOwners]
   );
 
   const appointmentsByPatient = useMemo(() => {
@@ -1862,6 +1920,39 @@ const Patients: React.FC = () => {
     }
   }, [patients, selectedPatientId]);
 
+  useEffect(() => {
+    if (!recentlySavedPatientId) {
+      return;
+    }
+
+    const patientStillExists = patients.some(
+      (patient) => patient.id === recentlySavedPatientId
+    );
+    if (!patientStillExists) {
+      return;
+    }
+
+    const patientIsVisible = visiblePatients.some(
+      (entry) => entry.patient.id === recentlySavedPatientId
+    );
+
+    if (!patientIsVisible) {
+      setSearchTerm("");
+      setSpeciesFilter("all");
+      setStatusFilter("all");
+      toast.info(
+        "Les filtres ont été réinitialisés pour garder le dossier visible après modification."
+      );
+    }
+
+    setSelectedPatientId(recentlySavedPatientId);
+    setRecentlySavedPatientId(null);
+  }, [patients, recentlySavedPatientId, visiblePatients]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [deferredSearchTerm, speciesFilter, statusFilter]);
+
   // Listen for new patient event from sidebar
   useEffect(() => {
     const handleNewPatient = () => {
@@ -1957,18 +2048,89 @@ const Patients: React.FC = () => {
         tone: "slate",
       },
     ];
-  }, [appointments, owners.length, patients]);
+  }, [appointments, hydratedOwners.length, patients]);
 
   const openPatientDetails = (patient: Patient, tab: DetailsTab = "info") => {
     setDetailsInitialTab(tab);
     setSelectedPatientId(patient.id);
   };
 
+  const handlePatientSaved = useCallback((patientId: string) => {
+    window.setTimeout(() => {
+      setRecentlySavedPatientId(patientId);
+    }, 0);
+  }, []);
+
   const resetFilters = () => {
     setSearchTerm("");
     setSpeciesFilter("all");
     setStatusFilter("all");
+    setCurrentPage(1);
   };
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(visiblePatients.length / PATIENTS_PAGE_SIZE)
+  );
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedPatients = useMemo(() => {
+    const start = (currentPage - 1) * PATIENTS_PAGE_SIZE;
+    return visiblePatients.slice(start, start + PATIENTS_PAGE_SIZE);
+  }, [currentPage, visiblePatients]);
+
+  const pageStart = visiblePatients.length
+    ? (currentPage - 1) * PATIENTS_PAGE_SIZE + 1
+    : 0;
+  const pageEnd = Math.min(
+    currentPage * PATIENTS_PAGE_SIZE,
+    visiblePatients.length
+  );
+
+  const paginationRange = useMemo(() => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    if (currentPage <= 3) {
+      return [1, 2, 3, 4, totalPages];
+    }
+
+    if (currentPage >= totalPages - 2) {
+      return [1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+
+    return [1, currentPage - 1, currentPage, currentPage + 1, totalPages];
+  }, [currentPage, totalPages]);
+
+  const createAppointmentForPatient = useCallback((patient: Patient) => {
+    const pendingAppointment = {
+      ownerId: patient.ownerId,
+      patientId: patient.id,
+    };
+
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(
+        "vetera:pending-appointment",
+        JSON.stringify(pendingAppointment)
+      );
+      window.location.hash = "#/agenda";
+      window.setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent("vetera:new-appointment", {
+            detail: pendingAppointment,
+          })
+        );
+      }, 180);
+    }
+
+    setCreatedPatientPrompt(null);
+  }, []);
 
   const handleCreatePatient = useCallback(
     async ({
@@ -1981,7 +2143,7 @@ const Patients: React.FC = () => {
       patient: Partial<Patient>;
     }) => {
       try {
-        const createdPatient = await createWithOwner({
+        const createdBundle = await createWithOwner({
           ownerId: selectedOwnerId,
           owner: {
             firstName: owner.firstName || "",
@@ -2000,14 +2162,29 @@ const Patients: React.FC = () => {
           },
         });
 
-        if (!createdPatient) {
+        if (!createdBundle?.patient) {
           throw new Error("La création du patient a échoué.");
         }
 
-        toast.success("Le nouveau dossier patient a été créé.");
+        toast.success("Dossier patient créé.", {
+          description: "Vous pouvez maintenant créer le rendez-vous associé.",
+        });
         setIsCreateOpen(false);
-        setDetailsInitialTab("info");
-        setSelectedPatientId(createdPatient.id);
+        setRecentlySavedPatientId(createdBundle.patient.id);
+        const createdOwner = createdBundle.owner;
+        if (createdOwner) {
+          setRecentOwnersById((current) => ({
+            ...current,
+            [createdOwner.id]: createdOwner,
+          }));
+        }
+        setCreatedPatientPrompt({
+          owner:
+            createdBundle.owner ||
+            ownersMap.get(createdBundle.patient.ownerId) ||
+            (selectedOwnerId ? ownersMap.get(selectedOwnerId) : undefined),
+          patient: createdBundle.patient,
+        });
       } catch (error) {
         console.error(error);
         const message =
@@ -2024,13 +2201,14 @@ const Patients: React.FC = () => {
         } else {
           toast.error(message);
         }
+        throw new Error(message);
       }
     },
-    [createWithOwner]
+    [createWithOwner, ownersMap]
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -2059,65 +2237,113 @@ const Patients: React.FC = () => {
       <div className="min-h-0 flex-1">
         <Card className="card-vibrant card-hover-lift min-h-[640px] rounded-[24px] border border-border bg-card shadow-none">
           <CardHeader className="border-border border-b px-6 py-5">
-            <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
-              Registre clinique
-            </CardDescription>
-            <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
-              Tableau des dossiers patients
-            </CardTitle>
-            <CardAction>
-              <Badge className="rounded-full px-3 py-1" variant="outline">
-                {visiblePatients.length} visible
-                {visiblePatients.length > 1 ? "s" : ""}
-              </Badge>
-            </CardAction>
+            <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="rounded-full px-3 py-1.5" variant="outline">
+                    Registre clinique
+                  </Badge>
+                  <Badge className="rounded-full border-0 bg-blue-500/8 px-3 py-1.5 text-blue-700 dark:text-blue-300">
+                    {visiblePatients.length} dossier
+                    {visiblePatients.length > 1 ? "s" : ""} visible
+                    {visiblePatients.length > 1 ? "s" : ""}
+                  </Badge>
+                </div>
+                <div className="space-y-1">
+                  <CardTitle className="font-normal text-[24px] tracking-[-0.05em]">
+                    Liste des patients
+                  </CardTitle>
+                  <CardDescription className="max-w-[70ch] text-sm leading-6">
+                    Une vue plus claire pour parcourir les dossiers, repérer les
+                    patients à suivre et ouvrir rapidement la fiche utile.
+                  </CardDescription>
+                </div>
+              </div>
+
+              <CardAction className="flex flex-wrap items-center gap-2 self-start">
+                <Badge className="rounded-full px-3 py-1.5" variant="secondary">
+                  Page {currentPage}/{totalPages}
+                </Badge>
+                <Badge className="rounded-full px-3 py-1.5" variant="outline">
+                  {pageStart > 0 ? `${pageStart}-${pageEnd}` : "0"} sur{" "}
+                  {visiblePatients.length}
+                </Badge>
+              </CardAction>
+            </div>
           </CardHeader>
 
           <CardContent className="flex min-h-0 flex-1 flex-col gap-4 px-0 pb-0">
-            <div className="grid gap-3 px-6 pt-5 lg:grid-cols-[minmax(0,1fr)_200px_220px]">
-              <div className="relative">
-                <HugeiconsIcon
-                  className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
-                  icon={SearchIcon}
-                  strokeWidth={2}
-                />
-                <Input
-                  className="h-11 rounded-2xl border-border bg-[var(--color-surface-soft)] pl-11 shadow-none"
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Rechercher un patient, un propriétaire ou un téléphone..."
-                  value={searchTerm}
-                />
+            <div className="px-6 pt-5">
+              <div className="rounded-[22px] border border-border/70 bg-[linear-gradient(180deg,color-mix(in_oklch,white_82%,transparent),color-mix(in_oklch,var(--color-surface-soft)_72%,transparent))] p-3 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.28)] dark:bg-[linear-gradient(180deg,color-mix(in_oklch,var(--color-surface-soft)_65%,transparent),color-mix(in_oklch,var(--color-surface-soft-2)_86%,transparent))]">
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+                  <div className="relative xl:min-w-0 xl:flex-1">
+                    <HugeiconsIcon
+                      className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+                      icon={SearchIcon}
+                      strokeWidth={2}
+                    />
+                    <Input
+                      className="h-12 rounded-2xl border-border/70 bg-background/88 pl-11 shadow-none"
+                      onChange={(event) => setSearchTerm(event.target.value)}
+                      placeholder="Rechercher un patient, un propriétaire ou un téléphone..."
+                      value={searchTerm}
+                    />
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2 xl:w-[430px]">
+                    <NativeSelect
+                      className="w-full [&>[data-slot=native-select]]:h-12 [&>[data-slot=native-select]]:rounded-2xl [&>[data-slot=native-select]]:border-border/70 [&>[data-slot=native-select]]:bg-background/88 [&>[data-slot=native-select]]:pl-4"
+                      onChange={(event) => setSpeciesFilter(event.target.value)}
+                      value={speciesFilter}
+                    >
+                      <NativeSelectOption value="all">
+                        Toutes les espèces
+                      </NativeSelectOption>
+                      {speciesOptions.map((species) => (
+                        <NativeSelectOption key={species} value={species}>
+                          {species}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+
+                    <NativeSelect
+                      className="w-full [&>[data-slot=native-select]]:h-12 [&>[data-slot=native-select]]:rounded-2xl [&>[data-slot=native-select]]:border-border/70 [&>[data-slot=native-select]]:bg-background/88 [&>[data-slot=native-select]]:pl-4"
+                      onChange={(event) => setStatusFilter(event.target.value)}
+                      value={statusFilter}
+                    >
+                      <NativeSelectOption value="all">
+                        Tous les statuts
+                      </NativeSelectOption>
+                      {PATIENT_STATUS_OPTIONS.map((option) => (
+                        <NativeSelectOption key={option.value} value={option.value}>
+                          {option.label}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Badge className="rounded-full px-3 py-1.5" variant="secondary">
+                    {owners.length} propriétaire
+                    {owners.length > 1 ? "s" : ""}
+                  </Badge>
+                  <Badge className="rounded-full px-3 py-1.5" variant="secondary">
+                    {speciesOptions.length} espèce
+                    {speciesOptions.length > 1 ? "s" : ""}
+                  </Badge>
+                  {(searchTerm || speciesFilter !== "all" || statusFilter !== "all") && (
+                    <Button
+                      className="h-8 rounded-full px-3 text-xs"
+                      onClick={resetFilters}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Réinitialiser la vue
+                    </Button>
+                  )}
+                </div>
               </div>
-
-              <NativeSelect
-                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:rounded-2xl [&>[data-slot=native-select]]:border-border [&>[data-slot=native-select]]:bg-[var(--color-surface-soft)] [&>[data-slot=native-select]]:pl-4"
-                onChange={(event) => setSpeciesFilter(event.target.value)}
-                value={speciesFilter}
-              >
-                <NativeSelectOption value="all">
-                  Toutes les espèces
-                </NativeSelectOption>
-                {speciesOptions.map((species) => (
-                  <NativeSelectOption key={species} value={species}>
-                    {species}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-
-              <NativeSelect
-                className="w-full [&>[data-slot=native-select]]:h-11 [&>[data-slot=native-select]]:rounded-2xl [&>[data-slot=native-select]]:border-border [&>[data-slot=native-select]]:bg-[var(--color-surface-soft)] [&>[data-slot=native-select]]:pl-4"
-                onChange={(event) => setStatusFilter(event.target.value)}
-                value={statusFilter}
-              >
-                <NativeSelectOption value="all">
-                  Tous les statuts
-                </NativeSelectOption>
-                {PATIENT_STATUS_OPTIONS.map((option) => (
-                  <NativeSelectOption key={option.value} value={option.value}>
-                    {option.label}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
             </div>
 
             {loadingPatients ? (
@@ -2147,108 +2373,174 @@ const Patients: React.FC = () => {
                         icon={Add01Icon}
                         strokeWidth={2}
                       />
-                      Nouveau patient
+                      {searchTerm.trim()
+                        ? "Créer avec cette recherche"
+                        : "Nouveau patient"}
                     </Button>
                   </EmptyContent>
                 </Empty>
               </div>
             ) : (
               <div className="px-6 pb-6">
-                <div className="overflow-hidden rounded-[18px] border border-border bg-card">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Patient</TableHead>
-                        <TableHead>Propriétaire</TableHead>
-                        <TableHead>Profil</TableHead>
-                        <TableHead>Dernière visite</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead className="pl-6 text-left">Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {visiblePatients.map((entry) => (
-                        <TableRow
-                          className="cursor-pointer transition-colors hover:bg-[var(--color-surface-soft)]"
-                          key={entry.patient.id}
-                          onClick={() =>
-                            openPatientDetails(entry.patient, "info")
-                          }
-                        >
-                          <TableCell className="min-w-[220px] pl-10">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={cn(
-                                  "flex size-10 items-center justify-center rounded-2xl text-xl",
-                                  getSpeciesTone(entry.patient.species)
-                                )}
-                              >
-                                {getSpeciesIcon(entry.patient.species)}
-                              </div>
-                              <div className="min-w-0">
-                                <p className="truncate font-medium text-foreground">
+                <div className="overflow-hidden rounded-[24px] border border-border/80 bg-card/90 shadow-[0_18px_42px_-34px_rgba(15,23,42,0.25)]">
+                  <div className="hidden grid-cols-[minmax(0,1.8fr)_minmax(170px,1.2fr)_minmax(180px,1.2fr)_minmax(140px,0.8fr)_auto] gap-4 border-border/70 border-b px-5 py-3 text-muted-foreground text-xs uppercase tracking-[0.14em] lg:grid">
+                    <span>Patient</span>
+                    <span>Propriétaire</span>
+                    <span>Profil</span>
+                    <span>Suivi</span>
+                    <span className="text-right">Actions</span>
+                  </div>
+
+                  <div className="divide-y divide-border/60">
+                    {paginatedPatients.map((entry) => (
+                      <button
+                        className="group block w-full cursor-pointer bg-transparent px-4 py-4 text-left transition-all duration-200 hover:bg-[linear-gradient(90deg,color-mix(in_oklch,var(--color-surface-soft)_75%,transparent),transparent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 sm:px-5"
+                        key={entry.patient.id}
+                        onClick={() => openPatientDetails(entry.patient, "info")}
+                        type="button"
+                      >
+                        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(170px,1.2fr)_minmax(180px,1.2fr)_minmax(140px,0.8fr)_auto] lg:items-center">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div
+                              className={cn(
+                                "flex size-12 shrink-0 items-center justify-center rounded-[18px] text-[22px] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]",
+                                getSpeciesTone(entry.patient.species)
+                              )}
+                            >
+                              {getSpeciesIcon(entry.patient.species)}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="truncate font-medium text-[15px] text-foreground tracking-[-0.02em]">
                                   {entry.patient.name}
                                 </p>
-                                <p className="truncate text-muted-foreground text-sm">
-                                  {getAgeLabel(entry.patient.dateOfBirth)}
-                                </p>
+                                <Badge
+                                  className={cn(
+                                    "rounded-full border-0 px-2.5 py-1 text-[11px]",
+                                    getSpeciesTone(entry.patient.species)
+                                  )}
+                                  variant="secondary"
+                                >
+                                  {entry.patient.species}
+                                </Badge>
                               </div>
-                            </div>
-                          </TableCell>
-
-                          <TableCell className="min-w-[180px]">
-                            <div className="min-w-0">
-                              <p className="truncate font-medium text-foreground">
-                                {formatOwnerName(entry.owner)}
-                              </p>
-                              <p className="truncate text-muted-foreground text-sm">
-                                {entry.owner?.phone ||
-                                  "Téléphone non renseigné"}
-                              </p>
-                            </div>
-                          </TableCell>
-
-                          <TableCell className="min-w-[220px]">
-                            <div className="min-w-0">
-                              <p className="truncate font-medium text-foreground">
-                                {entry.patient.species}
-                                {entry.patient.breed
-                                  ? ` · ${entry.patient.breed}`
+                              <p className="mt-1 truncate text-muted-foreground text-sm">
+                                {getAgeLabel(entry.patient.dateOfBirth)}
+                                {entry.patient.sex
+                                  ? ` · ${entry.patient.sex === "F" ? "Femelle" : "Mâle"}`
                                   : ""}
                               </p>
-                              <p className="truncate text-muted-foreground text-sm">
-                                {entry.upcomingAppointment
-                                  ? `RDV ${formatPatientDate(entry.upcomingAppointment.startTime)}`
-                                  : `${entry.completedAppointments.length} visite${entry.completedAppointments.length > 1 ? "s" : ""} archivée${entry.completedAppointments.length > 1 ? "s" : ""}`}
-                              </p>
                             </div>
-                          </TableCell>
+                          </div>
 
-                          <TableCell>
-                            {formatPatientDate(entry.lastVisit)}
-                          </TableCell>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium text-foreground text-sm">
+                              {formatOwnerName(entry.owner)}
+                            </p>
+                            <p className="mt-1 truncate text-muted-foreground text-sm">
+                              {entry.owner?.phone || "Téléphone non renseigné"}
+                            </p>
+                          </div>
 
-                          <TableCell>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium text-foreground text-sm">
+                              {entry.patient.breed || "Race non renseignée"}
+                            </p>
+                            <p className="mt-1 truncate text-muted-foreground text-sm">
+                              {entry.upcomingAppointment
+                                ? `Prochain RDV · ${formatPatientDate(entry.upcomingAppointment.startTime)}`
+                                : `${entry.completedAppointments.length} visite${entry.completedAppointments.length > 1 ? "s" : ""} archivée${entry.completedAppointments.length > 1 ? "s" : ""}`}
+                            </p>
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="font-medium text-foreground text-sm">
+                              {formatPatientDate(entry.lastVisit)}
+                            </p>
+                            <p className="mt-1 text-muted-foreground text-sm">
+                              {entry.upcomingAppointment
+                                ? formatPatientLongDate(
+                                    entry.upcomingAppointment.startTime
+                                  )
+                                : "Aucun créneau planifié"}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-col items-start gap-3 lg:items-end">
                             <PatientStatusBadge status={entry.patient.status} />
-                          </TableCell>
-
-                          <TableCell className="pl-6 text-left">
                             <Button
-                              className="justify-start px-0"
+                              className="h-9 rounded-full border-border/70 px-4 shadow-none transition-transform duration-200 group-hover:-translate-y-0.5"
                               onClick={(event) => {
                                 event.stopPropagation();
                                 openPatientDetails(entry.patient, "info");
                               }}
                               size="sm"
-                              variant="ghost"
+                              variant="outline"
                             >
                               Consulter
                             </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-col gap-3 border-border/70 border-t px-5 py-4 md:flex-row md:items-center md:justify-between">
+                    <p className="text-muted-foreground text-sm">
+                      Affichage de <span className="font-medium text-foreground">{pageStart}</span>
+                      {" "}à <span className="font-medium text-foreground">{pageEnd}</span>
+                      {" "}sur <span className="font-medium text-foreground">{visiblePatients.length}</span> dossier
+                      {visiblePatients.length > 1 ? "s" : ""}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        className="h-9 rounded-full px-4"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                        size="sm"
+                        variant="outline"
+                      >
+                        Précédent
+                      </Button>
+
+                      {paginationRange.map((page, index) => {
+                        const previousPage = paginationRange[index - 1];
+                        const shouldRenderGap =
+                          previousPage !== undefined && page - previousPage > 1;
+
+                        return (
+                          <React.Fragment key={page}>
+                            {shouldRenderGap ? (
+                              <span className="px-1 text-muted-foreground text-sm">
+                                …
+                              </span>
+                            ) : null}
+                            <Button
+                              className="h-9 min-w-9 rounded-full px-3"
+                              onClick={() => setCurrentPage(page)}
+                              size="sm"
+                              variant={currentPage === page ? "default" : "outline"}
+                            >
+                              {page}
+                            </Button>
+                          </React.Fragment>
+                        );
+                      })}
+
+                      <Button
+                        className="h-9 rounded-full px-4"
+                        disabled={currentPage === totalPages}
+                        onClick={() =>
+                          setCurrentPage((page) => Math.min(totalPages, page + 1))
+                        }
+                        size="sm"
+                        variant="outline"
+                      >
+                        Suivant
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -2258,10 +2550,11 @@ const Patients: React.FC = () => {
 
       {selectedPatient ? (
         <PatientDetailsDialog
-          allOwners={owners}
+          allOwners={hydratedOwners}
           appointments={appointments}
           initialTab={detailsInitialTab}
           onClose={() => setSelectedPatientId(null)}
+          onSaved={handlePatientSaved}
           onUpdateOwner={updateOwner}
           onUpdatePatient={updatePatient}
           owner={ownersMap.get(selectedPatient.ownerId)}
@@ -2275,6 +2568,95 @@ const Patients: React.FC = () => {
         open={isCreateOpen}
         owners={owners}
       />
+
+      <Dialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setCreatedPatientPrompt(null);
+          }
+        }}
+        open={!!createdPatientPrompt}
+      >
+        <DialogContent className="modal-medical-shell modal-hero-frame max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0">
+          <DialogHeader className="modal-hero-shell gap-0 px-6 py-5">
+            <div className="relative z-[1] grid gap-4">
+              <div className="modal-hero-badge w-fit px-3 py-2">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-[14px] bg-emerald-500/12 text-emerald-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:text-emerald-300">
+                  <HugeiconsIcon
+                    className="size-4"
+                    icon={CheckmarkCircle02Icon}
+                    strokeWidth={2}
+                  />
+                </div>
+                <span className="font-medium text-[12px] text-emerald-700/90 tracking-[0.02em] dark:text-emerald-300/90">
+                  Dossier créé
+                </span>
+              </div>
+
+              <div className="space-y-1.5">
+                <DialogTitle className="text-[1.65rem] leading-[1.05] tracking-[-0.04em]">
+                  {createdPatientPrompt?.patient.name}
+                </DialogTitle>
+                <DialogDescription className="text-[0.95rem] text-muted-foreground leading-6">
+                  {createdPatientPrompt?.patient.species}
+                  {createdPatientPrompt?.patient.breed
+                    ? ` · ${createdPatientPrompt.patient.breed}`
+                    : ""}
+                  {createdPatientPrompt?.owner
+                    ? ` — ${formatOwnerName(createdPatientPrompt.owner)}`
+                    : ""}
+                  {createdPatientPrompt?.owner?.phone
+                    ? ` · ${createdPatientPrompt.owner.phone}`
+                    : ""}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <div className="modal-hero-footer flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="sm:mr-auto"
+              onClick={() => setCreatedPatientPrompt(null)}
+              type="button"
+              variant="ghost"
+            >
+              Fermer
+            </Button>
+            <Button
+              onClick={() => {
+                if (createdPatientPrompt) {
+                  setDetailsInitialTab("info");
+                  setSelectedPatientId(createdPatientPrompt.patient.id);
+                }
+                setCreatedPatientPrompt(null);
+              }}
+              type="button"
+              variant="outline"
+            >
+              <HugeiconsIcon
+                data-icon="inline-start"
+                icon={StethoscopeIcon}
+                strokeWidth={2}
+              />
+              Voir le dossier
+            </Button>
+            <Button
+              onClick={() => {
+                if (createdPatientPrompt) {
+                  createAppointmentForPatient(createdPatientPrompt.patient);
+                }
+              }}
+              type="button"
+            >
+              <HugeiconsIcon
+                data-icon="inline-start"
+                icon={Calendar01Icon}
+                strokeWidth={2}
+              />
+              Créer un RDV
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

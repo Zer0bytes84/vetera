@@ -448,7 +448,7 @@ const Tasks: React.FC = () => {
   ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-wrap items-center gap-3">
           {/* Filter toggle */}

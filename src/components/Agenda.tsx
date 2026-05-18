@@ -441,6 +441,10 @@ function getPatientProfile(patient?: Patient) {
     : patient.species;
 }
 
+function normalizeEntityId(value?: string | null) {
+  return String(value ?? "").trim();
+}
+
 function getAgeLabel(dateOfBirth?: string) {
   const birthday = normalizeDate(dateOfBirth);
   if (!birthday) {
@@ -1121,7 +1125,9 @@ const Agenda: React.FC = () => {
     string | null
   >(null);
   const [selectedOwnerId, setSelectedOwnerId] = useState("");
+  const [personSearchTerm, setPersonSearchTerm] = useState("");
   const [ownerSearchTerm, setOwnerSearchTerm] = useState("");
+  const [patientSearchTerm, setPatientSearchTerm] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [selectedVetId, setSelectedVetId] = useState("");
   const [selectedType, setSelectedType] =
@@ -1131,6 +1137,7 @@ const Agenda: React.FC = () => {
   const [duration, setDuration] = useState(30);
   const [reason, setReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
@@ -1181,7 +1188,7 @@ const Agenda: React.FC = () => {
   const filteredOwners = useMemo(() => {
     const query = ownerSearchTerm.trim().toLowerCase();
     if (!query) {
-      return owners.slice(0, 8);
+      return owners;
     }
 
     return owners
@@ -1191,16 +1198,71 @@ const Agenda: React.FC = () => {
           .join(" ")
           .toLowerCase()
           .includes(query)
-      )
-      .slice(0, 8);
+      );
   }, [ownerSearchTerm, owners]);
 
   const patientsForSelectedOwner = useMemo(() => {
-    if (!selectedOwnerId) {
+    const ownerId = normalizeEntityId(selectedOwnerId);
+    if (!ownerId) {
       return patients;
     }
-    return patients.filter((patient) => patient.ownerId === selectedOwnerId);
+
+    return patients.filter(
+      (patient) => normalizeEntityId(patient.ownerId) === ownerId
+    );
   }, [patients, selectedOwnerId]);
+
+  const filteredPatientsForForm = useMemo(() => {
+    const query = patientSearchTerm.trim().toLowerCase();
+    if (!query) {
+      return patientsForSelectedOwner;
+    }
+
+    return patientsForSelectedOwner.filter((patient) => {
+      const owner = ownersById.get(patient.ownerId);
+      const searchIndex = [
+        patient.name,
+        patient.species,
+        patient.breed,
+        owner?.firstName,
+        owner?.lastName,
+        owner?.phone,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchIndex.includes(query);
+    });
+  }, [ownersById, patientSearchTerm, patientsForSelectedOwner]);
+
+  const unifiedAppointmentMatches = useMemo(() => {
+    const query = personSearchTerm.trim().toLowerCase();
+    if (!query) {
+      return [];
+    }
+
+    return patients
+      .map((patient) => {
+        const owner = ownersById.get(patient.ownerId);
+        const searchIndex = [
+          patient.name,
+          patient.species,
+          patient.breed,
+          owner?.firstName,
+          owner?.lastName,
+          owner?.phone,
+          owner?.email,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return { owner, patient, searchIndex };
+      })
+      .filter((entry) => entry.searchIndex.includes(query))
+      .slice(0, 8);
+  }, [ownersById, patients, personSearchTerm]);
 
   const appointmentsByDate = useMemo(() => {
     const map = new Map<string, Appointment[]>();
@@ -1488,7 +1550,9 @@ const Agenda: React.FC = () => {
   const resetForm = (date = selectedDate) => {
     setEditingAppointmentId(null);
     setSelectedOwnerId("");
+    setPersonSearchTerm("");
     setOwnerSearchTerm("");
+    setPatientSearchTerm("");
     setSelectedPatientId("");
     setSelectedVetId(vets[0]?.id ?? "");
     setSelectedType("Consultation");
@@ -1497,6 +1561,7 @@ const Agenda: React.FC = () => {
     setDuration(30);
     setReason("");
     setIsSubmitting(false);
+    setFormError("");
   };
 
   const closeDialog = () => {
@@ -1534,37 +1599,123 @@ const Agenda: React.FC = () => {
   };
 
   const handleOwnerSelect = (ownerId: string) => {
-    setSelectedOwnerId(ownerId);
-    const owner = ownersById.get(ownerId);
+    const normalizedOwnerId = normalizeEntityId(ownerId);
+    setSelectedOwnerId(normalizedOwnerId);
+    const owner = ownersById.get(normalizedOwnerId);
     setOwnerSearchTerm(
       owner ? `${owner.firstName} ${owner.lastName}`.trim() : ""
     );
 
     const ownerPatients = patients.filter(
-      (patient) => patient.ownerId === ownerId
+      (patient) => normalizeEntityId(patient.ownerId) === normalizedOwnerId
     );
     if (ownerPatients.length === 1) {
       setSelectedPatientId(ownerPatients[0].id);
+      setPatientSearchTerm("");
       return;
     }
 
     const selectedPatient = patientsById.get(selectedPatientId);
-    if (!selectedPatient || selectedPatient.ownerId !== ownerId) {
+    if (
+      !selectedPatient ||
+      normalizeEntityId(selectedPatient.ownerId) !== normalizedOwnerId
+    ) {
       setSelectedPatientId("");
     }
+    setPatientSearchTerm("");
   };
 
   const handlePatientSelect = (patientId: string) => {
-    setSelectedPatientId(patientId);
-    const patient = patientsById.get(patientId);
+    setFormError("");
+    const normalizedPatientId = normalizeEntityId(patientId);
+    setSelectedPatientId(normalizedPatientId);
+    const patient = patientsById.get(normalizedPatientId);
     if (patient?.ownerId) {
-      setSelectedOwnerId(patient.ownerId);
-      const owner = ownersById.get(patient.ownerId);
+      const normalizedOwnerId = normalizeEntityId(patient.ownerId);
+      setSelectedOwnerId(normalizedOwnerId);
+      const owner = ownersById.get(normalizedOwnerId);
       setOwnerSearchTerm(
         owner ? `${owner.firstName} ${owner.lastName}`.trim() : ""
       );
     }
+    if (patient) {
+      setPatientSearchTerm(patient.name);
+      const owner = ownersById.get(patient.ownerId);
+      setPersonSearchTerm(
+        `${patient.name} ${owner ? formatOwnerName(owner) : ""}`.trim()
+      );
+    }
   };
+
+  const handleOpenCreateForPatient = (patientId: string) => {
+    const normalizedPatientId = normalizeEntityId(patientId);
+    const patient = patientsById.get(normalizedPatientId);
+    if (!patient) {
+      return false;
+    }
+
+    resetForm(selectedDate);
+    setIsDialogOpen(true);
+    window.setTimeout(() => {
+      handlePatientSelect(normalizedPatientId);
+    }, 0);
+    return true;
+  };
+
+  useEffect(() => {
+    const consumePendingAppointment = () => {
+      if (typeof window === "undefined") {
+        return false;
+      }
+
+      const raw = window.sessionStorage.getItem("vetera:pending-appointment");
+      if (!raw) {
+        return false;
+      }
+
+      try {
+        const pending = JSON.parse(raw) as { patientId?: string };
+        if (!pending.patientId) {
+          window.sessionStorage.removeItem("vetera:pending-appointment");
+          return false;
+        }
+
+        const opened = handleOpenCreateForPatient(pending.patientId);
+        if (opened) {
+          window.sessionStorage.removeItem("vetera:pending-appointment");
+        }
+        return opened;
+      } catch {
+        window.sessionStorage.removeItem("vetera:pending-appointment");
+        return false;
+      }
+    };
+
+    const handleNewAppointment = (event: Event) => {
+      const detail = (event as CustomEvent<{ patientId?: string }>).detail;
+      if (detail?.patientId && typeof window !== "undefined") {
+        window.sessionStorage.setItem(
+          "vetera:pending-appointment",
+          JSON.stringify(detail)
+        );
+      }
+
+      window.setTimeout(() => {
+        if (!consumePendingAppointment()) {
+          handleOpenCreate();
+        }
+      }, 0);
+    };
+
+    consumePendingAppointment();
+    window.addEventListener("vetera:new-appointment", handleNewAppointment);
+    return () => {
+      window.removeEventListener(
+        "vetera:new-appointment",
+        handleNewAppointment
+      );
+    };
+  }, [patientsById, ownersById, selectedDate]);
 
   const selectAppointment = (appointment: Appointment, syncDate = false) => {
     setSelectedAppointmentId(appointment.id);
@@ -1624,8 +1775,12 @@ const Agenda: React.FC = () => {
   };
 
   const handleSave = async () => {
+    setFormError("");
+
     if (!selectedPatientId) {
-      toast.error("Sélectionnez un patient pour créer le rendez-vous.");
+      const message = "Sélectionnez un patient pour créer le rendez-vous.";
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
@@ -1633,7 +1788,10 @@ const Agenda: React.FC = () => {
       selectedVetId || selectedAppointment?.vetId || vets[0]?.id || "";
 
     if (!effectiveVetId) {
-      toast.error("Aucun vétérinaire actif n’est disponible pour ce créneau.");
+      const message =
+        "Aucun vétérinaire actif n’est disponible pour ce créneau.";
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
@@ -1645,7 +1803,9 @@ const Agenda: React.FC = () => {
       Number.isNaN(hours) ||
       Number.isNaN(minutes)
     ) {
-      toast.error("La date ou l’heure du rendez-vous est invalide.");
+      const message = "La date ou l’heure du rendez-vous est invalide.";
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
@@ -1677,9 +1837,10 @@ const Agenda: React.FC = () => {
     });
 
     if (hasConflict) {
-      toast.error(
-        "Ce créneau est déjà occupé pour le vétérinaire sélectionné."
-      );
+      const message =
+        "Ce créneau est déjà occupé pour le vétérinaire sélectionné. Choisissez un autre horaire ou un autre vétérinaire.";
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
@@ -1725,9 +1886,13 @@ const Agenda: React.FC = () => {
         message.toLowerCase().includes("database is locked") ||
         message.toLowerCase().includes("code: 5")
       ) {
-        toast.error("Base occupée, réessayez dans quelques secondes.");
+        const userMessage = "Base occupée, réessayez dans quelques secondes.";
+        setFormError(userMessage);
+        toast.error(userMessage);
       } else {
-        toast.error(`Impossible d’enregistrer ce rendez-vous: ${message}`);
+        const userMessage = `Impossible d’enregistrer ce rendez-vous: ${message}`;
+        setFormError(userMessage);
+        toast.error(userMessage);
       }
     } finally {
       setIsSubmitting(false);
@@ -1832,7 +1997,7 @@ const Agenda: React.FC = () => {
   const visibleRowsCount = tableRowsByTab[tableTab].length;
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -2537,6 +2702,54 @@ const Agenda: React.FC = () => {
             <FieldGroup className="grid gap-6">
               <div className="grid gap-5 lg:grid-cols-2">
                 <Field className="lg:col-span-2">
+                  <FieldLabel>Recherche rapide patient / propriétaire</FieldLabel>
+                  <Input
+                    onChange={(event) =>
+                      setPersonSearchTerm(event.target.value)
+                    }
+                    placeholder="Tapez Lisa, Hadji, un téléphone, une espèce..."
+                    value={personSearchTerm}
+                  />
+                  <FieldDescription>
+                    Sélectionnez directement le bon dossier. Le propriétaire et
+                    le patient seront remplis ensemble.
+                  </FieldDescription>
+                  {personSearchTerm.trim() ? (
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {unifiedAppointmentMatches.length > 0 ? (
+                        unifiedAppointmentMatches.map(({ owner, patient }) => (
+                          <button
+                            className={cn(
+                              "rounded-2xl border px-4 py-3 text-left transition hover:border-primary/40 hover:bg-primary/5",
+                              selectedPatientId === patient.id
+                                ? "border-primary bg-primary/10"
+                                : "border-border/80 bg-background/70"
+                            )}
+                            key={patient.id}
+                            onClick={() => handlePatientSelect(patient.id)}
+                            type="button"
+                          >
+                            <span className="block font-medium text-foreground">
+                              {patient.name}
+                            </span>
+                            <span className="mt-1 block text-muted-foreground text-sm">
+                              {patient.species}
+                              {patient.breed ? ` · ${patient.breed}` : ""} ·{" "}
+                              {formatOwnerName(owner)}
+                            </span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="rounded-2xl border border-dashed p-4 text-muted-foreground text-sm sm:col-span-2">
+                          Aucun dossier trouvé. Créez d’abord le patient dans le
+                          module Patients, puis revenez ici.
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+                </Field>
+
+                <Field className="lg:col-span-2">
                   <FieldLabel>Client existant</FieldLabel>
                   <Input
                     onChange={(event) => {
@@ -2561,7 +2774,10 @@ const Agenda: React.FC = () => {
                           size="sm"
                           type="button"
                           variant={
-                            selectedOwnerId === owner.id ? "default" : "outline"
+                            normalizeEntityId(selectedOwnerId) ===
+                            normalizeEntityId(owner.id)
+                              ? "default"
+                              : "outline"
                           }
                         >
                           {formatOwnerName(owner)}
@@ -2577,6 +2793,11 @@ const Agenda: React.FC = () => {
 
                 <Field>
                   <FieldLabel>Patient</FieldLabel>
+                  <Input
+                    onChange={(event) => setPatientSearchTerm(event.target.value)}
+                    placeholder="Rechercher un patient par nom, espèce ou propriétaire..."
+                    value={patientSearchTerm}
+                  />
                   <NativeSelect
                     className="w-full"
                     onChange={(event) =>
@@ -2589,7 +2810,7 @@ const Agenda: React.FC = () => {
                         ? "Sélectionner un dossier du client"
                         : "Sélectionner un dossier"}
                     </NativeSelectOption>
-                    {patientsForSelectedOwner.map((patient) => {
+                    {filteredPatientsForForm.map((patient) => {
                       const owner = ownersById.get(patient.ownerId);
                       return (
                         <NativeSelectOption key={patient.id} value={patient.id}>
@@ -2795,6 +3016,11 @@ const Agenda: React.FC = () => {
               >
                 Annuler
               </Button>
+              {formError ? (
+                <div className="max-w-[360px] rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm">
+                  {formError}
+                </div>
+              ) : null}
               <Button
                 className="min-w-[170px]"
                 disabled={isSubmitting || !selectedPatientId}

@@ -249,7 +249,7 @@ const Help: React.FC = () => {
     sections.find((s) => s.id === activeSectionId) || sections[0];
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-64px)] w-full max-w-[1600px] flex-col gap-0">
+    <div className="prospeo-dashboard mx-auto flex h-[calc(100vh-64px)] w-full min-w-0 max-w-[1600px] flex-col gap-0">
       {/* Hero Banner */}
       <Card className="relative overflow-hidden rounded-none border-x-0 border-t-0 shadow-sm">
         <div className="pointer-events-none absolute top-0 right-0 -mt-16 -mr-16 h-64 w-64 rounded-full bg-gradient-to-br from-primary/10 to-purple-500/10 blur-3xl" />

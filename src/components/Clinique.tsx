@@ -120,6 +120,10 @@ type BillingItem = {
   amount: number;
 };
 
+type SaveDraftOptions = {
+  silent?: boolean;
+};
+
 type ListTab = "all" | "scheduled" | "in_progress" | "completed";
 type DetailTab = "overview" | "history";
 
@@ -653,6 +657,7 @@ function ConsultationSessionDialog({
   owner,
   patientName,
   documents,
+  historyAppointments,
   onClose,
   onSaveDraft,
   onComplete,
@@ -664,8 +669,12 @@ function ConsultationSessionDialog({
   owner?: Owner;
   patientName: string;
   documents: ConsultationDocument[];
+  historyAppointments: Appointment[];
   onClose: () => void;
-  onSaveDraft: (payload: ConsultationDraftPayload) => Promise<void>;
+  onSaveDraft: (
+    payload: ConsultationDraftPayload,
+    options?: SaveDraftOptions
+  ) => Promise<void>;
   onComplete: (payload: ConsultationDraftPayload) => Promise<void>;
   onUploadDocument: (file: File, description?: string) => Promise<void>;
   onDeleteDocument: (documentId: string) => Promise<void>;
@@ -694,7 +703,15 @@ function ConsultationSessionDialog({
   );
   const [documentDescription, setDocumentDescription] = useState("");
   const [isUploadingDocument, setIsUploadingDocument] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [autosaveStatus, setAutosaveStatus] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+  const [lastAutoSavedAt, setLastAutoSavedAt] = useState<Date | null>(null);
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  const autosaveReadyRef = useRef(false);
+  const saveDraftRef = useRef(onSaveDraft);
   const [startedAt, setStartedAt] = useState(() => {
     if (typeof window === "undefined") {
       return new Date().toISOString();
@@ -723,7 +740,13 @@ function ConsultationSessionDialog({
     setDiagnosis(appointment.diagnosis || "");
     setTreatment(appointment.treatment || "");
     setConsultationNotes(appointment.notes || "");
+    setAutosaveStatus("idle");
+    autosaveReadyRef.current = false;
   }, [appointment, patient]);
+
+  useEffect(() => {
+    saveDraftRef.current = onSaveDraft;
+  }, [onSaveDraft]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -775,6 +798,46 @@ function ConsultationSessionDialog({
     },
   });
 
+  const autosaveKey = [
+    patientNameValue,
+    patientSpecies,
+    patientBreed,
+    patientSex,
+    patientStatus,
+    allergies,
+    chronicConditions,
+    generalNotes,
+    reason,
+    diagnosis,
+    treatment,
+    consultationNotes,
+  ].join("\u001f");
+
+  useEffect(() => {
+    if (!autosaveReadyRef.current) {
+      autosaveReadyRef.current = true;
+      return;
+    }
+
+    if (isCompleting) {
+      return;
+    }
+
+    const timer = window.setTimeout(async () => {
+      try {
+        setAutosaveStatus("saving");
+        await saveDraftRef.current(buildPayload(), { silent: true });
+        setLastAutoSavedAt(new Date());
+        setAutosaveStatus("saved");
+      } catch (error) {
+        console.error(error);
+        setAutosaveStatus("error");
+      }
+    }, 1400);
+
+    return () => window.clearTimeout(timer);
+  }, [autosaveKey, isCompleting]);
+
   const triggerDocumentPicker = () => {
     uploadInputRef.current?.click();
   };
@@ -810,6 +873,32 @@ function ConsultationSessionDialog({
       toast.error("Impossible d'ajouter ce document.");
     } finally {
       setIsUploadingDocument(false);
+    }
+  };
+
+  const handleSaveDraftClick = async () => {
+    if (isSavingDraft || isCompleting) {
+      return;
+    }
+    try {
+      setIsSavingDraft(true);
+      await onSaveDraft(buildPayload());
+      setLastAutoSavedAt(new Date());
+      setAutosaveStatus("saved");
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const handleCompleteClick = async () => {
+    if (isSavingDraft || isCompleting) {
+      return;
+    }
+    try {
+      setIsCompleting(true);
+      await onComplete(buildPayload());
+    } finally {
+      setIsCompleting(false);
     }
   };
 
@@ -884,6 +973,48 @@ function ConsultationSessionDialog({
                       {owner?.phone || "Non renseigné"}
                     </p>
                   </div>
+                </CardContent>
+              </Card>
+
+              <Card size="sm">
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    Historique récent
+                  </CardTitle>
+                  <CardDescription>
+                    Les dernières consultations restent visibles pendant
+                    l’examen.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {historyAppointments.length > 0 ? (
+                    <div className="grid gap-2">
+                      {historyAppointments.map((entry) => (
+                        <div
+                          className="rounded-2xl border bg-background/70 px-4 py-3"
+                          key={entry.id}
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <p className="font-medium text-foreground text-sm">
+                              {entry.type} · {formatShortDate(entry.startTime)}
+                            </p>
+                            <AppointmentStatusBadge status={entry.status} />
+                          </div>
+                          <p className="mt-2 line-clamp-2 text-muted-foreground text-sm">
+                            {entry.diagnosis ||
+                              entry.treatment ||
+                              entry.notes ||
+                              entry.reason ||
+                              "Aucune note clinique détaillée."}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed bg-muted/20 px-4 py-3 text-muted-foreground text-sm">
+                      Première consultation enregistrée pour ce patient.
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -1155,28 +1286,66 @@ function ConsultationSessionDialog({
           </div>
         </div>
 
-        <div className="modal-medical-footer flex flex-col gap-2 border-t px-6 py-4 sm:flex-row sm:justify-end">
-          <Button className="min-w-[120px]" onClick={onClose} variant="outline">
+        <div className="modal-medical-footer flex flex-col gap-2 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-h-5 text-muted-foreground text-sm">
+            {autosaveStatus === "saving" ? (
+              <span className="inline-flex items-center gap-2">
+                <Spinner className="size-3.5" />
+                Sauvegarde automatique...
+              </span>
+            ) : autosaveStatus === "saved" ? (
+              <span>
+                Sauvegardé automatiquement
+                {lastAutoSavedAt
+                  ? ` à ${lastAutoSavedAt.toLocaleTimeString("fr-FR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`
+                  : ""}
+              </span>
+            ) : autosaveStatus === "error" ? (
+              <span className="text-destructive">
+                Sauvegarde automatique à vérifier.
+              </span>
+            ) : (
+              <span>Les changements sont sauvegardés automatiquement.</span>
+            )}
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button
+            className="min-w-[120px]"
+            disabled={isSavingDraft || isCompleting}
+            onClick={onClose}
+            variant="outline"
+          >
             Fermer
           </Button>
           <Button
             className="min-w-[130px]"
-            onClick={() => void onSaveDraft(buildPayload())}
+            disabled={isSavingDraft || isCompleting}
+            onClick={() => void handleSaveDraftClick()}
             variant="outline"
           >
-            Sauvegarder
+            {isSavingDraft ? <Spinner className="size-4" /> : null}
+            {isSavingDraft ? "Sauvegarde..." : "Sauvegarder"}
           </Button>
           <Button
             className="min-w-[188px]"
-            onClick={() => void onComplete(buildPayload())}
+            disabled={isSavingDraft || isCompleting}
+            onClick={() => void handleCompleteClick()}
           >
-            <HugeiconsIcon
-              data-icon="inline-start"
-              icon={Dollar01Icon}
-              strokeWidth={2}
-            />
-            Clôturer et facturer
+            {isCompleting ? (
+              <Spinner className="size-4" />
+            ) : (
+              <HugeiconsIcon
+                data-icon="inline-start"
+                icon={Dollar01Icon}
+                strokeWidth={2}
+              />
+            )}
+            {isCompleting ? "Traitement..." : "Clôturer et facturer"}
           </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -1186,21 +1355,24 @@ function ConsultationSessionDialog({
 function BillingDialog({
   appointment,
   patientName,
+  ownerName,
   ownerEmail,
   onClose,
   onConfirm,
 }: {
   appointment: Appointment;
   patientName: string;
+  ownerName?: string;
   ownerEmail?: string;
   onClose: () => void;
-  onConfirm: (items: BillingItem[]) => void;
+  onConfirm: (items: BillingItem[]) => Promise<void>;
 }) {
   const [items, setItems] = useState<BillingItem[]>([
     { desc: `Consultation - ${appointment.type}`, amount: 2000 },
   ]);
   const [newItemDesc, setNewItemDesc] = useState("");
   const [newItemAmount, setNewItemAmount] = useState("");
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const total = items.reduce((sum, item) => sum + item.amount, 0);
 
@@ -1272,6 +1444,18 @@ function BillingDialog({
     window.open(`mailto:${ownerEmail}?subject=${subject}&body=${body}`);
   };
 
+  const handleConfirm = async () => {
+    if (isConfirming) {
+      return;
+    }
+    try {
+      setIsConfirming(true);
+      await onConfirm(items);
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
       <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(940px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(940px,calc(100%-2rem))]">
@@ -1288,11 +1472,34 @@ function BillingDialog({
           <div className="grid gap-6">
             <Card size="sm">
               <CardHeader>
-                <CardTitle className="text-base">{patientName}</CardTitle>
+                <CardTitle className="text-base">
+                  Résumé avant facturation
+                </CardTitle>
                 <CardDescription>
-                  {appointment.type} · {new Date().toLocaleDateString("fr-FR")}
+                  Vérifiez le patient, le propriétaire et le total avant de
+                  générer la facture.
                 </CardDescription>
               </CardHeader>
+              <CardContent className="grid gap-3 sm:grid-cols-4">
+                <div className="rounded-2xl bg-muted/30 px-4 py-3">
+                  <p className="text-muted-foreground text-xs">Patient</p>
+                  <p className="mt-1 font-medium">{patientName}</p>
+                </div>
+                <div className="rounded-2xl bg-muted/30 px-4 py-3">
+                  <p className="text-muted-foreground text-xs">Client</p>
+                  <p className="mt-1 font-medium">
+                    {ownerName || "Non renseigné"}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-muted/30 px-4 py-3">
+                  <p className="text-muted-foreground text-xs">Acte</p>
+                  <p className="mt-1 font-medium">{appointment.type}</p>
+                </div>
+                <div className="rounded-2xl bg-primary/10 px-4 py-3 text-primary">
+                  <p className="text-xs">Total provisoire</p>
+                  <p className="mt-1 font-semibold">{total} DA</p>
+                </div>
+              </CardContent>
             </Card>
 
             <FieldGroup className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px_auto]">
@@ -1414,18 +1621,27 @@ function BillingDialog({
           <div className="modal-medical-actions">
             <Button
               className="min-w-[120px]"
+              disabled={isConfirming}
               onClick={onClose}
               variant="outline"
             >
               Annuler
             </Button>
-            <Button className="min-w-[196px]" onClick={() => onConfirm(items)}>
-              <HugeiconsIcon
-                data-icon="inline-start"
-                icon={PrinterIcon}
-                strokeWidth={2}
-              />
-              Encaisser et imprimer
+            <Button
+              className="min-w-[196px]"
+              disabled={isConfirming}
+              onClick={() => void handleConfirm()}
+            >
+              {isConfirming ? (
+                <Spinner className="size-4" />
+              ) : (
+                <HugeiconsIcon
+                  data-icon="inline-start"
+                  icon={PrinterIcon}
+                  strokeWidth={2}
+                />
+              )}
+              {isConfirming ? "Traitement..." : "Encaisser et imprimer"}
             </Button>
           </div>
         </div>
@@ -1601,6 +1817,25 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       );
   }, [activeConsultation, consultationDocuments]);
 
+  const activeConsultationHistory = useMemo(() => {
+    if (!activeConsultation) {
+      return [];
+    }
+
+    return appointments
+      .filter(
+        (appointment) =>
+          appointment.patientId === activeConsultation.patientId &&
+          appointment.id !== activeConsultation.id
+      )
+      .sort(
+        (left, right) =>
+          new Date(right.startTime).getTime() -
+          new Date(left.startTime).getTime()
+      )
+      .slice(0, 4);
+  }, [activeConsultation, appointments]);
+
   const stats = useMemo(
     () => ({
       total: todaysAppointments.length,
@@ -1667,6 +1902,15 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     const patient = getPatient(appointment.patientId);
     return ownersById.get(appointment.ownerId || patient?.ownerId || "");
   };
+  const moveSelectionToStatusTab = (
+    status: Appointment["status"],
+    appointmentId: string
+  ) => {
+    if (status === "in_progress" || status === "completed") {
+      setListTab(status);
+    }
+    setSelectedAppointmentId(appointmentId);
+  };
 
   const handleStatusAction = async (appointment: Appointment) => {
     try {
@@ -1677,8 +1921,8 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           status: "in_progress" as const,
         };
         setActiveConsultation(openedAppointment);
-        setSelectedAppointmentId(appointment.id);
-        toast.success("La consultation a été démarrée.");
+        moveSelectionToStatusTab("in_progress", appointment.id);
+        toast.success("La consultation a été démarrée et déplacée dans En cours.");
         return;
       }
 
@@ -1692,7 +1936,8 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   };
 
   const handleConsultationSaveDraft = async (
-    payload: ConsultationDraftPayload
+    payload: ConsultationDraftPayload,
+    options?: SaveDraftOptions
   ) => {
     if (!activeConsultation) {
       return;
@@ -1701,6 +1946,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     try {
       await updateAppointment(activeConsultation.id, payload.appointmentPatch);
       await updatePatient(activeConsultation.patientId, payload.patientPatch);
+      moveSelectionToStatusTab("in_progress", activeConsultation.id);
 
       setActiveConsultation((current) =>
         current
@@ -1711,10 +1957,15 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           : current
       );
 
-      toast.success("Consultation mise à jour.");
+      if (!options?.silent) {
+        toast.success("Consultation mise à jour.");
+      }
     } catch (error) {
       console.error(error);
-      toast.error("Impossible d’enregistrer la consultation.");
+      if (!options?.silent) {
+        toast.error("Impossible d’enregistrer la consultation.");
+      }
+      throw error;
     }
   };
 
@@ -1726,12 +1977,16 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     }
 
     try {
+      const finalAppointmentPatch: Partial<Appointment> = {
+        ...payload.appointmentPatch,
+        status: "completed",
+      };
       const patientPatch: Partial<Patient> = {
         ...payload.patientPatch,
         lastVisit: new Date().toISOString(),
       };
 
-      await updateAppointment(activeConsultation.id, payload.appointmentPatch);
+      await updateAppointment(activeConsultation.id, finalAppointmentPatch);
       await updatePatient(activeConsultation.patientId, patientPatch);
 
       if (typeof window !== "undefined") {
@@ -1742,12 +1997,13 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
 
       const updatedAppointment: Appointment = {
         ...activeConsultation,
-        ...payload.appointmentPatch,
+        ...finalAppointmentPatch,
       };
 
+      moveSelectionToStatusTab("completed", activeConsultation.id);
       setActiveConsultation(null);
       setBillingAppointment(updatedAppointment);
-      toast.success("Consultation clôturée. Passez à la facturation.");
+      toast.success("Consultation clôturée et déplacée dans Terminés.");
     } catch (error) {
       console.error(error);
       toast.error("Impossible de clôturer la consultation.");
@@ -1881,7 +2137,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     : undefined;
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 px-4 pt-4 pb-6 lg:px-6">
+    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -2212,7 +2468,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                               <div className="flex flex-wrap items-center gap-1.5">
                                 {appointment.status === "scheduled" ? (
                                   <Button
-                                    className="rounded-3xl"
+                                    className="min-w-[118px] rounded-3xl"
                                     onClick={() =>
                                       handleStatusAction(appointment)
                                     }
@@ -2227,7 +2483,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                                   </Button>
                                 ) : appointment.status === "in_progress" ? (
                                   <Button
-                                    className="rounded-3xl"
+                                    className="min-w-[118px] rounded-3xl"
                                     onClick={() =>
                                       handleStatusAction(appointment)
                                     }
@@ -2687,6 +2943,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         <ConsultationSessionDialog
           appointment={activeConsultation}
           documents={activeConsultationDocuments}
+          historyAppointments={activeConsultationHistory}
           onClose={() => setActiveConsultation(null)}
           onComplete={handleConsultationComplete}
           onDeleteDocument={handleConsultationDocumentDelete}
@@ -2707,6 +2964,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           onClose={() => setBillingAppointment(null)}
           onConfirm={handleBillingConfirm}
           ownerEmail={getOwner(billingAppointment)?.email}
+          ownerName={formatOwnerName(getOwner(billingAppointment))}
           patientName={
             patientsById.get(billingAppointment.patientId)?.name ||
             "Patient local"
