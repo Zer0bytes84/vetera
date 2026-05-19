@@ -1706,13 +1706,45 @@ html:not(.dark) .card-hover-lift:hover {
 }
 
 .prospeo-dashboard {
+  position: relative;
   min-height: 100%;
   color: var(--prospeo-text);
   background:
     radial-gradient(
-      circle at 74% -12%,
-      color-mix(in oklch, var(--prospeo-active) 10%, transparent),
-      transparent 28%
+      ellipse 60% 50% at 12% 8%,
+      color-mix(in oklch, var(--prospeo-active) 14%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 88% 6%,
+      color-mix(in oklch, var(--prospeo-active-2) 12%, transparent) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 70% 55% at 50% 100%,
+      color-mix(in oklch, var(--prospeo-active) 8%, transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(180deg, var(--prospeo-bg), var(--background));
+}
+
+.prospeo-dashboard.prospeo-dark,
+.dark .prospeo-dashboard {
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 12% 8%,
+      color-mix(in oklch, var(--prospeo-active) 10%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 88% 6%,
+      color-mix(in oklch, var(--prospeo-active-2) 9%, transparent) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 70% 55% at 50% 100%,
+      color-mix(in oklch, var(--prospeo-active) 6%, transparent) 0%,
+      transparent 62%
     ),
     linear-gradient(180deg, var(--prospeo-bg), var(--background));
 }
@@ -1841,8 +1873,172 @@ html:not(.dark) .card-hover-lift:hover {
   justify-content: flex-end;
 }
 
+.modal-hero-shell {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 88%, transparent);
+  background:
+    radial-gradient(
+      120% 140% at 0% 0%,
+      color-mix(in oklch, #6fd3ff 30%, white) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      110% 140% at 100% 0%,
+      color-mix(in oklch, #ffd58a 34%, white) 0%,
+      transparent 48%
+    ),
+    radial-gradient(
+      90% 120% at 50% 100%,
+      color-mix(in oklch, #ff8d76 26%, white) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, white 94%, var(--muted) 6%) 0%,
+      color-mix(in oklch, white 98%, var(--muted) 2%) 100%
+    );
+}
+
+.modal-hero-frame {
+  border: 1px solid color-mix(in oklch, white 50%, var(--border) 50%);
+  box-shadow:
+    0 1px 0 color-mix(in oklch, white 85%, transparent) inset,
+    0 34px 70px -46px color-mix(in oklch, black 28%, transparent);
+  backdrop-filter: blur(20px) saturate(1.08);
+}
+
+.modal-hero-shell::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in oklch, white 30%, transparent) 0%,
+      transparent 35%,
+      color-mix(in oklch, white 34%, transparent) 100%
+    );
+  pointer-events: none;
+  content: "";
+}
+
+.modal-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid color-mix(in oklch, white 72%, var(--border) 28%);
+  border-radius: 999px;
+  background: color-mix(in oklch, white 84%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in oklch, white 90%, transparent) inset,
+    0 18px 40px -34px color-mix(in oklch, black 22%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.modal-hero-stat {
+  border: 1px solid color-mix(in oklch, white 70%, var(--border) 30%);
+  border-radius: 1.15rem;
+  background: color-mix(in oklch, white 78%, transparent);
+  box-shadow: 0 16px 36px -30px color-mix(in oklch, black 20%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.modal-hero-footer {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, white 92%, transparent),
+      color-mix(in oklch, white 98%, var(--muted) 2%)
+    );
+  box-shadow: 0 1px 0 color-mix(in oklch, white 80%, transparent) inset;
+}
+
+.modal-hero-action {
+  min-height: 154px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 1.35rem;
+  padding: 1.15rem 1.1rem;
+  text-align: left;
+  box-shadow:
+    0 1px 0 color-mix(in oklch, white 75%, transparent) inset,
+    0 18px 36px -30px color-mix(in oklch, black 20%, transparent);
+  white-space: normal;
+}
+
+.modal-hero-action > span,
+.modal-hero-action [class*="grid"] {
+  min-width: 0;
+}
+
+.modal-hero-action [class*="grid"] > span:last-child {
+  overflow-wrap: anywhere;
+}
+
+.modal-hero-action[data-variant="primary"] {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--primary) 92%, white 8%) 0%,
+      color-mix(in oklch, var(--primary) 100%, black 0%) 100%
+    );
+}
+
+.modal-hero-action[data-variant="secondary"] {
+  border-color: color-mix(in oklch, var(--border) 88%, white 12%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, white 94%, var(--muted) 6%) 0%,
+      color-mix(in oklch, white 99%, var(--muted) 1%) 100%
+    );
+}
+
 .dark .modal-medical-shell {
   box-shadow:
     0 1px 0 color-mix(in oklch, white 10%, transparent) inset,
     0 30px 70px -42px color-mix(in oklch, black 70%, transparent);
+}
+
+.dark .modal-hero-frame {
+  border-color: color-mix(in oklch, white 10%, var(--border) 90%);
+}
+
+.dark .modal-hero-shell {
+  background:
+    radial-gradient(
+      120% 140% at 0% 0%,
+      color-mix(in oklch, #63c8ff 22%, transparent) 0%,
+      transparent 46%
+    ),
+    radial-gradient(
+      110% 140% at 100% 0%,
+      color-mix(in oklch, #ffc96e 18%, transparent) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      90% 120% at 50% 100%,
+      color-mix(in oklch, #ff8a72 18%, transparent) 0%,
+      transparent 54%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--background) 90%, var(--muted) 10%) 0%,
+      color-mix(in oklch, var(--background) 96%, var(--muted) 4%) 100%
+    );
+}
+
+.dark .modal-hero-badge,
+.dark .modal-hero-stat {
+  border-color: color-mix(in oklch, white 10%, var(--border) 90%);
+  background: color-mix(in oklch, var(--background) 74%, white 6%);
+}
+
+.dark .modal-hero-footer {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--background) 86%, transparent),
+      color-mix(in oklch, var(--background) 94%, var(--muted) 6%)
+    );
 }

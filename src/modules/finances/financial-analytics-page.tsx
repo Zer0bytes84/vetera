@@ -1799,7 +1799,7 @@ export function FinancialAnalyticsV2Page({
   );
 
   return (
-    <div className="flex flex-1 flex-col gap-6 px-4 py-4 lg:px-6 lg:py-6">
+    <div className="flex flex-1 flex-col gap-6 py-4">
       <div className="ms-0 me-auto flex w-full min-w-0 max-w-[1160px] flex-col gap-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">

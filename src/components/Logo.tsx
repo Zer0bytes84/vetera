@@ -24,7 +24,7 @@ const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
   xl: "text-[26px] leading-[34px]",
 };
 
-function VeteraMark({
+function BaitariMark({
   iconClassName,
   flatMark = false,
 }: {
@@ -120,7 +120,7 @@ const Logo: React.FC<LogoProps> = ({
     >
       <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-1.5")}>
         <div className="logo-mark-shell flex items-center justify-center">
-          <VeteraMark
+          <BaitariMark
             flatMark={flatMark}
             iconClassName={cn("shrink-0", iconSizeClass)}
           />
@@ -149,7 +149,7 @@ const Logo: React.FC<LogoProps> = ({
                 fontWeight: 560,
               }}
             >
-              Altari
+              AItari
             </span>
           </div>
         )}

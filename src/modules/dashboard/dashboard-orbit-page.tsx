@@ -496,7 +496,7 @@ export function DashboardOrbitPage({
   );
 
   return (
-    <div className="prospeo-dashboard flex w-full flex-col gap-5 px-4 pt-5 pb-16 md:px-5 lg:px-6">
+    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <ProspeoMetricCard
           caption="vs période précédente"

@@ -15,6 +15,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       className="toaster group"
+      expand
       icons={{
         success: (
           <HugeiconsIcon
@@ -58,9 +59,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          zIndex: 2147483647,
         } as React.CSSProperties
       }
       theme={theme as ToasterProps["theme"]}
+      position="top-center"
       toastOptions={{
         classNames: {
           toast: "cn-toast",

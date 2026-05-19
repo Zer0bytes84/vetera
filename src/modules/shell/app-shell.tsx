@@ -22,6 +22,18 @@ import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
 import { AIAgentChat } from "@/components/AIAgentChat";
 import Avatar from "@/components/Avatar";
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarHeading,
+  SidebarItem,
+  SidebarLabel,
+  SidebarSection,
+  SidebarSpacer,
+} from "@/components/catalyst/sidebar";
+import { SidebarLayout } from "@/components/catalyst/sidebar-layout";
 import CommandPalette from "@/components/CommandPalette";
 import Logo from "@/components/Logo";
 import { useTheme } from "@/components/theme-provider";
@@ -217,7 +229,6 @@ function AppShellInner() {
 
   const isDarkMode = theme === "dark";
 
-  // Catalyst-style sidebar item
   const renderNavItem = (item: {
     view: View;
     labelKey: string;
@@ -226,47 +237,22 @@ function AppShellInner() {
   }) => {
     const isActive = currentView === item.view;
     return (
-      <li className="relative" key={item.view}>
-        {isActive && (
-          <span
-            aria-hidden="true"
-            className={cn(
-              "absolute inset-y-1.5 w-0.5 rounded-full bg-zinc-950 dark:bg-white",
-              isRtl ? "-right-2.5" : "-left-2.5"
-            )}
-          />
-        )}
-        <button
-          className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left font-medium text-sm/5 transition-colors",
-            "text-zinc-700 hover:bg-zinc-950/5 dark:text-zinc-200 dark:hover:bg-white/5",
-            isActive &&
-              "bg-zinc-950/5 text-zinc-950 dark:bg-white/5 dark:text-white"
-          )}
-          onClick={() => handleNavigate(item.view)}
-          type="button"
-        >
-          <HugeiconsIcon
-            className={cn(
-              "size-5 shrink-0",
-              isActive
-                ? "text-zinc-950 dark:text-white"
-                : "text-zinc-500 dark:text-zinc-400"
-            )}
-            icon={item.icon}
-            strokeWidth={2}
-          />
-          <span className="truncate">{t(item.labelKey)}</span>
-        </button>
-      </li>
+      <SidebarItem
+        current={isActive}
+        key={item.view}
+        onClick={() => handleNavigate(item.view)}
+      >
+        <span data-slot="icon">
+          <HugeiconsIcon icon={item.icon} strokeWidth={2} />
+        </span>
+        <SidebarLabel>{t(item.labelKey)}</SidebarLabel>
+      </SidebarItem>
     );
   };
 
-  // Sidebar markup shared between desktop & mobile
   const sidebarContent = (
-    <nav className="flex h-full min-h-0 flex-col">
-      {/* Workspace switcher (top) */}
-      <div className="flex flex-col border-zinc-950/5 border-b p-4 dark:border-white/5">
+    <Sidebar>
+      <SidebarHeader>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -311,44 +297,35 @@ function AppShellInner() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </SidebarHeader>
 
-      {/* Nav body */}
-      <div className="flex flex-1 flex-col overflow-y-auto p-4">
-        {/* Main views */}
-        <ul className="flex flex-col gap-0.5">
+      <SidebarBody>
+        <SidebarSection>
           {navigationSections[0]?.items.map(renderNavItem)}
-        </ul>
+        </SidebarSection>
 
-        {/* Patient journey */}
-        <div className="mt-8">
-          <h3 className="mb-1 px-2 font-medium text-xs/6 text-zinc-500 dark:text-zinc-400">
+        <SidebarSection>
+          <SidebarHeading>
             {t(navigationSections[1]?.titleKey ?? "")}
-          </h3>
-          <ul className="flex flex-col gap-0.5">
-            {navigationSections[1]?.items.map(renderNavItem)}
-          </ul>
-        </div>
+          </SidebarHeading>
+          {navigationSections[1]?.items.map(renderNavItem)}
+        </SidebarSection>
 
-        {/* Operations */}
-        <div className="mt-8">
-          <h3 className="mb-1 px-2 font-medium text-xs/6 text-zinc-500 dark:text-zinc-400">
+        <SidebarSection>
+          <SidebarHeading>
             {t(navigationSections[2]?.titleKey ?? "")}
-          </h3>
-          <ul className="flex flex-col gap-0.5">
-            {navigationSections[2]?.items.map(renderNavItem)}
-          </ul>
-        </div>
+          </SidebarHeading>
+          {navigationSections[2]?.items.map(renderNavItem)}
+        </SidebarSection>
 
-        {/* Configuration pushed to bottom */}
-        <div aria-hidden="true" className="mt-8 flex-1" />
-        <ul className="flex flex-col gap-0.5">
+        <SidebarSpacer />
+
+        <SidebarSection>
           {navigationSections[3]?.items.map(renderNavItem)}
-        </ul>
-      </div>
+        </SidebarSection>
+      </SidebarBody>
 
-      {/* User profile (bottom) */}
-      <div className="flex flex-col border-zinc-950/5 border-t p-4 dark:border-white/5">
+      <SidebarFooter>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -421,8 +398,8 @@ function AppShellInner() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-    </nav>
+      </SidebarFooter>
+    </Sidebar>
   );
 
   return (
@@ -435,7 +412,7 @@ function AppShellInner() {
     >
       {isDesktopRuntime && (
         <div
-          className="fixed inset-x-0 top-0 z-[60] flex h-8 items-center bg-zinc-100 dark:bg-zinc-950"
+          className="fixed inset-x-0 top-0 z-[60] flex h-5 items-center bg-zinc-100 dark:bg-zinc-950"
           data-tauri-drag-region
         />
       )}
@@ -445,7 +422,7 @@ function AppShellInner() {
         className={cn(
           "fixed inset-y-0 w-64 max-lg:hidden",
           isRtl ? "right-0" : "left-0",
-          isDesktopRuntime && "top-8"
+          isDesktopRuntime && "top-5"
         )}
       >
         {sidebarContent}
@@ -503,7 +480,7 @@ function AppShellInner() {
         className={cn(
           "flex flex-1 flex-col overflow-x-hidden pb-2 lg:min-w-0 lg:pt-2",
           isRtl ? "lg:pr-64 lg:pl-2" : "lg:pr-2 lg:pl-64",
-          isDesktopRuntime && "lg:pt-10"
+          isDesktopRuntime && "lg:pt-7"
         )}
       >
         <div className="app-inset-card flex grow flex-col overflow-x-hidden overflow-y-auto lg:rounded-lg lg:bg-white lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10">
