@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/types/db";
+import { PRIORITY_META } from "@/config/status-meta";
 
 interface KanbanBoardProps {
   onDelete: (taskId: string) => void;
@@ -39,24 +40,6 @@ interface KanbanBoardProps {
 }
 
 type TaskStatus = "todo" | "in_progress" | "done";
-
-const PRIORITY_COLORS: Record<string, string> = {
-  high: "border-l-destructive bg-destructive/5",
-  medium: "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10",
-  low: "border-l-blue-500 bg-blue-500/5 dark:bg-blue-500/10",
-};
-
-const PRIORITY_BADGES: Record<string, string> = {
-  high: "bg-red-500/10 text-red-700 dark:text-red-300",
-  medium: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  low: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-};
-
-const PRIORITY_LABELS: Record<string, string> = {
-  high: "Urgent",
-  medium: "Normal",
-  low: "Faible",
-};
 
 const columns: Array<{
   id: TaskStatus;
@@ -129,7 +112,7 @@ function KanbanCardBody({
       className={cn(
         "group rounded-xl border-l-4 bg-card p-4 shadow-sm transition-all",
         isOverlay ? "shadow-xl" : "hover:shadow-md",
-        PRIORITY_COLORS[task.priority]
+        PRIORITY_META[task.priority].cardClassName
       )}
     >
       <div className="flex items-start gap-3">
@@ -163,11 +146,11 @@ function KanbanCardBody({
             <Badge
               className={cn(
                 "rounded-full px-2 py-0.5 font-medium text-[10px]",
-                PRIORITY_BADGES[task.priority]
+                PRIORITY_META[task.priority].badgeClassName
               )}
               variant="secondary"
             >
-              {PRIORITY_LABELS[task.priority]}
+              {PRIORITY_META[task.priority].label}
             </Badge>
 
             {task.dueDate ? (

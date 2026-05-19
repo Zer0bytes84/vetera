@@ -17,6 +17,10 @@ import { jsPDF } from "jspdf";
 import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
+  TRANSACTION_STATUS_META,
+  TRANSACTION_TYPE_META,
+} from "@/config/status-meta";
+import {
   type MetricOverviewItem,
   MetricOverviewStrip,
 } from "@/components/metric-overview-strip";
@@ -111,40 +115,6 @@ const FILTER_OPTIONS: Array<{ value: TransactionFilter; label: string }> = [
   { value: "income", label: "Revenus" },
   { value: "expense", label: "Dépenses" },
 ];
-
-const TYPE_META: Record<
-  Transaction["type"],
-  {
-    label: string;
-    badgeClassName: string;
-    amountClassName: string;
-  }
-> = {
-  income: {
-    label: "Revenu",
-    badgeClassName: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    amountClassName: "text-emerald-600 dark:text-emerald-400",
-  },
-  expense: {
-    label: "Dépense",
-    badgeClassName: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-    amountClassName: "text-rose-600 dark:text-rose-400",
-  },
-};
-
-const STATUS_META: Record<
-  Transaction["status"],
-  { label: string; className: string }
-> = {
-  paid: {
-    label: "Payé",
-    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  },
-  pending: {
-    label: "En attente",
-    className: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
-  },
-};
 
 const METHOD_LABELS: Record<Transaction["method"], string> = {
   cash: "Espèces",
@@ -350,7 +320,7 @@ function generateFinancialReportPDF({
     doc.text(formatShortDate(transaction.date), 22, y);
     doc.text(transaction.description.slice(0, 28), 48, y);
     doc.text(transaction.category.slice(0, 18), 112, y);
-    doc.text(STATUS_META[transaction.status].label, 151, y);
+    doc.text(TRANSACTION_STATUS_META[transaction.status].label, 151, y);
     if (transaction.type === "income") {
       doc.setTextColor(21, 128, 61);
     } else {
@@ -390,12 +360,12 @@ function TransactionTypeBadge({
     <Badge
       className={cn(
         "border-transparent",
-        TYPE_META[type].badgeClassName,
+        TRANSACTION_TYPE_META[type].badgeClassName,
         className
       )}
       variant="secondary"
     >
-      {TYPE_META[type].label}
+      {TRANSACTION_TYPE_META[type].label}
     </Badge>
   );
 }
@@ -411,12 +381,12 @@ function TransactionStatusBadge({
     <Badge
       className={cn(
         "border-transparent",
-        STATUS_META[status].className,
+        TRANSACTION_STATUS_META[status].className,
         className
       )}
       variant="secondary"
     >
-      {STATUS_META[status].label}
+      {TRANSACTION_STATUS_META[status].label}
     </Badge>
   );
 }
@@ -486,7 +456,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         transaction.description,
         transaction.category,
         METHOD_LABELS[transaction.method],
-        STATUS_META[transaction.status].label,
+        TRANSACTION_STATUS_META[transaction.status].label,
       ]
         .join(" ")
         .toLowerCase();
@@ -964,7 +934,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                               }
                               strokeWidth={2}
                             />
-                            {STATUS_META[transaction.status].label}
+                            {TRANSACTION_STATUS_META[transaction.status].label}
                           </Button>
                         </TableCell>
                       </TableRow>

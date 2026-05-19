@@ -70,6 +70,7 @@ import {
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
+import { APPOINTMENT_STATUS_META, PATIENT_STATUS_META, getSpeciesTone } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import type { Appointment, Owner, Patient } from "@/types/db";
 
@@ -124,51 +125,7 @@ const CAT_BREEDS = [
   "Croisé",
 ];
 
-const PATIENT_STATUS_OPTIONS = [
-  {
-    value: "sante" as const,
-    label: "En bonne santé",
-    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  },
-  {
-    value: "traitement" as const,
-    label: "En traitement",
-    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  },
-  {
-    value: "hospitalise" as const,
-    label: "Hospitalisé",
-    className: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  },
-  {
-    value: "decede" as const,
-    label: "Décédé",
-    className: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-  },
-];
 
-const APPOINTMENT_STATUS_META = {
-  scheduled: {
-    label: "Planifié",
-    className: "bg-slate-100 text-slate-700 border-slate-200",
-  },
-  in_progress: {
-    label: "En cours",
-    className: "bg-blue-100 text-blue-700 border-blue-200",
-  },
-  completed: {
-    label: "Terminé",
-    className: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  },
-  cancelled: {
-    label: "Annulé",
-    className: "bg-rose-100 text-rose-700 border-rose-200",
-  },
-  no_show: {
-    label: "Absent",
-    className: "bg-amber-100 text-amber-700 border-amber-200",
-  },
-} satisfies Record<Appointment["status"], { label: string; className: string }>;
 
 type DetailsTab = "info" | "medical" | "history";
 
@@ -298,28 +255,7 @@ function getAgeLabel(value?: string) {
 }
 
 function getStatusMeta(status: Patient["status"]) {
-  return (
-    PATIENT_STATUS_OPTIONS.find((option) => option.value === status) ??
-    PATIENT_STATUS_OPTIONS[0]
-  );
-}
-
-function getSpeciesTone(species?: string) {
-  const normalized = species?.toLowerCase() ?? "";
-
-  if (normalized.includes("chien")) {
-    return "bg-blue-500/10 text-blue-700 dark:text-blue-300";
-  }
-
-  if (normalized.includes("chat")) {
-    return "bg-violet-500/10 text-violet-700 dark:text-violet-300";
-  }
-
-  if (normalized.includes("nac")) {
-    return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
-  }
-
-  return "bg-muted text-muted-foreground";
+  return PATIENT_STATUS_META[status] ?? PATIENT_STATUS_META.sante;
 }
 
 function getSpeciesIcon(species?: string): string {
@@ -947,10 +883,10 @@ function PatientDetailsDialog({
                               }
                               value={patientData.status}
                             >
-                              {PATIENT_STATUS_OPTIONS.map((option) => (
+                              {Object.entries(PATIENT_STATUS_META).map(([value, option]) => (
                                 <NativeSelectOption
-                                  key={option.value}
-                                  value={option.value}
+                                  key={value}
+                                  value={value}
                                 >
                                   {option.label}
                                 </NativeSelectOption>
@@ -1700,10 +1636,10 @@ function PatientCreateDialog({
                         }
                         value={(newPatient.status || "sante") as string}
                       >
-                        {PATIENT_STATUS_OPTIONS.map((option) => (
+                        {Object.entries(PATIENT_STATUS_META).map(([value, option]) => (
                           <NativeSelectOption
-                            key={option.value}
-                            value={option.value}
+                            key={value}
+                            value={value}
                           >
                             {option.label}
                           </NativeSelectOption>
@@ -2314,8 +2250,8 @@ const Patients: React.FC = () => {
                       <NativeSelectOption value="all">
                         Tous les statuts
                       </NativeSelectOption>
-                      {PATIENT_STATUS_OPTIONS.map((option) => (
-                        <NativeSelectOption key={option.value} value={option.value}>
+                      {Object.entries(PATIENT_STATUS_META).map(([value, option]) => (
+                        <NativeSelectOption key={value} value={value}>
                           {option.label}
                         </NativeSelectOption>
                       ))}

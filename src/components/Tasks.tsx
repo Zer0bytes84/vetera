@@ -64,18 +64,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTasksRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/types/db";
+import { PRIORITY_META } from "@/config/status-meta";
 import KanbanBoard from "./KanbanBoard";
 
 const PRIORITY_COLORS: Record<string, string> = {
   high: "bg-red-500/10 text-red-700 border-red-200 dark:text-red-300",
   medium: "bg-amber-500/10 text-amber-700 border-amber-200 dark:text-amber-300",
   low: "bg-blue-500/10 text-blue-700 border-blue-200 dark:text-blue-300",
-};
-
-const PRIORITY_LABELS: Record<string, string> = {
-  high: "Urgent",
-  medium: "Normal",
-  low: "Faible",
 };
 
 const PRIORITY_TABLE_BADGES: Record<string, string> = {
@@ -855,7 +850,7 @@ const Tasks: React.FC = () => {
                             )}
                             variant="outline"
                           >
-                            {PRIORITY_LABELS[task.priority]}
+                            {PRIORITY_META[task.priority].label}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground text-xs">
@@ -1076,7 +1071,7 @@ const TaskGroup: React.FC<{
                       )}
                       variant="outline"
                     >
-                      {PRIORITY_LABELS[task.priority]}
+                      {PRIORITY_META[task.priority].label}
                     </Badge>
                   )}
 

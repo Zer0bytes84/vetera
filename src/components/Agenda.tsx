@@ -85,6 +85,7 @@ import {
 import i18n from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import type { Appointment, User as AppUser, Owner, Patient } from "@/types/db";
+import { APPOINTMENT_STATUS_META, APPOINTMENT_TYPE_META } from "@/config/status-meta";
 
 const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
@@ -120,72 +121,6 @@ const HOUR_BLOCKS = Array.from(
 const CALENDAR_START_MINUTES = CALENDAR_START_HOUR * 60;
 const CALENDAR_END_MINUTES = (CALENDAR_END_HOUR + 1) * 60;
 
-const TYPE_META: Record<
-  Appointment["type"],
-  {
-    badgeClassName: string;
-    surfaceClassName: string;
-    dotClassName: string;
-  }
-> = {
-  Consultation: {
-    badgeClassName: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    surfaceClassName:
-      "border-emerald-200/70 bg-emerald-500/8 dark:border-emerald-900/70 dark:bg-emerald-500/10",
-    dotClassName: "bg-emerald-500",
-  },
-  Vaccin: {
-    badgeClassName: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-    surfaceClassName:
-      "border-blue-200/70 bg-blue-500/8 dark:border-blue-900/70 dark:bg-blue-500/10",
-    dotClassName: "bg-blue-500",
-  },
-  Chirurgie: {
-    badgeClassName: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-    surfaceClassName:
-      "border-rose-200/70 bg-rose-500/8 dark:border-rose-900/70 dark:bg-rose-500/10",
-    dotClassName: "bg-rose-500",
-  },
-  Urgence: {
-    badgeClassName: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
-    surfaceClassName:
-      "border-amber-200/70 bg-amber-500/10 dark:border-amber-900/70 dark:bg-amber-500/12",
-    dotClassName: "bg-amber-500",
-  },
-  Contrôle: {
-    badgeClassName: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
-    surfaceClassName:
-      "border-violet-200/70 bg-violet-500/8 dark:border-violet-900/70 dark:bg-violet-500/10",
-    dotClassName: "bg-violet-500",
-  },
-};
-
-const STATUS_META: Record<
-  Appointment["status"],
-  { label: string; className: string }
-> = {
-  scheduled: {
-    label: "Planifié",
-    className:
-      "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  },
-  in_progress: {
-    label: "En cours",
-    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  },
-  completed: {
-    label: "Terminé",
-    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  },
-  cancelled: {
-    label: "Annulé",
-    className: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-  },
-  no_show: {
-    label: "Absent",
-    className: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  },
-};
 
 const TABLE_TABS = [
   { label: "Planning", value: "planning" },
@@ -490,7 +425,7 @@ function getAppointmentPresentation(
     };
   }
 
-  const status = STATUS_META[appointment.status];
+  const status = APPOINTMENT_STATUS_META[appointment.status];
 
   return {
     label: status.label,
@@ -511,7 +446,7 @@ function AppointmentTypeBadge({
     <Badge
       className={cn(
         "border-transparent",
-        TYPE_META[type].badgeClassName,
+        APPOINTMENT_TYPE_META[type].badgeClassName,
         className
       )}
       variant="outline"
@@ -846,7 +781,7 @@ function AgendaDayView({
                         <button
                           className={cn(
                             "absolute overflow-hidden rounded-3xl border p-3 text-left shadow-sm transition hover:shadow-md",
-                            TYPE_META[appointment.type].surfaceClassName,
+                            APPOINTMENT_TYPE_META[appointment.type].surfaceClassName,
                             selectedAppointmentId === appointment.id
                               ? "z-10 ring-2 ring-primary/55 ring-offset-1"
                               : "ring-0"
@@ -865,7 +800,7 @@ function AgendaDayView({
                             <span
                               className={cn(
                                 "mt-1 size-2.5 shrink-0 rounded-full",
-                                TYPE_META[appointment.type].dotClassName
+                                APPOINTMENT_TYPE_META[appointment.type].dotClassName
                               )}
                             />
                             <div className="min-w-0">
@@ -979,7 +914,7 @@ function AgendaWeekView({
                         <button
                           className={cn(
                             "absolute rounded-2xl border px-2.5 py-2 text-left shadow-sm transition hover:shadow-md",
-                            TYPE_META[appointment.type].surfaceClassName,
+                            APPOINTMENT_TYPE_META[appointment.type].surfaceClassName,
                             selectedAppointmentId === appointment.id
                               ? "z-10 ring-2 ring-primary/55 ring-offset-1"
                               : "ring-0"
@@ -1083,7 +1018,7 @@ function AgendaMonthView({
                     <div
                       className={cn(
                         "rounded-2xl border px-3 py-2 text-xs",
-                        TYPE_META[appointment.type].surfaceClassName
+                        APPOINTMENT_TYPE_META[appointment.type].surfaceClassName
                       )}
                       key={appointment.id}
                     >
@@ -2171,7 +2106,7 @@ const Agenda: React.FC = () => {
                   <div
                     className={cn(
                       "rounded-4xl border p-4",
-                      TYPE_META[selectedAppointment.type].surfaceClassName
+                      APPOINTMENT_TYPE_META[selectedAppointment.type].surfaceClassName
                     )}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -2324,7 +2259,7 @@ const Agenda: React.FC = () => {
                         <span
                           className={cn(
                             "size-2.5 rounded-full",
-                            TYPE_META[entry.type].dotClassName
+                            APPOINTMENT_TYPE_META[entry.type].dotClassName
                           )}
                         />
                         <span className="font-medium text-foreground">
@@ -2460,7 +2395,7 @@ const Agenda: React.FC = () => {
                   <NativeSelectOption value="all">
                     Tous les statuts
                   </NativeSelectOption>
-                  {Object.entries(STATUS_META).map(([status, meta]) => (
+                  {Object.entries(APPOINTMENT_STATUS_META).map(([status, meta]) => (
                     <NativeSelectOption key={status} value={status}>
                       {meta.label}
                     </NativeSelectOption>

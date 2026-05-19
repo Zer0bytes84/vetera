@@ -25,6 +25,7 @@ import {
   type MetricOverviewItem,
   MetricOverviewStrip,
 } from "@/components/metric-overview-strip";
+import { StockStatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -704,8 +705,7 @@ const Stock: React.FC = () => {
                           )
                         )
                       : 100;
-                  const isExpired =
-                    product.expiryDate && product.expiryDate < todayStr;
+                  const isExpired = !!(product.expiryDate && product.expiryDate < todayStr);
 
                   return (
                     <div
@@ -805,35 +805,11 @@ const Stock: React.FC = () => {
 
                       <div className="mt-3 flex items-center justify-between border-border/30 border-t pt-2">
                         <div className="flex items-center gap-2">
-                          {isExpired ? (
-                            <Badge
-                              className="border-transparent bg-violet-500/10 text-violet-700 dark:text-violet-300"
-                              variant="outline"
-                            >
-                              Expiré
-                            </Badge>
-                          ) : isOut ? (
-                            <Badge
-                              className="border-transparent bg-red-500/10 text-red-700 dark:text-red-300"
-                              variant="outline"
-                            >
-                              Rupture
-                            </Badge>
-                          ) : isLow ? (
-                            <Badge
-                              className="border-transparent bg-amber-500/10 text-amber-700 dark:text-amber-300"
-                              variant="outline"
-                            >
-                              Stock Bas
-                            </Badge>
-                          ) : (
-                            <Badge
-                              className="border-transparent bg-green-500/10 text-green-700 dark:text-green-300"
-                              variant="outline"
-                            >
-                              OK
-                            </Badge>
-                          )}
+                          <StockStatusBadge
+                            isExpired={isExpired}
+                            isOut={isOut}
+                            isLow={isLow}
+                          />
                           {product.expiryDate && !isExpired && (
                             <span className="text-[10px] text-muted-foreground">
                               Exp: {product.expiryDate}

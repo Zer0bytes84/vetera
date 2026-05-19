@@ -21,6 +21,7 @@ import {
   type MetricOverviewItem,
   MetricOverviewStrip,
 } from "@/components/metric-overview-strip";
+import { TEAM_STATUS_META } from "@/config/status-meta";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -582,25 +583,14 @@ const Team: React.FC = () => {
 
                     {/* Status Indicator */}
                     <div className="absolute right-5 bottom-5">
-                      {user.status === "active" ? (
-                        <Badge className="gap-1 border-green-100 bg-green-50 text-[10px] text-green-600 dark:border-green-500/20 dark:bg-green-500/10">
-                          <HugeiconsIcon
-                            className="size-2.5"
-                            icon={CheckmarkCircle02Icon}
-                            strokeWidth={2}
-                          />{" "}
-                          Actif
-                        </Badge>
-                      ) : (
-                        <Badge className="gap-1 bg-muted/50 text-[10px] text-muted-foreground">
-                          <HugeiconsIcon
-                            className="size-2.5"
-                            icon={Cancel01Icon}
-                            strokeWidth={2}
-                          />{" "}
-                          Inactif
-                        </Badge>
-                      )}
+                      <Badge className={cn("gap-1 text-[10px]", TEAM_STATUS_META[user.status === "active" ? "active" : "inactive"].className)}>
+                        <HugeiconsIcon
+                          className="size-2.5"
+                          icon={user.status === "active" ? CheckmarkCircle02Icon : Cancel01Icon}
+                          strokeWidth={2}
+                        />{" "}
+                        {TEAM_STATUS_META[user.status === "active" ? "active" : "inactive"].label}
+                      </Badge>
                     </div>
                   </div>
                 );

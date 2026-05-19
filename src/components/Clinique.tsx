@@ -111,6 +111,8 @@ import type {
   Patient,
 } from "@/types/db";
 
+import { APPOINTMENT_TYPE_META, CLINIQUE_STATUS_META, PATIENT_STATUS_META } from "@/config/status-meta";
+
 type CliniqueProps = {
   onNavigate?: (view: View) => void;
 };
@@ -152,96 +154,6 @@ const LIST_TABS: Array<{
   { value: "in_progress", label: "En cours", icon: TimerIcon },
   { value: "completed", label: "Terminés", icon: CheckmarkCircle01Icon },
 ];
-
-const STATUS_META: Record<
-  Appointment["status"],
-  { label: string; className: string }
-> = {
-  scheduled: {
-    label: "À lancer",
-    className: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  },
-  in_progress: {
-    label: "En cours",
-    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  },
-  completed: {
-    label: "Terminé",
-    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  },
-  cancelled: {
-    label: "Annulé",
-    className: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-  },
-  no_show: {
-    label: "Absent",
-    className:
-      "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  },
-};
-
-const PATIENT_STATUS_META: Record<
-  Patient["status"],
-  { label: string; className: string }
-> = {
-  sante: {
-    label: "En bonne santé",
-    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  },
-  traitement: {
-    label: "En traitement",
-    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  },
-  hospitalise: {
-    label: "Hospitalisé",
-    className: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
-  },
-  decede: {
-    label: "Décédé",
-    className: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-  },
-};
-
-const TYPE_META: Record<
-  Appointment["type"],
-  { badgeClassName: string; surfaceClassName: string; iconClassName: string }
-> = {
-  Consultation: {
-    badgeClassName: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-    surfaceClassName:
-      "border-blue-200/70 bg-blue-500/8 dark:border-blue-900/70 dark:bg-blue-500/10",
-    iconClassName:
-      "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300",
-  },
-  Vaccin: {
-    badgeClassName: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    surfaceClassName:
-      "border-emerald-200/70 bg-emerald-500/8 dark:border-emerald-900/70 dark:bg-emerald-500/10",
-    iconClassName:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300",
-  },
-  Chirurgie: {
-    badgeClassName: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
-    surfaceClassName:
-      "border-rose-200/70 bg-rose-500/8 dark:border-rose-900/70 dark:bg-rose-500/10",
-    iconClassName:
-      "bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300",
-  },
-  Urgence: {
-    badgeClassName: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
-    surfaceClassName:
-      "border-amber-200/70 bg-amber-500/10 dark:border-amber-900/70 dark:bg-amber-500/12",
-    iconClassName:
-      "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
-  },
-  Contrôle: {
-    badgeClassName: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
-    surfaceClassName:
-      "border-violet-200/70 bg-violet-500/8 dark:border-violet-900/70 dark:bg-violet-500/10",
-    iconClassName:
-      "bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300",
-  },
-};
 
 function normalizeDate(value?: string | Date | null) {
   if (!value) {
@@ -403,7 +315,7 @@ function AppointmentTypeBadge({
     <Badge
       className={cn(
         "border-transparent",
-        TYPE_META[type].badgeClassName,
+        APPOINTMENT_TYPE_META[type].badgeClassName,
         className
       )}
       variant="outline"
@@ -420,7 +332,7 @@ function AppointmentStatusBadge({
   status: Appointment["status"];
   className?: string;
 }) {
-  const meta = STATUS_META[status];
+  const meta = CLINIQUE_STATUS_META[status];
 
   return (
     <Badge
@@ -2406,7 +2318,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                                 <div
                                   className={cn(
                                     "flex size-10 items-center justify-center rounded-2xl",
-                                    TYPE_META[appointment.type].iconClassName
+                                    APPOINTMENT_TYPE_META[appointment.type].iconClassName
                                   )}
                                 >
                                   <HugeiconsIcon
@@ -2587,7 +2499,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                 <div
                   className={cn(
                     "rounded-4xl border p-5",
-                    TYPE_META[selectedAppointment.type].surfaceClassName
+                    APPOINTMENT_TYPE_META[selectedAppointment.type].surfaceClassName
                   )}
                 >
                   <div className="flex items-start gap-4">
