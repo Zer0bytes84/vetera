@@ -10,7 +10,7 @@ import {
   isTauriRuntime,
   setBrowserSetting,
 } from "./browser-store";
-import { getDatabase } from "./sqlite/database";
+import { runDbOperation } from "./sqlite/database";
 
 // Ensure app_settings table exists (run on first access)
 let tableCreated = false;
@@ -20,14 +20,15 @@ async function ensureTable(): Promise<void> {
     return;
   }
 
-  const db = await getDatabase();
-  await db.execute(`
+  await runDbOperation((db) =>
+    db.execute(`
         CREATE TABLE IF NOT EXISTS app_settings (
             key TEXT PRIMARY KEY,
             value TEXT,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
-    `);
+    `)
+  );
   tableCreated = true;
 }
 
@@ -40,10 +41,11 @@ export async function getSetting(key: string): Promise<string | null> {
   }
 
   await ensureTable();
-  const db = await getDatabase();
-  const result = await db.select<{ value: string }[]>(
-    "SELECT value FROM app_settings WHERE key = ?",
-    [key]
+  const result = await runDbOperation((db) =>
+    db.select<{ value: string }[]>(
+      "SELECT value FROM app_settings WHERE key = ?",
+      [key]
+    )
   );
   return result.length > 0 ? result[0].value : null;
 }
@@ -58,12 +60,13 @@ export async function setSetting(key: string, value: string): Promise<void> {
   }
 
   await ensureTable();
-  const db = await getDatabase();
-  await db.execute(
-    `INSERT INTO app_settings (key, value, updated_at) 
+  await runDbOperation((db) =>
+    db.execute(
+      `INSERT INTO app_settings (key, value, updated_at)
          VALUES (?, ?, CURRENT_TIMESTAMP)
          ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`,
-    [key, value]
+      [key, value]
+    )
   );
 }
 
@@ -92,9 +95,8 @@ export async function isSetupComplete(): Promise<boolean> {
       return false;
     }
 
-    const db = await getDatabase();
-    const users = await db.select<{ count: number }[]>(
-      "SELECT COUNT(*) as count FROM users"
+    const users = await runDbOperation((db) =>
+      db.select<{ count: number }[]>("SELECT COUNT(*) as count FROM users")
     );
     if (users.length > 0 && users[0].count > 0) {
       // Users exist, mark setup as complete and return true

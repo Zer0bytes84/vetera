@@ -4,7 +4,7 @@ import {
   replaceBrowserTable,
   setBrowserRow,
 } from "@/services/browser-store";
-import { getDatabase } from "@/services/sqlite/database";
+import { runDbOperation } from "@/services/sqlite/database";
 import type {
   Appointment,
   Note,
@@ -622,48 +622,50 @@ async function runPurgeDemoData() {
     return;
   }
 
-  const db = await getDatabase();
   const savepoint = `purge_demo_data_${Date.now()}`;
-  let savepointCreated = false;
-
   const maxAttempts = 8;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      await db.execute(`SAVEPOINT ${savepoint}`);
-      savepointCreated = true;
-      await db.execute(
-        "DELETE FROM consultation_documents WHERE id LIKE 'demo_%' OR appointment_id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%'"
-      );
-      await db.execute(
-        "DELETE FROM appointments WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%' OR vet_id LIKE 'demo_%'"
-      );
-      await db.execute(
-        "DELETE FROM tasks WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR assigned_to LIKE 'demo_%'"
-      );
-      await db.execute(
-        "DELETE FROM transactions WHERE id LIKE 'demo_%' OR reference_id LIKE 'demo_%'"
-      );
-      await db.execute("DELETE FROM notes WHERE id LIKE 'demo_%'");
-      await db.execute("DELETE FROM products WHERE id LIKE 'demo_%'");
-      await db.execute(
-        "DELETE FROM patients WHERE id LIKE 'demo_%' OR owner_id LIKE 'demo_%'"
-      );
-      await db.execute("DELETE FROM owners WHERE id LIKE 'demo_%'");
-      await db.execute("DELETE FROM users WHERE id LIKE 'demo_%'");
-      await db.execute(`RELEASE SAVEPOINT ${savepoint}`);
+      await runDbOperation(async (db) => {
+        let savepointCreated = false;
+        try {
+          await db.execute(`SAVEPOINT ${savepoint}`);
+          savepointCreated = true;
+          await db.execute(
+            "DELETE FROM consultation_documents WHERE id LIKE 'demo_%' OR appointment_id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%'"
+          );
+          await db.execute(
+            "DELETE FROM appointments WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR owner_id LIKE 'demo_%' OR vet_id LIKE 'demo_%'"
+          );
+          await db.execute(
+            "DELETE FROM tasks WHERE id LIKE 'demo_%' OR patient_id LIKE 'demo_%' OR assigned_to LIKE 'demo_%'"
+          );
+          await db.execute(
+            "DELETE FROM transactions WHERE id LIKE 'demo_%' OR reference_id LIKE 'demo_%'"
+          );
+          await db.execute("DELETE FROM notes WHERE id LIKE 'demo_%'");
+          await db.execute("DELETE FROM products WHERE id LIKE 'demo_%'");
+          await db.execute(
+            "DELETE FROM patients WHERE id LIKE 'demo_%' OR owner_id LIKE 'demo_%'"
+          );
+          await db.execute("DELETE FROM owners WHERE id LIKE 'demo_%'");
+          await db.execute("DELETE FROM users WHERE id LIKE 'demo_%'");
+          await db.execute(`RELEASE SAVEPOINT ${savepoint}`);
+        } catch (error) {
+          if (savepointCreated) {
+            try {
+              await db.execute(`ROLLBACK TO SAVEPOINT ${savepoint}`);
+              await db.execute(`RELEASE SAVEPOINT ${savepoint}`);
+            } catch {
+              // Ignore secondary rollback errors; keep original error context.
+            }
+          }
+          throw error;
+        }
+      });
       return;
     } catch (error) {
-      if (savepointCreated) {
-        try {
-          await db.execute(`ROLLBACK TO SAVEPOINT ${savepoint}`);
-          await db.execute(`RELEASE SAVEPOINT ${savepoint}`);
-        } catch {
-          // Ignore secondary rollback errors; keep original error context.
-        }
-        savepointCreated = false;
-      }
-
       if (attempt < maxAttempts && isDatabaseLockedError(error)) {
         // Backoff for transient startup lock contention.
         await wait(Math.min(250 * 2 ** (attempt - 1), 3000));

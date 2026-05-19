@@ -4,6 +4,104 @@ import { MIGRATION_001_SQL, MIGRATION_002_SQL } from "./schema";
 let db: Database | null = null;
 let dbInitPromise: Promise<Database> | null = null;
 
+// ====================================================================================
+// Serialized SQLite operation queue + retry helper
+// ------------------------------------------------------------------------------------
+// All SQLite access in the application must go through `runDbOperation` (or
+// `runDbTransaction`). Tauri's SQL plugin opens a single connection to the
+// database and SQLite uses file-level write locks; if two writes are issued
+// concurrently the second one fails immediately with `code: 5 - database is
+// locked`. Serializing them in a global FIFO queue guarantees that no two
+// statements ever overlap, while the retry logic absorbs the rare lock that
+// can still happen because of background WAL checkpoints.
+// ====================================================================================
+
+let sqliteOperationQueue: Promise<unknown> = Promise.resolve();
+
+const sleep = (ms: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+const isDatabaseLockedError = (error: unknown): boolean => {
+  if (!error) {
+    return false;
+  }
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : JSON.stringify(error);
+  const lower = message.toLowerCase();
+  return (
+    lower.includes("database is locked") ||
+    lower.includes("code: 5") ||
+    lower.includes("(code 5)") ||
+    lower.includes("database table is locked")
+  );
+};
+
+async function withLockRetry<T>(operation: () => Promise<T>): Promise<T> {
+  const delays = [80, 160, 320, 640, 1000];
+  let lastError: unknown = null;
+
+  for (let attempt = 0; attempt <= delays.length; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (!isDatabaseLockedError(error) || attempt === delays.length) {
+        throw error;
+      }
+      await sleep(delays[attempt]);
+    }
+  }
+
+  throw lastError;
+}
+
+/**
+ * Exécute une opération SQLite de manière sérialisée et tolérante aux verrous.
+ * Toutes les écritures et lectures concurrentes doivent passer par cette fonction.
+ */
+export function runDbOperation<T>(
+  operation: (database: Database) => Promise<T>
+): Promise<T> {
+  const job = sqliteOperationQueue.then(async () => {
+    const database = await getDatabase();
+    return withLockRetry(() => operation(database));
+  });
+
+  // Évite que la chaîne de la queue se "bloque" sur un rejet précédent.
+  sqliteOperationQueue = job.catch(() => undefined);
+
+  return job;
+}
+
+/**
+ * Exécute une suite d'opérations dans une transaction SQLite sérialisée.
+ * Tolère les verrous de la base et garantit un ROLLBACK en cas d'erreur.
+ */
+export function runDbTransaction<T>(
+  operation: (database: Database) => Promise<T>,
+  mode: "DEFERRED" | "IMMEDIATE" | "EXCLUSIVE" = "IMMEDIATE"
+): Promise<T> {
+  return runDbOperation(async (database) => {
+    await database.execute(`BEGIN ${mode} TRANSACTION`);
+    try {
+      const result = await operation(database);
+      await database.execute("COMMIT");
+      return result;
+    } catch (error) {
+      try {
+        await database.execute("ROLLBACK");
+      } catch {
+        // no-op
+      }
+      throw error;
+    }
+  });
+}
+
 /**
  * Obtient ou crée la connexion à la base de données SQLite
  */

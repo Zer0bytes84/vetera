@@ -18,7 +18,7 @@ import {
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
 import { isTauriRuntime } from "./browser-store";
-import { closeDatabaseConnection, getDatabase } from "./sqlite/database";
+import { closeDatabaseConnection, runDbOperation } from "./sqlite/database";
 
 const DB_FILENAME = "baitari.db";
 const WAL_FILENAME = "baitari.db-wal";
@@ -138,8 +138,7 @@ export function getAppVersion(): string {
  */
 async function checkpointWal(): Promise<void> {
   try {
-    const db = await getDatabase();
-    await db.execute("PRAGMA wal_checkpoint(TRUNCATE)");
+    await runDbOperation((db) => db.execute("PRAGMA wal_checkpoint(TRUNCATE)"));
     console.log("[Backup] WAL checkpoint completed");
   } catch (e) {
     console.warn("[Backup] WAL checkpoint failed (non-critical):", e);

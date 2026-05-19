@@ -12,6 +12,7 @@ import {
 import {
   generateId,
   getDatabase,
+  runDbOperation,
   toSQLiteTimestamp,
 } from "../services/sqlite/database";
 
@@ -47,43 +48,9 @@ const BOOLEAN_FIELDS_BY_TABLE: Record<string, string[]> = {
 };
 
 const DATA_CHANGED_EVENT = "sqlite-data-changed";
-let sqliteOperationQueue: Promise<void> = Promise.resolve();
 const tableColumnsCache = new Map<string, Set<string>>();
 
-const isDatabaseLockedError = (error: unknown) => {
-  if (!error) {
-    return false;
-  }
-  const message =
-    error instanceof Error
-      ? error.message
-      : typeof error === "string"
-        ? error
-        : JSON.stringify(error);
-  const lower = message.toLowerCase();
-  return lower.includes("database is locked") || lower.includes("code: 5");
-};
-
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function withSqliteRetry<T>(operation: () => Promise<T>): Promise<T> {
-  const delays = [120, 300, 650];
-  let lastError: unknown = null;
-
-  for (let attempt = 0; attempt <= delays.length; attempt += 1) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error;
-      if (!isDatabaseLockedError(error) || attempt === delays.length) {
-        throw error;
-      }
-      await sleep(delays[attempt]);
-    }
-  }
-
-  throw lastError;
-}
 
 export const emitSQLiteDataChanged = (tableName: string) => {
   window.dispatchEvent(
@@ -211,18 +178,8 @@ export function useSQLite<T extends { id: string }>(
   const safeTableName = ALLOWED_TABLES.has(tableName) ? tableName : null;
 
   const runSerializedTauriOp = useCallback(
-    async <R>(operation: () => Promise<R>): Promise<R> => {
-      const job = sqliteOperationQueue
-        .then(() => withSqliteRetry(operation))
-        .catch(() => withSqliteRetry(operation));
-
-      sqliteOperationQueue = job.then(
-        () => undefined,
-        () => undefined
-      );
-
-      return job;
-    },
+    <R>(operation: () => Promise<R>): Promise<R> =>
+      runDbOperation(() => operation()),
     []
   );
 
@@ -279,6 +236,25 @@ export function useSQLite<T extends { id: string }>(
       window.removeEventListener(DATA_CHANGED_EVENT, handleDataChanged);
   }, [tableName, loadData]);
 
+  const syncTableAfterMutation = useCallback(
+    async (stabilize = false) => {
+      await loadData();
+      emitSQLiteDataChanged(safeTableName ?? tableName);
+
+      if (!stabilize || !isTauriRuntime()) {
+        return;
+      }
+
+      // Tauri's SQLite bridge can expose the mutation before dependent views
+      // have observed the committed row. A second delayed refresh keeps linked
+      // entities such as owners/patients in sync right after creation.
+      await sleep(140);
+      await loadData();
+      emitSQLiteDataChanged(safeTableName ?? tableName);
+    },
+    [loadData, safeTableName, tableName]
+  );
+
   const add = useCallback(
     async (
       item: Omit<T, "id" | "createdAt" | "updatedAt">
@@ -323,24 +299,43 @@ export function useSQLite<T extends { id: string }>(
           [id, ...values]
         );
 
-        return db.select<Record<string, unknown>[]>(
-          `SELECT * FROM ${safeTableName} WHERE id = ?`,
-          [id]
-        );
+        for (let attempt = 0; attempt < 4; attempt += 1) {
+          const rows = await db.select<Record<string, unknown>[]>(
+            `SELECT * FROM ${safeTableName} WHERE id = ?`,
+            [id]
+          );
+
+          if (rows?.[0]) {
+            return rows;
+          }
+
+          await sleep(90 * (attempt + 1));
+        }
+
+        return [];
       });
 
-      await loadData();
-      emitSQLiteDataChanged(safeTableName);
+      await syncTableAfterMutation(true);
 
       if (!created?.[0]) {
-        return null;
+        // Tauri SQL can occasionally return an empty result right after a
+        // successful INSERT even though the row was persisted. In that case we
+        // return a local fallback so higher-level flows do not report a false
+        // creation failure to the user.
+        console.warn(
+          `[useSQLite] Insert succeeded but post-insert select returned no row for ${safeTableName}:${id}`
+        );
+        return normalizeBooleanFields(safeTableName, {
+          id,
+          ...(item as Record<string, unknown>),
+        }) as T;
       }
       return normalizeBooleanFields(
         safeTableName,
         mapKeys(created[0], toCamelCase)
       ) as T;
     },
-    [loadData, runSerializedTauriOp, safeTableName, tableName]
+    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName]
   );
 
   const update = useCallback(
@@ -390,15 +385,14 @@ export function useSQLite<T extends { id: string }>(
             params
           );
         });
-        await loadData();
-        emitSQLiteDataChanged(safeTableName);
+        await syncTableAfterMutation();
         return true;
       } catch (err) {
         console.error(`[useSQLite] Error updating ${safeTableName}:`, err);
         return false;
       }
     },
-    [loadData, runSerializedTauriOp, safeTableName, tableName]
+    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName]
   );
 
   const remove = useCallback(
@@ -428,8 +422,7 @@ export function useSQLite<T extends { id: string }>(
         if (result.rowsAffected === 0) {
           throw new Error(`Élément non trouvé: ${id}`);
         }
-        await loadData();
-        emitSQLiteDataChanged(safeTableName);
+        await syncTableAfterMutation();
         return true;
       } catch (err) {
         console.error(`[useSQLite] Error removing from ${safeTableName}:`, err);
@@ -439,7 +432,7 @@ export function useSQLite<T extends { id: string }>(
         return false;
       }
     },
-    [loadData, runSerializedTauriOp, safeTableName, tableName, setError]
+    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName, setError]
   );
 
   const set = useCallback(
@@ -454,8 +447,7 @@ export function useSQLite<T extends { id: string }>(
           id,
           item as Partial<Record<string, unknown>>
         );
-        await loadData();
-        emitSQLiteDataChanged(safeTableName);
+        await syncTableAfterMutation();
         return;
       }
 
@@ -497,10 +489,9 @@ export function useSQLite<T extends { id: string }>(
         );
       });
 
-      await loadData();
-      emitSQLiteDataChanged(safeTableName);
+      await syncTableAfterMutation();
     },
-    [loadData, runSerializedTauriOp, safeTableName, tableName, update]
+    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName, update]
   );
 
   const refresh = useCallback(async () => {

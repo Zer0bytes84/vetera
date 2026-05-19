@@ -7,7 +7,7 @@ import {
   isTauriRuntime,
   updateBrowserRow,
 } from "../browser-store";
-import { generateId, getDatabase } from "./database";
+import { generateId, runDbOperation } from "./database";
 
 export interface LoginCredentials {
   email: string;
@@ -34,9 +34,8 @@ async function getRegistrationRole(): Promise<string> {
     return existingUsers.length === 0 ? "admin" : "stagiaire";
   }
 
-  const db = await getDatabase();
-  const result = await db.select<{ count: number }[]>(
-    "SELECT COUNT(*) as count FROM users"
+  const result = await runDbOperation((db) =>
+    db.select<{ count: number }[]>("SELECT COUNT(*) as count FROM users")
   );
 
   return result[0]?.count === 0 ? "admin" : "stagiaire";
@@ -59,6 +58,98 @@ type BrowserSessionRecord = {
   expiresAt: string;
 };
 
+function legacySha256(value: string): string {
+  const rightRotate = (word: number, amount: number) =>
+    (word >>> amount) | (word << (32 - amount));
+  const mathPow = Math.pow;
+  const maxWord = mathPow(2, 32);
+  const lengthProperty = "length";
+  const words: number[] = [];
+  const ascii = unescape(encodeURIComponent(value));
+  let hash = legacySha256.h as number[] | undefined;
+  let k = legacySha256.k as number[] | undefined;
+  let primeCounter = k?.length ?? 0;
+  const isComposite: Record<number, boolean> = {};
+
+  if (!(hash && k)) {
+    hash = [];
+    k = [];
+    for (let candidate = 2; primeCounter < 64; candidate += 1) {
+      if (!isComposite[candidate]) {
+        for (let i = 0; i < 313; i += candidate) {
+          isComposite[i] = true;
+        }
+        hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+        k[primeCounter] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+        primeCounter += 1;
+      }
+    }
+    legacySha256.h = hash;
+    legacySha256.k = k;
+  }
+
+  const message = `${ascii}\x80`;
+  for (let i = 0; i < message[lengthProperty]; i += 1) {
+    const j = message.charCodeAt(i);
+    words[i >> 2] |= j << (((3 - i) % 4) * 8);
+  }
+  words[(((message[lengthProperty] + 8) >> 6) << 4) + 15] =
+    ascii[lengthProperty] * 8;
+
+  const workingHash = hash.slice();
+  for (let j = 0; j < words[lengthProperty]; ) {
+    const w = words.slice(j, (j += 16));
+    const oldHash = workingHash.slice();
+    for (let i = 0; i < 64; i += 1) {
+      const w15 = w[i - 15];
+      const w2 = w[i - 2];
+      const a = workingHash[0];
+      const e = workingHash[4];
+      const temp1 =
+        workingHash[7] +
+        (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) +
+        ((e & workingHash[5]) ^ (~e & workingHash[6])) +
+        k[i] +
+        (w[i] =
+          i < 16
+            ? w[i]
+            : (w[i - 16] +
+                (rightRotate(w15, 7) ^
+                  rightRotate(w15, 18) ^
+                  (w15 >>> 3)) +
+                w[i - 7] +
+                (rightRotate(w2, 17) ^
+                  rightRotate(w2, 19) ^
+                  (w2 >>> 10))) |
+              0);
+      const temp2 =
+        (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) +
+        ((a & workingHash[1]) ^
+          (a & workingHash[2]) ^
+          (workingHash[1] & workingHash[2]));
+
+      workingHash.unshift((temp1 + temp2) | 0);
+      workingHash[4] = (workingHash[4] + temp1) | 0;
+      workingHash.pop();
+    }
+
+    for (let i = 0; i < 8; i += 1) {
+      workingHash[i] = (workingHash[i] + oldHash[i]) | 0;
+    }
+  }
+
+  return workingHash
+    .map((word) =>
+      Array.from({ length: 4 }, (_value, index) =>
+        ((word >> ((3 - index) * 8)) & 255).toString(16).padStart(2, "0")
+      ).join("")
+    )
+    .join("");
+}
+
+legacySha256.h = undefined as number[] | undefined;
+legacySha256.k = undefined as number[] | undefined;
+
 /**
  * Hash un mot de passe (à implémenter côté Rust pour bcrypt)
  * Pour l'instant: hash simple (À REMPLACER en production)
@@ -79,8 +170,12 @@ async function verifyPassword(
   ) {
     return bcrypt.compare(password, hash);
   }
-  const passwordHash = await hashPassword(password);
-  return passwordHash === hash;
+
+  if (/^[a-f0-9]{64}$/i.test(hash)) {
+    return legacySha256(password) === hash.toLowerCase();
+  }
+
+  return false;
 }
 
 /**
@@ -128,12 +223,12 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
   }
 
   console.log("[AUTH] Starting login for:", credentials.email);
-  const db = await getDatabase();
-  console.log("[AUTH] Database loaded");
 
-  const users = await db.select<any[]>(
-    "SELECT * FROM users WHERE email = ? AND status = ?",
-    [credentials.email, "active"]
+  const users = await runDbOperation((db) =>
+    db.select<any[]>(
+      "SELECT * FROM users WHERE email = ? AND status = ?",
+      [credentials.email, "active"]
+    )
   );
 
   console.log("[AUTH] Users found:", users.length);
@@ -164,9 +259,11 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7); // 7 jours
 
-  await db.execute(
-    "INSERT INTO sessions (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)",
-    [sessionId, user.id, token, expiresAt.toISOString()]
+  await runDbOperation((db) =>
+    db.execute(
+      "INSERT INTO sessions (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)",
+      [sessionId, user.id, token, expiresAt.toISOString()]
+    )
   );
 
   // Sauvegarder le token en localStorage
@@ -213,12 +310,10 @@ export async function register(data: RegisterData): Promise<AuthUser> {
   }
 
   console.log("[AUTH] Starting registration for:", data.email);
-  const db = await getDatabase();
 
   // Vérifier si l'email existe déjà
-  const existing = await db.select<any[]>(
-    "SELECT id FROM users WHERE email = ?",
-    [data.email]
+  const existing = await runDbOperation((db) =>
+    db.select<any[]>("SELECT id FROM users WHERE email = ?", [data.email])
   );
 
   if (existing.length > 0) {
@@ -234,9 +329,11 @@ export async function register(data: RegisterData): Promise<AuthUser> {
   // Créer l'utilisateur
   const userId = generateId();
 
-  await db.execute(
-    "INSERT INTO users (id, email, password_hash, display_name, role, status) VALUES (?, ?, ?, ?, ?, ?)",
-    [userId, data.email, passwordHash, data.displayName, role, "active"]
+  await runDbOperation((db) =>
+    db.execute(
+      "INSERT INTO users (id, email, password_hash, display_name, role, status) VALUES (?, ?, ?, ?, ?, ?)",
+      [userId, data.email, passwordHash, data.displayName, role, "active"]
+    )
   );
 
   console.log("[AUTH] User created, auto-logging in...");
@@ -264,8 +361,9 @@ export async function logout(): Promise<void> {
       return;
     }
 
-    const db = await getDatabase();
-    await db.execute("DELETE FROM sessions WHERE token = ?", [token]);
+    await runDbOperation((db) =>
+      db.execute("DELETE FROM sessions WHERE token = ?", [token])
+    );
     localStorage.removeItem("auth_token");
   }
 }
@@ -310,12 +408,12 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     };
   }
 
-  const db = await getDatabase();
-
   // Vérifier la session
-  const sessions = await db.select<any[]>(
-    "SELECT * FROM sessions WHERE token = ? AND expires_at > ?",
-    [token, new Date().toISOString()]
+  const sessions = await runDbOperation((db) =>
+    db.select<any[]>(
+      "SELECT * FROM sessions WHERE token = ? AND expires_at > ?",
+      [token, new Date().toISOString()]
+    )
   );
 
   if (sessions.length === 0) {
@@ -326,9 +424,9 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   const session = sessions[0];
 
   // Récupérer l'utilisateur
-  const users = await db.select<any[]>("SELECT * FROM users WHERE id = ?", [
-    session.user_id,
-  ]);
+  const users = await runDbOperation((db) =>
+    db.select<any[]>("SELECT * FROM users WHERE id = ?", [session.user_id])
+  );
 
   if (users.length === 0) {
     return null;
@@ -358,13 +456,14 @@ export async function updatePassword(
     return;
   }
 
-  const db = await getDatabase();
   const passwordHash = await hashPassword(newPassword);
 
-  await db.execute("UPDATE users SET password_hash = ? WHERE id = ?", [
-    passwordHash,
-    userId,
-  ]);
+  await runDbOperation((db) =>
+    db.execute("UPDATE users SET password_hash = ? WHERE id = ?", [
+      passwordHash,
+      userId,
+    ])
+  );
 }
 
 export async function createInitialAdmin(
@@ -399,10 +498,8 @@ export async function createInitialAdmin(
     };
   }
 
-  const db = await getDatabase();
-  const existing = await db.select<any[]>(
-    "SELECT id FROM users WHERE email = ?",
-    [data.email]
+  const existing = await runDbOperation((db) =>
+    db.select<any[]>("SELECT id FROM users WHERE email = ?", [data.email])
   );
 
   if (existing.length > 0) {
@@ -412,10 +509,12 @@ export async function createInitialAdmin(
   const passwordHash = await hashPassword(data.password);
   const userId = generateId();
 
-  await db.execute(
-    `INSERT INTO users (id, email, password_hash, display_name, role, status, created_at, updated_at)
+  await runDbOperation((db) =>
+    db.execute(
+      `INSERT INTO users (id, email, password_hash, display_name, role, status, created_at, updated_at)
          VALUES (?, ?, ?, ?, 'admin', 'active', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-    [userId, data.email, passwordHash, data.displayName]
+      [userId, data.email, passwordHash, data.displayName]
+    )
   );
 
   return {

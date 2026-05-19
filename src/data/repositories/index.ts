@@ -1,6 +1,13 @@
 import { useSQLite } from "@/hooks/useSQLite";
+import { isTauriRuntime } from "@/services/browser-store";
 import * as AppSettingsService from "@/services/appSettingsService";
 import * as AuthService from "@/services/sqlite/auth";
+import {
+  generateId,
+  runDbOperation,
+  runDbTransaction,
+  toSQLiteTimestamp,
+} from "@/services/sqlite/database";
 import type {
   Appointment,
   ConsultationDocument,
@@ -13,6 +20,39 @@ import type {
   User,
 } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const rowToOwner = (row: Record<string, unknown>): Owner => ({
+  id: String(row.id),
+  firstName: String(row.first_name ?? ""),
+  lastName: String(row.last_name ?? ""),
+  phone: String(row.phone ?? ""),
+  email: row.email ? String(row.email) : undefined,
+  address: row.address ? String(row.address) : undefined,
+  city: row.city ? String(row.city) : undefined,
+  createdAt: String(row.created_at ?? new Date().toISOString()),
+});
+
+const rowToPatient = (row: Record<string, unknown>): Patient => ({
+  id: String(row.id),
+  ownerId: String(row.owner_id ?? ""),
+  name: String(row.name ?? ""),
+  species: String(row.species ?? ""),
+  breed: row.breed ? String(row.breed) : undefined,
+  sex: ((row.sex ? String(row.sex) : "M") as Patient["sex"]) ?? "M",
+  dateOfBirth: row.date_of_birth ? String(row.date_of_birth) : undefined,
+  weightHistory: row.weight_history ? String(row.weight_history) : undefined,
+  status: ((row.status ? String(row.status) : "sante") as Patient["status"]) ??
+    "sante",
+  lastVisit: row.last_visit ? String(row.last_visit) : undefined,
+  allergies: row.allergies ? String(row.allergies) : undefined,
+  chronicConditions: row.chronic_conditions
+    ? String(row.chronic_conditions)
+    : undefined,
+  generalNotes: row.general_notes ? String(row.general_notes) : undefined,
+  createdAt: String(row.created_at ?? new Date().toISOString()),
+});
 
 export const authRepository = {
   getCurrentUser: AuthService.getCurrentUser,
@@ -181,6 +221,40 @@ export function usePatientsRepository() {
   const patientsStore = useSQLite<Patient>("patients");
   const ownersStore = useSQLite<Owner>("owners");
 
+  const waitForOwner = async (ownerId: string) => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const rows = await runDbOperation((db) =>
+        db.select<Record<string, unknown>[]>(
+          "SELECT * FROM owners WHERE id = ?",
+          [ownerId]
+        )
+      );
+      if (rows?.[0]) {
+        return rowToOwner(rows[0]);
+      }
+      await sleep(120 * (attempt + 1));
+    }
+
+    return null;
+  };
+
+  const waitForPatient = async (patientId: string) => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const rows = await runDbOperation((db) =>
+        db.select<Record<string, unknown>[]>(
+          "SELECT * FROM patients WHERE id = ?",
+          [patientId]
+        )
+      );
+      if (rows?.[0]) {
+        return rowToPatient(rows[0]);
+      }
+      await sleep(120 * (attempt + 1));
+    }
+
+    return null;
+  };
+
   const createWithOwner = async ({
     ownerId,
     owner,
@@ -190,32 +264,145 @@ export function usePatientsRepository() {
     owner: Omit<Owner, "id" | "createdAt" | "updatedAt">;
     patient: Omit<Patient, "id" | "ownerId" | "createdAt" | "updatedAt">;
   }) => {
+    const patientName = patient.name?.trim();
+    const patientSpecies = patient.species?.trim();
+
+    if (!patientName) {
+      throw new Error("Le nom du patient est obligatoire.");
+    }
+
+    if (!patientSpecies) {
+      throw new Error("L'espèce du patient est obligatoire.");
+    }
+
+    if (!isTauriRuntime()) {
+      let finalOwnerId = ownerId ?? null;
+      let finalOwner: Owner | null =
+        (finalOwnerId
+          ? ownersStore.data.find((entry) => entry.id === finalOwnerId)
+          : null) ?? null;
+
+      if (finalOwnerId) {
+        finalOwnerId = finalOwnerId.trim();
+      } else {
+        const createdOwner = await ownersStore.add(
+          {
+            firstName: owner.firstName?.trim() || "",
+            lastName: owner.lastName?.trim() || "",
+            phone: owner.phone?.trim() || "",
+            email: owner.email?.trim() || "",
+            address: owner.address?.trim() || "",
+            city: owner.city?.trim() || "",
+          } as Omit<Owner, "id" | "createdAt" | "updatedAt">
+        );
+        finalOwnerId = createdOwner?.id ?? null;
+        finalOwner = createdOwner ?? null;
+      }
+
+      if (!finalOwnerId) {
+        throw new Error("Impossible de créer le propriétaire.");
+      }
+
+      const createdPatient = await patientsStore.add({
+        ...patient,
+        name: patientName,
+        species: patientSpecies,
+        breed: patient.breed?.trim() || "",
+        ownerId: finalOwnerId,
+      } as Omit<Patient, "id" | "createdAt" | "updatedAt">);
+
+      if (!createdPatient) {
+        return null;
+      }
+
+      return {
+        owner:
+          finalOwner ??
+          ownersStore.data.find((entry) => entry.id === finalOwnerId) ??
+          null,
+        patient: createdPatient,
+      };
+    }
+
     let finalOwnerId = ownerId ?? null;
+    let finalOwner: Owner | null = null;
 
     if (finalOwnerId) {
-      const existingOwner = ownersStore.data.find(
-        (entry) => entry.id === finalOwnerId
-      );
-      if (!existingOwner) {
-        throw new Error(
-          "Propriétaire introuvable. Réessayez après actualisation de la liste."
+      finalOwnerId = finalOwnerId.trim();
+      finalOwner = await waitForOwner(finalOwnerId);
+      if (!finalOwner) {
+        throw new Error("Le propriétaire sélectionné est introuvable.");
+      }
+    }
+
+    const now = toSQLiteTimestamp(new Date());
+    const createdOwnerId = finalOwnerId ?? generateId();
+    const createdPatientId = generateId();
+
+    await runDbTransaction(async (db) => {
+      if (!finalOwnerId) {
+        await db.execute(
+          `INSERT INTO owners (
+            id, first_name, last_name, phone, email, address, city, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            createdOwnerId,
+            owner.firstName?.trim() || "",
+            owner.lastName?.trim() || "",
+            owner.phone?.trim() || "",
+            owner.email?.trim() || "",
+            owner.address?.trim() || "",
+            owner.city?.trim() || "",
+            now,
+            now,
+          ]
         );
       }
-    } else {
-      const createdOwner = await ownersStore.add(
-        owner as Omit<Owner, "id" | "createdAt" | "updatedAt">
+
+      await db.execute(
+        `INSERT INTO patients (
+          id, owner_id, name, species, breed, sex, date_of_birth, status, allergies,
+          chronic_conditions, general_notes, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          createdPatientId,
+          createdOwnerId,
+          patientName,
+          patientSpecies,
+          patient.breed?.trim() || "",
+          patient.sex || "M",
+          patient.dateOfBirth || null,
+          patient.status || "sante",
+          patient.allergies || null,
+          patient.chronicConditions || null,
+          patient.generalNotes || null,
+          now,
+          now,
+        ]
       );
-      finalOwnerId = createdOwner?.id ?? null;
+    });
+
+    finalOwner = finalOwner ?? (await waitForOwner(createdOwnerId));
+    const createdPatient = await waitForPatient(createdPatientId);
+
+    if (!finalOwner) {
+      throw new Error(
+        "Le propriétaire n'a pas été sauvegardé correctement dans la base."
+      );
     }
 
-    if (!finalOwnerId) {
-      throw new Error("Impossible de créer le propriétaire.");
+    if (!createdPatient) {
+      throw new Error(
+        "Le patient n'a pas été sauvegardé correctement dans la base."
+      );
     }
 
-    return patientsStore.add({
-      ...patient,
-      ownerId: finalOwnerId,
-    } as Omit<Patient, "id" | "createdAt" | "updatedAt">);
+    await Promise.all([ownersStore.refresh(), patientsStore.refresh()]);
+
+    return {
+      owner: finalOwner,
+      patient: createdPatient,
+    };
   };
 
   return {
