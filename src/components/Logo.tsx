@@ -131,8 +131,7 @@ const Logo: React.FC<LogoProps> = ({
               className={cn("font-semibold tracking-tight", wordmarkClass)}
               style={{
                 color: primaryWordmark,
-                fontFamily:
-                  '"Geist Variable", "Geist", "Geist Fallback", sans-serif',
+                fontFamily: "'Inter Variable', 'Inter', sans-serif",
                 letterSpacing: "-0.045em",
                 fontWeight: 650,
               }}
@@ -143,8 +142,7 @@ const Logo: React.FC<LogoProps> = ({
               className={cn("font-medium tracking-tight", wordmarkClass)}
               style={{
                 color: secondaryWordmark,
-                fontFamily:
-                  '"Geist Variable", "Geist", "Geist Fallback", sans-serif',
+                fontFamily: "'Inter Variable', 'Inter', sans-serif",
                 letterSpacing: "-0.038em",
                 fontWeight: 560,
               }}

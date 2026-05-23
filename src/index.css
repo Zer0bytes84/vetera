@@ -425,9 +425,17 @@
   --popover-foreground: var(--prospeo-text);
   --secondary: var(--prospeo-card-soft);
   --secondary-foreground: var(--prospeo-text);
-  --muted: color-mix(in oklch, var(--prospeo-card-soft) 88%, var(--prospeo-bg) 12%);
+  --muted: color-mix(
+    in oklch,
+    var(--prospeo-card-soft) 88%,
+    var(--prospeo-bg) 12%
+  );
   --muted-foreground: var(--prospeo-muted);
-  --accent: color-mix(in oklch, var(--prospeo-card-soft) 72%, var(--prospeo-active) 8%);
+  --accent: color-mix(
+    in oklch,
+    var(--prospeo-card-soft) 72%,
+    var(--prospeo-active) 8%
+  );
   --accent-foreground: var(--prospeo-text);
   --border: var(--prospeo-border);
   --input: var(--prospeo-border);
@@ -452,16 +460,29 @@
 }
 
 .dark .modal-medical-header {
-  background: color-mix(in oklch, var(--prospeo-card-soft) 84%, var(--background) 16%);
+  background: color-mix(
+    in oklch,
+    var(--prospeo-card-soft) 84%,
+    var(--background) 16%
+  );
 }
 
 .dark .modal-medical-body {
-  background: color-mix(in oklch, var(--prospeo-card) 92%, var(--background) 8%);
+  background: color-mix(
+    in oklch,
+    var(--prospeo-card) 92%,
+    var(--background) 8%
+  );
 }
 
 .dark .modal-medical-footer {
-  background: color-mix(in oklch, var(--prospeo-card-soft) 88%, var(--background) 12%);
-  box-shadow: 0 -1px 0 color-mix(in oklch, var(--prospeo-border) 85%, transparent) inset;
+  background: color-mix(
+    in oklch,
+    var(--prospeo-card-soft) 88%,
+    var(--background) 12%
+  );
+  box-shadow: 0 -1px 0
+    color-mix(in oklch, var(--prospeo-border) 85%, transparent) inset;
 }
 
 /* Metric Glow Effects - Subtle border glows */
@@ -1385,7 +1406,7 @@ button:focus-visible,
 html,
 body,
 body * {
-  letter-spacing: 0 !important;
+  letter-spacing: -0.31px !important;
 }
 
 body {
@@ -1709,137 +1730,17 @@ html:not(.dark) .card-hover-lift:hover {
   position: relative;
   min-height: 100%;
   color: var(--prospeo-text);
-  background:
-    radial-gradient(
-      ellipse 60% 50% at 12% 8%,
-      color-mix(in oklch, var(--prospeo-active) 14%, transparent) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 55% 45% at 88% 6%,
-      color-mix(in oklch, var(--prospeo-active-2) 12%, transparent) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 70% 55% at 50% 100%,
-      color-mix(in oklch, var(--prospeo-active) 8%, transparent) 0%,
-      transparent 62%
-    ),
-    linear-gradient(180deg, var(--prospeo-bg), var(--background));
+  background-color: var(--prospeo-bg);
 }
 
 .prospeo-dashboard.prospeo-dark,
 .dark .prospeo-dashboard {
-  background:
-    radial-gradient(
-      ellipse 60% 50% at 12% 8%,
-      color-mix(in oklch, var(--prospeo-active) 10%, transparent) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 55% 45% at 88% 6%,
-      color-mix(in oklch, var(--prospeo-active-2) 9%, transparent) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 70% 55% at 50% 100%,
-      color-mix(in oklch, var(--prospeo-active) 6%, transparent) 0%,
-      transparent 62%
-    ),
-    linear-gradient(180deg, var(--prospeo-bg), var(--background));
+  background-color: var(--prospeo-bg);
 }
 
 .prospeo-shell {
   background: var(--prospeo-shell);
   border: 1px solid var(--prospeo-border);
-  box-shadow: var(--prospeo-shadow);
-}
-
-.prospeo-card {
-  position: relative;
-  padding: 22px;
-  overflow: hidden;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklch, var(--prospeo-card) 94%, white 6%),
-      var(--prospeo-card)
-    ),
-    var(--prospeo-card);
-  border: 1px solid var(--prospeo-border);
-  border-radius: 20px;
-  box-shadow: var(--prospeo-shadow);
-}
-
-.prospeo-card:hover {
-  border-color: var(--prospeo-border-strong);
-}
-
-.prospeo-card::after {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  content: "";
-  background: radial-gradient(
-    circle at 88% 8%,
-    color-mix(in oklch, var(--prospeo-active) 5%, transparent),
-    transparent 24%
-  );
-}
-
-.prospeo-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-.prospeo-metric-card {
-  min-height: 156px;
-}
-
-.prospeo-chart-card {
-  min-height: 478px;
-}
-
-.prospeo-label {
-  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
-  color: var(--prospeo-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em !important;
-}
-
-.prospeo-select {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0 14px;
-  font-size: 13px;
-  color: var(--prospeo-text);
-  background: var(--prospeo-card-soft);
-  border: 1px solid var(--prospeo-border);
-  border-radius: 12px;
-}
-
-.prospeo-glyph {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  color: var(--prospeo-text);
-  background: var(--prospeo-card-soft);
-  border: 1px solid var(--prospeo-border);
-  border-radius: 12px;
-}
-
-.prospeo-tooltip {
-  padding: 8px 10px;
-  font-size: 12px;
-  color: var(--prospeo-text);
-  background: var(--prospeo-card);
-  border: 1px solid var(--prospeo-border-strong);
-  border-radius: 12px;
   box-shadow: var(--prospeo-shadow);
 }
 
@@ -1876,7 +1777,6 @@ html:not(.dark) .card-hover-lift:hover {
 .modal-hero-shell {
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid color-mix(in oklch, var(--border) 88%, transparent);
   background:
     radial-gradient(
       120% 140% at 0% 0%,
@@ -1898,6 +1798,7 @@ html:not(.dark) .card-hover-lift:hover {
       color-mix(in oklch, white 94%, var(--muted) 6%) 0%,
       color-mix(in oklch, white 98%, var(--muted) 2%) 100%
     );
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 88%, transparent);
 }
 
 .modal-hero-frame {
@@ -1911,24 +1812,23 @@ html:not(.dark) .card-hover-lift:hover {
 .modal-hero-shell::before {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in oklch, white 30%, transparent) 0%,
-      transparent 35%,
-      color-mix(in oklch, white 34%, transparent) 100%
-    );
   pointer-events: none;
   content: "";
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklch, white 30%, transparent) 0%,
+    transparent 35%,
+    color-mix(in oklch, white 34%, transparent) 100%
+  );
 }
 
 .modal-hero-badge {
   display: inline-flex;
-  align-items: center;
   gap: 0.55rem;
+  align-items: center;
+  background: color-mix(in oklch, white 84%, transparent);
   border: 1px solid color-mix(in oklch, white 72%, var(--border) 28%);
   border-radius: 999px;
-  background: color-mix(in oklch, white 84%, transparent);
   box-shadow:
     0 1px 0 color-mix(in oklch, white 90%, transparent) inset,
     0 18px 40px -34px color-mix(in oklch, black 22%, transparent);
@@ -1936,34 +1836,33 @@ html:not(.dark) .card-hover-lift:hover {
 }
 
 .modal-hero-stat {
+  background: color-mix(in oklch, white 78%, transparent);
   border: 1px solid color-mix(in oklch, white 70%, var(--border) 30%);
   border-radius: 1.15rem;
-  background: color-mix(in oklch, white 78%, transparent);
   box-shadow: 0 16px 36px -30px color-mix(in oklch, black 20%, transparent);
   backdrop-filter: blur(12px);
 }
 
 .modal-hero-footer {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklch, white 92%, transparent),
-      color-mix(in oklch, white 98%, var(--muted) 2%)
-    );
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, white 92%, transparent),
+    color-mix(in oklch, white 98%, var(--muted) 2%)
+  );
   box-shadow: 0 1px 0 color-mix(in oklch, white 80%, transparent) inset;
 }
 
 .modal-hero-action {
-  min-height: 154px;
   align-items: flex-start;
   justify-content: flex-start;
-  border-radius: 1.35rem;
+  min-height: 154px;
   padding: 1.15rem 1.1rem;
   text-align: left;
+  white-space: normal;
+  border-radius: 1.35rem;
   box-shadow:
     0 1px 0 color-mix(in oklch, white 75%, transparent) inset,
     0 18px 36px -30px color-mix(in oklch, black 20%, transparent);
-  white-space: normal;
 }
 
 .modal-hero-action > span,
@@ -1976,22 +1875,20 @@ html:not(.dark) .card-hover-lift:hover {
 }
 
 .modal-hero-action[data-variant="primary"] {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklch, var(--primary) 92%, white 8%) 0%,
-      color-mix(in oklch, var(--primary) 100%, black 0%) 100%
-    );
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--primary) 92%, white 8%) 0%,
+    color-mix(in oklch, var(--primary) 100%, black 0%) 100%
+  );
 }
 
 .modal-hero-action[data-variant="secondary"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, white 94%, var(--muted) 6%) 0%,
+    color-mix(in oklch, white 99%, var(--muted) 1%) 100%
+  );
   border-color: color-mix(in oklch, var(--border) 88%, white 12%);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklch, white 94%, var(--muted) 6%) 0%,
-      color-mix(in oklch, white 99%, var(--muted) 1%) 100%
-    );
 }
 
 .dark .modal-medical-shell {
@@ -2030,15 +1927,14 @@ html:not(.dark) .card-hover-lift:hover {
 
 .dark .modal-hero-badge,
 .dark .modal-hero-stat {
-  border-color: color-mix(in oklch, white 10%, var(--border) 90%);
   background: color-mix(in oklch, var(--background) 74%, white 6%);
+  border-color: color-mix(in oklch, white 10%, var(--border) 90%);
 }
 
 .dark .modal-hero-footer {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklch, var(--background) 86%, transparent),
-      color-mix(in oklch, var(--background) 94%, var(--muted) 6%)
-    );
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--background) 86%, transparent),
+    color-mix(in oklch, var(--background) 94%, var(--muted) 6%)
+  );
 }

@@ -2,15 +2,11 @@ import {
   Add01Icon,
   BirdIcon,
   Calendar01Icon,
-  CalendarCheckInIcon,
   CheckmarkCircle02Icon,
   Edit01Icon,
-  HeartPulse,
-  Notification02Icon,
   SaveIcon,
   SearchIcon,
   StethoscopeIcon,
-  UserGroupIcon,
   WorkHistoryIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -23,6 +19,7 @@ import React, {
 } from "react";
 import { toast } from "sonner";
 
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,17 +57,20 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { Sparkline } from "@/components/ui/sparkline";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  APPOINTMENT_STATUS_META,
+  getSpeciesTone,
+  PATIENT_STATUS_META,
+} from "@/config/status-meta";
 import {
   useAppointmentsRepository,
   useOwnersRepository,
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
-import { APPOINTMENT_STATUS_META, PATIENT_STATUS_META, getSpeciesTone } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import type { Appointment, Owner, Patient } from "@/types/db";
 
@@ -124,8 +124,6 @@ const CAT_BREEDS = [
   "Abyssin",
   "Croisé",
 ];
-
-
 
 type DetailsTab = "info" | "medical" | "history";
 
@@ -306,118 +304,6 @@ function PatientStatusBadge({ status }: { status: Patient["status"] }) {
     <Badge className={meta.className} variant="secondary">
       {meta.label}
     </Badge>
-  );
-}
-
-type PatientOverviewCard = {
-  label: string;
-  value: string;
-  meta: string;
-  note: string;
-  icon: typeof UserGroupIcon;
-  tone: "blue" | "orange" | "emerald" | "slate";
-  sparklineData: number[];
-};
-
-const patientToneMap: Record<
-  PatientOverviewCard["tone"],
-  { bg: string; text: string; spark: string }
-> = {
-  blue: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-600",
-    spark: "#3b82f6",
-  },
-  orange: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-600",
-    spark: "#f97316",
-  },
-  emerald: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-600",
-    spark: "#10b981",
-  },
-  slate: {
-    bg: "bg-slate-500/10",
-    text: "text-slate-600",
-    spark: "#64748b",
-  },
-};
-
-function buildPatientSparkline(
-  base: number,
-  pattern: "steady" | "rise" | "watch" | "stable"
-) {
-  const deltas = {
-    steady: [-2, -1, 0, 1, 0, 1, 1, 2],
-    rise: [-3, -2, -1, 0, 1, 2, 2, 3],
-    watch: [3, 2, 4, 5, 4, 6, 5, 7],
-    stable: [1, 1, 0, 1, 0, 1, 0, 0],
-  }[pattern];
-
-  return deltas.map((delta) => Math.max(base + delta, 0));
-}
-
-function PatientOverviewStrip({ items }: { items: PatientOverviewCard[] }) {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {items.map((item) => {
-        const tone = patientToneMap[item.tone];
-
-        return (
-          <Card
-            className={cn(
-              "card-vibrant overflow-hidden rounded-[24px] border border-border bg-card shadow-none",
-              `metric-glow-${item.tone}`
-            )}
-            key={item.label}
-          >
-            <CardContent className="flex min-h-[154px] flex-col justify-between p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="text-[11px] text-muted-foreground">
-                    {item.label}
-                  </p>
-                  <p className="font-medium text-[24px] text-foreground tracking-[-0.04em]">
-                    {item.value}
-                  </p>
-                  <div className="flex items-center gap-1.5 text-[10px]">
-                    <span className="font-mono text-foreground/70">
-                      {item.meta}
-                    </span>
-                    <span className="font-mono text-muted-foreground uppercase tracking-[0.04em]">
-                      {item.note}
-                    </span>
-                  </div>
-                </div>
-                <div className="prospeo-glyph h-10 w-10 shrink-0">
-                  <HugeiconsIcon
-                    className={cn("size-[18px]", tone.text)}
-                    icon={item.icon}
-                    strokeWidth={2}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-end justify-between gap-3">
-                <p className="max-w-[20ch] text-[12px] text-muted-foreground leading-[1.45]">
-                  {item.note}
-                </p>
-                <Sparkline
-                  color={tone.spark}
-                  data={item.sparklineData}
-                  fillOpacity={0.08}
-                  height={28}
-                  strokeWidth={2}
-                  width={74}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
   );
 }
 
@@ -883,14 +769,13 @@ function PatientDetailsDialog({
                               }
                               value={patientData.status}
                             >
-                              {Object.entries(PATIENT_STATUS_META).map(([value, option]) => (
-                                <NativeSelectOption
-                                  key={value}
-                                  value={value}
-                                >
-                                  {option.label}
-                                </NativeSelectOption>
-                              ))}
+                              {Object.entries(PATIENT_STATUS_META).map(
+                                ([value, option]) => (
+                                  <NativeSelectOption key={value} value={value}>
+                                    {option.label}
+                                  </NativeSelectOption>
+                                )
+                              )}
                             </NativeSelect>
                           </Field>
                         </div>
@@ -1636,14 +1521,13 @@ function PatientCreateDialog({
                         }
                         value={(newPatient.status || "sante") as string}
                       >
-                        {Object.entries(PATIENT_STATUS_META).map(([value, option]) => (
-                          <NativeSelectOption
-                            key={value}
-                            value={value}
-                          >
-                            {option.label}
-                          </NativeSelectOption>
-                        ))}
+                        {Object.entries(PATIENT_STATUS_META).map(
+                          ([value, option]) => (
+                            <NativeSelectOption key={value} value={value}>
+                              {option.label}
+                            </NativeSelectOption>
+                          )
+                        )}
                       </NativeSelect>
                     </Field>
                   </div>
@@ -1911,7 +1795,7 @@ const Patients: React.FC = () => {
     [patients]
   );
 
-  const overviewCards = useMemo<PatientOverviewCard[]>(() => {
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
     const activePatients = patients.filter(
       (patient) => patient.status !== "decede"
     ).length;
@@ -1948,40 +1832,36 @@ const Patients: React.FC = () => {
 
     return [
       {
-        label: "Patients actifs",
+        title: "Patients actifs",
         value: String(activePatients),
-        meta: `${owners.length} foyers`,
-        note: "Patients suivis",
-        icon: UserGroupIcon,
-        sparklineData: buildPatientSparkline(activePatients, "steady"),
-        tone: "blue",
+        badge: `${owners.length} foyers`,
+        trend: "neutral",
+        footerTitle: "Patients suivis",
+        footerDescription: "Patients actifs enregistrés",
       },
       {
-        label: "Suivi clinique",
+        title: "Suivi clinique",
         value: String(monitoredPatients),
-        meta: monitoredPatients > 0 ? "a surveiller" : "stable",
-        note: "Traitements en cours",
-        icon: HeartPulse,
-        sparklineData: buildPatientSparkline(monitoredPatients, "watch"),
-        tone: "orange",
+        badge: monitoredPatients > 0 ? "a surveiller" : "stable",
+        trend: monitoredPatients > 0 ? "up" : "neutral",
+        footerTitle: "Traitements en cours",
+        footerDescription: "Patients sous traitement ou hospitalisés",
       },
       {
-        label: "Rendez-vous à venir",
+        title: "Rendez-vous à venir",
         value: String(scheduledPatients),
-        meta: `${recentAdmissions} nouveaux`,
-        note: "Prochaines visites",
-        icon: CalendarCheckInIcon,
-        sparklineData: buildPatientSparkline(scheduledPatients, "rise"),
-        tone: "emerald",
+        badge: `${recentAdmissions} nouveaux`,
+        trend: "up",
+        footerTitle: "Prochaines visites",
+        footerDescription: "Consultations planifiées",
       },
       {
-        label: "Relances à prévoir",
+        title: "Relances à prévoir",
         value: String(stalePatients),
-        meta: "90+ jours",
-        note: "Dossiers inactifs",
-        icon: Notification02Icon,
-        sparklineData: buildPatientSparkline(stalePatients, "stable"),
-        tone: "slate",
+        badge: "90+ jours",
+        trend: stalePatients > 0 ? "down" : "neutral",
+        footerTitle: "Dossiers inactifs",
+        footerDescription: "Patients sans visite depuis 90 jours",
       },
     ];
   }, [appointments, hydratedOwners.length, patients]);
@@ -2144,7 +2024,7 @@ const Patients: React.FC = () => {
   );
 
   return (
-    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -2168,7 +2048,7 @@ const Patients: React.FC = () => {
         </div>
       </div>
 
-      <PatientOverviewStrip items={overviewCards} />
+      <SectionCards items={sectionCards} />
 
       <div className="min-h-0 flex-1">
         <Card className="card-vibrant card-hover-lift min-h-[640px] rounded-[24px] border border-border bg-card shadow-none">
@@ -2250,25 +2130,35 @@ const Patients: React.FC = () => {
                       <NativeSelectOption value="all">
                         Tous les statuts
                       </NativeSelectOption>
-                      {Object.entries(PATIENT_STATUS_META).map(([value, option]) => (
-                        <NativeSelectOption key={value} value={value}>
-                          {option.label}
-                        </NativeSelectOption>
-                      ))}
+                      {Object.entries(PATIENT_STATUS_META).map(
+                        ([value, option]) => (
+                          <NativeSelectOption key={value} value={value}>
+                            {option.label}
+                          </NativeSelectOption>
+                        )
+                      )}
                     </NativeSelect>
                   </div>
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Badge className="rounded-full px-3 py-1.5" variant="secondary">
+                  <Badge
+                    className="rounded-full px-3 py-1.5"
+                    variant="secondary"
+                  >
                     {owners.length} propriétaire
                     {owners.length > 1 ? "s" : ""}
                   </Badge>
-                  <Badge className="rounded-full px-3 py-1.5" variant="secondary">
+                  <Badge
+                    className="rounded-full px-3 py-1.5"
+                    variant="secondary"
+                  >
                     {speciesOptions.length} espèce
                     {speciesOptions.length > 1 ? "s" : ""}
                   </Badge>
-                  {(searchTerm || speciesFilter !== "all" || statusFilter !== "all") && (
+                  {(searchTerm ||
+                    speciesFilter !== "all" ||
+                    statusFilter !== "all") && (
                     <Button
                       className="h-8 rounded-full px-3 text-xs"
                       onClick={resetFilters}
@@ -2332,7 +2222,9 @@ const Patients: React.FC = () => {
                       <button
                         className="group block w-full cursor-pointer bg-transparent px-4 py-4 text-left transition-all duration-200 hover:bg-[linear-gradient(90deg,color-mix(in_oklch,var(--color-surface-soft)_75%,transparent),transparent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 sm:px-5"
                         key={entry.patient.id}
-                        onClick={() => openPatientDetails(entry.patient, "info")}
+                        onClick={() =>
+                          openPatientDetails(entry.patient, "info")
+                        }
                         type="button"
                       >
                         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(170px,1.2fr)_minmax(180px,1.2fr)_minmax(140px,0.8fr)_auto] lg:items-center">
@@ -2423,9 +2315,19 @@ const Patients: React.FC = () => {
 
                   <div className="flex flex-col gap-3 border-border/70 border-t px-5 py-4 md:flex-row md:items-center md:justify-between">
                     <p className="text-muted-foreground text-sm">
-                      Affichage de <span className="font-medium text-foreground">{pageStart}</span>
-                      {" "}à <span className="font-medium text-foreground">{pageEnd}</span>
-                      {" "}sur <span className="font-medium text-foreground">{visiblePatients.length}</span> dossier
+                      Affichage de{" "}
+                      <span className="font-medium text-foreground">
+                        {pageStart}
+                      </span>{" "}
+                      à{" "}
+                      <span className="font-medium text-foreground">
+                        {pageEnd}
+                      </span>{" "}
+                      sur{" "}
+                      <span className="font-medium text-foreground">
+                        {visiblePatients.length}
+                      </span>{" "}
+                      dossier
                       {visiblePatients.length > 1 ? "s" : ""}
                     </p>
 
@@ -2433,7 +2335,9 @@ const Patients: React.FC = () => {
                       <Button
                         className="h-9 rounded-full px-4"
                         disabled={currentPage === 1}
-                        onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                        onClick={() =>
+                          setCurrentPage((page) => Math.max(1, page - 1))
+                        }
                         size="sm"
                         variant="outline"
                       >
@@ -2456,7 +2360,9 @@ const Patients: React.FC = () => {
                               className="h-9 min-w-9 rounded-full px-3"
                               onClick={() => setCurrentPage(page)}
                               size="sm"
-                              variant={currentPage === page ? "default" : "outline"}
+                              variant={
+                                currentPage === page ? "default" : "outline"
+                              }
                             >
                               {page}
                             </Button>
@@ -2468,7 +2374,9 @@ const Patients: React.FC = () => {
                         className="h-9 rounded-full px-4"
                         disabled={currentPage === totalPages}
                         onClick={() =>
-                          setCurrentPage((page) => Math.min(totalPages, page + 1))
+                          setCurrentPage((page) =>
+                            Math.min(totalPages, page + 1)
+                          )
                         }
                         size="sm"
                         variant="outline"

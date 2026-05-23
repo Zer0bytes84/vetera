@@ -12,8 +12,7 @@ export const APPOINTMENT_TYPE_META: Record<
   }
 > = {
   Consultation: {
-    badgeClassName:
-      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    badgeClassName: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
     surfaceClassName:
       "border-emerald-200/70 bg-emerald-500/8 dark:border-emerald-900/70 dark:bg-emerald-500/10",
     dotClassName: "bg-emerald-500",
@@ -37,8 +36,7 @@ export const APPOINTMENT_TYPE_META: Record<
       "bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300",
   },
   Urgence: {
-    badgeClassName:
-      "bg-amber-500/12 text-amber-700 dark:text-amber-300",
+    badgeClassName: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
     surfaceClassName:
       "border-amber-200/70 bg-amber-500/10 dark:border-amber-900/70 dark:bg-amber-500/12",
     dotClassName: "bg-amber-500",
@@ -46,8 +44,7 @@ export const APPOINTMENT_TYPE_META: Record<
       "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
   },
   Contrôle: {
-    badgeClassName:
-      "bg-violet-500/10 text-violet-700 dark:text-violet-300",
+    badgeClassName: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
     surfaceClassName:
       "border-violet-200/70 bg-violet-500/8 dark:border-violet-900/70 dark:bg-violet-500/10",
     dotClassName: "bg-violet-500",
@@ -62,8 +59,7 @@ export const APPOINTMENT_STATUS_META: Record<
 > = {
   scheduled: {
     label: "Planifié",
-    className:
-      "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
   },
   in_progress: {
     label: "En cours",
@@ -71,8 +67,7 @@ export const APPOINTMENT_STATUS_META: Record<
   },
   completed: {
     label: "Terminé",
-    className:
-      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
   },
   cancelled: {
     label: "Annulé",
@@ -80,38 +75,30 @@ export const APPOINTMENT_STATUS_META: Record<
   },
   no_show: {
     label: "Absent",
-    className:
-      "bg-amber-500/12 text-amber-700 dark:text-amber-300",
+    className: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
   },
 };
 
 /** Clinique overrides: different labels/colors for in-progress appointments */
-export const CLINIQUE_STATUS_META: Record<
-  Appointment["status"],
-  StatusColor
-> = {
-  ...APPOINTMENT_STATUS_META,
-  scheduled: {
-    label: "À lancer",
-    className:
-      "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  },
-  no_show: {
-    label: "Absent",
-    className:
-      "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  },
-};
+export const CLINIQUE_STATUS_META: Record<Appointment["status"], StatusColor> =
+  {
+    ...APPOINTMENT_STATUS_META,
+    scheduled: {
+      label: "À lancer",
+      className: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    },
+    no_show: {
+      label: "Absent",
+      className:
+        "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    },
+  };
 
 /** Patient-level status (shared between Clinique and Patients) */
-export const PATIENT_STATUS_META: Record<
-  Patient["status"],
-  StatusColor
-> = {
+export const PATIENT_STATUS_META: Record<Patient["status"], StatusColor> = {
   sante: {
     label: "En bonne santé",
-    className:
-      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
   },
   traitement: {
     label: "En traitement",
@@ -119,8 +106,7 @@ export const PATIENT_STATUS_META: Record<
   },
   hospitalise: {
     label: "Hospitalisé",
-    className:
-      "bg-amber-500/12 text-amber-700 dark:text-amber-300",
+    className: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
   },
   decede: {
     label: "Décédé",
@@ -134,23 +120,18 @@ export const PRIORITY_META: Record<
 > = {
   high: {
     label: "Urgent",
-    badgeClassName:
-      "bg-red-500/10 text-red-700 dark:text-red-300",
+    badgeClassName: "bg-red-500/10 text-red-700 dark:text-red-300",
     cardClassName: "border-l-destructive bg-destructive/5",
   },
   medium: {
     label: "Normal",
-    badgeClassName:
-      "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    cardClassName:
-      "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10",
+    badgeClassName: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    cardClassName: "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10",
   },
   low: {
     label: "Faible",
-    badgeClassName:
-      "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-    cardClassName:
-      "border-l-blue-500 bg-blue-500/5 dark:bg-blue-500/10",
+    badgeClassName: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    cardClassName: "border-l-blue-500 bg-blue-500/5 dark:bg-blue-500/10",
   },
 };
 
@@ -160,8 +141,7 @@ export const STOCK_STATUS_META: Record<
 > = {
   expired: {
     label: "Expiré",
-    className:
-      "bg-violet-500/10 text-violet-700 dark:text-violet-300",
+    className: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
   },
   out: {
     label: "Rupture",
@@ -169,13 +149,11 @@ export const STOCK_STATUS_META: Record<
   },
   low: {
     label: "Stock Bas",
-    className:
-      "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    className: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
   },
   ok: {
     label: "OK",
-    className:
-      "bg-green-500/10 text-green-700 dark:text-green-300",
+    className: "bg-green-500/10 text-green-700 dark:text-green-300",
   },
 };
 
@@ -191,8 +169,7 @@ export const TEAM_STATUS_META: Record<
   },
   inactive: {
     label: "Inactif",
-    className:
-      "bg-muted/50 text-muted-foreground",
+    className: "bg-muted/50 text-muted-foreground",
     icon: "cancel",
   },
 };
@@ -207,10 +184,8 @@ export const TRANSACTION_TYPE_META: Record<
 > = {
   income: {
     label: "Revenu",
-    badgeClassName:
-      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    amountClassName:
-      "text-emerald-600 dark:text-emerald-400",
+    badgeClassName: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    amountClassName: "text-emerald-600 dark:text-emerald-400",
   },
   expense: {
     label: "Dépense",
@@ -219,26 +194,18 @@ export const TRANSACTION_TYPE_META: Record<
   },
 };
 
-export const TRANSACTION_STATUS_META: Record<
-  string,
-  StatusColor
-> = {
+export const TRANSACTION_STATUS_META: Record<string, StatusColor> = {
   paid: {
     label: "Payé",
-    className:
-      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
   },
   pending: {
     label: "En attente",
-    className:
-      "bg-amber-500/12 text-amber-700 dark:text-amber-300",
+    className: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
   },
 };
 
-export const SPECIES_TONE: Record<
-  string,
-  string
-> = {
+export const SPECIES_TONE: Record<string, string> = {
   chien: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
   chat: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
   nac: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
@@ -246,8 +213,14 @@ export const SPECIES_TONE: Record<
 
 export function getSpeciesTone(species?: string): string {
   const normalized = species?.toLowerCase() ?? "";
-  if (normalized.includes("chien")) return SPECIES_TONE.chien;
-  if (normalized.includes("chat")) return SPECIES_TONE.chat;
-  if (normalized.includes("nac")) return SPECIES_TONE.nac;
+  if (normalized.includes("chien")) {
+    return SPECIES_TONE.chien;
+  }
+  if (normalized.includes("chat")) {
+    return SPECIES_TONE.chat;
+  }
+  if (normalized.includes("nac")) {
+    return SPECIES_TONE.nac;
+  }
   return "bg-muted text-muted-foreground";
 }

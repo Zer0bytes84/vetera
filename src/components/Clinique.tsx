@@ -35,10 +35,7 @@ import React, {
 import { toast } from "sonner";
 
 import Avatar from "@/components/Avatar";
-import {
-  type MetricOverviewItem,
-  MetricOverviewStrip,
-} from "@/components/metric-overview-strip";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,6 +92,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  APPOINTMENT_TYPE_META,
+  CLINIQUE_STATUS_META,
+  PATIENT_STATUS_META,
+} from "@/config/status-meta";
+import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
   useOwnersRepository,
@@ -110,8 +112,6 @@ import type {
   Owner,
   Patient,
 } from "@/types/db";
-
-import { APPOINTMENT_TYPE_META, CLINIQUE_STATUS_META, PATIENT_STATUS_META } from "@/config/status-meta";
 
 type CliniqueProps = {
   onNavigate?: (view: View) => void;
@@ -890,9 +890,7 @@ function ConsultationSessionDialog({
 
               <Card size="sm">
                 <CardHeader>
-                  <CardTitle className="text-base">
-                    Historique récent
-                  </CardTitle>
+                  <CardTitle className="text-base">Historique récent</CardTitle>
                   <CardDescription>
                     Les dernières consultations restent visibles pendant
                     l’examen.
@@ -1224,39 +1222,39 @@ function ConsultationSessionDialog({
             )}
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-          <Button
-            className="min-w-[120px]"
-            disabled={isSavingDraft || isCompleting}
-            onClick={onClose}
-            variant="outline"
-          >
-            Fermer
-          </Button>
-          <Button
-            className="min-w-[130px]"
-            disabled={isSavingDraft || isCompleting}
-            onClick={() => void handleSaveDraftClick()}
-            variant="outline"
-          >
-            {isSavingDraft ? <Spinner className="size-4" /> : null}
-            {isSavingDraft ? "Sauvegarde..." : "Sauvegarder"}
-          </Button>
-          <Button
-            className="min-w-[188px]"
-            disabled={isSavingDraft || isCompleting}
-            onClick={() => void handleCompleteClick()}
-          >
-            {isCompleting ? (
-              <Spinner className="size-4" />
-            ) : (
-              <HugeiconsIcon
-                data-icon="inline-start"
-                icon={Dollar01Icon}
-                strokeWidth={2}
-              />
-            )}
-            {isCompleting ? "Traitement..." : "Clôturer et facturer"}
-          </Button>
+            <Button
+              className="min-w-[120px]"
+              disabled={isSavingDraft || isCompleting}
+              onClick={onClose}
+              variant="outline"
+            >
+              Fermer
+            </Button>
+            <Button
+              className="min-w-[130px]"
+              disabled={isSavingDraft || isCompleting}
+              onClick={() => void handleSaveDraftClick()}
+              variant="outline"
+            >
+              {isSavingDraft ? <Spinner className="size-4" /> : null}
+              {isSavingDraft ? "Sauvegarde..." : "Sauvegarder"}
+            </Button>
+            <Button
+              className="min-w-[188px]"
+              disabled={isSavingDraft || isCompleting}
+              onClick={() => void handleCompleteClick()}
+            >
+              {isCompleting ? (
+                <Spinner className="size-4" />
+              ) : (
+                <HugeiconsIcon
+                  data-icon="inline-start"
+                  icon={Dollar01Icon}
+                  strokeWidth={2}
+                />
+              )}
+              {isCompleting ? "Traitement..." : "Clôturer et facturer"}
+            </Button>
           </div>
         </div>
       </DialogContent>
@@ -1764,46 +1762,39 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     [todaysAppointments]
   );
 
-  const generateSparkline = (base: number) =>
-    Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 3) - 1);
-
-  const overviewCards = useMemo<MetricOverviewItem[]>(
+  const sectionCards = useMemo<SectionCardItem[]>(
     () => [
       {
-        label: "Consultations",
+        title: "Consultations",
         value: String(stats.total),
-        meta: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""}`,
-        note: "Flux du jour",
-        icon: Activity01Icon,
-        sparklineData: generateSparkline(stats.total),
-        tone: "blue",
+        badge: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""}`,
+        trend: "neutral",
+        footerTitle: "Flux consultatoire",
+        footerDescription: "Flux du jour",
       },
       {
-        label: "En cours",
+        title: "En cours",
         value: String(stats.inProgress),
-        meta: `${stats.inProgress} active${stats.inProgress > 1 ? "s" : ""}`,
-        note: "À documenter",
-        icon: TimerIcon,
-        sparklineData: generateSparkline(stats.inProgress),
-        tone: "amber",
+        badge: `${stats.inProgress} active${stats.inProgress > 1 ? "s" : ""}`,
+        trend: "neutral",
+        footerTitle: "Activité en cours",
+        footerDescription: "À documenter",
       },
       {
-        label: "Terminés",
+        title: "Terminés",
         value: String(stats.completed),
-        meta: `${stats.completed} finie${stats.completed > 1 ? "s" : ""}`,
-        note: "Clôturées",
-        icon: CheckmarkCircle01Icon,
-        sparklineData: generateSparkline(stats.completed),
-        tone: "emerald",
+        badge: `${stats.completed} finie${stats.completed > 1 ? "s" : ""}`,
+        trend: "up",
+        footerTitle: "Consultations clôturées",
+        footerDescription: "Clôturées",
       },
       {
-        label: "En attente",
+        title: "En attente",
         value: String(stats.pending),
-        meta: `${stats.pending} en salle`,
-        note: "À lancer",
-        icon: HourglassIcon,
-        sparklineData: generateSparkline(stats.pending),
-        tone: "violet",
+        badge: `${stats.pending} en salle`,
+        trend: "neutral",
+        footerTitle: "Patients en attente",
+        footerDescription: "À lancer",
       },
     ],
     [stats.completed, stats.inProgress, stats.pending, stats.total]
@@ -1834,7 +1825,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         };
         setActiveConsultation(openedAppointment);
         moveSelectionToStatusTab("in_progress", appointment.id);
-        toast.success("La consultation a été démarrée et déplacée dans En cours.");
+        toast.success(
+          "La consultation a été démarrée et déplacée dans En cours."
+        );
         return;
       }
 
@@ -2049,7 +2042,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     : undefined;
 
   return (
-    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -2101,7 +2094,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      <MetricOverviewStrip items={overviewCards} />
+      <SectionCards items={sectionCards} />
 
       <div className="grid gap-4">
         <Card className="card-vibrant card-hover-lift relative min-h-[760px] overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
@@ -2318,7 +2311,8 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                                 <div
                                   className={cn(
                                     "flex size-10 items-center justify-center rounded-2xl",
-                                    APPOINTMENT_TYPE_META[appointment.type].iconClassName
+                                    APPOINTMENT_TYPE_META[appointment.type]
+                                      .iconClassName
                                   )}
                                 >
                                   <HugeiconsIcon
@@ -2499,7 +2493,8 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                 <div
                   className={cn(
                     "rounded-4xl border p-5",
-                    APPOINTMENT_TYPE_META[selectedAppointment.type].surfaceClassName
+                    APPOINTMENT_TYPE_META[selectedAppointment.type]
+                      .surfaceClassName
                   )}
                 >
                   <div className="flex items-start gap-4">

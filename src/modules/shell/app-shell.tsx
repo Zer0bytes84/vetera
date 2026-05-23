@@ -1,41 +1,39 @@
 import {
   BotIcon,
   Calendar01Icon,
-  Cancel01Icon,
   CheckmarkCircle02Icon,
-  ChevronDown,
   LanguageCircleIcon,
-  Logout01Icon,
-  Menu01Icon,
   Moon02Icon,
   Notification03Icon,
   SearchIcon,
-  Settings01Icon,
   Sun03Icon,
-  User02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { navigationSections } from "@/app/config/navigation";
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
 import { AIAgentChat } from "@/components/AIAgentChat";
-import Avatar from "@/components/Avatar";
+import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
-import Logo from "@/components/Logo";
 import { useTheme } from "@/components/theme-provider";
+import { useCircularTransition } from "@/hooks/use-circular-transition";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Kbd } from "@/components/ui/kbd";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutProvider } from "@/contexts/layout-provider";
+import { LayoutProvider, useLayout } from "@/contexts/layout-provider";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/i18n/config";
 import { cn } from "@/lib/utils";
@@ -60,7 +58,6 @@ const ALL_VIEWS: View[] = [
 const DEFAULT_VIEW: View = "dashboard";
 
 const HASH_PREFIX_REGEX = /^#\/?/;
-const WHITESPACE_REGEX = /\s+/;
 
 function getViewFromHash(hash: string): View {
   const rawHash = hash.replace(HASH_PREFIX_REGEX, "").trim();
@@ -90,17 +87,16 @@ function AppShellInner() {
   });
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [aiAgentOpen, setAiAgentOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { currentUser, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const { setThemeMode, themeMode } = useThemeMode();
   const { ref: headerRef, handleMouseDown } = useTauriDrag<HTMLElement>();
   const isDesktopRuntime = isTauriRuntime();
+  const { variant, collapsible } = useLayout();
 
   const handleNavigate = useCallback((view: View) => {
     setCurrentView(view);
-    setSidebarOpen(false);
   }, []);
 
   useEffect(() => {
@@ -174,19 +170,14 @@ function AppShellInner() {
         setPaletteOpen(true);
         return;
       }
-      if (event.key === "Escape") {
-        if (aiAgentOpen) {
-          setAiAgentOpen(false);
-        }
-        if (sidebarOpen) {
-          setSidebarOpen(false);
-        }
+      if (event.key === "Escape" && aiAgentOpen) {
+        setAiAgentOpen(false);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentView, handleNavigate, aiAgentOpen, sidebarOpen]);
+  }, [currentView, handleNavigate, aiAgentOpen]);
 
   const content = useMemo(
     () =>
@@ -202,9 +193,6 @@ function AppShellInner() {
   const userDisplayName =
     currentUser?.displayName || currentUser?.email || "Utilisateur";
   const userEmail = currentUser?.email || "local@baitari.app";
-  const userShortName =
-    userDisplayName.split("@")[0].trim().split(WHITESPACE_REGEX)[0] ||
-    "Utilisateur";
 
   const languageLabelByCode: Record<SupportedLanguage, string> = {
     fr: t("language.french"),
@@ -216,306 +204,56 @@ function AppShellInner() {
   };
 
   const isDarkMode = theme === "dark";
-
-  const renderNavItem = (item: {
-    view: View;
-    labelKey: string;
-    // biome-ignore lint/suspicious/noExplicitAny: hugeicons type
-    icon: any;
-  }) => {
-    const isActive = currentView === item.view;
-    return (
-      <li className="relative" key={item.view}>
-        {isActive && (
-          <span
-            aria-hidden="true"
-            className={cn(
-              "absolute inset-y-1.5 w-0.5 rounded-full bg-zinc-950 dark:bg-white",
-              isRtl ? "-right-2.5" : "-left-2.5"
-            )}
-          />
-        )}
-        <button
-          className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left font-medium text-sm/5 transition-colors",
-            "text-zinc-700 hover:bg-zinc-950/5 dark:text-zinc-200 dark:hover:bg-white/5",
-            isActive &&
-              "bg-zinc-950/5 text-zinc-950 dark:bg-white/5 dark:text-white"
-          )}
-          onClick={() => handleNavigate(item.view)}
-          type="button"
-        >
-          <HugeiconsIcon
-            className={cn(
-              "size-5 shrink-0",
-              isActive
-                ? "text-zinc-950 dark:text-white"
-                : "text-zinc-500 dark:text-zinc-400"
-            )}
-            icon={item.icon}
-            strokeWidth={2}
-          />
-          <span className="truncate">{t(item.labelKey)}</span>
-        </button>
-      </li>
-    );
-  };
-
-  // Sidebar markup shared between desktop & mobile
-  const sidebarContent = (
-    <nav className="flex h-full min-h-0 flex-col">
-      {/* Workspace switcher (top) */}
-      <div className="flex flex-col border-zinc-950/5 border-b p-4 dark:border-white/5">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <button
-                aria-label="bAItari workspace"
-                className="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left font-medium text-sm/5 text-zinc-950 transition-colors hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5"
-                type="button"
-              />
-            }
-          >
-            <Logo
-              className="[&_.logo-mark-shell]:bg-transparent"
-              flatMark
-              isDarkMode={isDarkMode}
-              size="sm"
-            />
-            <HugeiconsIcon
-              className="ml-auto size-4 text-zinc-500 dark:text-zinc-400"
-              icon={ChevronDown}
-              strokeWidth={2}
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            className="min-w-56"
-            sideOffset={4}
-          >
-            <div className="px-2 py-1.5">
-              <p className="font-medium text-foreground text-sm">bAItari</p>
-              <p className="truncate text-muted-foreground text-xs">
-                Clinique vétérinaire
-              </p>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleNavigate("parametres")}>
-              <HugeiconsIcon
-                className="size-4"
-                icon={Settings01Icon}
-                strokeWidth={2}
-              />
-              <span>Paramètres clinique</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Nav body */}
-      <div className="flex flex-1 flex-col overflow-y-auto p-4">
-        {/* Main views */}
-        <ul className="flex flex-col gap-0.5">
-          {navigationSections[0]?.items.map(renderNavItem)}
-        </ul>
-
-        {/* Patient journey */}
-        <div className="mt-8">
-          <h3 className="mb-1 px-2 font-medium text-xs/6 text-zinc-500 dark:text-zinc-400">
-            {t(navigationSections[1]?.titleKey ?? "")}
-          </h3>
-          <ul className="flex flex-col gap-0.5">
-            {navigationSections[1]?.items.map(renderNavItem)}
-          </ul>
-        </div>
-
-        {/* Operations */}
-        <div className="mt-8">
-          <h3 className="mb-1 px-2 font-medium text-xs/6 text-zinc-500 dark:text-zinc-400">
-            {t(navigationSections[2]?.titleKey ?? "")}
-          </h3>
-          <ul className="flex flex-col gap-0.5">
-            {navigationSections[2]?.items.map(renderNavItem)}
-          </ul>
-        </div>
-
-        {/* Configuration pushed to bottom */}
-        <div aria-hidden="true" className="mt-8 flex-1" />
-        <ul className="flex flex-col gap-0.5">
-          {navigationSections[3]?.items.map(renderNavItem)}
-        </ul>
-      </div>
-
-      {/* User profile (bottom) */}
-      <div className="flex flex-col border-zinc-950/5 border-t p-4 dark:border-white/5">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <button
-                aria-label="User menu"
-                className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-zinc-950/5 dark:hover:bg-white/5"
-                type="button"
-              />
-            }
-          >
-            <Avatar
-              className="border-0 shadow-none ring-0"
-              name={userDisplayName}
-              size="sm"
-              src={currentUser?.avatarUrl ?? undefined}
-            />
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-medium text-sm text-zinc-950 dark:text-white">
-                {userShortName}
-              </p>
-              <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-                {userEmail}
-              </p>
-            </div>
-            <HugeiconsIcon
-              className="size-4 shrink-0 text-zinc-500 dark:text-zinc-400"
-              icon={ChevronDown}
-              strokeWidth={2}
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-56" sideOffset={4}>
-            <div className="px-2 py-1.5">
-              <p className="font-medium text-foreground text-sm">
-                {userShortName}
-              </p>
-              <p className="truncate text-muted-foreground text-xs">
-                {userEmail}
-              </p>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleNavigate("equipe")}>
-              <HugeiconsIcon
-                className="size-4"
-                icon={User02Icon}
-                strokeWidth={2}
-              />
-              <span>Profil</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleNavigate("parametres")}>
-              <HugeiconsIcon
-                className="size-4"
-                icon={Settings01Icon}
-                strokeWidth={2}
-              />
-              <span>Paramètres</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-red-600 dark:text-red-400"
-              onClick={async () => {
-                await logout();
-              }}
-            >
-              <HugeiconsIcon
-                className="size-4"
-                icon={Logout01Icon}
-                strokeWidth={2}
-              />
-              <span>Déconnexion</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </nav>
-  );
+  const { toggleTheme } = useCircularTransition();
 
   return (
-    <div
-      className={cn(
-        "relative isolate flex h-svh w-full bg-white max-lg:flex-col lg:bg-zinc-100 dark:bg-zinc-900 dark:lg:bg-zinc-950",
-        isRtl && "rtl-shell"
-      )}
+    <SidebarProvider
+      className={cn("relative isolate", isDesktopRuntime && "pt-5", isRtl && "rtl-shell")}
       dir={isRtl ? "rtl" : "ltr"}
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
     >
       {isDesktopRuntime && (
         <div
-          className="fixed inset-x-0 top-0 z-[60] flex h-5 items-center bg-zinc-100 dark:bg-zinc-950"
+          className="fixed inset-x-0 top-0 z-[60] flex h-5 items-center bg-sidebar"
           data-tauri-drag-region
         />
       )}
 
-      {/* Sidebar on desktop */}
-      <div
-        className={cn(
-          "fixed inset-y-0 w-64 max-lg:hidden",
-          isRtl ? "right-0" : "left-0",
-          isDesktopRuntime && "top-5"
-        )}
-      >
-        {sidebarContent}
-      </div>
+      <AppSidebar
+        collapsible={collapsible}
+        currentUserAvatar={currentUser?.avatarUrl ?? null}
+        currentUserEmail={userEmail}
+        currentUserName={userDisplayName}
+        currentView={currentView}
+        onLogout={logout}
+        onNavigate={handleNavigate}
+        onOpenPalette={() => setPaletteOpen(true)}
+        side={isRtl ? "right" : "left"}
+        variant={variant}
+      />
 
-      {/* Sidebar on mobile (overlay) */}
-      {sidebarOpen && (
-        <div className="relative z-50 lg:hidden">
-          <div
-            aria-hidden="true"
-            className="fixed inset-0 bg-black/30"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <div
-            className={cn(
-              "fixed inset-y-0 w-full max-w-80 p-2",
-              isRtl ? "right-0" : "left-0"
-            )}
-          >
-            <div className="flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10">
-              <div className="-mb-3 flex justify-end px-4 pt-3">
-                <button
-                  aria-label="Close sidebar"
-                  className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-950/5 dark:text-zinc-400 dark:hover:bg-white/5"
-                  onClick={() => setSidebarOpen(false)}
-                  type="button"
-                >
-                  <HugeiconsIcon
-                    className="size-5"
-                    icon={Cancel01Icon}
-                    strokeWidth={2}
-                  />
-                </button>
-              </div>
-              {sidebarContent}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile top bar */}
-      <header className="flex items-center px-4 lg:hidden">
-        <button
-          aria-label="Open sidebar"
-          className="-m-2.5 p-2.5 text-zinc-700 dark:text-zinc-200"
-          onClick={() => setSidebarOpen(true)}
-          type="button"
+      <SidebarInset>
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: header needs onMouseDown for Tauri window drag */}
+        <header
+          className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
+          onMouseDown={handleMouseDown}
+          ref={headerRef}
         >
-          <HugeiconsIcon className="size-6" icon={Menu01Icon} strokeWidth={2} />
-        </button>
-      </header>
+          <div className="flex w-full items-center gap-2 px-4 lg:px-6">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              className="mx-2 data-vertical:h-4 data-vertical:self-auto"
+              orientation="vertical"
+            />
 
-      {/* Content (Catalyst inset card) */}
-      <main
-        className={cn(
-          "flex flex-1 flex-col overflow-x-hidden pb-2 lg:min-w-0 lg:pt-2",
-          isRtl ? "lg:pr-64 lg:pl-2" : "lg:pr-2 lg:pl-64",
-          isDesktopRuntime && "lg:pt-7"
-        )}
-      >
-        <div className="app-inset-card flex grow flex-col overflow-x-hidden overflow-y-auto lg:rounded-lg lg:bg-white lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10">
-          {/* Sticky toolbar inside the inset card */}
-          {/* biome-ignore lint/a11y/noStaticElementInteractions: header needs onMouseDown for Tauri window drag */}
-          <header
-            className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-x-3 border-zinc-950/5 border-b bg-white/95 px-4 backdrop-blur-sm sm:px-6 lg:rounded-t-lg dark:border-white/5 dark:bg-zinc-900/95"
-            onMouseDown={handleMouseDown}
-            ref={headerRef}
-          >
             {/* Search trigger */}
             <button
-              className="flex flex-1 items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm text-zinc-500 transition-colors hover:bg-zinc-950/5 dark:text-zinc-400 dark:hover:bg-white/5"
+              className="flex w-[280px] items-center gap-2 rounded-lg border border-neutral-200/50 bg-white px-3 py-1.5 text-left text-sm text-zinc-500 transition-all hover:border-neutral-300/60 dark:border-neutral-700/50 dark:bg-neutral-800 dark:text-zinc-400 dark:hover:border-neutral-600/60"
               onClick={() => setPaletteOpen(true)}
               type="button"
             >
@@ -532,14 +270,14 @@ function AppShellInner() {
               <Kbd className="ml-auto hidden xl:inline-flex">⌘ K</Kbd>
             </button>
 
-            <div className="flex items-center gap-x-1">
+          <div className="ml-auto flex items-center gap-x-1">
               {/* AI assistant */}
               <Button
                 aria-label="Assistant IA"
-                className="size-9 rounded-lg text-zinc-500 hover:bg-zinc-950/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white"
+                className="size-9"
                 onClick={() => setAiAgentOpen(true)}
                 size="icon"
-                variant="ghost"
+                variant="outline"
               >
                 <HugeiconsIcon
                   className="size-5"
@@ -551,10 +289,10 @@ function AppShellInner() {
               {/* Notifications */}
               <Button
                 aria-label={t("header.notifications")}
-                className="relative size-9 rounded-lg text-zinc-500 hover:bg-zinc-950/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white"
+                className="relative size-9"
                 onClick={() => handleNavigate("taches")}
                 size="icon"
-                variant="ghost"
+                variant="outline"
               >
                 <HugeiconsIcon
                   className="size-5"
@@ -566,10 +304,10 @@ function AppShellInner() {
               {/* Theme toggle */}
               <Button
                 aria-label={t("header.toggleTheme")}
-                className="size-9 rounded-lg text-zinc-500 hover:bg-zinc-950/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white"
-                onClick={() => setTheme(isDarkMode ? "light" : "dark")}
+                className="mode-toggle-button size-9"
+                onClick={toggleTheme}
                 size="icon"
-                variant="ghost"
+                variant="outline"
               >
                 <HugeiconsIcon
                   className="size-5"
@@ -584,9 +322,9 @@ function AppShellInner() {
                   render={
                     <Button
                       aria-label={t("language.label")}
-                      className="size-9 rounded-lg text-zinc-500 hover:bg-zinc-950/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white"
+                      className="size-9"
                       size="icon"
-                      variant="ghost"
+                      variant="outline"
                     />
                   }
                 >
@@ -659,12 +397,12 @@ function AppShellInner() {
                 </Button>
               )}
             </div>
-          </header>
+          </div>
+        </header>
 
-          {/* View content */}
-          <div className="min-w-0 flex-1">{content}</div>
-        </div>
-      </main>
+        {/* View content */}
+        <div className="flex flex-1 flex-col gap-4 py-4">{content}</div>
+      </SidebarInset>
 
       {/* Command Palette */}
       <CommandPalette
@@ -679,6 +417,6 @@ function AppShellInner() {
         isOpen={aiAgentOpen}
         onClose={() => setAiAgentOpen(false)}
       />
-    </div>
+    </SidebarProvider>
   );
 }

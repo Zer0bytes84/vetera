@@ -241,7 +241,7 @@ export function useSQLite<T extends { id: string }>(
       await loadData();
       emitSQLiteDataChanged(safeTableName ?? tableName);
 
-      if (!stabilize || !isTauriRuntime()) {
+      if (!(stabilize && isTauriRuntime())) {
         return;
       }
 
@@ -432,7 +432,13 @@ export function useSQLite<T extends { id: string }>(
         return false;
       }
     },
-    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName, setError]
+    [
+      runSerializedTauriOp,
+      safeTableName,
+      syncTableAfterMutation,
+      tableName,
+      setError,
+    ]
   );
 
   const set = useCallback(
@@ -491,7 +497,13 @@ export function useSQLite<T extends { id: string }>(
 
       await syncTableAfterMutation();
     },
-    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName, update]
+    [
+      runSerializedTauriOp,
+      safeTableName,
+      syncTableAfterMutation,
+      tableName,
+      update,
+    ]
   );
 
   const refresh = useCallback(async () => {

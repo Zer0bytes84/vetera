@@ -114,13 +114,9 @@ function legacySha256(value: string): string {
           i < 16
             ? w[i]
             : (w[i - 16] +
-                (rightRotate(w15, 7) ^
-                  rightRotate(w15, 18) ^
-                  (w15 >>> 3)) +
+                (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) +
                 w[i - 7] +
-                (rightRotate(w2, 17) ^
-                  rightRotate(w2, 19) ^
-                  (w2 >>> 10))) |
+                (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) |
               0);
       const temp2 =
         (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) +
@@ -225,10 +221,10 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
   console.log("[AUTH] Starting login for:", credentials.email);
 
   const users = await runDbOperation((db) =>
-    db.select<any[]>(
-      "SELECT * FROM users WHERE email = ? AND status = ?",
-      [credentials.email, "active"]
-    )
+    db.select<any[]>("SELECT * FROM users WHERE email = ? AND status = ?", [
+      credentials.email,
+      "active",
+    ])
   );
 
   console.log("[AUTH] Users found:", users.length);

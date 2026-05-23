@@ -6,6 +6,7 @@ import "@fontsource/ibm-plex-mono/500.css";
 import App from "@/App";
 import { AuthProvider } from "@/contexts/AuthContext";
 import "./index.css";
+import "@/styles/circular-transition.css";
 import "@/i18n/config";
 import { ThemeProvider } from "@/components/theme-provider";
 import { DirectionProvider } from "@/components/ui/direction";

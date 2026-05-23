@@ -3,11 +3,11 @@ import { createContext, useContext, useState } from "react";
 export type Collapsible = "offcanvas" | "icon" | "none";
 type Variant = "inset" | "sidebar" | "floating";
 
-const LAYOUT_COLLAPSIBLE_KEY = "layout_collapsible";
-const LAYOUT_VARIANT_KEY = "layout_variant";
+const LAYOUT_COLLAPSIBLE_KEY = "layout_collapsible_v2";
+const LAYOUT_VARIANT_KEY = "layout_variant_v2";
 
-const DEFAULT_VARIANT: Variant = "sidebar";
-const DEFAULT_COLLAPSIBLE: Collapsible = "icon";
+const DEFAULT_VARIANT: Variant = "inset";
+const DEFAULT_COLLAPSIBLE: Collapsible = "offcanvas";
 
 type LayoutContextType = {
   resetLayout: () => void;
@@ -34,11 +34,6 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
   const [variant, _setVariant] = useState<Variant>(() => {
     try {
       const saved = localStorage.getItem(LAYOUT_VARIANT_KEY);
-      // This redesign depends on the full dark sidebar shell. Old saved
-      // inset/floating layouts keep the app looking like the previous version.
-      if (saved === "inset" || saved === "floating") {
-        return DEFAULT_VARIANT;
-      }
       return (saved as Variant) || DEFAULT_VARIANT;
     } catch {
       return DEFAULT_VARIANT;

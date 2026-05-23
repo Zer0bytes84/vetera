@@ -77,108 +77,7 @@ const revenueGradientDark = [
   "#312e81",
 ];
 
-function MiniSparkline({
-  data,
-  color = "#8b5cf6",
-  positive = true,
-}: {
-  data: number[];
-  color?: string;
-  positive?: boolean;
-}) {
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const range = max - min || 1;
-  const width = 80;
-  const height = 40;
-  const points = data
-    .map((val, i) => {
-      const x = (i / (data.length - 1)) * width;
-      const y = height - ((val - min) / range) * height;
-      return `${x},${y}`;
-    })
-    .join(" ");
-  const gradientColor = positive ? color : "#ef4444";
-  return (
-    <svg className="overflow-visible" height={height} width={width}>
-      <defs>
-        <linearGradient
-          id={`sparkline-${positive}`}
-          x1="0"
-          x2="0"
-          y1="0"
-          y2="1"
-        >
-          <stop offset="0%" stopColor={gradientColor} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={gradientColor} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path
-        d={`M0,${height} L${points} L${width},${height} Z`}
-        fill={`url(#sparkline-${positive})`}
-      />
-      <polyline
-        fill="none"
-        points={points}
-        stroke={gradientColor}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-}
-
-function MetricCard({
-  title,
-  value,
-  delta,
-  deltaLabel,
-  positive,
-  data,
-  color,
-}: {
-  title: string;
-  value: string;
-  delta: string;
-  deltaLabel: string;
-  positive: boolean;
-  data: number[];
-  color: string;
-}) {
-  return (
-    <Card className="card-vibrant overflow-hidden rounded-[20px] border border-border/60 bg-card/80 p-5 transition-all duration-200 ease-out hover:shadow-[0_4px_20px_-8px_rgba(0,0,0,0.1)]">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-3">
-          <p className="font-medium text-[13px] text-muted-foreground">
-            {title}
-          </p>
-          <div className="flex items-baseline gap-2">
-            <span className="font-semibold text-[28px] text-foreground tracking-[-0.02em]">
-              {value}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span
-              className={cn(
-                "flex items-center font-medium text-[12px]",
-                positive ? "text-emerald-500" : "text-red-500"
-              )}
-            >
-              {positive ? "↑" : "↓"} {delta}
-            </span>
-            <span className="text-[12px] text-muted-foreground">
-              {deltaLabel}
-            </span>
-          </div>
-        </div>
-        <div className="flex-shrink-0 pt-1">
-          <MiniSparkline color={color} data={data} positive={positive} />
-        </div>
-      </div>
-    </Card>
-  );
-}
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 
 function metricDeltaTone(negative?: boolean) {
   return negative ? "text-chart-red" : "text-emerald-600";
@@ -491,18 +390,6 @@ export function DashboardSection({
 
 export function LeadMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
   const { t } = useTranslation();
-  const generateSparklineData = (
-    baseValue: number,
-    trend: "up" | "down" | "neutral"
-  ) => {
-    const points = 7;
-    return Array.from({ length: points }, (_, i) => {
-      const variance = Math.random() * 0.3 + 0.85;
-      const trendFactor =
-        trend === "up" ? 1 + i * 0.05 : trend === "down" ? 1 - i * 0.03 : 1;
-      return Math.round(baseValue * variance * trendFactor);
-    });
-  };
   const incomeDelta = percentageDelta(
     metrics.summary.income30,
     metrics.summary.previousIncome30
@@ -518,61 +405,38 @@ export function LeadMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
           Math.max(1, metrics.summary.currentQualified)
       : 0
   );
-  return (
-    <div className="grid gap-4 md:grid-cols-3">
-      <MetricCard
-        color="#8b5cf6"
-        data={generateSparklineData(
-          metrics.summary.income30 / 30,
-          incomeDelta >= 0 ? "up" : "down"
-        )}
-        delta={formatDeltaText(
-          metrics.summary.income30,
-          metrics.summary.previousIncome30
-        )}
-        deltaLabel="vs période précédente"
-        positive={incomeDelta >= 0}
-        title={t("dashboardV2.metricStrip.income30", "Revenus 30j")}
-        value={formatDZD(metrics.summary.income30)}
-      />
-      <MetricCard
-        color="#06b6d4"
-        data={generateSparklineData(
-          metrics.summary.todayAppointments,
-          appointmentsDelta >= 0 ? "up" : "down"
-        )}
-        delta={formatDeltaText(
-          metrics.summary.todayAppointments,
-          metrics.summary.yesterdayAppointments
-        )}
-        deltaLabel="vs hier"
-        positive={appointmentsDelta >= 0}
-        title={t(
-          "dashboardV2.metricStrip.todayAppointments",
-          "Rendez-vous du jour"
-        )}
-        value={formatCompactInteger(metrics.summary.todayAppointments)}
-      />
-      <MetricCard
-        color="#f59e0b"
-        data={generateSparklineData(
-          metrics.summary.averageBasket,
-          basketDelta >= 0 ? "up" : "neutral"
-        )}
-        delta={formatDeltaText(
-          metrics.summary.averageBasket,
-          metrics.summary.previousIncome30
-            ? metrics.summary.previousIncome30 /
-                Math.max(1, metrics.summary.currentQualified)
-            : 0
-        )}
-        deltaLabel="vs période précédente"
-        positive={basketDelta >= 0}
-        title={t("dashboardV2.metricStrip.averageBasket", "Panier moyen")}
-        value={formatDZD(metrics.summary.averageBasket)}
-      />
-    </div>
-  );
+
+  const sectionCards: SectionCardItem[] = [
+    {
+      title: t("dashboardV2.metricStrip.income30", "Revenus 30j"),
+      value: formatDZD(metrics.summary.income30),
+      badge: `${incomeDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(incomeDelta))}`,
+      trend: incomeDelta >= 0 ? "up" : "down",
+      footerTitle: incomeDelta >= 0 ? "En hausse" : "En baisse",
+      footerDescription: "vs période précédente",
+    },
+    {
+      title: t(
+        "dashboardV2.metricStrip.todayAppointments",
+        "Rendez-vous du jour"
+      ),
+      value: formatCompactInteger(metrics.summary.todayAppointments),
+      badge: `${appointmentsDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(appointmentsDelta))}`,
+      trend: appointmentsDelta >= 0 ? "up" : "down",
+      footerTitle: appointmentsDelta >= 0 ? "Progression" : "Moins qu'hier",
+      footerDescription: "consultations planifiées",
+    },
+    {
+      title: t("dashboardV2.metricStrip.averageBasket", "Panier moyen"),
+      value: formatDZD(metrics.summary.averageBasket),
+      badge: `${basketDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(basketDelta))}`,
+      trend: basketDelta >= 0 ? "up" : "down",
+      footerTitle: basketDelta >= 0 ? "En hausse" : "En baisse",
+      footerDescription: "vs période précédente",
+    },
+  ];
+
+  return <SectionCards items={sectionCards} />;
 }
 
 export function LeadRevenuePanel({ metrics }: { metrics: DashboardMetrics }) {

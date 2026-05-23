@@ -26,9 +26,9 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PRIORITY_META } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/types/db";
-import { PRIORITY_META } from "@/config/status-meta";
 
 interface KanbanBoardProps {
   onDelete: (taskId: string) => void;

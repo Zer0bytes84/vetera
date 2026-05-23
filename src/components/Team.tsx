@@ -1,6 +1,5 @@
 import {
   Add01Icon,
-  BankIcon,
   Briefcase01Icon,
   Cancel01Icon,
   CheckmarkCircle02Icon,
@@ -17,11 +16,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useMemo, useState } from "react";
-import {
-  type MetricOverviewItem,
-  MetricOverviewStrip,
-} from "@/components/metric-overview-strip";
-import { TEAM_STATUS_META } from "@/config/status-meta";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +48,7 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
+import { TEAM_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
@@ -94,20 +90,6 @@ const ROLE_CONFIG: Record<
     bg: "bg-muted/50",
     icon: GraduationScrollIcon,
   },
-};
-
-const buildTeamSparkline = (
-  base: number,
-  pattern: "steady" | "rise" | "watch" | "stable"
-) => {
-  const deltas = {
-    steady: [-1, 0, 1, 0, 1, 1, 2, 2],
-    rise: [0, 1, 1, 2, 2, 3, 3, 4],
-    watch: [2, 1, 3, 2, 4, 3, 5, 4],
-    stable: [1, 1, 0, 1, 0, 1, 0, 0],
-  }[pattern];
-
-  return deltas.map((delta) => Math.max(base + delta, 0));
 };
 
 const Team: React.FC = () => {
@@ -308,7 +290,7 @@ const Team: React.FC = () => {
     [users, searchTerm]
   );
 
-  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
     const activeUsers = users.filter((user) => user.status === "active").length;
     const vets = users.filter((user) =>
       ["vet_principal", "vet_adjoint"].includes(user.role || "")
@@ -322,46 +304,42 @@ const Team: React.FC = () => {
 
     return [
       {
-        label: "Équipe active",
+        title: "Équipe active",
         value: String(activeUsers),
-        meta: `${users.length} compte${users.length > 1 ? "s" : ""}`,
-        note: "Présence",
-        icon: BankIcon,
-        tone: "blue",
-        sparklineData: buildTeamSparkline(activeUsers, "steady"),
+        badge: `${users.length} compte${users.length > 1 ? "s" : ""}`,
+        trend: "neutral",
+        footerTitle: "Effectif actif",
+        footerDescription: "Présence",
       },
       {
-        label: "Vétérinaires",
+        title: "Vétérinaires",
         value: String(vets),
-        meta: "pratique clinique",
-        note: "Capacité",
-        icon: StethoscopeIcon,
-        tone: "orange",
-        sparklineData: buildTeamSparkline(vets, "rise"),
+        badge: "pratique clinique",
+        trend: "neutral",
+        footerTitle: "Praticiens disponibles",
+        footerDescription: "Capacité",
       },
       {
-        label: "Support & relève",
+        title: "Support & relève",
         value: String(support),
-        meta: "assistant·e·s et stagiaires",
-        note: "Couverture",
-        icon: Briefcase01Icon,
-        tone: "emerald",
-        sparklineData: buildTeamSparkline(support, "stable"),
+        badge: "assistant·e·s et stagiaires",
+        trend: "neutral",
+        footerTitle: "Personnel de support",
+        footerDescription: "Couverture",
       },
       {
-        label: "Accès à revoir",
+        title: "Accès à revoir",
         value: String(accessReview),
-        meta: accessReview > 0 ? "statut inactif" : "tout est OK",
-        note: "Permissions",
-        icon: Key01Icon,
-        tone: accessReview > 0 ? "amber" : "slate",
-        sparklineData: buildTeamSparkline(accessReview, "watch"),
+        badge: accessReview > 0 ? "statut inactif" : "tout est OK",
+        trend: accessReview > 0 ? "down" : "neutral",
+        footerTitle: "Comptes à vérifier",
+        footerDescription: "Permissions",
       },
     ];
   }, [users]);
 
   return (
-    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           {canManageTeam ? (
@@ -380,7 +358,7 @@ const Team: React.FC = () => {
         </div>
       </div>
 
-      <MetricOverviewStrip items={overviewCards} />
+      <SectionCards items={sectionCards} />
 
       {/* Main Card */}
       <Card className="card-vibrant card-hover-lift flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
@@ -451,9 +429,7 @@ const Team: React.FC = () => {
                   currentUser?.email?.trim().toLowerCase();
                 const resolvedAvatar =
                   user.avatarUrl ||
-                  (isCurrentUserRow
-                    ? (currentUser?.avatarUrl ?? "")
-                    : "");
+                  (isCurrentUserRow ? (currentUser?.avatarUrl ?? "") : "");
 
                 const isResetting =
                   resetStatus.loading && resetStatus.userId === user.id;
@@ -583,13 +559,28 @@ const Team: React.FC = () => {
 
                     {/* Status Indicator */}
                     <div className="absolute right-5 bottom-5">
-                      <Badge className={cn("gap-1 text-[10px]", TEAM_STATUS_META[user.status === "active" ? "active" : "inactive"].className)}>
+                      <Badge
+                        className={cn(
+                          "gap-1 text-[10px]",
+                          TEAM_STATUS_META[
+                            user.status === "active" ? "active" : "inactive"
+                          ].className
+                        )}
+                      >
                         <HugeiconsIcon
                           className="size-2.5"
-                          icon={user.status === "active" ? CheckmarkCircle02Icon : Cancel01Icon}
+                          icon={
+                            user.status === "active"
+                              ? CheckmarkCircle02Icon
+                              : Cancel01Icon
+                          }
                           strokeWidth={2}
                         />{" "}
-                        {TEAM_STATUS_META[user.status === "active" ? "active" : "inactive"].label}
+                        {
+                          TEAM_STATUS_META[
+                            user.status === "active" ? "active" : "inactive"
+                          ].label
+                        }
                       </Badge>
                     </div>
                   </div>

@@ -7,7 +7,6 @@ import {
   Clock01Icon,
   CreditCardIcon,
   Download01Icon,
-  LandmarkIcon,
   ReceiptTextIcon,
   SearchIcon,
   Wallet01Icon,
@@ -16,14 +15,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { jsPDF } from "jspdf";
 import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
-import {
-  TRANSACTION_STATUS_META,
-  TRANSACTION_TYPE_META,
-} from "@/config/status-meta";
-import {
-  type MetricOverviewItem,
-  MetricOverviewStrip,
-} from "@/components/metric-overview-strip";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,6 +64,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  TRANSACTION_STATUS_META,
+  TRANSACTION_TYPE_META,
+} from "@/config/status-meta";
 import { useTransactionsRepository } from "@/data/repositories";
 import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
@@ -516,55 +512,43 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       .slice(0, 5);
   }, [transactionsInRange]);
 
-  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
-    const generateSparkline = (base: number) =>
-      Array.from(
-        { length: 8 },
-        () =>
-          base +
-          Math.floor(Math.random() * base * 0.1) -
-          Math.floor(base * 0.05)
-      );
-
-    return [
+  const sectionCards = useMemo<SectionCardItem[]>(
+    () => [
       {
-        label: "Encaissé",
+        title: "Encaissé",
         value: formatDZD(stats.income),
-        meta: `${stats.paidIncomeCount} réglé${stats.paidIncomeCount > 1 ? "s" : ""}`,
-        note: "Recettes confirmées",
-        icon: ArrowUp01Icon,
-        sparklineData: generateSparkline(Math.round(stats.income / 100)),
-        tone: "emerald",
+        badge: `${stats.paidIncomeCount} réglé${stats.paidIncomeCount > 1 ? "s" : ""}`,
+        trend: "up",
+        footerTitle: "Recettes confirmées",
+        footerDescription: "Recettes confirmées",
       },
       {
-        label: "Dépensé",
+        title: "Dépensé",
         value: formatDZD(stats.expense),
-        meta: `${stats.paidExpenseCount} sortie${stats.paidExpenseCount > 1 ? "s" : ""}`,
-        note: "Décaissements validés",
-        icon: ArrowDown01Icon,
-        sparklineData: generateSparkline(Math.round(stats.expense / 100)),
-        tone: "rose",
+        badge: `${stats.paidExpenseCount} sortie${stats.paidExpenseCount > 1 ? "s" : ""}`,
+        trend: "down",
+        footerTitle: "Décaissements validés",
+        footerDescription: "Décaissements validés",
       },
       {
-        label: "Solde net",
+        title: "Solde net",
         value: formatDZD(stats.net),
-        meta: stats.net >= 0 ? "positif" : "à surveiller",
-        note: "Vue nette",
-        icon: LandmarkIcon,
-        sparklineData: generateSparkline(Math.round(stats.net / 100)),
-        tone: stats.net >= 0 ? "blue" : "amber",
+        badge: stats.net >= 0 ? "positif" : "à surveiller",
+        trend: stats.net >= 0 ? "up" : "down",
+        footerTitle: stats.net >= 0 ? "Solde positif" : "Solde négatif",
+        footerDescription: "Vue nette",
       },
       {
-        label: "Encours",
+        title: "Encours",
         value: formatDZD(stats.pending),
-        meta: `${stats.pendingCount} attente${stats.pendingCount > 1 ? "s" : ""}`,
-        note: "Écritures ouvertes",
-        icon: Clock01Icon,
-        sparklineData: generateSparkline(Math.round(stats.pending / 100)),
-        tone: "amber",
+        badge: `${stats.pendingCount} attente${stats.pendingCount > 1 ? "s" : ""}`,
+        trend: "neutral",
+        footerTitle: "Écritures en attente",
+        footerDescription: "Écritures ouvertes",
       },
-    ];
-  }, [stats]);
+    ],
+    [stats]
+  );
 
   const resetDraft = () => {
     setDraft(getDefaultDraft());
@@ -667,7 +651,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
   };
 
   return (
-    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -709,7 +693,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         </div>
       </div>
 
-      <MetricOverviewStrip items={overviewCards} />
+      <SectionCards items={sectionCards} />
 
       {/* Main Table Card */}
       <Card className="card-vibrant card-hover-lift rounded-[24px] border border-border bg-card shadow-none">

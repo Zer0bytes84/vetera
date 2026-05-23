@@ -1,13 +1,5 @@
 import * as React from "react";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  CartesianGrid,
-  Line,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
@@ -23,15 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export type ClinicalActivityPoint = {
   date: string;
@@ -39,106 +23,72 @@ export type ClinicalActivityPoint = {
   interventions: number;
 };
 
-const fallbackData: ClinicalActivityPoint[] = [
-  { date: "2026-01-05", consultations: 8, interventions: 1 },
-  { date: "2026-01-12", consultations: 11, interventions: 2 },
-  { date: "2026-01-19", consultations: 10, interventions: 1 },
-  { date: "2026-01-26", consultations: 14, interventions: 3 },
-  { date: "2026-02-02", consultations: 12, interventions: 2 },
-  { date: "2026-02-09", consultations: 15, interventions: 2 },
-  { date: "2026-02-16", consultations: 13, interventions: 1 },
-  { date: "2026-02-23", consultations: 17, interventions: 3 },
-];
-
 const chartConfig = {
   consultations: {
     label: "Consultations",
-    color: "var(--chart-1)",
+    color: "var(--primary)",
   },
   interventions: {
     label: "Interventions",
-    color: "var(--chart-2)",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
-const PERIOD_LABELS: Record<string, string> = {
-  "7d": "7J",
-  "30d": "30J",
-  "90d": "90J",
-};
-
 export function ChartAreaInteractive({
-  data = fallbackData,
+  data,
 }: {
-  data?: ClinicalActivityPoint[];
+  data: ClinicalActivityPoint[];
 }) {
-  const [period, setPeriod] = React.useState("90d");
-  const [chartType, setChartType] = React.useState("area");
+  const [timeRange, setTimeRange] = React.useState<string[]>(["90d"]);
 
   const filteredData = React.useMemo(() => {
-    const maxDate = new Date(
-      data.length
-        ? data[data.length - 1].date
-        : fallbackData[fallbackData.length - 1].date
-    );
-    const startDate = new Date(maxDate);
-
-    if (period === "30d") {
-      startDate.setDate(startDate.getDate() - 29);
-    } else if (period === "7d") {
-      startDate.setDate(startDate.getDate() - 6);
-    } else {
-      startDate.setDate(startDate.getDate() - 89);
+    const referenceDate = data.length
+      ? new Date(data[data.length - 1].date)
+      : new Date();
+    const active = timeRange[0] ?? "90d";
+    let daysToSubtract = 90;
+    if (active === "30d") {
+      daysToSubtract = 30;
+    } else if (active === "7d") {
+      daysToSubtract = 7;
     }
-
+    const startDate = new Date(referenceDate);
+    startDate.setDate(startDate.getDate() - daysToSubtract);
     return data.filter((item) => new Date(item.date) >= startDate);
-  }, [data, period]);
+  }, [data, timeRange]);
 
   return (
-    <Card>
+    <Card className="@container/card">
       <CardHeader>
-        <div className="flex flex-col gap-1">
-          <CardTitle>Vue d&apos;activité</CardTitle>
-          <CardDescription>
-            Consultations et interventions sur la période active
-          </CardDescription>
-        </div>
-        <CardAction className="flex items-center gap-2">
-          <Tabs onValueChange={setChartType} value={chartType}>
-            <TabsList className="@[767px]/card:flex hidden">
-              <TabsTrigger value="area">Aire</TabsTrigger>
-              <TabsTrigger value="line">Ligne</TabsTrigger>
-              <TabsTrigger value="stacked">Empilé</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Select
-            onValueChange={(value) => {
-              if (!value) {
-                return;
-              }
-              setPeriod(value as keyof typeof PERIOD_LABELS);
-            }}
-            value={period}
+        <CardTitle>Activité clinique</CardTitle>
+        <CardDescription>
+          <span className="@[540px]/card:block hidden">
+            Consultations et interventions sur la période
+          </span>
+          <span className="@[540px]/card:hidden">Période sélectionnée</span>
+        </CardDescription>
+        <CardAction>
+          <ToggleGroup
+            className="*:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex hidden"
+            onValueChange={setTimeRange}
+            value={timeRange}
+            variant="outline"
           >
-            <SelectTrigger className="w-28" size="sm">
-              <SelectValue>{PERIOD_LABELS[period] ?? "90J"}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="7d">7J</SelectItem>
-                <SelectItem value="30d">30J</SelectItem>
-                <SelectItem value="90d">90J</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+            <ToggleGroupItem value="90d">90 jours</ToggleGroupItem>
+            <ToggleGroupItem value="30d">30 jours</ToggleGroupItem>
+            <ToggleGroupItem value="7d">7 jours</ToggleGroupItem>
+          </ToggleGroup>
         </CardAction>
       </CardHeader>
-      <CardContent className="pt-4">
-        <ChartContainer className="h-[250px] w-full" config={chartConfig}>
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <ChartContainer
+          className="aspect-auto h-[250px] w-full"
+          config={chartConfig}
+        >
           <AreaChart data={filteredData}>
             <defs>
               <linearGradient
-                id="dashboard-consultations"
+                id="fillConsultations"
                 x1="0"
                 x2="0"
                 y1="0"
@@ -147,16 +97,16 @@ export function ChartAreaInteractive({
                 <stop
                   offset="5%"
                   stopColor="var(--color-consultations)"
-                  stopOpacity={0.3}
+                  stopOpacity={1.0}
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-consultations)"
-                  stopOpacity={0.02}
+                  stopOpacity={0.1}
                 />
               </linearGradient>
               <linearGradient
-                id="dashboard-interventions"
+                id="fillInterventions"
                 x1="0"
                 x2="0"
                 y1="0"
@@ -165,107 +115,60 @@ export function ChartAreaInteractive({
                 <stop
                   offset="5%"
                   stopColor="var(--color-interventions)"
-                  stopOpacity={0.28}
+                  stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-interventions)"
-                  stopOpacity={0.02}
+                  stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid
-              stroke="oklch(1 0 0 / 5%)"
-              strokeDasharray="3 3"
-              vertical={false}
-            />
+            <CartesianGrid vertical={false} />
             <XAxis
               axisLine={false}
               dataKey="date"
-              fontSize={12}
-              minTickGap={28}
-              stroke="oklch(0.65 0.015 285)"
-              tickFormatter={(value) =>
-                new Date(value).toLocaleDateString("fr-FR", {
-                  day: "numeric",
+              minTickGap={32}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("fr-FR", {
                   month: "short",
-                })
-              }
+                  day: "numeric",
+                });
+              }}
               tickLine={false}
               tickMargin={8}
-            />
-            <YAxis
-              axisLine={false}
-              fontSize={12}
-              stroke="oklch(0.65 0.015 285)"
-              tickLine={false}
-              width={32}
             />
             <ChartTooltip
               content={
                 <ChartTooltipContent
                   indicator="dot"
                   labelFormatter={(value) =>
-                    new Date(value).toLocaleDateString("fr-FR", {
-                      weekday: "short",
-                      day: "numeric",
+                    new Date(
+                      value as string | number | Date
+                    ).toLocaleDateString("fr-FR", {
                       month: "short",
+                      day: "numeric",
                     })
                   }
                 />
               }
               cursor={false}
             />
-            {chartType === "stacked" ? (
-              <>
-                <Bar
-                  dataKey="consultations"
-                  fill="var(--color-consultations)"
-                  radius={[0, 0, 0, 0]}
-                  stackId="activity"
-                />
-                <Bar
-                  dataKey="interventions"
-                  fill="var(--color-interventions)"
-                  radius={[6, 6, 0, 0]}
-                  stackId="activity"
-                />
-              </>
-            ) : chartType === "line" ? (
-              <>
-                <Line
-                  dataKey="consultations"
-                  dot={false}
-                  stroke="var(--color-consultations)"
-                  strokeWidth={2.5}
-                  type="monotone"
-                />
-                <Line
-                  dataKey="interventions"
-                  dot={false}
-                  stroke="var(--color-interventions)"
-                  strokeWidth={2.5}
-                  type="monotone"
-                />
-              </>
-            ) : (
-              <>
-                <Area
-                  dataKey="consultations"
-                  fill="url(#dashboard-consultations)"
-                  stroke="var(--color-consultations)"
-                  strokeWidth={2}
-                  type="monotone"
-                />
-                <Area
-                  dataKey="interventions"
-                  fill="url(#dashboard-interventions)"
-                  stroke="var(--color-interventions)"
-                  strokeWidth={2}
-                  type="monotone"
-                />
-              </>
-            )}
+            <Area
+              dataKey="interventions"
+              fill="url(#fillInterventions)"
+              stackId="a"
+              stroke="var(--color-interventions)"
+              type="natural"
+            />
+            <Area
+              dataKey="consultations"
+              fill="url(#fillConsultations)"
+              stackId="a"
+              stroke="var(--color-consultations)"
+              type="natural"
+            />
           </AreaChart>
         </ChartContainer>
       </CardContent>

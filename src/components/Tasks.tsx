@@ -16,10 +16,7 @@ import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  type MetricOverviewItem,
-  MetricOverviewStrip,
-} from "@/components/metric-overview-strip";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -60,11 +57,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { PRIORITY_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTasksRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/types/db";
-import { PRIORITY_META } from "@/config/status-meta";
 import KanbanBoard from "./KanbanBoard";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -109,20 +106,6 @@ const parseDateInput = (value?: string) => {
     return null;
   }
   return new Date(year, month - 1, day, 12, 0, 0, 0);
-};
-
-const buildTaskSparkline = (
-  base: number,
-  pattern: "steady" | "rise" | "watch" | "stable"
-) => {
-  const deltas = {
-    steady: [-2, -1, 0, 1, 0, 1, 1, 2],
-    rise: [-1, 0, 1, 2, 1, 2, 3, 4],
-    watch: [3, 2, 4, 5, 4, 6, 5, 7],
-    stable: [1, 1, 0, 1, 0, 1, 0, 0],
-  }[pattern];
-
-  return deltas.map((delta) => Math.max(base + delta, 0));
 };
 
 const Tasks: React.FC = () => {
@@ -384,7 +367,7 @@ const Tasks: React.FC = () => {
     [filteredTasks, priorityFilter, statusFilter, taskSearch]
   );
 
-  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
     const openTasks = filteredTasks.filter(
       (task) => task.status !== "done"
     ).length;
@@ -397,40 +380,36 @@ const Tasks: React.FC = () => {
 
     return [
       {
-        label: "Tâches ouvertes",
+        title: "Tâches ouvertes",
         value: String(openTasks),
-        meta: filter === "mine" ? "vue perso" : "équipe complète",
-        note: "Charge active à absorber",
-        icon: ListPlusIcon,
-        tone: "blue",
-        sparklineData: buildTaskSparkline(openTasks, "steady"),
+        badge: filter === "mine" ? "vue perso" : "équipe complète",
+        trend: "neutral",
+        footerTitle: "Charge active",
+        footerDescription: "Charge active à absorber",
       },
       {
-        label: "À traiter aujourd'hui",
+        title: "À traiter aujourd'hui",
         value: String(groupedTasks.today.length),
-        meta: `${groupedTasks.overdue.length} en retard`,
-        note: "Priorités immédiates",
-        icon: Calendar01Icon,
-        tone: "orange",
-        sparklineData: buildTaskSparkline(groupedTasks.today.length, "rise"),
+        badge: `${groupedTasks.overdue.length} en retard`,
+        trend: "up",
+        footerTitle: "Priorités du jour",
+        footerDescription: "Priorités immédiates",
       },
       {
-        label: "Alertes prioritaires",
+        title: "Alertes prioritaires",
         value: String(urgentTasks),
-        meta: `${groupedTasks.tomorrow.length} demain`,
-        note: "Actions à surveiller",
-        icon: Notification02Icon,
-        tone: "amber",
-        sparklineData: buildTaskSparkline(urgentTasks, "watch"),
+        badge: `${groupedTasks.tomorrow.length} demain`,
+        trend: "up",
+        footerTitle: "Attention requise",
+        footerDescription: "Actions à surveiller",
       },
       {
-        label: "Clôturées",
+        title: "Clôturées",
         value: String(completedTasks),
-        meta: `${tableTasks.length} dans la vue`,
-        note: "Suivi",
-        icon: CheckmarkCircle02Icon,
-        tone: "emerald",
-        sparklineData: buildTaskSparkline(completedTasks, "stable"),
+        badge: `${tableTasks.length} dans la vue`,
+        trend: "up",
+        footerTitle: "Tâches terminées",
+        footerDescription: "Suivi",
       },
     ];
   }, [
@@ -443,7 +422,7 @@ const Tasks: React.FC = () => {
   ]);
 
   return (
-    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-wrap items-center gap-3">
           {/* Filter toggle */}
@@ -494,7 +473,7 @@ const Tasks: React.FC = () => {
         </div>
       </div>
 
-      <MetricOverviewStrip items={overviewCards} />
+      <SectionCards items={sectionCards} />
 
       {/* Quick Add Bar */}
       <Card

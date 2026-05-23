@@ -41,12 +41,7 @@ function renderLazyView(node: ReactNode) {
 export function renderView(view: View, props: ViewRegistryProps) {
   switch (view) {
     case "dashboard":
-      return (
-        <DashboardOrbitPage
-          onNavigate={props.onNavigate}
-          onOpenAIAgent={props.onOpenAIAgent}
-        />
-      );
+      return <DashboardOrbitPage onOpenAIAgent={props.onOpenAIAgent} />;
     case "agenda":
       return renderLazyView(<AgendaPage />);
     case "clinique":
@@ -75,6 +70,6 @@ export function renderView(view: View, props: ViewRegistryProps) {
     case "aide":
       return renderLazyView(<HelpPage />);
     default:
-      return <DashboardOrbitPage onNavigate={props.onNavigate} />;
+      return <DashboardOrbitPage />;
   }
 }

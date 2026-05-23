@@ -310,7 +310,7 @@ const NotesPro: React.FC = () => {
   const getInitial = (title: string) => (title || "N").charAt(0).toUpperCase();
 
   return (
-    <div className="prospeo-dashboard flex h-full w-full min-w-0">
+    <div className="flex h-full w-full min-w-0">
       {/* Sidebar */}
       <aside
         className={cn(

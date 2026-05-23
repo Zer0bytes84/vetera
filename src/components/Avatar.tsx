@@ -96,18 +96,15 @@ const normalizeAvatarSrc = (src?: string | null) => {
   return value;
 };
 
-const isRenderableAvatarSrc = (src: string) => {
-  return (
-    src.startsWith("http://") ||
-    src.startsWith("https://") ||
-    src.startsWith("data:") ||
-    src.startsWith("blob:") ||
-    src.startsWith("file://") ||
-    src.startsWith("asset:") ||
-    src.startsWith("tauri:") ||
-    src.startsWith("/")
-  );
-};
+const isRenderableAvatarSrc = (src: string) =>
+  src.startsWith("http://") ||
+  src.startsWith("https://") ||
+  src.startsWith("data:") ||
+  src.startsWith("blob:") ||
+  src.startsWith("file://") ||
+  src.startsWith("asset:") ||
+  src.startsWith("tauri:") ||
+  src.startsWith("/");
 
 const normalizeName = (name?: string | null) => {
   if (typeof name !== "string") {

@@ -166,7 +166,7 @@ export function AppHeader({
                 strokeWidth={2}
               />
               <Input
-                className="h-10 cursor-pointer rounded-2xl border-black/6 bg-white/72 pr-12 pl-9 text-sm shadow-[0_1px_0_rgba(255,255,255,0.85)_inset] backdrop-blur-xl hover:bg-white/86 dark:border-white/8 dark:bg-white/6 dark:hover:bg-white/10"
+                className="h-10 cursor-pointer rounded-2xl border border-neutral-200 bg-white pr-12 pl-9 text-sm shadow-sm backdrop-blur-xl transition-all hover:border-neutral-300 hover:shadow-md focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-neutral-600"
                 placeholder="Rechercher..."
                 readOnly
                 value=""

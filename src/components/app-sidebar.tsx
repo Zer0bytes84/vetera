@@ -194,7 +194,7 @@ export function AppSidebar({
     <Sidebar
       {...props}
       className={cn(
-        isDesktopRuntime && "top-8 h-[calc(100svh-32px)]",
+        isDesktopRuntime && "top-5 h-[calc(100svh-20px)]",
         isClassicSidebar &&
           "bg-sidebar shadow-[inset_-1px_0_0_var(--sidebar-border)]",
         props.className
@@ -203,10 +203,10 @@ export function AppSidebar({
       <SidebarHeader
         className={cn(
           "flex shrink-0 flex-row items-center px-3",
-          isDesktopRuntime ? "py-2" : "py-1",
+          isDesktopRuntime ? "py-3.5" : "py-2",
           "[@media(max-height:820px)]:p-1",
           isClassicSidebar &&
-            "h-[66px] border-sidebar-border border-b bg-sidebar px-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
+            "h-[60px] bg-sidebar px-5 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
           isClassicSidebar && isCollapsed && "justify-center px-3"
         )}
       >
@@ -216,7 +216,7 @@ export function AppSidebar({
               className={cn(
                 "w-full justify-start",
                 isClassicSidebar &&
-                  "ms-4 h-10 w-auto justify-start rounded-xl px-3 hover:bg-transparent",
+                  "ms-0 h-10 w-auto justify-start rounded-xl px-3 hover:bg-transparent",
                 isClassicSidebar &&
                   isCollapsed &&
                   "ms-0 h-11 w-11 justify-center rounded-2xl border border-border/70 bg-background/92 px-0 shadow-xs hover:bg-muted/35"
@@ -286,6 +286,7 @@ export function AppSidebar({
       <SidebarFooter
         className={cn(
           "glass-surface shrink-0 border-sidebar-border/50 border-t bg-sidebar/80 backdrop-blur-sm [@media(max-height:820px)]:p-1.5",
+          "mx-2 mb-2 rounded-2xl border border-sidebar-border/50 px-3 py-2.5",
           isClassicSidebar &&
             "mx-5 mb-3 gap-2 rounded-[18px] border border-sidebar-border bg-sidebar-accent px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
           isClassicSidebar &&

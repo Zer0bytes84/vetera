@@ -53,17 +53,17 @@ const Toaster = ({ ...props }: ToasterProps) => {
           />
         ),
       }}
+      position="top-center"
       style={
         {
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
-          zIndex: 2147483647,
+          zIndex: 2_147_483_647,
         } as React.CSSProperties
       }
       theme={theme as ToasterProps["theme"]}
-      position="top-center"
       toastOptions={{
         classNames: {
           toast: "cn-toast",

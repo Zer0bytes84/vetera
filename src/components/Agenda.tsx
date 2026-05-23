@@ -14,6 +14,7 @@ import React, { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -64,7 +65,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Sparkline } from "@/components/ui/sparkline";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
@@ -77,6 +77,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  APPOINTMENT_STATUS_META,
+  APPOINTMENT_TYPE_META,
+} from "@/config/status-meta";
+import {
   useAppointmentsRepository,
   useOwnersRepository,
   usePatientsRepository,
@@ -85,7 +89,6 @@ import {
 import i18n from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import type { Appointment, User as AppUser, Owner, Patient } from "@/types/db";
-import { APPOINTMENT_STATUS_META, APPOINTMENT_TYPE_META } from "@/config/status-meta";
 
 const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
@@ -120,7 +123,6 @@ const HOUR_BLOCKS = Array.from(
 );
 const CALENDAR_START_MINUTES = CALENDAR_START_HOUR * 60;
 const CALENDAR_END_MINUTES = (CALENDAR_END_HOUR + 1) * 60;
-
 
 const TABLE_TABS = [
   { label: "Planning", value: "planning" },
@@ -477,118 +479,6 @@ function AppointmentStatusBadge({
   );
 }
 
-type AgendaOverviewCard = {
-  label: string;
-  value: string;
-  meta: string;
-  note: string;
-  icon: typeof Calendar01Icon;
-  tone: "blue" | "orange" | "emerald" | "slate";
-  sparklineData: number[];
-};
-
-const agendaToneMap: Record<
-  AgendaOverviewCard["tone"],
-  { bg: string; text: string; spark: string }
-> = {
-  blue: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-600",
-    spark: "#3b82f6",
-  },
-  orange: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-600",
-    spark: "#f97316",
-  },
-  emerald: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-600",
-    spark: "#10b981",
-  },
-  slate: {
-    bg: "bg-slate-500/10",
-    text: "text-slate-600",
-    spark: "#64748b",
-  },
-};
-
-function buildAgendaSparkline(
-  base: number,
-  pattern: "steady" | "rise" | "watch" | "stable"
-) {
-  const deltas = {
-    steady: [-2, -1, 0, 1, 0, 1, 1, 2],
-    rise: [-3, -2, -1, 0, 1, 2, 2, 3],
-    watch: [2, 3, 4, 5, 3, 4, 5, 6],
-    stable: [1, 1, 0, 1, 0, 1, 0, 0],
-  }[pattern];
-
-  return deltas.map((delta) => Math.max(base + delta, 0));
-}
-
-function AgendaOverviewStrip({ items }: { items: AgendaOverviewCard[] }) {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {items.map((item) => {
-        const tone = agendaToneMap[item.tone];
-
-        return (
-          <Card
-            className={cn(
-              "card-vibrant overflow-hidden rounded-[24px] border border-border bg-card shadow-none",
-              `metric-glow-${item.tone}`
-            )}
-            key={item.label}
-          >
-            <CardContent className="flex min-h-[154px] flex-col justify-between p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="text-[11px] text-muted-foreground">
-                    {item.label}
-                  </p>
-                  <p className="font-medium text-[24px] text-foreground tracking-[-0.04em]">
-                    {item.value}
-                  </p>
-                  <div className="flex items-center gap-1.5 text-[10px]">
-                    <span className="font-mono text-foreground/70">
-                      {item.meta}
-                    </span>
-                    <span className="font-mono text-muted-foreground uppercase tracking-[0.04em]">
-                      {item.note}
-                    </span>
-                  </div>
-                </div>
-                <div className="prospeo-glyph h-10 w-10 shrink-0">
-                  <HugeiconsIcon
-                    className={cn("size-[18px]", tone.text)}
-                    icon={item.icon}
-                    strokeWidth={1.5}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-end justify-between gap-3">
-                <p className="max-w-[20ch] text-[12px] text-muted-foreground leading-[1.45]">
-                  {item.note}
-                </p>
-                <Sparkline
-                  color={tone.spark}
-                  data={item.sparklineData}
-                  fillOpacity={0.08}
-                  height={28}
-                  strokeWidth={1.5}
-                  width={74}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
-  );
-}
-
 function calculateOverlapMap(appointments: Appointment[]) {
   const layout = new Map<string, { column: number; totalColumns: number }>();
 
@@ -781,7 +671,8 @@ function AgendaDayView({
                         <button
                           className={cn(
                             "absolute overflow-hidden rounded-3xl border p-3 text-left shadow-sm transition hover:shadow-md",
-                            APPOINTMENT_TYPE_META[appointment.type].surfaceClassName,
+                            APPOINTMENT_TYPE_META[appointment.type]
+                              .surfaceClassName,
                             selectedAppointmentId === appointment.id
                               ? "z-10 ring-2 ring-primary/55 ring-offset-1"
                               : "ring-0"
@@ -800,7 +691,8 @@ function AgendaDayView({
                             <span
                               className={cn(
                                 "mt-1 size-2.5 shrink-0 rounded-full",
-                                APPOINTMENT_TYPE_META[appointment.type].dotClassName
+                                APPOINTMENT_TYPE_META[appointment.type]
+                                  .dotClassName
                               )}
                             />
                             <div className="min-w-0">
@@ -914,7 +806,8 @@ function AgendaWeekView({
                         <button
                           className={cn(
                             "absolute rounded-2xl border px-2.5 py-2 text-left shadow-sm transition hover:shadow-md",
-                            APPOINTMENT_TYPE_META[appointment.type].surfaceClassName,
+                            APPOINTMENT_TYPE_META[appointment.type]
+                              .surfaceClassName,
                             selectedAppointmentId === appointment.id
                               ? "z-10 ring-2 ring-primary/55 ring-offset-1"
                               : "ring-0"
@@ -1126,14 +1019,13 @@ const Agenda: React.FC = () => {
       return owners;
     }
 
-    return owners
-      .filter((owner) =>
-        [owner.firstName, owner.lastName, owner.phone, owner.email, owner.city]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase()
-          .includes(query)
-      );
+    return owners.filter((owner) =>
+      [owner.firstName, owner.lastName, owner.phone, owner.email, owner.city]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(query)
+    );
   }, [ownerSearchTerm, owners]);
 
   const patientsForSelectedOwner = useMemo(() => {
@@ -1337,33 +1229,34 @@ const Agenda: React.FC = () => {
     (vet) => (appointmentsByVet.get(vet.id) ?? []).length > 0
   ).length;
 
-  const overviewCards = useMemo<AgendaOverviewCard[]>(() => {
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
     const delta = dailyAppointments.length - previousDayAppointments.length;
     const deltaPrefix = delta > 0 ? "+" : "";
+    const closedCount = dailyAppointments.filter(
+      (item) => item.status === "completed"
+    ).length;
     const occupancyTarget = Math.max(1, vets.length) * 8 * 60;
     const occupancy = Math.round((totalPlannedMinutes / occupancyTarget) * 100);
 
     return [
       {
-        label: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux" }),
+        title: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux" }),
         value: String(dailyAppointments.length),
-        meta: delta === 0 ? "stable" : `${deltaPrefix}${delta}`,
-        note: t("agenda.overview.closedConsultations", {
-          count: dailyAppointments.filter((item) => item.status === "completed")
-            .length,
-          defaultValue_one: "{{count}} clôturée",
-          defaultValue_other: "{{count}} clôturées",
+        badge: delta === 0 ? "stable" : `${deltaPrefix}${delta}`,
+        trend: delta > 0 ? "up" : delta < 0 ? "down" : "neutral",
+        footerTitle: `${closedCount} clôturée${closedCount > 1 ? "s" : ""}`,
+        footerDescription: t("agenda.overview.closedConsultations", {
+          count: closedCount,
+          defaultValue_one: "{{count}} consultation clôturée",
+          defaultValue_other: "{{count}} consultations clôturées",
         }),
-        icon: Calendar01Icon,
-        sparklineData: buildAgendaSparkline(dailyAppointments.length, "steady"),
-        tone: "blue",
       },
       {
-        label: t("agenda.overview.openEmergencies", {
+        title: t("agenda.overview.openEmergencies", {
           defaultValue: "Urgences ouvertes",
         }),
         value: String(urgentOpenCount),
-        meta:
+        badge:
           urgentOpenCount === 0
             ? "stable"
             : t("agenda.overview.alerts", {
@@ -1371,51 +1264,45 @@ const Agenda: React.FC = () => {
                 defaultValue_one: "{{count}} alerte",
                 defaultValue_other: "{{count}} alertes",
               }),
-        note: t("agenda.overview.priorityCases", {
+        trend: urgentOpenCount > 0 ? "up" : "neutral",
+        footerTitle: "Cas à surveiller",
+        footerDescription: t("agenda.overview.priorityCases", {
           defaultValue: "Cas à surveiller en priorité",
         }),
-        icon: Alert02Icon,
-        sparklineData: buildAgendaSparkline(urgentOpenCount, "watch"),
-        tone: "orange",
       },
       {
-        label: t("agenda.overview.plannedTime", {
+        title: t("agenda.overview.plannedTime", {
           defaultValue: "Temps planifié",
         }),
         value: formatDuration(totalPlannedMinutes),
-        meta:
+        badge:
           totalPlannedMinutes === 0
             ? "0%"
             : `${Number.isFinite(occupancy) ? occupancy : 0}%`,
-        note: t("agenda.overview.engagedVets", {
+        trend: "neutral",
+        footerTitle: t("agenda.overview.engagedVets", {
           count: engagedVetsCount,
           defaultValue_one: "{{count}} praticien mobilisé",
           defaultValue_other: "{{count}} praticiens mobilisés",
         }),
-        icon: StethoscopeIcon,
-        sparklineData: buildAgendaSparkline(
-          Math.round(totalPlannedMinutes / 60),
-          "rise"
-        ),
-        tone: "emerald",
+        footerDescription: "Occupation planning",
       },
       {
-        label: t("agenda.overview.nextAppointment", {
+        title: t("agenda.overview.nextAppointment", {
           defaultValue: "Prochain rendez-vous",
         }),
         value: nextAppointment
           ? formatTimeCompact(nextAppointment.startTime)
           : t("agenda.overview.free", { defaultValue: "Libre" }),
-        meta: nextAppointment ? nextAppointment.type : "aucun",
-        note: nextAppointment
+        badge: nextAppointment ? nextAppointment.type : "aucun",
+        trend: "neutral",
+        footerTitle: nextAppointment
           ? patientsById.get(nextAppointment.patientId)?.name ||
             nextAppointment.title
           : t("agenda.overview.noUpcomingSlot", {
               defaultValue: "Aucun créneau imminent",
             }),
-        icon: UserCircle02Icon,
-        sparklineData: buildAgendaSparkline(nextAppointment ? 2 : 0, "stable"),
-        tone: "slate",
+        footerDescription: "Prochain passage",
       },
     ];
   }, [
@@ -1932,7 +1819,7 @@ const Agenda: React.FC = () => {
   const visibleRowsCount = tableRowsByTab[tableTab].length;
 
   return (
-    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -1956,7 +1843,7 @@ const Agenda: React.FC = () => {
         </div>
       </div>
 
-      <AgendaOverviewStrip items={overviewCards} />
+      <SectionCards items={sectionCards} />
 
       <div className="grid gap-4">
         <Card className="card-vibrant card-hover-lift min-h-[780px] rounded-[24px] border border-border bg-card shadow-none">
@@ -2106,7 +1993,8 @@ const Agenda: React.FC = () => {
                   <div
                     className={cn(
                       "rounded-4xl border p-4",
-                      APPOINTMENT_TYPE_META[selectedAppointment.type].surfaceClassName
+                      APPOINTMENT_TYPE_META[selectedAppointment.type]
+                        .surfaceClassName
                     )}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -2395,11 +2283,13 @@ const Agenda: React.FC = () => {
                   <NativeSelectOption value="all">
                     Tous les statuts
                   </NativeSelectOption>
-                  {Object.entries(APPOINTMENT_STATUS_META).map(([status, meta]) => (
-                    <NativeSelectOption key={status} value={status}>
-                      {meta.label}
-                    </NativeSelectOption>
-                  ))}
+                  {Object.entries(APPOINTMENT_STATUS_META).map(
+                    ([status, meta]) => (
+                      <NativeSelectOption key={status} value={status}>
+                        {meta.label}
+                      </NativeSelectOption>
+                    )
+                  )}
                 </NativeSelect>
               </div>
             </div>
@@ -2637,7 +2527,9 @@ const Agenda: React.FC = () => {
             <FieldGroup className="grid gap-6">
               <div className="grid gap-5 lg:grid-cols-2">
                 <Field className="lg:col-span-2">
-                  <FieldLabel>Recherche rapide patient / propriétaire</FieldLabel>
+                  <FieldLabel>
+                    Recherche rapide patient / propriétaire
+                  </FieldLabel>
                   <Input
                     onChange={(event) =>
                       setPersonSearchTerm(event.target.value)
@@ -2729,7 +2621,9 @@ const Agenda: React.FC = () => {
                 <Field>
                   <FieldLabel>Patient</FieldLabel>
                   <Input
-                    onChange={(event) => setPatientSearchTerm(event.target.value)}
+                    onChange={(event) =>
+                      setPatientSearchTerm(event.target.value)
+                    }
                     placeholder="Rechercher un patient par nom, espèce ou propriétaire..."
                     value={patientSearchTerm}
                   />

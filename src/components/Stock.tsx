@@ -21,10 +21,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useDeferredValue, useMemo, useState } from "react";
-import {
-  type MetricOverviewItem,
-  MetricOverviewStrip,
-} from "@/components/metric-overview-strip";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { StockStatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -337,50 +334,43 @@ const Stock: React.FC = () => {
     value: formatDZD(stockValue),
   };
 
-  // Section Cards for Stock
-  const overviewCards = useMemo<MetricOverviewItem[]>(() => {
-    const generateSparkline = (base: number) =>
-      Array.from({ length: 8 }, () => base + Math.floor(Math.random() * 4) - 2);
-
-    return [
+  const sectionCards = useMemo<SectionCardItem[]>(
+    () => [
       {
-        label: "Produits",
+        title: "Produits",
         value: String(totalProducts),
-        meta: `${products.length} réf.`,
-        note: "Catalogue",
-        icon: Package02Icon,
-        sparklineData: generateSparkline(totalProducts),
-        tone: "blue",
+        badge: `${products.length} réf.`,
+        trend: "neutral",
+        footerTitle: "Catalogue actif",
+        footerDescription: "Catalogue",
       },
       {
-        label: "Stock bas",
+        title: "Stock bas",
         value: String(lowStock),
-        meta: lowStock > 0 ? "à réapprovisionner" : "OK",
-        note: "Seuil atteint",
-        icon: ArrowDown01Icon,
-        sparklineData: generateSparkline(lowStock),
-        tone: "amber",
+        badge: lowStock > 0 ? "à réapprovisionner" : "OK",
+        trend: lowStock > 0 ? "down" : "neutral",
+        footerTitle: "Réapprovisionnement nécessaire",
+        footerDescription: "Seuil atteint",
       },
       {
-        label: "Ruptures",
+        title: "Ruptures",
         value: String(outOfStock),
-        meta: outOfStock > 0 ? "critique" : "aucune",
-        note: "Stock épuisé",
-        icon: Alert02Icon,
-        sparklineData: generateSparkline(outOfStock),
-        tone: "rose",
+        badge: outOfStock > 0 ? "critique" : "aucune",
+        trend: outOfStock > 0 ? "down" : "neutral",
+        footerTitle: "Stock épuisé",
+        footerDescription: "Stock épuisé",
       },
       {
-        label: "Valeur stock",
+        title: "Valeur stock",
         value: formatDZD(stockValue),
-        meta: "valorisation",
-        note: "Coût d'acquisition total",
-        icon: ShoppingCart01Icon,
-        sparklineData: generateSparkline(Math.round(stockValue / 1000)),
-        tone: "emerald",
+        badge: "valorisation",
+        trend: "neutral",
+        footerTitle: "Valorisation totale",
+        footerDescription: "Coût d'acquisition total",
       },
-    ];
-  }, [totalProducts, lowStock, outOfStock, stockValue, products.length]);
+    ],
+    [totalProducts, lowStock, outOfStock, stockValue, products.length]
+  );
 
   // Filtering
   const filteredProducts = useMemo(
@@ -562,7 +552,7 @@ const Stock: React.FC = () => {
   };
 
   return (
-    <div className="prospeo-dashboard flex w-full min-w-0 flex-col gap-5 px-4 pt-5 pb-16 sm:px-6">
+    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button className="h-10 rounded-xl px-4" onClick={handleOpenAdd}>
@@ -576,7 +566,7 @@ const Stock: React.FC = () => {
         </div>
       </div>
 
-      <MetricOverviewStrip items={overviewCards} />
+      <SectionCards items={sectionCards} />
 
       {/* Main Table Card */}
       <Card className="card-vibrant card-hover-lift flex min-h-[540px] flex-col rounded-[24px] border border-border bg-card shadow-none">
@@ -705,7 +695,9 @@ const Stock: React.FC = () => {
                           )
                         )
                       : 100;
-                  const isExpired = !!(product.expiryDate && product.expiryDate < todayStr);
+                  const isExpired = !!(
+                    product.expiryDate && product.expiryDate < todayStr
+                  );
 
                   return (
                     <div
@@ -807,8 +799,8 @@ const Stock: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <StockStatusBadge
                             isExpired={isExpired}
-                            isOut={isOut}
                             isLow={isLow}
+                            isOut={isOut}
                           />
                           {product.expiryDate && !isExpired && (
                             <span className="text-[10px] text-muted-foreground">

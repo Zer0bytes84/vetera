@@ -1,6 +1,6 @@
 import { useSQLite } from "@/hooks/useSQLite";
-import { isTauriRuntime } from "@/services/browser-store";
 import * as AppSettingsService from "@/services/appSettingsService";
+import { isTauriRuntime } from "@/services/browser-store";
 import * as AuthService from "@/services/sqlite/auth";
 import {
   generateId,
@@ -43,7 +43,8 @@ const rowToPatient = (row: Record<string, unknown>): Patient => ({
   sex: ((row.sex ? String(row.sex) : "M") as Patient["sex"]) ?? "M",
   dateOfBirth: row.date_of_birth ? String(row.date_of_birth) : undefined,
   weightHistory: row.weight_history ? String(row.weight_history) : undefined,
-  status: ((row.status ? String(row.status) : "sante") as Patient["status"]) ??
+  status:
+    ((row.status ? String(row.status) : "sante") as Patient["status"]) ??
     "sante",
   lastVisit: row.last_visit ? String(row.last_visit) : undefined,
   allergies: row.allergies ? String(row.allergies) : undefined,
@@ -285,16 +286,14 @@ export function usePatientsRepository() {
       if (finalOwnerId) {
         finalOwnerId = finalOwnerId.trim();
       } else {
-        const createdOwner = await ownersStore.add(
-          {
-            firstName: owner.firstName?.trim() || "",
-            lastName: owner.lastName?.trim() || "",
-            phone: owner.phone?.trim() || "",
-            email: owner.email?.trim() || "",
-            address: owner.address?.trim() || "",
-            city: owner.city?.trim() || "",
-          } as Omit<Owner, "id" | "createdAt" | "updatedAt">
-        );
+        const createdOwner = await ownersStore.add({
+          firstName: owner.firstName?.trim() || "",
+          lastName: owner.lastName?.trim() || "",
+          phone: owner.phone?.trim() || "",
+          email: owner.email?.trim() || "",
+          address: owner.address?.trim() || "",
+          city: owner.city?.trim() || "",
+        } as Omit<Owner, "id" | "createdAt" | "updatedAt">);
         finalOwnerId = createdOwner?.id ?? null;
         finalOwner = createdOwner ?? null;
       }
