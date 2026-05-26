@@ -94,7 +94,7 @@ export function DashboardOrbitPage({ onOpenAIAgent, onNavigate }: DashboardOrbit
   const clinicalActivityData = useMemo(() => {
     const ref = new Date(metrics.referenceDate);
     ref.setHours(23, 59, 59, 999);
-    const days = [];
+    const days: Array<{ date: string; consultations: number; interventions: number }> = [];
     for (let i = 89; i >= 0; i -= 1) {
       const day = new Date(ref);
       day.setDate(day.getDate() - i);
