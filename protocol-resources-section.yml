@@ -1,0 +1,257 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner:
+      - generic [ref=e4]:
+        - link "Home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+        - generic [ref=e10]:
+          - button "Find something... ⌘K" [ref=e13]:
+            - img [ref=e14]
+            - text: Find something...
+            - generic [ref=e16]: ⌘K
+          - generic [ref=e17]:
+            - navigation [ref=e18]:
+              - list [ref=e19]:
+                - listitem [ref=e20]:
+                  - link "API" [ref=e21] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e22]:
+                  - link "Documentation" [ref=e23] [cursor=pointer]:
+                    - /url: "#"
+                - listitem [ref=e24]:
+                  - link "Support" [ref=e25] [cursor=pointer]:
+                    - /url: "#"
+            - button "Switch to dark theme" [ref=e28]:
+              - img [ref=e29]
+            - link "Sign in" [ref=e33] [cursor=pointer]:
+              - /url: "#"
+        - navigation [ref=e34]:
+          - list [ref=e35]:
+            - listitem [ref=e36]:
+              - heading "Guides" [level=2] [ref=e37]
+              - list [ref=e42]:
+                - listitem [ref=e43]:
+                  - link "Introduction" [ref=e44] [cursor=pointer]:
+                    - /url: /
+                    - generic [ref=e45]: Introduction
+                  - list [ref=e46]:
+                    - listitem [ref=e47]:
+                      - link "Guides" [ref=e48] [cursor=pointer]:
+                        - /url: /#guides
+                        - generic [ref=e49]: Guides
+                    - listitem [ref=e50]:
+                      - link "Resources" [ref=e51] [cursor=pointer]:
+                        - /url: /#resources
+                        - generic [ref=e52]: Resources
+                - listitem [ref=e53]:
+                  - link "Quickstart" [ref=e54] [cursor=pointer]:
+                    - /url: /quickstart
+                    - generic [ref=e55]: Quickstart
+                - listitem [ref=e56]:
+                  - link "SDKs" [ref=e57] [cursor=pointer]:
+                    - /url: /sdks
+                    - generic [ref=e58]: SDKs
+                - listitem [ref=e59]:
+                  - link "Authentication" [ref=e60] [cursor=pointer]:
+                    - /url: /authentication
+                    - generic [ref=e61]: Authentication
+                - listitem [ref=e62]:
+                  - link "Pagination" [ref=e63] [cursor=pointer]:
+                    - /url: /pagination
+                    - generic [ref=e64]: Pagination
+                - listitem [ref=e65]:
+                  - link "Errors" [ref=e66] [cursor=pointer]:
+                    - /url: /errors
+                    - generic [ref=e67]: Errors
+                - listitem [ref=e68]:
+                  - link "Webhooks" [ref=e69] [cursor=pointer]:
+                    - /url: /webhooks
+                    - generic [ref=e70]: Webhooks
+            - listitem [ref=e71]:
+              - heading "Resources" [level=2] [ref=e72]
+              - list [ref=e75]:
+                - listitem [ref=e76]:
+                  - link "Contacts" [ref=e77] [cursor=pointer]:
+                    - /url: /contacts
+                    - generic [ref=e78]: Contacts
+                - listitem [ref=e79]:
+                  - link "Conversations" [ref=e80] [cursor=pointer]:
+                    - /url: /conversations
+                    - generic [ref=e81]: Conversations
+                - listitem [ref=e82]:
+                  - link "Messages" [ref=e83] [cursor=pointer]:
+                    - /url: /messages
+                    - generic [ref=e84]: Messages
+                - listitem [ref=e85]:
+                  - link "Groups" [ref=e86] [cursor=pointer]:
+                    - /url: /groups
+                    - generic [ref=e87]: Groups
+                - listitem [ref=e88]:
+                  - link "Attachments" [ref=e89] [cursor=pointer]:
+                    - /url: /attachments
+                    - generic [ref=e90]: Attachments
+    - generic [ref=e91]:
+      - main [ref=e92]:
+        - article [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e96]:
+              - img [ref=e98]:
+                - img [ref=e100]
+              - img [ref=e105]
+            - heading "API Documentation" [level=1] [ref=e107]
+            - paragraph [ref=e108]: Use the Protocol API to access contacts, conversations, group messages, and more and seamlessly integrate your product into the workflows of dozens of devoted Protocol users.
+            - generic [ref=e109]:
+              - link "Quickstart" [ref=e110] [cursor=pointer]:
+                - /url: /quickstart
+                - text: Quickstart
+                - img [ref=e111]
+              - link "Explore SDKs" [ref=e113] [cursor=pointer]:
+                - /url: /sdks
+            - heading "Getting started" [level=2] [ref=e114]
+            - paragraph [ref=e115]:
+              - text: To get started, create a new application in your
+              - link "developer settings" [ref=e116] [cursor=pointer]:
+                - /url: "#"
+              - text: ", then read about how to make requests for the resources you need to access using our HTTP APIs or dedicated client SDKs. When your integration is ready to go live, publish it to our"
+              - link "integrations directory" [ref=e117] [cursor=pointer]:
+                - /url: "#"
+              - text: to reach the Protocol community.
+            - link "Get your API key" [ref=e119] [cursor=pointer]:
+              - /url: /sdks
+              - text: Get your API key
+              - img [ref=e120]
+            - generic [ref=e122]:
+              - heading "Guides" [level=2] [ref=e123]:
+                - link "Guides" [ref=e124] [cursor=pointer]:
+                  - /url: "#guides"
+              - generic [ref=e125]:
+                - generic [ref=e126]:
+                  - heading "Authentication" [level=3] [ref=e127]
+                  - paragraph [ref=e128]: Learn how to authenticate your API requests.
+                  - paragraph [ref=e129]:
+                    - link "Read more" [ref=e130] [cursor=pointer]:
+                      - /url: /authentication
+                      - text: Read more
+                      - img [ref=e131]
+                - generic [ref=e133]:
+                  - heading "Pagination" [level=3] [ref=e134]
+                  - paragraph [ref=e135]: Understand how to work with paginated responses.
+                  - paragraph [ref=e136]:
+                    - link "Read more" [ref=e137] [cursor=pointer]:
+                      - /url: /pagination
+                      - text: Read more
+                      - img [ref=e138]
+                - generic [ref=e140]:
+                  - heading "Errors" [level=3] [ref=e141]
+                  - paragraph [ref=e142]: Read about the different types of errors returned by the API.
+                  - paragraph [ref=e143]:
+                    - link "Read more" [ref=e144] [cursor=pointer]:
+                      - /url: /errors
+                      - text: Read more
+                      - img [ref=e145]
+                - generic [ref=e147]:
+                  - heading "Webhooks" [level=3] [ref=e148]
+                  - paragraph [ref=e149]: Learn how to programmatically configure webhooks for your app.
+                  - paragraph [ref=e150]:
+                    - link "Read more" [ref=e151] [cursor=pointer]:
+                      - /url: /webhooks
+                      - text: Read more
+                      - img [ref=e152]
+            - generic [ref=e154]:
+              - heading "Resources" [level=2] [ref=e155]:
+                - link "Resources" [ref=e156] [cursor=pointer]:
+                  - /url: "#resources"
+                  - img [ref=e159]
+                  - text: Resources
+              - generic [ref=e161]:
+                - generic [ref=e162]:
+                  - generic:
+                    - generic:
+                      - img:
+                        - img
+                    - generic:
+                      - img:
+                        - img
+                  - generic [ref=e164]:
+                    - img [ref=e166]
+                    - heading "Contacts" [level=3] [ref=e170]:
+                      - link "Contacts" [ref=e171] [cursor=pointer]:
+                        - /url: /contacts
+                        - text: Contacts
+                    - paragraph [ref=e173]: Learn about the contact model and how to create, retrieve, update, delete, and list contacts.
+                - generic [ref=e174]:
+                  - generic:
+                    - generic:
+                      - img:
+                        - img
+                    - generic:
+                      - img:
+                        - img
+                  - generic [ref=e176]:
+                    - img [ref=e178]
+                    - heading "Conversations" [level=3] [ref=e181]:
+                      - link "Conversations" [ref=e182] [cursor=pointer]:
+                        - /url: /conversations
+                        - text: Conversations
+                    - paragraph [ref=e184]: Learn about the conversation model and how to create, retrieve, update, delete, and list conversations.
+                - generic [ref=e185]:
+                  - generic:
+                    - generic:
+                      - img:
+                        - img
+                    - generic:
+                      - img:
+                        - img
+                  - generic [ref=e187]:
+                    - img [ref=e189]
+                    - heading "Messages" [level=3] [ref=e192]:
+                      - link "Messages" [ref=e193] [cursor=pointer]:
+                        - /url: /messages
+                        - text: Messages
+                    - paragraph [ref=e195]: Learn about the message model and how to create, retrieve, update, delete, and list messages.
+                - generic [ref=e196]:
+                  - generic:
+                    - generic:
+                      - img:
+                        - img
+                    - generic:
+                      - img:
+                        - img
+                  - generic [ref=e198]:
+                    - img [ref=e200]
+                    - heading "Groups" [level=3] [ref=e205]:
+                      - link "Groups" [ref=e206] [cursor=pointer]:
+                        - /url: /groups
+                        - text: Groups
+                    - paragraph [ref=e208]: Learn about the group model and how to create, retrieve, update, delete, and list groups.
+          - generic [ref=e211]:
+            - paragraph [ref=e212]: Was this page helpful?
+            - generic [ref=e213]:
+              - button "Yes" [ref=e214]
+              - button "No" [ref=e216]
+      - contentinfo [ref=e217]:
+        - generic [ref=e219]:
+          - 'link "Next: Quickstart" [ref=e220] [cursor=pointer]':
+            - /url: /quickstart
+            - text: Next
+            - img [ref=e221]
+          - link [ref=e223] [cursor=pointer]:
+            - /url: /quickstart
+            - text: Quickstart
+        - generic [ref=e224]:
+          - paragraph [ref=e225]: © Copyright 2026. All rights reserved.
+          - generic [ref=e226]:
+            - link "Follow us on X" [ref=e227] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e228]: Follow us on X
+              - img [ref=e229]
+            - link "Follow us on GitHub" [ref=e231] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e232]: Follow us on GitHub
+              - img [ref=e233]
+            - link "Join our Discord server" [ref=e235] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e236]: Join our Discord server
+              - img [ref=e237]
+  - alert [ref=e239]: API Documentation

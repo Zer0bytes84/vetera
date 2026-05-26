@@ -1968,250 +1968,224 @@ const Agenda: React.FC = () => {
         </Card>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] xl:items-start">
-          <Card className="min-h-[420px]">
-            <CardHeader className="border-b">
-              <CardDescription>Détail de la sélection</CardDescription>
-              <CardTitle className="text-xl tracking-[-0.04em]">
-                {selectedAppointment
-                  ? patientsById.get(selectedAppointment.patientId)?.name ||
-                    selectedAppointment.title
-                  : "Aucun rendez-vous sélectionné"}
-              </CardTitle>
-              {selectedAppointment ? (
+          {selectedAppointment ? (
+            <Card className="min-h-[420px]">
+              <CardHeader className="border-border border-b px-6 py-5">
+                <CardDescription>Détail de la sélection</CardDescription>
+                <CardTitle className="text-xl tracking-[-0.04em]">
+                  {patientsById.get(selectedAppointment.patientId)?.name ||
+                    selectedAppointment.title}
+                </CardTitle>
                 <CardAction>
                   <AppointmentStatusBadge
                     appointment={selectedAppointment}
                     patient={selectedPatient}
                   />
                 </CardAction>
-              ) : null}
-            </CardHeader>
+              </CardHeader>
 
-            <CardContent className="flex min-h-0 flex-1 flex-col gap-4">
-              {selectedAppointment ? (
-                <>
-                  <div
-                    className={cn(
-                      "rounded-4xl border p-4",
-                      APPOINTMENT_TYPE_META[selectedAppointment.type]
-                        .surfaceClassName
-                    )}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          Acte clinique
-                        </p>
-                        <p className="mt-1 font-medium text-foreground text-lg">
-                          {selectedAppointment.type}
-                        </p>
-                      </div>
-                      <AppointmentTypeBadge type={selectedAppointment.type} />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 rounded-4xl border border-border/80 bg-muted/20 p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-muted-foreground text-sm">
-                        Créneau
-                      </span>
-                      <span className="text-right font-medium text-foreground">
-                        {formatTimeCompact(selectedAppointment.startTime)} -{" "}
-                        {formatTimeCompact(selectedAppointment.endTime)}
-                      </span>
-                    </div>
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-muted-foreground text-sm">
-                        Date
-                      </span>
-                      <span className="text-right font-medium text-foreground">
-                        {formatDateLabel(
-                          normalizeDate(selectedAppointment.startTime) ??
-                            selectedDate,
-                          {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          }
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-muted-foreground text-sm">
-                        Vétérinaire
-                      </span>
-                      <span className="text-right font-medium text-foreground">
-                        {selectedVet?.displayName || "Vétérinaire local"}
-                      </span>
-                    </div>
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-muted-foreground text-sm">
-                        Propriétaire
-                      </span>
-                      <span className="text-right font-medium text-foreground">
-                        {formatOwnerName(selectedOwner)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 rounded-4xl border border-border/80 bg-card p-4 transition-all duration-200 ease-out hover:border-border/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                    <div className="flex items-center gap-2">
-                      <HugeiconsIcon
-                        className="size-4 text-muted-foreground"
-                        icon={StethoscopeIcon}
-                        strokeWidth={1.5}
-                      />
-                      <p className="font-medium text-foreground">Patient</p>
-                    </div>
-                    <div className="grid gap-1">
-                      <p className="font-medium text-foreground">
-                        {selectedPatient?.name || "Patient local"}
-                      </p>
+              <CardContent className="flex min-h-0 flex-1 flex-col gap-4 px-6 py-5">
+                <div
+                  className={cn(
+                    "rounded-2xl border p-4",
+                    APPOINTMENT_TYPE_META[selectedAppointment.type]
+                      .surfaceClassName
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
                       <p className="text-muted-foreground text-sm">
-                        {getPatientProfile(selectedPatient)} ·{" "}
-                        {getAgeLabel(selectedPatient?.dateOfBirth)}
+                        Acte clinique
+                      </p>
+                      <p className="mt-1 font-medium text-foreground text-lg">
+                        {selectedAppointment.type}
                       </p>
                     </div>
-                    {selectedAppointment.reason ? (
-                      <p className="text-muted-foreground text-sm leading-6">
-                        {selectedAppointment.reason}
-                      </p>
-                    ) : (
-                      <p className="text-muted-foreground text-sm">
-                        Aucun motif détaillé n&apos;a encore été saisi.
-                      </p>
-                    )}
+                    <AppointmentTypeBadge type={selectedAppointment.type} />
                   </div>
-                </>
-              ) : (
-                <Empty className="border border-border/80 border-dashed bg-muted/20 p-8">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
-                    </EmptyMedia>
-                    <EmptyTitle>Sélectionnez un rendez-vous</EmptyTitle>
-                    <EmptyDescription>
-                      Cliquez sur un créneau dans le planning ou dans le tableau
-                      ci-dessous pour afficher la fiche contextuelle.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent className="justify-center sm:flex-row">
-                    <Button onClick={() => handleOpenCreate()}>
-                      <HugeiconsIcon
-                        data-icon="inline-start"
-                        icon={Add01Icon}
-                        strokeWidth={1.5}
-                      />
-                      Nouveau rendez-vous
-                    </Button>
-                  </EmptyContent>
-                </Empty>
-              )}
-            </CardContent>
+                </div>
 
-            {selectedAppointment ? (
-              <CardFooter className="gap-2 border-t">
+                <div className="grid gap-3 rounded-2xl border border-border/60 bg-muted/10 p-4 text-sm">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-muted-foreground">Créneau</span>
+                    <span className="text-right font-medium text-foreground">
+                      {formatTimeCompact(selectedAppointment.startTime)} -{" "}
+                      {formatTimeCompact(selectedAppointment.endTime)}
+                    </span>
+                  </div>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-muted-foreground">Date</span>
+                    <span className="text-right font-medium text-foreground">
+                      {formatDateLabel(
+                        normalizeDate(selectedAppointment.startTime) ??
+                          selectedDate,
+                        {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        }
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-muted-foreground">Vétérinaire</span>
+                    <span className="text-right font-medium text-foreground">
+                      {selectedVet?.displayName || "Vétérinaire local"}
+                    </span>
+                  </div>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-muted-foreground">Propriétaire</span>
+                    <span className="text-right font-medium text-foreground">
+                      {formatOwnerName(selectedOwner)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4 transition-all duration-200 ease-out hover:border-border/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      className="size-4 text-muted-foreground"
+                      icon={StethoscopeIcon}
+                      strokeWidth={1.5}
+                    />
+                    <p className="font-medium text-foreground">Patient</p>
+                  </div>
+                  <div className="grid gap-1">
+                    <p className="font-medium text-foreground">
+                      {selectedPatient?.name || "Patient local"}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      {getPatientProfile(selectedPatient)} ·{" "}
+                      {getAgeLabel(selectedPatient?.dateOfBirth)}
+                    </p>
+                  </div>
+                  {selectedAppointment.reason ? (
+                    <p className="text-muted-foreground text-sm leading-6">
+                      {selectedAppointment.reason}
+                    </p>
+                  ) : (
+                    <p className="text-muted-foreground text-sm">
+                      Aucun motif détaillé n&apos;a encore été saisi.
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+
+              <CardFooter className="gap-2 border-t px-6 py-4">
                 <Button
-                  className="flex-1"
+                  className="flex-1 rounded-xl h-10"
                   onClick={() => handleOpenEdit(selectedAppointment)}
                   variant="outline"
                 >
                   Modifier
                 </Button>
                 <Button
-                  className="flex-1"
+                  className="flex-1 rounded-xl h-10"
                   onClick={() => handleOpenCreate(selectedDate)}
                 >
                   Nouveau RDV
                 </Button>
               </CardFooter>
-            ) : null}
-          </Card>
-
-          <Card className="h-fit" size="sm">
-            <CardHeader>
-              <CardDescription>Cadence de la journée</CardDescription>
-              <CardTitle>{formatDateLabel(selectedDate)}</CardTitle>
-            </CardHeader>
-
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                {typeSummary.length > 0 ? (
-                  typeSummary.map((entry) => (
-                    <div
-                      className="flex items-center justify-between gap-3 rounded-3xl bg-muted/30 px-4 py-3"
-                      key={entry.type}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={cn(
-                            "size-2.5 rounded-full",
-                            APPOINTMENT_TYPE_META[entry.type].dotClassName
-                          )}
-                        />
-                        <span className="font-medium text-foreground">
-                          {entry.type}
-                        </span>
-                      </div>
-                      <Badge variant="outline">{entry.count}</Badge>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-3xl border border-border/80 border-dashed bg-muted/20 px-4 py-6 text-muted-foreground text-sm">
-                    Aucun rendez-vous n&apos;est encore programmé sur cette
-                    journée.
-                  </div>
-                )}
+            </Card>
+          ) : (
+            <div className="flex flex-col items-center justify-center border border-dashed border-border/80 bg-muted/5 rounded-[24px] p-8 text-center min-h-[420px] h-full shadow-none transition-all duration-200">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/10 dark:bg-white/5 dark:ring-white/10 mb-4">
+                <HugeiconsIcon className="size-6 text-muted-foreground opacity-80" icon={Calendar01Icon} strokeWidth={1.5} />
               </div>
+              <h3 className="text-lg font-medium text-foreground tracking-tight">Aucun rendez-vous sélectionné</h3>
+              <p className="text-muted-foreground text-sm mt-2 max-w-sm leading-6">
+                Cliquez sur un créneau dans le planning ou dans le tableau ci-dessous pour afficher les détails contextuels.
+              </p>
+              <Button onClick={() => handleOpenCreate()} className="mt-6 h-10 rounded-xl px-4 gap-2">
+                <HugeiconsIcon
+                  data-icon="inline-start"
+                  icon={Add01Icon}
+                  strokeWidth={1.5}
+                  className="size-4"
+                />
+                Nouveau rendez-vous
+              </Button>
+            </div>
+          )}
 
-              <div className="grid gap-2 rounded-4xl border border-border/80 bg-card p-4 transition-all duration-200 ease-out hover:border-border/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-muted-foreground text-sm">
-                    Charge planifiée
-                  </span>
-                  <span className="font-medium text-foreground">
-                    {formatDuration(totalPlannedMinutes)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-muted-foreground text-sm">
-                    Urgences en cours
-                  </span>
-                  <span className="font-medium text-foreground">
-                    {urgentOpenCount}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-muted-foreground text-sm">
-                    Vétérinaires mobilisés
-                  </span>
-                  <span className="font-medium text-foreground">
-                    {engagedVetsCount}
-                  </span>
-                </div>
-              </div>
+          <Card className="h-full flex flex-col justify-between rounded-[24px] border border-border bg-card shadow-none">
+            <div>
+              <CardHeader className="border-border border-b px-6 py-5">
+                <CardDescription>Cadence de la journée</CardDescription>
+                <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
+                  {formatDateLabel(selectedDate)}
+                </CardTitle>
+              </CardHeader>
 
-              {dayLoadSummary.length > 0 ? (
+              <CardContent className="grid gap-4 px-6 py-5">
                 <div className="grid gap-2">
-                  {dayLoadSummary.map((entry) => (
-                    <div
-                      className="flex items-center justify-between gap-3 rounded-3xl bg-muted/30 px-4 py-3"
-                      key={entry.vet.id}
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-foreground">
-                          {entry.vet.displayName}
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          {entry.vet.specialty || "Consultation générale"}
-                        </p>
+                  {typeSummary.length > 0 ? (
+                    typeSummary.map((entry) => (
+                      <div
+                        className="flex items-center justify-between gap-3 rounded-2xl bg-muted/30 px-4 py-3 text-sm"
+                        key={entry.type}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={cn(
+                              "size-2 rounded-full",
+                              APPOINTMENT_TYPE_META[entry.type].dotClassName
+                            )}
+                          />
+                          <span className="font-medium text-foreground">
+                            {entry.type}
+                          </span>
+                        </div>
+                        <Badge variant="outline" className="rounded-lg">{entry.count}</Badge>
                       </div>
-                      <Badge variant="outline">{entry.count}</Badge>
+                    ))
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
+                      <HugeiconsIcon icon={Calendar01Icon} className="size-8 opacity-30 mb-2" strokeWidth={1.5} />
+                      <p className="text-sm">Aucun rendez-vous programmé aujourd'hui</p>
                     </div>
-                  ))}
+                  )}
                 </div>
-              ) : null}
+
+                {dayLoadSummary.length > 0 ? (
+                  <div className="grid gap-2 border-t pt-4 border-border/40">
+                    {dayLoadSummary.map((entry) => (
+                      <div
+                        className="flex items-center justify-between gap-3 rounded-2xl bg-muted/20 px-4 py-2.5 text-sm"
+                        key={entry.vet.id}
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-foreground">
+                            {entry.vet.displayName}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            {entry.vet.specialty || "Consultation générale"}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="rounded-lg">{entry.count}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </CardContent>
+            </div>
+
+            <CardContent className="px-6 pb-5 pt-0 mt-auto">
+              <div className="grid grid-cols-3 gap-3 border-t border-border/40 pt-5">
+                <div className="text-center">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Charge</p>
+                  <p className="mt-1 font-semibold text-foreground text-base tracking-tight">{formatDuration(totalPlannedMinutes)}</p>
+                </div>
+                <div className="text-center border-x border-border/40 px-1">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Urgences</p>
+                  <p className="mt-1 font-semibold text-foreground text-base">{urgentOpenCount}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Mobilisés</p>
+                  <p className="mt-1 font-semibold text-foreground text-base">{engagedVetsCount}</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -2236,32 +2210,32 @@ const Agenda: React.FC = () => {
             onValueChange={(value) => setTableTab(value as TableTab)}
             value={tableTab}
           >
-            <div className="flex flex-col gap-3 border-b px-6 pt-1 pb-4 xl:flex-row xl:items-center xl:justify-between">
-              <TabsList>
+            <div className="flex flex-col gap-3 border-b px-6 py-4 xl:flex-row xl:items-center xl:justify-between">
+              <TabsList className="group-data-horizontal/tabs:!h-9 rounded-xl">
                 {TABLE_TABS.map((tab) => (
-                  <TabsTrigger key={tab.value} value={tab.value}>
+                  <TabsTrigger className="rounded-lg" key={tab.value} value={tab.value}>
                     {tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
 
-              <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px]">
+              <div className="grid w-full gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px] xl:flex-1 xl:max-w-4xl xl:ml-auto">
                 <div className="relative">
                   <HugeiconsIcon
-                    className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+                    className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
                     icon={SearchIcon}
                     strokeWidth={1.5}
                   />
                   <Input
-                    className="h-11 rounded-3xl bg-input/50 pl-11"
+                    className="h-9 rounded-xl bg-muted/40 pl-10 text-sm border-border/60 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500"
                     onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Rechercher un patient, un motif ou un vétérinaire..."
+                    placeholder="Rechercher un patient, un motif..."
                     value={searchTerm}
                   />
                 </div>
 
                 <NativeSelect
-                  className="w-full"
+                  className="w-full [&>select]:bg-muted/40 [&>select]:border-border/60 [&>select]:focus-visible:ring-emerald-500/20 [&>select]:focus-visible:border-emerald-500"
                   onChange={(event) => setVetFilter(event.target.value)}
                   value={vetFilter}
                 >
@@ -2276,7 +2250,7 @@ const Agenda: React.FC = () => {
                 </NativeSelect>
 
                 <NativeSelect
-                  className="w-full"
+                  className="w-full [&>select]:bg-muted/40 [&>select]:border-border/60 [&>select]:focus-visible:ring-emerald-500/20 [&>select]:focus-visible:border-emerald-500"
                   onChange={(event) => setStatusFilter(event.target.value)}
                   value={statusFilter}
                 >
@@ -2299,12 +2273,12 @@ const Agenda: React.FC = () => {
 
               return (
                 <TabsContent
-                  className="px-6 pb-6"
+                  className="px-0 pb-6"
                   key={tab.value}
                   value={tab.value}
                 >
                   {rows.length === 0 ? (
-                    <Empty className="border border-border/80 border-dashed bg-muted/20">
+                    <Empty className="mx-6 border border-border/80 border-dashed bg-muted/20">
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
                           {tab.value === "attention" ? (
@@ -2349,98 +2323,112 @@ const Agenda: React.FC = () => {
                       </EmptyContent>
                     </Empty>
                   ) : (
-                    <div className="overflow-hidden rounded-lg border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Dossier</TableHead>
-                            <TableHead>Propriétaire</TableHead>
-                            <TableHead>Acte</TableHead>
-                            <TableHead>Créneau</TableHead>
-                            <TableHead>Statut</TableHead>
-                            <TableHead>Vétérinaire</TableHead>
-                            <TableHead className="pr-8 text-right">
-                              Action
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {rows.map((row) => (
+                    <Table>
+                      <TableHeader className="bg-muted/5">
+                        <TableRow className="hover:bg-transparent">
+                          <TableHead className="w-[22%] min-w-[130px] pl-6 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Dossier</TableHead>
+                          <TableHead className="w-[18%] min-w-[110px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Propriétaire</TableHead>
+                          <TableHead className="w-[12%] min-w-[80px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Acte</TableHead>
+                          <TableHead className="w-[20%] min-w-[130px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Créneau</TableHead>
+                          <TableHead className="w-[12%] min-w-[80px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Statut</TableHead>
+                          <TableHead className="w-[12%] min-w-[100px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Vétérinaire</TableHead>
+                          <TableHead className="w-[4%] min-w-[40px] pr-6 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5 text-right">
+                            Action
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {rows.map((row) => {
+                          const timePart = row.appointmentAt.includes(" · ") ? row.appointmentAt.split(" · ")[1] : row.appointmentAt;
+                          const datePart = row.appointmentAt.includes(" · ") ? row.appointmentAt.split(" · ")[0] : "";
+                          return (
                             <TableRow
-                              className="cursor-pointer"
+                              className="cursor-pointer transition-colors hover:bg-muted/10"
                               key={row.appointment.id}
                               onClick={() =>
                                 selectAppointment(row.appointment, true)
                               }
                             >
-                              <TableCell className="min-w-[220px] pl-10">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex size-10 items-center justify-center rounded-2xl bg-muted text-foreground">
+                              <TableCell className="w-[22%] min-w-[130px] pl-6">
+                                <div className="flex items-center gap-3.5">
+                                  <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500/10 to-teal-500/5 ring-1 ring-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-sm">
                                     {(row.patientName || "?")
                                       .slice(0, 2)
                                       .toUpperCase()}
                                   </div>
                                   <div className="min-w-0">
-                                    <p className="truncate font-medium text-foreground">
+                                    <p className="truncate font-semibold text-foreground text-sm tracking-tight">
                                       {row.patientName}
                                     </p>
-                                    <p className="truncate text-muted-foreground text-sm">
+                                    <p className="truncate text-muted-foreground text-xs mt-0.5 font-medium">
                                       {getPatientProfile(row.patient)}
                                     </p>
                                   </div>
                                 </div>
                               </TableCell>
 
-                              <TableCell className="min-w-[180px]">
+                              <TableCell className="w-[18%] min-w-[110px]">
                                 <div className="min-w-0">
-                                  <p className="truncate font-medium text-foreground">
+                                  <p className="truncate font-semibold text-foreground text-sm tracking-tight">
                                     {row.ownerName}
                                   </p>
-                                  <p className="truncate text-muted-foreground text-sm">
-                                    {row.owner?.phone ||
-                                      "Téléphone non renseigné"}
+                                  <p className="truncate text-muted-foreground text-xs mt-0.5 font-medium flex items-center gap-1">
+                                    <span className="opacity-60 text-[10px]">📞</span> {row.owner?.phone || "Non renseigné"}
                                   </p>
                                 </div>
                               </TableCell>
 
-                              <TableCell>
-                                <AppointmentTypeBadge
-                                  type={row.appointment.type}
-                                />
+                              <TableCell className="w-[12%] min-w-[80px]">
+                                <div className="flex items-center">
+                                  <AppointmentTypeBadge
+                                    className="font-semibold text-xs tracking-tight rounded-lg px-2.5 py-0.5 border"
+                                    type={row.appointment.type}
+                                  />
+                                </div>
                               </TableCell>
 
-                              <TableCell className="min-w-[200px]">
+                              <TableCell className="w-[20%] min-w-[130px]">
                                 <div className="min-w-0">
-                                  <p className="truncate font-medium text-foreground">
-                                    {row.appointmentAt}
+                                  <p className="truncate font-semibold text-foreground text-sm tracking-tight flex items-center gap-1.5">
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">{timePart}</span>
+                                    {datePart && (
+                                      <>
+                                        <span className="text-muted-foreground/40 text-xs">|</span>
+                                        <span className="text-muted-foreground/80 text-xs font-normal">{datePart}</span>
+                                      </>
+                                    )}
                                   </p>
-                                  <p className="truncate text-muted-foreground text-sm">
-                                    {row.appointment.reason ||
-                                      "Motif non renseigné"}
+                                  <p className="truncate text-muted-foreground/80 text-xs mt-0.5 font-medium italic font-serif">
+                                    {row.appointment.reason || "Motif non renseigné"}
                                   </p>
                                 </div>
                               </TableCell>
 
-                              <TableCell>
-                                <AppointmentStatusBadge
-                                  appointment={row.appointment}
-                                  patient={row.patient}
-                                />
+                              <TableCell className="w-[12%] min-w-[80px]">
+                                <div className="flex items-center">
+                                  <AppointmentStatusBadge
+                                    appointment={row.appointment}
+                                    patient={row.patient}
+                                  />
+                                </div>
                               </TableCell>
 
-                              <TableCell className="min-w-[180px]">
+                              <TableCell className="w-[12%] min-w-[100px]">
                                 <div className="min-w-0">
-                                  <p className="truncate font-medium text-foreground">
+                                  <p className="truncate font-semibold text-foreground text-sm tracking-tight flex items-center gap-1.5">
+                                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
+                                      {row.vetName.split(" ").pop()?.slice(0, 1).toUpperCase() || "V"}
+                                    </span>
                                     {row.vetName}
                                   </p>
-                                  <p className="truncate text-muted-foreground text-sm">
+                                  <p className="truncate text-muted-foreground text-xs mt-0.5 font-medium pl-[26px]">
                                     {row.vet?.specialty || "Pratique générale"}
                                   </p>
                                 </div>
                               </TableCell>
 
                               <TableCell
-                                className="pr-8 text-right"
+                                className="w-[4%] min-w-[40px] pr-6 text-right"
                                 onClick={(event) => event.stopPropagation()}
                               >
                                 <DropdownMenu>
@@ -2489,10 +2477,10 @@ const Agenda: React.FC = () => {
                                 </DropdownMenu>
                               </TableCell>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
                   )}
                 </TabsContent>
               );

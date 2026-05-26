@@ -58,10 +58,10 @@ export function ChartAreaInteractive({
   }, [data, timeRange]);
 
   return (
-    <Card className="@container/card">
+    <Card className="dashboard-chart-card @container/card">
       <CardHeader>
-        <CardTitle>Activité clinique</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl">Activité clinique</CardTitle>
+        <CardDescription className="text-sm">
           <span className="@[540px]/card:block hidden">
             Consultations et interventions sur la période
           </span>
@@ -82,7 +82,7 @@ export function ChartAreaInteractive({
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
-          className="aspect-auto h-[250px] w-full"
+          className="dashboard-chart-canvas aspect-auto h-[280px] w-full"
           config={chartConfig}
         >
           <AreaChart data={filteredData}>
@@ -95,14 +95,14 @@ export function ChartAreaInteractive({
                 y2="1"
               >
                 <stop
-                  offset="5%"
+                  offset="0%"
                   stopColor="var(--color-consultations)"
-                  stopOpacity={1.0}
+                  stopOpacity={0.45}
                 />
                 <stop
-                  offset="95%"
+                  offset="100%"
                   stopColor="var(--color-consultations)"
-                  stopOpacity={0.1}
+                  stopOpacity={0.02}
                 />
               </linearGradient>
               <linearGradient
@@ -113,14 +113,14 @@ export function ChartAreaInteractive({
                 y2="1"
               >
                 <stop
-                  offset="5%"
+                  offset="0%"
                   stopColor="var(--color-interventions)"
-                  stopOpacity={0.8}
+                  stopOpacity={0.4}
                 />
                 <stop
-                  offset="95%"
+                  offset="100%"
                   stopColor="var(--color-interventions)"
-                  stopOpacity={0.1}
+                  stopOpacity={0.01}
                 />
               </linearGradient>
             </defs>
@@ -142,6 +142,7 @@ export function ChartAreaInteractive({
             <ChartTooltip
               content={
                 <ChartTooltipContent
+                  className="shadow-lg border-border/50 dark:border-border/30 bg-background/95 backdrop-blur-md"
                   indicator="dot"
                   labelFormatter={(value) =>
                     new Date(

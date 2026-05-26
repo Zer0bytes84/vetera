@@ -1,12 +1,7 @@
 "use client";
 
-import { SparklesIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Sparkles } from "lucide-react";
 import { useMemo } from "react";
-import type { ClinicalActivityPoint } from "@/components/chart-area-interactive";
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import type { AppointmentTableRow } from "@/components/data-table";
-import { DataTable } from "@/components/data-table";
 import type { SectionCardItem } from "@/components/section-cards";
 import { SectionCards } from "@/components/section-cards";
 import {
@@ -17,9 +12,20 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { buildDashboardMetrics } from "@/lib/metrics";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Import our premium widgets
+import { ClinicalChartsCenter } from "./components/clinical-charts-center";
+import { NextAppointmentsFeed } from "./components/next-appointments-feed";
+import { SpecialtiesDistribution } from "./components/specialties-distribution";
+import { TasksAlertsBoard } from "./components/tasks-alerts-board";
+import { PipelineActivityFunnel } from "./components/pipeline-activity-funnel";
+import { StaffStatusWidget } from "./components/staff-status-widget";
+import { StockAlertsWidget } from "./components/stock-alerts-widget";
 
 interface DashboardOrbitPageProps {
   onOpenAIAgent?: () => void;
+  onNavigate?: (view: any) => void;
 }
 
 function formatCompactInteger(value: number): string {
@@ -47,7 +53,8 @@ function parseDashboardDate(value?: string): Date | null {
   return Number.isFinite(date.getTime()) ? date : null;
 }
 
-export function DashboardOrbitPage({ onOpenAIAgent }: DashboardOrbitPageProps) {
+export function DashboardOrbitPage({ onOpenAIAgent, onNavigate }: DashboardOrbitPageProps) {
+  const { currentUser } = useAuth();
   const { data: appointments } = useAppointmentsRepository();
   const { data: owners } = useOwnersRepository();
   const { data: patients } = usePatientsRepository();
@@ -83,11 +90,11 @@ export function DashboardOrbitPage({ onOpenAIAgent }: DashboardOrbitPageProps) {
     (task) => task.priority === "high" && task.status !== "done"
   ).length;
 
-  // Clinical activity data for ChartAreaInteractive (90 derniers jours)
-  const clinicalActivityData = useMemo<ClinicalActivityPoint[]>(() => {
+  // 1. Clinical activity data for Charts widget (last 90 days)
+  const clinicalActivityData = useMemo(() => {
     const ref = new Date(metrics.referenceDate);
     ref.setHours(23, 59, 59, 999);
-    const days: ClinicalActivityPoint[] = [];
+    const days = [];
     for (let i = 89; i >= 0; i -= 1) {
       const day = new Date(ref);
       day.setDate(day.getDate() - i);
@@ -119,8 +126,8 @@ export function DashboardOrbitPage({ onOpenAIAgent }: DashboardOrbitPageProps) {
     return days;
   }, [appointments, metrics.referenceDate]);
 
-  // Appointment table rows for DataTable
-  const appointmentTableRows = useMemo<AppointmentTableRow[]>(() => {
+  // 2. Formatting today's appointments list for NextAppointmentsFeed
+  const todayAppointmentsList = useMemo(() => {
     const patientsById = new Map(patients.map((p) => [p.id, p]));
     const ownersById = new Map(owners.map((o) => [o.id, o]));
     const today = new Date(metrics.referenceDate);
@@ -128,49 +135,33 @@ export function DashboardOrbitPage({ onOpenAIAgent }: DashboardOrbitPageProps) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    return appointments.map((a, idx) => {
-      const patient = patientsById.get(a.patientId);
-      const owner = ownersById.get(a.ownerId);
-      const date = parseDashboardDate(a.startTime);
-      const isToday = date && date >= today && date < tomorrow;
-      const isPast = date && date < today;
-      const isPending = a.status === "scheduled" || a.status === "in_progress";
-      const isDone = a.status === "completed";
-
-      let tab: AppointmentTableRow["tab"] = "planning";
-      if (isDone) {
-        tab = "termine";
-      } else if (isToday && isPending) {
-        tab = "aujourdhui";
-      } else if (isPast && isPending) {
-        tab = "attention";
-      }
-
-      return {
-        id: idx,
-        patient: patient?.name || a.title,
-        owner: owner ? `${owner.firstName} ${owner.lastName}`.trim() : "—",
-        species: patient?.species || "—",
-        type: a.type,
-        appointmentAt: date
-          ? date.toLocaleDateString("fr-FR", {
-              day: "2-digit",
-              month: "short",
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "—",
-        status: a.status,
-        veterinarian: `Vétérinaire ${a.vetId.slice(0, 4)}`,
-        tab,
-        diagnosis: a.diagnosis,
-        treatment: a.treatment,
-        notes: a.notes,
-      };
-    });
+    return appointments
+      .filter((a) => {
+        const date = parseDashboardDate(a.startTime);
+        return date && date >= today && date < tomorrow;
+      })
+      .map((a, idx) => {
+        const patient = patientsById.get(a.patientId);
+        const owner = ownersById.get(a.ownerId);
+        const date = parseDashboardDate(a.startTime);
+        return {
+          id: a.id || idx,
+          patient: patient?.name || a.title,
+          owner: owner ? `${owner.firstName} ${owner.lastName}`.trim() : "—",
+          species: patient?.species || "—",
+          type: a.type,
+          time: date
+            ? date.toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "—",
+          status: a.status,
+        };
+      });
   }, [appointments, patients, owners, metrics.referenceDate]);
 
-  // SectionCards items for first row
+  // SectionCards items for the first row (retained as requested)
   const sectionCardItems: SectionCardItem[] = [
     {
       title: "Revenus 30j",
@@ -213,18 +204,18 @@ export function DashboardOrbitPage({ onOpenAIAgent }: DashboardOrbitPageProps) {
   ];
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-semibold text-2xl text-foreground tracking-tight">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6 pb-8">
+      {/* Header Panel */}
+      <div className="dashboard-command-panel flex items-end justify-between gap-6">
+        <div className="min-w-0">
+          <h1 className="font-semibold text-4xl text-foreground tracking-tight lg:text-5xl">
             Tableau de bord
           </h1>
-          <p className="mt-1 text-muted-foreground">
-            Suivez l'activité de votre clinique en temps réel
+          <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+            Bonjour {currentUser?.displayName ? `${currentUser.displayName.split(" ")[0]} ` : ""}👋 Ravi de vous retrouver ! Voici l'état de votre clinique aujourd'hui.
           </p>
         </div>
-        <div className="text-right text-muted-foreground text-sm">
+        <div className="dashboard-date-pill shrink-0 text-right text-sm text-muted-foreground">
           {new Date(metrics.referenceDate).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",
@@ -234,27 +225,69 @@ export function DashboardOrbitPage({ onOpenAIAgent }: DashboardOrbitPageProps) {
         </div>
       </div>
 
-      {/* SectionCards — KPI Cards */}
+      {/* Row 1 — Legacy Glowing KPI Cards */}
       <SectionCards items={sectionCardItems} />
 
-      {/* ChartAreaInteractive — stacked area chart */}
-      <ChartAreaInteractive data={clinicalActivityData} />
+      {/* Row 2 — Main Interactive Charts & Waiting Room Feed Grid */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <ClinicalChartsCenter
+            activityData={clinicalActivityData}
+            monthlyRevenue={metrics.monthlyRevenue}
+            monthlyAppointments={metrics.monthlyAppointments}
+          />
+        </div>
+        <div>
+          <NextAppointmentsFeed
+            appointments={todayAppointmentsList}
+            onNavigate={onNavigate}
+          />
+        </div>
+      </div>
 
-      {/* DataTable — shadcnspace multi-tab table */}
-      <DataTable data={appointmentTableRows} />
+      {/* Row 3 — Care Distribution, Interactive Tasks Checklist & Activity Funnel Grid */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <SpecialtiesDistribution
+            categories={metrics.topCategories}
+            appointmentTypes={metrics.topAppointmentTypes}
+          />
+        </div>
+        <div>
+          <TasksAlertsBoard onNavigate={onNavigate} />
+        </div>
+        <div>
+          <PipelineActivityFunnel
+            pipelineRows={metrics.pipelineRows}
+            activityDays={metrics.activityDays}
+          />
+        </div>
+      </div>
 
+      {/* Row 4 — Staff Status Board & Stock Alerts Inventory Grid */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div>
+          <StaffStatusWidget
+            onNavigate={onNavigate}
+            referenceDate={metrics.referenceDate}
+          />
+        </div>
+        <div>
+          <StockAlertsWidget
+            onNavigate={onNavigate}
+          />
+        </div>
+      </div>
+
+      {/* Floating AI Agent Fab button */}
       {onOpenAIAgent && (
         <button
           aria-label="Assistant IA"
-          className="fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center rounded-full bg-[var(--prospeo-active)] text-black shadow-[0_18px_38px_-22px_var(--prospeo-active)] transition-all hover:scale-105 active:scale-95"
+          className="dashboard-ai-fab fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center rounded-full bg-zinc-950 text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-zinc-800 active:scale-95 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100"
           onClick={onOpenAIAgent}
           type="button"
         >
-          <HugeiconsIcon
-            className="size-5"
-            icon={SparklesIcon}
-            strokeWidth={2}
-          />
+          <Sparkles className="size-5" />
         </button>
       )}
     </div>

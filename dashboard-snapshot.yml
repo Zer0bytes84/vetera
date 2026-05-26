@@ -1,0 +1,316 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - list [ref=e8]:
+          - listitem [ref=e9]:
+            - button "b AItari" [ref=e10]:
+              - generic [ref=e12]:
+                - img [ref=e14]
+                - generic [ref=e18]:
+                  - generic [ref=e19]: b
+                  - generic [ref=e20]: AItari
+        - generic [ref=e22]:
+          - list [ref=e25]:
+            - listitem [ref=e26]:
+              - button "Nouveau patient" [ref=e27]:
+                - img [ref=e29]
+                - generic [ref=e31]: Nouveau patient
+              - button "Agenda" [ref=e32]:
+                - img
+                - generic [ref=e33]: Agenda
+            - generic [ref=e34]: Parcours patient
+            - listitem [ref=e35]:
+              - button "Tableau de bord" [ref=e36]:
+                - img [ref=e37]
+                - generic [ref=e42]: Tableau de bord
+            - listitem [ref=e43]:
+              - button "Patients" [ref=e44]:
+                - img [ref=e45]
+                - generic [ref=e51]: Patients
+            - listitem [ref=e52]:
+              - button "Agenda" [ref=e53]:
+                - img [ref=e54]
+                - generic [ref=e58]: Agenda
+            - listitem [ref=e59]:
+              - button "Clinique" [ref=e60]:
+                - img [ref=e61]
+                - generic [ref=e64]: Clinique
+            - listitem [ref=e65]:
+              - button "Notes" [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e72]: Notes
+          - generic [ref=e73]:
+            - generic [ref=e74]: Exploitation
+            - list [ref=e75]:
+              - listitem [ref=e76]:
+                - button "Rappels" [ref=e77]:
+                  - img [ref=e78]
+                  - generic [ref=e82]: Rappels
+                - button "Plus" [ref=e83]:
+                  - img [ref=e84]
+                  - generic [ref=e88]: Plus
+              - listitem [ref=e89]:
+                - button "Produits" [ref=e90]:
+                  - img [ref=e91]
+                  - generic [ref=e96]: Produits
+                - button "Plus" [ref=e97]:
+                  - img [ref=e98]
+                  - generic [ref=e102]: Plus
+              - listitem [ref=e103]:
+                - button "Finances" [ref=e104]:
+                  - img [ref=e105]
+                  - generic [ref=e109]: Finances
+                - button "Plus" [ref=e110]:
+                  - img [ref=e111]
+                  - generic [ref=e115]: Plus
+              - listitem [ref=e116]:
+                - button "Équipe" [ref=e117]:
+                  - img [ref=e118]
+                  - generic [ref=e125]: Équipe
+                - button "Plus" [ref=e126]:
+                  - img [ref=e127]
+                  - generic [ref=e131]: Plus
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e134]: Paramètres
+            - list [ref=e136]:
+              - listitem [ref=e137]:
+                - button "Paramètres" [ref=e138]:
+                  - img [ref=e139]
+                  - generic [ref=e142]: Paramètres
+              - listitem [ref=e143]:
+                - button "Centre d'aide" [ref=e144]:
+                  - img [ref=e145]
+                  - generic [ref=e149]: Centre d'aide
+          - list [ref=e150]:
+            - listitem [ref=e151]:
+              - button "DA Dr Admin admin@clinique.com" [ref=e152]:
+                - generic [ref=e154]: DA
+                - generic [ref=e155]:
+                  - generic [ref=e156]: Dr Admin
+                  - generic [ref=e157]: admin@clinique.com
+                - img [ref=e158]
+      - main [ref=e162]:
+        - generic [ref=e164]:
+          - button "Toggle Sidebar" [ref=e165]:
+            - img
+            - generic [ref=e166]: Toggle Sidebar
+          - separator [ref=e167]
+          - button "Rechercher... ⌘ K" [ref=e168]:
+            - img [ref=e169]
+            - generic [ref=e172]: Rechercher...
+            - generic: ⌘ K
+          - generic [ref=e173]:
+            - button "Assistant IA" [ref=e174]:
+              - img
+            - button "Notifications" [ref=e175]:
+              - img
+            - button "Basculer le thème" [ref=e176]:
+              - img
+            - button "Langue" [ref=e177]:
+              - img
+            - button "Nouveau RDV" [ref=e178]:
+              - img
+              - text: Nouveau RDV
+        - generic [ref=e180]:
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - generic [ref=e183]: Vetera cockpit
+              - heading "Tableau de bord" [level=1] [ref=e184]
+              - paragraph [ref=e185]: Suivez l'activité de votre clinique en temps réel
+            - generic [ref=e186]: vendredi 22 mai 2026
+          - generic [ref=e187]:
+            - generic [ref=e188]:
+              - generic [ref=e189]:
+                - generic [ref=e190]: Revenus 30j
+                - generic [ref=e191]:
+                  - generic [ref=e192]: 15 100
+                  - generic [ref=e193]: DA
+                - generic [ref=e195]:
+                  - img
+                  - text: +100.0%
+              - generic [ref=e196]:
+                - generic [ref=e197]:
+                  - text: En hausse ce mois
+                  - img [ref=e198]
+                - generic [ref=e201]: vs période précédente de 30 jours
+            - generic [ref=e202]:
+              - generic [ref=e203]:
+                - generic [ref=e204]: RDV aujourd'hui
+                - generic [ref=e206]: "1"
+                - generic [ref=e208]:
+                  - img
+                  - text: "-66.7%"
+              - generic [ref=e209]:
+                - generic [ref=e210]:
+                  - text: Moins qu'hier
+                  - img [ref=e211]
+                - generic [ref=e214]: consultations planifiées
+            - generic [ref=e215]:
+              - generic [ref=e216]:
+                - generic [ref=e217]: Patients actifs
+                - generic [ref=e219]: "5"
+                - generic [ref=e221]:
+                  - img
+                  - text: +0.0%
+              - generic [ref=e222]:
+                - generic [ref=e223]:
+                  - text: Fidélisation stable
+                  - img [ref=e224]
+                - generic [ref=e227]: patients actifs sur 90 jours
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - generic [ref=e230]: Tâches ouvertes
+                - generic [ref=e232]: "3"
+                - generic [ref=e234]:
+                  - img
+                  - text: 2 urgentes
+              - generic [ref=e235]:
+                - generic [ref=e236]:
+                  - text: Attention requise
+                  - img [ref=e237]
+                - generic [ref=e240]: tâches nécessitant une action immédiate
+          - generic [ref=e241]:
+            - generic [ref=e243]:
+              - generic [ref=e244]:
+                - generic [ref=e245]: Activité clinique
+                - generic [ref=e247]: Consultations et interventions sur la période
+              - application [ref=e252]:
+                - generic [ref=e270]:
+                  - generic [ref=e469]: 4 mars
+                  - generic [ref=e471]: 14 mars
+                  - generic [ref=e473]: 25 mars
+                  - generic [ref=e475]: 4 avr.
+                  - generic [ref=e477]: 13 avr.
+                  - generic [ref=e479]: 23 avr.
+                  - generic [ref=e481]: 2 mai
+                  - generic [ref=e483]: 11 mai
+                  - generic [ref=e485]: 22 mai
+            - generic [ref=e289]:
+              - generic [ref=e290]:
+                - generic [ref=e292]:
+                  - generic [ref=e293]:
+                    - generic [ref=e294]: Actions rapides
+                    - generic [ref=e295]: Tâches courantes
+                  - generic [ref=e296]:
+                    - img
+                    - text: "6"
+                - generic [ref=e298]:
+                  - button "Nouveau RDV" [ref=e299]:
+                    - img [ref=e301]
+                    - generic [ref=e304]: Nouveau RDV
+                  - button "Nouveau patient" [ref=e305]:
+                    - img [ref=e307]
+                    - generic [ref=e313]: Nouveau patient
+                  - button "Consultation" [ref=e314]:
+                    - img [ref=e316]
+                    - generic [ref=e321]: Consultation
+                  - button "Vaccination" [ref=e322]:
+                    - img [ref=e324]
+                    - generic [ref=e332]: Vaccination
+                  - button "Message" [ref=e333]:
+                    - img [ref=e335]
+                    - generic [ref=e338]: Message
+                  - button "Ordonnance" [ref=e339]:
+                    - img [ref=e341]
+                    - generic [ref=e345]: Ordonnance
+              - generic [ref=e346]:
+                - generic [ref=e347]:
+                  - generic [ref=e348]: Utilisation
+                  - generic [ref=e349]: Ressources et capacité
+                - generic [ref=e350]:
+                  - generic [ref=e352]:
+                    - img [ref=e354]
+                    - generic [ref=e359]: Patients actifs
+                    - generic [ref=e360]: 847 / 1 000
+                  - generic [ref=e364]:
+                    - img [ref=e366]
+                    - generic [ref=e370]: Stockage DPI
+                    - generic [ref=e371]: 3.2 GB / 10 GB
+                  - generic [ref=e375]:
+                    - img [ref=e377]
+                    - generic [ref=e379]: API mensuelle
+                    - generic [ref=e380]: 12 450 / 50 000
+                  - generic [ref=e384]:
+                    - img [ref=e386]
+                    - generic [ref=e388]: Espace fichiers
+                    - generic [ref=e389]: 1.8 GB / 5 GB
+                  - generic [ref=e393]:
+                    - img [ref=e395]
+                    - generic [ref=e398]: Sessions actives
+                    - generic [ref=e399]: 3 / 10
+          - generic [ref=e402]:
+            - generic [ref=e403]:
+              - tablist [ref=e404]:
+                - tab "Planification 0" [selected] [ref=e405] [cursor=pointer]:
+                  - text: Planification
+                  - generic [ref=e406]: "0"
+                - tab "Aujourd'hui 1" [ref=e407] [cursor=pointer]:
+                  - text: Aujourd'hui
+                  - generic [ref=e408]: "1"
+                - tab "Attention 2" [ref=e409] [cursor=pointer]:
+                  - text: Attention
+                  - generic [ref=e410]: "2"
+                - tab "Terminé 2" [ref=e411] [cursor=pointer]:
+                  - text: Terminé
+                  - generic [ref=e412]: "2"
+              - generic [ref=e413]:
+                - button "Colonnes" [ref=e414] [cursor=pointer]:
+                  - img [ref=e415]
+                  - generic [ref=e417]: Colonnes
+                  - img [ref=e418]
+                - button "Nouveau RDV" [ref=e420] [cursor=pointer]:
+                  - img
+                  - generic [ref=e421]: Nouveau RDV
+            - tabpanel "Planification 0" [ref=e422]:
+              - generic [ref=e423]:
+                - table [ref=e425]:
+                  - rowgroup [ref=e426]:
+                    - row "Tout sélectionner Patient Type Statut Horaire Vétérinaire" [ref=e427]:
+                      - columnheader [ref=e428]
+                      - columnheader "Tout sélectionner" [ref=e429]:
+                        - generic [ref=e430]:
+                          - checkbox "Tout sélectionner" [ref=e431]
+                          - checkbox [ref=e432]
+                      - columnheader "Patient" [ref=e433]
+                      - columnheader "Type" [ref=e434]
+                      - columnheader "Statut" [ref=e435]
+                      - columnheader "Horaire" [ref=e436]:
+                        - generic [ref=e437]: Horaire
+                      - columnheader "Vétérinaire" [ref=e438]
+                      - columnheader [ref=e439]
+                  - rowgroup [ref=e440]:
+                    - row "Aucun résultat." [ref=e441]:
+                      - cell "Aucun résultat." [ref=e442]
+                - status [ref=e443]
+              - generic [ref=e444]:
+                - generic [ref=e445]: 0 sur 0 ligne(s) sélectionnée(s).
+                - generic [ref=e446]:
+                  - generic [ref=e447]:
+                    - generic [ref=e448]: Lignes/page
+                    - combobox "Lignes/page" [ref=e449] [cursor=pointer]:
+                      - generic [ref=e450]: "10"
+                      - img: ▼
+                    - textbox [ref=e451]: "10"
+                  - generic [ref=e452]: Page 1 sur 0
+                  - generic [ref=e453]:
+                    - button "Première page" [disabled]:
+                      - generic: Première page
+                      - img
+                    - button "Page précédente" [disabled]:
+                      - generic: Page précédente
+                      - img
+                    - button "Page suivante" [disabled]:
+                      - generic: Page suivante
+                      - img
+                    - button "Dernière page" [disabled]:
+                      - generic: Dernière page
+                      - img
+          - button "Assistant IA" [ref=e454]:
+            - img [ref=e455]
+      - generic [ref=e458]:
+        - heading "Command Palette" [level=2] [ref=e459]
+        - paragraph [ref=e460]: Search for a command to run...
+    - region "Notifications alt+T"
+  - generic [ref=e461]: 4 mars

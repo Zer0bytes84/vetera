@@ -9,13 +9,16 @@ import {
   Sun03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
 import { AIAgentChat } from "@/components/AIAgentChat";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
+import { HeroPattern } from "@/components/HeroPattern";
 import { useTheme } from "@/components/theme-provider";
 import { useCircularTransition } from "@/hooks/use-circular-transition";
 import { Button } from "@/components/ui/button";
@@ -26,7 +29,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Kbd } from "@/components/ui/kbd";
-import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
@@ -87,6 +89,12 @@ function AppShellInner() {
   });
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [aiAgentOpen, setAiAgentOpen] = useState(false);
+  const sidebarScrollRef = useRef<HTMLElement>(null);
+
+  // Protocol-style glass header — opacity driven by scroll position (continuous, not toggled)
+  const { scrollY } = useScroll({ container: sidebarScrollRef });
+  const bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9]);
+  const bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
 
   const { currentUser, logout } = useAuth();
   const { theme } = useTheme();
@@ -208,18 +216,18 @@ function AppShellInner() {
 
   return (
     <SidebarProvider
-      className={cn("relative isolate", isDesktopRuntime && "pt-5", isRtl && "rtl-shell")}
+      className={cn("relative isolate", isDesktopRuntime && "pt-3", isRtl && "rtl-shell")}
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
+          "--header-height": "calc(var(--spacing) * 13)",
         } as React.CSSProperties
       }
     >
       {isDesktopRuntime && (
         <div
-          className="fixed inset-x-0 top-0 z-[60] flex h-5 items-center bg-sidebar"
+          className="fixed inset-x-0 top-0 z-[60] flex h-3 items-center bg-sidebar"
           data-tauri-drag-region
         />
       )}
@@ -237,23 +245,50 @@ function AppShellInner() {
         variant={variant}
       />
 
-      <SidebarInset>
+      <SidebarInset
+        ref={sidebarScrollRef}
+        className={cn(
+          "overflow-y-auto !bg-transparent",
+          isDesktopRuntime
+            ? "max-h-[calc(100dvh-20px)]"
+            : "max-h-dvh"
+        )}
+      >
+        <HeroPattern />
+
         {/* biome-ignore lint/a11y/noStaticElementInteractions: header needs onMouseDown for Tauri window drag */}
         <header
-          className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
+          className="app-shell-header sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 backdrop-blur-sm bg-background/[var(--bg-opacity-light)] dark:bg-background/[var(--bg-opacity-dark)] transition-all duration-300 group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
+          style={
+            {
+              "--bg-opacity-light": bgOpacityLight,
+              "--bg-opacity-dark": bgOpacityDark,
+            } as React.CSSProperties
+          }
           onMouseDown={handleMouseDown}
           ref={headerRef}
         >
-          <div className="flex w-full items-center gap-2 px-4 lg:px-6">
+          {/* Liquid glass refraction overlay */}
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.02] to-transparent dark:from-white/[0.03]"
+            aria-hidden="true"
+          />
+          {/* Bottom separator — Protocol-style hairline */}
+          <div
+            className="pointer-events-none absolute inset-x-0 top-full h-px bg-zinc-900/15 dark:bg-white/20"
+            aria-hidden="true"
+          />
+          <div className="relative flex w-full items-center gap-2 px-4 lg:px-6">
             <SidebarTrigger className="-ml-1" />
-            <Separator
-              className="mx-2 data-vertical:h-4 data-vertical:self-auto"
-              orientation="vertical"
+            {/* Header separator — Protocol exact pattern */}
+            <div
+              aria-hidden="true"
+              className="mx-2 hidden h-5 w-px bg-zinc-900/15 dark:bg-white/30 md:block"
             />
 
             {/* Search trigger */}
             <button
-              className="flex w-[280px] items-center gap-2 rounded-lg border border-neutral-200/50 bg-white px-3 py-1.5 text-left text-sm text-zinc-500 transition-all hover:border-neutral-300/60 dark:border-neutral-700/50 dark:bg-neutral-800 dark:text-zinc-400 dark:hover:border-neutral-600/60"
+              className="app-shell-search flex h-9 w-[280px] items-center gap-2 rounded-xl border px-3 text-left text-sm text-muted-foreground transition-all hover:text-foreground"
               onClick={() => setPaletteOpen(true)}
               type="button"
             >
@@ -311,7 +346,7 @@ function AppShellInner() {
               >
                 <HugeiconsIcon
                   className="size-5"
-                  icon={isDarkMode ? Sun03Icon : Moon02Icon}
+                  icon={isDarkMode ? Moon02Icon : Sun03Icon}
                   strokeWidth={2}
                 />
               </Button>
@@ -369,10 +404,18 @@ function AppShellInner() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
+              {/* Header separator — right side */}
+              {currentView === "dashboard" && (
+                <div
+                  aria-hidden="true"
+                  className="mx-2 hidden h-5 w-px bg-zinc-900/15 dark:bg-white/30 lg:block"
+                />
+              )}
+
               {/* Quick CTA on dashboard */}
               {currentView === "dashboard" && (
                 <Button
-                  className="ml-2 hidden lg:inline-flex"
+                  className="ml-2 hidden lg:inline-flex h-9 items-center gap-2 rounded-xl px-4 font-medium shadow-sm transition-all duration-200"
                   onClick={() => {
                     handleNavigate("agenda");
                     setTimeout(
@@ -383,7 +426,6 @@ function AppShellInner() {
                       100
                     );
                   }}
-                  size="sm"
                   variant="default"
                 >
                   <HugeiconsIcon
@@ -392,7 +434,7 @@ function AppShellInner() {
                     strokeWidth={2}
                   />
                   {t("dashboard.quick.newAppointment", {
-                    defaultValue: "Nouveau RDV",
+                    defaultValue: "Nouveau rendez-vous",
                   })}
                 </Button>
               )}
@@ -401,7 +443,7 @@ function AppShellInner() {
         </header>
 
         {/* View content */}
-        <div className="flex flex-1 flex-col gap-4 py-4">{content}</div>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 py-4">{content}</div>
       </SidebarInset>
 
       {/* Command Palette */}

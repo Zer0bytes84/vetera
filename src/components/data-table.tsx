@@ -470,7 +470,7 @@ function TableContent({
 }) {
   return (
     <>
-      <div className="overflow-hidden rounded-lg border">
+      <div className="dashboard-table-frame overflow-hidden rounded-[22px] border">
         <DndContext
           collisionDetection={closestCenter}
           modifiers={[restrictToVerticalAxis]}
@@ -710,14 +710,14 @@ export function DataTable({ data }: { data: AppointmentTableRow[] }) {
 
   return (
     <Tabs
-      className="w-full flex-col justify-start gap-6"
+      className="dashboard-table-card w-full flex-col justify-start gap-6"
       onValueChange={(value) => {
         setActiveTab(value as AppointmentTableRow["tab"]);
         setPagination((prev) => ({ ...prev, pageIndex: 0 }));
       }}
       value={activeTab}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 lg:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-5 lg:px-6">
         <TabsList className="hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:px-1 sm:flex">
           {TABS.map((tab) => (
             <TabsTrigger
@@ -772,7 +772,7 @@ export function DataTable({ data }: { data: AppointmentTableRow[] }) {
       </div>
       {TABS.map((tab) => (
         <TabsContent
-          className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+          className="relative flex flex-col gap-4 overflow-auto px-5 pb-5 lg:px-6"
           key={tab.value}
           value={tab.value}
         >

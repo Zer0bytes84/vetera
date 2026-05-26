@@ -1,0 +1,288 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - list [ref=e8]:
+          - listitem [ref=e9]:
+            - button "b AItari" [ref=e10]:
+              - generic [ref=e12]:
+                - img [ref=e14]
+                - generic [ref=e18]:
+                  - generic [ref=e19]: b
+                  - generic [ref=e20]: AItari
+        - generic [ref=e22]:
+          - list [ref=e25]:
+            - listitem [ref=e26]:
+              - button "Nouveau patient" [ref=e27]:
+                - img [ref=e29]
+                - generic [ref=e31]: Nouveau patient
+              - button "Agenda" [ref=e32]:
+                - img
+                - generic [ref=e33]: Agenda
+            - generic [ref=e34]: Parcours patient
+            - listitem [ref=e35]:
+              - button "Tableau de bord" [ref=e36]:
+                - img [ref=e37]
+                - generic [ref=e42]: Tableau de bord
+            - listitem [ref=e43]:
+              - button "Patients" [ref=e44]:
+                - img [ref=e45]
+                - generic [ref=e51]: Patients
+            - listitem [ref=e52]:
+              - button "Agenda" [ref=e53]:
+                - img [ref=e54]
+                - generic [ref=e58]: Agenda
+            - listitem [ref=e59]:
+              - button "Clinique" [ref=e60]:
+                - img [ref=e61]
+                - generic [ref=e64]: Clinique
+            - listitem [ref=e65]:
+              - button "Notes" [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e72]: Notes
+          - generic [ref=e73]:
+            - generic [ref=e74]: Exploitation
+            - list [ref=e75]:
+              - listitem [ref=e76]:
+                - button "Rappels" [ref=e77]:
+                  - img [ref=e78]
+                  - generic [ref=e82]: Rappels
+                - button "Plus" [ref=e83]:
+                  - img [ref=e84]
+                  - generic [ref=e88]: Plus
+              - listitem [ref=e89]:
+                - button "Produits" [ref=e90]:
+                  - img [ref=e91]
+                  - generic [ref=e96]: Produits
+                - button "Plus" [ref=e97]:
+                  - img [ref=e98]
+                  - generic [ref=e102]: Plus
+              - listitem [ref=e103]:
+                - button "Finances" [ref=e104]:
+                  - img [ref=e105]
+                  - generic [ref=e109]: Finances
+                - button "Plus" [ref=e110]:
+                  - img [ref=e111]
+                  - generic [ref=e115]: Plus
+              - listitem [ref=e116]:
+                - button "Équipe" [ref=e117]:
+                  - img [ref=e118]
+                  - generic [ref=e125]: Équipe
+                - button "Plus" [ref=e126]:
+                  - img [ref=e127]
+                  - generic [ref=e131]: Plus
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e134]: Paramètres
+            - list [ref=e136]:
+              - listitem [ref=e137]:
+                - button "Paramètres" [ref=e138]:
+                  - img [ref=e139]
+                  - generic [ref=e142]: Paramètres
+              - listitem [ref=e143]:
+                - button "Centre d'aide" [ref=e144]:
+                  - img [ref=e145]
+                  - generic [ref=e149]: Centre d'aide
+          - list [ref=e150]:
+            - listitem [ref=e151]:
+              - button "DA Dr Admin admin@clinique.com" [ref=e152]:
+                - generic [ref=e154]: DA
+                - generic [ref=e155]:
+                  - generic [ref=e156]: Dr Admin
+                  - generic [ref=e157]: admin@clinique.com
+                - img [ref=e158]
+      - main [ref=e162]:
+        - generic [ref=e164]:
+          - button "Toggle Sidebar" [ref=e165]:
+            - img
+            - generic [ref=e166]: Toggle Sidebar
+          - separator [ref=e167]
+          - button "Rechercher... ⌘ K" [ref=e168]:
+            - img [ref=e169]
+            - generic [ref=e172]: Rechercher...
+            - generic: ⌘ K
+          - generic [ref=e173]:
+            - button "Assistant IA" [ref=e174]:
+              - img
+            - button "Notifications" [ref=e175]:
+              - img
+            - button "Basculer le thème" [ref=e176]:
+              - img
+            - button "Langue" [ref=e177]:
+              - img
+            - button "Nouveau RDV" [ref=e178]:
+              - img
+              - text: Nouveau RDV
+        - generic [ref=e180]:
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - heading "Tableau de bord" [level=1] [ref=e183]
+              - paragraph [ref=e184]: Suivez l'activité de votre clinique en temps réel
+            - generic [ref=e185]: vendredi 22 mai 2026
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - generic [ref=e188]:
+                - generic [ref=e189]: Revenus 30j
+                - generic [ref=e190]: 15 100 DA
+                - generic [ref=e192]:
+                  - img
+                  - text: +100.0%
+              - generic [ref=e193]:
+                - generic [ref=e194]:
+                  - text: En hausse ce mois
+                  - img [ref=e195]
+                - generic [ref=e198]: vs période précédente de 30 jours
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - generic [ref=e201]: RDV aujourd'hui
+                - generic [ref=e202]: "1"
+                - generic [ref=e204]:
+                  - img
+                  - text: "-66.7%"
+              - generic [ref=e205]:
+                - generic [ref=e206]:
+                  - text: Moins qu'hier
+                  - img [ref=e207]
+                - generic [ref=e210]: consultations planifiées
+            - generic [ref=e211]:
+              - generic [ref=e212]:
+                - generic [ref=e213]: Patients actifs
+                - generic [ref=e214]: "5"
+                - generic [ref=e216]:
+                  - img
+                  - text: +0.0%
+              - generic [ref=e217]:
+                - generic [ref=e218]:
+                  - text: Fidélisation stable
+                  - img [ref=e219]
+                - generic [ref=e222]: patients actifs sur 90 jours
+            - generic [ref=e223]:
+              - generic [ref=e224]:
+                - generic [ref=e225]: Tâches ouvertes
+                - generic [ref=e226]: "3"
+                - generic [ref=e228]:
+                  - img
+                  - text: 2 urgentes
+              - generic [ref=e229]:
+                - generic [ref=e230]:
+                  - text: Attention requise
+                  - img [ref=e231]
+                - generic [ref=e234]: tâches nécessitant une action immédiate
+          - generic [ref=e235]:
+            - generic [ref=e236]:
+              - generic [ref=e237]: Activité clinique
+              - generic [ref=e239]: Consultations et interventions — comparaison N-1
+              - group [ref=e241]:
+                - button "90 jours" [pressed] [ref=e242]
+                - button "30 jours" [ref=e243]
+                - button "7 jours" [ref=e244]
+            - generic [ref=e248]:
+              - generic [ref=e250]:
+                - generic [ref=e251]: Consultations
+                - generic [ref=e253]: Consultations (N-1)
+                - generic [ref=e255]: Interventions
+                - generic [ref=e257]: Interventions (N-1)
+              - application [ref=e259]:
+                - generic [ref=e277]:
+                  - generic [ref=e384]: 1 mars
+                  - generic [ref=e386]: 7 mars
+                  - generic [ref=e388]: 14 mars
+                  - generic [ref=e390]: 21 mars
+                  - generic [ref=e392]: 28 mars
+                  - generic [ref=e394]: 3 avr.
+                  - generic [ref=e396]: 9 avr.
+                  - generic [ref=e398]: 15 avr.
+                  - generic [ref=e400]: 21 avr.
+                  - generic [ref=e402]: 27 avr.
+                  - generic [ref=e404]: 3 mai
+                  - generic [ref=e406]: 9 mai
+                  - generic [ref=e408]: 15 mai
+                  - generic [ref=e410]: 22 mai
+          - generic [ref=e306]:
+            - generic [ref=e307]:
+              - tablist [ref=e308]:
+                - tab "Planification 0" [selected] [ref=e309] [cursor=pointer]:
+                  - text: Planification
+                  - generic [ref=e310]: "0"
+                - tab "Aujourd'hui 1" [ref=e311] [cursor=pointer]:
+                  - text: Aujourd'hui
+                  - generic [ref=e312]: "1"
+                - tab "Attention 2" [ref=e313] [cursor=pointer]:
+                  - text: Attention
+                  - generic [ref=e314]: "2"
+                - tab "Terminé 2" [ref=e315] [cursor=pointer]:
+                  - text: Terminé
+                  - generic [ref=e316]: "2"
+              - generic [ref=e317]:
+                - button "Colonnes" [ref=e318] [cursor=pointer]:
+                  - img [ref=e319]
+                  - generic [ref=e321]: Colonnes
+                  - img [ref=e322]
+                - button "Nouveau RDV" [ref=e324] [cursor=pointer]:
+                  - img
+                  - generic [ref=e325]: Nouveau RDV
+            - tabpanel "Planification 0" [ref=e326]:
+              - generic [ref=e327]:
+                - table [ref=e329]:
+                  - rowgroup [ref=e330]:
+                    - row "Tout sélectionner Patient Type Statut Horaire Vétérinaire" [ref=e331]:
+                      - columnheader [ref=e332]
+                      - columnheader "Tout sélectionner" [ref=e333]:
+                        - generic [ref=e334]:
+                          - checkbox "Tout sélectionner" [ref=e335]
+                          - checkbox [ref=e336]
+                      - columnheader "Patient" [ref=e337]
+                      - columnheader "Type" [ref=e338]
+                      - columnheader "Statut" [ref=e339]
+                      - columnheader "Horaire" [ref=e340]:
+                        - generic [ref=e341]: Horaire
+                      - columnheader "Vétérinaire" [ref=e342]
+                      - columnheader [ref=e343]
+                  - rowgroup [ref=e344]:
+                    - row "Aucun résultat." [ref=e345]:
+                      - cell "Aucun résultat." [ref=e346]
+                - status [ref=e347]
+              - generic [ref=e348]:
+                - generic [ref=e349]: 0 sur 0 ligne(s) sélectionnée(s).
+                - generic [ref=e350]:
+                  - generic [ref=e351]:
+                    - generic [ref=e352]: Lignes/page
+                    - combobox "Lignes/page" [ref=e353] [cursor=pointer]:
+                      - generic [ref=e354]: "10"
+                      - img
+                    - textbox [ref=e355]: "10"
+                  - generic [ref=e356]: Page 1 sur 0
+                  - generic [ref=e357]:
+                    - button "Première page" [disabled]:
+                      - generic: Première page
+                      - img
+                    - button "Page précédente" [disabled]:
+                      - generic: Page précédente
+                      - img
+                    - button "Page suivante" [disabled]:
+                      - generic: Page suivante
+                      - img
+                    - button "Dernière page" [disabled]:
+                      - generic: Dernière page
+                      - img
+          - button "Assistant IA" [ref=e358]:
+            - img [ref=e359]
+      - generic [ref=e362]:
+        - heading "Command Palette" [level=2] [ref=e363]
+        - paragraph [ref=e364]: Search for a command to run...
+    - region "Notifications alt+T"
+  - generic [ref=e367]:
+    - generic [ref=e368]: "[plugin:vite:react-babel] /Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/src/modules/shell/app-shell.tsx: Expected corresponding JSX closing tag for <header>. (395:10) 398 | {/* View content */}"
+    - generic [ref=e369]: /Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/src/modules/shell/app-shell.tsx:395:10
+    - generic [ref=e370]: "393 | )} 394 | </div> 395 | </div> | ^ 396 | </header> 397 |"
+    - generic [ref=e371]: at constructor (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:365:19) at TypeScriptParserMixin.raise (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:6599:19) at TypeScriptParserMixin.jsxParseElementAt (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:4727:16) at TypeScriptParserMixin.jsxParseElementAt (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:4698:32) at TypeScriptParserMixin.jsxParseElementAt (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:4698:32) at TypeScriptParserMixin.jsxParseElement (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:4749:17) at TypeScriptParserMixin.parseExprAtom (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:4759:19) at TypeScriptParserMixin.parseExprSubscripts (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11081:23) at TypeScriptParserMixin.parseUpdate (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11066:21) at TypeScriptParserMixin.parseMaybeUnary (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11046:23) at TypeScriptParserMixin.parseMaybeUnary (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:9837:18) at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10899:61) at TypeScriptParserMixin.parseExprOps (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10904:23) at TypeScriptParserMixin.parseMaybeConditional (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10881:23) at TypeScriptParserMixin.parseMaybeAssign (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10831:21) at /Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:9775:39 at TypeScriptParserMixin.tryParse (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:6907:20) at TypeScriptParserMixin.parseMaybeAssign (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:9775:18) at /Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10800:39 at TypeScriptParserMixin.allowInAnd (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12426:12) at TypeScriptParserMixin.parseMaybeAssignAllowIn (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10800:17) at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12493:17) at TypeScriptParserMixin.parseParenAndDistinguishExpression (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11675:28) at TypeScriptParserMixin.parseExprAtom (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11331:23) at TypeScriptParserMixin.parseExprAtom (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:4764:20) at TypeScriptParserMixin.parseExprSubscripts (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11081:23) at TypeScriptParserMixin.parseUpdate (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11066:21) at TypeScriptParserMixin.parseMaybeUnary (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:11046:23) at TypeScriptParserMixin.parseMaybeUnary (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:9837:18) at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10899:61) at TypeScriptParserMixin.parseExprOps (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10904:23) at TypeScriptParserMixin.parseMaybeConditional (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10881:23) at TypeScriptParserMixin.parseMaybeAssign (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10831:21) at TypeScriptParserMixin.parseMaybeAssign (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:9786:20) at TypeScriptParserMixin.parseExpressionBase (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10784:23) at /Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10780:39 at TypeScriptParserMixin.allowInAnd (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12421:16) at TypeScriptParserMixin.parseExpression (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:10780:17) at TypeScriptParserMixin.parseReturnStatement (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:13142:28) at TypeScriptParserMixin.parseStatementContent (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12798:21) at TypeScriptParserMixin.parseStatementContent (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:9508:18) at TypeScriptParserMixin.parseStatementLike (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12767:17) at TypeScriptParserMixin.parseStatementListItem (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12747:17) at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:13316:61) at TypeScriptParserMixin.parseBlockBody (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:13309:10) at TypeScriptParserMixin.parseBlock (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:13297:10) at TypeScriptParserMixin.parseFunctionBody (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12100:24) at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:12086:10) at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:9172:18) at /Users/zohir/Documents/Projects 2026/BAITARI 2.1/bAItari/node_modules/@babel/parser/lib/index.js:13445:12
+    - generic [ref=e372]:
+      - text: Click outside, press Esc key, or fix the code to dismiss.
+      - text: You can also disable this overlay by setting
+      - code [ref=e373]: server.hmr.overlay
+      - text: to
+      - code [ref=e374]: "false"
+      - text: in
+      - code [ref=e375]: vite.config.ts
+      - text: .
+  - generic [ref=e376]: 24 févr.

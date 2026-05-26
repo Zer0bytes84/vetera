@@ -16,6 +16,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { FileText, Star, Pin, BookOpen, PenLine, Sparkles, Hash } from "lucide-react";
 import Editor from "@/components/Editor";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNotesRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Note } from "@/types/db";
+import { SectionCards, type SectionCardItem } from "@/components/section-cards";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
 
 // Utils
 const normalizeDate = (dateInput: any): Date =>
@@ -167,8 +172,66 @@ const NotesPro: React.FC = () => {
     const recent = userNotes.filter(
       (n) => new Date(n.updatedAt) > oneWeekAgo
     ).length;
-    return { total, favorites, pinned, recent };
+
+    const totalWords = userNotes.reduce((acc, n) => {
+      if (!n.content) return acc;
+      const text = n.content.replace(/<[^>]*>?/gm, "").trim();
+      if (!text) return acc;
+      const count = text.split(/\s+/).filter(Boolean).length;
+      return acc + count;
+    }, 0);
+
+    const sortedByDate = [...userNotes].sort(
+      (a, b) => normalizeDate(b.updatedAt).getTime() - normalizeDate(a.updatedAt).getTime()
+    );
+    const lastModifiedText = sortedByDate[0]
+      ? `Dernière modif. : ${formatDate(sortedByDate[0].updatedAt).toLowerCase()}`
+      : "Aucune note modifiée";
+
+    return { total, favorites, pinned, recent, totalWords, lastModifiedText };
   }, [notes, currentUser]);
+
+  const sectionCardItems = useMemo<SectionCardItem[]>(
+    () => [
+      {
+        title: "Total Notes",
+        value: String(stats.total),
+        badge: stats.total === 0 ? "Vide" : stats.total === 1 ? "1 doc" : `${stats.total} docs`,
+        trend: "neutral",
+        footerTitle: "Base de connaissances",
+        footerDescription: stats.lastModifiedText,
+        icon: FileText,
+      },
+      {
+        title: "Favoris",
+        value: String(stats.favorites),
+        badge: "Accès rapide",
+        trend: "neutral",
+        footerTitle: "Raccourcis étoilés",
+        footerDescription: "Notes marquées d'une étoile",
+        icon: Star,
+      },
+      {
+        title: "Épinglées",
+        value: String(stats.pinned),
+        badge: "Prioritaire",
+        trend: "neutral",
+        footerTitle: "Accès immédiat",
+        footerDescription: "Notes fixées en haut",
+        icon: Pin,
+      },
+      {
+        title: "Volume Rédigé",
+        value: stats.totalWords.toLocaleString("fr-FR"),
+        badge: "Mots",
+        trend: "neutral",
+        footerTitle: "Productivité",
+        footerDescription: "Nombre total de mots rédigés",
+        icon: BookOpen,
+      },
+    ],
+    [stats]
+  );
 
   // Select note
   const handleSelectNote = (noteId: string) => {
@@ -310,181 +373,209 @@ const NotesPro: React.FC = () => {
   const getInitial = (title: string) => (title || "N").charAt(0).toUpperCase();
 
   return (
-    <div className="flex h-full w-full min-w-0">
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "flex flex-col border-border/60 border-r transition-all duration-300",
-          showSidebar ? "w-[340px]" : "w-0 overflow-hidden"
-        )}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          <div>
-            <h2 className="font-semibold text-base tracking-tight">Notes</h2>
-            <p className="text-[11px] text-muted-foreground">
-              {stats.total} note{stats.total === 1 ? "" : "s"}
-            </p>
-          </div>
-          <Button
-            className="size-8 rounded-lg shadow-sm"
-            onClick={handleCreateNote}
-            size="icon"
-          >
-            <HugeiconsIcon className="size-4" icon={Add01Icon} />
-          </Button>
+    <div className="flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 h-full pb-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">Notes</h1>
+          <p className="text-[12px] text-muted-foreground mt-0.5">
+            {stats.total} note{stats.total !== 1 ? "s" : ""} · {stats.totalWords.toLocaleString("fr-FR")} mots
+          </p>
         </div>
+        <Button
+          className="h-9 rounded-xl px-4 gap-2 shadow-sm"
+          onClick={handleCreateNote}
+        >
+          <HugeiconsIcon
+            className="size-4"
+            icon={Add01Icon}
+            strokeWidth={1.5}
+          />
+          Nouvelle note
+        </Button>
+      </div>
 
-        {/* Search */}
-        <div className="px-3 pb-2">
-          <div className="relative">
-            <HugeiconsIcon
-              className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground/50"
-              icon={SearchIcon}
-            />
-            <Input
-              className="h-8 rounded-lg border-border/40 bg-muted/50 pl-8 text-xs placeholder:text-muted-foreground/40 focus:border-primary/30 focus:bg-background dark:bg-muted/30 dark:focus:bg-muted/50"
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher une note..."
-              value={searchTerm}
-            />
-          </div>
-        </div>
+      {/* Widget Cards Row */}
+      <SectionCards items={sectionCardItems} />
 
-        {/* Filter pills */}
-        <div className="flex gap-1 px-3 pb-3">
-          {(
-            [
-              { id: "all", label: "Toutes", count: stats.total },
-              { id: "favorites", label: "★ Favoris", count: stats.favorites },
-              { id: "pinned", label: "📌 Épinglées", count: stats.pinned },
-              { id: "recent", label: "Récentes", count: stats.recent },
-            ] as const
-          ).map((f) => (
-            <button
-              className={cn(
-                "rounded-md px-2.5 py-1 font-medium text-[11px] transition-all",
-                filter === f.id
-                  ? "bg-foreground text-background shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted/60"
-              )}
-              key={f.id}
-              onClick={() => setFilter(f.id)}
-            >
-              {f.label}
-              {f.count > 0 && filter === f.id && (
-                <span className="ml-1 opacity-70">{f.count}</span>
-              )}
-            </button>
-          ))}
-        </div>
+      {/* Main workspace */}
+      <div className="flex flex-1 min-h-[520px] gap-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
 
-        <Separator className="opacity-50" />
-
-        {/* Notes List */}
-        <ScrollArea className="flex-1 px-2 pt-2">
-          {filteredNotes.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-muted/50 dark:bg-muted/30">
-                <HugeiconsIcon
-                  className="size-6 text-muted-foreground/30"
-                  icon={File01Icon}
-                />
+        {/* ── LEFT SIDEBAR ── */}
+        <aside
+          className={cn(
+            "flex flex-col shrink-0 border-r border-border/50 transition-all duration-300 ease-in-out bg-zinc-50/80 dark:bg-zinc-900/60",
+            showSidebar ? "w-[300px]" : "w-0 overflow-hidden"
+          )}
+        >
+          {/* Sidebar header */}
+          <div className="flex items-center justify-between px-4 pt-4 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/15">
+                <PenLine className="size-3.5 text-primary" />
               </div>
-              <p className="mt-3 font-medium text-muted-foreground/70 text-sm">
-                {searchTerm ? "Aucun résultat" : "Aucune note"}
-              </p>
-              <p className="mt-1 text-muted-foreground/50 text-xs">
-                {searchTerm
-                  ? "Essayez un autre terme"
-                  : "Créez votre première note"}
-              </p>
-              {!searchTerm && (
-                <Button
-                  className="mt-4 h-7 rounded-md text-xs"
-                  onClick={handleCreateNote}
-                  size="sm"
-                  variant="outline"
-                >
-                  <HugeiconsIcon className="mr-1.5 size-3" icon={Add01Icon} />
-                  Nouvelle note
-                </Button>
-              )}
+              <span className="font-semibold text-sm tracking-tight">Mes notes</span>
             </div>
-          ) : (
-            <div className="space-y-1 pb-2">
-              {filteredNotes.map((note) => {
-                const isSelected = selectedNoteId === note.id;
-                const isPinned = (note as any).isPinned;
-                const preview = extractPreview(note.content);
-                const accent = getNoteAccent(note.title || "N");
+            <Button
+              className="size-7 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+              onClick={handleCreateNote}
+              size="icon-sm"
+            >
+              <HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={2} />
+            </Button>
+          </div>
 
-                return (
-                  <div
+          {/* Search bar */}
+          <div className="px-3 pb-2">
+            <div className="relative">
+              <HugeiconsIcon
+                className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground/40"
+                icon={SearchIcon}
+              />
+              <Input
+                className="h-8 rounded-lg border-border/40 bg-white/70 dark:bg-zinc-800/60 pl-8 text-xs placeholder:text-muted-foreground/40 focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:border-primary/30 shadow-none"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Rechercher..."
+                value={searchTerm}
+              />
+            </div>
+          </div>
+
+          {/* Filter tabs */}
+          <div className="flex gap-0.5 px-3 pb-3">
+            {(
+              [
+                { id: "all", label: "Toutes", count: stats.total },
+                { id: "favorites", label: "Favoris", count: stats.favorites },
+                { id: "pinned", label: "Épinglées", count: stats.pinned },
+                { id: "recent", label: "7 jours", count: stats.recent },
+              ] as const
+            ).map((f) => (
+              <button
+                className={cn(
+                  "flex items-center gap-1 rounded-lg px-2.5 py-1.5 font-medium text-[11px] transition-all duration-150",
+                  filter === f.id
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted/80 hover:text-foreground dark:hover:bg-zinc-800/80"
+                )}
+                key={f.id}
+                onClick={() => setFilter(f.id)}
+              >
+                {f.label}
+                {f.count > 0 && (
+                  <span
                     className={cn(
-                      "group relative flex w-full items-start gap-3 rounded-xl p-3 text-left transition-all duration-150",
-                      isSelected
-                        ? "bg-primary/[0.08] ring-1 ring-primary/20 dark:bg-primary/[0.12] dark:ring-primary/25"
-                        : "hover:bg-muted/70 dark:hover:bg-muted/40"
+                      "min-w-[16px] rounded-full px-1 py-0 text-center text-[10px] font-semibold tabular-nums leading-4",
+                      filter === f.id
+                        ? "bg-white/25 text-white"
+                        : "bg-muted text-muted-foreground"
                     )}
-                    key={note.id}
-                    onClick={() => handleSelectNote(note.id)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        handleSelectNote(note.id);
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
                   >
-                    {/* Color accent dot / initial */}
+                    {f.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="mx-3 border-t border-border/40" />
+
+          {/* Notes list */}
+          <ScrollArea className="flex-1 mt-1">
+            {filteredNotes.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-14 text-center px-4">
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-muted/60 dark:bg-zinc-800/60 mb-3">
+                  <HugeiconsIcon
+                    className="size-7 text-muted-foreground/30"
+                    icon={File01Icon}
+                  />
+                </div>
+                <p className="font-medium text-muted-foreground/70 text-sm">
+                  {searchTerm ? "Aucun résultat" : "Aucune note"}
+                </p>
+                <p className="mt-1 text-muted-foreground/50 text-xs">
+                  {searchTerm ? "Essayez un autre terme" : "Créez votre première note"}
+                </p>
+                {!searchTerm && (
+                  <Button
+                    className="mt-4 h-7 rounded-lg text-xs gap-1.5"
+                    onClick={handleCreateNote}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <HugeiconsIcon className="size-3" icon={Add01Icon} />
+                    Nouvelle note
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-0.5 px-2 py-2 pb-4">
+                {filteredNotes.map((note) => {
+                  const isSelected = selectedNoteId === note.id;
+                  const isPinned = (note as any).isPinned;
+                  const preview = extractPreview(note.content);
+                  const accent = getNoteAccent(note.title || "N");
+                  const noteWordCount = preview ? preview.split(/\s+/).filter(Boolean).length : 0;
+
+                  return (
                     <div
                       className={cn(
-                        "flex size-9 shrink-0 items-center justify-center rounded-lg font-semibold text-xs",
-                        accent
+                        "group relative flex w-full flex-col gap-1.5 rounded-xl p-3 text-left transition-all duration-150 cursor-pointer",
+                        isSelected
+                          ? "bg-white dark:bg-zinc-800 shadow-sm ring-1 ring-border/60 dark:ring-zinc-700/60"
+                          : "hover:bg-white/70 dark:hover:bg-zinc-800/50"
                       )}
+                      key={note.id}
+                      onClick={() => handleSelectNote(note.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          handleSelectNote(note.id);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
                     >
-                      {getInitial(note.title)}
-                    </div>
-
-                    {/* Content */}
-                    <div className="min-w-0 flex-1">
-                      {/* Title */}
-                      <div className="flex items-center gap-1.5">
-                        <p
-                          className={cn(
-                            "truncate font-medium text-[13px]",
-                            isSelected
-                              ? "text-foreground"
-                              : "text-foreground/90 dark:text-foreground/80"
+                      {/* Title row */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          {/* Color pill */}
+                          <div
+                            className={cn(
+                              "flex size-7 shrink-0 items-center justify-center rounded-lg font-bold text-[11px]",
+                              accent
+                            )}
+                          >
+                            {getInitial(note.title)}
+                          </div>
+                          <p
+                            className={cn(
+                              "truncate font-semibold text-[13px] leading-tight",
+                              isSelected ? "text-foreground" : "text-foreground/85"
+                            )}
+                          >
+                            {note.title || "Sans titre"}
+                          </p>
+                        </div>
+                        {/* Badges */}
+                        <div className="flex shrink-0 items-center gap-1">
+                          {isPinned && (
+                            <Pin className="size-2.5 text-amber-500" />
                           )}
-                        >
-                          {note.title || "Sans titre"}
-                        </p>
-                        {isPinned && (
-                          <HugeiconsIcon
-                            className="size-3 shrink-0 text-amber-500 dark:text-amber-400"
-                            icon={Bookmark01Icon}
-                          />
-                        )}
-                        {note.isFavorite && (
-                          <HugeiconsIcon
-                            className="size-3 shrink-0 text-amber-500 dark:text-amber-400"
-                            fill="currentColor"
-                            icon={StarIcon}
-                          />
-                        )}
+                          {note.isFavorite && (
+                            <Star className="size-2.5 fill-amber-400 text-amber-400" />
+                          )}
+                        </div>
                       </div>
 
                       {/* Preview */}
                       {preview && (
                         <p
                           className={cn(
-                            "mt-0.5 line-clamp-2 text-[11px] leading-relaxed",
+                            "line-clamp-2 text-[11px] leading-relaxed pl-9",
                             isSelected
                               ? "text-muted-foreground"
-                              : "text-muted-foreground/70 dark:text-muted-foreground/60"
+                              : "text-muted-foreground/60"
                           )}
                         >
                           {preview}
@@ -492,361 +583,369 @@ const NotesPro: React.FC = () => {
                       )}
 
                       {/* Meta row */}
-                      <div className="mt-1.5 flex items-center gap-2">
-                        <span
-                          className={cn(
-                            "text-[10px]",
-                            isSelected
-                              ? "text-muted-foreground/80"
-                              : "text-muted-foreground/50"
-                          )}
-                        >
+                      <div className="flex items-center justify-between pl-9">
+                        <span className="text-[10px] text-muted-foreground/50 tabular-nums">
                           {formatDate(note.updatedAt)}
                         </span>
-                        {wordCount > 0 && isSelected && (
+                        {noteWordCount > 0 && (
+                          <span className="text-[10px] text-muted-foreground/40 tabular-nums">
+                            {noteWordCount} mots
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Hover actions */}
+                      <div
+                        className={cn(
+                          "absolute top-2 right-2 flex items-center gap-0.5 rounded-lg bg-white/95 dark:bg-zinc-900/95 p-0.5 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-opacity",
+                          isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                        )}
+                      >
+                        <Button
+                          className="size-5 rounded-md hover:bg-muted"
+                          onClick={(e) => togglePin(note, e)}
+                          size="icon-sm"
+                          variant="ghost"
+                        >
+                          <HugeiconsIcon
+                            className={cn("size-2.5", isPinned ? "text-amber-500" : "text-muted-foreground")}
+                            icon={Bookmark01Icon}
+                          />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                className="size-5 rounded-md hover:bg-muted"
+                                onClick={(e) => e.stopPropagation()}
+                                size="icon-sm"
+                                variant="ghost"
+                              >
+                                <HugeiconsIcon
+                                  className="size-2.5 text-muted-foreground"
+                                  icon={MoreVerticalIcon}
+                                />
+                              </Button>
+                            }
+                          />
+                          <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuItem onClick={() => toggleFavorite(note)}>
+                              <HugeiconsIcon className="mr-2 size-4" icon={StarIcon} />
+                              {note.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleExportNote("md")}>
+                              <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} />
+                              Exporter (.md)
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDeleteNote(note.id)}
+                            >
+                              <HugeiconsIcon className="mr-2 size-4" icon={Delete01Icon} />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </ScrollArea>
+        </aside>
+
+        {/* ── EDITOR AREA ── */}
+        <main className="flex min-w-0 flex-1 flex-col bg-background">
+          {selectedNoteId && activeNote ? (
+            <div className="flex h-full flex-col">
+
+              {/* Editor toolbar — glassmorphic */}
+              <div className="flex items-center justify-between gap-2 border-b border-border/40 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm px-4 py-2 sticky top-0 z-10">
+                <div className="flex items-center gap-1.5">
+                  {/* Toggle sidebar */}
+                  <Button
+                    className="size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/70"
+                    onClick={() => setShowSidebar(!showSidebar)}
+                    size="icon-sm"
+                    variant="ghost"
+                    title={showSidebar ? "Masquer la liste" : "Afficher la liste"}
+                  >
+                    <HugeiconsIcon className="size-3.5" icon={Folder01Icon} />
+                  </Button>
+
+                  <div className="w-px h-4 bg-border/60 mx-0.5" />
+
+                  {/* Edit / Preview toggle */}
+                  <div className="flex items-center rounded-lg bg-muted/60 dark:bg-zinc-800/60 p-0.5 gap-0.5">
+                    <button
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium text-[11px] transition-all duration-150",
+                        !isPreviewMode
+                          ? "bg-white dark:bg-zinc-700 text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                      onClick={() => setIsPreviewMode(false)}
+                    >
+                      <HugeiconsIcon className="size-3" icon={EditIcon} />
+                      Éditer
+                    </button>
+                    <button
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium text-[11px] transition-all duration-150",
+                        isPreviewMode
+                          ? "bg-white dark:bg-zinc-700 text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                      onClick={() => setIsPreviewMode(true)}
+                    >
+                      <HugeiconsIcon className="size-3" icon={EyeIcon} />
+                      Aperçu
+                    </button>
+                  </div>
+
+                  <div className="w-px h-4 bg-border/60 mx-0.5" />
+
+                  {/* Save status */}
+                  {isSaving ? (
+                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <span className="relative flex size-1.5">
+                        <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                        <span className="relative inline-flex size-1.5 rounded-full bg-amber-500" />
+                      </span>
+                      Enregistrement...
+                    </span>
+                  ) : lastSaved ? (
+                    <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
+                      <HugeiconsIcon className="size-3" icon={CheckmarkCircle02Icon} />
+                      Sauvegardé
+                    </span>
+                  ) : null}
+                </div>
+
+                {/* Right actions */}
+                <div className="flex items-center gap-0.5">
+                  {/* Word / char count badge */}
+                  <Badge
+                    variant="outline"
+                    className="hidden sm:flex h-6 gap-1 text-[10px] text-muted-foreground/60 border-border/40 font-normal tabular-nums"
+                  >
+                    <Hash className="size-2.5" />
+                    {wordCount} mots
+                  </Badge>
+
+                  <div className="w-px h-4 bg-border/60 mx-1" />
+
+                  <Button
+                    className={cn(
+                      "size-7 rounded-lg",
+                      (activeNote as any).isPinned
+                        ? "text-amber-500 hover:text-amber-600"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    onClick={() => togglePin(activeNote)}
+                    size="icon-sm"
+                    variant="ghost"
+                    title="Épingler"
+                  >
+                    <HugeiconsIcon className="size-3.5" icon={Bookmark01Icon} />
+                  </Button>
+                  <Button
+                    className={cn(
+                      "size-7 rounded-lg",
+                      activeNote.isFavorite
+                        ? "text-amber-500 hover:text-amber-600"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    onClick={() => toggleFavorite(activeNote)}
+                    size="icon-sm"
+                    variant="ghost"
+                    title="Favori"
+                  >
+                    <HugeiconsIcon
+                      className="size-3.5"
+                      fill={activeNote.isFavorite ? "currentColor" : "none"}
+                      icon={StarIcon}
+                    />
+                  </Button>
+                  <Button
+                    className="size-7 rounded-lg text-muted-foreground hover:text-foreground"
+                    onClick={handleCopyNote}
+                    size="icon-sm"
+                    variant="ghost"
+                    title="Copier"
+                  >
+                    <HugeiconsIcon className="size-3.5" icon={CopyIcon} />
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          className="size-7 rounded-lg text-muted-foreground hover:text-foreground"
+                          size="icon-sm"
+                          variant="ghost"
+                        >
+                          <HugeiconsIcon className="size-3.5" icon={MoreVerticalIcon} />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => handleExportNote("md")}>
+                        <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} />
+                        Exporter en Markdown
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExportNote("txt")}>
+                        <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} />
+                        Exporter en Texte
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => handleDeleteNote(activeNote.id)}
+                      >
+                        <HugeiconsIcon className="mr-2 size-4" icon={Delete01Icon} />
+                        Supprimer
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+
+              {/* Editor content area */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="mx-auto max-w-3xl px-8 py-8">
+                  {isPreviewMode ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+                      <p className="text-muted-foreground text-xs mt-1 mb-6">
+                        {formatFullDate(activeNote.updatedAt)}
+                      </p>
+                      <div dangerouslySetInnerHTML={{ __html: content }} />
+                    </div>
+                  ) : (
+                    <>
+                      {/* Note title */}
+                      <input
+                        className="w-full bg-transparent font-bold text-[26px] leading-tight text-foreground tracking-tight outline-none placeholder:text-muted-foreground/20 mb-2"
+                        onChange={(e) => handleTitleChange(e.target.value)}
+                        placeholder="Titre de la note"
+                        type="text"
+                        value={title}
+                      />
+
+                      {/* Meta line below title */}
+                      <div className="flex items-center gap-2.5 mb-7">
+                        <p className="text-[11px] text-muted-foreground/50">
+                          {formatFullDate(activeNote.updatedAt)}
+                        </p>
+                        {wordCount > 0 && (
                           <>
-                            <span className="text-muted-foreground/30">·</span>
-                            <span className="text-[10px] text-muted-foreground/50">
-                              {extractPreview(note.content).split(/\s+/).length}{" "}
-                              mots
+                            <span className="text-muted-foreground/25">·</span>
+                            <p className="text-[11px] text-muted-foreground/50 tabular-nums">
+                              {wordCount} mots
+                            </p>
+                          </>
+                        )}
+                        {(activeNote as any).isPinned && (
+                          <>
+                            <span className="text-muted-foreground/25">·</span>
+                            <span className="flex items-center gap-1 text-[11px] text-amber-500">
+                              <Pin className="size-2.5" />
+                              Épinglée
+                            </span>
+                          </>
+                        )}
+                        {activeNote.isFavorite && (
+                          <>
+                            <span className="text-muted-foreground/25">·</span>
+                            <span className="flex items-center gap-1 text-[11px] text-amber-400">
+                              <Star className="size-2.5 fill-amber-400" />
+                              Favori
                             </span>
                           </>
                         )}
                       </div>
-                    </div>
 
-                    {/* Actions (hover) */}
-                    <div
-                      className={cn(
-                        "absolute top-2 right-2 flex items-center gap-0.5 rounded-md bg-background/90 p-0.5 shadow-sm ring-1 ring-border/50 backdrop-blur-sm transition-opacity dark:bg-background/80",
-                        isSelected
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-100"
-                      )}
-                    >
-                      <Button
-                        className="size-6 rounded-md hover:bg-muted"
-                        onClick={(e) => togglePin(note, e)}
-                        size="icon-sm"
-                        variant="ghost"
-                      >
-                        <HugeiconsIcon
-                          className={cn(
-                            "size-3",
-                            isPinned
-                              ? "text-amber-500"
-                              : "text-muted-foreground"
-                          )}
-                          icon={Bookmark01Icon}
-                        />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          render={
-                            <Button
-                              className="size-6 rounded-md hover:bg-muted"
-                              onClick={(e) => e.stopPropagation()}
-                              size="icon-sm"
-                              variant="ghost"
-                            >
-                              <HugeiconsIcon
-                                className="size-3 text-muted-foreground"
-                                icon={MoreVerticalIcon}
-                              />
-                            </Button>
-                          }
-                        />
-                        <DropdownMenuContent align="end" className="w-44">
-                          <DropdownMenuItem
-                            onClick={() => toggleFavorite(note)}
-                          >
-                            <HugeiconsIcon
-                              className="mr-2 size-4"
-                              icon={StarIcon}
-                            />
-                            {note.isFavorite
-                              ? "Retirer des favoris"
-                              : "Ajouter aux favoris"}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleExportNote("md")}
-                          >
-                            <HugeiconsIcon
-                              className="mr-2 size-4"
-                              icon={DownloadIcon}
-                            />
-                            Exporter (.md)
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => handleDeleteNote(note.id)}
-                          >
-                            <HugeiconsIcon
-                              className="mr-2 size-4"
-                              icon={Delete01Icon}
-                            />
-                            Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </ScrollArea>
-      </aside>
-
-      {/* Editor */}
-      <main className="flex min-w-0 flex-1 flex-col bg-background">
-        {selectedNoteId && activeNote ? (
-          <div className="flex flex-1 flex-col">
-            {/* Toolbar */}
-            <div className="flex items-center justify-between border-border/40 border-b px-5 py-2 dark:border-border/30">
-              <div className="flex items-center gap-2">
-                <Button
-                  className="size-7 rounded-md text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowSidebar(!showSidebar)}
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon className="size-3.5" icon={Folder01Icon} />
-                </Button>
-                <Separator className="h-5 opacity-50" orientation="vertical" />
-
-                {/* Edit/Preview toggle */}
-                <div className="flex items-center rounded-lg bg-muted/50 p-0.5 dark:bg-muted/30">
-                  <button
-                    className={cn(
-                      "flex items-center gap-1 rounded-md px-2.5 py-1 font-medium text-[11px] transition-all",
-                      isPreviewMode
-                        ? "text-muted-foreground hover:text-foreground"
-                        : "bg-background text-foreground shadow-sm dark:bg-background/80"
-                    )}
-                    onClick={() => setIsPreviewMode(false)}
-                  >
-                    <HugeiconsIcon className="size-3" icon={EditIcon} />
-                    Éditer
-                  </button>
-                  <button
-                    className={cn(
-                      "flex items-center gap-1 rounded-md px-2.5 py-1 font-medium text-[11px] transition-all",
-                      isPreviewMode
-                        ? "bg-background text-foreground shadow-sm dark:bg-background/80"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                    onClick={() => setIsPreviewMode(true)}
-                  >
-                    <HugeiconsIcon className="size-3" icon={EyeIcon} />
-                    Aperçu
-                  </button>
-                </div>
-
-                <Separator className="h-5 opacity-50" orientation="vertical" />
-
-                {/* Save status */}
-                {isSaving ? (
-                  <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <span className="relative flex size-2">
-                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                      <span className="relative inline-flex size-2 rounded-full bg-amber-500" />
-                    </span>
-                    Sauvegarde...
-                  </span>
-                ) : lastSaved ? (
-                  <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
-                    <HugeiconsIcon
-                      className="size-3 text-emerald-500"
-                      icon={CheckmarkCircle02Icon}
-                    />
-                    Sauvegardé
-                  </span>
-                ) : null}
-
-                <Separator className="h-5 opacity-50" orientation="vertical" />
-
-                <span className="text-[11px] text-muted-foreground/40">
-                  {wordCount} mots · {charCount} car.
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Button
-                  className={cn(
-                    "size-7 rounded-md",
-                    (activeNote as any).isPinned
-                      ? "text-amber-500 hover:text-amber-600"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                  onClick={() => togglePin(activeNote)}
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon className="size-3.5" icon={Bookmark01Icon} />
-                </Button>
-                <Button
-                  className={cn(
-                    "size-7 rounded-md",
-                    activeNote.isFavorite
-                      ? "text-amber-500 hover:text-amber-600"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                  onClick={() => toggleFavorite(activeNote)}
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon
-                    className="size-3.5"
-                    fill={activeNote.isFavorite ? "currentColor" : "none"}
-                    icon={StarIcon}
-                  />
-                </Button>
-                <Button
-                  className="size-7 rounded-md text-muted-foreground hover:text-foreground"
-                  onClick={handleCopyNote}
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon className="size-3.5" icon={CopyIcon} />
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={
-                      <Button
-                        className="size-7 rounded-md text-muted-foreground hover:text-foreground"
-                        size="icon-sm"
-                        variant="ghost"
-                      >
-                        <HugeiconsIcon
-                          className="size-3.5"
-                          icon={MoreVerticalIcon}
-                        />
-                      </Button>
-                    }
-                  />
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => handleExportNote("md")}>
-                      <HugeiconsIcon
-                        className="mr-2 size-4"
-                        icon={DownloadIcon}
-                      />
-                      Exporter en Markdown
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExportNote("txt")}>
-                      <HugeiconsIcon
-                        className="mr-2 size-4"
-                        icon={DownloadIcon}
-                      />
-                      Exporter en Texte
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => handleDeleteNote(activeNote.id)}
-                    >
-                      <HugeiconsIcon
-                        className="mr-2 size-4"
-                        icon={Delete01Icon}
-                      />
-                      Supprimer
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-
-            {/* Editor content */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="mx-auto max-w-4xl px-8 py-6">
-                {isPreviewMode ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <h1>{title}</h1>
-                    <p className="text-muted-foreground text-sm">
-                      {formatFullDate(activeNote.updatedAt)}
-                    </p>
-                    <div
-                      className="mt-4"
-                      dangerouslySetInnerHTML={{ __html: content }}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    {/* Title */}
-                    <input
-                      className="w-full bg-transparent font-bold text-2xl text-foreground tracking-tight outline-none placeholder:text-muted-foreground/25"
-                      onChange={(e) => handleTitleChange(e.target.value)}
-                      placeholder="Titre de la note"
-                      type="text"
-                      value={title}
-                    />
-
-                    {/* Date */}
-                    <p className="mt-1.5 text-[11px] text-muted-foreground/50">
-                      {formatFullDate(activeNote.updatedAt)}
-                    </p>
-
-                    {/* Rich Text Editor */}
-                    <div className="mt-5">
+                      {/* Rich text editor */}
                       <Editor
                         content={content}
                         onUpdate={handleContentChange}
                       />
-                    </div>
-                  </>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* ── PREMIUM EMPTY STATE ── */
+            <div className="flex flex-1 flex-col items-center justify-center p-12 relative overflow-hidden">
+              {/* Decorative background radial */}
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="size-[500px] rounded-full bg-gradient-to-br from-primary/5 via-transparent to-transparent blur-3xl" />
+              </div>
+              <div className="pointer-events-none absolute top-8 right-8">
+                <div className="size-[200px] rounded-full bg-gradient-to-br from-emerald-200/20 to-transparent blur-2xl dark:from-emerald-500/10" />
+              </div>
+
+              {/* Icon cluster */}
+              <div className="relative mb-7">
+                {/* Background glow ring */}
+                <div className="absolute inset-0 rounded-3xl bg-primary/10 blur-xl scale-150 dark:bg-primary/15" />
+                <div className="relative flex size-24 items-center justify-center rounded-3xl bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 ring-1 ring-primary/20 dark:from-primary/20 dark:via-primary/10 dark:ring-primary/15 shadow-lg">
+                  <PenLine className="size-10 text-primary/70 dark:text-primary/60" />
+                </div>
+                {/* Floating accent badges */}
+                <div className="absolute -top-2 -right-3 flex size-8 items-center justify-center rounded-xl bg-amber-400/20 ring-1 ring-amber-400/30 shadow-sm backdrop-blur-sm">
+                  <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                </div>
+                <div className="absolute -bottom-2 -left-3 flex size-7 items-center justify-center rounded-lg bg-emerald-400/20 ring-1 ring-emerald-400/30 shadow-sm backdrop-blur-sm">
+                  <Sparkles className="size-3 text-emerald-500" />
+                </div>
+              </div>
+
+              {/* Text */}
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Prêt à écrire ?
+              </h2>
+              <p className="mt-2 max-w-xs text-center text-[13px] text-muted-foreground/70 leading-relaxed">
+                Sélectionnez une note dans la liste ou créez-en une nouvelle pour commencer à rédiger.
+              </p>
+
+              {/* Actions */}
+              <div className="mt-7 flex items-center gap-2.5">
+                <Button
+                  className="rounded-xl gap-2 shadow-sm h-9 px-4"
+                  onClick={handleCreateNote}
+                >
+                  <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
+                  Créer une note
+                </Button>
+                {!showSidebar && (
+                  <Button
+                    className="rounded-xl gap-2 h-9 px-4"
+                    onClick={() => setShowSidebar(true)}
+                    variant="outline"
+                  >
+                    <HugeiconsIcon className="size-4" icon={Folder01Icon} />
+                    Voir les notes
+                  </Button>
                 )}
               </div>
-            </div>
-          </div>
-        ) : (
-          /* Empty state */
-          <div className="flex flex-1 flex-col items-center justify-center p-8">
-            <div className="relative">
-              <div className="flex size-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/15 dark:to-primary/5">
-                <HugeiconsIcon
-                  className="size-9 text-primary/40"
-                  icon={File01Icon}
-                />
-              </div>
-              <div className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20">
-                <HugeiconsIcon className="size-3" icon={Add01Icon} />
-              </div>
-            </div>
-            <h3 className="mt-5 font-semibold text-lg tracking-tight">
-              Sélectionnez une note
-            </h3>
-            <p className="mt-1.5 max-w-sm text-center text-muted-foreground/70 text-sm">
-              Choisissez une note dans la liste ou créez-en une nouvelle pour
-              commencer à écrire
-            </p>
-            <div className="mt-5 flex gap-2.5">
-              <Button
-                className="rounded-lg shadow-sm"
-                onClick={handleCreateNote}
-              >
-                <HugeiconsIcon className="mr-1.5 size-4" icon={Add01Icon} />
-                Créer une note
-              </Button>
-              {!showSidebar && (
-                <Button
-                  className="rounded-lg"
-                  onClick={() => setShowSidebar(true)}
-                  variant="outline"
-                >
-                  <HugeiconsIcon
-                    className="mr-1.5 size-4"
-                    icon={Folder01Icon}
-                  />
-                  Voir les notes
-                </Button>
+
+              {/* Footer hint */}
+              {stats.total > 0 && (
+                <p className="mt-8 text-[11px] text-muted-foreground/35">
+                  {stats.total} note{stats.total !== 1 ? "s" : ""} enregistrée{stats.total !== 1 ? "s" : ""} · {stats.totalWords.toLocaleString("fr-FR")} mots rédigés
+                </p>
               )}
             </div>
-          </div>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
     </div>
   );
 };
 
 export default NotesPro;
+

@@ -1,4 +1,7 @@
-import { TrendingDown, TrendingUp } from "lucide-react";
+"use client";
+
+import { TrendingDown, TrendingUp, Coins, Calendar, Users, ClipboardList } from "lucide-react";
+import { useMotionValue, useMotionTemplate, motion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -9,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { GridPattern } from "@/components/GridPattern";
 
 export interface SectionCardItem {
   badge: string;
@@ -17,44 +21,119 @@ export interface SectionCardItem {
   title: string;
   trend: "up" | "down" | "neutral";
   value: string;
+  icon?: React.ComponentType<any>;
+}
+
+function SectionCard({ item, idx }: { item: SectionCardItem; idx: number }) {
+  const isUp = item.trend === "up";
+  const isDown = item.trend === "down";
+  const TrendIcon = isUp
+    ? TrendingUp
+    : isDown
+      ? TrendingDown
+      : TrendingUp;
+
+  const icons = [Coins, Calendar, Users, ClipboardList];
+  const IconComponent = item.icon || icons[idx] || Coins;
+
+  // Framer Motion cursor tracking
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  function onMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent<HTMLDivElement>) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  }
+
+  const maskImage = useMotionTemplate`radial-gradient(180px at ${mouseX}px ${mouseY}px, white, transparent)`;
+  const style = { maskImage, WebkitMaskImage: maskImage };
+
+  return (
+    <Card
+      className="dashboard-kpi-card @container/card group bg-zinc-50 dark:bg-white/2.5 relative flex flex-col overflow-hidden"
+      key={idx}
+      onMouseMove={onMouseMove}
+    >
+      <div className="pointer-events-none absolute inset-0 z-0">
+        {/* Grid pattern layer (Always visible, fades slightly on hover) */}
+        <div className="absolute inset-0 rounded-[16px] transition-opacity duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
+          <GridPattern
+            width={72}
+            height={56}
+            x="50%"
+            y={-1}
+            className="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-zinc-900/[0.02] stroke-zinc-900/[0.08] dark:fill-white/[0.04] dark:stroke-white/[0.12]"
+          />
+        </div>
+        {/* Gradient overlay layer (Protocol mouse-tracking glow) */}
+        <motion.div
+          className="absolute inset-0 rounded-[16px] bg-linear-to-r from-[#D7EDEA] to-[#F4FBDF] dark:from-[#223d3a] dark:to-[#363d27] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={style}
+        />
+        {/* Grid overlay with mix-blend (Protocol mouse-tracking overlay) */}
+        <motion.div
+          className="absolute inset-0 rounded-[16px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-overlay"
+          style={style}
+        >
+          <GridPattern
+            width={72}
+            height={56}
+            x="50%"
+            y={-1}
+            className="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-zinc-900/10 stroke-zinc-900/15 dark:fill-white/[0.07] dark:stroke-white/[0.24]"
+          />
+        </motion.div>
+        {/* Inset ring layer */}
+        <div className="absolute inset-0 rounded-[16px] ring-1 ring-inset ring-zinc-900/7.5 dark:ring-white/15 group-hover:ring-zinc-900/10 dark:group-hover:ring-white/30 transition-shadow duration-300" />
+      </div>
+      <CardHeader className="relative z-10 space-y-4">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/25 backdrop-blur-[2px] transition duration-300 group-hover:bg-white/50 group-hover:ring-zinc-900/25 dark:bg-white/7.5 dark:ring-white/15 dark:group-hover:bg-emerald-300/10 dark:group-hover:ring-emerald-400">
+          <IconComponent className="h-4 w-4 text-zinc-600 transition-colors duration-300 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-emerald-400" strokeWidth={2} />
+        </div>
+        <div className="space-y-1">
+          <CardDescription className="dashboard-kpi-label">
+            {item.title}
+          </CardDescription>
+          <CardTitle className="dashboard-kpi-value flex items-baseline gap-1 font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
+            {item.value.endsWith("DA") ? (
+              <>
+                <span className="truncate">{item.value.replace(/\s*DA$/, "")}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">&nbsp;DA</span>
+              </>
+            ) : (
+              <span className="truncate">{item.value}</span>
+            )}
+          </CardTitle>
+        </div>
+        <CardAction>
+          <Badge
+            className="bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300 border-emerald-200/50 dark:border-emerald-400/20 font-medium"
+            variant="outline"
+          >
+            <TrendIcon className="size-3" />
+            {item.badge}
+          </Badge>
+        </CardAction>
+      </CardHeader>
+      <CardFooter className="relative z-10 flex-col items-start gap-0.5 mt-auto h-16 justify-center !p-4 !bg-muted/50 border-t">
+        <div className="w-full truncate flex items-center gap-1.5 font-semibold text-xs text-foreground tracking-tight">
+          {item.footerTitle} <TrendIcon className="size-3.5 shrink-0 text-muted-foreground" />
+        </div>
+        <div className="w-full truncate text-[11px] text-muted-foreground/80 font-medium">
+          {item.footerDescription}
+        </div>
+      </CardFooter>
+    </Card>
+  );
 }
 
 export function SectionCards({ items }: { items: SectionCardItem[] }) {
   return (
-    <div className="grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs sm:grid-cols-2 xl:grid-cols-4 dark:*:data-[slot=card]:bg-card">
-      {items.map((item, idx) => {
-        const isUp = item.trend === "up";
-        const isDown = item.trend === "down";
-        const TrendIcon = isUp
-          ? TrendingUp
-          : isDown
-            ? TrendingDown
-            : TrendingUp;
-        return (
-          <Card className="@container/card" key={idx}>
-            <CardHeader>
-              <CardDescription>{item.title}</CardDescription>
-              <CardTitle className="font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
-                {item.value}
-              </CardTitle>
-              <CardAction>
-                <Badge variant="outline">
-                  <TrendIcon />
-                  {item.badge}
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className="flex-col items-start gap-1.5 text-sm">
-              <div className="line-clamp-1 flex gap-2 font-medium">
-                {item.footerTitle} <TrendIcon className="size-4" />
-              </div>
-              <div className="text-muted-foreground">
-                {item.footerDescription}
-              </div>
-            </CardFooter>
-          </Card>
-        );
-      })}
+    <div className="dashboard-kpi-grid grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {items.map((item, idx) => (
+        <SectionCard key={idx} item={item} idx={idx} />
+      ))}
     </div>
   );
 }

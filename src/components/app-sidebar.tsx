@@ -194,7 +194,7 @@ export function AppSidebar({
     <Sidebar
       {...props}
       className={cn(
-        isDesktopRuntime && "top-5 h-[calc(100svh-20px)]",
+        isDesktopRuntime && "top-3 h-[calc(100svh-12px)]",
         isClassicSidebar &&
           "bg-sidebar shadow-[inset_-1px_0_0_var(--sidebar-border)]",
         props.className
@@ -203,11 +203,11 @@ export function AppSidebar({
       <SidebarHeader
         className={cn(
           "flex shrink-0 flex-row items-center px-3",
-          isDesktopRuntime ? "py-3.5" : "py-2",
-          "[@media(max-height:820px)]:p-1",
-          isClassicSidebar &&
-            "h-[60px] bg-sidebar px-5 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
-          isClassicSidebar && isCollapsed && "justify-center px-3"
+          isDesktopRuntime ? "py-3" : "py-2.5",
+          "[@media(max-height:820px)]:p-1.5",
+          "h-[72px] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
+          isClassicSidebar ? "bg-sidebar px-5" : "bg-transparent px-3",
+          isCollapsed && "justify-center px-3"
         )}
       >
         <SidebarMenu className="w-full">
@@ -215,11 +215,9 @@ export function AppSidebar({
             <SidebarMenuButton
               className={cn(
                 "w-full justify-start",
-                isClassicSidebar &&
-                  "ms-0 h-10 w-auto justify-start rounded-xl px-3 hover:bg-transparent",
-                isClassicSidebar &&
-                  isCollapsed &&
-                  "ms-0 h-11 w-11 justify-center rounded-2xl border border-border/70 bg-background/92 px-0 shadow-xs hover:bg-muted/35"
+                "ms-0 h-13 w-auto justify-start rounded-xl !ps-5 pe-2 hover:bg-transparent",
+                isCollapsed &&
+                  "ms-0 h-13 w-13 justify-center rounded-2xl border border-border/70 bg-background/92 px-0 shadow-xs hover:bg-muted/35"
               )}
               render={
                 <button onClick={() => onNavigate("dashboard")} type="button" />
@@ -227,14 +225,11 @@ export function AppSidebar({
               tooltip="bAItari"
             >
               <Logo
-                className={cn(
-                  "text-sidebar-foreground",
-                  isClassicSidebar &&
-                    "[&_.logo-mark-shell]:bg-transparent [&_.logo-mark-shell_svg]:size-[2.35rem] [&_.logo-wordmark]:text-sidebar-foreground"
-                )}
+                className="text-sidebar-foreground"
                 collapsed={isCollapsed}
                 flatMark={isClassicSidebar}
-                size="md"
+                size="2xl"
+                textSize="md"
               />
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -243,9 +238,9 @@ export function AppSidebar({
       <SidebarContent
         className={cn(
           "scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent overflow-y-auto",
-          isClassicSidebar &&
-            "overflow-y-hidden bg-sidebar px-5 pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-          isClassicSidebar && isCollapsed && "px-2 pt-3"
+          "pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          isClassicSidebar ? "overflow-y-hidden bg-sidebar px-5" : "px-3",
+          isCollapsed && "px-2 pt-3"
         )}
       >
         <div
@@ -257,20 +252,6 @@ export function AppSidebar({
         >
           <NavMain
             items={mainItems}
-            onPrimaryAction={() => {
-              if (currentView === "patients") {
-                window.dispatchEvent(new CustomEvent("vetera:new-patient"));
-              } else {
-                onNavigate("patients");
-                setTimeout(
-                  () =>
-                    window.dispatchEvent(new CustomEvent("vetera:new-patient")),
-                  150
-                );
-              }
-            }}
-            onSecondaryAction={() => onNavigate("agenda")}
-            showQuickActions={!isClassicSidebar}
             title={t("nav.sections.patientJourney")}
           />
           <NavDocuments
@@ -285,22 +266,23 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter
         className={cn(
-          "glass-surface shrink-0 border-sidebar-border/50 border-t bg-sidebar/80 backdrop-blur-sm [@media(max-height:820px)]:p-1.5",
-          "mx-2 mb-2 rounded-2xl border border-sidebar-border/50 px-3 py-2.5",
-          isClassicSidebar &&
-            "mx-5 mb-3 gap-2 rounded-[18px] border border-sidebar-border bg-sidebar-accent px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
-          isClassicSidebar &&
-            isCollapsed &&
-            "mx-0 mb-2 gap-1.5 rounded-none border-0 bg-transparent px-2 py-0 shadow-none backdrop-blur-none"
+          "shrink-0 transition-all duration-300",
+          isCollapsed
+            ? "mx-0 mb-2 gap-1.5 rounded-none border-0 bg-transparent px-2 py-0 shadow-none backdrop-blur-none"
+            : isClassicSidebar
+              ? "mx-5 mb-3 gap-0 rounded-[18px] border border-sidebar-border bg-sidebar-accent/90 dark:bg-zinc-800/40 px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
+              : "mx-3 mb-3 gap-0 rounded-2xl border border-zinc-200/90 dark:border-white/12 bg-white/80 dark:bg-white/[0.06] backdrop-blur-md px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
         )}
       >
         <NavSecondary
-          className={cn(isClassicSidebar && isCollapsed && "p-0")}
+          className={cn(
+            "p-0",
+            isCollapsed && "p-0"
+          )}
           items={secondaryItems}
-          title={t("nav.sections.configuration")}
         />
         {isClassicSidebar && !isCollapsed ? (
-          <SidebarSeparator className="mx-0 opacity-60" />
+          <SidebarSeparator className="mx-0 my-0.5 opacity-60" />
         ) : null}
         <NavUser
           onFinances={() => onNavigate("finances")}

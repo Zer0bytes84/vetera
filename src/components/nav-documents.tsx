@@ -47,9 +47,11 @@ export function NavDocuments({
           <SidebarMenuItem className="group/item" key={item.name}>
             <SidebarMenuButton
               className={cn(
-                "transition-all duration-200 ease-out",
+                "h-10 rounded-xl !px-3 text-[15px] transition-all duration-200 ease-out",
                 "hover:translate-x-0.5 hover:bg-muted/50 hover:shadow-[0_0_0_1px_rgba(15,23,42,0.06)]",
-                "group-data-[variant=sidebar]:h-10 group-data-[variant=sidebar]:rounded-xl group-data-[variant=sidebar]:px-3 group-data-[variant=sidebar]:text-[15px] group-data-[variant=sidebar]:text-sidebar-foreground/65 group-data-[variant=sidebar]:hover:translate-x-0 group-data-[variant=sidebar]:hover:bg-sidebar-accent group-data-[variant=sidebar]:hover:text-sidebar-foreground"
+                "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                "data-[active]:bg-sidebar-accent data-[active]:text-sidebar-foreground data-[active]:shadow-[inset_0_1px_0_var(--sidebar-border)]",
+                "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center"
               )}
               render={<button onClick={item.onClick} type="button" />}
               tooltip={item.name}

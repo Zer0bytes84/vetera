@@ -7,14 +7,16 @@ interface LogoProps {
   collapsed?: boolean;
   flatMark?: boolean;
   isDarkMode?: boolean;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
+  textSize?: "sm" | "md" | "lg" | "xl" | "2xl";
 }
 
-const SIZE_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
-  sm: "size-8",
-  md: "size-9",
-  lg: "size-10",
-  xl: "size-11",
+const SIZE_PX: Record<NonNullable<LogoProps["size"]>, number> = {
+  sm: 32,
+  md: 36,
+  lg: 40,
+  xl: 44,
+  "2xl": 52,
 };
 
 const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
@@ -22,13 +24,14 @@ const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
   md: "text-[19px] leading-[26px]",
   lg: "text-[22px] leading-[30px]",
   xl: "text-[26px] leading-[34px]",
+  "2xl": "text-[28px] leading-[36px]",
 };
 
 function BaitariMark({
-  iconClassName,
+  sizePx,
   flatMark = false,
 }: {
-  iconClassName: string;
+  sizePx: number;
   flatMark?: boolean;
 }) {
   const id = useId().replace(/:/g, "");
@@ -39,7 +42,7 @@ function BaitariMark({
   return (
     <svg
       aria-hidden="true"
-      className={iconClassName}
+      style={{ width: sizePx, height: sizePx, flexShrink: 0 }}
       viewBox="0 0 40 40"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -48,33 +51,12 @@ function BaitariMark({
           <stop offset="0%" stopColor="#151c25" />
           <stop offset="100%" stopColor="#101720" />
         </linearGradient>
-        <filter height="180%" id={shadowId} width="180%" x="-40%" y="-40%">
-          <feDropShadow
-            dx="0"
-            dy="8"
-            floodColor="#0f1218"
-            floodOpacity="0.22"
-            stdDeviation="8"
-          />
-        </filter>
       </defs>
 
       <rect
         fill={`url(#${panelId})`}
-        filter={flatMark ? undefined : `url(#${shadowId})`}
         height="32"
         rx="10"
-        width="32"
-        x="4"
-        y="4"
-      />
-      <rect
-        fill="none"
-        height="32"
-        rx="10"
-        stroke="#ffffff"
-        strokeOpacity={borderOpacity}
-        strokeWidth="1.5"
         width="32"
         x="4"
         y="4"
@@ -102,11 +84,12 @@ const Logo: React.FC<LogoProps> = ({
   className = "",
   collapsed = false,
   size = "md",
+  textSize = "md",
   isDarkMode = false,
   flatMark = false,
 }) => {
-  const iconSizeClass = SIZE_MAP[size];
-  const wordmarkClass = WORDMARK_CLASS_MAP[size];
+  const sizePx = collapsed ? 36 : SIZE_PX[size];
+  const wordmarkClass = WORDMARK_CLASS_MAP[textSize];
   const primaryWordmark = isDarkMode
     ? "#f8fafc"
     : "color-mix(in oklab, currentColor 94%, #0f172a 6%)";
@@ -118,15 +101,15 @@ const Logo: React.FC<LogoProps> = ({
     <div
       className={cn("flex select-none items-center text-current", className)}
     >
-      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-1.5")}>
+      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-2")}>
         <div className="logo-mark-shell flex items-center justify-center">
           <BaitariMark
             flatMark={flatMark}
-            iconClassName={cn("shrink-0", iconSizeClass)}
+            sizePx={sizePx}
           />
         </div>
         {collapsed ? null : (
-          <div className="-ms-0.5 flex items-baseline gap-0">
+          <div className="flex items-baseline gap-0">
             <span
               className={cn("font-semibold tracking-tight", wordmarkClass)}
               style={{

@@ -69,7 +69,7 @@ export function NavUser({
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
-                className="group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-muted [@media(max-height:820px)]:h-10"
+                className="group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-muted [@media(max-height:820px)]:h-10 px-3"
                 size="lg"
               />
             }
