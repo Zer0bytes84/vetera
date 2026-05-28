@@ -98,10 +98,12 @@ export function ClinicalChartsCenter({
   return (
     <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-[transform,shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20">
       {/* Background radial glow */}
-      <div className="pointer-events-none absolute inset-0 z-[-1] opacity-100">
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-100">
         <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/10 animate-pulse duration-4000" />
         <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-500/15 blur-3xl dark:bg-indigo-500/10 animate-pulse duration-4000" />
       </div>
+
+      <div className="relative z-10 flex flex-col h-full w-full">
 
       {/* Header section with tabs and quick stats */}
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
@@ -414,6 +416,7 @@ export function ClinicalChartsCenter({
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
       </div>
     </Card>
   );
