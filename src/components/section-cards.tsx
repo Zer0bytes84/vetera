@@ -55,7 +55,7 @@ function SectionCard({ item, idx }: { item: SectionCardItem; idx: number }) {
       className={cn(
         "dashboard-kpi-card @container/card group relative flex flex-col overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md active:scale-[0.995]",
         idx === 0
-          ? "bg-gradient-to-r from-[#D7EDEA]/85 to-[#F4FBDF]/85 dark:from-[#1b3431]/75 dark:to-[#25301a]/75"
+          ? "bg-white dark:bg-zinc-900"
           : "bg-zinc-50 dark:bg-white/2.5"
       )}
       key={idx}
@@ -72,15 +72,21 @@ function SectionCard({ item, idx }: { item: SectionCardItem; idx: number }) {
             className="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-zinc-900/[0.02] stroke-zinc-900/[0.08] dark:fill-white/[0.04] dark:stroke-white/[0.12]"
           />
         </div>
-        {/* Gradient overlay layer (Protocol mouse-tracking glow) */}
+        {/* Gradient overlay layer (Protocol mouse-tracking glow / default for Revenue) */}
         <motion.div
-          className="absolute inset-0 rounded-[16px] bg-linear-to-r from-[#D7EDEA] to-[#F4FBDF] dark:from-[#223d3a] dark:to-[#363d27] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={style}
+          className={cn(
+            "absolute inset-0 rounded-[16px] bg-linear-to-r from-[#D7EDEA] to-[#F4FBDF] dark:from-[#223d3a] dark:to-[#363d27] transition-opacity duration-300",
+            idx === 0 ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          )}
+          style={idx === 0 ? undefined : style}
         />
-        {/* Grid overlay with mix-blend (Protocol mouse-tracking overlay) */}
+        {/* Grid overlay with mix-blend (Protocol mouse-tracking overlay / default for Revenue) */}
         <motion.div
-          className="absolute inset-0 rounded-[16px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-overlay"
-          style={style}
+          className={cn(
+            "absolute inset-0 rounded-[16px] transition-opacity duration-300 mix-blend-overlay",
+            idx === 0 ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          )}
+          style={idx === 0 ? undefined : style}
         >
           <GridPattern
             width={72}
@@ -91,11 +97,20 @@ function SectionCard({ item, idx }: { item: SectionCardItem; idx: number }) {
           />
         </motion.div>
         {/* Inset ring layer */}
-        <div className="absolute inset-0 rounded-[16px] ring-1 ring-inset ring-zinc-900/7.5 dark:ring-white/15 group-hover:ring-zinc-900/10 dark:group-hover:ring-white/30 transition-shadow duration-300" />
+        <div className={cn(
+          "absolute inset-0 rounded-[16px] ring-1 ring-inset ring-zinc-900/7.5 dark:ring-white/15 transition-shadow duration-300",
+          idx === 0 ? "ring-zinc-900/10 dark:ring-white/30" : "group-hover:ring-zinc-900/10 dark:group-hover:ring-white/30"
+        )} />
       </div>
       <CardHeader className="relative z-10 space-y-4">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/25 backdrop-blur-[2px] transition duration-300 group-hover:bg-white/50 group-hover:ring-zinc-900/25 dark:bg-white/7.5 dark:ring-white/15 dark:group-hover:bg-emerald-300/10 dark:group-hover:ring-emerald-400">
-          <IconComponent className="h-4 w-4 text-zinc-600 transition-colors duration-300 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-emerald-400" strokeWidth={2} />
+        <div className={cn(
+          "flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/25 backdrop-blur-[2px] transition duration-300 group-hover:bg-white/50 group-hover:ring-zinc-900/25 dark:bg-white/7.5 dark:ring-white/15 dark:group-hover:bg-emerald-300/10 dark:group-hover:ring-emerald-400",
+          idx === 0 && "bg-white/50 ring-zinc-900/25 dark:bg-emerald-300/10 dark:ring-emerald-400"
+        )}>
+          <IconComponent className={cn(
+            "h-4 w-4 text-zinc-600 transition-colors duration-300 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-emerald-400",
+            idx === 0 && "text-zinc-900 dark:text-emerald-400"
+          )} strokeWidth={2} />
         </div>
         <div className="space-y-1">
           <CardDescription className="dashboard-kpi-label">
