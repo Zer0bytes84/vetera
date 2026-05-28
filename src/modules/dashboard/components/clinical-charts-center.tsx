@@ -46,7 +46,7 @@ export function ClinicalChartsCenter({
   monthlyAppointments,
 }: ClinicalChartsCenterProps) {
   const [activeTab, setActiveTab] = React.useState<"clinical" | "financial">("clinical");
-  const [timeRange, setTimeRange] = React.useState<"7d" | "30d" | "90d">("90d");
+  const [timeRange, setTimeRange] = React.useState<"7d" | "30d" | "90d">("7d");
 
   // Filtering clinical activity data based on range
   const filteredActivityData = React.useMemo(() => {
