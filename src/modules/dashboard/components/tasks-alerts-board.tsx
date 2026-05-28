@@ -60,7 +60,7 @@ export function TasksAlertsBoard({ onNavigate }: TasksAlertsBoardProps) {
   };
 
   return (
-    <Card className="dashboard-luxe-card group relative flex h-full flex-col overflow-hidden shadow-none transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20 active:scale-[0.995]">
+    <Card className="dashboard-luxe-card group relative flex h-full flex-col overflow-hidden shadow-none transition-[transform,shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20">
       {/* Background radial glow */}
       <div className="pointer-events-none absolute inset-0 z-[-1] opacity-0 transition-opacity duration-500 group-hover:opacity-100">
         <div className="absolute left-0 bottom-0 h-48 w-48 rounded-full bg-amber-500/10 blur-3xl dark:bg-amber-500/5" />
@@ -128,11 +128,10 @@ export function TasksAlertsBoard({ onNavigate }: TasksAlertsBoardProps) {
                     </span>
                   )}
 
-                  {/* Checkbox button */}
                   <button
                     onClick={() => handleToggleTask(task.id, task.status)}
                     className={cn(
-                      "flex size-5 shrink-0 items-center justify-center rounded-lg border text-white transition-all duration-200 cursor-pointer active:scale-[0.85]",
+                      "flex size-5 shrink-0 items-center justify-center rounded-lg border text-white transition-[transform,colors] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer active:scale-[0.95]",
                       task.status === "done"
                         ? "bg-gradient-to-br from-emerald-400 to-teal-500 border-transparent shadow-[0_0_6px_rgba(16,185,129,0.3)]"
                         : "border-zinc-900/15 bg-white hover:border-zinc-950/30 dark:border-white/15 dark:bg-zinc-950 dark:hover:border-white/30"
@@ -177,7 +176,7 @@ export function TasksAlertsBoard({ onNavigate }: TasksAlertsBoardProps) {
         <div className="mt-auto border-t border-zinc-950/10 p-4 dark:border-white/10">
           <button
             onClick={() => onNavigate("taches")}
-            className="flex w-full items-center justify-center rounded-2xl bg-zinc-900 px-4 py-2.5 font-semibold text-xs text-white transition-all duration-200 hover:bg-zinc-800 hover:scale-[1.01] active:scale-[0.97] active:duration-75 hover:shadow-md dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 cursor-pointer"
+            className="flex w-full items-center justify-center rounded-2xl bg-zinc-900 px-4 py-2.5 font-semibold text-xs text-white transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-zinc-800 hover:scale-[1.01] active:scale-[0.97] hover:shadow-md dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 cursor-pointer"
             type="button"
           >
             Gérer toutes les tâches
