@@ -45,7 +45,7 @@ export function SpecialtiesDistribution({
   const totalDemand = appointmentTypes.reduce((sum, t) => sum + t.demand, 0);
 
   return (
-    <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-all duration-300">
+    <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20 active:scale-[0.995]">
       {/* Background radial glow */}
       <div className="pointer-events-none absolute inset-0 z-[-1] opacity-0 transition-opacity duration-500 group-hover:opacity-100">
         <div className="absolute right-0 bottom-0 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/5" />

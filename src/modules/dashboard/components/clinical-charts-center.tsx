@@ -96,7 +96,7 @@ export function ClinicalChartsCenter({
   }, [combinedFinancialData]);
 
   return (
-    <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-all duration-300">
+    <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20 active:scale-[0.995]">
       {/* Background radial glow */}
       <div className="pointer-events-none absolute inset-0 z-[-1] opacity-0 transition-opacity duration-750 group-hover:opacity-100">
         <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/10 animate-pulse duration-4000" />
@@ -119,7 +119,7 @@ export function ClinicalChartsCenter({
           <button
             onClick={() => setActiveTab("clinical")}
             className={cn(
-              "relative px-4 py-1.5 text-xs font-semibold tracking-wide transition-all duration-300 rounded-full cursor-pointer",
+              "relative px-4 py-1.5 text-xs font-semibold tracking-wide transition-all duration-200 rounded-full cursor-pointer active:scale-95",
               activeTab === "clinical" ? "text-white dark:text-zinc-950 font-bold" : "text-muted-foreground hover:text-foreground"
             )}
             type="button"
@@ -136,7 +136,7 @@ export function ClinicalChartsCenter({
           <button
             onClick={() => setActiveTab("financial")}
             className={cn(
-              "relative px-4 py-1.5 text-xs font-semibold tracking-wide transition-all duration-300 rounded-full cursor-pointer",
+              "relative px-4 py-1.5 text-xs font-semibold tracking-wide transition-all duration-200 rounded-full cursor-pointer active:scale-95",
               activeTab === "financial" ? "text-white dark:text-zinc-950 font-bold" : "text-muted-foreground hover:text-foreground"
             )}
             type="button"
@@ -211,7 +211,7 @@ export function ClinicalChartsCenter({
                 key={range}
                 onClick={() => setTimeRange(range)}
                 className={cn(
-                  "px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider transition-all rounded-full cursor-pointer",
+                  "px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider transition-all duration-100 rounded-full cursor-pointer active:scale-95",
                   timeRange === range
                     ? "bg-white shadow-[0_1px_4px_rgba(0,0,0,0.08)] text-foreground dark:bg-zinc-800 dark:text-white"
                     : "text-muted-foreground hover:text-foreground"

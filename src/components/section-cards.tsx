@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { GridPattern } from "@/components/GridPattern";
+import { cn } from "@/lib/utils";
 
 export interface SectionCardItem {
   badge: string;
@@ -51,7 +52,12 @@ function SectionCard({ item, idx }: { item: SectionCardItem; idx: number }) {
 
   return (
     <Card
-      className="dashboard-kpi-card @container/card group bg-zinc-50 dark:bg-white/2.5 relative flex flex-col overflow-hidden"
+      className={cn(
+        "dashboard-kpi-card @container/card group relative flex flex-col overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md active:scale-[0.995]",
+        idx === 0
+          ? "bg-gradient-to-r from-[#D7EDEA]/85 to-[#F4FBDF]/85 dark:from-[#1b3431]/75 dark:to-[#25301a]/75"
+          : "bg-zinc-50 dark:bg-white/2.5"
+      )}
       key={idx}
       onMouseMove={onMouseMove}
     >
