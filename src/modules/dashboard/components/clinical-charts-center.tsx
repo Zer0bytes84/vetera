@@ -98,7 +98,7 @@ export function ClinicalChartsCenter({
   return (
     <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20 active:scale-[0.995]">
       {/* Background radial glow */}
-      <div className="pointer-events-none absolute inset-0 z-[-1] opacity-0 transition-opacity duration-750 group-hover:opacity-100">
+      <div className="pointer-events-none absolute inset-0 z-[-1] opacity-100">
         <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/10 animate-pulse duration-4000" />
         <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-500/15 blur-3xl dark:bg-indigo-500/10 animate-pulse duration-4000" />
       </div>
