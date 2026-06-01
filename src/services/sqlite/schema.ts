@@ -311,3 +311,74 @@ CREATE TRIGGER IF NOT EXISTS update_consultation_documents_timestamp AFTER UPDAT
 BEGIN
     UPDATE consultation_documents SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;`;
+
+export const MIGRATION_003_SQL = `-- Migration 003: Automations and Patient Linking
+CREATE TABLE IF NOT EXISTS automations (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    icon_name TEXT NOT NULL,
+    icon_color TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    schedule TEXT NOT NULL,
+    time TEXT NOT NULL,
+    last_run_date TEXT,
+    last_run_status TEXT NOT NULL DEFAULT 'Stopped',
+    next_run_date TEXT,
+    next_run_iso TEXT,
+    next_run_relative TEXT,
+    metric_label TEXT NOT NULL,
+    metric_icon_name TEXT NOT NULL,
+    metric_value TEXT NOT NULL,
+    metric_trend TEXT NOT NULL,
+    metric_trend_up INTEGER NOT NULL DEFAULT 1,
+    chart_type TEXT NOT NULL,
+    chart_color TEXT NOT NULL,
+    chart_data TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS patient_automations (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    automation_id TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    last_run_date TEXT,
+    next_run_iso TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (automation_id) REFERENCES automations(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_patient_automations_patient_id ON patient_automations(patient_id);
+CREATE INDEX IF NOT EXISTS idx_patient_automations_automation_id ON patient_automations(automation_id);
+
+CREATE TRIGGER IF NOT EXISTS update_automations_timestamp AFTER UPDATE ON automations
+BEGIN
+    UPDATE automations SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS update_patient_automations_timestamp AFTER UPDATE ON patient_automations
+BEGIN
+    UPDATE patient_automations SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- Default automations seeding
+INSERT OR IGNORE INTO automations (id, title, description, icon_name, icon_color, is_active, schedule, time, last_run_status, metric_label, metric_icon_name, metric_value, metric_trend, metric_trend_up, chart_type, chart_color, chart_data)
+VALUES 
+('auto-001', 'Rappels de Vaccination', 'Analyse les dossiers patients, identifie les rappels de vaccins imminents, et prépare les campagnes de SMS/Emails automatiques.', 'Mail', 'bg-blue-500', 1, 'Chaque Lundi', 'à 09:00', 'Scheduled', 'Taux de conversion', 'MailCheck', '78%', '+8%', 1, 'discrete', 'bg-emerald-500', '[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]'),
+('auto-002', 'Résumé des Consultations', 'Automatise l''analyse des rapports quotidiens, extrait les insights clés et les anomalies, et livre des résumés concis.', 'Sparkles', 'bg-purple-500', 1, 'Chaque Mardi', 'à 10:00', 'Scheduled', 'Insights extraits', 'Lightbulb', '15', '+25%', 1, 'area', '#3b82f6', '[{"value":10},{"value":11},{"value":9},{"value":13},{"value":15},{"value":20},{"value":25}]'),
+('auto-003', 'Suivi Post-Opératoire', 'Surveille l''état des patients récemment opérés, identifie les risques potentiels et génère des alertes de suivi prioritaires.', 'Activity', 'bg-emerald-500', 0, 'Chaque Vendredi', 'à 10:00', 'Stopped', 'Taux de ponctualité', 'Timer', '39%', '-5%', 0, 'discrete', 'bg-amber-500', '[1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]');
+
+-- Seed initial patient_automations for existing patients (active by default)
+INSERT OR IGNORE INTO patient_automations (id, patient_id, automation_id, is_active)
+SELECT 
+  lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-' || lower(hex(randomblob(2))) || '-' || lower(hex(randomblob(2))) || '-' || lower(hex(randomblob(6))),
+  p.id, 
+  a.id, 
+  1
+FROM patients p
+CROSS JOIN automations a;
+`;

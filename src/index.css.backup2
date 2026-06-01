@@ -58,9 +58,9 @@
 /* ─── Zinc / Emerald Theme ─── */
 /* Inspired by Tailwind Plus Protocol template — neutral zinc base, emerald accent */
 :root {
-  --background: oklch(0.975 0.005 100);      /* off-white/beige for floating style */
+  --background: oklch(1 0 0);                /* white */
   --foreground: oklch(0.141 0.005 286);      /* zinc-900 */
-  --card: oklch(1 0 0);                      /* pure white for cards */
+  --card: oklch(0.985 0 0);                  /* zinc-50 */
   --card-foreground: oklch(0.141 0.005 286); /* zinc-900 */
   --popover: oklch(1 0 0);                   /* white */
   --popover-foreground: oklch(0.141 0.005 286);
@@ -81,8 +81,8 @@
   --chart-3: oklch(0.72 0.17 72);            /* amber */
   --chart-4: oklch(0.552 0.016 286);         /* zinc-500 */
   --chart-5: oklch(0.596 0.145 163);         /* emerald-600 */
-  --radius: 1.25rem;                         /* rounded-2xl / 20px */
-  --sidebar: oklch(1 0 0);                   /* pure white */
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);               /* zinc-50 */
   --sidebar-foreground: oklch(0.37 0.013 286); /* zinc-700 */
   --sidebar-primary: oklch(0.696 0.17 162);  /* emerald-500 */
   --sidebar-primary-foreground: oklch(1 0 0);
@@ -128,9 +128,9 @@
 }
 
 .dark {
-  --background: oklch(0.11 0.005 286);       /* darker background */
+  --background: oklch(0.141 0.005 286);      /* zinc-900 */
   --foreground: oklch(0.967 0.001 286);      /* zinc-100 */
-  --card: oklch(0.16 0.005 286);             /* lighter card */
+  --card: rgba(255, 255, 255, 0.025);        /* exact Protocol dark card background bg-white/2.5 */
   --card-foreground: oklch(0.967 0.001 286);
   --popover: oklch(0.181 0.008 286);
   --popover-foreground: oklch(0.967 0.001 286);
@@ -151,7 +151,7 @@
   --chart-3: oklch(0.8 0.15 72);             /* amber */
   --chart-4: oklch(0.705 0.015 286);         /* zinc-400 */
   --chart-5: oklch(0.6 0.14 163);            /* emerald-500 */
-  --sidebar: oklch(0.16 0.005 286);          /* match card */
+  --sidebar: oklch(0.141 0.005 286);         /* zinc-900 */
   --sidebar-foreground: oklch(0.967 0.001 286);
   --sidebar-primary: oklch(0.765 0.177 163);
   --sidebar-primary-foreground: oklch(0.141 0.005 286);
@@ -633,15 +633,10 @@ button:focus-visible,
 
 /* ─── Luxe Card (Quick Actions, Quota Usage) ─── */
 .dashboard-luxe-card {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(16px);
   border-radius: 24px !important;
-  border: none !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
   position: relative;
-  overflow: hidden;
-  transform: translateZ(0); /* Fix Safari corner bleeding */
-  -webkit-mask-image: -webkit-radial-gradient(white, black); /* Fix Safari corner bleeding */
   transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -651,35 +646,33 @@ button:focus-visible,
   inset: 0;
   border-radius: 24px !important;
   pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.075) !important;
+  box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.05) !important;
 }
 
 .dashboard-luxe-card:hover {
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 12px -5px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.04), 0 4px 12px -5px rgba(0, 0, 0, 0.02);
 }
 
 .dark .dashboard-luxe-card {
-  background: rgba(20, 20, 25, 0.6) !important;
-  backdrop-filter: blur(24px);
+  background: rgba(20, 20, 25, 0.45) !important;
+  backdrop-filter: blur(16px);
 }
 
 .dark .dashboard-luxe-card::after {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
 }
 
 .dark .dashboard-luxe-card:hover {
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.3), 0 4px 12px -5px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.3), 0 4px 12px -5px rgba(0, 0, 0, 0.2);
 }
 
 /* Luxe Card recharts overrides */
-.dashboard-luxe-card .recharts-cartesian-grid line,
-.dashboard-kpi-card .recharts-cartesian-grid line {
+.dashboard-luxe-card .recharts-cartesian-grid line {
   stroke: oklch(0.871 0.006 286 / 0.6) !important;
   stroke-dasharray: 3 8;
 }
 
-.dark .dashboard-luxe-card .recharts-cartesian-grid line,
-.dark .dashboard-kpi-card .recharts-cartesian-grid line {
+.dark .dashboard-luxe-card .recharts-cartesian-grid line {
   stroke: oklch(0.37 0.013 286 / 0.6) !important;
 }
 

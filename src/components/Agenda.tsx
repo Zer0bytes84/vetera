@@ -18,6 +18,7 @@ import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { AgendaListView } from "@/components/AgendaListView";
 import {
   Card,
   CardAction,
@@ -116,7 +117,7 @@ const QUICK_TIMES = [
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 const CALENDAR_START_HOUR = 7;
-const CALENDAR_END_HOUR = 21;
+const CALENDAR_END_HOUR = 23;
 const HOUR_BLOCKS = Array.from(
   { length: CALENDAR_END_HOUR - CALENDAR_START_HOUR + 1 },
   (_, index) => CALENDAR_START_HOUR + index
@@ -131,7 +132,7 @@ const TABLE_TABS = [
   { label: "Attention", value: "attention" },
 ] as const;
 
-type ViewMode = "day" | "week" | "month";
+type ViewMode = "list" | "day" | "week" | "month";
 type TableTab = (typeof TABLE_TABS)[number]["value"];
 
 type AgendaTableRow = {
@@ -943,7 +944,7 @@ const Agenda: React.FC = () => {
   const { t } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<ViewMode>("day");
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
@@ -1914,6 +1915,7 @@ const Agenda: React.FC = () => {
                 </div>
 
                 <TabsList>
+                  <TabsTrigger value="list">{t("agenda.list", { defaultValue: "Vue liste" })}</TabsTrigger>
                   <TabsTrigger value="day">{t("agenda.day")}</TabsTrigger>
                   <TabsTrigger value="week">{t("agenda.week")}</TabsTrigger>
                   <TabsTrigger value="month">{t("agenda.month")}</TabsTrigger>
@@ -1926,6 +1928,22 @@ const Agenda: React.FC = () => {
                 </div>
               ) : (
                 <>
+                  <TabsContent className="min-h-0 flex-1" value="list">
+                    <AgendaListView
+                      getAppointmentsForDate={getAppointmentsForDate}
+                      getOwnerName={(ownerId) => ownerId ? ownersById.get(ownerId)?.lastName || "" : ""}
+                      getPatient={(id) => patientsById.get(id)}
+                      getPatientName={getPatientName}
+                      isSameDay={isSameDay}
+                      monthDays={monthDays}
+                      onDateClick={(date) => setSelectedDate(date)}
+                      onSelectAppointment={selectAppointment}
+                      selectedAppointmentId={selectedAppointmentId}
+                      selectedDate={selectedDate}
+                      formatTime={formatTime}
+                    />
+                  </TabsContent>
+
                   <TabsContent className="min-h-0 flex-1" value="day">
                     <AgendaDayView
                       appointmentsByVet={appointmentsByVet}

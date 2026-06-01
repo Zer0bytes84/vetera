@@ -1,6 +1,6 @@
 "use client";
 
-import { HugeiconsIcon } from "@hugeicons/react";
+
 import type { UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import * as React from "react";
@@ -142,15 +142,14 @@ export function AppSidebar({
   ].map((item) => ({
     title: t(item.labelKey),
     icon: (
-      <HugeiconsIcon
+      <item.icon
+        weight="duotone"
         className={cn(
           "transition-all duration-200 ease-out",
           currentView === item.view
             ? "text-primary"
             : "text-muted-foreground group-hover:text-foreground"
         )}
-        icon={item.icon}
-        strokeWidth={2}
       />
     ),
     isActive: currentView === item.view,
@@ -163,10 +162,9 @@ export function AppSidebar({
   ].map((item) => ({
     name: t(item.labelKey),
     icon: (
-      <HugeiconsIcon
+      <item.icon
+        weight="duotone"
         className="text-muted-foreground transition-all duration-200 ease-out group-hover:text-foreground"
-        icon={item.icon}
-        strokeWidth={2}
       />
     ),
     onClick: () => onNavigate(item.view),
@@ -175,15 +173,14 @@ export function AppSidebar({
   const secondaryItems = (configSection?.items ?? []).map((item) => ({
     title: t(item.labelKey),
     icon: (
-      <HugeiconsIcon
+      <item.icon
+        weight="duotone"
         className={cn(
           "transition-all duration-200 ease-out",
           currentView === item.view
             ? "text-primary"
             : "text-muted-foreground group-hover:text-foreground"
         )}
-        icon={item.icon}
-        strokeWidth={2}
       />
     ),
     isActive: currentView === item.view,
@@ -194,20 +191,24 @@ export function AppSidebar({
     <Sidebar
       {...props}
       className={cn(
-        isDesktopRuntime && "top-3 h-[calc(100svh-12px)]",
         isClassicSidebar &&
           "bg-sidebar shadow-[inset_-1px_0_0_var(--sidebar-border)]",
         props.className
       )}
     >
+
       <SidebarHeader
+        data-tauri-drag-region={isDesktopRuntime ? "true" : undefined}
         className={cn(
-          "flex shrink-0 flex-row items-center px-3",
+          "flex shrink-0 flex-row items-center",
           isDesktopRuntime ? "py-3" : "py-2.5",
           "[@media(max-height:820px)]:p-1.5",
-          "h-[72px] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]",
-          isClassicSidebar ? "bg-sidebar px-5" : "bg-transparent px-3",
-          isCollapsed && "justify-center px-3"
+          "shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] transition-all duration-200",
+          isClassicSidebar ? "bg-sidebar" : "bg-transparent",
+          isDesktopRuntime && !isCollapsed ? "h-[72px] pl-[76px] pr-3" : "px-3",
+          !isDesktopRuntime && !isCollapsed && "h-[72px] px-3",
+          isDesktopRuntime && isCollapsed && "h-[100px] flex-col justify-end pb-3",
+          !isDesktopRuntime && isCollapsed && "h-[72px] justify-center"
         )}
       >
         <SidebarMenu className="w-full">
@@ -268,10 +269,10 @@ export function AppSidebar({
         className={cn(
           "shrink-0 transition-all duration-300",
           isCollapsed
-            ? "mx-0 mb-2 gap-1.5 rounded-none border-0 bg-transparent px-2 py-0 shadow-none backdrop-blur-none"
+            ? "mx-0 mb-1.5 gap-1.5 rounded-none border-0 bg-transparent px-2 py-0 shadow-none backdrop-blur-none"
             : isClassicSidebar
-              ? "mx-5 mb-3 gap-0 rounded-[18px] border border-sidebar-border bg-sidebar-accent/90 dark:bg-zinc-800/40 px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
-              : "mx-3 mb-3 gap-0 rounded-2xl border border-zinc-200/90 dark:border-white/12 bg-white/80 dark:bg-white/[0.06] backdrop-blur-md px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+              ? "mx-4 mb-2 gap-0 rounded-[18px] border border-sidebar-border bg-sidebar-accent/90 dark:bg-zinc-800/40 px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
+              : "mx-3 mb-2 gap-0 rounded-2xl border border-zinc-200/90 dark:border-white/12 bg-white/80 dark:bg-white/[0.06] backdrop-blur-md px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
         )}
       >
         <NavSecondary

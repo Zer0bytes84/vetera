@@ -1,14 +1,13 @@
 import {
-  BotIcon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  LanguageCircleIcon,
-  Moon02Icon,
-  Notification03Icon,
-  SearchIcon,
-  Sun03Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+  Robot,
+  CheckCircle,
+  Translate,
+  Moon,
+  Bell,
+  MagnifyingGlass,
+  Sun,
+  CalendarBlank,
+} from "@phosphor-icons/react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -216,21 +215,15 @@ function AppShellInner() {
 
   return (
     <SidebarProvider
-      className={cn("relative isolate", isDesktopRuntime && "pt-3", isRtl && "rtl-shell")}
+      className={cn("relative isolate", isRtl && "rtl-shell")}
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 13)",
+          "--header-height": "72px",
         } as React.CSSProperties
       }
     >
-      {isDesktopRuntime && (
-        <div
-          className="fixed inset-x-0 top-0 z-[60] flex h-3 items-center bg-sidebar"
-          data-tauri-drag-region
-        />
-      )}
 
       <AppSidebar
         collapsible={collapsible}
@@ -273,11 +266,6 @@ function AppShellInner() {
             className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.02] to-transparent dark:from-white/[0.03]"
             aria-hidden="true"
           />
-          {/* Bottom separator — Protocol-style hairline */}
-          <div
-            className="pointer-events-none absolute inset-x-0 top-full h-px bg-zinc-900/15 dark:bg-white/20"
-            aria-hidden="true"
-          />
           <div className="relative flex w-full items-center gap-2 px-4 lg:px-6">
             <SidebarTrigger className="-ml-1" />
             {/* Header separator — Protocol exact pattern */}
@@ -287,22 +275,24 @@ function AppShellInner() {
             />
 
             {/* Search trigger */}
+            {/* Search trigger - Premium Dribbble Style */}
             <button
-              className="app-shell-search flex h-9 w-[280px] items-center gap-2 rounded-xl border px-3 text-left text-sm text-muted-foreground transition-all hover:text-foreground"
+              className="group relative flex h-10 w-[300px] sm:w-[340px] items-center gap-3 rounded-full border border-black/5 bg-white/40 px-4 text-left text-sm text-muted-foreground shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md transition-all duration-300 hover:border-black/10 hover:bg-white/60 hover:text-foreground hover:shadow-[0_4px_14px_rgba(0,0,0,0.04)] dark:border-white/10 dark:bg-zinc-900/40 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:hover:border-white/20 dark:hover:bg-zinc-900/60"
               onClick={() => setPaletteOpen(true)}
               type="button"
             >
-              <HugeiconsIcon
-                className="size-4 shrink-0"
-                icon={SearchIcon}
-                strokeWidth={2}
+              <MagnifyingGlass
+                weight="duotone"
+                className="size-4 shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary"
               />
-              <span className="truncate">
+              <span className="truncate flex-1 font-medium tracking-tight">
                 {t("common.searchPlaceholder", {
-                  defaultValue: "Rechercher...",
+                  defaultValue: "Rechercher partout...",
                 })}
               </span>
-              <Kbd className="ml-auto hidden xl:inline-flex">⌘ K</Kbd>
+              <kbd className="ml-auto hidden h-6 select-none items-center gap-1 rounded-full border border-black/10 bg-white/50 px-2 font-mono text-[10px] font-medium tracking-widest text-muted-foreground shadow-xs transition-colors group-hover:bg-white dark:border-white/10 dark:bg-zinc-800/50 dark:group-hover:bg-zinc-800 xl:flex">
+                <span className="text-xs">⌘</span>K
+              </kbd>
             </button>
 
           <div className="ml-auto flex items-center gap-x-1">
@@ -314,10 +304,9 @@ function AppShellInner() {
                 size="icon"
                 variant="outline"
               >
-                <HugeiconsIcon
+                <Robot
+                  weight="duotone"
                   className="size-5"
-                  icon={BotIcon}
-                  strokeWidth={2}
                 />
               </Button>
 
@@ -329,10 +318,9 @@ function AppShellInner() {
                 size="icon"
                 variant="outline"
               >
-                <HugeiconsIcon
+                <Bell
+                  weight="duotone"
                   className="size-5"
-                  icon={Notification03Icon}
-                  strokeWidth={2}
                 />
               </Button>
 
@@ -344,11 +332,11 @@ function AppShellInner() {
                 size="icon"
                 variant="outline"
               >
-                <HugeiconsIcon
-                  className="size-5"
-                  icon={isDarkMode ? Moon02Icon : Sun03Icon}
-                  strokeWidth={2}
-                />
+                {isDarkMode ? (
+                  <Moon weight="duotone" className="size-5" />
+                ) : (
+                  <Sun weight="duotone" className="size-5" />
+                )}
               </Button>
 
               {/* Language */}
@@ -363,10 +351,9 @@ function AppShellInner() {
                     />
                   }
                 >
-                  <HugeiconsIcon
+                  <Translate
+                    weight="duotone"
                     className="size-5"
-                    icon={LanguageCircleIcon}
-                    strokeWidth={2}
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -388,10 +375,9 @@ function AppShellInner() {
                       >
                         <span className="flex items-center gap-2">
                           {active ? (
-                            <HugeiconsIcon
+                            <CheckCircle
+                              weight="duotone"
                               className="size-4 text-primary"
-                              icon={CheckmarkCircle02Icon}
-                              strokeWidth={2}
                             />
                           ) : (
                             <span className="size-4" />
@@ -428,10 +414,9 @@ function AppShellInner() {
                   }}
                   variant="default"
                 >
-                  <HugeiconsIcon
+                  <CalendarBlank
+                    weight="duotone"
                     className="size-4"
-                    icon={Calendar01Icon}
-                    strokeWidth={2}
                   />
                   {t("dashboard.quick.newAppointment", {
                     defaultValue: "Nouveau rendez-vous",

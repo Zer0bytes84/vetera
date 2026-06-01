@@ -282,141 +282,163 @@ export function Help() {
     }, 4000);
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredCategories = sidebarCategories.map(category => {
+    const items = category.items.filter(itemId => {
+      const section = sections.find(s => s.id === itemId);
+      if (!section) return false;
+      return section.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+             section.description.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+    return { ...category, items };
+  }).filter(c => c.items.length > 0);
+
   return (
-    <div className="mx-auto flex h-[calc(100vh-64px)] w-full min-w-0 max-w-[1400px] flex-col gap-0 px-4 lg:px-8 pb-6 page-enter">
-      <div className="flex flex-1 overflow-hidden gap-8 mt-6">
-        
-        {/* Left Minimalist Sidebar */}
-        <aside className="hidden w-56 shrink-0 flex-col gap-6 md:flex pr-4 border-r border-zinc-100 dark:border-white/5">
-          <ScrollArea className="h-full pr-2">
+    <div className="mx-auto flex h-[calc(100svh-88px)] w-full min-w-0 flex-col lg:flex-row rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white/50 dark:bg-zinc-950/20 overflow-hidden shadow-sm backdrop-blur-xl">
+        {/* Left Premium Secondary Sidebar */}
+        <aside className="w-full lg:w-72 shrink-0 flex-col bg-zinc-50/50 dark:bg-zinc-900/30 border-r border-zinc-200/80 dark:border-white/5 flex">
+          <div className="p-4 border-b border-zinc-200/80 dark:border-white/5">
+            <h2 className="font-semibold text-zinc-900 dark:text-white mb-3 tracking-tight">Centre d'aide</h2>
+            <div className="relative">
+              <HugeiconsIcon icon={HelpCircleIcon} className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
+              <input 
+                type="text" 
+                placeholder="Rechercher une rubrique..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-zinc-400"
+              />
+            </div>
+          </div>
+          <ScrollArea className="flex-1 px-3 py-4">
             <div className="space-y-6">
-              {sidebarCategories.map((category) => (
-                <div key={category.title} className="space-y-2">
-                  <h3 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest pl-4">
-                    {category.title}
-                  </h3>
-                  <ul role="list" className="space-y-1 relative pl-2">
-                    {/* Vertical guideline */}
-                    <div className="absolute left-2.5 top-0 bottom-0 w-px bg-zinc-100 dark:bg-white/5" />
-                    
-                    {category.items.map((itemId) => {
-                      const section = sections.find((s) => s.id === itemId);
-                      if (!section) return null;
-                      
-                      const Icon = section.icon;
-                      const isActive = activeSectionId === itemId;
-                      
-                      return (
-                        <li key={itemId} className="relative">
-                          {isActive && (
-                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-emerald-500 rounded-r" />
-                          )}
-                          <button
-                            onClick={() => {
-                              setActiveSectionId(itemId);
-                              setFeedbackSubmitted(false);
-                            }}
-                            className={cn(
-                              "group flex items-center gap-3 py-1.5 pl-6 text-xs font-semibold transition-all duration-200 cursor-pointer w-full text-left rounded-md",
-                              isActive
-                                ? "text-zinc-900 dark:text-white font-bold"
-                                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                            )}
-                            type="button"
-                          >
-                            <HugeiconsIcon
+              {filteredCategories.length === 0 ? (
+                <div className="text-center text-sm text-zinc-500 py-8">Aucun résultat trouvé.</div>
+              ) : (
+                filteredCategories.map((category) => (
+                  <div key={category.title} className="space-y-1.5">
+                    <h3 className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider pl-3 mb-2">
+                      {category.title}
+                    </h3>
+                    <ul role="list" className="space-y-0.5">
+                      {category.items.map((itemId) => {
+                        const section = sections.find((s) => s.id === itemId);
+                        if (!section) return null;
+                        
+                        const Icon = section.icon;
+                        const isActive = activeSectionId === itemId;
+                        
+                        return (
+                          <li key={itemId}>
+                            <button
+                              onClick={() => {
+                                setActiveSectionId(itemId);
+                                setFeedbackSubmitted(false);
+                              }}
                               className={cn(
-                                "size-4 shrink-0 transition-transform duration-200",
-                                isActive 
-                                  ? "text-emerald-500 scale-105" 
-                                  : "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
+                                "group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-left",
+                                isActive
+                                  ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200/50 dark:ring-white/5"
+                                  : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white"
                               )}
-                              icon={Icon}
-                              strokeWidth={isActive ? 2.5 : 2}
-                            />
-                            <span className="truncate">{section.title}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
+                              type="button"
+                            >
+                              <HugeiconsIcon
+                                className={cn(
+                                  "size-4 shrink-0 transition-colors duration-200",
+                                  isActive 
+                                    ? "text-primary" 
+                                    : "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
+                                )}
+                                icon={Icon}
+                                strokeWidth={isActive ? 2.5 : 2}
+                              />
+                              <span className="truncate">{section.title}</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))
+              )}
             </div>
           </ScrollArea>
         </aside>
 
-        {/* Right Documentation Pane (Transparent full-bleed typography layout) */}
-        <ScrollArea className="flex-1 min-w-0 h-full">
-          <main className="max-w-2xl px-2 md:px-6 pb-16">
-            <div className="space-y-6">
+        {/* Right Documentation Pane */}
+        <ScrollArea className="flex-1 min-w-0 h-full bg-white/40 dark:bg-transparent">
+          <main className="max-w-3xl mx-auto px-6 py-8 md:px-10 md:py-12">
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
               
               {/* Header Topic details */}
-              <div className="flex items-start gap-4 border-b border-zinc-100 pb-6 dark:border-white/5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-50 ring-1 ring-zinc-200/80 dark:bg-white/[0.02] dark:ring-white/5 shadow-xs">
+              <div className="flex items-start gap-5 border-b border-zinc-100 pb-8 dark:border-white/5">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-zinc-50 to-zinc-100 ring-1 ring-zinc-200/80 dark:from-zinc-800/50 dark:to-zinc-900/50 dark:ring-white/10 shadow-sm">
                   <HugeiconsIcon
-                    className="size-5 text-zinc-700 dark:text-zinc-200"
+                    className="size-6 text-zinc-700 dark:text-zinc-300"
                     icon={activeSection.icon}
                     strokeWidth={2}
                   />
                 </div>
                 <div>
-                  <h1 className="font-display text-2xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
+                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
                     {activeSection.title}
                   </h1>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed font-semibold">
+                  <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-2 leading-relaxed">
                     {activeSection.description}
                   </p>
                 </div>
               </div>
 
               {/* Active Section Content */}
-              <div className="py-2 min-h-[30vh]">
+              <div className="py-4 min-h-[35vh] prose prose-zinc dark:prose-invert prose-sm md:prose-base max-w-none">
                 {activeSection.content}
               </div>
 
               {/* Alert Tips inside active section */}
               {activeSection.id !== "introduction" && (
-                <div className="mt-8 flex gap-3 rounded-xl border border-emerald-500/10 bg-emerald-500/[0.02] p-4 dark:border-emerald-400/10 dark:bg-emerald-400/[0.01]">
+                <div className="mt-8 flex gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 dark:border-primary/20 dark:bg-primary/10 shadow-sm">
                   <HugeiconsIcon
-                    className="mt-0.5 size-4.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                    className="mt-0.5 size-5 shrink-0 text-primary"
                     icon={InformationCircleIcon}
                     strokeWidth={2}
                   />
-                  <div className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    <strong className="text-emerald-700 dark:text-emerald-400 font-semibold">Conseil :</strong> Les données et indicateurs sont synchronisés automatiquement. Si vous rencontrez un problème persistant, n'hésitez pas à solliciter notre support technique.
+                  <div className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    <strong className="text-primary font-semibold mr-2">Conseil de pro :</strong> 
+                    Les données et indicateurs sont synchronisés automatiquement. Si vous rencontrez un problème persistant, n'hésitez pas à solliciter notre support technique.
                   </div>
                 </div>
               )}
 
               {/* Integrated Feedback & Stats footer block */}
-              <footer className="mt-12 border-t border-zinc-100 dark:border-white/5 pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs">
+              <footer className="mt-16 border-t border-zinc-100 dark:border-white/5 pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs">
                 <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-500">
                   <HugeiconsIcon className="size-4 shrink-0" icon={Book01Icon} strokeWidth={2} />
-                  <span>Documentation officielle bAItari • Mis à jour le {new Date().toLocaleDateString("fr-FR")}</span>
+                  <span>Documentation officielle {APP_NAME} • Rév. 2026.5</span>
                 </div>
 
                 {/* Integrated "Useful?" feedback */}
                 <div className="flex items-center gap-4">
                   {feedbackSubmitted ? (
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5 animate-in fade-in duration-300">
-                      <span className="inline-block size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-primary font-semibold flex items-center gap-2 animate-in fade-in duration-300 bg-primary/10 px-3 py-1.5 rounded-full">
+                      <span className="inline-block size-1.5 rounded-full bg-primary animate-pulse" />
                       Merci pour votre retour !
                     </span>
                   ) : (
                     <div className="flex items-center gap-3">
-                      <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Cette page est-elle utile ?</span>
+                      <span className="text-zinc-500 dark:text-zinc-400 font-medium">Cette page vous a-t-elle aidé ?</span>
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleFeedback(true)}
-                          className="px-2.5 py-1 rounded-md border border-zinc-200 hover:bg-zinc-50 dark:border-white/10 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-400 cursor-pointer transition-colors duration-200 text-xs font-semibold"
+                          className="px-3 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 dark:border-white/10 dark:hover:bg-white/10 text-zinc-600 dark:text-zinc-300 cursor-pointer transition-colors duration-200 font-medium shadow-sm hover:shadow"
                           type="button"
                         >
                           Oui
                         </button>
                         <button
                           onClick={() => handleFeedback(false)}
-                          className="px-2.5 py-1 rounded-md border border-zinc-200 hover:bg-zinc-50 dark:border-white/10 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-400 cursor-pointer transition-colors duration-200 text-xs font-semibold"
+                          className="px-3 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 dark:border-white/10 dark:hover:bg-white/10 text-zinc-600 dark:text-zinc-300 cursor-pointer transition-colors duration-200 font-medium shadow-sm hover:shadow"
                           type="button"
                         >
                           Non
@@ -430,8 +452,6 @@ export function Help() {
             </div>
           </main>
         </ScrollArea>
-
-      </div>
     </div>
   );
 }

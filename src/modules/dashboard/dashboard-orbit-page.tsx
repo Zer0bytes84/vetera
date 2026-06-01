@@ -1,6 +1,5 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
 import { useMemo } from "react";
 import type { SectionCardItem } from "@/components/section-cards";
 import { SectionCards } from "@/components/section-cards";
@@ -12,7 +11,6 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { buildDashboardMetrics } from "@/lib/metrics";
-import { useAuth } from "@/contexts/AuthContext";
 
 // Import our premium widgets
 import { ClinicalChartsCenter } from "./components/clinical-charts-center";
@@ -22,10 +20,11 @@ import { TasksAlertsBoard } from "./components/tasks-alerts-board";
 import { PipelineActivityFunnel } from "./components/pipeline-activity-funnel";
 import { StaffStatusWidget } from "./components/staff-status-widget";
 import { StockAlertsWidget } from "./components/stock-alerts-widget";
+import { AutomationWidgets } from "./components/automation-widgets";
 
 interface DashboardOrbitPageProps {
+  onNavigate?: (view: string) => void;
   onOpenAIAgent?: () => void;
-  onNavigate?: (view: any) => void;
 }
 
 function formatCompactInteger(value: number): string {
@@ -53,8 +52,7 @@ function parseDashboardDate(value?: string): Date | null {
   return Number.isFinite(date.getTime()) ? date : null;
 }
 
-export function DashboardOrbitPage({ onOpenAIAgent, onNavigate }: DashboardOrbitPageProps) {
-  const { currentUser } = useAuth();
+export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
   const { data: appointments } = useAppointmentsRepository();
   const { data: owners } = useOwnersRepository();
   const { data: patients } = usePatientsRepository();
@@ -204,48 +202,21 @@ export function DashboardOrbitPage({ onOpenAIAgent, onNavigate }: DashboardOrbit
   ];
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6 pb-8">
-      {/* Header Panel */}
-      <div className="dashboard-command-panel flex items-end justify-between gap-6">
-        <div className="min-w-0">
-          <h1 className="font-semibold text-4xl text-foreground tracking-tight lg:text-5xl">
-            Tableau de bord
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-            Bonjour {currentUser?.displayName ? `${currentUser.displayName.split(" ")[0]} ` : ""}👋 Ravi de vous retrouver ! Voici l'état de votre clinique aujourd'hui.
-          </p>
-        </div>
-        <div className="dashboard-date-pill shrink-0 text-right text-sm text-muted-foreground">
-          {new Date(metrics.referenceDate).toLocaleDateString("fr-FR", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </div>
-      </div>
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+      {/* Row 1 — Main Interactive Charts (full width) */}
+      <ClinicalChartsCenter
+        activityData={clinicalActivityData}
+        monthlyRevenue={metrics.monthlyRevenue}
+        monthlyAppointments={metrics.monthlyAppointments}
+      />
 
-      {/* Row 1 — Legacy Glowing KPI Cards */}
+      {/* Row 2 — Legacy Glowing KPI Cards */}
       <SectionCards items={sectionCardItems} />
 
-      {/* Row 2 — Main Interactive Charts & Waiting Room Feed Grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ClinicalChartsCenter
-            activityData={clinicalActivityData}
-            monthlyRevenue={metrics.monthlyRevenue}
-            monthlyAppointments={metrics.monthlyAppointments}
-          />
-        </div>
-        <div>
-          <NextAppointmentsFeed
-            appointments={todayAppointmentsList}
-            onNavigate={onNavigate}
-          />
-        </div>
-      </div>
+      {/* Row 2.5 — Automation Widgets */}
+      <AutomationWidgets />
 
-      {/* Row 3 — Care Distribution, Interactive Tasks Checklist & Activity Funnel Grid */}
+      {/* Row 3 — Care Distribution, Tasks & Activity Funnel */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div>
           <SpecialtiesDistribution
@@ -264,7 +235,7 @@ export function DashboardOrbitPage({ onOpenAIAgent, onNavigate }: DashboardOrbit
         </div>
       </div>
 
-      {/* Row 4 — Staff Status Board & Stock Alerts Inventory Grid */}
+      {/* Row 4 — Staff Status Board & Stock Alerts Inventory */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <StaffStatusWidget
@@ -273,23 +244,15 @@ export function DashboardOrbitPage({ onOpenAIAgent, onNavigate }: DashboardOrbit
           />
         </div>
         <div>
-          <StockAlertsWidget
-            onNavigate={onNavigate}
-          />
+          <StockAlertsWidget onNavigate={onNavigate} />
         </div>
       </div>
 
-      {/* Floating AI Agent Fab button */}
-      {onOpenAIAgent && (
-        <button
-          aria-label="Assistant IA"
-          className="dashboard-ai-fab fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center rounded-full bg-zinc-950 text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-zinc-800 active:scale-95 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100"
-          onClick={onOpenAIAgent}
-          type="button"
-        >
-          <Sparkles className="size-5" />
-        </button>
-      )}
+      {/* Row 5 — Full-width Today's Programme & Next Appointments */}
+      <NextAppointmentsFeed
+        appointments={todayAppointmentsList}
+        onNavigate={onNavigate}
+      />
     </div>
   );
 }

@@ -1,11 +1,14 @@
 "use client";
 
+import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart as PieIcon } from "lucide-react";
 
 export interface CareSpecialty {
   label: string;
-  value: number; // Volume value (can be count or cash value)
+  value: number;
   color: string;
 }
 
@@ -19,127 +22,272 @@ interface SpecialtiesDistributionProps {
   appointmentTypes: AppointmentTypeDemand[];
 }
 
-const progressGradients = [
-  "from-violet-500 to-fuchsia-400 shadow-[0_0_8px_rgba(167,139,250,0.3)]",
-  "from-amber-500 to-orange-400 shadow-[0_0_8px_rgba(245,158,11,0.3)]",
-  "from-emerald-500 to-teal-400 shadow-[0_0_8px_rgba(16,185,129,0.3)]",
-  "from-sky-400 to-indigo-500 shadow-[0_0_8px_rgba(56,189,248,0.3)]",
+const SLICE_COLORS = ["#8b5cf6", "#f59e0b", "#10b981", "#0ea5e9", "#f43f5e"];
+
+const SLICE_GRADIENTS: Array<{ from: string; to: string }> = [
+  { from: "#a78bfa", to: "#7c3aed" }, // violet
+  { from: "#fbbf24", to: "#d97706" }, // amber
+  { from: "#34d399", to: "#059669" }, // emerald
+  { from: "#38bdf8", to: "#0284c7" }, // sky
+  { from: "#fb7185", to: "#e11d48" }, // rose
 ];
 
-const categoryColors = [
-  "border-violet-500/20 bg-violet-500/5 text-violet-700 dark:text-violet-300",
-  "border-amber-500/20 bg-amber-500/5 text-amber-700 dark:text-amber-300",
-  "border-emerald-500/20 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300",
-  "border-sky-500/20 bg-sky-500/5 text-sky-700 dark:text-sky-300",
+const TYPE_TONES = [
+  "from-violet-500/10 to-violet-500/[0.03] border-violet-500/20 text-violet-700 dark:text-violet-300",
+  "from-amber-500/10 to-amber-500/[0.03] border-amber-500/20 text-amber-700 dark:text-amber-300",
+  "from-emerald-500/10 to-emerald-500/[0.03] border-emerald-500/20 text-emerald-700 dark:text-emerald-300",
+  "from-sky-500/10 to-sky-500/[0.03] border-sky-500/20 text-sky-700 dark:text-sky-300",
 ];
+
+const TYPE_BARS = [
+  "bg-violet-500",
+  "bg-amber-500",
+  "bg-emerald-500",
+  "bg-sky-500",
+];
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    return (
+      <div className="rounded-xl border border-zinc-200 bg-white/95 px-3 py-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          {data.name}
+        </p>
+        <p className="mt-1 font-display text-sm font-semibold tabular-nums text-foreground">
+          {new Intl.NumberFormat("fr-FR").format(data.value)} DA
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export function SpecialtiesDistribution({
   categories,
   appointmentTypes,
 }: SpecialtiesDistributionProps) {
-  // Calculate maximum values for relative widths
-  const maxCategoryValue = Math.max(...categories.map((c) => c.value), 1);
-  const totalCategories = categories.reduce((sum, c) => sum + c.value, 0);
+  const [hoverIdx, setHoverIdx] = React.useState<number | null>(null);
 
-  const maxTypeDemand = Math.max(...appointmentTypes.map((t) => t.demand), 1);
+  const totalCategories = categories.reduce((sum, c) => sum + c.value, 0);
   const totalDemand = appointmentTypes.reduce((sum, t) => sum + t.demand, 0);
 
+  const chartData = categories.slice(0, 5).map((cat, idx) => ({
+    name: cat.label,
+    value: cat.value,
+    fill: SLICE_COLORS[idx % SLICE_COLORS.length],
+    gradId: `slice-grad-${idx}`,
+  }));
+
+  const featured =
+    hoverIdx !== null && chartData[hoverIdx] ? chartData[hoverIdx] : null;
+
   return (
-    <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-[transform,shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20">
-      {/* Background radial glow */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-        <div className="absolute right-0 bottom-0 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/5" />
+    <Card className="dashboard-luxe-card group relative flex h-full flex-col overflow-hidden p-6 shadow-none !border-zinc-200 dark:!border-white/10 transition-[transform,shadow] duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20">
+      {/* Glow */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/5" />
+        <div className="absolute -left-12 -bottom-12 h-40 w-40 rounded-full bg-fuchsia-500/10 blur-3xl dark:bg-fuchsia-500/5" />
       </div>
 
-      <div className="relative z-10 flex flex-col h-full w-full">
-
-      {/* Skewed Grid Pattern Layer in the background */}
-      <div className="pointer-events-none absolute inset-0 z-[-1] opacity-[0.015] transition-all duration-500 group-hover:opacity-[0.04] dark:opacity-[0.01] dark:group-hover:opacity-[0.025]">
-        <svg className="h-full w-full skew-y-[-18deg]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="distribution-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#distribution-grid)" />
-        </svg>
-      </div>
-
-      <div>
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-fuchsia-400 dark:from-violet-400 dark:to-fuchsia-300">
-          Répartition des Actes
-        </span>
-        <h3 className="text-xl font-bold tracking-tight text-foreground mt-1">
-          Distribution des Soins
-        </h3>
-      </div>
-
-      <div className="mt-6 space-y-6">
-        {/* Categories Progress Bars */}
-        <div className="space-y-4">
-          <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Activités Financières par Catégorie
-          </h4>
-          <div className="space-y-3">
-            {categories.slice(0, 4).map((cat, idx) => {
-              const ratio = cat.value / maxCategoryValue;
-              const percentage = totalCategories > 0 ? (cat.value / totalCategories) * 100 : 0;
-              const gradient = progressGradients[idx % progressGradients.length];
-
-              return (
-                <div key={cat.label} className="group/item space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-foreground">{cat.label}</span>
-                    <span className="text-muted-foreground font-semibold tabular-nums">
-                      {new Intl.NumberFormat("fr-FR").format(cat.value)} DA ({percentage.toFixed(0)}%)
-                    </span>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-950/5 dark:bg-white/5">
-                    <div
-                      className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-700 ease-out", gradient)}
-                      style={{
-                        width: `${ratio * 100}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+      <div className="relative z-10 flex h-full flex-col">
+        {/* ── Header ──────────────────────────────────────────── */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/15 to-fuchsia-500/10 ring-1 ring-violet-500/15 dark:ring-violet-400/15">
+                <PieIcon
+                  className="h-3.5 w-3.5 text-violet-700 dark:text-violet-300"
+                  strokeWidth={2.2}
+                />
+              </span>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-fuchsia-400 dark:from-violet-400 dark:to-fuchsia-300 font-sans">
+                Répartition Financière
+              </span>
+            </div>
+            <h3 className="mt-2 truncate font-display text-xl font-semibold tracking-tight text-foreground">
+              Distribution par Catégorie
+            </h3>
           </div>
         </div>
 
-        {/* Appointment Types List */}
-        <div className="border-t border-zinc-950/10 pt-4 dark:border-white/10 space-y-3.5">
-          <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Demande par Acte Médical
-          </h4>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-            {appointmentTypes.slice(0, 4).map((type, idx) => {
-              const percentage = totalDemand > 0 ? (type.demand / totalDemand) * 100 : 0;
-              const colorConfig = categoryColors[idx % categoryColors.length];
+        {/* ── Donut + legend ──────────────────────────────────── */}
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[1fr_1fr] sm:items-center">
+          <div className="relative mx-auto h-[180px] w-[180px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <defs>
+                  {SLICE_GRADIENTS.slice(0, chartData.length).map((g, idx) => (
+                    <linearGradient
+                      key={`slice-grad-${idx}`}
+                      id={`slice-grad-${idx}`}
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="1"
+                    >
+                      <stop offset="0%" stopColor={g.from} />
+                      <stop offset="100%" stopColor={g.to} />
+                    </linearGradient>
+                  ))}
+                </defs>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={58}
+                  outerRadius={80}
+                  paddingAngle={4}
+                  dataKey="value"
+                  stroke="none"
+                  onMouseEnter={(_, idx) => setHoverIdx(idx)}
+                  onMouseLeave={() => setHoverIdx(null)}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`url(#${entry.gradId})`}
+                      className={cn(
+                        "transition-all duration-300",
+                        hoverIdx !== null && hoverIdx !== index
+                          ? "opacity-30"
+                          : "opacity-100"
+                      )}
+                      style={{ outline: "none", cursor: "pointer" }}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
+              </PieChart>
+            </ResponsiveContainer>
+            {/* Centered label */}
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+              {featured ? (
+                <>
+                  <span className="max-w-[110px] truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    {featured.name}
+                  </span>
+                  <span className="mt-0.5 font-display text-base font-semibold tabular-nums tracking-tight text-foreground">
+                    {new Intl.NumberFormat("fr-FR", {
+                      notation: "compact",
+                      compactDisplay: "short",
+                    }).format(featured.value)}
+                  </span>
+                  <span className="text-[9px] font-bold text-muted-foreground tabular-nums">
+                    {totalCategories > 0
+                      ? `${((featured.value / totalCategories) * 100).toFixed(0)}%`
+                      : "—"}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Total
+                  </span>
+                  <span className="mt-0.5 font-display text-xl font-semibold tabular-nums tracking-tight text-foreground">
+                    {new Intl.NumberFormat("fr-FR", {
+                      notation: "compact",
+                      compactDisplay: "short",
+                    }).format(totalCategories)}
+                  </span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                    DA
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
 
+          {/* Side legend */}
+          <ul className="space-y-2">
+            {chartData.map((entry, idx) => {
+              const pct =
+                totalCategories > 0
+                  ? (entry.value / totalCategories) * 100
+                  : 0;
               return (
-                <div
+                <li
+                  key={entry.name}
+                  className={cn(
+                    "flex items-center gap-2 rounded-lg p-1.5 transition-all cursor-pointer",
+                    hoverIdx === idx
+                      ? "bg-zinc-950/5 dark:bg-white/5"
+                      : "hover:bg-zinc-950/5 dark:hover:bg-white/5"
+                  )}
+                  onMouseEnter={() => setHoverIdx(idx)}
+                  onMouseLeave={() => setHoverIdx(null)}
+                >
+                  <span
+                    className="h-3 w-3 shrink-0 rounded-md ring-1 ring-black/5"
+                    style={{
+                      background: `linear-gradient(135deg, ${SLICE_GRADIENTS[idx].from}, ${SLICE_GRADIENTS[idx].to})`,
+                    }}
+                  />
+                  <span
+                    className="min-w-0 flex-1 truncate text-xs font-semibold text-foreground"
+                    title={entry.name}
+                  >
+                    {entry.name}
+                  </span>
+                  <span className="shrink-0 text-[10px] font-bold tabular-nums text-muted-foreground">
+                    {pct.toFixed(0)}%
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* ── Top Demands ─────────────────────────────────────── */}
+        <div className="mt-5 space-y-3 border-t border-zinc-950/10 pt-4 dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">
+              Top Demandes d'Actes
+            </h4>
+            <span className="text-[10px] font-bold text-muted-foreground tabular-nums">
+              {totalDemand} actes
+            </span>
+          </div>
+          <ul className="space-y-2">
+            {appointmentTypes.slice(0, 4).map((type, idx) => {
+              const pct = totalDemand > 0 ? (type.demand / totalDemand) * 100 : 0;
+              const tone = TYPE_TONES[idx % TYPE_TONES.length];
+              const bar = TYPE_BARS[idx % TYPE_BARS.length];
+              return (
+                <li
                   key={type.name}
                   className={cn(
-                    "flex items-center justify-between rounded-xl border p-2.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-xs",
-                    colorConfig
+                    "rounded-xl border bg-clip-padding bg-gradient-to-br p-2.5 transition-all hover:scale-[1.01] hover:shadow-xs",
+                    tone
                   )}
                 >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-bold text-xs leading-none">{type.name}</p>
-                    <p className="text-[9px] opacity-75 mt-1 leading-none font-semibold">Volume de soins</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p
+                      className="min-w-0 flex-1 truncate text-xs font-bold leading-tight text-foreground"
+                      title={type.name}
+                    >
+                      {type.name}
+                    </p>
+                    <div className="flex shrink-0 items-baseline gap-1.5">
+                      <span className="font-display text-sm font-semibold tabular-nums leading-none text-foreground">
+                        {type.demand}
+                      </span>
+                      <span className="text-[10px] font-bold tabular-nums opacity-70">
+                        {pct.toFixed(0)}%
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-xs font-bold tabular-nums leading-none">{type.demand}</p>
-                    <p className="text-[9px] opacity-75 mt-1 leading-none font-semibold tabular-nums">{percentage.toFixed(0)}%</p>
+                  <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-white/40 dark:bg-white/5">
+                    <div
+                      className={cn("h-full rounded-full transition-all duration-700", bar)}
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
-      </div>
       </div>
     </Card>
   );

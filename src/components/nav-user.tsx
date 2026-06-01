@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  Logout01Icon,
-  MoreVerticalCircle01Icon,
-  Notification03Icon,
-  Settings02Icon,
-  UserCircle02Icon,
-  WalletIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+  SignOut,
+  DotsThreeVertical,
+  Bell,
+  Gear,
+  UserCircle,
+  Wallet,
+} from "@phosphor-icons/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -69,45 +68,41 @@ export function NavUser({
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
-                className="group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-muted [@media(max-height:820px)]:h-10 px-3"
+                className="group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-10 h-12 px-2.5 hover:bg-sidebar-accent/50 rounded-xl transition-all"
                 size="lg"
               />
             }
           >
-            <Avatar className="size-8 rounded-lg [@media(max-height:820px)]:size-7">
+            <Avatar className="size-9 rounded-full shadow-sm [@media(max-height:820px)]:size-8 border border-border/50 transition-all group-data-[collapsible=icon]:size-10">
               <AvatarImage alt={user.name} src={normalizedAvatar} />
-              <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
+              <AvatarFallback className="rounded-full bg-primary/10 text-primary text-sm font-medium">{fallback}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:text-[13px]">
-              <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-foreground/70 text-xs [@media(max-height:820px)]:text-[11px]">
-                {user.email}
-              </span>
+            <div className="flex flex-1 items-center ms-2 text-start text-sm group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:text-[13px]">
+              <span className="truncate font-medium tracking-tight text-[15px]">{user.name}</span>
             </div>
-            <HugeiconsIcon
-              className="ms-auto size-4 group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:size-3.5"
-              icon={MoreVerticalCircle01Icon}
-              strokeWidth={2}
+            <DotsThreeVertical
+              weight="duotone"
+              className="ms-auto size-4 text-muted-foreground/50 transition-colors group-hover:text-foreground group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:size-3.5"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="min-w-56"
+            className="min-w-56 rounded-2xl"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="size-8 rounded-lg">
+                <div className="flex items-center gap-3 px-1 py-1.5 text-left text-sm">
+                  <Avatar className="size-10 rounded-full shadow-sm border border-border/50">
                     <AvatarImage alt={user.name} src={normalizedAvatar} />
-                    <AvatarFallback className="rounded-lg">
+                    <AvatarFallback className="rounded-full bg-primary/10 text-primary text-sm font-medium">
                       {fallback}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-start text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-muted-foreground text-xs">
+                    <span className="truncate font-medium tracking-tight text-[15px]">{user.name}</span>
+                    <span className="truncate text-muted-foreground/80 text-xs">
                       {user.email}
                     </span>
                   </div>
@@ -117,25 +112,25 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={onProfile}>
-                <HugeiconsIcon icon={UserCircle02Icon} strokeWidth={2} />
+                <UserCircle weight="duotone" className="size-5" />
                 Mon profil
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onFinances}>
-                <HugeiconsIcon icon={WalletIcon} strokeWidth={2} />
+                <Wallet weight="duotone" className="size-5" />
                 Finances
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onNotifications}>
-                <HugeiconsIcon icon={Notification03Icon} strokeWidth={2} />
+                <Bell weight="duotone" className="size-5" />
                 Notifications
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onSettings}>
-                <HugeiconsIcon icon={Settings02Icon} strokeWidth={2} />
+                <Gear weight="duotone" className="size-5" />
                 Parametres
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => void onLogout?.()}>
-              <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+              <SignOut weight="duotone" className="size-5" />
               Deconnexion
             </DropdownMenuItem>
           </DropdownMenuContent>

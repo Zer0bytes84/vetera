@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 export type ClinicalActivityPoint = {
   date: string;
@@ -45,6 +46,7 @@ export function ClinicalChartsCenter({
   monthlyRevenue,
   monthlyAppointments,
 }: ClinicalChartsCenterProps) {
+  const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = React.useState<"clinical" | "financial">("clinical");
   const [timeRange, setTimeRange] = React.useState<"7d" | "30d" | "90d">("7d");
 
@@ -96,28 +98,20 @@ export function ClinicalChartsCenter({
   }, [combinedFinancialData]);
 
   return (
-    <Card className="dashboard-luxe-card group relative overflow-hidden p-6 shadow-none transition-[transform,shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20">
-      {/* Background radial glow */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-100">
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/10 animate-pulse duration-4000" />
-        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-500/15 blur-3xl dark:bg-indigo-500/10 animate-pulse duration-4000" />
-      </div>
-
-      <div className="relative z-10 flex flex-col h-full w-full">
-
-      {/* Header section with tabs and quick stats */}
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-400 dark:to-teal-300">
-            Analytiques Cliniques & Financiers
+    <div className="flex flex-col gap-6 relative z-10 w-full">
+      {/* Header section with tabs (Floating directly on background like Protocol template) */}
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between px-2">
+        <div className="max-w-2xl">
+          <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2 block">
+            Bonjour {currentUser?.displayName ? `${currentUser.displayName.split(" ")[0]} ` : ""}👋 Ravi de vous retrouver !
           </span>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl mt-1">
+          <h2 className="text-4xl font-display font-semibold tracking-tight text-foreground sm:text-5xl mt-1.5">
             {activeTab === "clinical" ? "Activité Médicale" : "Performance Globale"}
           </h2>
         </div>
 
         {/* Tab Controls */}
-        <div className="relative flex rounded-full bg-zinc-950/10 p-1 dark:bg-white/10 sm:self-center border border-zinc-950/5 dark:border-white/5 backdrop-blur-xs">
+        <div className="relative flex rounded-full bg-white/60 p-1 dark:bg-zinc-900/60 sm:self-center border border-zinc-950/10 dark:border-white/10 backdrop-blur-md shadow-sm">
           <button
             onClick={() => setActiveTab("clinical")}
             className={cn(
@@ -155,9 +149,18 @@ export function ClinicalChartsCenter({
         </div>
       </div>
 
-      {/* Sub-Header: Stats block and time range filter */}
-      <div className="mt-6 flex flex-col gap-4 border-t border-zinc-950/10 pt-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-8">
+      {/* The isolated Chart Card matching Protocol aesthetic, sublimated with premium glass and glows */}
+      <Card className="dashboard-luxe-card relative overflow-hidden p-6 lg:p-8 shadow-sm group">
+        {/* Background radial glow */}
+        <div className="pointer-events-none absolute inset-0 z-0 opacity-100">
+          <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/10 animate-pulse duration-4000" />
+          <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-500/15 blur-3xl dark:bg-indigo-500/10 animate-pulse duration-4000" />
+        </div>
+        
+        <div className="relative z-10 flex flex-col h-full w-full">
+          {/* Sub-Header: Stats block and time range filter */}
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
+          <div className="flex items-center gap-8">
           {activeTab === "clinical" ? (
             <>
               <div className="flex flex-col">
@@ -418,6 +421,7 @@ export function ClinicalChartsCenter({
         </AnimatePresence>
       </div>
       </div>
-    </Card>
+      </Card>
+    </div>
   );
 }
