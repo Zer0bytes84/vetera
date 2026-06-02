@@ -230,19 +230,24 @@ export function AgendaListView({
                         </dl>
                       </div>
                       
-                      <div className="flex flex-col items-end gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute right-4 top-1/2 -translate-y-1/2">
-                        <Button 
-                          size="sm" 
-                          className="rounded-xl shadow-md bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 h-9"
-                          onClick={(e) => handleStartConsultation(e, appt)}
-                        >
-                          <Stethoscope weight="fill" className="size-4" />
-                          <span>Démarrer</span>
-                        </Button>
-                      </div>
+                      {(appt.status === "scheduled" || appt.status === "in_progress") ? (
+                        <div className="flex flex-col items-end gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute right-4 top-1/2 -translate-y-1/2">
+                          <Button 
+                            size="sm" 
+                            className="rounded-xl shadow-md bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 h-9"
+                            onClick={(e) => handleStartConsultation(e, appt)}
+                          >
+                            <Stethoscope weight="fill" className="size-4" />
+                            <span>{appt.status === "in_progress" ? "Reprendre" : "Démarrer"}</span>
+                          </Button>
+                        </div>
+                      ) : null}
                       
-                      {/* Default status badge, hides on hover to make room for button */}
-                      <div className="absolute right-5 top-1/2 -translate-y-1/2 group-hover:opacity-0 transition-opacity duration-300">
+                      {/* Default status badge, hides on hover to make room for button (only for actionable statuses) */}
+                      <div className={cn(
+                        "absolute right-5 top-1/2 -translate-y-1/2 transition-opacity duration-300",
+                        (appt.status === "scheduled" || appt.status === "in_progress") && "group-hover:opacity-0"
+                      )}>
                         <div className={cn("text-xs font-semibold px-2.5 py-1 rounded-lg border", APPOINTMENT_STATUS_META[appt.status]?.className)}>
                           {APPOINTMENT_STATUS_META[appt.status]?.label || appt.status}
                         </div>
