@@ -13,7 +13,9 @@ export type BrowserTableName =
   | "migrations"
   | "weight_entries"
   | "vaccinations"
-  | "consultation_soaps";
+  | "consultation_soaps"
+  | "prescriptions"
+  | "prescription_items";
 
 export type BrowserRow = {
   id?: string;
@@ -44,6 +46,8 @@ const EMPTY_STATE: BrowserDatabaseState = {
     weight_entries: [],
     vaccinations: [],
     consultation_soaps: [],
+    prescriptions: [],
+    prescription_items: [],
   },
 };
 

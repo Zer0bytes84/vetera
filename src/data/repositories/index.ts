@@ -15,6 +15,8 @@ import type {
   Note,
   Owner,
   Patient,
+  Prescription,
+  PrescriptionItem,
   Product,
   Task,
   Transaction,
@@ -643,6 +645,46 @@ export function useConsultationSoapsRepository() {
           "id" | "createdAt" | "updatedAt"
         >
       );
+    },
+  };
+}
+
+export function usePrescriptionsRepository() {
+  const store = useSQLite<Prescription>("prescriptions");
+  return {
+    ...store,
+    forAppointment: (appointmentId: string) =>
+      store.data
+        .filter((row) => row.appointmentId === appointmentId)
+        .sort((a, b) => (a.prescriptionDate < b.prescriptionDate ? 1 : -1)),
+    forPatient: (patientId: string) =>
+      store.data
+        .filter((row) => row.patientId === patientId)
+        .sort((a, b) => (a.prescriptionDate < b.prescriptionDate ? 1 : -1)),
+  };
+}
+
+export function usePrescriptionItemsRepository() {
+  const store = useSQLite<PrescriptionItem>("prescription_items");
+  return {
+    ...store,
+    forPrescription: (prescriptionId: string) =>
+      store.data
+        .filter((row) => row.prescriptionId === prescriptionId)
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    forPrescriptions: (prescriptionIds: string[]) => {
+      const set = new Set(prescriptionIds);
+      return store.data
+        .filter((row) => set.has(row.prescriptionId))
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+    },
+    forPatient: (patientId: string, prescriptions: Prescription[]) => {
+      const ids = new Set(
+        prescriptions.filter((p) => p.patientId === patientId).map((p) => p.id)
+      );
+      return store.data
+        .filter((row) => ids.has(row.prescriptionId))
+        .sort((a, b) => a.sortOrder - b.sortOrder);
     },
   };
 }

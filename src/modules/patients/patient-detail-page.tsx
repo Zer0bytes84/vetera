@@ -15,6 +15,7 @@ import type { View } from "@/types";
 import type { Vaccination, WeightEntry } from "@/types/db";
 
 import { PatientDocumentsList } from "./components/patient-documents-list";
+import { PrescriptionList } from "@/modules/prescriptions";
 import { PatientHeader } from "./components/patient-header";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
 import { PatientTimeline } from "./components/patient-timeline";
@@ -198,6 +199,9 @@ export function PatientDetailPage({
             <TabsTrigger value="documents">
               {t("patientDetail.tabs.documents")}
             </TabsTrigger>
+            <TabsTrigger value="prescriptions">
+              {t("patientDetail.tabs.prescriptions", "Ordonnances")}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent className="mt-4 space-y-4" value="overview">
@@ -257,6 +261,15 @@ export function PatientDetailPage({
 
           <TabsContent className="mt-4 space-y-4" value="documents">
             <PatientDocumentsList patientId={patientId} />
+          </TabsContent>
+
+          <TabsContent
+            className="mt-4 space-y-4"
+            value="prescriptions"
+          >
+            {patient ? (
+              <PrescriptionList patient={patient} />
+            ) : null}
           </TabsContent>
         </Tabs>
       </div>

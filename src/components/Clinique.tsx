@@ -35,6 +35,8 @@ import React, {
 } from "react";
 import { toast } from "sonner";
 
+import { Pill } from "@phosphor-icons/react";
+
 import Avatar from "@/components/Avatar";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
@@ -106,6 +108,9 @@ import {
 import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { ConsultationSessionDrawer } from "@/modules/consultations";
+import { PrescriptionSheet } from "@/modules/prescriptions";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUsersRepository } from "@/data/repositories";
 import { getSetting } from "@/services/appSettingsService";
 import type { View } from "@/types";
 import type {
@@ -574,6 +579,7 @@ function ConsultationSessionDialog({
   historyAppointments,
   onClose,
   onOpenSoap,
+  onOpenPrescription,
   onSaveDraft,
   onComplete,
   onUploadDocument,
@@ -587,6 +593,7 @@ function ConsultationSessionDialog({
   historyAppointments: Appointment[];
   onClose: () => void;
   onOpenSoap?: () => void;
+  onOpenPrescription?: () => void;
   onSaveDraft: (
     payload: ConsultationDraftPayload,
     options?: SaveDraftOptions
@@ -842,6 +849,16 @@ function ConsultationSessionDialog({
               >
                 <HugeiconsIcon icon={NoteIcon} size={14} strokeWidth={2} />
                 Note SOAP
+              </Button>
+              <Button
+                className="h-8 gap-1.5"
+                onClick={() => onOpenPrescription?.()}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                <Pill weight="duotone" size={14} />
+                Ordonnance
               </Button>
               <Badge className="bg-background/90" variant="outline">
                 <HugeiconsIcon
@@ -1581,9 +1598,15 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const [activeConsultation, setActiveConsultation] =
     useState<Appointment | null>(null);
   const [soapOpen, setSoapOpen] = useState<boolean>(false);
+  const [prescriptionOpen, setPrescriptionOpen] = useState<boolean>(false);
   const [billingAppointment, setBillingAppointment] =
     useState<Appointment | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const { currentUser: authUser } = useAuth();
+  const usersRepo = useUsersRepository();
+  const currentUser = authUser
+    ? usersRepo.data.find((u) => u.id === authUser.id) ?? null
+    : null;
   const deferredSearch = useDeferredValue(searchQuery);
   const [listTab, setListTab] = useState<ListTab>("all");
   const [detailTab, setDetailTab] = useState<DetailTab>("overview");
@@ -2869,6 +2892,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           onClose={() => setActiveConsultation(null)}
           onComplete={handleConsultationComplete}
           onDeleteDocument={handleConsultationDocumentDelete}
+          onOpenPrescription={() => setPrescriptionOpen(true)}
           onOpenSoap={() => setSoapOpen(true)}
           onSaveDraft={handleConsultationSaveDraft}
           onUploadDocument={handleConsultationDocumentUpload}
@@ -2908,6 +2932,16 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
             : undefined
         }
       />
+
+      {activeConsultation && activeConsultationPatient ? (
+        <PrescriptionSheet
+          appointmentId={activeConsultation.id}
+          onOpenChange={setPrescriptionOpen}
+          open={prescriptionOpen}
+          patient={activeConsultationPatient}
+          vet={currentUser}
+        />
+      ) : null}
     </div>
   );
 };

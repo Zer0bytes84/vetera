@@ -465,4 +465,76 @@ CREATE INDEX IF NOT EXISTS idx_consultation_soaps_updated_at ON consultation_soa
 CREATE TRIGGER IF NOT EXISTS update_consultation_soaps_timestamp AFTER UPDATE ON consultation_soaps
 BEGIN
     UPDATE consultation_soaps SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- ============================================================================
+-- Migration 006: Prescriptions & ordonnances
+-- ============================================================================
+-- Une prescription = 1 document signé par 1 véto pour 1 consultation
+-- Elle contient N lignes (médicaments, posologie, durée, instructions).
+-- Les valeurs calculées (mg total, volume mL) sont stockées pour la
+-- relecture / l'impression, même si elles peuvent être recalculées à la volée.
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS prescriptions (
+    id TEXT PRIMARY KEY,
+    appointment_id TEXT NOT NULL,
+    patient_id TEXT NOT NULL,
+    vet_id TEXT,
+    prescription_date TEXT NOT NULL,
+    weight_kg REAL,
+    diagnosis TEXT,
+    general_instructions TEXT,
+    status TEXT NOT NULL DEFAULT 'draft', -- 'draft' | 'signed' | 'dispensed' | 'cancelled'
+    signed_at DATETIME,
+    template_version TEXT NOT NULL DEFAULT '1.0',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_prescriptions_patient_id ON prescriptions(patient_id);
+CREATE INDEX IF NOT EXISTS idx_prescriptions_appointment_id ON prescriptions(appointment_id);
+CREATE INDEX IF NOT EXISTS idx_prescriptions_prescription_date ON prescriptions(prescription_date);
+CREATE INDEX IF NOT EXISTS idx_prescriptions_status ON prescriptions(status);
+
+CREATE TRIGGER IF NOT EXISTS update_prescriptions_timestamp AFTER UPDATE ON prescriptions
+BEGIN
+    UPDATE prescriptions SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+CREATE TABLE IF NOT EXISTS prescription_items (
+    id TEXT PRIMARY KEY,
+    prescription_id TEXT NOT NULL,
+    medication_id TEXT,             -- nullable: médicament hors catalogue
+    medication_name TEXT NOT NULL,  -- snapshot du nom (commercial ou DCI)
+    medication_class TEXT,
+    form TEXT,                      -- comprimé, solution buvable, injectable…
+    dosage_per_kg REAL,             -- ex 20 (mg/kg)
+    dosage_unit TEXT NOT NULL DEFAULT 'mg/kg', -- mg/kg | mg/tot | mL/kg | UI/kg
+    dosage_min REAL,                -- borne basse (ex 10)
+    dosage_max REAL,                -- borne haute (ex 20)
+    concentration_mg_per_ml REAL,   -- pour calcul mL
+    computed_dose_mg REAL,          -- dose totale calculée (mg)
+    computed_volume_ml REAL,        -- volume total calculé (mL)
+    frequency TEXT NOT NULL,        -- 2x/jour, toutes les 8h…
+    duration TEXT NOT NULL,         -- 5-7 jours, 14 jours…
+    route TEXT,                     -- PO, IM, SC, IV…
+    quantity TEXT,                  -- ex "1 boîte de 30 cp"
+    instructions TEXT,              -- texte libre pour le propriétaire
+    warnings TEXT,                  -- effets secondaires / précautions
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (prescription_id) REFERENCES prescriptions(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_prescription_items_prescription_id ON prescription_items(prescription_id);
+CREATE INDEX IF NOT EXISTS idx_prescription_items_sort_order ON prescription_items(prescription_id, sort_order);
+
+CREATE TRIGGER IF NOT EXISTS update_prescription_items_timestamp AFTER UPDATE ON prescription_items
+BEGIN
+    UPDATE prescription_items SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;`;

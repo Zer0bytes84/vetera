@@ -196,3 +196,68 @@ export interface ConsultationSoap {
 
 /** Type pratique pour les appels S/O/A/P. */
 export type SoapSectionKey = "subjective" | "objective" | "assessment" | "plan";
+
+// =====================================================================================
+// Prescriptions & ordonnances (Migration 006)
+// =====================================================================================
+
+export type PrescriptionStatus = "draft" | "signed" | "dispensed" | "cancelled";
+
+export type PrescriptionDosageUnit =
+  | "mg/kg"
+  | "mg/tot"
+  | "mL/kg"
+  | "UI/kg"
+  | "cp/kg";
+
+export interface Prescription {
+  id: string;
+  appointmentId: string;
+  patientId: string;
+  vetId?: string;
+  /** Date affichée sur l'ordonnance (par défaut, date du jour). */
+  prescriptionDate: string;
+  /** Poids utilisé pour le calcul des doses (snapshot, en kg). */
+  weightKg?: number;
+  diagnosis?: string;
+  /** Instructions globales (ex: "À donner pendant les repas"). */
+  generalInstructions?: string;
+  status: PrescriptionStatus;
+  signedAt?: string;
+  templateVersion: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PrescriptionItem {
+  id: string;
+  prescriptionId: string;
+  /** Référence au catalogue (nullable : médicament hors base). */
+  medicationId?: string;
+  /** Snapshot du nom (DCI ou commercial). */
+  medicationName: string;
+  medicationClass?: string;
+  /** Comprimé, solution buvable, injectable, gel, pommade… */
+  form?: string;
+  dosagePerKg: number;
+  dosageUnit: PrescriptionDosageUnit;
+  dosageMin?: number;
+  dosageMax?: number;
+  /** Concentration pour conversion mg → mL. */
+  concentrationMgPerMl?: number;
+  computedDoseMg?: number;
+  computedVolumeMl?: number;
+  /** "2x/jour", "toutes les 8h"… */
+  frequency: string;
+  /** "5-7 jours", "14 jours"… */
+  duration: string;
+  /** PO, IM, SC, IV, topique… */
+  route?: string;
+  /** "1 boîte de 30 comprimés" */
+  quantity?: string;
+  instructions?: string;
+  warnings?: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}

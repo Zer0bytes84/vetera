@@ -821,3 +821,56 @@ button:focus-visible,
   box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3), 0 4px 12px -2px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
 }
 
+
+/* ============================================================================
+ * Prescription print layout (A4)
+ * ============================================================================
+ * Active uniquement quand l'utilisateur imprime / exporte en PDF depuis
+ * l'aperçu d'ordonnance. On masque la nav / sidebar / boutons et on
+ * présente l'ordonnance comme un document A4 propre (marges, sérigraphie,
+ * pas de coupure au milieu d'un médicament).
+ * ============================================================================ */
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+
+  body {
+    background: #ffffff !important;
+  }
+
+  /* Masquer tout sauf la zone imprimable */
+  body * {
+    visibility: hidden;
+  }
+  .prescription-print,
+  .prescription-print * {
+    visibility: visible;
+  }
+  .prescription-print {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background: #ffffff !important;
+    color: #111111 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Ne pas couper un médicament sur deux pages */
+  .prescription-print .rx-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .prescription-print .rx-header {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .prescription-print * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

@@ -43,6 +43,8 @@ const ALLOWED_TABLES = new Set([
   "weight_entries",
   "vaccinations",
   "consultation_soaps",
+  "prescriptions",
+  "prescription_items",
 ]);
 
 const BOOLEAN_FIELDS_BY_TABLE: Record<string, string[]> = {

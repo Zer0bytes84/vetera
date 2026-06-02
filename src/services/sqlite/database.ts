@@ -5,6 +5,7 @@ import {
   MIGRATION_003_SQL,
   MIGRATION_004_SQL,
   MIGRATION_005_SQL,
+  MIGRATION_006_SQL,
 } from "./schema";
 
 let db: Database | null = null;
@@ -272,6 +273,21 @@ async function runMigrations(database: Database): Promise<void> {
         "005",
       ]);
       console.log("[DB] Migration 005 applied successfully");
+    }
+
+    if (lastVersion < "006") {
+      console.log("[DB] Applying migration 006...");
+
+      const migrationStatements = parseSqlStatements(MIGRATION_006_SQL);
+
+      for (const statement of migrationStatements) {
+        await database.execute(statement);
+      }
+
+      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
+        "006",
+      ]);
+      console.log("[DB] Migration 006 applied successfully");
     }
   } catch (error) {
     console.error("[DB] Migration error:", error);
