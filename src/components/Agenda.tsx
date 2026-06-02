@@ -1695,7 +1695,7 @@ const Agenda: React.FC = () => {
 
       setSelectedAppointmentId(saved.id);
       setSelectedDate(start);
-      setViewMode("day");
+      setViewMode("list");
       closeDialog();
     } catch (error) {
       console.error(error);

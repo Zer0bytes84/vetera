@@ -58,6 +58,9 @@ export function AgendaListView({
   const handleStartConsultation = (e: React.MouseEvent, appt: Appointment) => {
     e.stopPropagation();
     onSelectAppointment(appt);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("vetera:pending-consultation-start", appt.id);
+    }
     window.location.assign("#/clinique");
   };
 

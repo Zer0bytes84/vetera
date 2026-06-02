@@ -33,6 +33,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { flushSync } from "react-dom";
 import { toast } from "sonner";
 
 import { Pill } from "@phosphor-icons/react";
@@ -1709,6 +1710,54 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         : null,
     [appointments, selectedAppointmentId]
   );
+
+  // Consume the "pending consultation start" hint set by another view
+  // (e.g. AgendaListView's Démarrer button). When the user navigates
+  // from Agenda into Clinique with that flag set, we auto-open the
+  // consultation drawer for the matching appointment so a single click
+  // is enough — no need to re-select the row in Clinique.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const pendingId = window.sessionStorage.getItem(
+      "vetera:pending-consultation-start"
+    );
+    if (!pendingId) return;
+    window.sessionStorage.removeItem("vetera:pending-consultation-start");
+
+    const target = appointments.find((a) => a.id === pendingId);
+    if (!target) return;
+    if (
+      target.status === "completed" ||
+      target.status === "cancelled" ||
+      target.status === "no_show"
+    ) {
+      return;
+    }
+
+    // Sync the right-side "Dossier sélectionné" panel with the appointment
+    // we are about to open. Wrapped in flushSync so React commits this in
+    // the same tick as the active-consultation state update below — this
+    // is a one-shot init-on-mount, not a continuous sync.
+    flushSync(() => {
+      setSelectedAppointmentId(target.id);
+    });
+    if (target.status === "scheduled") {
+      updateAppointment(target.id, { status: "in_progress" })
+        .then(() => {
+          flushSync(() => {
+            setActiveConsultation({ ...target, status: "in_progress" });
+            setListTab("in_progress");
+          });
+        })
+        .catch((error) => {
+          console.error("Failed to start consultation from agenda", error);
+        });
+    } else if (target.status === "in_progress") {
+      flushSync(() => {
+        setActiveConsultation(target);
+      });
+    }
+  }, [appointments, updateAppointment]);
 
   const selectedPatient = selectedAppointment
     ? patientsById.get(selectedAppointment.patientId)
