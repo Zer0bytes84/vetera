@@ -12,6 +12,7 @@ import {
   HourglassIcon,
   Mail01Icon,
   MoreVerticalCircle01Icon,
+  NoteIcon,
   PhoneCheckIcon,
   PillIcon,
   PlayIcon,
@@ -104,6 +105,7 @@ import {
 } from "@/data/repositories";
 import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
+import { ConsultationSessionDrawer } from "@/modules/consultations";
 import { getSetting } from "@/services/appSettingsService";
 import type { View } from "@/types";
 import type {
@@ -571,6 +573,7 @@ function ConsultationSessionDialog({
   documents,
   historyAppointments,
   onClose,
+  onOpenSoap,
   onSaveDraft,
   onComplete,
   onUploadDocument,
@@ -583,6 +586,7 @@ function ConsultationSessionDialog({
   documents: ConsultationDocument[];
   historyAppointments: Appointment[];
   onClose: () => void;
+  onOpenSoap?: () => void;
   onSaveDraft: (
     payload: ConsultationDraftPayload,
     options?: SaveDraftOptions
@@ -829,6 +833,16 @@ function ConsultationSessionDialog({
               </DialogDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <Button
+                className="h-8 gap-1.5"
+                onClick={() => onOpenSoap?.()}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                <HugeiconsIcon icon={NoteIcon} size={14} strokeWidth={2} />
+                Note SOAP
+              </Button>
               <Badge className="bg-background/90" variant="outline">
                 <HugeiconsIcon
                   className="mr-1 size-3.5"
@@ -1566,6 +1580,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   >(null);
   const [activeConsultation, setActiveConsultation] =
     useState<Appointment | null>(null);
+  const [soapOpen, setSoapOpen] = useState<boolean>(false);
   const [billingAppointment, setBillingAppointment] =
     useState<Appointment | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -2854,6 +2869,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           onClose={() => setActiveConsultation(null)}
           onComplete={handleConsultationComplete}
           onDeleteDocument={handleConsultationDocumentDelete}
+          onOpenSoap={() => setSoapOpen(true)}
           onSaveDraft={handleConsultationSaveDraft}
           onUploadDocument={handleConsultationDocumentUpload}
           owner={activeConsultationOwner}
@@ -2878,6 +2894,20 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           }
         />
       ) : null}
+
+      <ConsultationSessionDrawer
+        appointmentId={activeConsultation?.id ?? ""}
+        onOpenChange={(next) => {
+          setSoapOpen(next);
+        }}
+        open={soapOpen && Boolean(activeConsultation)}
+        patientId={activeConsultation?.patientId ?? ""}
+        patientName={
+          activeConsultation
+            ? (patientsById.get(activeConsultation.patientId)?.name ?? undefined)
+            : undefined
+        }
+      />
     </div>
   );
 };
