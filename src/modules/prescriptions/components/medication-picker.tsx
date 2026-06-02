@@ -17,7 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, Pill } from "@phosphor-icons/react";
+import { CaretUpDown, Check, Pill } from "@phosphor-icons/react";
 
 import {
   type MedicationSearchResult,
@@ -67,7 +67,7 @@ export function MedicationPicker({
               <Pill weight="duotone" className="size-3.5" />
               {t("prescriptions.builder.addMedication")}
             </span>
-            <ChevronsUpDown className="size-3.5 opacity-50" />
+            <CaretUpDown className="size-3.5 opacity-50" />
           </Button>
         }
       />

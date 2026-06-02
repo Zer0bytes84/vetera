@@ -465,16 +465,13 @@ CREATE INDEX IF NOT EXISTS idx_consultation_soaps_updated_at ON consultation_soa
 CREATE TRIGGER IF NOT EXISTS update_consultation_soaps_timestamp AFTER UPDATE ON consultation_soaps
 BEGIN
     UPDATE consultation_soaps SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-END;
+END;`;
 
--- ============================================================================
--- Migration 006: Prescriptions & ordonnances
--- ============================================================================
+export const MIGRATION_006_SQL = `-- Migration 006: Prescriptions & ordonnances
 -- Une prescription = 1 document signé par 1 véto pour 1 consultation
 -- Elle contient N lignes (médicaments, posologie, durée, instructions).
 -- Les valeurs calculées (mg total, volume mL) sont stockées pour la
 -- relecture / l'impression, même si elles peuvent être recalculées à la volée.
--- ============================================================================
 
 CREATE TABLE IF NOT EXISTS prescriptions (
     id TEXT PRIMARY KEY,
