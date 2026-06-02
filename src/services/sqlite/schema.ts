@@ -367,18 +367,102 @@ END;
 
 -- Default automations seeding
 INSERT OR IGNORE INTO automations (id, title, description, icon_name, icon_color, is_active, schedule, time, last_run_status, metric_label, metric_icon_name, metric_value, metric_trend, metric_trend_up, chart_type, chart_color, chart_data)
-VALUES 
+VALUES
 ('auto-001', 'Rappels de Vaccination', 'Analyse les dossiers patients, identifie les rappels de vaccins imminents, et prépare les campagnes de SMS/Emails automatiques.', 'Mail', 'bg-blue-500', 1, 'Chaque Lundi', 'à 09:00', 'Scheduled', 'Taux de conversion', 'MailCheck', '78%', '+8%', 1, 'discrete', 'bg-emerald-500', '[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]'),
 ('auto-002', 'Résumé des Consultations', 'Automatise l''analyse des rapports quotidiens, extrait les insights clés et les anomalies, et livre des résumés concis.', 'Sparkles', 'bg-purple-500', 1, 'Chaque Mardi', 'à 10:00', 'Scheduled', 'Insights extraits', 'Lightbulb', '15', '+25%', 1, 'area', '#3b82f6', '[{"value":10},{"value":11},{"value":9},{"value":13},{"value":15},{"value":20},{"value":25}]'),
 ('auto-003', 'Suivi Post-Opératoire', 'Surveille l''état des patients récemment opérés, identifie les risques potentiels et génère des alertes de suivi prioritaires.', 'Activity', 'bg-emerald-500', 0, 'Chaque Vendredi', 'à 10:00', 'Stopped', 'Taux de ponctualité', 'Timer', '39%', '-5%', 0, 'discrete', 'bg-amber-500', '[1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]');
 
 -- Seed initial patient_automations for existing patients (active by default)
 INSERT OR IGNORE INTO patient_automations (id, patient_id, automation_id, is_active)
-SELECT 
+SELECT
   lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-' || lower(hex(randomblob(2))) || '-' || lower(hex(randomblob(2))) || '-' || lower(hex(randomblob(6))),
-  p.id, 
-  a.id, 
+  p.id,
+  a.id,
   1
 FROM patients p
-CROSS JOIN automations a;
-`;
+CROSS JOIN automations a;`;
+
+export const MIGRATION_004_SQL = `-- Migration 004: Clinical tracking (weight + vaccinations)
+-- Suivi du poids structuré (remplace progressivement patients.weight_history JSON)
+CREATE TABLE IF NOT EXISTS weight_entries (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    weight_kg REAL NOT NULL,
+    measured_at TEXT NOT NULL,
+    bcs INTEGER,
+    notes TEXT,
+    vet_id TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_weight_entries_patient_id ON weight_entries(patient_id);
+CREATE INDEX IF NOT EXISTS idx_weight_entries_measured_at ON weight_entries(measured_at);
+
+CREATE TRIGGER IF NOT EXISTS update_weight_entries_timestamp AFTER UPDATE ON weight_entries
+BEGIN
+    UPDATE weight_entries SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- Carnet de vaccination structuré
+CREATE TABLE IF NOT EXISTS vaccinations (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    vaccine_name TEXT NOT NULL,
+    vaccine_type TEXT,
+    administered_at TEXT NOT NULL,
+    next_due_at TEXT,
+    batch_number TEXT,
+    manufacturer TEXT,
+    vet_id TEXT,
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_vaccinations_patient_id ON vaccinations(patient_id);
+CREATE INDEX IF NOT EXISTS idx_vaccinations_administered_at ON vaccinations(administered_at);
+CREATE INDEX IF NOT EXISTS idx_vaccinations_next_due_at ON vaccinations(next_due_at);
+
+CREATE TRIGGER IF NOT EXISTS update_vaccinations_timestamp AFTER UPDATE ON vaccinations
+BEGIN
+    UPDATE vaccinations SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;`;
+
+export const MIGRATION_005_SQL = `-- Migration 005: Structured SOAP for consultations
+-- SOAP = Subjective / Objective / Assessment / Plan, structurés en JSON
+-- Lié 1-1 à un appointment, content = JSON libre,
+-- ai_draft = brouillon structuré, ai_confidence = score 0-1.
+CREATE TABLE IF NOT EXISTS consultation_soaps (
+    id TEXT PRIMARY KEY,
+    appointment_id TEXT NOT NULL UNIQUE,
+    patient_id TEXT NOT NULL,
+    subjective TEXT NOT NULL DEFAULT '',
+    objective TEXT NOT NULL DEFAULT '',
+    assessment TEXT NOT NULL DEFAULT '',
+    plan TEXT NOT NULL DEFAULT '',
+    content TEXT NOT NULL DEFAULT '{}',
+    ai_draft TEXT,
+    ai_confidence REAL,
+    transcript TEXT,
+    template_version TEXT NOT NULL DEFAULT '1.0',
+    vet_id TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_consultation_soaps_patient_id ON consultation_soaps(patient_id);
+CREATE INDEX IF NOT EXISTS idx_consultation_soaps_appointment_id ON consultation_soaps(appointment_id);
+CREATE INDEX IF NOT EXISTS idx_consultation_soaps_updated_at ON consultation_soaps(updated_at);
+
+CREATE TRIGGER IF NOT EXISTS update_consultation_soaps_timestamp AFTER UPDATE ON consultation_soaps
+BEGIN
+    UPDATE consultation_soaps SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;`;

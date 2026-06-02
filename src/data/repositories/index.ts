@@ -11,6 +11,7 @@ import {
 import type {
   Appointment,
   ConsultationDocument,
+  ConsultationSoap,
   Note,
   Owner,
   Patient,
@@ -18,6 +19,8 @@ import type {
   Task,
   Transaction,
   User,
+  Vaccination,
+  WeightEntry,
 } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
 
@@ -531,4 +534,115 @@ export function useNotesRepository() {
 
 export function useConsultationDocumentsRepository() {
   return useSQLite<ConsultationDocument>("consultation_documents");
+}
+
+export function useWeightEntriesRepository() {
+  const store = useSQLite<WeightEntry>("weight_entries");
+  return {
+    ...store,
+    /** Toutes les pesées d'un patient, triées par date croissante */
+    forPatient: (patientId: string) =>
+      store.data
+        .filter((entry) => entry.patientId === patientId)
+        .sort(
+          (a, b) =>
+            new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime()
+        ),
+    /** Dernière pesée connue */
+    latestFor: (patientId: string) => {
+      const entries = store.data
+        .filter((entry) => entry.patientId === patientId)
+        .sort(
+          (a, b) =>
+            new Date(b.measuredAt).getTime() -
+            new Date(a.measuredAt).getTime()
+        );
+      return entries[0] ?? null;
+    },
+  };
+}
+
+export function useVaccinationsRepository() {
+  const store = useSQLite<Vaccination>("vaccinations");
+  return {
+    ...store,
+    /** Carnet de vaccination d'un patient, trié par date d'administration décroissante */
+    forPatient: (patientId: string) =>
+      store.data
+        .filter((entry) => entry.patientId === patientId)
+        .sort(
+          (a, b) =>
+            new Date(b.administeredAt).getTime() -
+            new Date(a.administeredAt).getTime()
+        ),
+  };
+}
+
+export function useConsultationSoapsRepository() {
+  const store = useSQLite<ConsultationSoap>("consultation_soaps");
+  return {
+    ...store,
+    /** SOAP d'une consultation (par appointmentId, 1-1). */
+    forAppointment: (appointmentId: string) =>
+      store.data.find((soap) => soap.appointmentId === appointmentId) ?? null,
+    /** Tous les SOAPs d'un patient, triés par updatedAt desc. */
+    forPatient: (patientId: string) =>
+      store.data
+        .filter((soap) => soap.patientId === patientId)
+        .sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        ),
+    /**
+     * Upsert : crée le SOAP s'il n'existe pas, met à jour sinon.
+     * Respecte la contrainte UNIQUE(appointment_id) en faisant
+     * `INSERT OR REPLACE` côté hook (re-add après remove).
+     */
+    upsertForAppointment: async (
+      appointmentId: string,
+      patientId: string,
+      patch: Partial<
+        Omit<
+          ConsultationSoap,
+          "id" | "appointmentId" | "patientId" | "createdAt" | "updatedAt"
+        >
+      >,
+      vetId?: string
+    ): Promise<ConsultationSoap | null> => {
+      const existing = store.data.find(
+        (soap) => soap.appointmentId === appointmentId
+      );
+      if (existing) {
+        const ok = await store.update(existing.id, patch);
+        if (!ok) {
+          return null;
+        }
+        return (
+          store.data.find((soap) => soap.appointmentId === appointmentId) ??
+          null
+        );
+      }
+      const draft = {
+        appointmentId,
+        patientId,
+        vetId,
+        subjective: "",
+        objective: "",
+        assessment: "",
+        plan: "",
+        content: "{}",
+        aiDraft: null,
+        aiConfidence: null,
+        transcript: null,
+        templateVersion: "1.0",
+        ...patch,
+      };
+      return store.add(
+        draft as unknown as Omit<
+          ConsultationSoap,
+          "id" | "createdAt" | "updatedAt"
+        >
+      );
+    },
+  };
 }

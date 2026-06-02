@@ -35,4 +35,5 @@ export type View =
   | "parametres"
   | "equipe"
   | "taches"
-  | "aide";
+  | "aide"
+  | "patient_detail";

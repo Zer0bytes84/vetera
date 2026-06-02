@@ -137,3 +137,62 @@ export interface Task {
   status: "todo" | "in_progress" | "done";
   title: string;
 }
+
+export interface WeightEntry {
+  bcs?: number; // Body Condition Score 1-9
+  createdAt: string;
+  id: string;
+  measuredAt: string; // ISO date
+  notes?: string;
+  patientId: string;
+  updatedAt: string;
+  vetId?: string;
+  weightKg: number;
+}
+
+export interface Vaccination {
+  administeredAt: string; // ISO date
+  batchNumber?: string;
+  createdAt: string;
+  id: string;
+  manufacturer?: string;
+  nextDueAt?: string; // ISO date
+  notes?: string;
+  patientId: string;
+  updatedAt: string;
+  vaccineName: string;
+  vaccineType?: string; // ex: CHPL, FeLV, Rage
+  vetId?: string;
+}
+
+/**
+ * SOAP structuré pour une consultation.
+ * Lié 1-1 à un `Appointment` via `appointmentId` (UNIQUE).
+ * `content` est un blob JSON libre pour des extensions futures
+ * (signes vitaux structurés, médicaments, etc.) ; les 4 champs
+ * S/O/A/P sont la source de vérité.
+ */
+export interface ConsultationSoap {
+  id: string;
+  appointmentId: string;
+  patientId: string;
+  subjective: string;
+  objective: string;
+  assessment: string;
+  plan: string;
+  /** JSON libre sérialisé (signes vitaux, médocs, etc.) — extension future */
+  content: string;
+  /** Brouillon généré par l'IA (JSON.stringify) ou null */
+  aiDraft: string | null;
+  /** Score de confiance 0-1 retourné par l'IA */
+  aiConfidence: number | null;
+  /** Texte brut dicté par le véto avant structuration */
+  transcript: string | null;
+  templateVersion: string;
+  vetId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Type pratique pour les appels S/O/A/P. */
+export type SoapSectionKey = "subjective" | "objective" | "assessment" | "plan";

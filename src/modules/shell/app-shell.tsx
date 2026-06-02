@@ -54,18 +54,32 @@ const ALL_VIEWS: View[] = [
   "equipe",
   "taches",
   "aide",
+  "patient_detail",
 ];
 
 const DEFAULT_VIEW: View = "dashboard";
 
 const HASH_PREFIX_REGEX = /^#\/?/;
+const PATIENT_DETAIL_PREFIX = /^patient\/([A-Za-z0-9-]+)$/;
 
-function getViewFromHash(hash: string): View {
-  const rawHash = hash.replace(HASH_PREFIX_REGEX, "").trim();
-  if (!rawHash) {
-    return DEFAULT_VIEW;
+export interface RouteState {
+  currentView: View;
+  patientId: string | null;
+}
+
+function parseRouteFromHash(hash: string): RouteState {
+  const raw = hash.replace(HASH_PREFIX_REGEX, "").trim();
+  if (!raw) {
+    return { currentView: DEFAULT_VIEW, patientId: null };
   }
-  return ALL_VIEWS.includes(rawHash as View) ? (rawHash as View) : DEFAULT_VIEW;
+  const match = raw.match(PATIENT_DETAIL_PREFIX);
+  if (match) {
+    return { currentView: "patient_detail", patientId: match[1] };
+  }
+  return {
+    currentView: ALL_VIEWS.includes(raw as View) ? (raw as View) : DEFAULT_VIEW,
+    patientId: null,
+  };
 }
 
 export function AppShell() {
@@ -84,7 +98,13 @@ function AppShellInner() {
     if (typeof window === "undefined") {
       return DEFAULT_VIEW;
     }
-    return getViewFromHash(window.location.hash);
+    return parseRouteFromHash(window.location.hash).currentView;
+  });
+  const [currentPatientId, setCurrentPatientId] = useState<string | null>(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+    return parseRouteFromHash(window.location.hash).patientId;
   });
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [aiAgentOpen, setAiAgentOpen] = useState(false);
@@ -104,20 +124,32 @@ function AppShellInner() {
 
   const handleNavigate = useCallback((view: View) => {
     setCurrentView(view);
+    setCurrentPatientId(null);
+  }, []);
+
+  const handleNavigateToPatient = useCallback((patientId: string) => {
+    setCurrentView("patient_detail");
+    setCurrentPatientId(patientId);
   }, []);
 
   useEffect(() => {
-    const hash = `#/${currentView}`;
+    let hash = `#/${currentView}`;
+    if (currentView === "patient_detail" && currentPatientId) {
+      hash = `#/patient/${currentPatientId}`;
+    }
     if (window.location.hash !== hash) {
       window.history.replaceState(null, "", hash);
     }
-  }, [currentView]);
+  }, [currentView, currentPatientId]);
 
   useEffect(() => {
     const handleHashChange = () => {
-      const nextView = getViewFromHash(window.location.hash);
+      const next = parseRouteFromHash(window.location.hash);
       setCurrentView((previousView) =>
-        previousView === nextView ? previousView : nextView
+        previousView === next.currentView ? previousView : next.currentView
+      );
+      setCurrentPatientId((previousId) =>
+        previousId === next.patientId ? previousId : next.patientId
       );
     };
     window.addEventListener("hashchange", handleHashChange);
@@ -190,11 +222,20 @@ function AppShellInner() {
     () =>
       renderView(currentView, {
         onNavigate: handleNavigate,
+        onNavigateToPatient: handleNavigateToPatient,
+        patientId: currentPatientId,
         currentTheme: themeMode,
         onThemeChange: setThemeMode,
         onOpenAIAgent: () => setAiAgentOpen(true),
       }),
-    [currentView, handleNavigate, setThemeMode, themeMode]
+    [
+      currentView,
+      currentPatientId,
+      handleNavigate,
+      handleNavigateToPatient,
+      setThemeMode,
+      themeMode,
+    ]
   );
 
   const userDisplayName =

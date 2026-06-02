@@ -1,5 +1,11 @@
 import Database from "@tauri-apps/plugin-sql";
-import { MIGRATION_001_SQL, MIGRATION_002_SQL, MIGRATION_003_SQL } from "./schema";
+import {
+  MIGRATION_001_SQL,
+  MIGRATION_002_SQL,
+  MIGRATION_003_SQL,
+  MIGRATION_004_SQL,
+  MIGRATION_005_SQL,
+} from "./schema";
 
 let db: Database | null = null;
 let dbInitPromise: Promise<Database> | null = null;
@@ -236,6 +242,36 @@ async function runMigrations(database: Database): Promise<void> {
         "003",
       ]);
       console.log("[DB] Migration 003 applied successfully");
+    }
+
+    if (lastVersion < "004") {
+      console.log("[DB] Applying migration 004...");
+
+      const migrationStatements = parseSqlStatements(MIGRATION_004_SQL);
+
+      for (const statement of migrationStatements) {
+        await database.execute(statement);
+      }
+
+      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
+        "004",
+      ]);
+      console.log("[DB] Migration 004 applied successfully");
+    }
+
+    if (lastVersion < "005") {
+      console.log("[DB] Applying migration 005...");
+
+      const migrationStatements = parseSqlStatements(MIGRATION_005_SQL);
+
+      for (const statement of migrationStatements) {
+        await database.execute(statement);
+      }
+
+      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
+        "005",
+      ]);
+      console.log("[DB] Migration 005 applied successfully");
     }
   } catch (error) {
     console.error("[DB] Migration error:", error);

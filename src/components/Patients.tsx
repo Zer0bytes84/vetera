@@ -1575,7 +1575,11 @@ function PatientCreateDialog({
   );
 }
 
-const Patients: React.FC = () => {
+interface PatientsProps {
+  onNavigateToPatient?: (patientId: string) => void;
+}
+
+const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [speciesFilter, setSpeciesFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -2294,19 +2298,34 @@ const Patients: React.FC = () => {
                             </p>
                           </div>
 
-                          <div className="flex flex-col items-start gap-3 lg:items-end">
+                          <div className="flex flex-col items-start gap-2 lg:items-end">
                             <PatientStatusBadge status={entry.patient.status} />
-                            <Button
-                              className="h-9 rounded-full border-border/70 px-4 shadow-none transition-transform duration-200 group-hover:-translate-y-0.5"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                openPatientDetails(entry.patient, "info");
-                              }}
-                              size="sm"
-                              variant="outline"
-                            >
-                              Consulter
-                            </Button>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Button
+                                className="h-9 rounded-full border-border/70 px-4 shadow-none transition-transform duration-200 group-hover:-translate-y-0.5"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  openPatientDetails(entry.patient, "info");
+                                }}
+                                size="sm"
+                                variant="outline"
+                              >
+                                Consulter
+                              </Button>
+                              {onNavigateToPatient ? (
+                                <Button
+                                  className="h-9 rounded-full px-4 shadow-none transition-transform duration-200 group-hover:-translate-y-0.5"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    onNavigateToPatient(entry.patient.id);
+                                  }}
+                                  size="sm"
+                                  variant="default"
+                                >
+                                  Fiche détaillée
+                                </Button>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
                       </button>

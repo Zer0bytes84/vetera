@@ -224,3 +224,42 @@ export function getSpeciesTone(species?: string): string {
   }
   return "bg-muted text-muted-foreground";
 }
+
+export type VaccinationStatus = "up_to_date" | "due_soon" | "overdue" | "unknown";
+
+export const VACCINATION_STATUS_META: Record<
+  VaccinationStatus,
+  { label: string; className: string }
+> = {
+  up_to_date: {
+    label: "À jour",
+    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  },
+  due_soon: {
+    label: "Bientôt dû",
+    className: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
+  },
+  overdue: {
+    label: "En retard",
+    className: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
+  },
+  unknown: {
+    label: "Inconnu",
+    className: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-300",
+  },
+};
+
+export const COMMON_VACCINES: Array<{ type: string; label: string; intervalDays: number }> = [
+  { type: "CHPL", label: "CHPL (Carré, Hépatite, Parvo, Lepto)", intervalDays: 365 },
+  { type: "Rage", label: "Rage", intervalDays: 365 },
+  { type: "Toux de chenil", label: "Toux de chenil (Bordetella)", intervalDays: 365 },
+  { type: "Piroplasmose", label: "Piroplasmose", intervalDays: 365 },
+  { type: "Leishmaniose", label: "Leishmaniose", intervalDays: 365 },
+  { type: "FeLV", label: "FeLV (Leucose féline)", intervalDays: 365 },
+  { type: "FVRCP", label: "FVRCP (Coryza, Panleucopénie)", intervalDays: 365 },
+  { type: "FIV", label: "FIV (Sida du chat)", intervalDays: 365 },
+  { type: "Rage_chat", label: "Rage (chat)", intervalDays: 365 },
+  { type: "Myxomatose", label: "Myxomatose (lapin)", intervalDays: 180 },
+  { type: "VHD", label: "VHD (lapin)", intervalDays: 365 },
+  { type: "Autre", label: "Autre", intervalDays: 365 },
+];

@@ -3,6 +3,7 @@ import type { ThemeMode } from "@/app/hooks/use-theme-mode";
 import { Spinner } from "@/components/ui/spinner";
 import { DashboardOrbitPage } from "@/modules/dashboard/dashboard-orbit-page";
 import { FinancialAnalyticsV2Page } from "@/modules/finances/financial-analytics-page";
+import { PatientDetailPage } from "@/modules/patients/patient-detail-page";
 import type { View } from "@/types";
 
 const AgendaPage = lazy(() => import("@/components/Agenda"));
@@ -19,8 +20,10 @@ const TeamPage = lazy(() => import("@/components/Team"));
 interface ViewRegistryProps {
   currentTheme: ThemeMode;
   onNavigate: (view: View) => void;
+  onNavigateToPatient?: (patientId: string) => void;
   onOpenAIAgent?: () => void;
   onThemeChange: (mode: ThemeMode) => void;
+  patientId?: string | null;
 }
 
 function ViewLoadingState() {
@@ -47,7 +50,16 @@ export function renderView(view: View, props: ViewRegistryProps) {
     case "clinique":
       return renderLazyView(<CliniquePage onNavigate={props.onNavigate} />);
     case "patients":
-      return renderLazyView(<PatientsPage />);
+      return renderLazyView(
+        <PatientsPage onNavigateToPatient={props.onNavigateToPatient} />
+      );
+    case "patient_detail":
+      return (
+        <PatientDetailPage
+          onNavigate={props.onNavigate}
+          patientId={props.patientId ?? ""}
+        />
+      );
     case "notes":
       return renderLazyView(<NotesPage />);
     case "stock":

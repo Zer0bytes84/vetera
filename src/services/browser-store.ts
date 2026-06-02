@@ -10,7 +10,10 @@ export type BrowserTableName =
   | "consultation_documents"
   | "tasks"
   | "app_settings"
-  | "migrations";
+  | "migrations"
+  | "weight_entries"
+  | "vaccinations"
+  | "consultation_soaps";
 
 export type BrowserRow = {
   id?: string;
@@ -38,6 +41,9 @@ const EMPTY_STATE: BrowserDatabaseState = {
     tasks: [],
     app_settings: [],
     migrations: [],
+    weight_entries: [],
+    vaccinations: [],
+    consultation_soaps: [],
   },
 };
 
