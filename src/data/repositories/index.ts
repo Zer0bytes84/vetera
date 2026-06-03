@@ -9,9 +9,14 @@ import {
   toSQLiteTimestamp,
 } from "@/services/sqlite/database";
 import type {
+  AnesthesiaDrugLogEntry,
+  AnesthesiaMonitoringEntry,
+  AnesthesiaSheet,
   Appointment,
   ConsultationDocument,
   ConsultationSoap,
+  Hospitalization,
+  HospitalizationVital,
   Note,
   Owner,
   Patient,
@@ -686,5 +691,100 @@ export function usePrescriptionItemsRepository() {
         .filter((row) => ids.has(row.prescriptionId))
         .sort((a, b) => a.sortOrder - b.sortOrder);
     },
+  };
+}
+
+export function useHospitalizationsRepository() {
+  const store = useSQLite<Hospitalization>("hospitalizations");
+  return {
+    ...store,
+    forPatient: (patientId: string) =>
+      store.data
+        .filter((row) => row.patientId === patientId)
+        .sort((a, b) => (a.admissionDate < b.admissionDate ? 1 : -1)),
+    active: () =>
+      store.data.filter(
+        (row) =>
+          row.status !== "discharged" &&
+          row.status !== "transferred" &&
+          row.status !== "deceased"
+      ),
+  };
+}
+
+export function useHospitalizationVitalsRepository() {
+  const store = useSQLite<HospitalizationVital>("hospitalization_vitals");
+  return {
+    ...store,
+    forHospitalization: (hospitalizationId: string) =>
+      store.data
+        .filter((row) => row.hospitalizationId === hospitalizationId)
+        .sort((a, b) => (a.recordedAt < b.recordedAt ? -1 : 1)),
+    forPatient: (
+      patientId: string,
+      hospitalizations: Hospitalization[]
+    ) => {
+      const ids = new Set(
+        hospitalizations
+          .filter((h) => h.patientId === patientId)
+          .map((h) => h.id)
+      );
+      return store.data
+        .filter((row) => ids.has(row.hospitalizationId))
+        .sort((a, b) => (a.recordedAt < b.recordedAt ? -1 : 1));
+    },
+  };
+}
+
+export function useAnesthesiaSheetsRepository() {
+  const store = useSQLite<AnesthesiaSheet>("anesthesia_sheets");
+  return {
+    ...store,
+    forPatient: (patientId: string) =>
+      store.data
+        .filter((row) => row.patientId === patientId)
+        .sort((a, b) =>
+          (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? 1 : -1
+        ),
+    forHospitalization: (hospitalizationId: string) =>
+      store.data
+        .filter((row) => row.hospitalizationId === hospitalizationId)
+        .sort((a, b) =>
+          (a.scheduledAt ?? "") < (b.scheduledAt ?? "") ? -1 : 1
+        ),
+    active: () =>
+      store.data.filter(
+        (row) => row.status === "planned" || row.status === "in_progress"
+      ),
+  };
+}
+
+export function useAnesthesiaDrugLogRepository() {
+  const store = useSQLite<AnesthesiaDrugLogEntry>("anesthesia_drug_log");
+  return {
+    ...store,
+    forSheet: (anesthesiaSheetId: string) =>
+      store.data
+        .filter((row) => row.anesthesiaSheetId === anesthesiaSheetId)
+        .sort((a, b) => (a.administeredAt < b.administeredAt ? -1 : 1)),
+    forPatient: (patientId: string, sheets: AnesthesiaSheet[]) => {
+      const ids = new Set(
+        sheets.filter((s) => s.patientId === patientId).map((s) => s.id)
+      );
+      return store.data
+        .filter((row) => ids.has(row.anesthesiaSheetId))
+        .sort((a, b) => (a.administeredAt < b.administeredAt ? -1 : 1));
+    },
+  };
+}
+
+export function useAnesthesiaMonitoringRepository() {
+  const store = useSQLite<AnesthesiaMonitoringEntry>("anesthesia_monitoring");
+  return {
+    ...store,
+    forSheet: (anesthesiaSheetId: string) =>
+      store.data
+        .filter((row) => row.anesthesiaSheetId === anesthesiaSheetId)
+        .sort((a, b) => (a.recordedAt < b.recordedAt ? -1 : 1)),
   };
 }

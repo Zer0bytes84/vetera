@@ -535,3 +535,171 @@ CREATE TRIGGER IF NOT EXISTS update_prescription_items_timestamp AFTER UPDATE ON
 BEGIN
     UPDATE prescription_items SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;`;
+
+export const MIGRATION_007_SQL = `-- Migration 007: Hospitalisation 24h & feuille d'anesthésie
+-- Une hospitalisation = 1 séjour (admission → sortie) lié à 1 patient,
+-- avec constantes horodatées (T°, FC, FR, SpO2, poids, glycémie, etc.)
+-- et un log d'événements (repas, médicaments, examen, note).
+-- Une feuille d'anesthésie = 1 procédure (induction → maintenance → réveil)
+-- liée à 1 hospitalisation (optionnelle) ou à 1 appointment, avec :
+--   - premed, induction, maintenance (gaz +IV), réveil
+--   - drug log (horodatage + molécule + dose + voie)
+--   - monitoring perop (T°, FC, FR, SpO2, ETCO2, PAM)
+--   - complications + score de réveil
+
+CREATE TABLE IF NOT EXISTS hospitalizations (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    appointment_id TEXT,
+    reason TEXT NOT NULL,                  -- motif d'hospitalisation
+    diagnosis TEXT,                        -- diagnostic principal
+    status TEXT NOT NULL DEFAULT 'admitted', -- admitted | monitoring | critical | discharged | transferred | deceased
+    admission_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    discharge_date DATETIME,
+    cage TEXT,                             -- box / chenil
+    weight_kg REAL,                        -- poids à l'admission
+    temperature_c REAL,                    -- T° initiale
+    iv_fluids TEXT,                        -- ex "NaCl 0.9% - 50 mL/h"
+    feeding_plan TEXT,                     -- ex "RC 3x/j + eau ad lib"
+    special_care TEXT,                     -- soins particuliers (cage, isolement, monitoring continu)
+    discharge_summary TEXT,                -- résumé de sortie
+    vet_id TEXT,                           -- véto référent
+    template_version TEXT NOT NULL DEFAULT '1.0',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_hospitalizations_patient_id ON hospitalizations(patient_id);
+CREATE INDEX IF NOT EXISTS idx_hospitalizations_status ON hospitalizations(status);
+CREATE INDEX IF NOT EXISTS idx_hospitalizations_admission_date ON hospitalizations(admission_date);
+
+CREATE TRIGGER IF NOT EXISTS update_hospitalizations_timestamp AFTER UPDATE ON hospitalizations
+BEGIN
+    UPDATE hospitalizations SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- Constantes / événements horodatés pendant l'hospitalisation
+CREATE TABLE IF NOT EXISTS hospitalization_vitals (
+    id TEXT PRIMARY KEY,
+    hospitalization_id TEXT NOT NULL,
+    recorded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    temperature_c REAL,                    -- °C
+    heart_rate_bpm INTEGER,                -- battements/min
+    respiratory_rate_bpm INTEGER,           -- respirations/min
+    spo2_percent REAL,                     -- % saturation
+    weight_kg REAL,                        -- pesée (kg)
+    blood_glucose_mmol_l REAL,             -- glycémie (mmol/L)
+    blood_pressure_sys INTEGER,            -- PAS (mmHg)
+    blood_pressure_dia INTEGER,            -- PAD (mmHg)
+    capillary_refill_time_s REAL,          -- TRC (s)
+    mucous_membranes TEXT,                 -- rose | pâle | cyanosé | ictérique
+    mental_state TEXT,                     -- alerte | abattu | comateux | agité
+    pain_score INTEGER,                    -- 0-10
+    notes TEXT,
+    recorded_by TEXT,                      -- user id (ASV / véto)
+    FOREIGN KEY (hospitalization_id) REFERENCES hospitalizations(id) ON DELETE CASCADE,
+    FOREIGN KEY (recorded_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_hospitalization_vitals_hospitalization_id ON hospitalization_vitals(hospitalization_id);
+CREATE INDEX IF NOT EXISTS idx_hospitalization_vitals_recorded_at ON hospitalization_vitals(recorded_at);
+
+CREATE TRIGGER IF NOT EXISTS update_hospitalization_vitals_timestamp AFTER UPDATE ON hospitalization_vitals
+BEGIN
+    UPDATE hospitalization_vitals SET id = id WHERE id = NEW.id;
+END;
+
+-- Feuille d'anesthésie (1 procédure complète)
+CREATE TABLE IF NOT EXISTS anesthesia_sheets (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    hospitalization_id TEXT,
+    appointment_id TEXT,
+    procedure_name TEXT NOT NULL,           -- ex "Ovariohystérectomie"
+    asa_status INTEGER,                    -- 1-5 (ASA physical status)
+    emergency INTEGER NOT NULL DEFAULT 0,  -- 0|1
+    status TEXT NOT NULL DEFAULT 'planned', -- planned | in_progress | completed | cancelled
+    scheduled_at DATETIME,
+    started_at DATETIME,
+    ended_at DATETIME,
+    weight_kg REAL,                        -- poids le jour J
+    fasting_since DATETIME,                -- dernière prise alimentaire
+    premedication TEXT,                    -- ex "ACP 0.01 mg/kg IM + morphine 0.1 mg/kg IM"
+    induction TEXT,                        -- ex "propofol 4 mg/kg IV à effet"
+    induction_agent TEXT,                  -- molécule principale induction
+    maintenance TEXT,                      -- ex "isoflurane 1.5% + O2 1 L/min"
+    monitoring_plan TEXT,                  -- ex "ETCO2, SpO2, FC, PNI q5min"
+    recovery_notes TEXT,                   -- notes réveil
+    recovery_score INTEGER,                -- score de réveil (0-10)
+    complications TEXT,                    -- complications éventuelles
+    vet_id TEXT,                           -- véto anesthésiste
+    template_version TEXT NOT NULL DEFAULT '1.0',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (hospitalization_id) REFERENCES hospitalizations(id) ON DELETE SET NULL,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_anesthesia_sheets_patient_id ON anesthesia_sheets(patient_id);
+CREATE INDEX IF NOT EXISTS idx_anesthesia_sheets_hospitalization_id ON anesthesia_sheets(hospitalization_id);
+CREATE INDEX IF NOT EXISTS idx_anesthesia_sheets_status ON anesthesia_sheets(status);
+CREATE INDEX IF NOT EXISTS idx_anesthesia_sheets_started_at ON anesthesia_sheets(started_at);
+
+CREATE TRIGGER IF NOT EXISTS update_anesthesia_sheets_timestamp AFTER UPDATE ON anesthesia_sheets
+BEGIN
+    UPDATE anesthesia_sheets SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- Médicaments administrés pendant l'anesthésie (drug log)
+CREATE TABLE IF NOT EXISTS anesthesia_drug_log (
+    id TEXT PRIMARY KEY,
+    anesthesia_sheet_id TEXT NOT NULL,
+    administered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    phase TEXT NOT NULL,                   -- premed | induction | maintenance | recovery
+    drug_name TEXT NOT NULL,               -- ex "morphine", "propofol"
+    dose TEXT,                             -- ex "0.1 mg/kg"
+    route TEXT,                            -- IM, SC, IV, IO, IR, PO, IN
+    administered_by TEXT,                  -- user id
+    notes TEXT,
+    FOREIGN KEY (anesthesia_sheet_id) REFERENCES anesthesia_sheets(id) ON DELETE CASCADE,
+    FOREIGN KEY (administered_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_anesthesia_drug_log_sheet_id ON anesthesia_drug_log(anesthesia_sheet_id);
+CREATE INDEX IF NOT EXISTS idx_anesthesia_drug_log_administered_at ON anesthesia_drug_log(administered_at);
+
+CREATE TRIGGER IF NOT EXISTS update_anesthesia_drug_log_timestamp AFTER UPDATE ON anesthesia_drug_log
+BEGIN
+    UPDATE anesthesia_drug_log SET id = id WHERE id = NEW.id;
+END;
+
+-- Monitoring perop (T°, FC, FR, SpO2, ETCO2, PNI)
+CREATE TABLE IF NOT EXISTS anesthesia_monitoring (
+    id TEXT PRIMARY KEY,
+    anesthesia_sheet_id TEXT NOT NULL,
+    recorded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    phase TEXT NOT NULL,                   -- induction | maintenance | recovery
+    heart_rate_bpm INTEGER,
+    respiratory_rate_bpm INTEGER,
+    spo2_percent REAL,
+    etco2_mmhg REAL,                       -- CO2 télé-expiratoire
+    map_mmhg INTEGER,                      -- pression artérielle moyenne
+    temperature_c REAL,
+    isoflurane_pct REAL,                   -- % isoflurane / sévoflurane
+    oxygen_flow_l_min REAL,
+    notes TEXT,
+    FOREIGN KEY (anesthesia_sheet_id) REFERENCES anesthesia_sheets(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_anesthesia_monitoring_sheet_id ON anesthesia_monitoring(anesthesia_sheet_id);
+CREATE INDEX IF NOT EXISTS idx_anesthesia_monitoring_recorded_at ON anesthesia_monitoring(recorded_at);
+
+CREATE TRIGGER IF NOT EXISTS update_anesthesia_monitoring_timestamp AFTER UPDATE ON anesthesia_monitoring
+BEGIN
+    UPDATE anesthesia_monitoring SET id = id WHERE id = NEW.id;
+END;`;

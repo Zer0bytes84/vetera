@@ -36,7 +36,7 @@ import React, {
 import { flushSync } from "react-dom";
 import { toast } from "sonner";
 
-import { Pill } from "@phosphor-icons/react";
+import { Hospital, Pill } from "@phosphor-icons/react";
 
 import Avatar from "@/components/Avatar";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
@@ -109,6 +109,7 @@ import {
 import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { ConsultationSessionDrawer } from "@/modules/consultations";
+import { HospitalizationSheet } from "@/modules/hospitalizations";
 import { PrescriptionSheet } from "@/modules/prescriptions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
@@ -861,6 +862,16 @@ function ConsultationSessionDialog({
                 <Pill weight="duotone" size={14} />
                 Ordonnance
               </Button>
+              <Button
+                className="h-8 gap-1.5"
+                onClick={() => setHospitalizationOpen(true)}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                <Hospital weight="duotone" size={14} />
+                Hospitaliser
+              </Button>
               <Badge className="bg-background/90" variant="outline">
                 <HugeiconsIcon
                   className="mr-1 size-3.5"
@@ -1600,6 +1611,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     useState<Appointment | null>(null);
   const [soapOpen, setSoapOpen] = useState<boolean>(false);
   const [prescriptionOpen, setPrescriptionOpen] = useState<boolean>(false);
+  const [hospitalizationOpen, setHospitalizationOpen] = useState<boolean>(false);
   const [billingAppointment, setBillingAppointment] =
     useState<Appointment | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -2989,6 +3001,14 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           open={prescriptionOpen}
           patient={activeConsultationPatient}
           vet={currentUser}
+        />
+      ) : null}
+
+      {activeConsultation && activeConsultationPatient ? (
+        <HospitalizationSheet
+          onOpenChange={setHospitalizationOpen}
+          open={hospitalizationOpen}
+          patient={activeConsultationPatient}
         />
       ) : null}
     </div>

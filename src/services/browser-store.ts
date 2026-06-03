@@ -15,7 +15,12 @@ export type BrowserTableName =
   | "vaccinations"
   | "consultation_soaps"
   | "prescriptions"
-  | "prescription_items";
+  | "prescription_items"
+  | "hospitalizations"
+  | "hospitalization_vitals"
+  | "anesthesia_sheets"
+  | "anesthesia_drug_log"
+  | "anesthesia_monitoring";
 
 export type BrowserRow = {
   id?: string;
@@ -48,6 +53,11 @@ const EMPTY_STATE: BrowserDatabaseState = {
     consultation_soaps: [],
     prescriptions: [],
     prescription_items: [],
+    hospitalizations: [],
+    hospitalization_vitals: [],
+    anesthesia_sheets: [],
+    anesthesia_drug_log: [],
+    anesthesia_monitoring: [],
   },
 };
 

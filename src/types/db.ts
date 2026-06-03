@@ -261,3 +261,125 @@ export interface PrescriptionItem {
   createdAt: string;
   updatedAt: string;
 }
+
+// ---------------------------------------------------------------------------
+// Hospitalisation 24h & feuille d'anesthésie (Migration 007)
+// ---------------------------------------------------------------------------
+
+export type HospitalizationStatus =
+  | "admitted"
+  | "monitoring"
+  | "critical"
+  | "discharged"
+  | "transferred"
+  | "deceased";
+
+export type MucousMembrane = "pink" | "pale" | "cyanotic" | "icteric";
+export type MentalState = "alert" | "lethargic" | "comatose" | "agitated";
+
+export interface Hospitalization {
+  id: string;
+  patientId: string;
+  appointmentId?: string | null;
+  reason: string;
+  diagnosis?: string | null;
+  status: HospitalizationStatus;
+  admissionDate: string;
+  dischargeDate?: string | null;
+  cage?: string | null;
+  weightKg?: number | null;
+  temperatureC?: number | null;
+  ivFluids?: string | null;
+  feedingPlan?: string | null;
+  specialCare?: string | null;
+  dischargeSummary?: string | null;
+  vetId?: string | null;
+  templateVersion: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HospitalizationVital {
+  id: string;
+  hospitalizationId: string;
+  recordedAt: string;
+  temperatureC?: number | null;
+  heartRateBpm?: number | null;
+  respiratoryRateBpm?: number | null;
+  spo2Percent?: number | null;
+  weightKg?: number | null;
+  bloodGlucoseMmolL?: number | null;
+  bloodPressureSys?: number | null;
+  bloodPressureDia?: number | null;
+  capillaryRefillTimeS?: number | null;
+  mucousMembranes?: MucousMembrane | null;
+  mentalState?: MentalState | null;
+  painScore?: number | null;
+  notes?: string | null;
+  recordedBy?: string | null;
+}
+
+export type AnesthesiaStatus =
+  | "planned"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
+
+export type AnesthesiaPhase = "premed" | "induction" | "maintenance" | "recovery";
+export type AnesthesiaRoute = "IM" | "SC" | "IV" | "IO" | "IR" | "PO" | "IN";
+
+export interface AnesthesiaSheet {
+  id: string;
+  patientId: string;
+  hospitalizationId?: string | null;
+  appointmentId?: string | null;
+  procedureName: string;
+  asaStatus?: number | null;
+  emergency: boolean;
+  status: AnesthesiaStatus;
+  scheduledAt?: string | null;
+  startedAt?: string | null;
+  endedAt?: string | null;
+  weightKg?: number | null;
+  fastingSince?: string | null;
+  premedication?: string | null;
+  induction?: string | null;
+  inductionAgent?: string | null;
+  maintenance?: string | null;
+  monitoringPlan?: string | null;
+  recoveryNotes?: string | null;
+  recoveryScore?: number | null;
+  complications?: string | null;
+  vetId?: string | null;
+  templateVersion: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AnesthesiaDrugLogEntry {
+  id: string;
+  anesthesiaSheetId: string;
+  administeredAt: string;
+  phase: AnesthesiaPhase;
+  drugName: string;
+  dose?: string | null;
+  route?: AnesthesiaRoute | null;
+  administeredBy?: string | null;
+  notes?: string | null;
+}
+
+export interface AnesthesiaMonitoringEntry {
+  id: string;
+  anesthesiaSheetId: string;
+  recordedAt: string;
+  phase: AnesthesiaPhase;
+  heartRateBpm?: number | null;
+  respiratoryRateBpm?: number | null;
+  spo2Percent?: number | null;
+  etco2Mmhg?: number | null;
+  mapMmhg?: number | null;
+  temperatureC?: number | null;
+  isofluranePct?: number | null;
+  oxygenFlowLMin?: number | null;
+  notes?: string | null;
+}
