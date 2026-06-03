@@ -27,6 +27,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
 import React, {
+  useCallback,
   useDeferredValue,
   useEffect,
   useMemo,
@@ -39,6 +40,7 @@ import { toast } from "sonner";
 import { Hospital, Pill, Syringe } from "@phosphor-icons/react";
 
 import Avatar from "@/components/Avatar";
+import { QuickPatientPicker } from "@/components/QuickPatientPicker";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1787,6 +1789,77 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     }
   }, [appointments, updateAppointment]);
 
+  // Palette-driven quick actions (⌘K): listen for medical action events
+  // dispatched by the CommandPalette. If a consultation is already active
+  // for a patient, reuse that patient. Otherwise, surface the
+  // QuickPatientPicker so the user can choose which patient to attach
+  // the new prescription/hospitalization/anesthesia to.
+  const [palettePickerOpen, setPalettePickerOpen] = useState(false);
+  const [palettePickerAction, setPalettePickerAction] =
+    useState<"prescription" | "hospitalization" | "anesthesia" | null>(null);
+  const [palettePatient, setPalettePatient] = useState<Patient | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const events: Array<{
+      name: string;
+      action: "prescription" | "hospitalization" | "anesthesia";
+    }> = [
+      { name: "vetera:open-prescription", action: "prescription" },
+      { name: "vetera:open-hospitalization", action: "hospitalization" },
+      { name: "vetera:open-anesthesia", action: "anesthesia" },
+    ];
+    const openPicker = (action: typeof events[number]["action"]) => {
+      const patient = activeConsultation
+        ? patientsById.get(activeConsultation.patientId)
+        : selectedPatient;
+      if (patient) {
+        // Active patient available — bypass picker and open sheet directly.
+        setPalettePatient(null);
+        setPalettePickerAction(null);
+        setPalettePickerOpen(false);
+        if (action === "prescription") {
+          setPrescriptionOpen(true);
+        } else if (action === "hospitalization") {
+          setHospitalizationOpen(true);
+        } else {
+          setAnesthesiaOpen(true);
+        }
+        return;
+      }
+      setPalettePickerAction(action);
+      setPalettePickerOpen(true);
+    };
+    const handlers = events.map((evt) => {
+      const handler = () => openPicker(evt.action);
+      window.addEventListener(evt.name, handler);
+      return { name: evt.name, handler };
+    });
+    return () => {
+      for (const { name, handler } of handlers) {
+        window.removeEventListener(name, handler);
+      }
+    };
+  }, [activeConsultation, selectedPatient, patientsById]);
+
+  const handlePalettePatientPicked = useCallback(
+    (patient: Patient) => {
+      setPalettePatient(patient);
+      if (palettePickerAction === "prescription") {
+        setPrescriptionOpen(true);
+      } else if (palettePickerAction === "hospitalization") {
+        setHospitalizationOpen(true);
+      } else if (palettePickerAction === "anesthesia") {
+        setAnesthesiaOpen(true);
+      }
+      setPalettePickerOpen(false);
+    },
+    [palettePickerAction]
+  );
+
+  const effectiveSheetPatient = activeConsultationPatient ?? palettePatient;
+  const effectiveAppointmentId = activeConsultation?.id;
+
   const selectedPatient = selectedAppointment
     ? patientsById.get(selectedAppointment.patientId)
     : undefined;
@@ -3012,31 +3085,76 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         }
       />
 
-      {activeConsultation && activeConsultationPatient ? (
+      {effectiveSheetPatient ? (
         <PrescriptionSheet
-          appointmentId={activeConsultation.id}
-          onOpenChange={setPrescriptionOpen}
+          appointmentId={effectiveAppointmentId}
+          onOpenChange={(open) => {
+            setPrescriptionOpen(open);
+            if (!open) {
+              setPalettePatient(null);
+            }
+          }}
           open={prescriptionOpen}
-          patient={activeConsultationPatient}
+          patient={effectiveSheetPatient}
           vet={currentUser}
         />
       ) : null}
 
-      {activeConsultation && activeConsultationPatient ? (
+      {effectiveSheetPatient ? (
         <HospitalizationSheet
-          onOpenChange={setHospitalizationOpen}
+          onOpenChange={(open) => {
+            setHospitalizationOpen(open);
+            if (!open) {
+              setPalettePatient(null);
+            }
+          }}
           open={hospitalizationOpen}
-          patient={activeConsultationPatient}
+          patient={effectiveSheetPatient}
         />
       ) : null}
 
-      {activeConsultation && activeConsultationPatient ? (
+      {effectiveSheetPatient ? (
         <AnesthesiaSheet
-          onOpenChange={setAnesthesiaOpen}
+          onOpenChange={(open) => {
+            setAnesthesiaOpen(open);
+            if (!open) {
+              setPalettePatient(null);
+            }
+          }}
           open={anesthesiaOpen}
-          patient={activeConsultationPatient}
+          patient={effectiveSheetPatient}
         />
       ) : null}
+
+      <QuickPatientPicker
+        description={
+          palettePickerAction === "prescription"
+            ? t("quickPatientPicker.descPrescription", {
+                defaultValue:
+                  "Choisissez le patient pour qui créer une ordonnance.",
+              })
+            : palettePickerAction === "hospitalization"
+              ? t("quickPatientPicker.descHospitalization", {
+                  defaultValue:
+                    "Choisissez le patient à hospitaliser.",
+                })
+              : t("quickPatientPicker.descAnesthesia", {
+                  defaultValue:
+                    "Choisissez le patient pour la feuille d'anesthésie.",
+                })
+        }
+        onOpenChange={(open) => {
+          setPalettePickerOpen(open);
+          if (!open) {
+            setPalettePickerAction(null);
+          }
+        }}
+        onSelect={handlePalettePatientPicked}
+        open={palettePickerOpen}
+        title={t("quickPatientPicker.title", {
+          defaultValue: "Sélectionner un patient",
+        })}
+      />
     </div>
   );
 };
