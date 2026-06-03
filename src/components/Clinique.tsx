@@ -36,7 +36,7 @@ import React, {
 import { flushSync } from "react-dom";
 import { toast } from "sonner";
 
-import { Hospital, Pill } from "@phosphor-icons/react";
+import { Hospital, Pill, Syringe } from "@phosphor-icons/react";
 
 import Avatar from "@/components/Avatar";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
@@ -109,6 +109,7 @@ import {
 import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { ConsultationSessionDrawer } from "@/modules/consultations";
+import { AnesthesiaSheet } from "@/modules/anesthesia";
 import { HospitalizationSheet } from "@/modules/hospitalizations";
 import { PrescriptionSheet } from "@/modules/prescriptions";
 import { useAuth } from "@/contexts/AuthContext";
@@ -582,6 +583,8 @@ function ConsultationSessionDialog({
   onClose,
   onOpenSoap,
   onOpenPrescription,
+  onOpenHospitalization,
+  onOpenAnesthesia,
   onSaveDraft,
   onComplete,
   onUploadDocument,
@@ -596,6 +599,8 @@ function ConsultationSessionDialog({
   onClose: () => void;
   onOpenSoap?: () => void;
   onOpenPrescription?: () => void;
+  onOpenHospitalization?: () => void;
+  onOpenAnesthesia?: () => void;
   onSaveDraft: (
     payload: ConsultationDraftPayload,
     options?: SaveDraftOptions
@@ -864,13 +869,23 @@ function ConsultationSessionDialog({
               </Button>
               <Button
                 className="h-8 gap-1.5"
-                onClick={() => setHospitalizationOpen(true)}
+                onClick={() => onOpenHospitalization?.()}
                 size="sm"
                 type="button"
                 variant="outline"
               >
                 <Hospital weight="duotone" size={14} />
                 Hospitaliser
+              </Button>
+              <Button
+                className="h-8 gap-1.5"
+                onClick={() => onOpenAnesthesia?.()}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                <Syringe weight="duotone" size={14} />
+                Anesthésie
               </Button>
               <Badge className="bg-background/90" variant="outline">
                 <HugeiconsIcon
@@ -1612,6 +1627,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const [soapOpen, setSoapOpen] = useState<boolean>(false);
   const [prescriptionOpen, setPrescriptionOpen] = useState<boolean>(false);
   const [hospitalizationOpen, setHospitalizationOpen] = useState<boolean>(false);
+  const [anesthesiaOpen, setAnesthesiaOpen] = useState<boolean>(false);
   const [billingAppointment, setBillingAppointment] =
     useState<Appointment | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -2954,6 +2970,8 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           onComplete={handleConsultationComplete}
           onDeleteDocument={handleConsultationDocumentDelete}
           onOpenPrescription={() => setPrescriptionOpen(true)}
+          onOpenHospitalization={() => setHospitalizationOpen(true)}
+          onOpenAnesthesia={() => setAnesthesiaOpen(true)}
           onOpenSoap={() => setSoapOpen(true)}
           onSaveDraft={handleConsultationSaveDraft}
           onUploadDocument={handleConsultationDocumentUpload}
@@ -3008,6 +3026,14 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         <HospitalizationSheet
           onOpenChange={setHospitalizationOpen}
           open={hospitalizationOpen}
+          patient={activeConsultationPatient}
+        />
+      ) : null}
+
+      {activeConsultation && activeConsultationPatient ? (
+        <AnesthesiaSheet
+          onOpenChange={setAnesthesiaOpen}
+          open={anesthesiaOpen}
           patient={activeConsultationPatient}
         />
       ) : null}

@@ -488,6 +488,7 @@ const resources = {
           vaccinations: "Vaccinations",
           prescriptions: "Ordonnances",
           hospitalizations: "Hospitalisations",
+          anesthesia: "Anesthésies",
         },
         header: {
           unknownOwner: "Propriétaire inconnu",
@@ -1373,6 +1374,7 @@ const resources = {
           vaccinations: "Vaccinations",
           prescriptions: "Prescriptions",
           hospitalizations: "Hospitalizations",
+          anesthesia: "Anesthesia",
         },
         header: {
           unknownOwner: "Unknown owner",
