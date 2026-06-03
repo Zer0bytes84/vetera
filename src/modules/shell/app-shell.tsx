@@ -477,6 +477,7 @@ function AppShellInner() {
         isOpen={paletteOpen}
         onClose={() => setPaletteOpen(false)}
         onNavigate={handleNavigate}
+        onNavigateToPatient={handleNavigateToPatient}
       />
 
       {/* AI Agent Chat */}
