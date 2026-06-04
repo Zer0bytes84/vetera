@@ -134,3 +134,23 @@
 **i18n** : nouvelle section `backup.*` (FR + EN) avec 16 clés (scheduler + encryption + error messages).
 
 **Build** : 0 nouvelle erreur TS (19 baseline inchangée).
+
+## S7.4 — Time picker ergonomique (sous-tâche S7) — ✅
+
+**Problème** : `<Input type="time">` natif peu pratique (saisie exacte obligatoire), 12 quick times 30min peu lisibles.
+
+**`AppointmentTimePicker` (Agenda.tsx)** — composant dédié avec :
+- **Centre** : `<Input type="time">` tabulaire centré, font-semibold, 24 chars width, validation regex `/^([0-1]?\d|2[0-3]):[0-5]\d$/`.
+- **Stepper ±1h** (flèches Hugeicons ArrowLeft/Right).
+- **Stepper ±15min / ±5min** (boutons ghost).
+- **Fin live** : `endLabel = minutesToTime(valueMinutes + durationMinutes)` affichée en dessous, mise à jour en temps réel.
+- **3 sections groupées** : "Matin" (06:00-12:00) / "Après-midi" (12:00-18:00) / "Soir" (18:00-22:00) avec chips 30min depuis `QUICK_TIMES` étendu (20 créneaux : 08:00 → 19:00).
+- **`tabular-nums`** sur tous les chiffres pour alignement vertical.
+- **`size="xs"`** + `variant={active ? "default" : "outline"}` pour chip actif clair.
+- **Helpers** : `timeToMinutes` / `minutesToTime` / `addMinutesToTime` / `STEP_MINUTES = 5`.
+
+**Wiring** : `<AppointmentTimePicker durationMinutes={duration} onChange={setFormTime} value={formTime} />` remplace l'ancien input + quick times block.
+
+**i18n** : `appointment.time.endsAt` ajouté (FR+EN).
+
+**Build** : 0 nouvelle erreur TS (19 baseline).

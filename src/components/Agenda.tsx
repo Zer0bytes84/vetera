@@ -1,6 +1,8 @@
 import {
   Add01Icon,
   Alert02Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
   Calendar01Icon,
   CheckmarkCircle02Icon,
   MoreVerticalCircle01Icon,
@@ -111,19 +113,209 @@ const APPOINTMENT_TYPES: Appointment["type"][] = [
 ];
 
 const QUICK_TIMES = [
+  "08:00",
+  "08:30",
   "09:00",
   "09:30",
   "10:00",
   "10:30",
   "11:00",
   "11:30",
+  "12:00",
   "14:00",
   "14:30",
   "15:00",
   "15:30",
   "16:00",
   "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "19:00",
 ];
+
+const TIME_PERIODS: {
+  id: "morning" | "afternoon" | "evening";
+  label: string;
+  from: string;
+  to: string;
+}[] = [
+  { id: "morning", label: "Matin", from: "06:00", to: "12:00" },
+  { id: "afternoon", label: "Après-midi", from: "12:00", to: "18:00" },
+  { id: "evening", label: "Soir", from: "18:00", to: "22:00" },
+];
+
+const STEP_MINUTES = 5;
+
+function timeToMinutes(value: string): number {
+  const [h, m] = value.split(":").map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) {
+    return 0;
+  }
+  return h * 60 + m;
+}
+
+function minutesToTime(total: number): string {
+  const clamped = Math.max(0, Math.min(24 * 60 - 1, total));
+  const hours = Math.floor(clamped / 60);
+  const minutes = clamped % 60;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+function addMinutesToTime(value: string, delta: number): string {
+  return minutesToTime(timeToMinutes(value) + delta);
+}
+
+interface TimePickerProps {
+  durationMinutes: number;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function AppointmentTimePicker({
+  durationMinutes,
+  value,
+  onChange,
+}: TimePickerProps) {
+  const { t } = useTranslation();
+  const valueMinutes = timeToMinutes(value);
+  const endMinutes = valueMinutes + durationMinutes;
+  const endLabel = minutesToTime(endMinutes);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
+        <div className="flex items-center gap-1">
+          <Button
+            aria-label="Heure précédente"
+            className="h-8 w-8"
+            onClick={() => onChange(addMinutesToTime(value, -60))}
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+          >
+            <HugeiconsIcon
+              icon={ArrowLeft01Icon}
+              size={14}
+              strokeWidth={1.75}
+            />
+          </Button>
+          <Button
+            aria-label="-15 minutes"
+            className="h-8 px-2 text-xs"
+            onClick={() => onChange(addMinutesToTime(value, -15))}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            −15
+          </Button>
+          <Button
+            aria-label="-5 minutes"
+            className="h-8 px-2 text-xs"
+            onClick={() => onChange(addMinutesToTime(value, -STEP_MINUTES))}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            −5
+          </Button>
+        </div>
+        <div className="flex flex-col items-center">
+          <Input
+            className="w-24 text-center text-base font-semibold tabular-nums"
+            onChange={(event) => {
+              const next = event.target.value;
+              if (/^([0-1]?\d|2[0-3]):[0-5]\d$/.test(next)) {
+                onChange(next);
+              }
+            }}
+            type="time"
+            value={value}
+          />
+          <span className="mt-0.5 text-[10px] text-muted-foreground/80">
+            {t("appointment.time.endsAt", {
+              defaultValue: "Fin",
+            })}
+            {" "}
+            {endLabel}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button
+            aria-label="+5 minutes"
+            className="h-8 px-2 text-xs"
+            onClick={() => onChange(addMinutesToTime(value, STEP_MINUTES))}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            +5
+          </Button>
+          <Button
+            aria-label="+15 minutes"
+            className="h-8 px-2 text-xs"
+            onClick={() => onChange(addMinutesToTime(value, 15))}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            +15
+          </Button>
+          <Button
+            aria-label="Heure suivante"
+            className="h-8 w-8"
+            onClick={() => onChange(addMinutesToTime(value, 60))}
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+          >
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              size={14}
+              strokeWidth={1.75}
+            />
+          </Button>
+        </div>
+      </div>
+
+      {TIME_PERIODS.map((period) => {
+        const slots = QUICK_TIMES.filter(
+          (time) =>
+            timeToMinutes(time) >= timeToMinutes(period.from) &&
+            timeToMinutes(time) <= timeToMinutes(period.to)
+        );
+        if (slots.length === 0) {
+          return null;
+        }
+        return (
+          <div className="space-y-1.5" key={period.id}>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+              {period.label}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {slots.map((time) => {
+                const active = value === time;
+                return (
+                  <Button
+                    className="tabular-nums"
+                    key={time}
+                    onClick={() => onChange(time)}
+                    size="xs"
+                    type="button"
+                    variant={active ? "default" : "outline"}
+                  >
+                    {time}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -3015,14 +3207,11 @@ const Agenda: React.FC = () => {
 
                 <Field>
                   <FieldLabel>Heure</FieldLabel>
-                  <Input
-                    onChange={(event) => setFormTime(event.target.value)}
-                    type="time"
+                  <AppointmentTimePicker
+                    durationMinutes={duration}
+                    onChange={setFormTime}
                     value={formTime}
                   />
-                  <FieldDescription>
-                    Format 24h, par exemple 20:45.
-                  </FieldDescription>
                 </Field>
 
                 <Field>
@@ -3042,23 +3231,6 @@ const Agenda: React.FC = () => {
                   </NativeSelect>
                 </Field>
               </div>
-
-              <Field>
-                <FieldLabel>Créneaux rapides</FieldLabel>
-                <div className="flex flex-wrap gap-2">
-                  {QUICK_TIMES.map((time) => (
-                    <Button
-                      key={time}
-                      onClick={() => setFormTime(time)}
-                      size="xs"
-                      type="button"
-                      variant={formTime === time ? "default" : "outline"}
-                    >
-                      {time}
-                    </Button>
-                  ))}
-                </div>
-              </Field>
 
               <Field>
                 <FieldLabel>Motif clinique</FieldLabel>
