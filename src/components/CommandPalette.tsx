@@ -8,18 +8,19 @@ import {
   DashboardSquare01Icon,
   HospitalBed01Icon,
   Package02Icon,
-  Pill01Icon,
+  PillIcon,
   Settings02Icon,
   StethoscopeIcon,
-  Syringe01Icon,
   Task01Icon,
   UserGroupIcon,
+  VaccineIcon,
   WalletIcon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format } from "date-fns";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
+import type { Locale } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -557,7 +558,7 @@ export default function CommandPalette({
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-fuchsia-200/50 bg-fuchsia-50/80 text-fuchsia-700 shadow-[0_2px_4px_rgba(0,0,0,0.02)] dark:border-fuchsia-900/30 dark:bg-fuchsia-950/40 dark:text-fuchsia-400">
                 <HugeiconsIcon
                   className="size-4"
-                  icon={Pill01Icon}
+                  icon={PillIcon}
                   strokeWidth={2}
                 />
               </div>
@@ -589,7 +590,7 @@ export default function CommandPalette({
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-rose-200/50 bg-rose-50/80 text-rose-700 shadow-[0_2px_4px_rgba(0,0,0,0.02)] dark:border-rose-900/30 dark:bg-rose-950/40 dark:text-rose-400">
                 <HugeiconsIcon
                   className="size-4"
-                  icon={Syringe01Icon}
+                  icon={VaccineIcon}
                   strokeWidth={2}
                 />
               </div>
