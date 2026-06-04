@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!-- Required for the WebKit process and V8 (used by framer-motion / WebCrypto). -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+
+    <!-- Required for the in-app updater to reach github.com. -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!-- Required for the local backup file picker (Documents / Downloads / Desktop). -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    <key>com.apple.security.files.downloads.read-write</key>
+    <true/>
+
+    <!-- App Sandbox is opt-in: this app is distributed via Developer ID + notarization,
+         not the Mac App Store, so we do not request the App Sandbox container. -->
+  </dict>
+</plist>

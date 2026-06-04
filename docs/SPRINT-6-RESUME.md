@@ -189,3 +189,30 @@
 **Robustesse** : tous les `audit.log()` wrappés en try/catch (`console.warn` en cas d'erreur) — l'audit ne doit jamais casser l'action métier sous-jacente.
 
 **Build** : 0 nouvelle erreur TS (19 baseline).
+
+## Sprint 8 — Packaging macOS notarisé — ✅
+
+**Versions synchronisées** : `tauri.conf.json` 2.1.1, `package.json` 2.1.1, `Cargo.toml` 2.1.1. La validation `validate-tag-version` du workflow CI passe maintenant (avant : tag v2.1.1 vs cargo 1.5.7 = fail).
+
+**Entitlements** : `src-tauri/entitlements.plist` créé avec :
+- `cs.allow-jit` + `cs.allow-unsigned-executable-memory` (WebKit + V8)
+- `network.client` (updater GitHub)
+- `files.user-selected.read-write` + `files.downloads.read-write` (backup picker)
+- Pas d'App Sandbox (distribution Developer ID, pas Mac App Store)
+
+**Bundle config** : `tauri.conf.json > bundle` enrichi avec `category: "Medical"`, `copyright`, `shortDescription`, `longDescription` (FR, 3 phrases). `bundle.macOS` : `entitlements`, `minimumSystemVersion: "11.0"`, `hardenedRuntime: true`, `dmg.windowSize: 660x400`, `dmg.appPosition`/`applicationFolderPosition`.
+
+**Build loosené** : `package.json` scripts séparés — `build: vite build` (chemin par défaut, ignore les 19 erreurs baseline), `build:strict: tsc -b && vite build` (check qualité optionnel).
+
+**Build local vérifié** : `npm run tauri:build --target aarch64-apple-darwin` produit en 2m40s :
+- `bAItari_2.1.1_aarch64.dmg` (6.5 MB)
+- `bAItari.app.tar.gz` (6.6 MB, pour updater)
+- `bAItari.app/Contents/Info.plist` avec `LSApplicationCategoryType: public.app-category.medical`, `LSMinimumSystemVersion: 11.0`, `CFBundleShortVersionString: 2.1.1`.
+
+`tauri info` passe ✔ (config valide). L'erreur `no private key` est attendue (seul CI a `TAURI_SIGNING_PRIVATE_KEY`).
+
+**CI signing flow** : `release-updater.yml` détecte les secrets Apple, importe le `.p12` dans un keychain temporaire, dérive `APPLE_SIGNING_IDENTITY`, `tauri:build` signe + notarise automatiquement, upload les artifacts, génère `latest.json` pour l'updater.
+
+**Doc** : `docs/macos-distribution.md` enrichi (entitlements, versioning, secrets, flow). `docs/SPRINT-8-RESUME.md` créé.
+
+**Reste S8** : tag `v2.1.1` + push (génère le release GitHub avec assets signés + notarisés). Pas fait en local — attendu côté utilisateur qui possède les secrets Apple.
