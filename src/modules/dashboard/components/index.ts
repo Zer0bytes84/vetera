@@ -13,7 +13,6 @@ export {
   OrbitRevenueBars,
 } from "./orbit-board-widgets";
 export { ProcedureDemandOrbit } from "./procedure-demand-orbit";
-export { RecentConsultationsOrbit } from "./recent-consultations-orbit";
 export { RevenueBreakdownOrbit } from "./revenue-breakdown-orbit";
 export { StatCardOrbit } from "./stat-card-orbit";
 export { TaskCadenceOrbit } from "./task-cadence-orbit";
