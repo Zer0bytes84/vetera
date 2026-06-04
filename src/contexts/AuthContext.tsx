@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { bootstrapScheduler, stopScheduler } from "@/services/backupScheduler";
 import * as AuthService from "@/services/sqlite/auth";
 
 interface AuthUser {
@@ -136,6 +137,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const loadUser = async () => {
       try {
         await refreshCurrentUser();
+        // Boot the backup scheduler once the user is resolved so the first
+        // run benefits from the live DB connection.
+        void bootstrapScheduler();
       } catch (error: any) {
         console.error("Error loading user:", error);
         setError(error.message || "Failed to load user");
@@ -146,6 +150,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     loadUser();
+
+    return () => {
+      stopScheduler();
+    };
   }, [refreshCurrentUser]);
 
   useEffect(() => {

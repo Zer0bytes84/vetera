@@ -90,3 +90,47 @@
 - S7.1 : `backupService` durci (encryption AES-256-GCM, retention, scheduler).
 - S7.2 : Audit log (table `audit_log` + `useAuditTrail()` hook).
 - S7.3 : i18n `pt-BR` + `de` refinement.
+
+---
+
+# Sprint 7 — Hardening (S7.1 fait)
+
+## S7.1 — Backup service durci (AES-256-GCM + retention + scheduler) — ✅
+
+**Nouveaux fichiers** :
+- `src/services/backupCrypto.ts` (264 lignes) — AES-256-GCM + PBKDF2 (WebCrypto natif, 0 dépendance).
+- `src/services/backupScheduler.ts` (160 lignes) — setTimeout-based scheduler (off/daily/weekly) + bootstrap catch-up.
+
+**Container layout** (big-endian, 40-byte header + payload) :
+```
+[8 bytes]  magic "BAITDB\0\0"
+[2 bytes]  version 0x0001
+[2 bytes]  flags (bit 0 = encrypted)
+[16 bytes] PBKDF2 salt
+[12 bytes] AES-GCM IV
+[N bytes]  ciphertext (auth tag inclus)
+[32 bytes] SHA-256 of plaintext
+```
+
+**Crypto** :
+- KDF : PBKDF2-HMAC-SHA256, **120 000 itérations**, salt 16 octets aléatoires.
+- Cipher : AES-256-GCM, IV 12 octets aléatoires, auth tag 16 octets.
+- Intégrité : SHA-256 du plaintext stocké en fin de container, vérifié en constant-time.
+
+**Rétention** : MAX_BACKUPS = 5, MAX_BACKUP_AGE_DAYS = 60, prune automatique à chaque `createBackup` (count + age).
+
+**Scheduler** :
+- `loadSchedulerSettings()` / `saveSchedulerSettings()` persistées dans `app_settings["backup_scheduler"]`.
+- `startScheduler({ frequency, passphrase })` + `stopScheduler()` + `getSchedulerStatus()`.
+- `bootstrapScheduler()` monté dans `AuthContext` : catch-up auto au boot si l'intervalle est écoulé.
+- `setTimeout` chain (pas `setInterval`) pour ne pas se déclencher en parallèle.
+
+**API publique étendue** :
+- `createBackup(reason?, passphrase?)` → écrit `.bdb` (chiffré) ou `.db` (plaintext container).
+- `restoreBackup(filename, passphrase?)` → déchiffre, vérifie SHA-256, vérifie magic SQLite.
+- `exportDatabase(passphrase?)` → même logique, écrit dans le path choisi par l'utilisateur.
+- `importDatabase(passphrase?)` / `importDatabaseFromFile(file, passphrase?)` → détecte encryption via magic bytes.
+
+**i18n** : nouvelle section `backup.*` (FR + EN) avec 16 clés (scheduler + encryption + error messages).
+
+**Build** : 0 nouvelle erreur TS (19 baseline inchangée).

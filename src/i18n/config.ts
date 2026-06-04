@@ -171,6 +171,31 @@ const resources = {
           noReminders: "Aucun rappel à venir",
         },
       },
+      backup: {
+        title: "Sauvegardes",
+        scheduler: {
+          title: "Planification automatique",
+          frequency: "Fréquence",
+          options: {
+            off: "Désactivé",
+            daily: "Tous les jours",
+            weekly: "Toutes les semaines",
+          },
+          passphraseLabel: "Mot de passe de chiffrement (optionnel)",
+          passphraseHint:
+            "AES-256-GCM via WebCrypto. Laissez vide pour des sauvegardes non chiffrées.",
+          save: "Enregistrer le planning",
+          lastRun: "Dernière exécution : {{date}}",
+          catchUp: "Une sauvegarde a été lancée au démarrage (récupération).",
+        },
+        encryption: {
+          enabled: "Chiffrement activé",
+          disabled: "Non chiffré",
+          required: "Mot de passe requis pour cette sauvegarde",
+          wrongPassphrase: "Mot de passe invalide ou sauvegarde corrompue.",
+          integrityFailed: "Intégrité compromise (hash SHA-256 invalide).",
+        },
+      },
       nav: {
         sections: {
           pilotage: "Pilotage",
@@ -1191,6 +1216,31 @@ const resources = {
         widget: {
           title: "Upcoming reminders",
           noReminders: "No upcoming reminders",
+        },
+      },
+      backup: {
+        title: "Backups",
+        scheduler: {
+          title: "Automatic schedule",
+          frequency: "Frequency",
+          options: {
+            off: "Disabled",
+            daily: "Daily",
+            weekly: "Weekly",
+          },
+          passphraseLabel: "Encryption passphrase (optional)",
+          passphraseHint:
+            "AES-256-GCM via WebCrypto. Leave empty for unencrypted backups.",
+          save: "Save schedule",
+          lastRun: "Last run: {{date}}",
+          catchUp: "A backup was run on startup (catch-up).",
+        },
+        encryption: {
+          enabled: "Encrypted",
+          disabled: "Unencrypted",
+          required: "Passphrase required for this backup",
+          wrongPassphrase: "Invalid passphrase or corrupted backup.",
+          integrityFailed: "Integrity check failed (SHA-256 mismatch).",
         },
       },
       nav: {

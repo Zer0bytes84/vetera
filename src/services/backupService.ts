@@ -3,12 +3,17 @@
  * Handles automatic and manual backup/restore of SQLite database
  *
  * Uses Tauri 2.0 plugin-fs with absolute paths for proper file operations
+ *
+ * S7.1 hardening:
+ * - Optional AES-256-GCM encryption with PBKDF2-derived key (WebCrypto)
+ * - SHA-256 integrity hash baked into the container
+ * - Retention policy (count + max age in days)
+ * - Lightweight scheduler (setInterval-based) for daily/weekly auto-backups
  */
 
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import {
-  copyFile,
   exists,
   mkdir,
   readFile,
@@ -17,6 +22,14 @@ import {
   writeFile,
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
+import {
+  decryptPayload,
+  encryptPayload,
+  isEncryptedContainer,
+  parseContainer,
+  serializeContainer,
+  serializePlaintext,
+} from "./backupCrypto";
 import { isTauriRuntime } from "./browser-store";
 import { closeDatabaseConnection, runDbOperation } from "./sqlite/database";
 
@@ -25,6 +38,7 @@ const WAL_FILENAME = "baitari.db-wal";
 const SHM_FILENAME = "baitari.db-shm";
 const BACKUP_DIR_NAME = "backups";
 const MAX_BACKUPS = 5;
+const MAX_BACKUP_AGE_DAYS = 60;
 const METADATA_FILE = "backup_metadata.json";
 
 interface BackupMetadata {
@@ -38,6 +52,9 @@ export interface BackupInfo {
   filename: string;
   size: number;
   version: string;
+  encrypted: boolean;
+  reason: string;
+  integrity: "verified" | "unknown" | "failed";
 }
 
 async function getAppDataPath(): Promise<string> {
@@ -185,22 +202,26 @@ async function prepareForDatabaseReplacement(): Promise<{
 }
 
 async function replaceDatabaseFile(
-  sourcePath: string,
+  sourceBytes: Uint8Array,
   destinationPath: string
 ): Promise<void> {
   const destinationExists = await exists(destinationPath);
   if (destinationExists) {
     await remove(destinationPath);
   }
-
-  await copyFile(sourcePath, destinationPath);
+  await writeFile(destinationPath, sourceBytes);
 }
 
 /**
  * Create a backup of the database
+ * @param reason   Tag for traceability (manual / auto-upgrade / pre-import / scheduled).
+ * @param passphrase Optional AES-256-GCM passphrase. When provided, the
+ *                   backup file is encrypted with PBKDF2-derived key + SHA-256
+ *                   integrity hash.
  */
 export async function createBackup(
-  reason = "manual"
+  reason = "manual",
+  passphrase?: string
 ): Promise<BackupInfo | null> {
   if (!isTauriRuntime()) {
     console.info("[Backup] Backup skipped outside Tauri runtime");
@@ -227,35 +248,31 @@ export async function createBackup(
     // Checkpoint WAL to ensure all writes are in the main DB file
     await checkpointWal();
 
+    // Read the database as bytes
+    const plaintext = await readFile(dbPath);
+
     // Generate backup filename with timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const version = getAppVersion();
-    const backupFilename = `backup_${timestamp}_v${version}_${reason}.db`;
+    const encrypted = typeof passphrase === "string" && passphrase.length > 0;
+    const extension = encrypted ? "bdb" : "db";
+    const backupFilename = `backup_${timestamp}_v${version}_${reason}${
+      encrypted ? "_enc" : ""
+    }.${extension}`;
     const backupDestPath = await joinPath(backupDir, backupFilename);
 
-    console.log("[Backup] Copying database from:", dbPath);
-    console.log("[Backup] Copying database to:", backupDestPath);
+    // Encrypt or pass through
+    const payload = encrypted
+      ? serializeContainer(await encryptPayload(plaintext, passphrase))
+      : serializePlaintext(plaintext);
 
-    // Copy database file
-    await copyFile(dbPath, backupDestPath);
-
-    // Also copy WAL and SHM files if they exist
-    const walSrcPath = await joinPath(appData, WAL_FILENAME);
-    const shmSrcPath = await joinPath(appData, SHM_FILENAME);
-    const walDestPath = await joinPath(backupDir, `${backupFilename}-wal`);
-    const shmDestPath = await joinPath(backupDir, `${backupFilename}-shm`);
-
-    const walExists = await exists(walSrcPath);
-    const shmExists = await exists(shmSrcPath);
-
-    if (walExists) {
-      await copyFile(walSrcPath, walDestPath);
-      console.log("[Backup] Copied WAL file");
-    }
-    if (shmExists) {
-      await copyFile(shmSrcPath, shmDestPath);
-      console.log("[Backup] Copied SHM file");
-    }
+    await writeFile(backupDestPath, payload);
+    console.log(
+      "[Backup] Wrote",
+      encrypted ? "encrypted" : "plaintext",
+      "backup to:",
+      backupDestPath
+    );
 
     // Update metadata
     const metadata = await loadMetadata();
@@ -263,26 +280,18 @@ export async function createBackup(
       filename: backupFilename,
       date: new Date().toISOString(),
       version,
-      size: 0,
+      size: payload.byteLength,
+      encrypted,
+      reason,
+      integrity: "verified",
     };
 
     metadata.backups.unshift(backupInfo);
     metadata.lastBackup = backupInfo.date;
     metadata.appVersion = version;
 
-    // Rotate old backups (keep only MAX_BACKUPS)
-    if (metadata.backups.length > MAX_BACKUPS) {
-      const toDelete = metadata.backups.splice(MAX_BACKUPS);
-      for (const old of toDelete) {
-        try {
-          const oldPath = await joinPath(backupDir, old.filename);
-          await remove(oldPath);
-          console.log("[Backup] Deleted old backup:", old.filename);
-        } catch (e) {
-          console.warn("[Backup] Could not delete old backup:", old.filename);
-        }
-      }
-    }
+    // Apply retention policy (count + max age)
+    await applyRetention(metadata, backupDir);
 
     await saveMetadata(metadata);
     console.log("[Backup] Created backup:", backupFilename);
@@ -292,6 +301,53 @@ export async function createBackup(
     console.error("[Backup] Error creating backup:", error);
     throw error;
   }
+}
+
+/**
+ * Apply the retention policy: keep at most MAX_BACKUPS items, and prune
+ * any backup older than MAX_BACKUP_AGE_DAYS. Returns the new metadata list.
+ */
+async function applyRetention(
+  metadata: BackupMetadata,
+  backupDir: string
+): Promise<void> {
+  const now = Date.now();
+  const ageMs = MAX_BACKUP_AGE_DAYS * 24 * 60 * 60 * 1000;
+  const survivors: BackupInfo[] = [];
+  for (let i = 0; i < metadata.backups.length; i += 1) {
+    const entry = metadata.backups[i];
+    const age = now - new Date(entry.date).getTime();
+    if (age > ageMs) {
+      try {
+        await remove(await joinPath(backupDir, entry.filename));
+        console.log("[Backup] Pruned aged backup:", entry.filename);
+      } catch (e) {
+        console.warn(
+          "[Backup] Could not prune aged backup:",
+          entry.filename,
+          e
+        );
+        survivors.push(entry);
+      }
+      continue;
+    }
+    if (survivors.length >= MAX_BACKUPS) {
+      try {
+        await remove(await joinPath(backupDir, entry.filename));
+        console.log("[Backup] Pruned excess backup:", entry.filename);
+      } catch (e) {
+        console.warn(
+          "[Backup] Could not prune excess backup:",
+          entry.filename,
+          e
+        );
+        survivors.push(entry);
+      }
+      continue;
+    }
+    survivors.push(entry);
+  }
+  metadata.backups = survivors;
 }
 
 /**
@@ -320,9 +376,15 @@ export async function getLastBackupDate(): Promise<string | null> {
 }
 
 /**
- * Restore database from a backup
+ * Restore database from a backup.
+ * @param filename  Backup file inside the managed backup directory.
+ * @param passphrase Required when the backup is encrypted. The integrity
+ *                   hash is verified and AES-GCM auth tag is checked.
  */
-export async function restoreBackup(filename: string): Promise<boolean> {
+export async function restoreBackup(
+  filename: string,
+  passphrase?: string
+): Promise<boolean> {
   if (!isTauriRuntime()) {
     console.info("[Backup] Restore unavailable outside Tauri runtime");
     return false;
@@ -336,42 +398,46 @@ export async function restoreBackup(filename: string): Promise<boolean> {
     const backupPath = await joinPath(backupDir, filename);
     const dbPath = await joinPath(appData, DB_FILENAME);
 
-    console.log("[Backup] Backup path:", backupPath);
-    console.log("[Backup] DB path:", dbPath);
-
     // Check if backup exists
     const backupExists = await exists(backupPath);
-    console.log("[Backup] Backup exists:", backupExists);
-
     if (!backupExists) {
-      console.error("[Backup] Backup file does not exist:", filename);
       throw new Error("Fichier de sauvegarde introuvable");
+    }
+
+    const bytes = await readFile(backupPath);
+    const encrypted = isEncryptedContainer(bytes);
+    let plaintext: Uint8Array;
+
+    if (encrypted) {
+      if (!passphrase) {
+        throw new Error(
+          "Cette sauvegarde est chiffrée — le mot de passe est requis pour la restaurer."
+        );
+      }
+      const container = parseContainer(bytes);
+      plaintext = await decryptPayload(container, passphrase);
+    } else {
+      // Either a legacy raw .db file, or a plaintext bdb container.
+      if (bytes.length > 12 && bytes[0] === 0x42 && bytes[1] === 0x41) {
+        // New container format with FLAG_ENCRYPTED = 0
+        const parsed = parseContainer(bytes);
+        plaintext = parsed.rawPayload;
+      } else {
+        plaintext = bytes;
+      }
+    }
+
+    if (!hasSqliteHeader(plaintext)) {
+      throw new Error(
+        "Le fichier déchiffré n'est pas une base SQLite valide."
+      );
     }
 
     // Checkpoint WAL before restore to avoid conflicts
     await checkpointWal();
 
-    // Do the restore
-    console.log("[Backup] Copying backup to database...");
-    await copyFile(backupPath, dbPath);
-
-    // Also restore WAL and SHM files if they exist in the backup
-    const backupWalPath = await joinPath(backupDir, `${filename}-wal`);
-    const backupShmPath = await joinPath(backupDir, `${filename}-shm`);
-    const liveWalPath = await joinPath(appData, WAL_FILENAME);
-    const liveShmPath = await joinPath(appData, SHM_FILENAME);
-
-    const backupWalExists = await exists(backupWalPath);
-    const backupShmExists = await exists(backupShmPath);
-
-    if (backupWalExists) {
-      await copyFile(backupWalPath, liveWalPath);
-      console.log("[Backup] Restored WAL file");
-    }
-    if (backupShmExists) {
-      await copyFile(backupShmPath, liveShmPath);
-      console.log("[Backup] Restored SHM file");
-    }
+    console.log("[Backup] Writing restored database to:", dbPath);
+    await writeFile(dbPath, plaintext);
 
     console.log("[Backup] Restore completed successfully!");
     return true;
@@ -382,9 +448,11 @@ export async function restoreBackup(filename: string): Promise<boolean> {
 }
 
 /**
- * Export database to user-chosen location
+ * Export database to user-chosen location.
+ * @param passphrase Optional AES-256-GCM passphrase. When provided, the
+ *                   exported file uses the encrypted container layout.
  */
-export async function exportDatabase(): Promise<boolean> {
+export async function exportDatabase(passphrase?: string): Promise<boolean> {
   if (!isTauriRuntime()) {
     console.info("[Backup] Export unavailable outside Tauri runtime");
     return false;
@@ -404,11 +472,25 @@ export async function exportDatabase(): Promise<boolean> {
     // Checkpoint WAL before export
     await checkpointWal();
 
+    const plaintext = await readFile(dbPath);
+    const encrypted = typeof passphrase === "string" && passphrase.length > 0;
+    const payload = encrypted
+      ? serializeContainer(await encryptPayload(plaintext, passphrase))
+      : serializePlaintext(plaintext);
+
     // Open save dialog
     const timestamp = new Date().toISOString().split("T")[0];
+    const defaultName = encrypted
+      ? `baitari-backup_${timestamp}.bdb`
+      : `baitari-backup_${timestamp}.db`;
     const savePath = await save({
-      defaultPath: `baitari-backup_${timestamp}.db`,
-      filters: [{ name: "SQLite Database", extensions: ["db"] }],
+      defaultPath: defaultName,
+      filters: [
+        {
+          name: encrypted ? "bAItari Encrypted Backup" : "SQLite Database",
+          extensions: [encrypted ? "bdb" : "db"],
+        },
+      ],
     });
 
     if (!savePath) {
@@ -416,10 +498,15 @@ export async function exportDatabase(): Promise<boolean> {
       return false;
     }
 
-    // Copy to chosen location
-    await copyFile(dbPath, savePath);
+    // Write payload to chosen location
+    await writeFile(savePath, payload);
 
-    console.log("[Backup] Exported database to:", savePath);
+    console.log(
+      "[Backup] Exported",
+      encrypted ? "encrypted" : "plaintext",
+      "database to:",
+      savePath
+    );
     return true;
   } catch (error) {
     console.error("[Backup] Error exporting database:", error);
@@ -488,10 +575,11 @@ export async function deleteBackup(filename: string): Promise<boolean> {
 }
 
 /**
- * Import a database file from user's filesystem
- * Copies the selected .db file into the app's data directory
+ * Import a database file from user's filesystem.
+ * Supports both raw SQLite (.db / .sqlite) and encrypted .bdb containers.
+ * @param passphrase Required when importing an encrypted .bdb backup.
  */
-export async function importDatabase(): Promise<boolean> {
+export async function importDatabase(passphrase?: string): Promise<boolean> {
   if (!isTauriRuntime()) {
     console.info("[Backup] Import unavailable outside Tauri runtime");
     return false;
@@ -502,7 +590,10 @@ export async function importDatabase(): Promise<boolean> {
     const filePath = await open({
       multiple: false,
       filters: [
-        { name: "SQLite Database", extensions: ["db", "sqlite", "sqlite3"] },
+        {
+          name: "bAItari Backup",
+          extensions: ["db", "sqlite", "sqlite3", "bdb"],
+        },
       ],
     });
 
@@ -512,18 +603,14 @@ export async function importDatabase(): Promise<boolean> {
     }
 
     const bytes = await readFile(filePath);
-    if (!hasSqliteHeader(bytes)) {
-      throw new Error(
-        "Le fichier sélectionné n'est pas une base SQLite valide"
-      );
-    }
+    const plaintext = await decodeBackupBytes(bytes, passphrase);
 
     await createBackup("pre-import");
     const { dbPath } = await prepareForDatabaseReplacement();
 
-    // Replace the live database with the selected SQLite file.
+    // Replace the live database with the decoded SQLite file.
     console.log("[Backup] Importing database from:", filePath);
-    await replaceDatabaseFile(filePath, dbPath);
+    await replaceDatabaseFile(plaintext, dbPath);
 
     console.log("[Backup] Database imported successfully from:", filePath);
     return true;
@@ -538,7 +625,10 @@ export async function importDatabase(): Promise<boolean> {
 /**
  * Import a database from a File selected via a native file input fallback.
  */
-export async function importDatabaseFromFile(file: File): Promise<boolean> {
+export async function importDatabaseFromFile(
+  file: File,
+  passphrase?: string
+): Promise<boolean> {
   if (!isTauriRuntime()) {
     console.info("[Backup] Import unavailable outside Tauri runtime");
     return false;
@@ -546,15 +636,11 @@ export async function importDatabaseFromFile(file: File): Promise<boolean> {
 
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    if (!hasSqliteHeader(bytes)) {
-      throw new Error(
-        "Le fichier sélectionné n'est pas une base SQLite compatible"
-      );
-    }
+    const plaintext = await decodeBackupBytes(bytes, passphrase);
 
     await createBackup("pre-import");
     const { dbPath } = await prepareForDatabaseReplacement();
-    await writeFile(dbPath, bytes);
+    await writeFile(dbPath, plaintext);
 
     console.log(
       "[Backup] Database imported successfully from File:",
@@ -567,4 +653,33 @@ export async function importDatabaseFromFile(file: File): Promise<boolean> {
       ? error
       : new Error("Impossible d'importer cette sauvegarde");
   }
+}
+
+/**
+ * Decode backup bytes: detect encrypted container, decrypt if needed, fall
+ * back to a raw SQLite blob. Throws on integrity / format failure.
+ */
+async function decodeBackupBytes(
+  bytes: Uint8Array,
+  passphrase?: string
+): Promise<Uint8Array> {
+  if (isEncryptedContainer(bytes)) {
+    if (!passphrase) {
+      throw new Error(
+        "Cette sauvegarde est chiffrée — le mot de passe est requis."
+      );
+    }
+    const container = parseContainer(bytes);
+    return decryptPayload(container, passphrase);
+  }
+  if (bytes.length > 12 && bytes[0] === 0x42 && bytes[1] === 0x41) {
+    const parsed = parseContainer(bytes);
+    return parsed.rawPayload;
+  }
+  if (!hasSqliteHeader(bytes)) {
+    throw new Error(
+      "Le fichier sélectionné n'est pas une base SQLite valide"
+    );
+  }
+  return bytes;
 }
