@@ -22,6 +22,7 @@ import {
   usePrescriptionsRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
+import { useAudit } from "@/services/auditService";
 import type { Patient, User } from "@/types/db";
 import type { PrescriptionItem } from "@/types/db";
 
@@ -162,6 +163,7 @@ export function PrescriptionBuilder({
 
   const prescriptionsRepo = usePrescriptionsRepository();
   const itemsRepo = usePrescriptionItemsRepository();
+  const audit = useAudit();
 
   // Init : si une prescription existe pour cette consultation, on hydrate
   useEffect(() => {
@@ -337,6 +339,18 @@ export function PrescriptionBuilder({
 
       setStatus(newStatus);
       setSavedAt(now);
+
+      await audit.log({
+        action: "create",
+        entity: "prescription",
+        entityId: prescriptionId,
+        payload: {
+          patientId: patient.id,
+          appointmentId,
+          status: newStatus,
+          itemCount: items.length,
+        },
+      });
     },
     [
       appointmentId,
@@ -349,6 +363,7 @@ export function PrescriptionBuilder({
       items,
       prescriptionsRepo,
       itemsRepo,
+      audit,
     ]
   );
 

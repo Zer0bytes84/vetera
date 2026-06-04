@@ -174,3 +174,18 @@
 **i18n** : section `auditLog` (FR + EN) — `title`, `empty`, `actions.*` (10), `entities.*` (11), `by`, `unknownUser`. Sous-titre widget via `auditLog.subtitle` avec defaultValue FR.
 
 **Build** : 0 nouvelle erreur TS (19 baseline).
+
+## S7.3 — Wire useAudit() dans les flux métier
+
+**Hook public `useAudit()`** étendu avec helpers hors-React `auditLogin(user)` / `auditLogout(user)` qui écrivent directement dans `audit_log` via `getDatabase() + generateId()` (les contextes Auth ne peuvent pas utiliser `useSQLite` qui requiert React).
+
+**Flux wirés** :
+- **Patients.tsx** — `useAudit()` + log `create`/`update` patient (audit `update` wrappe `onUpdatePatient` du `PatientDetailsDialog`, `create` après `createWithOwner`).
+- **Agenda.tsx** — `useAudit()` + log `create`/`update`/`delete` appointment (sur `saveAppointment` et `remove`).
+- **Clinique.tsx** — `useAudit()` + log `update` consultation (status=completed) + `create` document (metadata fichier) + `create` billing (itemCount + total).
+- **prescription-builder.tsx** — `useAudit()` + log `create` prescription (itemCount + status draft/signed).
+- **AuthContext.tsx** — `auditLogin` après `AuthService.login` réussi + `auditLogout` avant `setCurrentUser(null)`. `currentUserRef` sync via useEffect pour stabiliser la capture du user.
+
+**Robustesse** : tous les `audit.log()` wrappés en try/catch (`console.warn` en cas d'erreur) — l'audit ne doit jamais casser l'action métier sous-jacente.
+
+**Build** : 0 nouvelle erreur TS (19 baseline).

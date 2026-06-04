@@ -95,6 +95,7 @@ import {
 } from "@/data/repositories";
 import i18n from "@/i18n/config";
 import { cn } from "@/lib/utils";
+import { useAudit } from "@/services/auditService";
 import type {
   Appointment,
   AppointmentRecurrence,
@@ -1223,6 +1224,7 @@ const Agenda: React.FC = () => {
   const { data: patients } = usePatientsRepository();
   const { data: owners } = useOwnersRepository();
   const { data: users } = useUsersRepository();
+  const audit = useAudit();
 
   useEffect(() => {
     const interval = window.setInterval(
@@ -1828,6 +1830,12 @@ const Agenda: React.FC = () => {
         toast.error("Le rendez-vous n'a pas pu être supprimé.");
         return;
       }
+      await audit.log({
+        action: "delete",
+        entity: "appointment",
+        entityId: appointment.id,
+        payload: { patientId: appointment.patientId, startTime: appointment.startTime },
+      });
       toast.success("Le rendez-vous a été supprimé du planning.");
 
       if (selectedAppointmentId === appointment.id) {
@@ -1980,6 +1988,18 @@ const Agenda: React.FC = () => {
       if (!saved) {
         throw new Error("Le rendez-vous n’a pas pu être enregistré.");
       }
+
+      await audit.log({
+        action: editingAppointmentId ? "update" : "create",
+        entity: "appointment",
+        entityId: saved.id,
+        payload: {
+          patientId: saved.patientId,
+          startTime: saved.startTime,
+          room: saved.room,
+          type: saved.type,
+        },
+      });
 
       if (recurrenceEnabled && !editingAppointmentId) {
         const recurrence: Omit<

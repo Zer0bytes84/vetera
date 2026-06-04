@@ -117,6 +117,7 @@ import { HospitalizationSheet } from "@/modules/hospitalizations";
 import { PrescriptionSheet } from "@/modules/prescriptions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
+import { useAudit } from "@/services/auditService";
 import { getSetting } from "@/services/appSettingsService";
 import {
   useAppointmentReminderSync,
@@ -1627,6 +1628,7 @@ function BillingDialog({
 
 const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
+  const audit = useAudit();
   useAppointmentReminderSync();
   useReminderToasts();
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
@@ -2045,6 +2047,17 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       await updateAppointment(activeConsultation.id, finalAppointmentPatch);
       await updatePatient(activeConsultation.patientId, patientPatch);
 
+      await audit.log({
+        action: "update",
+        entity: "consultation",
+        entityId: activeConsultation.id,
+        payload: {
+          patientId: activeConsultation.patientId,
+          status: "completed",
+          lastVisit: patientPatch.lastVisit,
+        },
+      });
+
       if (typeof window !== "undefined") {
         window.sessionStorage.removeItem(
           `vetera:consultation-start:${activeConsultation.id}`
@@ -2094,6 +2107,17 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       description: description?.trim() || undefined,
       createdBy: "local",
     } as Omit<ConsultationDocument, "id" | "createdAt" | "updatedAt">);
+
+    await audit.log({
+      action: "create",
+      entity: "consultation",
+      entityId: activeConsultation.id,
+      payload: {
+        documentName: file.name,
+        category: getDocumentCategory(file.type || ""),
+        sizeBytes: file.size,
+      },
+    });
   };
 
   const handleConsultationDocumentDelete = async (documentId: string) => {
@@ -2140,6 +2164,19 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           `vetera:consultation-start:${billingAppointment.id}`
         );
       }
+
+      await audit.log({
+        action: "create",
+        entity: "billing",
+        entityId: billingAppointment.id,
+        payload: {
+          patientId: billingAppointment.patientId,
+          itemCount: items.length,
+          totalAmountDa,
+          method: "cash",
+        },
+      });
+
       toast.success("Facturation finalisée et reçu généré.");
     } catch (error) {
       console.error(error);

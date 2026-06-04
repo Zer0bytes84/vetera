@@ -80,6 +80,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const hasInitializedRef = useRef(false);
+  const currentUserRef = useRef<AuthUser | null>(null);
+
+  useEffect(() => {
+    currentUserRef.current = currentUser;
+  }, [currentUser]);
 
   const refreshCurrentUser = useCallback(async () => {
     const isInitialLoad = !hasInitializedRef.current;
@@ -186,6 +191,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         avatarUrl: user.avatarUrl ?? null,
       });
       setError(null);
+      // Audit log: login (ne doit jamais casser la session)
+      try {
+        const { auditLogin } = await import("@/services/auditService");
+        await auditLogin({
+          id: user.id,
+          displayName: user.displayName,
+          email: user.email,
+        });
+      } catch {
+        // silencieux
+      }
     } catch (err: any) {
       setError(err.message);
       throw err;
@@ -217,8 +233,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = async () => {
+    const current = currentUserRef.current;
     await AuthService.logout();
     setCurrentUser(null);
+    if (current) {
+      try {
+        const { auditLogout } = await import("@/services/auditService");
+        await auditLogout({
+          id: current.id,
+          displayName: current.displayName,
+          email: current.email,
+        });
+      } catch {
+        // silencieux
+      }
+    }
   };
 
   const value = {

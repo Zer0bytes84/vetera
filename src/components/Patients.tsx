@@ -72,6 +72,7 @@ import {
   useUsersRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
+import { useAudit } from "@/services/auditService";
 import type { Appointment, Owner, Patient } from "@/types/db";
 
 const COMMON_SPECIES = [
@@ -1611,6 +1612,7 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
   } = usePatientsRepository();
   const { data: owners, update: updateOwner } = useOwnersRepository();
   const { data: appointments } = useAppointmentsRepository();
+  const audit = useAudit();
 
   const hydratedOwners = useMemo(() => {
     const merged = new Map<string, Owner>();
@@ -1985,6 +1987,16 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
         if (!createdBundle?.patient) {
           throw new Error("La création du patient a échoué.");
         }
+
+        await audit.log({
+          action: "create",
+          entity: "patient",
+          entityId: createdBundle.patient.id,
+          payload: {
+            name: createdBundle.patient.name,
+            species: createdBundle.patient.species,
+          },
+        });
 
         toast.success("Dossier patient créé.", {
           description: "Vous pouvez maintenant créer le rendez-vous associé.",
@@ -2419,7 +2431,16 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
           onClose={() => setSelectedPatientId(null)}
           onSaved={handlePatientSaved}
           onUpdateOwner={updateOwner}
-          onUpdatePatient={updatePatient}
+          onUpdatePatient={async (patientId, updates) => {
+            const result = await updatePatient(patientId, updates);
+            await audit.log({
+              action: "update",
+              entity: "patient",
+              entityId: patientId,
+              payload: { fields: Object.keys(updates) },
+            });
+            return result;
+          }}
           owner={ownersMap.get(selectedPatient.ownerId)}
           patient={selectedPatient}
         />
