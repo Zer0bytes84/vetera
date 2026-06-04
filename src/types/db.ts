@@ -73,14 +73,53 @@ export interface Appointment {
   notes?: string;
   ownerId: string;
   patientId: string;
-
   reason?: string;
+  room?: string;
   startTime: string; // ISO string
   status: "scheduled" | "in_progress" | "completed" | "cancelled" | "no_show";
   title: string;
   treatment?: string;
   type: "Consultation" | "Vaccin" | "Chirurgie" | "Urgence" | "Contrôle";
   vetId: string;
+}
+
+export type RecurrenceFrequency =
+  | "weekly"
+  | "biweekly"
+  | "monthly"
+  | "yearly";
+
+export interface AppointmentRecurrence {
+  id: string;
+  parentAppointmentId: string;
+  frequency: RecurrenceFrequency;
+  intervalCount: number;
+  /** JSON-encoded array of weekday indexes 0..6 (0=Sun). null for non-weekly. */
+  daysOfWeek?: string | null;
+  /** ISO date string YYYY-MM-DD. null = no end. */
+  endDate?: string | null;
+  maxOccurrences?: number | null;
+  generatedCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ReminderChannel = "in_app" | "email" | "sms";
+export type ReminderStatus = "pending" | "sent" | "snoozed" | "dismissed";
+
+export interface Reminder {
+  id: string;
+  appointmentId: string;
+  minutesBefore: number;
+  channel: ReminderChannel;
+  status: ReminderStatus;
+  /** ISO datetime — appointment.start_time − minutes_before. */
+  scheduledFor: string;
+  sentAt?: string | null;
+  snoozedUntil?: string | null;
+  message?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Transaction {

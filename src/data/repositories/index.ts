@@ -13,6 +13,7 @@ import type {
   AnesthesiaMonitoringEntry,
   AnesthesiaSheet,
   Appointment,
+  AppointmentRecurrence,
   ConsultationDocument,
   ConsultationSoap,
   Hospitalization,
@@ -23,6 +24,7 @@ import type {
   Prescription,
   PrescriptionItem,
   Product,
+  Reminder,
   Task,
   Transaction,
   User,
@@ -786,5 +788,78 @@ export function useAnesthesiaMonitoringRepository() {
       store.data
         .filter((row) => row.anesthesiaSheetId === anesthesiaSheetId)
         .sort((a, b) => (a.recordedAt < b.recordedAt ? -1 : 1)),
+  };
+}
+
+export function useAppointmentRecurrencesRepository() {
+  const store = useSQLite<AppointmentRecurrence>("appointment_recurrences");
+  return {
+    ...store,
+    forAppointment: (appointmentId: string) =>
+      store.data.find((row) => row.parentAppointmentId === appointmentId) ??
+      null,
+    active: () =>
+      store.data.filter((row) => {
+        if (row.endDate) {
+          return new Date(row.endDate).getTime() >= Date.now();
+        }
+        if (row.maxOccurrences != null) {
+          return row.generatedCount < row.maxOccurrences;
+        }
+        return true;
+      }),
+  };
+}
+
+const REMINDER_OFFSETS = [15, 30, 60, 1440] as const;
+
+export function useRemindersRepository() {
+  const store = useSQLite<Reminder>("reminders");
+  return {
+    ...store,
+    forAppointment: (appointmentId: string) =>
+      store.data
+        .filter((row) => row.appointmentId === appointmentId)
+        .sort((a, b) => (a.scheduledFor < b.scheduledFor ? -1 : 1)),
+    pending: () => store.data.filter((row) => row.status === "pending"),
+    dueNow: (now: Date = new Date()) =>
+      store.data.filter(
+        (row) =>
+          row.status === "pending" &&
+          new Date(row.scheduledFor).getTime() <= now.getTime()
+      ),
+    upcoming: (windowMinutes = 120) => {
+      const now = Date.now();
+      const horizon = now + windowMinutes * 60_000;
+      return store.data
+        .filter(
+          (row) =>
+            (row.status === "pending" || row.status === "snoozed") &&
+            new Date(row.scheduledFor).getTime() >= now - 60_000 &&
+            new Date(row.scheduledFor).getTime() <= horizon
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.scheduledFor).getTime() -
+            new Date(b.scheduledFor).getTime()
+        );
+    },
+    markSent: async (id: string) => {
+      await store.update(id, {
+        status: "sent",
+        sentAt: new Date().toISOString(),
+      } as Partial<Reminder>);
+    },
+    snooze: async (id: string, minutes: number) => {
+      const until = new Date(Date.now() + minutes * 60_000).toISOString();
+      await store.update(id, {
+        status: "snoozed",
+        snoozedUntil: until,
+      } as Partial<Reminder>);
+    },
+    dismiss: async (id: string) => {
+      await store.update(id, { status: "dismissed" } as Partial<Reminder>);
+    },
+    defaultOffsets: REMINDER_OFFSETS,
   };
 }

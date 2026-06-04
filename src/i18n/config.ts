@@ -96,7 +96,80 @@ const resources = {
         finances: "Finances",
         notifications: "Notifications",
         settings: "Paramètres",
-        logout: "Déconnexion",
+      },
+      scheduling: {
+        rooms: {
+          consult1: "Consult. 1",
+          consult2: "Consult. 2",
+          surgery: "Chirurgie",
+          hospitalization: "Hospitalisation",
+          imaging: "Imagerie",
+        },
+        room: "Salle",
+        selectRoom: "Sélectionner une salle",
+        recurrence: {
+          label: "Rendez-vous récurrent",
+          enable: "Faire de ce rendez-vous une série récurrente",
+          frequency: "Fréquence",
+          frequencies: {
+            weekly: "Chaque semaine",
+            biweekly: "Toutes les 2 semaines",
+            monthly: "Chaque mois",
+            yearly: "Chaque année",
+          },
+          endDate: "Date de fin",
+          endDateHelp: "Laissez vide pour une récurrence sans fin",
+          maxOccurrences: "Occurrences max.",
+          summary: "{{count}} rendez-vous seront générés",
+          daysOfWeek: "Jours de la semaine",
+          days: {
+            sun: "Dim",
+            mon: "Lun",
+            tue: "Mar",
+            wed: "Mer",
+            thu: "Jeu",
+            fri: "Ven",
+            sat: "Sam",
+          },
+        },
+        conflict: {
+          title: "Conflit de salle détecté",
+          message:
+            "La salle « {{room}} » est déjà réservée entre {{start}} et {{end}} pour {{patient}}.",
+          hint: "Choisissez une autre salle ou ajustez l'horaire.",
+        },
+      },
+      reminders: {
+        title: "Rappels",
+        empty: "Aucun rappel à venir",
+        newReminder: "Nouveau rappel",
+        minutesBefore: "{{count}} min avant",
+        offsets: {
+          "15": "15 min avant",
+          "30": "30 min avant",
+          "60": "1 heure avant",
+          "1440": "1 jour avant",
+        },
+        add: "Ajouter un rappel",
+        remove: "Retirer",
+        snooze: "Reporter 5 min",
+        dismiss: "Ignorer",
+        channel: "Canal",
+        channels: {
+          in_app: "Notification",
+          email: "Email",
+          sms: "SMS",
+        },
+        status: {
+          pending: "En attente",
+          sent: "Envoyé",
+          snoozed: "Reporté",
+          dismissed: "Ignoré",
+        },
+        widget: {
+          title: "Prochains rappels",
+          noReminders: "Aucun rappel à venir",
+        },
       },
       nav: {
         sections: {
@@ -1045,6 +1118,80 @@ const resources = {
         notifications: "Notifications",
         settings: "Settings",
         logout: "Sign out",
+      },
+      scheduling: {
+        rooms: {
+          consult1: "Consult. 1",
+          consult2: "Consult. 2",
+          surgery: "Surgery",
+          hospitalization: "Hospitalization",
+          imaging: "Imaging",
+        },
+        room: "Room",
+        selectRoom: "Select a room",
+        recurrence: {
+          label: "Recurring appointment",
+          enable: "Make this a recurring series",
+          frequency: "Frequency",
+          frequencies: {
+            weekly: "Every week",
+            biweekly: "Every 2 weeks",
+            monthly: "Every month",
+            yearly: "Every year",
+          },
+          endDate: "End date",
+          endDateHelp: "Leave empty for open-ended recurrence",
+          maxOccurrences: "Max occurrences",
+          summary: "{{count}} appointments will be generated",
+          daysOfWeek: "Days of the week",
+          days: {
+            sun: "Sun",
+            mon: "Mon",
+            tue: "Tue",
+            wed: "Wed",
+            thu: "Thu",
+            fri: "Fri",
+            sat: "Sat",
+          },
+        },
+        conflict: {
+          title: "Room conflict detected",
+          message:
+            "Room «{{room}}» is already booked between {{start}} and {{end}} for {{patient}}.",
+          hint: "Pick another room or adjust the time.",
+        },
+      },
+      reminders: {
+        title: "Reminders",
+        empty: "No upcoming reminders",
+        newReminder: "New reminder",
+        minutesBefore: "{{count}} min before",
+        offsets: {
+          "15": "15 min before",
+          "30": "30 min before",
+          "60": "1 hour before",
+          "1440": "1 day before",
+        },
+        add: "Add a reminder",
+        remove: "Remove",
+        snooze: "Snooze 5 min",
+        dismiss: "Dismiss",
+        channel: "Channel",
+        channels: {
+          in_app: "Notification",
+          email: "Email",
+          sms: "SMS",
+        },
+        status: {
+          pending: "Pending",
+          sent: "Sent",
+          snoozed: "Snoozed",
+          dismissed: "Dismissed",
+        },
+        widget: {
+          title: "Upcoming reminders",
+          noReminders: "No upcoming reminders",
+        },
       },
       nav: {
         sections: {
@@ -3078,6 +3225,7 @@ const resources = {
     },
   },
 } as const;
+
 
 const savedLanguage =
   (localStorage.getItem("vetera.language") as SupportedLanguage | null) || "fr";

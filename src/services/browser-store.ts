@@ -20,7 +20,9 @@ export type BrowserTableName =
   | "hospitalization_vitals"
   | "anesthesia_sheets"
   | "anesthesia_drug_log"
-  | "anesthesia_monitoring";
+  | "anesthesia_monitoring"
+  | "appointment_recurrences"
+  | "reminders";
 
 export type BrowserRow = {
   id?: string;
@@ -58,6 +60,8 @@ const EMPTY_STATE: BrowserDatabaseState = {
     anesthesia_sheets: [],
     anesthesia_drug_log: [],
     anesthesia_monitoring: [],
+    appointment_recurrences: [],
+    reminders: [],
   },
 };
 

@@ -703,3 +703,85 @@ CREATE TRIGGER IF NOT EXISTS update_anesthesia_monitoring_timestamp AFTER UPDATE
 BEGIN
     UPDATE anesthesia_monitoring SET id = id WHERE id = NEW.id;
 END;`;
+
+export const MIGRATION_008_SQL = `
+-- 1) Colonne 'room' sur 'appointments' pour détecter les conflits de salle
+--    (consult-1, consult-2, chirurgie, hospitalisation, etc.).
+-- 2) Table 'appointment_recurrences' pour générer une série de RDV
+--    (hebdomadaire / bimensuel / mensuel / annuel) à partir d'un parent.
+-- 3) Table 'reminders' pour notifier le vétérinaire avant un RDV
+--    (15/30/60/1440 minutes avant, par toast + badge tâches).
+
+-- 1) Ajout de la colonne room
+ALTER TABLE appointments ADD COLUMN room TEXT DEFAULT 'consult-1';
+
+CREATE INDEX IF NOT EXISTS idx_appointments_room ON appointments(room);
+CREATE INDEX IF NOT EXISTS idx_appointments_room_time ON appointments(room, start_time, end_time);
+
+-- 2) Récurrences
+CREATE TABLE IF NOT EXISTS appointment_recurrences (
+    id TEXT PRIMARY KEY,
+    parent_appointment_id TEXT NOT NULL,
+    frequency TEXT NOT NULL CHECK(frequency IN ('weekly', 'biweekly', 'monthly', 'yearly')),
+    interval_count INTEGER NOT NULL DEFAULT 1,
+    days_of_week TEXT,                       -- JSON array [0,3] (0=dim .. 6=sam)
+    end_date DATE,                           -- NULL = indéfini
+    max_occurrences INTEGER,                 -- NULL = pas de limite
+    generated_count INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_appointment_id) REFERENCES appointments(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_appointment_recurrences_parent ON appointment_recurrences(parent_appointment_id);
+CREATE INDEX IF NOT EXISTS idx_appointment_recurrences_end_date ON appointment_recurrences(end_date);
+
+CREATE TRIGGER IF NOT EXISTS update_appointment_recurrences_timestamp AFTER UPDATE ON appointment_recurrences
+BEGIN
+    UPDATE appointment_recurrences SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- 3) Rappels
+CREATE TABLE IF NOT EXISTS reminders (
+    id TEXT PRIMARY KEY,
+    appointment_id TEXT NOT NULL,
+    minutes_before INTEGER NOT NULL,         -- 15 / 30 / 60 / 1440
+    channel TEXT NOT NULL DEFAULT 'in_app' CHECK(channel IN ('in_app', 'email', 'sms')),
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'sent', 'snoozed', 'dismissed')),
+    scheduled_for DATETIME NOT NULL,         -- computed = appointment.start - minutes_before
+    sent_at DATETIME,
+    snoozed_until DATETIME,
+    message TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_reminders_appointment_id ON reminders(appointment_id);
+CREATE INDEX IF NOT EXISTS idx_reminders_status ON reminders(status);
+CREATE INDEX IF NOT EXISTS idx_reminders_scheduled_for ON reminders(scheduled_for);
+
+CREATE TRIGGER IF NOT EXISTS update_reminders_timestamp AFTER UPDATE ON reminders
+BEGIN
+    UPDATE reminders SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- 4) Backfill : créer automatiquement un rappel 30min avant pour tous les
+--    RDV futurs qui n'ont pas encore eu lieu.
+INSERT INTO reminders (id, appointment_id, minutes_before, channel, status, scheduled_for, message)
+SELECT
+    lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' ||
+    substr(lower(hex(randomblob(2))), 2) || '-a' || substr(lower(hex(randomblob(2))), 2) ||
+    '-' || lower(hex(randomblob(6))),
+    a.id,
+    30,
+    'in_app',
+    'pending',
+    datetime(a.start_time, '-30 minutes'),
+    'Rappel de rendez-vous dans 30 minutes'
+FROM appointments a
+WHERE a.start_time > datetime('now')
+  AND a.status NOT IN ('completed', 'cancelled', 'no_show')
+  AND NOT EXISTS (
+    SELECT 1 FROM reminders r WHERE r.appointment_id = a.id
+  );`;

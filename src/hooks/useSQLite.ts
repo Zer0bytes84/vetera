@@ -50,6 +50,8 @@ const ALLOWED_TABLES = new Set([
   "anesthesia_sheets",
   "anesthesia_drug_log",
   "anesthesia_monitoring",
+  "appointment_recurrences",
+  "reminders",
 ]);
 
 const BOOLEAN_FIELDS_BY_TABLE: Record<string, string[]> = {

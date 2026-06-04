@@ -67,6 +67,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Table,
   TableBody,
@@ -81,15 +83,24 @@ import {
   APPOINTMENT_STATUS_META,
   APPOINTMENT_TYPE_META,
 } from "@/config/status-meta";
+import { generateId } from "@/services/sqlite/database";
 import {
   useAppointmentsRepository,
+  useAppointmentRecurrencesRepository,
   useOwnersRepository,
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
 import i18n from "@/i18n/config";
 import { cn } from "@/lib/utils";
-import type { Appointment, User as AppUser, Owner, Patient } from "@/types/db";
+import type {
+  Appointment,
+  AppointmentRecurrence,
+  RecurrenceFrequency,
+  User as AppUser,
+  Owner,
+  Patient,
+} from "@/types/db";
 
 const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
@@ -116,6 +127,31 @@ const QUICK_TIMES = [
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+const APPOINTMENT_ROOMS = [
+  { value: "consult-1", i18nKey: "scheduling.rooms.consult1" },
+  { value: "consult-2", i18nKey: "scheduling.rooms.consult2" },
+  { value: "surgery", i18nKey: "scheduling.rooms.surgery" },
+  { value: "hospitalization", i18nKey: "scheduling.rooms.hospitalization" },
+  { value: "imaging", i18nKey: "scheduling.rooms.imaging" },
+] as const;
+
+const RECURRENCE_FREQUENCIES: { value: RecurrenceFrequency; i18nKey: string }[] = [
+  { value: "weekly", i18nKey: "scheduling.recurrence.frequencies.weekly" },
+  { value: "biweekly", i18nKey: "scheduling.recurrence.frequencies.biweekly" },
+  { value: "monthly", i18nKey: "scheduling.recurrence.frequencies.monthly" },
+  { value: "yearly", i18nKey: "scheduling.recurrence.frequencies.yearly" },
+];
+
+const DAY_OF_WEEK_LABELS: { value: number; i18nKey: string }[] = [
+  { value: 1, i18nKey: "scheduling.recurrence.days.mon" },
+  { value: 2, i18nKey: "scheduling.recurrence.days.tue" },
+  { value: 3, i18nKey: "scheduling.recurrence.days.wed" },
+  { value: 4, i18nKey: "scheduling.recurrence.days.thu" },
+  { value: 5, i18nKey: "scheduling.recurrence.days.fri" },
+  { value: 6, i18nKey: "scheduling.recurrence.days.sat" },
+  { value: 0, i18nKey: "scheduling.recurrence.days.sun" },
+];
 const CALENDAR_START_HOUR = 7;
 const CALENDAR_END_HOUR = 23;
 const HOUR_BLOCKS = Array.from(
@@ -965,6 +1001,17 @@ const Agenda: React.FC = () => {
   const [formTime, setFormTime] = useState("09:00");
   const [duration, setDuration] = useState(30);
   const [reason, setReason] = useState("");
+  const [formRoom, setFormRoom] = useState("consult-1");
+  const [recurrenceEnabled, setRecurrenceEnabled] = useState(false);
+  const [recurrenceFrequency, setRecurrenceFrequency] =
+    useState<RecurrenceFrequency>("weekly");
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState("");
+  const [recurrenceMaxOccurrences, setRecurrenceMaxOccurrences] = useState<
+    number | null
+  >(null);
+  const [recurrenceDaysOfWeek, setRecurrenceDaysOfWeek] = useState<number[]>(
+    []
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -980,6 +1027,7 @@ const Agenda: React.FC = () => {
     saveAppointment,
     remove,
   } = useAppointmentsRepository();
+  const recurrencesStore = useAppointmentRecurrencesRepository();
   const { data: patients } = usePatientsRepository();
   const { data: owners } = useOwnersRepository();
   const { data: users } = useUsersRepository();
@@ -1383,6 +1431,12 @@ const Agenda: React.FC = () => {
     setFormTime("09:00");
     setDuration(30);
     setReason("");
+    setFormRoom("consult-1");
+    setRecurrenceEnabled(false);
+    setRecurrenceFrequency("weekly");
+    setRecurrenceEndDate("");
+    setRecurrenceMaxOccurrences(null);
+    setRecurrenceDaysOfWeek([]);
     setIsSubmitting(false);
     setFormError("");
   };
@@ -1636,7 +1690,7 @@ const Agenda: React.FC = () => {
     const end = new Date(start.getTime() + duration * 60_000);
     const patient = patientsById.get(selectedPatientId);
 
-    const hasConflict = appointments.some((appointment) => {
+    const hasVetConflict = appointments.some((appointment) => {
       if (appointment.id === editingAppointmentId) {
         return false;
       }
@@ -1659,9 +1713,56 @@ const Agenda: React.FC = () => {
       return start < appointmentEnd && end > appointmentStart;
     });
 
-    if (hasConflict) {
+    if (hasVetConflict) {
       const message =
         "Ce créneau est déjà occupé pour le vétérinaire sélectionné. Choisissez un autre horaire ou un autre vétérinaire.";
+      setFormError(message);
+      toast.error(message);
+      return;
+    }
+
+    const roomConflict = appointments.find((appointment) => {
+      if (appointment.id === editingAppointmentId) {
+        return undefined;
+      }
+      if ((appointment.room ?? "consult-1") !== formRoom) {
+        return undefined;
+      }
+      if (
+        appointment.status === "cancelled" ||
+        appointment.status === "no_show"
+      ) {
+        return undefined;
+      }
+      const appointmentStart = normalizeDate(appointment.startTime);
+      const appointmentEnd = normalizeDate(appointment.endTime);
+      if (!(appointmentStart && appointmentEnd)) {
+        return undefined;
+      }
+      return start < appointmentEnd && end > appointmentStart
+        ? appointment
+        : undefined;
+    });
+
+    if (roomConflict) {
+      const roomLabel =
+        APPOINTMENT_ROOMS.find((r) => r.value === formRoom)?.i18nKey ??
+        "scheduling.room";
+      const conflictPatient = patientsById.get(roomConflict.patientId);
+      const conflictPatientName = conflictPatient?.name ?? "Patient local";
+      const message = t("scheduling.conflict.message", {
+        room: t(roomLabel),
+        start: new Date(roomConflict.startTime).toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        end: new Date(roomConflict.endTime).toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        patient: conflictPatientName,
+        defaultValue: `La salle « {{room}} » est déjà réservée entre {{start}} et {{end}} pour {{patient}}.`,
+      });
       setFormError(message);
       toast.error(message);
       return;
@@ -1681,10 +1782,31 @@ const Agenda: React.FC = () => {
         endTime: end,
         status: "scheduled",
         reason,
+        room: formRoom,
       });
 
       if (!saved) {
         throw new Error("Le rendez-vous n’a pas pu être enregistré.");
+      }
+
+      if (recurrenceEnabled && !editingAppointmentId) {
+        const recurrence: Omit<
+          AppointmentRecurrence,
+          "createdAt" | "updatedAt"
+        > = {
+          id: generateId(),
+          parentAppointmentId: saved.id,
+          frequency: recurrenceFrequency,
+          intervalCount: 1,
+          daysOfWeek:
+            recurrenceFrequency === "weekly" && recurrenceDaysOfWeek.length > 0
+              ? JSON.stringify(recurrenceDaysOfWeek)
+              : null,
+          endDate: recurrenceEndDate || null,
+          maxOccurrences: recurrenceMaxOccurrences,
+          generatedCount: 1,
+        };
+        await recurrencesStore.add(recurrence);
       }
 
       toast.success(
@@ -2683,6 +2805,27 @@ const Agenda: React.FC = () => {
                     par défaut.
                   </FieldDescription>
                 </Field>
+
+                <Field>
+                  <FieldLabel>{t("scheduling.room", { defaultValue: "Salle" })}</FieldLabel>
+                  <NativeSelect
+                    className="w-full"
+                    onChange={(event) => setFormRoom(event.target.value)}
+                    value={formRoom}
+                  >
+                    {APPOINTMENT_ROOMS.map((room) => (
+                      <NativeSelectOption key={room.value} value={room.value}>
+                        {t(room.i18nKey)}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                  <FieldDescription>
+                    {t("scheduling.roomDescription", {
+                      defaultValue:
+                        "Salles physiques de la clinique. Un conflit de salle empêchera l'enregistrement.",
+                    })}
+                  </FieldDescription>
+                </Field>
               </div>
 
               <Field>
@@ -2701,6 +2844,136 @@ const Agenda: React.FC = () => {
                   ))}
                 </div>
               </Field>
+
+              <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-4">
+                <Field orientation="horizontal" className="items-center gap-3">
+                  <Checkbox
+                    checked={recurrenceEnabled}
+                    disabled={!!editingAppointmentId}
+                    id="recurrence-enabled"
+                    onCheckedChange={(value) =>
+                      setRecurrenceEnabled(value === true)
+                    }
+                  />
+                  <div className="space-y-0.5 leading-none">
+                    <FieldLabel htmlFor="recurrence-enabled">
+                      {t("scheduling.recurrence.enable", {
+                        defaultValue: "Rendez-vous récurrent",
+                      })}
+                    </FieldLabel>
+                    <FieldDescription>
+                      {t("scheduling.recurrence.enableDescription", {
+                        defaultValue:
+                          "Crée automatiquement la suite de rendez-vous (hebdomadaire, bimensuel, mensuel ou annuel).",
+                      })}
+                    </FieldDescription>
+                  </div>
+                </Field>
+
+                {recurrenceEnabled ? (
+                  <>
+                    <Field>
+                      <FieldLabel>
+                        {t("scheduling.recurrence.frequency", {
+                          defaultValue: "Fréquence",
+                        })}
+                      </FieldLabel>
+                      <RadioGroup
+                        className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+                        onValueChange={(value) =>
+                          setRecurrenceFrequency(value as RecurrenceFrequency)
+                        }
+                        value={recurrenceFrequency}
+                      >
+                        {RECURRENCE_FREQUENCIES.map((freq) => (
+                          <label
+                            key={freq.value}
+                            className="flex items-center gap-2 rounded-md border border-border/60 bg-background px-3 py-2 text-sm cursor-pointer hover:bg-muted/40"
+                          >
+                            <RadioGroupItem id={`freq-${freq.value}`} value={freq.value} />
+                            <span>{t(`scheduling.recurrence.frequencies.${freq.value}`)}</span>
+                          </label>
+                        ))}
+                      </RadioGroup>
+                    </Field>
+
+                    {recurrenceFrequency === "weekly" ? (
+                      <Field>
+                        <FieldLabel>
+                          {t("scheduling.recurrence.daysOfWeek", {
+                            defaultValue: "Jours de la semaine",
+                          })}
+                        </FieldLabel>
+                        <div className="flex flex-wrap gap-2">
+                          {DAY_OF_WEEK_LABELS.map((day) => {
+                            const checked = recurrenceDaysOfWeek.includes(
+                              day.value
+                            );
+                            return (
+                              <Button
+                                key={day.value}
+                                onClick={() => {
+                                  setRecurrenceDaysOfWeek((current) =>
+                                    checked
+                                      ? current.filter((d) => d !== day.value)
+                                      : [...current, day.value].sort()
+                                  );
+                                }}
+                                size="sm"
+                                type="button"
+                                variant={checked ? "default" : "outline"}
+                              >
+                                {t(day.i18nKey)}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      </Field>
+                    ) : null}
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field>
+                        <FieldLabel>
+                          {t("scheduling.recurrence.endDate", {
+                            defaultValue: "Date de fin (optionnelle)",
+                          })}
+                        </FieldLabel>
+                        <Input
+                          onChange={(event) =>
+                            setRecurrenceEndDate(event.target.value)
+                          }
+                          type="date"
+                          value={recurrenceEndDate}
+                        />
+                      </Field>
+                      <Field>
+                        <FieldLabel>
+                          {t("scheduling.recurrence.maxOccurrences", {
+                            defaultValue: "Nombre max d'occurrences",
+                          })}
+                        </FieldLabel>
+                        <Input
+                          min={1}
+                          onChange={(event) => {
+                            const raw = event.target.value.trim();
+                            setRecurrenceMaxOccurrences(
+                              raw === "" ? null : Math.max(1, Number(raw))
+                            );
+                          }}
+                          type="number"
+                          value={recurrenceMaxOccurrences ?? ""}
+                        />
+                        <FieldDescription>
+                          {t("scheduling.recurrence.maxOccurrencesDescription", {
+                            defaultValue:
+                              "Laissez vide pour une récurrence sans limite (jusqu'à la date de fin).",
+                          })}
+                        </FieldDescription>
+                      </Field>
+                    </div>
+                  </>
+                ) : null}
+              </div>
 
               <div className="grid gap-5 lg:grid-cols-[1fr_1fr_200px]">
                 <Field>

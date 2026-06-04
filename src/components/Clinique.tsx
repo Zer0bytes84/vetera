@@ -35,6 +35,7 @@ import React, {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Hospital, Pill, Syringe } from "@phosphor-icons/react";
@@ -117,6 +118,10 @@ import { PrescriptionSheet } from "@/modules/prescriptions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
 import { getSetting } from "@/services/appSettingsService";
+import {
+  useAppointmentReminderSync,
+  useReminderToasts,
+} from "@/services/reminderService";
 import type { View } from "@/types";
 import type {
   Appointment,
@@ -1621,6 +1626,9 @@ function BillingDialog({
 }
 
 const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
+  const { t } = useTranslation();
+  useAppointmentReminderSync();
+  useReminderToasts();
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
@@ -1799,48 +1807,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     useState<"prescription" | "hospitalization" | "anesthesia" | null>(null);
   const [palettePatient, setPalettePatient] = useState<Patient | null>(null);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const events: Array<{
-      name: string;
-      action: "prescription" | "hospitalization" | "anesthesia";
-    }> = [
-      { name: "vetera:open-prescription", action: "prescription" },
-      { name: "vetera:open-hospitalization", action: "hospitalization" },
-      { name: "vetera:open-anesthesia", action: "anesthesia" },
-    ];
-    const openPicker = (action: typeof events[number]["action"]) => {
-      const patient = activeConsultation
-        ? patientsById.get(activeConsultation.patientId)
-        : selectedPatient;
-      if (patient) {
-        // Active patient available — bypass picker and open sheet directly.
-        setPalettePatient(null);
-        setPalettePickerAction(null);
-        setPalettePickerOpen(false);
-        if (action === "prescription") {
-          setPrescriptionOpen(true);
-        } else if (action === "hospitalization") {
-          setHospitalizationOpen(true);
-        } else {
-          setAnesthesiaOpen(true);
-        }
-        return;
-      }
-      setPalettePickerAction(action);
-      setPalettePickerOpen(true);
-    };
-    const handlers = events.map((evt) => {
-      const handler = () => openPicker(evt.action);
-      window.addEventListener(evt.name, handler);
-      return { name: evt.name, handler };
-    });
-    return () => {
-      for (const { name, handler } of handlers) {
-        window.removeEventListener(name, handler);
-      }
-    };
-  }, [activeConsultation, selectedPatient, patientsById]);
+  const selectedPatient = selectedAppointment
+    ? patientsById.get(selectedAppointment.patientId)
+    : undefined;
 
   const handlePalettePatientPicked = useCallback(
     (patient: Patient) => {
@@ -1857,12 +1826,6 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     [palettePickerAction]
   );
 
-  const effectiveSheetPatient = activeConsultationPatient ?? palettePatient;
-  const effectiveAppointmentId = activeConsultation?.id;
-
-  const selectedPatient = selectedAppointment
-    ? patientsById.get(selectedAppointment.patientId)
-    : undefined;
   const selectedOwner = selectedAppointment
     ? ownersById.get(
         selectedAppointment.ownerId || selectedPatient?.ownerId || ""
@@ -2228,6 +2191,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const activeConsultationOwner = activeConsultation
     ? getOwner(activeConsultation)
     : undefined;
+
+  const effectiveSheetPatient = activeConsultationPatient ?? palettePatient;
+  const effectiveAppointmentId = activeConsultation?.id ?? "";
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">

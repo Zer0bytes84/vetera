@@ -87,7 +87,7 @@ export interface MedicationSearchResult extends Medication {
  * si possible.
  */
 export function listMedications(speciesKey?: SpeciesKey | null): MedicationSearchResult[] {
-  return vetKnowledgeService.medications.map((med) => {
+  return vetKnowledgeService.getAllMedications().map((med) => {
     const poso = speciesKey ? med.posologies?.[speciesKey] : undefined;
     const parsed = poso ? parsePosology(poso.dose) : null;
     return {
@@ -143,7 +143,7 @@ export function searchMedications(
 export function getMedicationById(
   id: string
 ): MedicationSearchResult | null {
-  const med = vetKnowledgeService.medications.find((m) => m.id === id);
+  const med = vetKnowledgeService.getAllMedications().find((m) => m.id === id);
   if (!med) return null;
   return {
     ...med,
