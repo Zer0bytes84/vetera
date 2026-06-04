@@ -23,6 +23,8 @@ import { PipelineActivityFunnel } from "./components/pipeline-activity-funnel";
 import { StaffStatusWidget } from "./components/staff-status-widget";
 import { StockAlertsWidget } from "./components/stock-alerts-widget";
 import { AutomationWidgets } from "./components/automation-widgets";
+import { ConsultationSummaryWidget } from "./components/consultation-summary-widget";
+import { PostOpFollowUpWidget } from "./components/post-op-follow-up-widget";
 
 interface DashboardOrbitPageProps {
   onNavigate?: (view: string) => void;
@@ -216,7 +218,21 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
       <SectionCards items={sectionCardItems} />
 
       {/* Row 2.5 — Automation Widgets */}
-      <AutomationWidgets />
+      <AutomationWidgets
+        onPatientClick={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
+      />
+
+      {/* Row 2.6 — Consultation Summary (W9.2) */}
+      <ConsultationSummaryWidget
+        onPatientClick={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
+        onOpenClinique={() => onNavigate?.("#/clinique")}
+      />
+
+      {/* Row 2.7 — Post-Op Follow-Up (W9.3) */}
+      <PostOpFollowUpWidget
+        onPatientClick={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
+        onOpenPatientFile={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
+      />
 
       {/* Row 3 — Care Distribution, Tasks & Activity Funnel */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

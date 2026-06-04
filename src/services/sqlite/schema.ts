@@ -809,3 +809,16 @@ CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON audit_log(created_at DESC
 CREATE INDEX IF NOT EXISTS idx_audit_log_entity ON audit_log(entity, entity_id);
 CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);`;
+
+export const MIGRATION_010_SQL = `
+-- Migration 010: Index ended_at on anesthesia_sheets
+-- Le widget dashboard "Suivi Post-Opératoire" (W9.3) filtre
+-- anesthesia_sheets WHERE status='completed' AND ended_at >= now-30d
+-- ORDER BY ended_at DESC. Sans index, full table scan à chaque refresh (60s).
+-- Le bottleneck est sur ended_at (non sur started_at, déjà indexé en 007).
+
+CREATE INDEX IF NOT EXISTS idx_anesthesia_sheets_ended_at
+  ON anesthesia_sheets(ended_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_hospitalization_vitals_patient_recorded
+  ON hospitalization_vitals(patient_id, recorded_at DESC);`;

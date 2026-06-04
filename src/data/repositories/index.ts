@@ -741,8 +741,59 @@ export function useHospitalizationVitalsRepository() {
 
 export function useAnesthesiaSheetsRepository() {
   const store = useSQLite<AnesthesiaSheet>("anesthesia_sheets");
+  const tasksStore = useSQLite<Task>("tasks");
+  const ensurePostOpTasks = async (sheet: AnesthesiaSheet) => {
+    if (sheet.status !== "completed" || !sheet.endedAt) return;
+    const endedDate = new Date(sheet.endedAt);
+    if (Number.isNaN(endedDate.getTime())) return;
+    const exists = tasksStore.data.some(
+      (t) =>
+        t.patientId === sheet.patientId &&
+        t.title.startsWith("Suivi post-op :")
+    );
+    if (exists) return;
+    const offsets: { day: 1 | 3 | 7; label: string }[] = [
+      { day: 1, label: "J+1 — contrôle douleur & état général" },
+      { day: 3, label: "J+3 — vérification cicatrisation & traitement" },
+      { day: 7, label: "J+7 — retrait fils / bilan post-opératoire" },
+    ];
+    for (const offset of offsets) {
+      const due = new Date(endedDate);
+      due.setDate(due.getDate() + offset.day);
+      await tasksStore.add({
+        patientId: sheet.patientId,
+        title: `Suivi post-op : ${sheet.procedureName} — ${offset.label}`,
+        description: `Tâche générée automatiquement après ${sheet.procedureName} (anesthésie ${sheet.id}).`,
+        dueDate: due.toISOString().slice(0, 10),
+        priority: "medium",
+        status: "todo",
+        isReminder: false,
+      } as Omit<Task, "id" | "createdAt" | "updatedAt">);
+    }
+  };
+  const wrappedAdd = async (
+    data: Omit<AnesthesiaSheet, "id" | "createdAt" | "updatedAt">
+  ) => {
+    const created = await store.add(data);
+    if (created) {
+      await ensurePostOpTasks(created);
+    }
+    return created;
+  };
+  const wrappedUpdate = async (id: string, patch: Partial<AnesthesiaSheet>) => {
+    const ok = await store.update(id, patch);
+    if (ok) {
+      const fresh = store.data.find((row) => row.id === id);
+      if (fresh) {
+        await ensurePostOpTasks(fresh);
+      }
+    }
+    return ok;
+  };
   return {
     ...store,
+    add: wrappedAdd,
+    update: wrappedUpdate,
     forPatient: (patientId: string) =>
       store.data
         .filter((row) => row.patientId === patientId)
