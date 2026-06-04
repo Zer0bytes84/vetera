@@ -16,6 +16,7 @@ import { buildDashboardMetrics } from "@/lib/metrics";
 import { ClinicalChartsCenter } from "./components/clinical-charts-center";
 import { NextAppointmentsFeed } from "./components/next-appointments-feed";
 import { RemindersWidget } from "./components/reminders-widget";
+import { ActivityWidget } from "./components/activity-widget";
 import { SpecialtiesDistribution } from "./components/specialties-distribution";
 import { TasksAlertsBoard } from "./components/tasks-alerts-board";
 import { PipelineActivityFunnel } from "./components/pipeline-activity-funnel";
@@ -252,11 +253,17 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
         </div>
       </div>
 
-      {/* Row 5 — Full-width Today's Programme & Next Appointments */}
-      <NextAppointmentsFeed
-        appointments={todayAppointmentsList}
-        onNavigate={onNavigate}
-      />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <NextAppointmentsFeed
+            appointments={todayAppointmentsList}
+            onNavigate={onNavigate}
+          />
+        </div>
+        <div>
+          <ActivityWidget />
+        </div>
+      </div>
     </div>
   );
 }

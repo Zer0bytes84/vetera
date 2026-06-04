@@ -14,6 +14,7 @@ import type {
   AnesthesiaSheet,
   Appointment,
   AppointmentRecurrence,
+  AuditLogEntry,
   ConsultationDocument,
   ConsultationSoap,
   Hospitalization,
@@ -861,5 +862,40 @@ export function useRemindersRepository() {
       await store.update(id, { status: "dismissed" } as Partial<Reminder>);
     },
     defaultOffsets: REMINDER_OFFSETS,
+  };
+}
+
+export function useAuditLogRepository() {
+  const store = useSQLite<AuditLogEntry>("audit_log");
+  return {
+    ...store,
+    recent: (limit = 25) =>
+      store.data
+        .slice()
+        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+        .slice(0, limit),
+    forEntity: (entity: string, entityId: string) =>
+      store.data
+        .filter((row) => row.entity === entity && row.entityId === entityId)
+        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)),
+    log: async (entry: {
+      action: AuditLogEntry["action"];
+      entity: AuditLogEntry["entity"];
+      entityId?: string | null;
+      userId?: string | null;
+      userDisplayName?: string | null;
+      payload?: Record<string, unknown> | null;
+      metadata?: Record<string, unknown> | null;
+    }) => {
+      await store.add({
+        action: entry.action,
+        entity: entry.entity,
+        entityId: entry.entityId ?? null,
+        userId: entry.userId ?? null,
+        userDisplayName: entry.userDisplayName ?? null,
+        payload: entry.payload ? JSON.stringify(entry.payload) : null,
+        metadata: entry.metadata ? JSON.stringify(entry.metadata) : null,
+      } as Omit<AuditLogEntry, "id" | "createdAt" | "updatedAt">);
+    },
   };
 }

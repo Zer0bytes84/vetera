@@ -122,6 +122,45 @@ export interface Reminder {
   updatedAt: string;
 }
 
+export type AuditAction =
+  | "create"
+  | "update"
+  | "delete"
+  | "restore"
+  | "login"
+  | "logout"
+  | "export"
+  | "import"
+  | "backup"
+  | "restore_backup";
+
+export type AuditEntity =
+  | "patient"
+  | "appointment"
+  | "consultation"
+  | "prescription"
+  | "hospitalization"
+  | "anesthesia"
+  | "billing"
+  | "user"
+  | "reminder"
+  | "backup"
+  | "session";
+
+export interface AuditLogEntry {
+  id: string;
+  action: AuditAction;
+  entity: AuditEntity;
+  entityId?: string | null;
+  userId?: string | null;
+  userDisplayName?: string | null;
+  /** JSON sérialisé (champs modifiés, ancienne valeur, etc.). */
+  payload?: string | null;
+  /** JSON libre (reason, ip, userAgent, source, etc.). */
+  metadata?: string | null;
+  createdAt: string;
+}
+
 export interface Transaction {
   amount: number; // In centimes
   category: string;

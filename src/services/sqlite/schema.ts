@@ -785,3 +785,27 @@ WHERE a.start_time > datetime('now')
   AND NOT EXISTS (
     SELECT 1 FROM reminders r WHERE r.appointment_id = a.id
   );`;
+
+export const MIGRATION_009_SQL = `
+-- Migration 009: Audit log
+-- Trace toutes les actions sensibles (create / update / delete) sur les
+-- entités métier (patient / appointment / consultation / prescription /
+-- billing / user / backup) pour répondre aux exigences de traçabilité
+-- vétérinaire et offrir une piste d'audit côté UI (widget dashboard).
+
+CREATE TABLE IF NOT EXISTS audit_log (
+  id TEXT PRIMARY KEY,
+  action TEXT NOT NULL,        -- 'create' | 'update' | 'delete' | 'restore' | 'login' | 'export'
+  entity TEXT NOT NULL,        -- 'patient' | 'appointment' | 'consultation' | ...
+  entity_id TEXT,              -- foreign id (nullable pour les actions globales)
+  user_id TEXT,                -- id de l'utilisateur courant (nullable si déconnecté)
+  user_display_name TEXT,      -- snapshot du nom affiché (pour affichage sans join)
+  payload TEXT,                -- JSON sérialisé (champs modifiés, ancienne valeur, etc.)
+  metadata TEXT,               -- JSON libre (reason, ip, userAgent, etc.)
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_entity ON audit_log(entity, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);`;

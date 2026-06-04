@@ -154,3 +154,23 @@
 **i18n** : `appointment.time.endsAt` ajouté (FR+EN).
 
 **Build** : 0 nouvelle erreur TS (19 baseline).
+
+## S7.2 — Audit log + widget activité — ✅
+
+**Migration 009** : table `audit_log` (id, action, entity, entity_id, user_id, user_display_name, payload JSON, metadata JSON, created_at) + 4 index (created_at DESC, entity+entity_id, user_id, action).
+
+**Types** : `AuditAction` (10 valeurs : create/update/delete/restore/login/logout/export/import/backup/restore_backup) + `AuditEntity` (11 valeurs : patient/appointment/consultation/prescription/hospitalization/anesthesia/billing/user/reminder/backup/session) + `AuditLogEntry`.
+
+**Whitelist** : `audit_log` ajouté à `ALLOWED_TABLES` (useSQLite) + `BrowserTableName`/`EMPTY_STATE` (browser-store).
+
+**Repository** : `useAuditLogRepository()` avec `recent(limit)` (tri DESC + slice) + `forEntity(entity, entityId)` + `log({ action, entity, entityId?, payload?, metadata? })` qui sérialise payload/metadata en JSON.
+
+**Service public** : `src/services/auditService.ts` — `useAudit()` lit `currentUser` via `useAuth()` et appelle `repo.log` avec `userId`/`userDisplayName` snapshot. Catch les erreurs en `console.warn` (n'écrase jamais l'action métier).
+
+**Widget dashboard** : `ActivityWidget` (6 dernières actions, iconographie par action, label i18n `auditLog.actions.*` / `auditLog.entities.*`, temps relatif `useNowTick(60_000)`). Mounted Row 5 dashboard, à côté de `NextAppointmentsFeed` (lg:col-span-2).
+
+**Hook helper** : `src/hooks/useNowTick.ts` — `setInterval` qui tick une Date pour les libellés "il y a X min" sans péter React 19 purity.
+
+**i18n** : section `auditLog` (FR + EN) — `title`, `empty`, `actions.*` (10), `entities.*` (11), `by`, `unknownUser`. Sous-titre widget via `auditLog.subtitle` avec defaultValue FR.
+
+**Build** : 0 nouvelle erreur TS (19 baseline).

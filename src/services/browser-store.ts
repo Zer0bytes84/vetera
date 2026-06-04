@@ -22,7 +22,8 @@ export type BrowserTableName =
   | "anesthesia_drug_log"
   | "anesthesia_monitoring"
   | "appointment_recurrences"
-  | "reminders";
+  | "reminders"
+  | "audit_log";
 
 export type BrowserRow = {
   id?: string;
@@ -62,6 +63,7 @@ const EMPTY_STATE: BrowserDatabaseState = {
     anesthesia_monitoring: [],
     appointment_recurrences: [],
     reminders: [],
+    audit_log: [],
   },
 };
 
