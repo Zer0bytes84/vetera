@@ -50,24 +50,30 @@ export function usePostOpFollowUp() {
             a.procedure AS procedure,
             a.ended_at AS endedAt,
             a.id AS anesthesiaId,
-            (SELECT temperature_c FROM hospitalization_vitals
-             WHERE patient_id = p.id
-             ORDER BY recorded_at DESC LIMIT 1) AS temperatureC,
-            (SELECT heart_rate_bpm FROM hospitalization_vitals
-             WHERE patient_id = p.id
-             ORDER BY recorded_at DESC LIMIT 1) AS heartRateBpm,
-            (SELECT respiratory_rate FROM hospitalization_vitals
-             WHERE patient_id = p.id
-             ORDER BY recorded_at DESC LIMIT 1) AS respiratoryRate,
-            (SELECT spo2_percent FROM hospitalization_vitals
-             WHERE patient_id = p.id
-             ORDER BY recorded_at DESC LIMIT 1) AS spo2Percent,
-            (SELECT pain_score FROM hospitalization_vitals
-             WHERE patient_id = p.id
-             ORDER BY recorded_at DESC LIMIT 1) AS painScore,
-            (SELECT recorded_at FROM hospitalization_vitals
-             WHERE patient_id = p.id
-             ORDER BY recorded_at DESC LIMIT 1) AS vitalsRecordedAt
+            (SELECT v.temperature_c FROM hospitalization_vitals v
+             JOIN hospitalizations h ON h.id = v.hospitalization_id
+             WHERE h.patient_id = p.id
+             ORDER BY v.recorded_at DESC LIMIT 1) AS temperatureC,
+            (SELECT v.heart_rate_bpm FROM hospitalization_vitals v
+             JOIN hospitalizations h ON h.id = v.hospitalization_id
+             WHERE h.patient_id = p.id
+             ORDER BY v.recorded_at DESC LIMIT 1) AS heartRateBpm,
+            (SELECT v.respiratory_rate_bpm FROM hospitalization_vitals v
+             JOIN hospitalizations h ON h.id = v.hospitalization_id
+             WHERE h.patient_id = p.id
+             ORDER BY v.recorded_at DESC LIMIT 1) AS respiratoryRate,
+            (SELECT v.spo2_percent FROM hospitalization_vitals v
+             JOIN hospitalizations h ON h.id = v.hospitalization_id
+             WHERE h.patient_id = p.id
+             ORDER BY v.recorded_at DESC LIMIT 1) AS spo2Percent,
+            (SELECT v.pain_score FROM hospitalization_vitals v
+             JOIN hospitalizations h ON h.id = v.hospitalization_id
+             WHERE h.patient_id = p.id
+             ORDER BY v.recorded_at DESC LIMIT 1) AS painScore,
+            (SELECT v.recorded_at FROM hospitalization_vitals v
+             JOIN hospitalizations h ON h.id = v.hospitalization_id
+             WHERE h.patient_id = p.id
+             ORDER BY v.recorded_at DESC LIMIT 1) AS vitalsRecordedAt
           FROM anesthesia_sheets a
           JOIN patients p ON p.id = a.patient_id
           LEFT JOIN owners o ON o.id = p.owner_id
