@@ -151,11 +151,12 @@ export function getAppVersion(): string {
 }
 
 /**
- * Checkpoint WAL to flush pending writes into the main DB file
+ * Checkpoint WAL to flush pending writes into the main DB file without blocking
  */
 async function checkpointWal(): Promise<void> {
   try {
-    await runDbOperation((db) => db.execute("PRAGMA wal_checkpoint(TRUNCATE)"));
+    // Use PASSIVE instead of TRUNCATE to avoid deadlocking if there are active readers/statements
+    await runDbOperation((db) => db.execute("PRAGMA wal_checkpoint(PASSIVE)"));
     console.log("[Backup] WAL checkpoint completed");
   } catch (e) {
     console.warn("[Backup] WAL checkpoint failed (non-critical):", e);

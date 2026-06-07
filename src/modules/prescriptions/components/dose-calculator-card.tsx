@@ -55,45 +55,48 @@ export function DoseCalculatorCard({
   return (
     <Card
       className={cn(
-        "overflow-hidden border-primary/15 bg-gradient-to-br from-primary/5 via-background to-background",
+        "relative overflow-hidden border-transparent bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md",
         className
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3 pt-2.5 pb-1.5">
-        <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 mix-blend-overlay">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent" />
+      </div>
+      <CardHeader className="relative z-10 flex flex-row items-center justify-between gap-2 space-y-0 px-4 pt-3 pb-2">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-emerald-600/80 dark:text-emerald-400/80">
           {t("prescriptions.calculator.computed")}
         </CardTitle>
         {computation.range ? (
-          <Badge className="text-[10px]" variant="secondary">
+          <Badge className="text-[10px] bg-background/50 backdrop-blur-sm border-emerald-500/20 text-emerald-600 dark:text-emerald-400" variant="outline">
             {t("prescriptions.calculator.range")}
           </Badge>
         ) : null}
       </CardHeader>
-      <CardContent className="space-y-1.5 px-3 pb-3 pt-0">
+      <CardContent className="relative z-10 space-y-2 px-4 pb-4 pt-0">
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
+          <span className="text-3xl font-bold tabular-nums tracking-tighter text-foreground/90">
             {hasWeight && computation.computedMg != null
               ? `${formatNumber(computation.computedMg)} mg`
               : `${computation.min}${computation.range ? `–${computation.max}` : ""}`}
           </span>
           {computation.unit ? (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-sm font-semibold text-muted-foreground/70">
               {computation.unit}
             </span>
           ) : null}
         </div>
 
         {computation.range ? (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-medium text-muted-foreground/70 border-t border-border/40 pt-2 mt-2">
             <span>
               {t("prescriptions.calculator.low")} :{" "}
-              <span className="font-medium text-foreground/80">
+              <span className="font-bold text-foreground/80">
                 {formatNumber(computation.min)} {computation.unit}
               </span>
             </span>
             <span>
               {t("prescriptions.calculator.high")} :{" "}
-              <span className="font-medium text-foreground/80">
+              <span className="font-bold text-foreground/80">
                 {formatNumber(computation.max)} {computation.unit}
               </span>
             </span>
@@ -101,15 +104,15 @@ export function DoseCalculatorCard({
         ) : null}
 
         {hasWeight && computation.computedMl != null ? (
-          <div className="flex items-center gap-2 rounded-md bg-foreground/5 px-2 py-1.5">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="mt-2 flex items-center gap-3 rounded-lg border border-emerald-500/10 bg-emerald-50/50 dark:bg-emerald-500/5 px-3 py-2 shadow-sm">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70">
               {t("prescriptions.calculator.volume")}
             </span>
-            <span className="text-sm font-semibold tabular-nums">
+            <span className="text-base font-bold tabular-nums text-emerald-700 dark:text-emerald-300">
               {formatNumber(computation.computedMl)} mL
             </span>
             {hasConcentration ? (
-              <span className="ml-auto text-[10px] text-muted-foreground">
+              <span className="ml-auto text-[10px] font-medium text-emerald-600/60 dark:text-emerald-400/60">
                 {formatNumber(concentrationMgPerMl)} mg/mL
               </span>
             ) : null}
@@ -117,13 +120,13 @@ export function DoseCalculatorCard({
         ) : null}
 
         {hasWeight && computation.computedMl == null && hasConcentration ? (
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-[10px] font-medium text-amber-600/80 dark:text-amber-400/80 mt-2">
             {t("prescriptions.calculator.warning")}
           </p>
         ) : null}
 
         {!hasWeight ? (
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-[10px] font-medium text-muted-foreground/60 mt-2">
             {t("prescriptions.builder.noWeight")}
           </p>
         ) : null}

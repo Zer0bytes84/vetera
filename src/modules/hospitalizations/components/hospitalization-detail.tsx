@@ -81,8 +81,8 @@ export function HospitalizationDetail({
   };
 
   return (
-    <div className={cn("grid gap-4", className)}>
-      <Card className="overflow-hidden">
+    <div className={cn("grid gap-6 lg:grid-cols-12", className)}>
+      <Card className="overflow-hidden lg:col-span-5 h-fit">
         <CardHeader className="border-border/40 border-b bg-gradient-to-b from-sky-500/[0.04] to-transparent">
           <div className="flex items-start gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10">
@@ -142,7 +142,7 @@ export function HospitalizationDetail({
             </div>
           ) : null}
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {hospitalization.weightKg ? (
               <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
                 <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
@@ -162,7 +162,7 @@ export function HospitalizationDetail({
               </div>
             ) : null}
             {hospitalization.ivFluids ? (
-              <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+              <div className="rounded-lg border border-border/40 bg-muted/20 p-3 sm:col-span-2">
                 <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
                   {t("modules.hospitalizations.fields.ivFluids", "Fluides IV")}
                 </p>
@@ -218,7 +218,7 @@ export function HospitalizationDetail({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="lg:col-span-7 h-fit">
         <CardHeader className="flex-row items-center justify-between border-border/40 border-b">
           <div className="grid gap-0.5">
             <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
@@ -240,7 +240,7 @@ export function HospitalizationDetail({
         </CardHeader>
         <CardContent className="grid gap-4 p-6">
           {latest ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
               <VitalCell
                 icon={<Thermometer className="size-3.5" weight="duotone" />}
                 label={t("modules.hospitalizations.vitals.temperature", "T°")}

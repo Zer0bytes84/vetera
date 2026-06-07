@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import type { SectionCardItem } from "@/components/section-cards";
-import { SectionCards } from "@/components/section-cards";
+import { SectionCards as SectionCardsBase } from "@/components/section-cards";
+import { DeferredWidget } from "@/components/deferred-widget";
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -13,18 +14,32 @@ import {
 import { buildDashboardMetrics } from "@/lib/metrics";
 
 // Import our premium widgets
-import { ClinicalChartsCenter } from "./components/clinical-charts-center";
-import { NextAppointmentsFeed } from "./components/next-appointments-feed";
-import { RemindersWidget } from "./components/reminders-widget";
-import { ActivityWidget } from "./components/activity-widget";
-import { SpecialtiesDistribution } from "./components/specialties-distribution";
-import { TasksAlertsBoard } from "./components/tasks-alerts-board";
-import { PipelineActivityFunnel } from "./components/pipeline-activity-funnel";
-import { StaffStatusWidget } from "./components/staff-status-widget";
-import { StockAlertsWidget } from "./components/stock-alerts-widget";
-import { AutomationWidgets } from "./components/automation-widgets";
-import { ConsultationSummaryWidget } from "./components/consultation-summary-widget";
-import { PostOpFollowUpWidget } from "./components/post-op-follow-up-widget";
+import { ClinicalChartsCenter as ClinicalChartsCenterBase } from "./components/clinical-charts-center";
+import { NextAppointmentsFeed as NextAppointmentsFeedBase } from "./components/next-appointments-feed";
+import { RemindersWidget as RemindersWidgetBase } from "./components/reminders-widget";
+import { ActivityWidget as ActivityWidgetBase } from "./components/activity-widget";
+import { SpecialtiesDistribution as SpecialtiesDistributionBase } from "./components/specialties-distribution";
+import { TasksAlertsBoard as TasksAlertsBoardBase } from "./components/tasks-alerts-board";
+import { PipelineActivityFunnel as PipelineActivityFunnelBase } from "./components/pipeline-activity-funnel";
+import { StaffStatusWidget as StaffStatusWidgetBase } from "./components/staff-status-widget";
+import { StockAlertsWidget as StockAlertsWidgetBase } from "./components/stock-alerts-widget";
+import { AutomationWidgets as AutomationWidgetsBase } from "./components/automation-widgets";
+import { ConsultationSummaryWidget as ConsultationSummaryWidgetBase } from "./components/consultation-summary-widget";
+import { PostOpFollowUpWidget as PostOpFollowUpWidgetBase } from "./components/post-op-follow-up-widget";
+
+const SectionCards = React.memo(SectionCardsBase);
+const ClinicalChartsCenter = React.memo(ClinicalChartsCenterBase);
+const NextAppointmentsFeed = React.memo(NextAppointmentsFeedBase);
+const RemindersWidget = React.memo(RemindersWidgetBase);
+const ActivityWidget = React.memo(ActivityWidgetBase);
+const SpecialtiesDistribution = React.memo(SpecialtiesDistributionBase);
+const TasksAlertsBoard = React.memo(TasksAlertsBoardBase);
+const PipelineActivityFunnel = React.memo(PipelineActivityFunnelBase);
+const StaffStatusWidget = React.memo(StaffStatusWidgetBase);
+const StockAlertsWidget = React.memo(StockAlertsWidgetBase);
+const AutomationWidgets = React.memo(AutomationWidgetsBase);
+const ConsultationSummaryWidget = React.memo(ConsultationSummaryWidgetBase);
+const PostOpFollowUpWidget = React.memo(PostOpFollowUpWidgetBase);
 
 interface DashboardOrbitPageProps {
   onNavigate?: (view: string) => void;
@@ -62,6 +77,17 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
   const { data: patients } = usePatientsRepository();
   const { data: tasks } = useTasksRepository();
   const { data: transactions } = useTransactionsRepository();
+
+  const handlePatientClick = useCallback(
+    (patientId: string) => {
+      onNavigate?.(`#/patient/${patientId}`);
+    },
+    [onNavigate]
+  );
+
+  const handleOpenClinique = useCallback(() => {
+    onNavigate?.("#/clinique");
+  }, [onNavigate]);
 
   const metrics = useMemo(
     () =>
@@ -218,68 +244,78 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
       <SectionCards items={sectionCardItems} />
 
       {/* Row 2.5 — Automation Widgets */}
-      <AutomationWidgets
-        onPatientClick={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
-      />
+      <DeferredWidget minHeight={300}>
+        <AutomationWidgets onPatientClick={handlePatientClick} />
+      </DeferredWidget>
 
       {/* Row 2.6 — Consultation Summary (W9.2) */}
-      <ConsultationSummaryWidget
-        onPatientClick={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
-        onOpenClinique={() => onNavigate?.("#/clinique")}
-      />
+      <DeferredWidget minHeight={400}>
+        <ConsultationSummaryWidget
+          onPatientClick={handlePatientClick}
+          onOpenClinique={handleOpenClinique}
+        />
+      </DeferredWidget>
 
       {/* Row 2.7 — Post-Op Follow-Up (W9.3) */}
-      <PostOpFollowUpWidget
-        onPatientClick={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
-        onOpenPatientFile={(patientId) => onNavigate?.(`#/patient/${patientId}`)}
-      />
+      <DeferredWidget minHeight={300}>
+        <PostOpFollowUpWidget
+          onPatientClick={handlePatientClick}
+          onOpenPatientFile={handlePatientClick}
+        />
+      </DeferredWidget>
 
       {/* Row 3 — Care Distribution, Tasks & Activity Funnel */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div>
-          <SpecialtiesDistribution
-            categories={metrics.topCategories}
-            appointmentTypes={metrics.topAppointmentTypes}
-          />
+      <DeferredWidget minHeight={350}>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <SpecialtiesDistribution
+              categories={metrics.topCategories}
+              appointmentTypes={metrics.topAppointmentTypes}
+            />
+          </div>
+          <div>
+            <TasksAlertsBoard onNavigate={onNavigate} />
+          </div>
+          <div>
+            <PipelineActivityFunnel
+              pipelineRows={metrics.pipelineRows}
+              activityDays={metrics.activityDays}
+            />
+          </div>
         </div>
-        <div>
-          <TasksAlertsBoard onNavigate={onNavigate} />
-        </div>
-        <div>
-          <PipelineActivityFunnel
-            pipelineRows={metrics.pipelineRows}
-            activityDays={metrics.activityDays}
-          />
-        </div>
-      </div>
+      </DeferredWidget>
 
       {/* Row 4 — Staff Status Board, Stock Alerts Inventory & Reminders */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div>
-          <StaffStatusWidget
-            onNavigate={onNavigate}
-            referenceDate={metrics.referenceDate}
-          />
+      <DeferredWidget minHeight={350}>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <StaffStatusWidget
+              onNavigate={onNavigate}
+              referenceDate={metrics.referenceDate}
+            />
+          </div>
+          <div>
+            <StockAlertsWidget onNavigate={onNavigate} />
+          </div>
+          <div>
+            <RemindersWidget />
+          </div>
         </div>
-        <div>
-          <StockAlertsWidget onNavigate={onNavigate} />
-        </div>
-        <div>
-          <RemindersWidget />
-        </div>
-      </div>
+      </DeferredWidget>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <NextAppointmentsFeed
-            appointments={todayAppointmentsList}
-            onNavigate={onNavigate}
-          />
+      <DeferredWidget minHeight={400}>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <NextAppointmentsFeed
+              appointments={todayAppointmentsList}
+              onNavigate={onNavigate}
+            />
+          </div>
+          <div>
+            <ActivityWidget />
+          </div>
         </div>
-        <div>
-          <ActivityWidget />
-        </div>
-      </div>
+      </DeferredWidget>
     </div>
   );
 }

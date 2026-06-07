@@ -83,52 +83,64 @@ export function ActivityWidget() {
   const isEmpty = !loading && recent.length === 0;
 
   return (
-    <Card className="@container/card h-full">
-      <CardHeader>
+    <Card className="@container/card h-full relative overflow-hidden group border-zinc-200/50 dark:border-zinc-800/50 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md">
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 mix-blend-overlay">
+        <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 via-transparent to-transparent" />
+      </div>
+
+      <CardHeader className="relative z-10 pb-4 border-b border-border/40">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <HugeiconsIcon
-              className="size-4 text-muted-foreground"
-              icon={Time01Icon}
-            />
-            <CardTitle className="text-sm font-medium">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
+              <HugeiconsIcon
+                className="size-4"
+                icon={Time01Icon}
+                strokeWidth={2}
+              />
+            </div>
+            <CardTitle className="text-sm font-semibold tracking-tight">
               {t("auditLog.title", { defaultValue: "Journal d'audit" })}
             </CardTitle>
           </div>
-          <Badge className="text-[10px]" variant="secondary">
-            {data.length}
+          <Badge className="text-[10px] bg-background/50 backdrop-blur-sm border-purple-500/20 text-purple-600 dark:text-purple-400" variant="outline">
+            {data.length} logs
           </Badge>
         </div>
-        <CardDescription>
+        <CardDescription className="text-xs pt-1">
           {t("auditLog.subtitle", {
             defaultValue: "Activité récente sur les dossiers et la sécurité.",
           })}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="relative z-10 pt-4">
         {loading ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, idx) => (
               <div
                 className="flex items-center gap-3"
                 key={`audit-skel-${idx}`}
               >
-                <Skeleton className="size-7 rounded-full" />
-                <div className="flex-1 space-y-1">
-                  <Skeleton className="h-3 w-3/5" />
-                  <Skeleton className="h-2 w-1/3" />
+                <Skeleton className="size-8 rounded-full bg-zinc-200/50 dark:bg-zinc-800/50" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-3 w-3/5 bg-zinc-200/50 dark:bg-zinc-800/50" />
+                  <Skeleton className="h-2 w-1/3 bg-zinc-200/50 dark:bg-zinc-800/50" />
                 </div>
               </div>
             ))}
           </div>
         ) : isEmpty ? (
-          <p className="text-xs text-muted-foreground">
-            {t("auditLog.empty", {
-              defaultValue: "Aucune action enregistrée pour le moment.",
-            })}
-          </p>
+          <div className="flex flex-col items-center justify-center py-6 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-900 mb-3">
+              <HugeiconsIcon icon={Time01Icon} size={20} className="text-zinc-400" />
+            </div>
+            <p className="text-xs font-medium text-muted-foreground/80 max-w-[200px]">
+              {t("auditLog.empty", {
+                defaultValue: "Aucune action enregistrée pour le moment.",
+              })}
+            </p>
+          </div>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {recent.map((entry) => (
               <ActivityRow
                 entry={entry}
@@ -169,19 +181,19 @@ function ActivityRow({ entry, now, t }: ActivityRowProps) {
     : null;
 
   return (
-    <li className="flex items-start gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50">
-      <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-        <HugeiconsIcon className="size-3.5" icon={Icon} />
+    <li className="group/item relative flex items-start gap-3 rounded-xl px-3 py-2.5 transition-all duration-300 hover:bg-white/60 dark:hover:bg-zinc-900/40 hover:shadow-sm border border-transparent hover:border-zinc-200/50 dark:hover:border-zinc-800/50">
+      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-100/80 dark:bg-zinc-800/80 text-zinc-500 transition-colors group-hover/item:bg-purple-100 dark:group-hover/item:bg-purple-900/30 group-hover/item:text-purple-600 dark:group-hover/item:text-purple-400">
+        <HugeiconsIcon className="size-4" icon={Icon} strokeWidth={2} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-medium">
-          <span className="text-foreground">{entityLabel}</span>
+        <p className="truncate text-xs font-semibold tracking-tight">
+          <span className="text-foreground/90">{entityLabel}</span>
           {entityIdLabel ? (
-            <span className="text-muted-foreground"> {entityIdLabel}</span>
+            <span className="text-muted-foreground/60"> {entityIdLabel}</span>
           ) : null}
-          <span className="text-muted-foreground"> · {actionLabel}</span>
+          <span className="text-purple-600/80 dark:text-purple-400/80"> · {actionLabel}</span>
         </p>
-        <p className="truncate text-[11px] text-muted-foreground">
+        <p className="truncate text-[11px] font-medium text-muted-foreground/70 mt-0.5">
           {userLabel} · {formatRelative(entry.createdAt, now, t)}
         </p>
       </div>

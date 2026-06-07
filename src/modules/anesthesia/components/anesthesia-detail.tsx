@@ -93,121 +93,122 @@ export function AnesthesiaDetail({
   }, [drugs]);
 
   return (
-    <div className={cn("grid gap-4", className)}>
-      <Card className="overflow-hidden">
-        <CardHeader className="border-border/40 border-b bg-gradient-to-b from-violet-500/[0.04] to-transparent">
-          <div className="flex items-start gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10">
-              <Syringe weight="duotone" className="size-5 text-violet-600" />
-            </div>
-            <div className="grid flex-1 gap-0.5">
-              <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
-                {patient.name} · {patient.species}
-              </CardDescription>
-              <CardTitle className="text-lg tracking-tight">
-                {sheet.procedureName}
-              </CardTitle>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <AnesthesiaStatusBadge status={sheet.status} />
-                {sheet.asaStatus ? (
-                  <Badge className="border-border/40 bg-background" variant="outline">
-                    ASA {sheet.asaStatus}
-                  </Badge>
+    <div className={cn("grid gap-6", className)}>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="overflow-hidden h-fit">
+          <CardHeader className="border-border/40 border-b bg-gradient-to-b from-violet-500/[0.04] to-transparent">
+            <div className="flex items-start gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10">
+                <Syringe weight="duotone" className="size-5 text-violet-600" />
+              </div>
+              <div className="grid flex-1 gap-0.5">
+                <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+                  {patient.name} · {patient.species}
+                </CardDescription>
+                <CardTitle className="text-lg tracking-tight">
+                  {sheet.procedureName}
+                </CardTitle>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <AnesthesiaStatusBadge status={sheet.status} />
+                  {sheet.asaStatus ? (
+                    <Badge className="border-border/40 bg-background" variant="outline">
+                      ASA {sheet.asaStatus}
+                    </Badge>
+                  ) : null}
+                  {sheet.emergency ? (
+                    <Badge className="border-rose-500/40 bg-rose-500/10 text-rose-700" variant="outline">
+                      Urgence
+                    </Badge>
+                  ) : null}
+                  {sheet.startedAt ? (
+                    <Badge className="border-border/40 bg-background" variant="outline">
+                      {formatDuration(durationMin)}
+                    </Badge>
+                  ) : null}
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {onBack ? (
+                  <Button onClick={onBack} size="icon" variant="ghost">
+                    <ArrowLeft className="size-4" weight="duotone" />
+                  </Button>
                 ) : null}
-                {sheet.emergency ? (
-                  <Badge className="border-rose-500/40 bg-rose-500/10 text-rose-700" variant="outline">
-                    Urgence
-                  </Badge>
-                ) : null}
-                {sheet.startedAt ? (
-                  <Badge className="border-border/40 bg-background" variant="outline">
-                    {formatDuration(durationMin)}
-                  </Badge>
+                {onPrint ? (
+                  <Button
+                    aria-label={t("modules.anesthesia.print", "Imprimer A4")}
+                    onClick={onPrint}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <Printer className="size-4" weight="duotone" />
+                  </Button>
                 ) : null}
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              {onBack ? (
-                <Button onClick={onBack} size="icon" variant="ghost">
-                  <ArrowLeft className="size-4" weight="duotone" />
-                </Button>
-              ) : null}
-              {onPrint ? (
-                <Button
-                  aria-label={t("modules.anesthesia.print", "Imprimer A4")}
-                  onClick={onPrint}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Printer className="size-4" weight="duotone" />
-                </Button>
-              ) : null}
+          </CardHeader>
+          <CardContent className="grid gap-4 p-6">
+            {sheet.premedication || sheet.induction || sheet.maintenance ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {sheet.premedication ? (
+                  <InfoBlock
+                    label={t("modules.anesthesia.fields.premedication", "Prémédication")}
+                    value={sheet.premedication}
+                  />
+                ) : null}
+                {sheet.induction ? (
+                  <InfoBlock
+                    label={t("modules.anesthesia.fields.induction", "Induction")}
+                    value={sheet.induction}
+                  />
+                ) : null}
+                {sheet.maintenance ? (
+                  <InfoBlock
+                    label={t("modules.anesthesia.fields.maintenance", "Maintenance")}
+                    value={sheet.maintenance}
+                  />
+                ) : null}
+                {sheet.monitoringPlan ? (
+                  <InfoBlock
+                    label={t("modules.anesthesia.fields.monitoringPlan", "Plan de monitoring")}
+                    value={sheet.monitoringPlan}
+                  />
+                ) : null}
+              </div>
+            ) : null}
+
+            <Separator />
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+                {t("modules.anesthesia.fields.changeStatus", "Statut")}
+              </span>
+              {(["planned", "in_progress", "completed", "cancelled"] as AnesthesiaStatus[]).map(
+                (s) => (
+                  <button
+                    className={cn(
+                      "rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
+                      sheet.status === s
+                        ? "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-200"
+                        : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"
+                    )}
+                    key={s}
+                    onClick={() => void handleStatusChange(s)}
+                    type="button"
+                  >
+                    {s === "in_progress" ? (
+                      <Play className="mr-1 inline-block size-3" weight="fill" />
+                    ) : s === "completed" ? (
+                      <Stop className="mr-1 inline-block size-3" weight="fill" />
+                    ) : null}
+                    {t(`modules.anesthesia.status.${s}`, s)}
+                  </button>
+                )
+              )}
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="grid gap-4 p-6">
-          {sheet.premedication || sheet.induction || sheet.maintenance ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {sheet.premedication ? (
-                <InfoBlock
-                  label={t("modules.anesthesia.fields.premedication", "Prémédication")}
-                  value={sheet.premedication}
-                />
-              ) : null}
-              {sheet.induction ? (
-                <InfoBlock
-                  label={t("modules.anesthesia.fields.induction", "Induction")}
-                  value={sheet.induction}
-                />
-              ) : null}
-              {sheet.maintenance ? (
-                <InfoBlock
-                  label={t("modules.anesthesia.fields.maintenance", "Maintenance")}
-                  value={sheet.maintenance}
-                />
-              ) : null}
-              {sheet.monitoringPlan ? (
-                <InfoBlock
-                  label={t("modules.anesthesia.fields.monitoringPlan", "Plan de monitoring")}
-                  value={sheet.monitoringPlan}
-                />
-              ) : null}
-            </div>
-          ) : null}
+          </CardContent>
+        </Card>
 
-          <Separator />
-
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
-              {t("modules.anesthesia.fields.changeStatus", "Statut")}
-            </span>
-            {(["planned", "in_progress", "completed", "cancelled"] as AnesthesiaStatus[]).map(
-              (s) => (
-                <button
-                  className={cn(
-                    "rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
-                    sheet.status === s
-                      ? "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-200"
-                      : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"
-                  )}
-                  key={s}
-                  onClick={() => void handleStatusChange(s)}
-                  type="button"
-                >
-                  {s === "in_progress" ? (
-                    <Play className="mr-1 inline-block size-3" weight="fill" />
-                  ) : s === "completed" ? (
-                    <Stop className="mr-1 inline-block size-3" weight="fill" />
-                  ) : null}
-                  {t(`modules.anesthesia.status.${s}`, s)}
-                </button>
-              )
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
+        <Card className="h-fit">
         <CardHeader className="flex-row items-center justify-between border-border/40 border-b">
           <div className="grid gap-0.5">
             <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
@@ -306,6 +307,7 @@ export function AnesthesiaDetail({
           </div>
         </CardContent>
       </Card>
+      </div>
 
       <Card>
         <CardHeader className="flex-row items-center justify-between border-border/40 border-b">

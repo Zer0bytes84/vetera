@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
+import { toast } from "sonner";
 
 import {
   type BrowserTableName,
@@ -204,6 +205,7 @@ export function useSQLite<T extends { id: string }>(
       setError(null);
 
       if (!isTauriRuntime()) {
+        toast.error("Tauri non détecté, utilisation des données locales !");
         setData(
           getBrowserTable<T & Record<string, unknown>>(
             safeTableName as BrowserTableName
@@ -226,7 +228,9 @@ export function useSQLite<T extends { id: string }>(
       setData(mapped as T[]);
     } catch (err) {
       console.error(`Error loading ${tableName}:`, err);
-      setError(err instanceof Error ? err.message : "Unknown error");
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      setError(errorMessage);
+      toast.error(`Erreur DB (${tableName}): ${errorMessage}`);
     } finally {
       setLoading(false);
     }

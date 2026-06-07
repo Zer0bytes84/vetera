@@ -71,18 +71,18 @@ function CommandInput({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
-    <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="h-12! rounded-none border-b border-black/5 dark:border-white/5 bg-transparent shadow-none! *:data-[slot=input-group-addon]:ps-4!">
+    <div data-slot="command-input-wrapper" className="p-2 pb-1 relative">
+      <InputGroup className="h-14 rounded-xl border border-transparent bg-zinc-100/50 dark:bg-zinc-900/50 shadow-none transition-all duration-300 focus-within:border-zinc-300/50 dark:focus-within:border-zinc-700/50 focus-within:bg-zinc-100 dark:focus-within:bg-zinc-900 *:data-[slot=input-group-addon]:ps-4!">
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(
-            "w-full text-base outline-hidden placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
+            "w-full text-base font-medium outline-hidden placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
           {...props}
         />
         <InputGroupAddon>
-          <SearchIcon className="size-5 shrink-0 text-muted-foreground/50" />
+          <SearchIcon className="size-5 shrink-0 text-muted-foreground/50 transition-colors group-focus-within:text-primary" />
         </InputGroupAddon>
       </InputGroup>
     </div>
@@ -97,7 +97,7 @@ function CommandList({
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none",
+        "no-scrollbar max-h-[350px] scroll-py-1 overflow-x-hidden overflow-y-auto outline-none px-1",
         className
       )}
       {...props}
@@ -112,7 +112,7 @@ function CommandEmpty({
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
-      className={cn("py-6 text-center text-sm", className)}
+      className={cn("py-12 text-center text-sm", className)}
       {...props}
     />
   )
@@ -126,7 +126,7 @@ function CommandGroup({
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        "overflow-hidden p-1 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
+        "overflow-hidden p-1 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-2 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:tracking-wider **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:text-muted-foreground/60",
         className
       )}
       {...props}
@@ -141,7 +141,7 @@ function CommandSeparator({
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
-      className={cn("-mx-1 h-px bg-border", className)}
+      className={cn("-mx-1 h-px bg-border/40 my-1", className)}
       {...props}
     />
   )
@@ -156,7 +156,7 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "group/command-item relative flex cursor-pointer items-center rounded-xl px-2 py-2 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-xl! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-black/5 dark:data-selected:bg-white/5 data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-selected:*:[svg]:text-foreground transition-colors",
+        "group/command-item relative flex cursor-pointer items-center rounded-xl px-3 py-2.5 my-0.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-xl! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-zinc-100/80 dark:data-selected:bg-zinc-800/80 data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-selected:*:[svg]:text-foreground transition-all duration-200",
         className
       )}
       {...props}

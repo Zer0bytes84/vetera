@@ -114,7 +114,7 @@ export function SpecialtiesDistribution({
         {/* ── Donut + legend ──────────────────────────────────── */}
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[1fr_1fr] sm:items-center">
           <div className="relative mx-auto h-[180px] w-[180px]">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
                 <defs>
                   {SLICE_GRADIENTS.slice(0, chartData.length).map((g, idx) => (

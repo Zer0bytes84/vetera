@@ -71,6 +71,7 @@ declare global {
   interface Window {
     __TAURI__?: unknown;
     __TAURI_INTERNALS__?: unknown;
+    __TAURI_IPC__?: unknown;
   }
 }
 
@@ -79,7 +80,13 @@ export function isTauriRuntime() {
     return false;
   }
 
-  return Boolean(window.__TAURI__ || window.__TAURI_INTERNALS__);
+  return Boolean(
+    window.__TAURI__ ||
+    window.__TAURI_INTERNALS__ ||
+    window.__TAURI_IPC__ ||
+    // @ts-ignore
+    import.meta.env.TAURI_ENV_PLATFORM
+  );
 }
 
 function cloneState(state: BrowserDatabaseState): BrowserDatabaseState {

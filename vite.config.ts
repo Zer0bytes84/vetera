@@ -13,6 +13,10 @@ export default defineConfig({
     port: 5180,
     host: "0.0.0.0",
     strictPort: true,
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
     fs: {
       allow: ["..", "../../node_modules/@fontsource"],
     },

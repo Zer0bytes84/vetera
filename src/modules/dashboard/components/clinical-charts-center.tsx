@@ -41,7 +41,7 @@ interface ClinicalChartsCenterProps {
   monthlyAppointments: MonthlyAppointmentPoint[];
 }
 
-export function ClinicalChartsCenter({
+export const ClinicalChartsCenter = React.memo(function ClinicalChartsCenter({
   activityData,
   monthlyRevenue,
   monthlyAppointments,
@@ -242,7 +242,7 @@ export function ClinicalChartsCenter({
               transition={{ duration: 0.3 }}
               className="h-full w-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <AreaChart
                   data={filteredActivityData}
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
@@ -342,7 +342,7 @@ export function ClinicalChartsCenter({
               transition={{ duration: 0.3 }}
               className="h-full w-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <BarChart
                   data={combinedFinancialData}
                   margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
@@ -424,4 +424,4 @@ export function ClinicalChartsCenter({
       </Card>
     </div>
   );
-}
+});

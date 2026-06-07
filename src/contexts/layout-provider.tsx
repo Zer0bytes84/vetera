@@ -3,11 +3,11 @@ import { createContext, useContext, useState } from "react";
 export type Collapsible = "offcanvas" | "icon" | "none";
 type Variant = "inset" | "sidebar" | "floating";
 
-const LAYOUT_COLLAPSIBLE_KEY = "layout_collapsible_v6";
+const LAYOUT_COLLAPSIBLE_KEY = "layout_collapsible_v7";
 const LAYOUT_VARIANT_KEY = "layout_variant_v6";
 
 const DEFAULT_VARIANT: Variant = "inset";
-const DEFAULT_COLLAPSIBLE: Collapsible = "offcanvas";
+const DEFAULT_COLLAPSIBLE: Collapsible = "icon";
 
 type LayoutContextType = {
   resetLayout: () => void;

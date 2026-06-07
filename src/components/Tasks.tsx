@@ -10,6 +10,7 @@ import {
   ListPlusIcon,
   MoreVerticalCircle01Icon,
   Notification02Icon,
+  Task01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
@@ -39,6 +40,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   NativeSelect,
   NativeSelectOption,
@@ -119,6 +121,7 @@ const Tasks: React.FC = () => {
   } = useTasksRepository();
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [filter, setFilter] = useState<"all" | "mine">("mine");
   const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
@@ -204,9 +207,11 @@ const Tasks: React.FC = () => {
         endTime: newTaskDetails.endTime,
         isReminder: newTaskDetails.isReminder,
         assignedTo: currentUser?.uid,
+        description: newTaskDescription.trim(),
       } as any);
 
       setNewTaskTitle("");
+      setNewTaskDescription("");
       setIsAdding(false);
       setNewTaskDetails((prev) => ({
         ...prev,
@@ -475,203 +480,237 @@ const Tasks: React.FC = () => {
 
       <SectionCards items={sectionCards} />
 
-      {/* Quick Add Bar */}
+      {/* Quick Add Bar / Composer */}
       <Card
-        className="card-vibrant rounded-[24px] border border-border bg-card shadow-none transition-all focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/20"
+        className={cn(
+          "card-vibrant overflow-hidden transition-all duration-300",
+          isAdding 
+            ? "rounded-[24px] border border-border bg-card shadow-lg shadow-black/5 ring-1 ring-primary/20" 
+            : "rounded-[24px] border-2 border-muted-foreground/15 bg-muted/10 hover:border-primary/30 hover:bg-muted/20 shadow-sm cursor-text"
+        )}
+        onClick={() => {
+          if (!isAdding) setIsAdding(true);
+        }}
         size="sm"
       >
-        <CardContent className="p-5">
-          <form className="flex flex-col gap-4" onSubmit={handleAddTask}>
-            <div className="flex items-center gap-3">
-              <div
-                className={cn(
-                  "flex size-6 shrink-0 items-center justify-center rounded-full border-2",
-                  isAdding ? "border-primary" : "border-muted-foreground/30"
-                )}
-              >
-                <HugeiconsIcon
+        <CardContent className={cn("transition-all duration-300", isAdding ? "p-5" : "p-3")}>
+          <form className="flex flex-col gap-3" onSubmit={handleAddTask}>
+            <div className="flex items-start gap-3">
+              {isAdding ? (
+                <div className="mt-2.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-primary/50 bg-primary/10">
+                  <div className="size-2 rounded-full bg-primary" />
+                </div>
+              ) : (
+                <div className="mt-2.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/30" />
+              )}
+              
+              <div className="flex flex-1 flex-col">
+                <Input
                   className={cn(
-                    "size-3.5",
-                    isAdding ? "text-primary" : "text-muted-foreground/50"
+                    "border-none bg-transparent shadow-none focus-visible:ring-0 px-0",
+                    isAdding ? "text-lg font-medium placeholder:text-muted-foreground/60" : "text-sm placeholder:text-muted-foreground/80"
                   )}
-                  icon={Add01Icon}
-                  strokeWidth={2}
+                  onChange={(e) => {
+                    setNewTaskTitle(e.target.value);
+                    if (!isAdding && e.target.value.length > 0) {
+                      setIsAdding(true);
+                    }
+                  }}
+                  onFocus={() => setIsAdding(true)}
+                  placeholder={isAdding ? "Titre de la tâche..." : "Que devez-vous faire ?"}
+                  type="text"
+                  value={newTaskTitle}
                 />
+                
+                {isAdding && (
+                  <div className="fade-in slide-in-from-top-1 animate-in mt-2">
+                    <Textarea
+                      className="min-h-[60px] resize-none border-none bg-transparent px-0 py-1 shadow-none focus-visible:ring-0 text-sm text-muted-foreground placeholder:text-muted-foreground/40"
+                      onChange={(e) => setNewTaskDescription(e.target.value)}
+                      placeholder="Ajouter des notes, des détails ou un contexte..."
+                      value={newTaskDescription}
+                    />
+                  </div>
+                )}
               </div>
-              <Input
-                className="flex-1 border-none bg-transparent shadow-none focus-visible:ring-0"
-                onChange={(e) => {
-                  setNewTaskTitle(e.target.value);
-                  if (!isAdding) {
-                    setIsAdding(true);
-                  }
-                }}
-                placeholder="Ajouter une nouvelle tâche..."
-                type="text"
-                value={newTaskTitle}
-              />
-              {isAdding && (
+              
+              {!isAdding && (
                 <Button
-                  className="rounded-[0.95rem] px-4"
-                  type="submit"
-                  variant="default"
+                  className="rounded-full size-9 p-0 bg-primary/10 text-primary hover:bg-primary/20 shrink-0"
+                  onClick={() => setIsAdding(true)}
+                  type="button"
+                  variant="ghost"
                 >
-                  Ajouter
+                  <HugeiconsIcon className="size-5" icon={Add01Icon} strokeWidth={2.5} />
                 </Button>
               )}
             </div>
 
             {isAdding && (
-              <div className="fade-in slide-in-from-top-2 flex animate-in flex-wrap items-center gap-3 border-border border-t pt-4 pl-9">
-                {/* Date Picker */}
-                <Popover>
-                  <PopoverTrigger
-                    render={
-                      <Button
-                        className="h-8 rounded-3xl bg-muted/30 px-3 font-normal text-xs hover:bg-muted/50"
-                        size="sm"
-                        variant="ghost"
+              <div className="fade-in slide-in-from-top-2 flex animate-in flex-wrap items-center justify-between gap-3 border-border/60 border-t pt-4 pl-8">
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Date Picker */}
+                  <Popover>
+                    <PopoverTrigger
+                      render={
+                        <Button
+                          className="h-8 rounded-full bg-muted/40 px-3 font-medium text-xs hover:bg-muted/60 text-foreground/80"
+                          size="sm"
+                          variant="ghost"
+                        />
+                      }
+                    >
+                      <HugeiconsIcon
+                        className="size-3.5 text-primary"
+                        icon={Calendar01Icon}
+                        strokeWidth={2.5}
                       />
-                    }
-                  >
-                    <HugeiconsIcon
-                      className="size-3.5 text-muted-foreground"
-                      icon={Calendar01Icon}
-                      strokeWidth={2}
-                    />
-                    {(
-                      parseDateInput(newTaskDetails.dueDate) ?? new Date()
-                    ).toLocaleDateString(currentLocale, {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="start"
-                    className="w-auto rounded-[1.35rem] p-2.5"
-                    sideOffset={10}
-                  >
-                    <Calendar
-                      className="rounded-[1.05rem] [--cell-size:--spacing(8.6)]"
-                      locale={calendarLocale}
-                      mode="single"
-                      onSelect={(date) => {
-                        if (!date) {
-                          return;
+                      {(
+                        parseDateInput(newTaskDetails.dueDate) ?? new Date()
+                      ).toLocaleDateString(currentLocale, {
+                        day: "2-digit",
+                        month: "short",
+                      })}
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      className="w-auto rounded-[1.35rem] p-2.5 shadow-xl shadow-black/5"
+                      sideOffset={8}
+                    >
+                      <Calendar
+                        className="rounded-[1.05rem] [--cell-size:--spacing(8.6)]"
+                        locale={calendarLocale}
+                        mode="single"
+                        onSelect={(date) => {
+                          if (!date) return;
+                          setNewTaskDetails({
+                            ...newTaskDetails,
+                            dueDate: formatDateInput(date),
+                          });
+                        }}
+                        selected={
+                          parseDateInput(newTaskDetails.dueDate) ?? new Date()
                         }
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  {/* Time Range Selector */}
+                  <div className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/60">
+                    <HugeiconsIcon
+                      className="size-3.5 text-blue-500"
+                      icon={Clock01Icon}
+                      strokeWidth={2.5}
+                    />
+                    <NativeSelect
+                      className="w-auto border-none bg-transparent p-0 text-xs font-medium focus:ring-0"
+                      onChange={handleStartTimeChange}
+                      value={newTaskDetails.startTime}
+                    >
+                      <NativeSelectOption value="">Début</NativeSelectOption>
+                      {TIME_SLOTS.map((t) => (
+                        <NativeSelectOption key={t} value={t}>
+                          {t}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                    <span className="text-muted-foreground/50 text-[10px]">-</span>
+                    <NativeSelect
+                      className="w-auto border-none bg-transparent p-0 text-xs font-medium focus:ring-0"
+                      onChange={(e) =>
                         setNewTaskDetails({
                           ...newTaskDetails,
-                          dueDate: formatDateInput(date),
-                        });
-                      }}
-                      selected={
-                        parseDateInput(newTaskDetails.dueDate) ?? new Date()
+                          endTime: e.target.value,
+                        })
                       }
+                      value={newTaskDetails.endTime}
+                    >
+                      <NativeSelectOption value="">Fin</NativeSelectOption>
+                      {TIME_SLOTS.map((t) => (
+                        <NativeSelectOption key={`end-${t}`} value={t}>
+                          {t}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  </div>
+
+                  {/* Priority Selector */}
+                  <div className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/60">
+                    <HugeiconsIcon
+                      className={cn(
+                        "size-3.5",
+                        newTaskDetails.priority === "high"
+                          ? "text-red-500"
+                          : newTaskDetails.priority === "medium"
+                            ? "text-amber-500"
+                            : "text-sky-500"
+                      )}
+                      icon={Flag01Icon}
+                      strokeWidth={2.5}
                     />
-                  </PopoverContent>
-                </Popover>
+                    <NativeSelect
+                      className="w-auto border-none bg-transparent p-0 text-xs font-medium focus:ring-0"
+                      onChange={(e) =>
+                        setNewTaskDetails({
+                          ...newTaskDetails,
+                          priority: e.target.value as any,
+                        })
+                      }
+                      value={newTaskDetails.priority}
+                    >
+                      <NativeSelectOption value="low">Basse</NativeSelectOption>
+                      <NativeSelectOption value="medium">Moyenne</NativeSelectOption>
+                      <NativeSelectOption value="high">Haute</NativeSelectOption>
+                    </NativeSelect>
+                  </div>
 
-                {/* Time Range Selector */}
-                <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/40">
-                  <HugeiconsIcon
-                    className="size-3.5 text-muted-foreground"
-                    icon={Clock01Icon}
-                    strokeWidth={2}
-                  />
-                  <NativeSelect
-                    className="w-auto"
-                    onChange={handleStartTimeChange}
-                    size="sm"
-                    value={newTaskDetails.startTime}
-                  >
-                    <NativeSelectOption value="">Début</NativeSelectOption>
-                    {TIME_SLOTS.map((t) => (
-                      <NativeSelectOption key={t} value={t}>
-                        {t}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                  <span className="text-muted-foreground text-xs">-</span>
-                  <NativeSelect
-                    className="w-auto"
-                    onChange={(e) =>
-                      setNewTaskDetails({
-                        ...newTaskDetails,
-                        endTime: e.target.value,
-                      })
-                    }
-                    size="sm"
-                    value={newTaskDetails.endTime}
-                  >
-                    <NativeSelectOption value="">Fin</NativeSelectOption>
-                    {TIME_SLOTS.map((t) => (
-                      <NativeSelectOption key={`end-${t}`} value={t}>
-                        {t}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                </div>
-
-                {/* Priority Selector */}
-                <div className="flex items-center gap-2 rounded-3xl bg-muted/30 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/40">
-                  <HugeiconsIcon
+                  {/* Reminder Toggle */}
+                  <Button
                     className={cn(
-                      "size-3.5",
-                      newTaskDetails.priority === "high"
-                        ? "text-red-500"
-                        : "text-muted-foreground"
+                      "gap-1.5 rounded-full text-xs h-8 px-3 font-medium transition-colors",
+                      newTaskDetails.isReminder
+                        ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400"
+                        : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
                     )}
-                    icon={Flag01Icon}
-                    strokeWidth={2}
-                  />
-                  <NativeSelect
-                    className="w-auto"
-                    onChange={(e) =>
+                    onClick={() =>
                       setNewTaskDetails({
                         ...newTaskDetails,
-                        priority: e.target.value as any,
+                        isReminder: !newTaskDetails.isReminder,
                       })
                     }
-                    size="sm"
-                    value={newTaskDetails.priority}
+                    type="button"
+                    variant="ghost"
                   >
-                    <NativeSelectOption value="low">
-                      Priorité Basse
-                    </NativeSelectOption>
-                    <NativeSelectOption value="medium">
-                      Priorité Moyenne
-                    </NativeSelectOption>
-                    <NativeSelectOption value="high">
-                      Priorité Haute
-                    </NativeSelectOption>
-                  </NativeSelect>
+                    <HugeiconsIcon
+                      className="size-3.5"
+                      icon={Notification02Icon}
+                      strokeWidth={2.5}
+                    />
+                    Rappel
+                  </Button>
                 </div>
-
-                {/* Reminder Toggle */}
-                <Button
-                  className={cn(
-                    "gap-1.5 rounded-3xl text-xs",
-                    newTaskDetails.isReminder &&
-                      "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300"
-                  )}
-                  onClick={() =>
-                    setNewTaskDetails({
-                      ...newTaskDetails,
-                      isReminder: !newTaskDetails.isReminder,
-                    })
-                  }
-                  size="sm"
-                  type="button"
-                  variant={newTaskDetails.isReminder ? "outline" : "ghost"}
-                >
-                  <HugeiconsIcon
-                    className="size-3.5"
-                    icon={Notification02Icon}
-                    strokeWidth={2}
-                  />
-                  Rappel
-                </Button>
+                
+                <div className="flex items-center gap-2 ms-auto">
+                  <Button
+                    className="rounded-full px-4 text-xs h-8"
+                    onClick={() => {
+                      setIsAdding(false);
+                      setNewTaskTitle("");
+                      setNewTaskDescription("");
+                    }}
+                    type="button"
+                    variant="ghost"
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    className="rounded-full px-5 text-xs h-8 shadow-md shadow-primary/20"
+                    disabled={!newTaskTitle.trim()}
+                    type="submit"
+                  >
+                    Créer la tâche
+                  </Button>
+                </div>
               </div>
             )}
           </form>
@@ -771,10 +810,18 @@ const Tasks: React.FC = () => {
                   {tableTasks.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        className="py-10 text-center text-muted-foreground"
+                        className="h-64 text-center"
                         colSpan={6}
                       >
-                        Aucun rappel trouvé.
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <div className="flex size-12 items-center justify-center rounded-full bg-muted/40 text-muted-foreground/50">
+                            <HugeiconsIcon className="size-6" icon={Task01Icon} strokeWidth={1.5} />
+                          </div>
+                          <p className="text-sm font-medium text-foreground">Aucune tâche trouvée</p>
+                          <p className="text-xs text-muted-foreground max-w-[250px] mx-auto text-balance">
+                            Vous êtes à jour ! Profitez-en pour vous concentrer sur vos patients ou créez une nouvelle tâche.
+                          </p>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ) : (

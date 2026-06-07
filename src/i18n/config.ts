@@ -2,12 +2,12 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 export const SUPPORTED_LANGUAGES = [
-  { code: "fr", shortcut: "1" },
-  { code: "en", shortcut: "2" },
-  { code: "ar", shortcut: "3" },
-  { code: "es", shortcut: "4" },
-  { code: "pt", shortcut: "5" },
-  { code: "de", shortcut: "6" },
+  { code: "fr", shortcut: "1", nativeName: "Français", flag: "🇫🇷" },
+  { code: "en", shortcut: "2", nativeName: "English", flag: "🇬🇧" },
+  { code: "ar", shortcut: "3", nativeName: "العربية", flag: "🇩🇿" },
+  { code: "es", shortcut: "4", nativeName: "Español", flag: "🇪🇸" },
+  { code: "pt", shortcut: "5", nativeName: "Português", flag: "🇵🇹" },
+  { code: "de", shortcut: "6", nativeName: "Deutsch", flag: "🇩🇪" },
 ] as const;
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]["code"];

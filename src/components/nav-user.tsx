@@ -73,7 +73,7 @@ export function NavUser({
               />
             }
           >
-            <Avatar className="size-9 rounded-full shadow-sm [@media(max-height:820px)]:size-8 border border-border/50 transition-all group-data-[collapsible=icon]:size-10">
+            <Avatar className="size-9 rounded-full shadow-sm [@media(max-height:820px)]:size-8 border border-border/50 transition-all group-data-[collapsible=icon]:size-8">
               <AvatarImage alt={user.name} src={normalizedAvatar} />
               <AvatarFallback className="rounded-full bg-primary/10 text-primary text-sm font-medium">{fallback}</AvatarFallback>
             </Avatar>

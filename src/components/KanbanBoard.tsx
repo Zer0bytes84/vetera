@@ -142,6 +142,12 @@ function KanbanCardBody({
             {task.title}
           </p>
 
+          {task.description ? (
+            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+              {task.description}
+            </p>
+          ) : null}
+
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <Badge
               className={cn(
@@ -402,9 +408,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   strategy={verticalListSortingStrategy}
                 >
                   {columnTasks.length === 0 ? (
-                    <div className="flex h-32 items-center justify-center rounded-xl border-2 border-border border-dashed">
-                      <p className="text-muted-foreground text-sm">
-                        Aucune tâche
+                    <div className="flex h-32 flex-col items-center justify-center gap-2 rounded-xl border-2 border-border border-dashed bg-muted/10 transition-colors hover:border-primary/20 hover:bg-muted/20">
+                      <HugeiconsIcon className="size-6 text-muted-foreground/30" icon={Icon} strokeWidth={1.5} />
+                      <p className="text-muted-foreground text-xs font-medium">
+                        Rien ici pour le moment
                       </p>
                     </div>
                   ) : (

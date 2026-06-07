@@ -821,4 +821,4 @@ CREATE INDEX IF NOT EXISTS idx_anesthesia_sheets_ended_at
   ON anesthesia_sheets(ended_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_hospitalization_vitals_patient_recorded
-  ON hospitalization_vitals(patient_id, recorded_at DESC);`;
+  ON hospitalization_vitals(hospitalization_id, recorded_at DESC);`;

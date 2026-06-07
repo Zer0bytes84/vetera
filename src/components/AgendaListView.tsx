@@ -82,7 +82,7 @@ export function AgendaListView({
             {t("agenda.upcomingMeetings", { defaultValue: "Rendez-vous prévus" })}
           </h2>
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
-            <div className="mt-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9 dashboard-luxe-card p-6">
+            <div className="mt-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9 p-6 bg-white dark:bg-zinc-900/50 rounded-3xl border border-border/50 shadow-sm">
               <div className="flex items-center text-foreground">
                 <button
                   type="button"
@@ -182,13 +182,13 @@ export function AgendaListView({
                     <li 
                       key={appt.id} 
                       className={cn(
-                        "group relative flex gap-x-6 py-5 xl:static cursor-pointer transition-all duration-300 rounded-2xl px-5 mb-2",
-                        "hover:shadow-lg hover:bg-card/80 hover:-translate-y-0.5 border border-transparent hover:border-border/50 backdrop-blur-sm",
-                        isSelected ? "bg-primary/5 border-primary/20 shadow-md ring-1 ring-primary/20" : "bg-card/40"
+                        "group relative flex gap-x-6 py-5 xl:static cursor-pointer transition-all duration-200 rounded-2xl px-5 mb-2",
+                        "hover:bg-muted/40",
+                        isSelected ? "bg-muted/50" : "bg-transparent"
                       )}
                       onClick={() => onSelectAppointment(appt)}
                     >
-                      <div className="flex size-14 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-muted/80 to-muted border border-border/50 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                      <div className="flex size-14 flex-none items-center justify-center rounded-2xl bg-muted/40 text-muted-foreground group-hover:text-foreground transition-colors duration-200">
                         {getAnimalIcon(patient)}
                       </div>
                       <div className="flex-auto min-w-0">

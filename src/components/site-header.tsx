@@ -306,30 +306,43 @@ export function SiteHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="min-w-56"
+              className="min-w-64 p-2"
               sideOffset={8}
             >
+              <div className="px-2 py-1.5 mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                {t("language.label")}
+              </div>
               {SUPPORTED_LANGUAGES.map((language) => {
                 const active = i18n.language.startsWith(language.code);
                 return (
                   <DropdownMenuItem
-                    className="justify-between"
+                    className={cn(
+                      "flex items-center justify-between rounded-lg px-2.5 py-2 cursor-pointer transition-colors",
+                      active ? "bg-primary/5 dark:bg-primary/10" : ""
+                    )}
                     key={language.code}
                     onClick={() => void i18n.changeLanguage(language.code)}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-base">{language.flag}</span>
+                      <span className={cn(
+                        "text-sm font-medium",
+                        active ? "text-primary dark:text-emerald-400" : "text-foreground/80"
+                      )}>
+                        {language.nativeName}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
                       {active ? (
                         <HugeiconsIcon
-                          className="size-4 text-primary"
+                          className="size-4 text-primary dark:text-emerald-400"
                           icon={CheckmarkCircle02Icon}
-                          strokeWidth={2}
+                          strokeWidth={2.5}
                         />
                       ) : (
-                        <span className="size-4" />
+                        <Kbd className="text-[10px] bg-transparent shadow-none border-border/40 text-muted-foreground/50">⌘⇧{language.shortcut}</Kbd>
                       )}
-                      <span>{languageLabelByCode[language.code]}</span>
                     </div>
-                    <Kbd>⌘⇧{language.shortcut}</Kbd>
                   </DropdownMenuItem>
                 );
               })}

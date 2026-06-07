@@ -164,9 +164,15 @@ export function AppSidebar({
     icon: (
       <item.icon
         weight="duotone"
-        className="text-muted-foreground transition-all duration-200 ease-out group-hover:text-foreground"
+        className={cn(
+          "transition-all duration-200 ease-out",
+          currentView === item.view
+            ? "text-primary"
+            : "text-muted-foreground group-hover:text-foreground"
+        )}
       />
     ),
+    isActive: currentView === item.view,
     onClick: () => onNavigate(item.view),
   }));
 
@@ -192,33 +198,35 @@ export function AppSidebar({
       {...props}
       className={cn(
         isClassicSidebar &&
-          "bg-sidebar shadow-[inset_-1px_0_0_var(--sidebar-border)]",
+          "bg-zinc-50/80 dark:bg-zinc-900/60 backdrop-blur-md shadow-[inset_-1px_0_0_rgba(24,24,27,0.07)] dark:shadow-[inset_-1px_0_0_rgba(255,255,255,0.07)]",
+        isCollapsed && "dark bg-zinc-950/95 dark:bg-zinc-950/95 border-r border-white/10 shadow-2xl backdrop-blur-xl [--sidebar:theme(colors.zinc.950)] [--sidebar-foreground:theme(colors.zinc.400)] [--sidebar-primary:oklch(0.765_0.177_163)] [--sidebar-primary-foreground:theme(colors.zinc.950)] [--sidebar-accent:rgba(255,255,255,0.08)] [--sidebar-accent-foreground:theme(colors.zinc.50)] [--sidebar-border:rgba(255,255,255,0.08)] [--sidebar-ring:oklch(0.765_0.177_163)]",
         props.className
       )}
     >
 
       <SidebarHeader
-        data-tauri-drag-region={isDesktopRuntime ? "true" : undefined}
         className={cn(
           "flex shrink-0 flex-row items-center",
           isDesktopRuntime ? "py-3" : "py-2.5",
           "[@media(max-height:820px)]:p-1.5",
-          "shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] transition-all duration-200",
-          isClassicSidebar ? "bg-sidebar" : "bg-transparent",
-          isDesktopRuntime && !isCollapsed ? "h-[72px] pl-[76px] pr-3" : "px-3",
-          !isDesktopRuntime && !isCollapsed && "h-[72px] px-3",
-          isDesktopRuntime && isCollapsed && "h-[100px] flex-col justify-end pb-3",
-          !isDesktopRuntime && isCollapsed && "h-[72px] justify-center"
+          "shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] transition-all duration-300",
+          "h-[72px] border-b border-sidebar-border",
+          isClassicSidebar ? "bg-transparent px-0" : "bg-transparent px-2",
         )}
       >
-        <SidebarMenu className="w-full">
-          <SidebarMenuItem>
+        {/* Invisible drag area to fill remaining space */}
+        {isDesktopRuntime && (
+          <div data-tauri-drag-region="true" className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing" />
+        )}
+        <SidebarMenu className="relative z-10">
+          <SidebarMenuItem className="h-14">
             <SidebarMenuButton
               className={cn(
-                "w-full justify-start",
-                "ms-0 h-13 w-auto justify-start rounded-xl !ps-5 pe-2 hover:bg-transparent",
+                "hover:bg-transparent active:bg-transparent h-14",
+                "transition-all duration-300 ease-out",
+                isClassicSidebar ? "px-5" : "px-3",
                 isCollapsed &&
-                  "ms-0 h-13 w-13 justify-center rounded-2xl border border-border/70 bg-background/92 px-0 shadow-xs hover:bg-muted/35"
+                  "ms-0 h-10 w-10 justify-center rounded-xl border border-white/10 bg-white/5 px-0 shadow-xs hover:bg-white/10"
               )}
               render={
                 <button onClick={() => onNavigate("dashboard")} type="button" />
@@ -226,9 +234,12 @@ export function AppSidebar({
               tooltip="bAItari"
             >
               <Logo
-                className="text-sidebar-foreground"
+                className={cn(
+                  "text-sidebar-foreground",
+                  isCollapsed && "text-white"
+                )}
                 collapsed={isCollapsed}
-                flatMark={isClassicSidebar}
+                flatMark={isClassicSidebar || isCollapsed}
                 size="2xl"
                 textSize="md"
               />
@@ -240,7 +251,7 @@ export function AppSidebar({
         className={cn(
           "scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent overflow-y-auto",
           "pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-          isClassicSidebar ? "overflow-y-hidden bg-sidebar px-5" : "px-3",
+          isClassicSidebar ? "overflow-y-hidden bg-transparent px-5" : "px-3",
           isCollapsed && "px-2 pt-3"
         )}
       >
@@ -259,6 +270,7 @@ export function AppSidebar({
             items={documents.map((item) => ({
               name: item.name,
               icon: item.icon,
+              isActive: item.isActive,
               onClick: item.onClick,
             }))}
             title={t("nav.sections.operations")}
@@ -271,7 +283,7 @@ export function AppSidebar({
           isCollapsed
             ? "mx-0 mb-1.5 gap-1.5 rounded-none border-0 bg-transparent px-2 py-0 shadow-none backdrop-blur-none"
             : isClassicSidebar
-              ? "mx-4 mb-2 gap-0 rounded-[18px] border border-sidebar-border bg-sidebar-accent/90 dark:bg-zinc-800/40 px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
+              ? "mx-4 mb-2 gap-0 rounded-[18px] border border-zinc-200/60 dark:border-zinc-800/60 bg-white/60 dark:bg-zinc-800/30 px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)]"
               : "mx-3 mb-2 gap-0 rounded-2xl border border-zinc-200/90 dark:border-white/12 bg-white/80 dark:bg-white/[0.06] backdrop-blur-md px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
         )}
       >

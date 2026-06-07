@@ -181,7 +181,7 @@ export function ConsultationSummaryWidget({
                   </span>
                 </div>
                 <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart
                       data={dailyChartData}
                       margin={{ top: 4, right: 4, left: 0, bottom: 0 }}

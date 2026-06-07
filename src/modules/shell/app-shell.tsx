@@ -60,7 +60,7 @@ const ALL_VIEWS: View[] = [
 const DEFAULT_VIEW: View = "dashboard";
 
 const HASH_PREFIX_REGEX = /^#\/?/;
-const PATIENT_DETAIL_PREFIX = /^patient\/([A-Za-z0-9-]+)$/;
+const PATIENT_DETAIL_PREFIX = /^patient\/([A-Za-z0-9_-]+)$/;
 
 export interface RouteState {
   currentView: View;

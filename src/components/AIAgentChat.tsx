@@ -348,7 +348,7 @@ SMS confirmation RDV :
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
-      <DialogContent className="!max-w-[85vw] flex h-[85vh] w-[85vw] flex-col gap-0 overflow-hidden rounded-2xl border border-border/50 p-0 shadow-2xl">
+      <DialogContent showCloseButton={false} className="!max-w-[85vw] flex h-[85vh] w-[85vw] flex-col gap-0 overflow-hidden rounded-2xl border border-border/50 p-0 shadow-2xl">
         <DialogHeader className="sr-only">
           <DialogTitle>Assistant Vétérinaire</DialogTitle>
         </DialogHeader>
@@ -356,9 +356,9 @@ SMS confirmation RDV :
         {/* Header Épuré */}
         <div className="flex h-16 shrink-0 items-center justify-between bg-gradient-to-r from-background to-muted/30 px-6">
           <div className="flex items-center gap-4">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20">
               <HugeiconsIcon
-                className="size-5 text-violet-600"
+                className="size-5 text-emerald-600"
                 icon={StethoscopeIcon}
               />
             </div>
@@ -395,9 +395,9 @@ SMS confirmation RDV :
                 onClick={createNewConversation}
                 variant="ghost"
               >
-                <div className="flex size-6 items-center justify-center rounded-md bg-violet-500/10">
+                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-500/10">
                   <HugeiconsIcon
-                    className="size-3.5 text-violet-600"
+                    className="size-3.5 text-emerald-600"
                     icon={Add01Icon}
                   />
                 </div>
@@ -415,7 +415,7 @@ SMS confirmation RDV :
                     className={cn(
                       "group flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
                       activeConversationId === conv.id
-                        ? "bg-violet-500/10 text-violet-700 shadow-sm"
+                        ? "bg-emerald-500/10 text-emerald-700 shadow-sm"
                         : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                     )}
                     key={conv.id}
@@ -426,7 +426,7 @@ SMS confirmation RDV :
                         className={cn(
                           "size-4 shrink-0",
                           activeConversationId === conv.id
-                            ? "text-violet-500"
+                            ? "text-emerald-500"
                             : "text-muted-foreground/60"
                         )}
                         icon={Chatting01Icon}
@@ -486,8 +486,8 @@ SMS confirmation RDV :
                 {messages.length === 0 ? (
                   <div className="flex h-full flex-col items-center justify-center gap-8 pt-12">
                     <div className="relative">
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-400/30 to-fuchsia-400/30 blur-2xl" />
-                      <div className="relative flex size-20 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/25">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/30 to-teal-400/30 blur-2xl" />
+                      <div className="relative flex size-20 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25">
                         <HugeiconsIcon
                           className="size-10 text-white"
                           icon={StethoscopeIcon}
@@ -506,14 +506,14 @@ SMS confirmation RDV :
                     <div className="grid w-full max-w-lg grid-cols-2 gap-3">
                       {QUICK_ACTIONS.map((action) => (
                         <button
-                          className="group flex flex-col items-start gap-2 rounded-xl border border-border/60 bg-background/80 p-4 text-left transition-all duration-200 hover:border-violet-300 hover:bg-violet-50/30 hover:shadow-md"
+                          className="group flex flex-col items-start gap-2 rounded-xl border border-border/60 bg-background/80 p-4 text-left transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/30 hover:shadow-md"
                           key={action.id}
                           onClick={() => handleQuickAction(action)}
                         >
                           <div className="flex items-center gap-2.5">
-                            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 transition-all group-hover:from-violet-500/20 group-hover:to-fuchsia-500/20">
+                            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/10 to-teal-500/10 transition-all group-hover:from-emerald-500/20 group-hover:to-teal-500/20">
                               <HugeiconsIcon
-                                className="size-4 text-violet-600"
+                                className="size-4 text-emerald-600"
                                 icon={action.icon}
                               />
                             </div>
@@ -542,7 +542,7 @@ SMS confirmation RDV :
                         style={{ animationDelay: `${idx * 50}ms` }}
                       >
                         {message.role === "assistant" && (
-                          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/20">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md shadow-emerald-500/20">
                             <HugeiconsIcon
                               className="size-4 text-white"
                               icon={StethoscopeIcon}
@@ -614,7 +614,7 @@ SMS confirmation RDV :
                               if (isQuote) {
                                 return (
                                   <div
-                                    className="my-3 rounded-r-lg border-violet-300 border-l-2 bg-violet-50/50 py-2 pl-4"
+                                    className="my-3 rounded-r-lg border-emerald-300 border-l-2 bg-emerald-50/50 py-2 pl-4"
                                     key={i}
                                   >
                                     <p className="text-muted-foreground text-sm italic">
@@ -629,7 +629,7 @@ SMS confirmation RDV :
                                   className={cn(
                                     "py-1",
                                     isListItem &&
-                                      "relative pl-4 before:absolute before:left-0 before:text-violet-500 before:content-['•']",
+                                      "relative pl-4 before:absolute before:left-0 before:text-emerald-500 before:content-['•']",
                                     line.includes("**") && "font-semibold"
                                   )}
                                   key={i}
@@ -651,7 +651,7 @@ SMS confirmation RDV :
 
                     {isLoading && (
                       <div className="fade-in flex animate-in gap-4 duration-300">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/20">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md shadow-emerald-500/20">
                           <HugeiconsIcon
                             className="size-4 text-white"
                             icon={StethoscopeIcon}
@@ -659,15 +659,15 @@ SMS confirmation RDV :
                         </div>
                         <div className="flex items-center gap-1 py-3">
                           <span
-                            className="size-1.5 animate-bounce rounded-full bg-violet-400"
+                            className="size-1.5 animate-bounce rounded-full bg-emerald-400"
                             style={{ animationDelay: "0ms" }}
                           />
                           <span
-                            className="size-1.5 animate-bounce rounded-full bg-violet-400"
+                            className="size-1.5 animate-bounce rounded-full bg-emerald-400"
                             style={{ animationDelay: "150ms" }}
                           />
                           <span
-                            className="size-1.5 animate-bounce rounded-full bg-violet-400"
+                            className="size-1.5 animate-bounce rounded-full bg-emerald-400"
                             style={{ animationDelay: "300ms" }}
                           />
                         </div>
@@ -687,7 +687,7 @@ SMS confirmation RDV :
                 <div className="flex flex-wrap gap-2">
                   {QUICK_ACTIONS.map((action) => (
                     <button
-                      className="flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/60 px-3 py-1.5 font-medium text-muted-foreground text-xs transition-all duration-200 hover:border-violet-200 hover:bg-violet-100/50 hover:text-violet-700"
+                      className="flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/60 px-3 py-1.5 font-medium text-muted-foreground text-xs transition-all duration-200 hover:border-emerald-200 hover:bg-emerald-100/50 hover:text-emerald-700"
                       key={action.id}
                       onClick={() => handleQuickAction(action)}
                     >
@@ -709,7 +709,7 @@ SMS confirmation RDV :
                     value={input}
                   />
                   <Button
-                    className="absolute right-2 bottom-2 size-9 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/25 transition-all hover:from-violet-600 hover:to-fuchsia-600 disabled:shadow-none"
+                    className="absolute right-2 bottom-2 size-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md shadow-emerald-500/25 transition-all hover:from-emerald-600 hover:to-teal-600 disabled:shadow-none"
                     disabled={!input.trim() || isLoading}
                     onClick={handleSend}
                     size="icon"

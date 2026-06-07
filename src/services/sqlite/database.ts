@@ -78,8 +78,19 @@ export function runDbOperation<T>(
   operation: (database: Database) => Promise<T>
 ): Promise<T> {
   const job = sqliteOperationQueue.then(async () => {
-    const database = await getDatabase();
-    return withLockRetry(() => operation(database));
+    let database = await getDatabase();
+    try {
+      return await withLockRetry(() => operation(database));
+    } catch (error) {
+      // Si on a une erreur fatale (ex: connexion perdue après la mise en veille du Mac),
+      // on force la réinitialisation de la connexion pour les prochaines requêtes.
+      console.warn("[DB] Fatal SQLite error encountered, dropping connection cache.", error);
+      await closeDatabaseConnection();
+      
+      // On tente de recharger la base une fois immédiatement
+      database = await getDatabase();
+      return await withLockRetry(() => operation(database));
+    }
   });
 
   // Évite que la chaîne de la queue se "bloque" sur un rejet précédent.
@@ -113,6 +124,8 @@ export function runDbTransaction<T>(
   });
 }
 
+import { appDataDir, join } from "@tauri-apps/api/path";
+
 /**
  * Obtient ou crée la connexion à la base de données SQLite
  */
@@ -124,6 +137,7 @@ export async function getDatabase(): Promise<Database> {
   if (!dbInitPromise) {
     dbInitPromise = (async () => {
       console.log("[DB] Loading database...");
+      
       const loadedDb = await Database.load("sqlite:baitari.db");
       await runMigrations(loadedDb);
       await applyDatabaseSafetyPragmas(loadedDb);

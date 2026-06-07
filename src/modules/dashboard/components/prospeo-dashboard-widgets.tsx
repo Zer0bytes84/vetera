@@ -239,7 +239,7 @@ export function ProspeoMetricCard({
       </div>
       {sparklineData && sparklineData.length > 1 && (
         <div className="mt-1 h-[44px] w-full px-1">
-          <ResponsiveContainer height="100%" width="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <AreaChart
               data={sparklineData}
               margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
@@ -344,7 +344,7 @@ export function ProspeoRevenueChart({
       </div>
 
       <div className="mt-5 h-[330px] w-full min-w-0 px-5 pb-5">
-        <ResponsiveContainer height="100%" width="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <BarChart
             data={data}
             margin={{ top: 12, right: 8, left: 0, bottom: 8 }}
@@ -2028,7 +2028,7 @@ export function ProspeoRevenueReport({
       </div>
       <div className="px-5 pb-5">
         <div className="h-[140px] w-full min-w-0">
-          <ResponsiveContainer height="100%" width="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <BarChart
               data={monthlyData}
               margin={{ top: 8, right: 8, left: 8, bottom: 24 }}
@@ -2172,7 +2172,7 @@ export function ProspeoRetentionReport({
       </div>
       <div className="px-5 pb-5">
         <div className="h-[170px] w-full min-w-0">
-          <ResponsiveContainer height="100%" width="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <LineChart
               data={trend}
               margin={{ top: 10, right: 10, left: 10, bottom: 30 }}

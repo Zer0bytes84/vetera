@@ -1758,14 +1758,18 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   // is enough — no need to re-select the row in Clinique.
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (loadingAppointments) return;
     const pendingId = window.sessionStorage.getItem(
       "vetera:pending-consultation-start"
     );
     if (!pendingId) return;
-    window.sessionStorage.removeItem("vetera:pending-consultation-start");
 
+    // Wait until target is found or appointments are fully loaded
     const target = appointments.find((a) => a.id === pendingId);
     if (!target) return;
+    
+    window.sessionStorage.removeItem("vetera:pending-consultation-start");
+
     if (
       target.status === "completed" ||
       target.status === "cancelled" ||

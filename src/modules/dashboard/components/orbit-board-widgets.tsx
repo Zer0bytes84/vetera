@@ -94,7 +94,7 @@ export function OrbitRevenueBars({
       </div>
 
       <div className="relative h-[190px]">
-        <ResponsiveContainer height="100%" width="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <BarChart
             data={visible}
             margin={{ top: 20, right: 4, left: -10, bottom: 0 }}
@@ -251,7 +251,7 @@ export function OrbitCadenceSpark({
       </div>
 
       <div className="relative h-[148px]">
-        <ResponsiveContainer height="100%" width="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <AreaChart
             data={data.slice(-18)}
             margin={{ top: 8, right: 2, left: 2, bottom: 0 }}

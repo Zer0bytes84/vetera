@@ -1,5 +1,6 @@
 import {
   CircleNotch,
+  Microphone,
   Sparkle,
   Trash,
   XCircle,
@@ -281,20 +282,14 @@ export function SoapPanel({ appointmentId, className, patientId }: SoapPanelProp
 
   return (
     <div className={cn("space-y-3", className)}>
-      {/* Header row */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h3 className="text-sm font-semibold tracking-tight">
-            {t("consultations.soap.title")}
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            {t("consultations.soap.subtitle")}
-          </p>
-        </div>
+      {/* Header action row */}
+      <div className="flex items-center justify-between gap-2 border-b border-border/10 pb-2.5">
         <div className="flex items-center gap-2">
           <SaveStatusPill status={saveStatus} />
+        </div>
+        <div className="flex items-center gap-2">
           <Button
-            className="h-7 gap-1 text-xs"
+            className="h-8 gap-1.5 text-xs font-semibold rounded-full px-4 shadow-sm hover:shadow-md transition-all duration-300"
             disabled={!canStructure || isStructuring}
             onClick={() => void handleStructureWithAi()}
             size="sm"
@@ -312,14 +307,14 @@ export function SoapPanel({ appointmentId, className, patientId }: SoapPanelProp
           </Button>
           <Button
             aria-label={t("consultations.soap.ai.clear")}
-            className="h-7 w-7"
+            className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
             disabled={!form.subjective && !form.objective && !form.assessment && !form.plan}
             onClick={clearAll}
             size="icon"
             type="button"
             variant="ghost"
           >
-            <Trash weight="duotone" className="size-3.5" />
+            <Trash weight="duotone" className="size-4" />
           </Button>
         </div>
       </div>
@@ -338,7 +333,7 @@ export function SoapPanel({ appointmentId, className, patientId }: SoapPanelProp
       ) : null}
 
       {/* 4 SOAP sections */}
-      <div className="grid gap-3 xl:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {SECTIONS.map(({ key, i18n: i18nKey }) => (
           <SoapSectionEditor
             disabled={isStructuring}
@@ -356,14 +351,21 @@ export function SoapPanel({ appointmentId, className, patientId }: SoapPanelProp
 
       {/* Live dictation + AI draft panel */}
       <div className="grid gap-3 xl:grid-cols-2">
-        <div className="rounded-lg border border-border/40 bg-background/40 p-3">
-          <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl p-4 shadow-sm relative overflow-hidden group/dictation">
+          <div className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover/dictation:opacity-100 mix-blend-overlay">
+            <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-transparent" />
+          </div>
+
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 relative z-10">
             <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                <Microphone weight="duotone" className="size-4" />
+              </div>
               <h4 className="text-sm font-semibold tracking-tight">
                 {t("consultations.soap.ai.transcriptPlaceholder")}
               </h4>
               {speech.isListening ? (
-                <Badge className="animate-pulse bg-rose-500 text-white" variant="default">
+                <Badge className="animate-pulse bg-rose-500 text-white shadow-[0_0_10px_rgba(244,63,94,0.4)]" variant="default">
                   ● {t("consultations.soap.ai.stopDictation")}
                 </Badge>
               ) : null}
@@ -373,7 +375,7 @@ export function SoapPanel({ appointmentId, className, patientId }: SoapPanelProp
                 </Badge>
               ) : null}
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <MicrophoneButton
                 isListening={speech.isListening}
                 isSupported={speech.isSupported}
@@ -383,24 +385,25 @@ export function SoapPanel({ appointmentId, className, patientId }: SoapPanelProp
                 size="sm"
               />
               <Button
-                className="h-7 text-xs"
+                className="h-8 text-xs font-semibold rounded-full px-3.5 shadow-xs"
                 disabled={!liveTranscript.trim() || isStructuring}
                 onClick={handleAppendTranscriptToSection}
                 size="sm"
                 type="button"
-                variant="outline"
+                variant="secondary"
               >
                 → {t(`consultations.soap.sections.${activeSection}`)}
               </Button>
             </div>
           </div>
           <Textarea
-            className="min-h-[88px] resize-y bg-background/70 text-sm"
+            className="min-h-[88px] resize-y border-0 bg-zinc-100/50 dark:bg-zinc-900/50 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-rose-500/30 rounded-lg relative z-10 placeholder:text-muted-foreground/50 transition-colors"
             onChange={(event) => setLiveTranscript(event.target.value)}
             placeholder={t("consultations.soap.ai.transcriptPlaceholder")}
             value={liveTranscript}
           />
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-2 text-[10px] font-medium text-muted-foreground/60 relative z-10 flex items-center gap-1.5">
+            <Sparkle weight="fill" className="size-3 text-rose-400" />
             {speech.isListening
               ? t("consultations.soap.ai.stopDictation")
               : t("consultations.soap.ai.startDictation")}
@@ -521,9 +524,9 @@ function DraftZone({
             </Badge>
           ) : null}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <Button
-            className="h-7 text-xs"
+            className="h-7.5 text-xs font-semibold rounded-full px-3.5"
             onClick={onApply}
             size="sm"
             type="button"
@@ -532,7 +535,7 @@ function DraftZone({
             {t("consultations.soap.ai.applyDraft")}
           </Button>
           <Button
-            className="h-7 text-xs"
+            className="h-7.5 text-xs font-semibold rounded-full px-3"
             onClick={onDiscard}
             size="sm"
             type="button"

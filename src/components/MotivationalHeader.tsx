@@ -143,7 +143,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
       className={cn(
         "flex flex-col gap-1.5 rounded-[24px] border border-border/70 bg-background/70 px-5 py-4 shadow-[0_12px_40px_rgba(15,23,42,0.04)] backdrop-blur-sm lg:gap-2 lg:px-6 lg:py-5",
         section === "dashboard" &&
-          "bg-gradient-to-br from-background via-background to-[rgba(255,140,51,0.045)]"
+          "bg-gradient-to-br from-background via-background to-[rgba(16,185,129,0.045)]"
       )}
     >
       {headerCopy.eyebrow && (

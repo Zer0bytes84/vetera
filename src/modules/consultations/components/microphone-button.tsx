@@ -44,10 +44,10 @@ export function MicrophoneButton({
               }
               className={cn(
                 dim,
-                "rounded-full",
+                "rounded-full relative transition-all duration-300",
                 isListening
-                  ? "bg-rose-500/90 text-white hover:bg-rose-500"
-                  : "bg-background/80",
+                  ? "bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.5)] hover:bg-rose-600 hover:shadow-[0_0_20px_rgba(244,63,94,0.6)]"
+                  : "bg-background/80 hover:bg-muted/80 backdrop-blur-sm shadow-sm",
                 className
               )}
               disabled={disabled || !isSupported}
@@ -56,8 +56,11 @@ export function MicrophoneButton({
               type="button"
               variant={isListening ? "default" : "ghost"}
             >
+              {isListening && (
+                <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-rose-400 opacity-75" />
+              )}
               {isListening ? (
-                <Stop weight="duotone" className={iconDim} />
+                <Stop weight="fill" className={iconDim} />
               ) : (
                 <Microphone weight="duotone" className={iconDim} />
               )}

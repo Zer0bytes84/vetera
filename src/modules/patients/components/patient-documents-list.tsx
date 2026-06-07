@@ -2,9 +2,12 @@ import {
   FileText,
   Image as ImageIcon,
   Plus,
+  Trash,
   UploadSimple,
 } from "@phosphor-icons/react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -88,12 +91,81 @@ export function PatientDocumentsList({
 }: PatientDocumentsListProps) {
   const { t } = useTranslation();
   const repo = useConsultationDocumentsRepository();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const docs = repo.data
     .filter((doc) => doc.patientId === patientId)
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    if (file.size > 12 * 1024 * 1024) {
+      toast.error("Le fichier dépasse 12 Mo.");
+      return;
+    }
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const dataUrl = e.target?.result as string;
+        const category = file.type.includes("pdf")
+          ? "pdf"
+          : file.type.startsWith("image/")
+          ? "image"
+          : "other";
+        
+        await repo.add({
+          patientId,
+          appointmentId: "",
+          fileName: file.name,
+          mimeType: file.type,
+          sizeBytes: file.size,
+          category,
+          dataUrl,
+        } as any);
+        toast.success("Document ajouté avec succès !");
+      } catch (err) {
+        toast.error("Erreur lors de l'ajout du document.");
+      } finally {
+        setIsUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerUpload = () => {
+    if (onUpload) {
+      onUpload();
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await repo.remove(id);
+      toast.success("Document supprimé avec succès.");
+    } catch (err) {
+      toast.error("Erreur lors de la suppression.");
+    }
+  };
+
+  const handleOpen = (doc: ConsultationDocument) => {
+    if (onOpenDocument) {
+      onOpenDocument(doc);
+    } else {
+      window.open(doc.dataUrl, "_blank");
+    }
+  };
 
   return (
     <Card className={className}>
@@ -106,17 +178,23 @@ export function PatientDocumentsList({
             {t("patientDetail.documents.count", { count: docs.length })}
           </CardDescription>
         </div>
-        {onUpload ? (
-          <Button
-            className="h-8 gap-1.5"
-            onClick={onUpload}
-            size="sm"
-            variant="outline"
-          >
-            <Plus weight="duotone" className="size-4" />
-            {t("patientDetail.documents.upload")}
-          </Button>
-        ) : null}
+        <input
+          type="file"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".pdf,image/*"
+        />
+        <Button
+          className="h-8 gap-1.5"
+          onClick={triggerUpload}
+          size="sm"
+          variant="outline"
+          disabled={isUploading}
+        >
+          <Plus weight="duotone" className="size-4" />
+          {isUploading ? "Import..." : t("patientDetail.documents.upload")}
+        </Button>
       </CardHeader>
       <CardContent>
         {docs.length === 0 ? (
@@ -133,14 +211,12 @@ export function PatientDocumentsList({
                 {t("patientDetail.documents.upload")}
               </EmptyDescription>
             </EmptyHeader>
-            {onUpload ? (
-              <EmptyContent>
-                <Button onClick={onUpload} size="sm" variant="outline">
-                  <UploadSimple weight="duotone" className="size-4" />
-                  {t("patientDetail.documents.upload")}
-                </Button>
-              </EmptyContent>
-            ) : null}
+            <EmptyContent>
+              <Button onClick={triggerUpload} size="sm" variant="outline" disabled={isUploading}>
+                <UploadSimple weight="duotone" className="size-4" />
+                {isUploading ? "Import..." : t("patientDetail.documents.upload")}
+              </Button>
+            </EmptyContent>
           </Empty>
         ) : (
           <ul className="divide-y divide-border/40">
@@ -160,34 +236,45 @@ export function PatientDocumentsList({
                   >
                     <Icon weight="duotone" className="size-4" />
                   </span>
-                  <button
-                    className="min-w-0 flex-1 text-left"
-                    onClick={() => onOpenDocument?.(doc)}
-                    type="button"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="truncate text-sm font-medium">
-                        {doc.fileName}
-                      </span>
-                      <Badge
-                        className="rounded-full px-1.5 py-0 text-[10px] font-medium"
-                        variant="outline"
-                      >
-                        {meta.label}
-                      </Badge>
-                    </div>
-                    <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-                      <span>{formatDate(doc.createdAt)}</span>
-                      <span aria-hidden>·</span>
-                      <span>{formatBytes(doc.sizeBytes)}</span>
-                      {doc.description ? (
-                        <>
-                          <span aria-hidden>·</span>
-                          <span className="truncate">{doc.description}</span>
-                        </>
-                      ) : null}
-                    </div>
-                  </button>
+                  <div className="min-w-0 flex-1 flex items-center justify-between gap-2">
+                    <button
+                      className="min-w-0 flex-1 text-left"
+                      onClick={() => handleOpen(doc)}
+                      type="button"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="truncate text-sm font-medium">
+                          {doc.fileName}
+                        </span>
+                        <Badge
+                          className="rounded-full px-1.5 py-0 text-[10px] font-medium"
+                          variant="outline"
+                        >
+                          {meta.label}
+                        </Badge>
+                      </div>
+                      <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                        <span>{formatDate(doc.createdAt)}</span>
+                        <span aria-hidden>·</span>
+                        <span>{formatBytes(doc.sizeBytes)}</span>
+                        {doc.description ? (
+                          <>
+                            <span aria-hidden>·</span>
+                            <span className="truncate">{doc.description}</span>
+                          </>
+                        ) : null}
+                      </div>
+                    </button>
+                    <Button
+                      aria-label="Supprimer le document"
+                      className="size-8 text-muted-foreground hover:text-destructive shrink-0"
+                      onClick={(e) => void handleDelete(doc.id, e)}
+                      size="icon"
+                      variant="ghost"
+                    >
+                      <Trash weight="duotone" className="size-4" />
+                    </Button>
+                  </div>
                 </li>
               );
             })}

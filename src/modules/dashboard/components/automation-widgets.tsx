@@ -239,7 +239,7 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
             <div className="h-7 w-24 flex items-end justify-end shrink-0 mb-1">
               {isArea ? (
                 <div className="h-full w-full relative">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart data={chartPoints as Array<{ value: number }>}>
                       <defs>
                         <linearGradient

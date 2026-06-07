@@ -159,7 +159,7 @@ export function PatientDetailPage({
         </Button>
 
         <PatientHeader
-          onAddNote={() => {
+          onNewNote={() => {
             if (lastAppointment) {
               openSoapForAppointment(lastAppointment.id);
             }
