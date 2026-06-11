@@ -85,20 +85,11 @@ export function PatientHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-6 rounded-3xl border border-border/40 bg-white/60 p-6 shadow-[0_1px_0_rgba(0,0,0,0.02)] backdrop-blur-md md:flex-row md:items-start md:gap-8 dark:bg-zinc-900/40",
+        "flex flex-col gap-6 rounded-[16px] border border-border bg-card p-6 shadow-sm md:flex-row md:items-start md:gap-8",
         className
       )}
     >
       <div className="flex flex-1 items-start gap-5">
-        <Button
-          aria-label={t("patientDetail.backToList")}
-          className="size-9 shrink-0"
-          onClick={onBack}
-          size="icon"
-          variant="ghost"
-        >
-          <ArrowLeft weight="duotone" className="size-4" />
-        </Button>
 
         <Avatar className="size-20 ring-2 ring-background shadow-sm">
           {patient.avatarUrl ? (
@@ -155,7 +146,7 @@ export function PatientHeader({
         </span>
         <div className="flex flex-wrap gap-2">
           <Button
-            className="h-9 gap-2"
+            className="h-9 rounded-full px-4 gap-2"
             onClick={onNewAppointment}
             size="sm"
             variant="default"
@@ -164,7 +155,7 @@ export function PatientHeader({
             {t("patientDetail.header.newAppointment")}
           </Button>
           <Button
-            className="h-9 gap-2"
+            className="h-9 rounded-full px-4 gap-2"
             onClick={onNewNote}
             size="sm"
             variant="outline"

@@ -72,32 +72,32 @@ export function VaccinationList({
   };
 
   return (
-    <Card className={cn("overflow-hidden rounded-2xl shadow-sm border-zinc-200 dark:border-zinc-800", className)}>
-        <CardHeader className="flex flex-row items-center justify-between gap-2 border-b border-border/40 bg-zinc-50/50 dark:bg-zinc-900/20 px-6 py-4">
-          <div>
-            <CardTitle className="text-base font-semibold">
-              {t("patientDetail.vaccinations.title")}
-            </CardTitle>
-            <CardDescription className="text-xs mt-1">
-              {entries.length}{" "}
-              {entries.length > 1
-                ? t("patientDetail.vaccinations.plural")
-                : t("patientDetail.vaccinations.singular")}
-            </CardDescription>
+    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
+      <div className="flex flex-row items-start justify-between gap-4 mb-6">
+        <div className="min-w-0 flex-1">
+          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider truncate">
+            {t("patientDetail.vaccinations.title")}
           </div>
-          {onNew ? (
-            <Button
-              className="h-8 gap-1.5 rounded-lg"
-              onClick={onNew}
-              size="sm"
-              variant="default"
-            >
-              <Plus weight="bold" className="size-3.5" />
-              {t("patientDetail.vaccinations.newVaccine")}
-            </Button>
-          ) : null}
-        </CardHeader>
-        <CardContent className="p-0">
+          <div className="text-xs text-muted-foreground mt-1 truncate">
+            {entries.length}{" "}
+            {entries.length > 1
+              ? t("patientDetail.vaccinations.plural")
+              : t("patientDetail.vaccinations.singular")}
+          </div>
+        </div>
+        {onNew ? (
+          <Button
+            className="h-8 gap-1.5 rounded-lg shrink-0"
+            onClick={onNew}
+            size="sm"
+            variant="default"
+          >
+            <Plus weight="bold" className="size-3.5" />
+            {t("patientDetail.vaccinations.newVaccine")}
+          </Button>
+        ) : null}
+      </div>
+      <div className="flex flex-col flex-1">
         {entries.length === 0 ? (
           <Empty>
             <EmptyHeader>
@@ -106,12 +106,12 @@ export function VaccinationList({
               </EmptyMedia>
               <EmptyTitle>{t("patientDetail.vaccinations.empty")}</EmptyTitle>
               <EmptyDescription>
-                {t("patientDetail.vaccinations.newVaccine")}
+                {t("patientDetail.vaccinations.emptyDescription")}
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button onClick={onNew} size="sm" variant="outline">
-                <Plus weight="duotone" className="size-4" />
+              <Button onClick={onNew} size="sm" variant="outline" className="rounded-lg">
+                <Plus weight="bold" className="size-4 mr-1.5" />
                 {t("patientDetail.vaccinations.newVaccine")}
               </Button>
             </EmptyContent>
@@ -192,7 +192,7 @@ export function VaccinationList({
             })}
           </ul>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

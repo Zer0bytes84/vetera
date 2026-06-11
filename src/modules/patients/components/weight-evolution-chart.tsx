@@ -77,9 +77,9 @@ export function WeightEvolutionChart({
 
   if (data.length === 0) {
     return (
-      <Card className={cn("overflow-hidden rounded-2xl shadow-sm border-zinc-200 dark:border-zinc-800", className)}>
-        <CardHeader className="flex flex-row items-center justify-between gap-2 border-b border-border/40 bg-zinc-50/50 dark:bg-zinc-900/20 px-6 py-4">
-          <CardTitle className="text-base font-semibold">{title}</CardTitle>
+      <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
+        <div className="flex flex-row items-center justify-between gap-2 mb-6">
+          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{title}</div>
           {onAdd ? (
             <Button
               className="h-8 gap-1.5 rounded-lg"
@@ -91,22 +91,22 @@ export function WeightEvolutionChart({
               {t("patientDetail.overview.newWeight")}
             </Button>
           ) : null}
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
+        </div>
+        <div className="flex h-[200px] flex-col items-center justify-center rounded-[16px] border border-dashed border-border/60 bg-muted/20 p-8 text-center sm:p-12">
           <p className="text-sm text-muted-foreground">{emptyMessage}</p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className={cn("overflow-hidden rounded-2xl shadow-sm border-zinc-200 dark:border-zinc-800", className)}>
-      <CardHeader className="flex flex-row items-center justify-between gap-2 border-b border-border/40 bg-zinc-50/50 dark:bg-zinc-900/20 px-6 py-4">
+    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
+      <div className="flex flex-row items-center justify-between gap-2 mb-6">
         <div>
-          <CardTitle className="text-base font-semibold">{title}</CardTitle>
-          <CardDescription className="text-xs mt-1">
+          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{title}</div>
+          <div className="text-xs text-muted-foreground mt-1">
             {data.length} {data.length > 1 ? "mesures" : "mesure"}
-          </CardDescription>
+          </div>
         </div>
         {onAdd ? (
           <Button
@@ -119,8 +119,8 @@ export function WeightEvolutionChart({
             {t("patientDetail.overview.newWeight")}
           </Button>
         ) : null}
-      </CardHeader>
-      <CardContent className="px-2 pt-6 sm:px-4 sm:pt-6">
+      </div>
+      <div className="px-2 pt-2 sm:px-4">
         <ChartContainer
           className="aspect-auto h-[220px] w-full"
           config={chartConfig}
@@ -201,7 +201,7 @@ export function WeightEvolutionChart({
             />
           </LineChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

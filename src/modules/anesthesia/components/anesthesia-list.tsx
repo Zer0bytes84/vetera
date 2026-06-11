@@ -61,22 +61,22 @@ export function AnesthesiaList({
   ];
 
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <CardHeader className="border-border/40 border-b bg-gradient-to-b from-violet-500/[0.04] to-transparent">
+    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] shadow-sm flex flex-col overflow-hidden", className)}>
+      <div className="border-border/40 border-b p-6">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10">
             <Syringe weight="duotone" className="size-5 text-violet-600" />
           </div>
           <div className="grid flex-1 gap-0.5">
-            <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+            <div className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
               {t("modules.anesthesia.subtitle", "Induction · Maintenance · Réveil")}
-            </CardDescription>
-            <CardTitle className="text-lg tracking-tight">
+            </div>
+            <div className="text-lg tracking-tight font-semibold">
               {t("modules.anesthesia.title", "Anesthésie")}
-            </CardTitle>
+            </div>
           </div>
           <Button
-            className="gap-1.5"
+            className="gap-1.5 rounded-lg"
             onClick={() => setDialogOpen(true)}
             size="sm"
           >
@@ -88,7 +88,7 @@ export function AnesthesiaList({
           {filters.map((f) => (
             <button
               className={cn(
-                "rounded-full border px-3 py-1 font-medium text-xs transition-all",
+                "rounded-full border px-3 py-1 font-medium text-[11px] transition-all",
                 filter === f.value
                   ? "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-200"
                   : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"
@@ -101,8 +101,8 @@ export function AnesthesiaList({
             </button>
           ))}
         </div>
-      </CardHeader>
-      <CardContent className="p-0">
+      </div>
+      <div className="flex flex-col flex-1 p-0">
         {filtered.length === 0 ? (
           <Empty className="m-6 border border-dashed">
             <EmptyHeader>
@@ -170,12 +170,12 @@ export function AnesthesiaList({
             })}
           </ul>
         )}
-      </CardContent>
+      </div>
       <AnesthesiaSheetDialog
         onOpenChange={setDialogOpen}
         open={dialogOpen}
         patient={patient}
       />
-    </Card>
+    </div>
   );
 }

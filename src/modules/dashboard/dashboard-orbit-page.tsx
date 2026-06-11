@@ -16,8 +16,8 @@ import { AsterTopStats } from "./components/aster-top-stats";
 import { AsterScoreChart } from "./components/aster/aster-score-chart";
 import { AsterRanking } from "./components/aster/aster-ranking";
 
-import { AsterRevenueBreakdown } from "./components/aster/aster-revenue-breakdown";
-import { AsterTasksList } from "./components/aster/aster-tasks-list";
+import { AsterTasksAlerts } from "./components/aster/aster-tasks-alerts";
+import { AsterConsultationsWidget } from "./components/aster/aster-consultations-widget";
 
 // Keep some essential widgets
 import { DeferredWidget } from "@/components/deferred-widget";
@@ -25,6 +25,7 @@ import { WaitingRoomWidget } from "./components/waiting-room-widget";
 
 interface DashboardOrbitPageProps {
   onNavigate?: (view: string) => void;
+  onNavigateToPatient?: (patientId: string) => void;
   onOpenAIAgent?: () => void;
   userDisplayName?: string;
 }
@@ -43,7 +44,7 @@ function parseDashboardDate(value?: string): Date | null {
   return Number.isFinite(date.getTime()) ? date : null;
 }
 
-export function DashboardOrbitPage({ onNavigate, userDisplayName }: DashboardOrbitPageProps) {
+export function DashboardOrbitPage({ onNavigate, onNavigateToPatient, userDisplayName }: DashboardOrbitPageProps) {
   const { data: appointments } = useAppointmentsRepository();
   const { data: owners } = useOwnersRepository();
   const { data: patients } = usePatientsRepository();
@@ -52,9 +53,9 @@ export function DashboardOrbitPage({ onNavigate, userDisplayName }: DashboardOrb
 
   const handlePatientClick = useCallback(
     (patientId: string) => {
-      onNavigate?.(`#/patient/${patientId}`);
+      onNavigateToPatient?.(patientId);
     },
-    [onNavigate]
+    [onNavigateToPatient]
   );
 
   const metrics = useMemo(
@@ -89,6 +90,7 @@ export function DashboardOrbitPage({ onNavigate, userDisplayName }: DashboardOrb
         const date = parseDashboardDate(a.startTime);
         return {
           id: a.id || idx,
+          patientId: a.patientId,
           patient: patient?.name || a.title,
           owner: owner ? `${owner.firstName} ${owner.lastName}`.trim() : "—",
           species: patient?.species || "—",
@@ -121,10 +123,10 @@ export function DashboardOrbitPage({ onNavigate, userDisplayName }: DashboardOrb
         <AsterRanking metrics={metrics} />
       </div>
 
-      {/* Row 3: Revenue Breakdown & Tasks */}
+      {/* Row 3: Tâches & Consultations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
-        <AsterRevenueBreakdown metrics={metrics} />
-        <AsterTasksList metrics={metrics} />
+        <AsterTasksAlerts className="min-h-[260px]" />
+        <AsterConsultationsWidget metrics={metrics} className="min-h-[260px]" />
       </div>
 
       {/* Row 4: Salle d'attente (Waiting Room) */}

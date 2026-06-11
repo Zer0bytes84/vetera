@@ -313,7 +313,7 @@ function AppShellInner() {
         {/* biome-ignore lint/a11y/noStaticElementInteractions: header needs onMouseDown for Tauri window drag */}
         <header
           className={cn(
-            "app-shell-header sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 backdrop-blur-xs dark:backdrop-blur-sm bg-background/[var(--bg-opacity-light)] dark:bg-background/[var(--bg-opacity-dark)] transition-all duration-300",
+            "app-shell-header sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 backdrop-blur-xs dark:backdrop-blur-sm bg-background/[var(--bg-opacity-light)] dark:bg-background/[var(--bg-opacity-dark)] transition-colors duration-300",
             "group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
           )}
           style={

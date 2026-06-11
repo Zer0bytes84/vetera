@@ -52,12 +52,10 @@ export function PrescriptionList({
 
   if (list.length === 0) {
     return (
-      <Card className={cn("border-dashed bg-muted/20", className)}>
-        <CardContent className="flex flex-col items-center justify-center px-4 py-8 text-center text-xs text-muted-foreground">
-          <Pill weight="duotone" className="mb-2 size-6 text-muted-foreground/50" />
-          {t("prescriptions.list.empty")}
-        </CardContent>
-      </Card>
+      <div className={cn("border border-dashed border-border/60 bg-muted/20 rounded-[16px] flex flex-col items-center justify-center px-4 py-8 text-center text-xs text-muted-foreground", className)}>
+        <Pill weight="duotone" className="mb-2 size-6 text-muted-foreground/50" />
+        {t("prescriptions.list.empty")}
+      </div>
     );
   }
 
@@ -135,10 +133,10 @@ function PrescriptionRow({
   });
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3 py-2.5">
+    <div className="bg-card border border-border dark:border-border rounded-[16px] p-4 shadow-sm flex flex-col mb-3">
+      <div className="flex flex-row items-center justify-between gap-2 mb-3">
         <div className="min-w-0 flex-1">
-          <CardTitle className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm font-semibold">
             {dateStr}
             <Badge
               className="text-[10px]"
@@ -146,7 +144,7 @@ function PrescriptionRow({
             >
               {t(`prescriptions.status.${status}`)}
             </Badge>
-          </CardTitle>
+          </div>
           {diagnosis ? (
             <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
               {diagnosis}
@@ -160,8 +158,8 @@ function PrescriptionRow({
           patient={patient}
           vet={vet ?? null}
         />
-      </CardHeader>
-      <CardContent className="px-3 pb-2.5 pt-0">
+      </div>
+      <div className="pt-0">
         <ul className="divide-y divide-border/40 text-[11px]">
           {items.slice(0, 4).map((it) => (
             <li
@@ -187,8 +185,8 @@ function PrescriptionRow({
             </li>
           ) : null}
         </ul>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

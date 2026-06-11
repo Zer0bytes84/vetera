@@ -203,16 +203,13 @@ export function PatientTimeline({
   );
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle className="text-base">
+    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
           {t("patientDetail.timeline.title")}
-        </CardTitle>
-        <CardDescription className="text-xs">
-          {t("patientDetail.timeline.subtitle")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </div>
+      </div>
+      <div className="flex flex-col flex-1">
         {entries.length === 0 ? (
           <Empty>
             <EmptyHeader>
@@ -303,7 +300,7 @@ export function PatientTimeline({
             })}
           </ol>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -168,15 +168,15 @@ export function PatientDocumentsList({
   };
 
   return (
-    <Card className={className}>
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
+    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
+      <div className="flex flex-row items-start justify-between gap-2 mb-6">
         <div>
-          <CardTitle className="text-base">
+          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
             {t("patientDetail.documents.title")}
-          </CardTitle>
-          <CardDescription className="text-xs">
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
             {t("patientDetail.documents.count", { count: docs.length })}
-          </CardDescription>
+          </div>
         </div>
         <input
           type="file"
@@ -186,17 +186,17 @@ export function PatientDocumentsList({
           accept=".pdf,image/*"
         />
         <Button
-          className="h-8 gap-1.5"
+          className="h-8 gap-1.5 rounded-lg"
           onClick={triggerUpload}
           size="sm"
-          variant="outline"
+          variant="default"
           disabled={isUploading}
         >
-          <Plus weight="duotone" className="size-4" />
+          <Plus weight="bold" className="size-3.5" />
           {isUploading ? "Import..." : t("patientDetail.documents.upload")}
         </Button>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="flex flex-col flex-1">
         {docs.length === 0 ? (
           <Empty>
             <EmptyHeader>
@@ -280,7 +280,7 @@ export function PatientDocumentsList({
             })}
           </ul>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

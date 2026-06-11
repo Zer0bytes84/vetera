@@ -9,6 +9,7 @@ import { useAppointmentsRepository, usePatientsRepository } from "@/data/reposit
 import {
   useVaccinationsRepository,
   useWeightEntriesRepository,
+  useOwnersRepository,
 } from "@/data/repositories";
 import { ConsultationSessionDrawer } from "@/modules/consultations";
 import type { View } from "@/types";
@@ -41,6 +42,7 @@ export function PatientDetailPage({
   const appointmentsRepo = useAppointmentsRepository();
   const vaccinationsRepo = useVaccinationsRepository();
   const weightsRepo = useWeightEntriesRepository();
+  const ownersRepo = useOwnersRepository();
 
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
   const [editingWeight, setEditingWeight] = useState<WeightEntry | null>(null);
@@ -60,6 +62,11 @@ export function PatientDetailPage({
   const patient = useMemo(
     () => patientsRepo.data.find((p) => p.id === patientId) ?? null,
     [patientsRepo.data, patientId]
+  );
+
+  const owner = useMemo(
+    () => ownersRepo.data.find((o) => o.id === patient?.ownerId) ?? undefined,
+    [ownersRepo.data, patient?.ownerId]
   );
 
   const weightEntries = useMemo(
@@ -146,8 +153,8 @@ export function PatientDetailPage({
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto">
-      <div className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+      <div className="mx-auto w-full max-w-6xl space-y-8">
         <Button
           className="h-8 gap-1.5 text-muted-foreground"
           onClick={() => onNavigate("patients")}
@@ -166,6 +173,7 @@ export function PatientDetailPage({
           }}
           onNewAppointment={() => onNavigate("agenda")}
           patient={patient}
+          owner={owner}
         />
 
         <PatientKpiStrip
@@ -180,7 +188,7 @@ export function PatientDetailPage({
           onValueChange={setActiveTab}
           value={activeTab}
         >
-          <TabsList className="w-full justify-start sm:w-auto">
+          <TabsList className="w-full justify-start rounded-lg border-b bg-background/50 p-1 backdrop-blur" variant="line">
             <TabsTrigger value="overview">
               <FirstAid weight="duotone" className="size-4" />
               {t("patientDetail.tabs.overview")}
