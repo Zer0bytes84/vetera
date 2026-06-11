@@ -3,6 +3,8 @@
 
 import type { UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { LayoutLeftIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
@@ -20,6 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUsersRepository } from "@/data/repositories";
@@ -52,7 +55,7 @@ export function AppSidebar({
   ...props
 }: AppSidebarProps) {
   const { t } = useTranslation();
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const { data: users } = useUsersRepository();
   const [cachedProfile, setCachedProfile] = React.useState(() =>
@@ -79,13 +82,13 @@ export function AppSidebar({
     (user) => user.email === currentUserEmail
   );
   const resolvedUserName =
-    cachedProfile?.displayName ||
     currentUserRecord?.displayName ||
-    currentUserName;
+    currentUserName ||
+    cachedProfile?.displayName;
   const resolvedUserAvatar =
-    cachedProfile?.avatarUrl ||
     currentUserRecord?.avatarUrl ||
-    currentUserAvatar;
+    currentUserAvatar ||
+    cachedProfile?.avatarUrl;
 
   const isDesktopRuntime = isTauriRuntime();
   const isClassicSidebar = props.variant === "sidebar";
@@ -139,133 +142,147 @@ export function AppSidebar({
   const mainItems = [
     ...(overviewSection?.items ?? []),
     ...(patientSection?.items.slice(0, 4) ?? []),
-  ].map((item) => ({
-    title: t(item.labelKey),
-    icon: (
-      <item.icon
-        weight="duotone"
-        className={cn(
-          "transition-all duration-200 ease-out",
-          currentView === item.view
-            ? "text-primary"
-            : "text-muted-foreground group-hover:text-foreground"
-        )}
-      />
-    ),
-    isActive: currentView === item.view,
-    onClick: () => onNavigate(item.view),
-  }));
+  ].map((item, index) => {
+    return {
+      title: t(item.labelKey),
+      icon: (
+        <HugeiconsIcon
+          icon={item.icon}
+          strokeWidth={1.5}
+          className="transition-all duration-200 ease-out size-[18px]"
+        />
+      ),
+      isActive: currentView === item.view,
+      onClick: () => onNavigate(item.view),
+    };
+  });
 
   const documents = [
     ...(patientSection?.items.slice(4) ?? []),
     ...(operationsSection?.items ?? []),
-  ].map((item) => ({
-    name: t(item.labelKey),
-    icon: (
-      <item.icon
-        weight="duotone"
-        className={cn(
-          "transition-all duration-200 ease-out",
-          currentView === item.view
-            ? "text-primary"
-            : "text-muted-foreground group-hover:text-foreground"
-        )}
-      />
-    ),
-    isActive: currentView === item.view,
-    onClick: () => onNavigate(item.view),
-  }));
+  ].map((item) => {
+    return {
+      name: t(item.labelKey),
+      icon: (
+        <HugeiconsIcon
+          icon={item.icon}
+          strokeWidth={1.5}
+          className="transition-all duration-200 ease-out size-[18px]"
+        />
+      ),
+      isActive: currentView === item.view,
+      onClick: () => onNavigate(item.view),
+    };
+  });
 
   const secondaryItems = (configSection?.items ?? []).map((item) => ({
     title: t(item.labelKey),
     icon: (
-      <item.icon
-        weight="duotone"
-        className={cn(
-          "transition-all duration-200 ease-out",
-          currentView === item.view
-            ? "text-primary"
-            : "text-muted-foreground group-hover:text-foreground"
-        )}
+      <HugeiconsIcon
+        icon={item.icon}
+        strokeWidth={1.5}
+        className="transition-all duration-200 ease-out size-[18px]"
       />
     ),
     isActive: currentView === item.view,
     onClick: () => onNavigate(item.view),
   }));
 
+  if (isCollapsed) {
+    secondaryItems.unshift({
+      title: "Développer",
+      icon: (
+        <HugeiconsIcon
+          icon={LayoutLeftIcon}
+          strokeWidth={1.5}
+          className="transition-all duration-200 ease-out size-[18px] rotate-180"
+        />
+      ),
+      isActive: false,
+      onClick: toggleSidebar,
+    });
+  }
+
   return (
     <Sidebar
       {...props}
-      className={cn(
-        isClassicSidebar &&
-          "bg-zinc-50/80 dark:bg-zinc-900/60 backdrop-blur-md shadow-[inset_-1px_0_0_rgba(24,24,27,0.07)] dark:shadow-[inset_-1px_0_0_rgba(255,255,255,0.07)]",
-        isCollapsed && "dark bg-zinc-950/95 dark:bg-zinc-950/95 border-r border-white/10 shadow-2xl backdrop-blur-xl [--sidebar:theme(colors.zinc.950)] [--sidebar-foreground:theme(colors.zinc.400)] [--sidebar-primary:oklch(0.765_0.177_163)] [--sidebar-primary-foreground:theme(colors.zinc.950)] [--sidebar-accent:rgba(255,255,255,0.08)] [--sidebar-accent-foreground:theme(colors.zinc.50)] [--sidebar-border:rgba(255,255,255,0.08)] [--sidebar-ring:oklch(0.765_0.177_163)]",
-        props.className
-      )}
+      className={cn("border-none", props.className)}
     >
+      <div className="apple-sidebar-glow" />
 
       <SidebarHeader
         className={cn(
-          "flex shrink-0 flex-row items-center",
-          isDesktopRuntime ? "py-3" : "py-2.5",
-          "[@media(max-height:820px)]:p-1.5",
-          "shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] transition-all duration-300",
-          "h-[72px] border-b border-sidebar-border",
-          isClassicSidebar ? "bg-transparent px-0" : "bg-transparent px-2",
+          "flex shrink-0 flex-row items-center relative z-10",
+          "h-[64px] transition-all duration-300",
+          isCollapsed ? "px-0 justify-center" : "px-4",
+          "bg-transparent w-full"
         )}
       >
+        {/* Hairline separator */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute z-50 top-full -translate-y-[6px] h-px bg-zinc-900/7.5 dark:bg-white/7.5",
+            isCollapsed 
+              ? "w-[var(--sidebar-width-icon)] left-0" 
+              : "w-[calc(var(--sidebar-width)+1px)] -left-4"
+          )}
+        />
+
         {/* Invisible drag area to fill remaining space */}
         {isDesktopRuntime && (
-          <div data-tauri-drag-region="true" className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing" />
+          <div data-tauri-drag-region="true" className="absolute inset-x-0 top-0 h-[40px] z-0 cursor-grab active:cursor-grabbing" />
         )}
-        <SidebarMenu className="relative z-10">
-          <SidebarMenuItem className="h-14">
-            <SidebarMenuButton
-              className={cn(
-                "hover:bg-transparent active:bg-transparent h-14",
-                "transition-all duration-300 ease-out",
-                isClassicSidebar ? "px-5" : "px-3",
-                isCollapsed &&
-                  "ms-0 h-10 w-10 justify-center rounded-xl border border-white/10 bg-white/5 px-0 shadow-xs hover:bg-white/10"
-              )}
-              render={
-                <button onClick={() => onNavigate("dashboard")} type="button" />
-              }
-              tooltip="bAItari"
-            >
-              <Logo
+        <SidebarMenu className="relative z-10 w-full">
+          <SidebarMenuItem className="flex flex-row items-center justify-between w-full">
+              <SidebarMenuButton
                 className={cn(
-                  "text-sidebar-foreground",
-                  isCollapsed && "text-white"
+                  "hover:bg-transparent active:bg-transparent h-13 px-1 flex-1",
+                  "transition-all duration-300 ease-out",
+                  isCollapsed && "px-0 justify-center ms-0"
                 )}
-                collapsed={isCollapsed}
-                flatMark={isClassicSidebar || isCollapsed}
-                size="2xl"
-                textSize="md"
-              />
-            </SidebarMenuButton>
+                render={
+                  <button onClick={() => onNavigate("dashboard")} type="button" />
+                }
+                tooltip="bAItari"
+              >
+                <Logo
+                  className="text-sidebar-foreground"
+                  collapsed={isCollapsed}
+                  flatMark={isCollapsed}
+                  size="2xl"
+                  textSize="md"
+                />
+              </SidebarMenuButton>
+              {!isCollapsed && (
+                <SidebarTrigger className="-mr-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent" />
+              )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent
         className={cn(
-          "scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent overflow-y-auto",
-          "pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-          isClassicSidebar ? "overflow-y-hidden bg-transparent px-5" : "px-3",
-          isCollapsed && "px-2 pt-3"
+          "overflow-y-auto relative z-10",
+          "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          isCollapsed ? "px-0 pt-2 flex flex-col items-center" : "px-4 pt-2 pb-6"
         )}
       >
         <div
           className={cn(
-            "flex min-h-full flex-1 flex-col gap-2 [@media(max-height:820px)]:gap-1.5",
-            isClassicSidebar && "gap-2.5 pb-2",
-            isClassicSidebar && isCollapsed && "gap-2 pb-1"
+            "flex min-h-full flex-1 flex-col",
+            isCollapsed ? "gap-0.5 items-center w-full" : "gap-6"
           )}
         >
           <NavMain
             items={mainItems}
             title={t("nav.sections.patientJourney")}
           />
+
+          {/* Subtle divider between groups in collapsed mode */}
+          {isCollapsed && (
+            <div className="my-2 h-px w-8 bg-zinc-900/8 dark:bg-white/8 rounded-full" />
+          )}
+
           <NavDocuments
             items={documents.map((item) => ({
               name: item.name,
@@ -279,30 +296,25 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter
         className={cn(
-          "shrink-0 transition-all duration-300",
+          "shrink-0 transition-all duration-300 relative z-10",
           isCollapsed
-            ? "mx-0 mb-1.5 gap-1.5 rounded-none border-0 bg-transparent px-2 py-0 shadow-none backdrop-blur-none"
-            : isClassicSidebar
-              ? "mx-4 mb-2 gap-0 rounded-[18px] border border-zinc-200/60 dark:border-zinc-800/60 bg-white/60 dark:bg-zinc-800/30 px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)]"
-              : "mx-3 mb-2 gap-0 rounded-2xl border border-zinc-200/90 dark:border-white/12 bg-white/80 dark:bg-white/[0.06] backdrop-blur-md px-2 pt-2 pb-2.5 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+            ? "mx-0 mb-0 mt-auto px-0 pt-2 pb-2 flex flex-col items-center gap-0.5"
+            : "mx-3 mb-1 mt-auto rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 px-2 pt-2 pb-1 shadow-sm backdrop-blur-md"
         )}
       >
+        {/* Divider above footer */}
+        {isCollapsed && (
+          <div className="mb-2 h-px w-8 bg-zinc-900/8 dark:bg-white/8 rounded-full" />
+        )}
         <NavSecondary
-          className={cn(
-            "p-0",
-            isCollapsed && "p-0"
-          )}
+          className="p-0"
           items={secondaryItems}
         />
-        {isClassicSidebar && !isCollapsed ? (
-          <SidebarSeparator className="mx-0 my-0.5 opacity-60" />
-        ) : null}
+        <div className={cn("my-1.5 h-px w-full bg-zinc-900/5 dark:bg-white/5", isCollapsed && "hidden")} />
         <NavUser
           onFinances={() => onNavigate("finances")}
-          onLogout={onLogout}
           onNotifications={() => onNavigate("taches")}
           onProfile={() => onNavigate("equipe")}
-          onSettings={() => onNavigate("parametres")}
           user={{
             name: resolvedUserName,
             email: currentUserEmail,

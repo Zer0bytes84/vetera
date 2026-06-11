@@ -822,3 +822,39 @@ CREATE INDEX IF NOT EXISTS idx_anesthesia_sheets_ended_at
 
 CREATE INDEX IF NOT EXISTS idx_hospitalization_vitals_patient_recorded
   ON hospitalization_vitals(hospitalization_id, recorded_at DESC);`;
+
+export const MIGRATION_011_SQL = `
+-- Migration 011: Notification state (centre de notifications unifié)
+-- Couche de persistance légère du read/dismiss pour les notifications
+-- agrégées depuis les sources existantes (reminders, postop, tasks, stock,
+-- soap, automations, audit). Pas de duplication des données métier :
+-- l'entité source reste la source de vérité, on stocke uniquement
+-- l'état UX (lu / dismissed) lié à un id dérivé (ex: "reminder:abc123").
+
+CREATE TABLE IF NOT EXISTS notification_state (
+  notification_id TEXT PRIMARY KEY,   -- ex: "reminder:abc123", "task:xyz", "stock:foo"
+  read_at DATETIME,
+  dismissed_at DATETIME,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_state_dismissed
+  ON notification_state(dismissed_at);
+`;
+
+export const MIGRATION_012_SQL = `
+-- Migration 012: Correct notification_state primary key to use 'id' column for useSQLite compliance
+DROP TABLE IF EXISTS notification_state;
+
+CREATE TABLE notification_state (
+  id TEXT PRIMARY KEY,
+  notification_id TEXT UNIQUE NOT NULL,
+  read_at DATETIME,
+  dismissed_at DATETIME,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_state_dismissed
+  ON notification_state(dismissed_at);
+`;
+

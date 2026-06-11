@@ -4,9 +4,11 @@ import {
   Stethoscope,
   Syringe,
 } from "@phosphor-icons/react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { SectionCards, type SectionCardItem } from "@/components/section-cards";
+import { cn } from "@/lib/utils";
+import { type SectionCardItem } from "@/components/section-cards";
 import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
 
 interface PatientKpiStripProps {
@@ -179,5 +181,64 @@ export function PatientKpiStrip({
     },
   ];
 
-  return <SectionCards items={items} />;
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+      {items.map((item, idx) => (
+        <PatientKpiCard key={idx} item={item} />
+      ))}
+    </div>
+  );
+}
+
+function PatientKpiCard({ item }: { item: SectionCardItem }) {
+  const isUp = item.trend === "up";
+  const isDown = item.trend === "down";
+  const TrendIcon = isUp
+    ? TrendingUp
+    : isDown
+      ? TrendingDown
+      : TrendingUp;
+  
+  const Icon = item.icon || Scales;
+
+  return (
+    <div className="relative flex flex-col overflow-hidden transition-all duration-300 bg-zinc-100 dark:bg-zinc-900/60 border border-transparent rounded-[24px] p-1.5 h-[160px]">
+      <div className="relative z-10 bg-white dark:bg-zinc-950 shadow-none rounded-[16px] flex flex-col flex-1 overflow-hidden p-5">
+        
+        {/* Header: Icon & Badge */}
+        <div className="flex items-start justify-between">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800">
+            <Icon className="h-5 w-5 text-zinc-600 dark:text-zinc-400" strokeWidth={1.5} />
+          </div>
+          <div className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+            {item.badge}
+          </div>
+        </div>
+
+        {/* Middle: Title & Value */}
+        <div className="mt-auto mb-2 space-y-1">
+          <p className="font-sans font-bold tracking-wider text-[10px] uppercase text-muted-foreground/80 leading-none">
+            {item.title}
+          </p>
+          <h3 className="font-display font-semibold text-2xl tracking-tight text-foreground leading-none">
+            {item.value}
+          </h3>
+        </div>
+
+        {/* Footer: Description & Trend */}
+        <div className="flex items-center justify-between mt-auto">
+          <p className="text-[11px] font-medium text-muted-foreground/80 truncate">
+            {item.footerTitle}
+          </p>
+          {item.trend !== "neutral" && (
+            <TrendIcon className={cn("size-3.5 shrink-0", isUp ? "text-emerald-500" : "text-rose-500")} />
+          )}
+          {item.trend === "neutral" && (
+            <TrendIcon className="size-3.5 shrink-0 text-zinc-400" />
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
 }

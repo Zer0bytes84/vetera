@@ -67,7 +67,7 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
   const sectionCards: SectionCardItem[] = [
     {
       title: "Encaissements (30j)",
-      value: formatDZD(metrics.summary.income30),
+      value: formatDZD(metrics.summary.income30 * 100),
       badge: `${incomeDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(incomeDelta))}`,
       trend: incomeDelta >= 0 ? "up" : "down",
       footerTitle: incomeDelta >= 0 ? "En hausse" : "En baisse",
@@ -91,7 +91,7 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
     },
     {
       title: "Panier moyen",
-      value: formatDZD(metrics.summary.averageBasket),
+      value: formatDZD(metrics.summary.averageBasket * 100),
       badge: `${basketDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(basketDelta))}`,
       trend: basketDelta >= 0 ? "up" : "down",
       footerTitle: basketDelta >= 0 ? "En hausse" : "En baisse",
@@ -149,7 +149,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                   </span>
                 </div>
                 <span className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white tabular-nums mt-0.5">
-                  {new Intl.NumberFormat("fr-FR").format(totalRevenue * 100)} DA
+                  {new Intl.NumberFormat("fr-FR").format(totalRevenue)} DA
                 </span>
               </div>
             ) : (
@@ -161,7 +161,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                   </span>
                 </div>
                 <span className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white tabular-nums mt-0.5">
-                  {new Intl.NumberFormat("fr-FR").format(totalCashflow * 100)} DA
+                  {new Intl.NumberFormat("fr-FR").format(totalCashflow)} DA
                 </span>
               </div>
             )}
@@ -252,7 +252,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                                 <span className="text-muted-foreground">Revenus</span>
                               </div>
                               <span className="text-foreground font-extrabold tabular-nums">
-                                {new Intl.NumberFormat("fr-FR").format(payload[0].payload.value * 100)} DA
+                                {new Intl.NumberFormat("fr-FR").format(payload[0].payload.value)} DA
                               </span>
                             </div>
                           </div>
@@ -306,7 +306,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                                 <span className="text-zinc-500 dark:text-zinc-400">Flux net</span>
                               </div>
                               <span className="text-zinc-900 dark:text-white font-bold tabular-nums">
-                                {new Intl.NumberFormat("fr-FR").format(payload[0].payload.value * 100)} DA
+                                {new Intl.NumberFormat("fr-FR").format(payload[0].payload.value)} DA
                               </span>
                             </div>
                           </div>

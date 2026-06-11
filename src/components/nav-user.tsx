@@ -1,13 +1,12 @@
 "use client";
 
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  SignOut,
-  DotsThreeVertical,
-  Bell,
-  Gear,
-  UserCircle,
-  Wallet,
-} from "@phosphor-icons/react";
+  MoreVerticalIcon,
+  Notification01Icon,
+  UserCircleIcon,
+  Wallet01Icon,
+} from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -32,19 +31,15 @@ type NavUserProps = {
     avatar?: string | null;
   };
   onProfile?: () => void;
-  onSettings?: () => void;
   onFinances?: () => void;
   onNotifications?: () => void;
-  onLogout?: () => void | Promise<void>;
 };
 
 export function NavUser({
   user,
   onProfile,
-  onSettings,
   onFinances,
   onNotifications,
-  onLogout,
 }: NavUserProps) {
   const { isMobile } = useSidebar();
   const normalizedAvatar =
@@ -68,7 +63,7 @@ export function NavUser({
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
-                className="group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-10 h-12 px-2.5 hover:bg-sidebar-accent/50 rounded-xl transition-all"
+                className="group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-10 h-11 px-2.5 hover:bg-zinc-950/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all"
                 size="lg"
               />
             }
@@ -77,17 +72,19 @@ export function NavUser({
               <AvatarImage alt={user.name} src={normalizedAvatar} />
               <AvatarFallback className="rounded-full bg-primary/10 text-primary text-sm font-medium">{fallback}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-1 items-center ms-2 text-start text-sm group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:text-[13px]">
-              <span className="truncate font-medium tracking-tight text-[15px]">{user.name}</span>
+            <div className="grid flex-1 ms-2 text-start text-sm group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:text-[13px] leading-tight">
+              <span className="truncate font-medium tracking-tight text-[14px] antialiased">{user.name}</span>
+              <span className="truncate text-[11px] text-muted-foreground/80 mt-0.5">{user.email}</span>
             </div>
-            <DotsThreeVertical
-              weight="duotone"
+            <HugeiconsIcon
+              icon={MoreVerticalIcon}
+              strokeWidth={1.5}
               className="ms-auto size-4 text-muted-foreground/50 transition-colors group-hover:text-foreground group-data-[collapsible=icon]:hidden [@media(max-height:820px)]:size-3.5"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="min-w-56 rounded-2xl"
+            className="min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
@@ -101,7 +98,7 @@ export function NavUser({
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-start text-sm leading-tight">
-                    <span className="truncate font-medium tracking-tight text-[15px]">{user.name}</span>
+                    <span className="truncate font-medium tracking-tight text-[15px] antialiased">{user.name}</span>
                     <span className="truncate text-muted-foreground/80 text-xs">
                       {user.email}
                     </span>
@@ -112,27 +109,18 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={onProfile}>
-                <UserCircle weight="duotone" className="size-5" />
+                <HugeiconsIcon icon={UserCircleIcon} strokeWidth={1.5} className="size-5" />
                 Mon profil
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onFinances}>
-                <Wallet weight="duotone" className="size-5" />
+                <HugeiconsIcon icon={Wallet01Icon} strokeWidth={1.5} className="size-5" />
                 Finances
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onNotifications}>
-                <Bell weight="duotone" className="size-5" />
+                <HugeiconsIcon icon={Notification01Icon} strokeWidth={1.5} className="size-5" />
                 Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={onSettings}>
-                <Gear weight="duotone" className="size-5" />
-                Parametres
-              </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => void onLogout?.()}>
-              <SignOut weight="duotone" className="size-5" />
-              Deconnexion
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

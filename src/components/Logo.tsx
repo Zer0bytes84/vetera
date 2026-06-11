@@ -12,11 +12,11 @@ interface LogoProps {
 }
 
 const SIZE_PX: Record<NonNullable<LogoProps["size"]>, number> = {
-  sm: 32,
-  md: 36,
-  lg: 40,
-  xl: 44,
-  "2xl": 52,
+  sm: 24,
+  md: 28,
+  lg: 32,
+  xl: 36,
+  "2xl": 42,
 };
 
 const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
@@ -88,7 +88,7 @@ const Logo: React.FC<LogoProps> = ({
   isDarkMode = false,
   flatMark = false,
 }) => {
-  const sizePx = collapsed ? 36 : SIZE_PX[size];
+  const sizePx = collapsed ? 32 : SIZE_PX[size];
   const wordmarkClass = WORDMARK_CLASS_MAP[textSize];
   const primaryWordmark = isDarkMode
     ? "#f8fafc"
@@ -101,36 +101,23 @@ const Logo: React.FC<LogoProps> = ({
     <div
       className={cn("flex select-none items-center text-current", className)}
     >
-      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-2")}>
-        <div className="logo-mark-shell flex items-center justify-center">
+      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-0")}>
+        <div className="logo-mark-shell flex items-center justify-center z-10">
           <BaitariMark
             flatMark={flatMark}
             sizePx={sizePx}
           />
         </div>
         {collapsed ? null : (
-          <div className="flex items-baseline gap-0">
+          <div className="flex items-baseline gap-0 -ml-1 z-0">
             <span
-              className={cn("font-semibold tracking-tight", wordmarkClass)}
+              className={cn("tracking-tight text-zinc-900 dark:text-white", wordmarkClass)}
               style={{
-                color: primaryWordmark,
                 fontFamily: "'Inter Variable', 'Inter', sans-serif",
-                letterSpacing: "-0.045em",
-                fontWeight: 650,
               }}
             >
-              b
-            </span>
-            <span
-              className={cn("font-medium tracking-tight", wordmarkClass)}
-              style={{
-                color: secondaryWordmark,
-                fontFamily: "'Inter Variable', 'Inter', sans-serif",
-                letterSpacing: "-0.038em",
-                fontWeight: 560,
-              }}
-            >
-              AItari
+              <span style={{ fontWeight: 800, letterSpacing: "-0.05em" }}>AI</span>
+              <span style={{ fontWeight: 500, letterSpacing: "-0.04em" }}>tari</span>
             </span>
           </div>
         )}

@@ -58,9 +58,9 @@
 /* ─── Zinc / Emerald Theme ─── */
 /* Inspired by Tailwind Plus Protocol template — neutral zinc base, emerald accent */
 :root {
-  --background: oklch(0.975 0.005 100);      /* off-white/beige for floating style */
+  --background: #e5e5e5;
   --foreground: oklch(0.141 0.005 286);      /* zinc-900 */
-  --card: oklch(1 0 0);                      /* pure white for cards */
+  --card: #ffffff;
   --card-foreground: oklch(0.141 0.005 286); /* zinc-900 */
   --popover: oklch(1 0 0);                   /* white */
   --popover-foreground: oklch(0.141 0.005 286);
@@ -69,12 +69,12 @@
   --secondary: oklch(0.92 0.004 286);        /* zinc-200 */
   --secondary-foreground: oklch(0.274 0.006 286); /* zinc-800 */
   --muted: oklch(0.967 0.001 286);           /* zinc-100 */
-  --muted-foreground: oklch(0.552 0.016 286); /* zinc-500 */
+  --muted-foreground: #6b7280; /* Aster muted text */
   --accent: oklch(0.92 0.004 286);           /* zinc-200 */
   --accent-foreground: oklch(0.141 0.005 286);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.871 0.006 286);          /* zinc-300 */
-  --input: oklch(0.871 0.006 286);           /* zinc-300 */
+  --border: #f0f0f0; /* Aster clean border */
+  --input: #f0f0f0;
   --ring: oklch(0.696 0.17 162);             /* emerald-500 */
   --chart-1: oklch(0.696 0.17 162);          /* emerald-500 */
   --chart-2: oklch(0.62 0.15 220);           /* sky / blue */
@@ -90,7 +90,7 @@
   --sidebar-accent-foreground: oklch(0.141 0.005 286);
   --sidebar-border: oklch(0.92 0.004 286);   /* zinc-200 */
   --sidebar-ring: oklch(0.696 0.17 162);     /* emerald-500 */
-  --bg-app: oklch(0.985 0 0);                /* zinc-50 — app surface */
+  --bg-app: #e5e5e5;                /* Aster background */
   --bg-panel: oklch(1 0 0);                  /* white */
   --text-primary: oklch(0.141 0.005 286);
   --text-secondary: oklch(0.442 0.017 286);  /* zinc-600 */
@@ -128,9 +128,9 @@
 }
 
 .dark {
-  --background: oklch(0.11 0.005 286);       /* darker background */
+  --background: #111111;
   --foreground: oklch(0.967 0.001 286);      /* zinc-100 */
-  --card: oklch(0.16 0.005 286);             /* lighter card */
+  --card: #242424;
   --card-foreground: oklch(0.967 0.001 286);
   --popover: oklch(0.181 0.008 286);
   --popover-foreground: oklch(0.967 0.001 286);
@@ -139,12 +139,12 @@
   --secondary: oklch(0.274 0.006 286);       /* zinc-800 */
   --secondary-foreground: oklch(0.967 0.001 286);
   --muted: oklch(0.274 0.006 286);           /* zinc-800 */
-  --muted-foreground: oklch(0.705 0.015 286); /* zinc-400 */
+  --muted-foreground: #9ca3af;
   --accent: oklch(0.274 0.006 286);          /* zinc-800 */
   --accent-foreground: oklch(0.967 0.001 286);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: rgba(255, 255, 255, 0.05);       /* translucent Protocol 5% white border */
-  --input: rgba(255, 255, 255, 0.08);        /* translucent Protocol 8% white input border */
+  --border: #333333;
+  --input: #333333;
   --ring: oklch(0.765 0.177 163);            /* emerald-400 */
   --chart-1: oklch(0.765 0.177 163);         /* emerald-400 */
   --chart-2: oklch(0.7 0.15 230);            /* sky */
@@ -159,7 +159,7 @@
   --sidebar-accent-foreground: oklch(0.967 0.001 286);
   --sidebar-border: rgba(255, 255, 255, 0.08); /* translucent Protocol 8% white sidebar border */
   --sidebar-ring: oklch(0.765 0.177 163);
-  --bg-app: oklch(0.141 0.005 286);          /* zinc-900 */
+  --bg-app: #111111;          /* Aster dark background */
   --bg-panel: oklch(0.181 0.008 286);
   --text-primary: oklch(0.967 0.001 286);
   --text-secondary: oklch(0.705 0.015 286);
@@ -329,11 +329,36 @@
 }
 
 /* ─── Scrollbar ─── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--muted-foreground); border-radius: 100px; opacity: 0.3; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); opacity: 0.5; }
-* { scrollbar-color: var(--muted-foreground) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+* {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  scrollbar-width: thin;
+}
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
 
 /* ─── RTL Overrides ─── */
 html[dir="rtl"] .rtl-shell [data-slot="sidebar-inset"] { direction: rtl; }
@@ -535,9 +560,6 @@ button:focus-visible,
 
 /* ─── KPI Cards ─── */
 .dashboard-kpi-card {
-  background: oklch(0.985 0 0) !important; /* zinc-50 background of Protocol cards */
-  border-radius: 24px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
   transition: box-shadow 180ms ease, transform 180ms ease;
   position: relative;
 }
@@ -548,7 +570,7 @@ button:focus-visible,
   inset: 0;
   border-radius: 24px !important;
   pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.075) !important; /* exact Protocol theme light border ring-zinc-900/7.5 */
+  box-shadow: none !important;
 }
 
 .dashboard-kpi-card:hover {
@@ -557,11 +579,10 @@ button:focus-visible,
 }
 
 .dark .dashboard-kpi-card {
-  background: rgba(255, 255, 255, 0.025) !important; /* exact Protocol theme dark background bg-white/2.5 */
 }
 
 .dark .dashboard-kpi-card::after {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important; /* exact Protocol theme dark border ring-white/10 */
+  box-shadow: none !important;
 }
 
 .dark .dashboard-kpi-card:hover {
@@ -633,7 +654,6 @@ button:focus-visible,
 
 /* ─── Luxe Card (Quick Actions, Quota Usage) ─── */
 .dashboard-luxe-card {
-  background: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(24px);
   border-radius: 24px !important;
   border: none !important;
@@ -757,11 +777,6 @@ button:focus-visible,
 }
 
 /* ─── Premium Protocol Card Global overrides ─── */
-[data-slot="card"] {
-  box-shadow: none !important;
-  border: none !important;
-  background-color: var(--card) !important;
-}
 
 /* Soften inner card dividers and lines */
 [data-slot="card"] .border-border,

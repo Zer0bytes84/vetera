@@ -98,14 +98,14 @@ export const ClinicalChartsCenter = React.memo(function ClinicalChartsCenter({
   }, [combinedFinancialData]);
 
   return (
-    <div className="flex flex-col gap-6 relative z-10 w-full">
+    <div className="bg-white dark:bg-[#242424] border border-zinc-200 dark:border-[#333333] rounded-[16px] p-6 lg:p-8 flex flex-col h-full w-full shadow-sm">
       {/* Header section with tabs (Floating directly on background like Protocol template) */}
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between px-2">
         <div className="max-w-2xl">
           <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2 block">
             Bonjour {currentUser?.displayName ? `${currentUser.displayName.split(" ")[0]} ` : ""}👋 Ravi de vous retrouver !
           </span>
-          <h2 className="text-4xl font-display font-semibold tracking-tight text-foreground sm:text-5xl mt-1.5">
+          <h2 className="text-3xl font-display font-semibold tracking-tight text-foreground sm:text-4xl mt-1.5">
             {activeTab === "clinical" ? "Activité Médicale" : "Performance Globale"}
           </h2>
         </div>
@@ -149,15 +149,7 @@ export const ClinicalChartsCenter = React.memo(function ClinicalChartsCenter({
         </div>
       </div>
 
-      {/* The isolated Chart Card matching Protocol aesthetic, sublimated with premium glass and glows */}
-      <Card className="dashboard-luxe-card relative overflow-hidden p-6 lg:p-8 shadow-sm group">
-        {/* Background radial glow */}
-        <div className="pointer-events-none absolute inset-0 z-0 opacity-100">
-          <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/10 animate-pulse duration-4000" />
-          <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-500/15 blur-3xl dark:bg-indigo-500/10 animate-pulse duration-4000" />
-        </div>
-        
-        <div className="relative z-10 flex flex-col h-full w-full">
+      <div className="mt-8 flex flex-col h-full w-full">
           {/* Sub-Header: Stats block and time range filter */}
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div className="flex items-center gap-8">
@@ -421,7 +413,6 @@ export const ClinicalChartsCenter = React.memo(function ClinicalChartsCenter({
         </AnimatePresence>
       </div>
       </div>
-      </Card>
     </div>
   );
 });

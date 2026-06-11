@@ -950,3 +950,54 @@ export function useAuditLogRepository() {
     },
   };
 }
+
+export type NotificationStateRow = {
+  id: string;
+  notificationId: string;
+  readAt: string | null;
+  dismissedAt: string | null;
+  createdAt: string;
+};
+
+/**
+ * Persistance du read/dismiss des notifications agrégées.
+ * Pas d'add() public : l'upsert est fait par les actions mark*.
+ */
+export function useNotificationStateRepository() {
+  const store = useSQLite<NotificationStateRow>("notification_state");
+
+  const upsert = async (
+    notificationId: string,
+    patch: Partial<Pick<NotificationStateRow, "readAt" | "dismissedAt">>
+  ) => {
+    const existing = store.data.find((row) => row.notificationId === notificationId);
+    if (existing) {
+      await store.update(existing.id, patch as Partial<NotificationStateRow>);
+    } else {
+      await store.add({
+        notificationId,
+        readAt: patch.readAt ?? null,
+        dismissedAt: patch.dismissedAt ?? null,
+      } as Omit<NotificationStateRow, "id" | "createdAt" | "updatedAt">);
+    }
+  };
+
+  return {
+    ...store,
+    stateFor: (notificationId: string) =>
+      store.data.find((row) => row.notificationId === notificationId),
+    markRead: (notificationId: string) =>
+      upsert(notificationId, { readAt: new Date().toISOString() }),
+    markUnread: (notificationId: string) =>
+      upsert(notificationId, { readAt: null }),
+    dismiss: (notificationId: string) =>
+      upsert(notificationId, {
+        readAt: new Date().toISOString(),
+        dismissedAt: new Date().toISOString(),
+      }),
+    markAllRead: (notificationIds: string[]) => {
+      const now = new Date().toISOString();
+      return Promise.all(notificationIds.map((id) => upsert(id, { readAt: now })));
+    },
+  };
+}

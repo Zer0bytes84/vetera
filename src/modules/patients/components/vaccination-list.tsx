@@ -72,27 +72,32 @@ export function VaccinationList({
   };
 
   return (
-    <Card className={className}>
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
-        <div className="min-w-0">
-          <CardTitle className="text-base">
-            {t("patientDetail.vaccinations.title")}
-          </CardTitle>
-          <CardDescription className="text-xs">
-            {t("patientDetail.vaccinations.count", { count: entries.length })}
-          </CardDescription>
-        </div>
-        <Button
-          className="h-8 shrink-0 gap-1.5"
-          onClick={onNew}
-          size="sm"
-          variant="default"
-        >
-          <Plus weight="duotone" className="size-4" />
-          {t("patientDetail.vaccinations.newVaccine")}
-        </Button>
-      </CardHeader>
-      <CardContent>
+    <Card className={cn("overflow-hidden rounded-2xl shadow-sm border-zinc-200 dark:border-zinc-800", className)}>
+        <CardHeader className="flex flex-row items-center justify-between gap-2 border-b border-border/40 bg-zinc-50/50 dark:bg-zinc-900/20 px-6 py-4">
+          <div>
+            <CardTitle className="text-base font-semibold">
+              {t("patientDetail.vaccinations.title")}
+            </CardTitle>
+            <CardDescription className="text-xs mt-1">
+              {entries.length}{" "}
+              {entries.length > 1
+                ? t("patientDetail.vaccinations.plural")
+                : t("patientDetail.vaccinations.singular")}
+            </CardDescription>
+          </div>
+          {onNew ? (
+            <Button
+              className="h-8 gap-1.5 rounded-lg"
+              onClick={onNew}
+              size="sm"
+              variant="default"
+            >
+              <Plus weight="bold" className="size-3.5" />
+              {t("patientDetail.vaccinations.newVaccine")}
+            </Button>
+          ) : null}
+        </CardHeader>
+        <CardContent className="p-0">
         {entries.length === 0 ? (
           <Empty>
             <EmptyHeader>

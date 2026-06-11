@@ -24,6 +24,7 @@ interface ViewRegistryProps {
   onOpenAIAgent?: () => void;
   onThemeChange: (mode: ThemeMode) => void;
   patientId?: string | null;
+  userDisplayName?: string;
 }
 
 function ViewLoadingState() {
@@ -44,7 +45,14 @@ function renderLazyView(node: ReactNode) {
 export function renderView(view: View, props: ViewRegistryProps) {
   switch (view) {
     case "dashboard":
-      return <DashboardOrbitPage onOpenAIAgent={props.onOpenAIAgent} onNavigate={props.onNavigate} />;
+      return (
+        <DashboardOrbitPage
+          onNavigate={props.onNavigate}
+          onNavigateToPatient={props.onNavigateToPatient}
+          onOpenAIAgent={props.onOpenAIAgent}
+          userDisplayName={props.userDisplayName}
+        />
+      );
     case "agenda":
       return renderLazyView(<AgendaPage />);
     case "clinique":

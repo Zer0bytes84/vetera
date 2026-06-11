@@ -23,7 +23,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 export function NavDocuments({
   title,
@@ -41,45 +40,32 @@ export function NavDocuments({
   const { isMobile } = useSidebar();
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:p-0">
-      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden px-2.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1.5 antialiased">
         {title ?? t("nav.sections.operations")}
       </SidebarGroupLabel>
-      <SidebarMenu className="group-data-[collapsible=icon]:gap-2">
+      <SidebarMenu className="group-data-[collapsible=icon]:gap-1.5 gap-0.5">
         {items.map((item) => (
-          <SidebarMenuItem className="group/item relative" key={item.name}>
+          <SidebarMenuItem className="group/item" key={item.name}>
             <SidebarMenuButton
               className={cn(
-                "relative h-10 rounded-xl !px-3 text-[15px] transition-colors duration-200 ease-out",
+                "h-8 rounded-lg px-2.5 text-[13px] font-medium tracking-tight antialiased transition-all duration-200 ease-out",
                 item.isActive
-                  ? "text-zinc-900 dark:text-zinc-50 font-medium"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-zinc-900/5 dark:hover:bg-white/5",
-                "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center"
+                  ? "bg-zinc-100/80 dark:bg-zinc-800/60 text-black dark:text-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-none border border-black/5 dark:border-white/5"
+                  : "text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/40 hover:text-black dark:hover:text-zinc-200",
+                "group-data-[collapsible=icon]:size-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:rounded-xl"
               )}
               isActive={item.isActive}
               render={<button onClick={item.onClick} type="button" />}
               tooltip={item.name}
             >
-              {item.isActive && (
-                <motion.div
-                  layoutId="active-nav-docs-item"
-                  className="absolute inset-0 rounded-xl bg-zinc-900/5 dark:bg-white/10 z-0"
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 35
-                  }}
-                />
-              )}
-              <span className="relative z-10 flex items-center gap-2">
-                <span className={cn(
-                  "transition-colors duration-200",
-                  item.isActive ? "text-zinc-900 dark:text-zinc-50" : "text-inherit"
-                )}>
-                  {item.icon}
-                </span>
-                <span className="group-data-[collapsible=icon]:hidden">
-                  {item.name}
-                </span>
+              <div className={cn(
+                "flex items-center justify-center shrink-0 transition-colors duration-200",
+                item.isActive ? "text-black dark:text-white" : "text-zinc-600 group-hover/item:text-black dark:text-zinc-400 dark:group-hover/item:text-white"
+              )}>
+                {item.icon}
+              </div>
+              <span className="truncate group-data-[collapsible=icon]:hidden font-sans leading-relaxed">
+                {item.name}
               </span>
             </SidebarMenuButton>
             <DropdownMenu>
@@ -94,26 +80,27 @@ export function NavDocuments({
                 <HugeiconsIcon
                   className="text-muted-foreground transition-all duration-200 group-hover:text-foreground"
                   icon={MoreHorizontalCircle01Icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
                 <span className="sr-only">{t("nav.menu.more")}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align={isMobile ? "end" : "start"}
-                className="w-24"
+                className="w-24 rounded-lg"
                 side={isMobile ? "bottom" : "right"}
+                sideOffset={4}
               >
                 <DropdownMenuItem>
-                  <HugeiconsIcon icon={Folder01Icon} strokeWidth={2} />
+                  <HugeiconsIcon icon={Folder01Icon} strokeWidth={1.5} />
                   <span>{t("nav.menu.open")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <HugeiconsIcon icon={Share01Icon} strokeWidth={2} />
+                  <HugeiconsIcon icon={Share01Icon} strokeWidth={1.5} />
                   <span>{t("nav.menu.share")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">
-                  <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+                  <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.5} />
                   <span>{t("nav.menu.delete")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

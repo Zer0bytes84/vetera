@@ -1,6 +1,6 @@
 import { Calendar01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Dog, Cat, Bird, PawPrint, Stethoscope, CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { Dog, Cat, Bird, PawPrint, Stethoscope, CaretLeft, CaretRight, User } from "@phosphor-icons/react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -24,7 +24,7 @@ interface AgendaListViewProps {
 }
 
 const DAY_NAMES = ["L", "M", "M", "J", "V", "S", "D"];
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 8;
 
 export function AgendaListView({
   selectedDate,
@@ -161,7 +161,7 @@ export function AgendaListView({
             </div>
             
             <div className="mt-4 lg:col-span-7 xl:col-span-8 flex flex-col min-h-[400px]">
-              <ol className="divide-y divide-border/50 text-sm/6 flex-1">
+              <ol className="flex-1 space-y-3 mt-2">
                 {selectedAppointments.length === 0 ? (
                   <li className="py-10 text-center text-muted-foreground flex flex-col items-center justify-center h-full">
                     <div className="size-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
@@ -182,78 +182,65 @@ export function AgendaListView({
                     <li 
                       key={appt.id} 
                       className={cn(
-                        "group relative flex gap-x-6 py-5 xl:static cursor-pointer transition-all duration-200 rounded-2xl px-5 mb-2",
-                        "hover:bg-muted/40",
-                        isSelected ? "bg-muted/50" : "bg-transparent"
+                        "group flex flex-col sm:flex-row sm:items-center sm:justify-between cursor-pointer transition-all duration-200 rounded-xl border p-4 shadow-sm",
+                        isSelected 
+                          ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20 dark:bg-primary/10" 
+                          : "border-border/50 bg-card hover:border-border hover:bg-muted/30"
                       )}
                       onClick={() => onSelectAppointment(appt)}
                     >
-                      <div className="flex size-14 flex-none items-center justify-center rounded-2xl bg-muted/40 text-muted-foreground group-hover:text-foreground transition-colors duration-200">
-                        {getAnimalIcon(patient)}
-                      </div>
-                      <div className="flex-auto min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-foreground text-base truncate">
-                            {patientName}
-                          </h3>
-                          {patient?.breed && (
-                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted/80 text-muted-foreground border border-border/50 truncate max-w-[120px]">
-                              {patient.breed}
-                            </span>
-                          )}
+                      <div className="flex items-center gap-4">
+                        {/* Time Box */}
+                        <div className="flex flex-col items-center justify-center rounded-lg bg-muted/50 px-3 py-2 dark:bg-zinc-900 border border-border/30">
+                          <span className="font-mono text-[13px] font-bold text-foreground">
+                            {formatTime(appt.startTime)}
+                          </span>
                         </div>
-                        <dl className="mt-1.5 flex flex-col text-muted-foreground xl:flex-row xl:flex-wrap gap-y-1">
-                          <div className="flex items-center gap-x-2 w-full xl:w-auto">
-                            <dt>
-                              <span className="sr-only">Date</span>
-                              <div className="p-1 rounded bg-muted/50 text-muted-foreground/80">
-                                <HugeiconsIcon icon={Calendar01Icon} className="size-3.5" />
-                              </div>
-                            </dt>
-                            <dd className="font-medium">
-                              <time dateTime={appt.startTime}>
-                                <span className="text-foreground/80">{formatTime(appt.startTime)}</span> 
-                                <span className="mx-1 opacity-50">-</span> 
-                                <span>{formatTime(appt.endTime)}</span>
-                              </time>
-                            </dd>
-                          </div>
-                          <div className="flex items-center gap-x-2 xl:ml-4 xl:border-l xl:border-border/50 xl:pl-4 w-full xl:w-auto">
-                            <dt className="flex shrink-0 items-center">
-                              <span className="sr-only">Propriétaire</span>
-                              <div className={cn("size-2 rounded-full", typeMeta.dotClassName)} />
-                            </dt>
-                            <dd className="truncate text-sm flex items-center gap-1.5">
-                              <span className="text-foreground/70 font-medium">{ownerName}</span>
-                              <span className={cn("px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold border", typeMeta.badgeClassName)}>
-                                {appt.type}
+
+                        {/* Info */}
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-foreground text-sm">
+                              {patientName}
+                            </span>
+                            {(patient?.species || patient?.breed) && (
+                              <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground border border-border/50">
+                                {patient?.species || patient?.breed}
                               </span>
-                            </dd>
+                            )}
                           </div>
-                        </dl>
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                            <User className="h-3.5 w-3.5 opacity-70" />
+                            <span>{ownerName || "Sans propriétaire"}</span>
+                          </div>
+                        </div>
                       </div>
-                      
-                      {(appt.status === "scheduled" || appt.status === "in_progress") ? (
-                        <div className="flex flex-col items-end gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute right-4 top-1/2 -translate-y-1/2">
+
+                      <div className="flex items-center justify-between sm:justify-end gap-3 mt-4 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-0 border-border/50">
+                        {/* Type & Status */}
+                        <div className="flex items-center gap-2">
+                          <span className={cn("px-2 py-0.5 rounded-full text-[11px] font-medium border", typeMeta.badgeClassName, typeMeta.surfaceClassName)}>
+                            {appt.type}
+                          </span>
+                          <span className={cn("text-[11px] font-semibold px-2.5 py-0.5 rounded-lg border", APPOINTMENT_STATUS_META[appt.status]?.className)}>
+                            {APPOINTMENT_STATUS_META[appt.status]?.label || appt.status}
+                          </span>
+                        </div>
+                        
+                        {/* Action Button */}
+                        {(appt.status === "scheduled" || appt.status === "in_progress") ? (
                           <Button 
                             size="sm" 
-                            className="rounded-xl shadow-md bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 h-9"
+                            variant="secondary"
+                            className="rounded-lg h-8 px-3 ml-1 text-xs bg-primary/10 text-primary hover:bg-primary hover:text-white shadow-none transition-colors"
                             onClick={(e) => handleStartConsultation(e, appt)}
                           >
-                            <Stethoscope weight="fill" className="size-4" />
-                            <span>{appt.status === "in_progress" ? "Reprendre" : "Démarrer"}</span>
+                            <Stethoscope weight="fill" className="size-3.5 mr-1.5" />
+                            {appt.status === "in_progress" ? "Reprendre" : "Démarrer"}
                           </Button>
-                        </div>
-                      ) : null}
-                      
-                      {/* Default status badge, hides on hover to make room for button (only for actionable statuses) */}
-                      <div className={cn(
-                        "absolute right-5 top-1/2 -translate-y-1/2 transition-opacity duration-300",
-                        (appt.status === "scheduled" || appt.status === "in_progress") && "group-hover:opacity-0"
-                      )}>
-                        <div className={cn("text-xs font-semibold px-2.5 py-1 rounded-lg border", APPOINTMENT_STATUS_META[appt.status]?.className)}>
-                          {APPOINTMENT_STATUS_META[appt.status]?.label || appt.status}
-                        </div>
+                        ) : (
+                          <div className="w-[90px] hidden sm:block"></div> /* Spacer to keep layout stable when no button */
+                        )}
                       </div>
                     </li>
                   );
@@ -262,27 +249,28 @@ export function AgendaListView({
 
               {/* Pagination controls */}
               {totalPages > 1 && (
-                <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
+                <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="text-sm text-muted-foreground font-medium">
                     {t("agenda.showing", { defaultValue: "Affichage" })} <span className="text-foreground">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> - <span className="text-foreground">{Math.min(currentPage * ITEMS_PER_PAGE, selectedAppointments.length)}</span> sur <span className="text-foreground">{selectedAppointments.length}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-muted/30 p-1 rounded-xl border border-border/50">
                     <Button
-                      variant="outline"
-                      size="icon"
-                      className="size-8 rounded-lg"
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-lg h-8 px-3 text-xs font-medium hover:bg-background shadow-none"
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
                     >
-                      <CaretLeft className="size-4" />
+                      <CaretLeft className="size-3.5 mr-1" />
+                      Précédent
                     </Button>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 border-x border-border/50 px-2">
                       {Array.from({ length: totalPages }).map((_, i) => (
                         <button
                           key={i}
                           className={cn(
-                            "size-7 rounded-md text-xs font-medium transition-colors",
-                            currentPage === i + 1 ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"
+                            "size-7 rounded-md text-xs font-bold transition-colors",
+                            currentPage === i + 1 ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-background text-muted-foreground"
                           )}
                           onClick={() => setCurrentPage(i + 1)}
                         >
@@ -291,13 +279,14 @@ export function AgendaListView({
                       ))}
                     </div>
                     <Button
-                      variant="outline"
-                      size="icon"
-                      className="size-8 rounded-lg"
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-lg h-8 px-3 text-xs font-medium hover:bg-background shadow-none"
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
                     >
-                      <CaretRight className="size-4" />
+                      Suivant
+                      <CaretRight className="size-3.5 ml-1" />
                     </Button>
                   </div>
                 </div>

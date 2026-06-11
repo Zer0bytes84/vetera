@@ -116,12 +116,12 @@ import { AnesthesiaSheet } from "@/modules/anesthesia";
 import { HospitalizationSheet } from "@/modules/hospitalizations";
 import { PrescriptionSheet } from "@/modules/prescriptions";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFocus } from "@/contexts/focus-provider";
 import { useUsersRepository } from "@/data/repositories";
 import { useAudit } from "@/services/auditService";
 import { getSetting } from "@/services/appSettingsService";
 import {
   useAppointmentReminderSync,
-  useReminderToasts,
 } from "@/services/reminderService";
 import type { View } from "@/types";
 import type {
@@ -1630,7 +1630,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const audit = useAudit();
   useAppointmentReminderSync();
-  useReminderToasts();
+  const { focus, clearFocus } = useFocus();
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
@@ -1670,6 +1670,23 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     () => new Map(patients.map((patient) => [patient.id, patient])),
     [patients]
   );
+
+  useEffect(() => {
+    if (focus) {
+      if (focus.kind === "appointment") {
+        setSelectedAppointmentId(focus.id);
+        clearFocus();
+      } else if (focus.kind === "patient") {
+        const patientAppts = appointments
+          .filter((a) => a.patientId === focus.id)
+          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+        if (patientAppts.length > 0) {
+          setSelectedAppointmentId(patientAppts[0].id);
+        }
+        clearFocus();
+      }
+    }
+  }, [focus, appointments, clearFocus]);
   const ownersById = useMemo(
     () => new Map(owners.map((owner) => [owner.id, owner])),
     [owners]

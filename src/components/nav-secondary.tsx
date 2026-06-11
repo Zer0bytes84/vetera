@@ -1,6 +1,6 @@
 import type * as React from "react";
+import { ChevronDown } from "lucide-react";
 import {
-  SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
@@ -32,47 +32,34 @@ export function NavSecondary({
       {...props}
     >
       {title ? (
-        <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden px-1 text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider mb-0.5">
+        <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden px-2.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1.5 antialiased">
           {title}
         </SidebarGroupLabel>
       ) : null}
       <SidebarGroupContent>
         <SidebarMenu className="group-data-[collapsible=icon]:gap-1.5 gap-0.5">
           {items.map((item) => (
-            <SidebarMenuItem className="group/item relative" key={item.title}>
+            <SidebarMenuItem className="group/item" key={item.title}>
               <SidebarMenuButton
                 className={cn(
-                  "relative h-9 rounded-xl !px-3 text-[13.5px] font-medium transition-colors duration-200 ease-out",
+                  "h-8 rounded-md px-2.5 text-[13px] font-medium tracking-tight antialiased transition-all duration-200 ease-out",
                   item.isActive
-                    ? "text-zinc-900 dark:text-zinc-50 font-semibold"
-                    : "text-sidebar-foreground/65 hover:text-sidebar-foreground hover:bg-zinc-900/5 dark:hover:bg-white/5",
-                  "group-data-[variant=sidebar]:h-10 group-data-[variant=sidebar]:rounded-xl group-data-[variant=sidebar]:!px-3 group-data-[variant=sidebar]:text-[15px]",
-                  "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center"
+                    ? "bg-zinc-100/80 dark:bg-zinc-800/60 text-black dark:text-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-none border border-black/5 dark:border-white/5"
+                    : "text-zinc-700 dark:text-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/40 hover:text-black dark:hover:text-zinc-200",
+                  "group-data-[variant=sidebar]:h-8 group-data-[variant=sidebar]:rounded-md group-data-[variant=sidebar]:px-2.5 group-data-[variant=sidebar]:text-[13px]",
+                  "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
                 )}
                 isActive={item.isActive}
                 render={<button onClick={item.onClick} type="button" />}
               >
-                {item.isActive && (
-                  <motion.div
-                    layoutId="active-sidebar-item"
-                    className="absolute inset-0 rounded-xl bg-zinc-900/5 dark:bg-white/10 z-0"
-                    transition={{
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 35
-                    }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-2">
-                  <span className={cn(
-                    "transition-colors duration-200",
-                    item.isActive ? "text-zinc-900 dark:text-zinc-50" : "text-inherit"
-                  )}>
-                    {item.icon}
-                  </span>
-                  <span className="group-data-[collapsible=icon]:hidden">
-                    {item.title}
-                  </span>
+                <div className={cn(
+                  "flex items-center justify-center shrink-0 transition-colors duration-200",
+                  item.isActive ? "text-black dark:text-white" : "text-zinc-600 group-hover/item:text-black dark:text-zinc-400 dark:group-hover/item:text-white"
+                )}>
+                  {item.icon}
+                </div>
+                <span className="truncate group-data-[collapsible=icon]:hidden font-sans leading-relaxed">
+                  {item.title}
                 </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -82,3 +69,4 @@ export function NavSecondary({
     </div>
   );
 }
+

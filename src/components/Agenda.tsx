@@ -93,6 +93,7 @@ import {
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
+import { useFocus } from "@/contexts/focus-provider";
 import i18n from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/auditService";
@@ -1171,6 +1172,7 @@ function AgendaMonthView({
 
 const Agenda: React.FC = () => {
   const { t } = useTranslation();
+  const { focus, clearFocus } = useFocus();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("list");
@@ -1192,7 +1194,7 @@ const Agenda: React.FC = () => {
     useState<Appointment["type"]>("Consultation");
   const [formDate, setFormDate] = useState(formatDateInput(new Date()));
   const [formTime, setFormTime] = useState("09:00");
-  const [duration, setDuration] = useState(30);
+  const [duration, setDuration] = useState(15);
   const [reason, setReason] = useState("");
   const [formRoom, setFormRoom] = useState("consult-1");
   const [recurrenceEnabled, setRecurrenceEnabled] = useState(false);
@@ -1220,6 +1222,28 @@ const Agenda: React.FC = () => {
     saveAppointment,
     remove,
   } = useAppointmentsRepository();
+
+  useEffect(() => {
+    if (focus) {
+      if (focus.kind === "appointment") {
+        setSelectedAppointmentId(focus.id);
+        const appt = appointments.find((a) => a.id === focus.id);
+        if (appt) {
+          setSelectedDate(new Date(appt.startTime));
+        }
+        clearFocus();
+      } else if (focus.kind === "patient") {
+        const patientAppts = appointments
+          .filter((a) => a.patientId === focus.id)
+          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+        if (patientAppts.length > 0) {
+          setSelectedAppointmentId(patientAppts[0].id);
+          setSelectedDate(new Date(patientAppts[0].startTime));
+        }
+        clearFocus();
+      }
+    }
+  }, [focus, appointments, clearFocus]);
   const recurrencesStore = useAppointmentRecurrencesRepository();
   const { data: patients } = usePatientsRepository();
   const { data: owners } = useOwnersRepository();
@@ -1623,7 +1647,7 @@ const Agenda: React.FC = () => {
     setSelectedType("Consultation");
     setFormDate(formatDateInput(date));
     setFormTime("09:00");
-    setDuration(30);
+    setDuration(15);
     setReason("");
     setFormRoom("consult-1");
     setRecurrenceEnabled(false);
@@ -1663,7 +1687,7 @@ const Agenda: React.FC = () => {
     setDuration(
       start && end
         ? Math.max(15, Math.round((end.getTime() - start.getTime()) / 60_000))
-        : 30
+        : 15
     );
     setReason(appointment.reason || "");
     setIsDialogOpen(true);

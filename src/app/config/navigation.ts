@@ -1,17 +1,16 @@
 import {
-  BookOpenText,
-  CalendarBlank,
-  CheckSquareOffset,
-  Gear,
-  Hospital,
-  Package,
-  Question,
-  SquaresFour,
-  Stethoscope,
-  UsersThree,
-  Wallet,
-} from "@phosphor-icons/react";
-import type { Icon } from "@phosphor-icons/react";
+  DashboardSquare01Icon,
+  StethoscopeIcon,
+  Calendar01Icon,
+  Hospital01Icon,
+  BookOpenTextIcon,
+  Task01Icon,
+  PackageIcon,
+  Wallet01Icon,
+  UserGroupIcon,
+  Settings01Icon,
+} from "@hugeicons/core-free-icons";
+import type { ReactNode } from "react";
 import type { TFunction } from "i18next";
 
 import type { View } from "@/types";
@@ -34,7 +33,7 @@ export const viewTitleKeys: Record<View, string> = {
 
 export const navigationSections: Array<{
   titleKey: string;
-  items: Array<{ view: View; labelKey: string; icon: Icon }>;
+  items: Array<{ view: View; labelKey: string; icon: React.FC<any> }>;
 }> = [
   {
     titleKey: "nav.sections.pilotage",
@@ -42,26 +41,26 @@ export const navigationSections: Array<{
       {
         view: "dashboard",
         labelKey: "views.dashboard",
-        icon: SquaresFour,
+        icon: DashboardSquare01Icon,
       },
     ],
   },
   {
     titleKey: "nav.sections.patientJourney",
     items: [
-      { view: "patients", labelKey: "views.patients", icon: Stethoscope },
-      { view: "agenda", labelKey: "views.agenda", icon: CalendarBlank },
-      { view: "clinique", labelKey: "views.clinique", icon: Hospital },
-      { view: "notes", labelKey: "views.notes", icon: BookOpenText },
-      { view: "taches", labelKey: "views.taches", icon: CheckSquareOffset },
+      { view: "patients", labelKey: "views.patients", icon: StethoscopeIcon },
+      { view: "agenda", labelKey: "views.agenda", icon: Calendar01Icon },
+      { view: "clinique", labelKey: "views.clinique", icon: Hospital01Icon },
+      { view: "notes", labelKey: "views.notes", icon: BookOpenTextIcon },
+      { view: "taches", labelKey: "views.taches", icon: Task01Icon },
     ],
   },
   {
     titleKey: "nav.sections.operations",
     items: [
-      { view: "stock", labelKey: "views.stock", icon: Package },
-      { view: "finances", labelKey: "views.finances", icon: Wallet },
-      { view: "equipe", labelKey: "views.equipe", icon: UsersThree },
+      { view: "stock", labelKey: "views.stock", icon: PackageIcon },
+      { view: "finances", labelKey: "views.finances", icon: Wallet01Icon },
+      { view: "equipe", labelKey: "views.equipe", icon: UserGroupIcon },
     ],
   },
   {
@@ -70,9 +69,8 @@ export const navigationSections: Array<{
       {
         view: "parametres",
         labelKey: "views.parametres",
-        icon: Gear,
+        icon: Settings01Icon,
       },
-      { view: "aide", labelKey: "views.aide", icon: Question },
     ],
   },
 ];

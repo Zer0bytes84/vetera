@@ -11,6 +11,7 @@ import { Plus } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -76,22 +77,22 @@ export function WeightEvolutionChart({
 
   if (data.length === 0) {
     return (
-      <Card className={className}>
-        <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
-          <CardTitle className="text-base">{title}</CardTitle>
+      <Card className={cn("overflow-hidden rounded-2xl shadow-sm border-zinc-200 dark:border-zinc-800", className)}>
+        <CardHeader className="flex flex-row items-center justify-between gap-2 border-b border-border/40 bg-zinc-50/50 dark:bg-zinc-900/20 px-6 py-4">
+          <CardTitle className="text-base font-semibold">{title}</CardTitle>
           {onAdd ? (
             <Button
-              className="h-8 gap-1.5"
+              className="h-8 gap-1.5 rounded-lg"
               onClick={onAdd}
               size="sm"
-              variant="outline"
+              variant="default"
             >
-              <Plus weight="duotone" className="size-4" />
+              <Plus weight="bold" className="size-3.5" />
               {t("patientDetail.overview.newWeight")}
             </Button>
           ) : null}
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
           <p className="text-sm text-muted-foreground">{emptyMessage}</p>
         </CardContent>
       </Card>
@@ -99,27 +100,27 @@ export function WeightEvolutionChart({
   }
 
   return (
-    <Card className={className}>
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
+    <Card className={cn("overflow-hidden rounded-2xl shadow-sm border-zinc-200 dark:border-zinc-800", className)}>
+      <CardHeader className="flex flex-row items-center justify-between gap-2 border-b border-border/40 bg-zinc-50/50 dark:bg-zinc-900/20 px-6 py-4">
         <div>
-          <CardTitle className="text-base">{title}</CardTitle>
-          <CardDescription className="text-xs">
+          <CardTitle className="text-base font-semibold">{title}</CardTitle>
+          <CardDescription className="text-xs mt-1">
             {data.length} {data.length > 1 ? "mesures" : "mesure"}
           </CardDescription>
         </div>
         {onAdd ? (
           <Button
-            className="h-8 gap-1.5"
+            className="h-8 gap-1.5 rounded-lg"
             onClick={onAdd}
             size="sm"
-            variant="outline"
+            variant="default"
           >
-            <Plus weight="duotone" className="size-4" />
+            <Plus weight="bold" className="size-3.5" />
             {t("patientDetail.overview.newWeight")}
           </Button>
         ) : null}
       </CardHeader>
-      <CardContent className="px-2 pt-2 sm:px-4 sm:pt-4">
+      <CardContent className="px-2 pt-6 sm:px-4 sm:pt-6">
         <ChartContainer
           className="aspect-auto h-[220px] w-full"
           config={chartConfig}
