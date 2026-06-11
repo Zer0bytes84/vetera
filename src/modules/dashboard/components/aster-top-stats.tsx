@@ -36,6 +36,7 @@ export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
       trend: revenueTrend,
       period: "30 J",
       icon: DollarSign,
+      iconColor: "text-emerald-500 dark:text-emerald-400",
     },
     {
       title: "RDV aujourd'hui",
@@ -43,6 +44,7 @@ export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
       trend: apptsTrend,
       period: "AUJ.",
       icon: Calendar,
+      iconColor: "text-blue-500 dark:text-blue-400",
     },
     {
       title: "Patients actifs",
@@ -50,6 +52,7 @@ export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
       trend: returningTrend,
       period: "90 J",
       icon: Users,
+      iconColor: "text-orange-500 dark:text-orange-400",
     },
     {
       title: "Tâches dues",
@@ -57,6 +60,7 @@ export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
       trend: 0, // Not easily calculable without previous
       period: "7 J",
       icon: ClipboardList,
+      iconColor: "text-purple-500 dark:text-purple-400",
     },
   ];
 
@@ -74,7 +78,7 @@ export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
               )}
               
               <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                <Icon className="w-4 h-4 opacity-70" />
+                <Icon className={cn("w-4 h-4 drop-shadow-sm", stat.iconColor)} />
                 {stat.title}
               </div>
               
