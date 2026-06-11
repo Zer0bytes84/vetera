@@ -235,6 +235,95 @@
   line-height: 1.75;
 }
 
+.tiptap-editor .ProseMirror {
+  outline: none !important;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--foreground);
+  min-height: 250px;
+}
+
+.tiptap-editor .ProseMirror:focus {
+  outline: none !important;
+}
+
+/* Elegant Tiptap Placeholder */
+.tiptap-editor .ProseMirror p.is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted-foreground);
+  opacity: 0.35;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+/* Premium Blockquote styling using Cormorant Garamond */
+.tiptap-editor .ProseMirror blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  color: var(--muted-foreground);
+  font-style: italic;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.15rem;
+}
+
+/* Headings within TipTap */
+.tiptap-editor .ProseMirror h1,
+.tiptap-editor .ProseMirror h2,
+.tiptap-editor .ProseMirror h3 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: var(--foreground);
+  letter-spacing: -0.015em;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-editor .ProseMirror h1 {
+  font-size: 1.5rem;
+}
+
+.tiptap-editor .ProseMirror h2 {
+  font-size: 1.25rem;
+}
+
+.tiptap-editor .ProseMirror h3 {
+  font-size: 1.1rem;
+}
+
+/* List Formatting */
+.tiptap-editor .ProseMirror ul,
+.tiptap-editor .ProseMirror ol {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.tiptap-editor .ProseMirror ul {
+  list-style-type: disc;
+}
+
+.tiptap-editor .ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.tiptap-editor .ProseMirror li {
+  margin: 0.25rem 0;
+  padding-left: 0.25rem;
+}
+
+.tiptap-editor .ProseMirror p {
+  margin-bottom: 0.75rem;
+}
+
+/* Horizontal Rule */
+.tiptap-editor .ProseMirror hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
 /* ─── Raycast Header (App Shell) ─── */
 .raycast-header {
   background: linear-gradient(180deg, oklch(1 0.006 86 / 0.88), oklch(0.985 0 0 / 0.78)), var(--card);

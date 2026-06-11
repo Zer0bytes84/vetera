@@ -9,6 +9,7 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { buildDashboardMetrics } from "@/lib/metrics";
+import MotivationalHeader from "@/components/MotivationalHeader";
 
 // Import Aster widgets
 import { AsterTopStats } from "./components/aster-top-stats";
@@ -109,18 +110,7 @@ export function DashboardOrbitPage({ onNavigate, userDisplayName }: DashboardOrb
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
       
       {/* Welcome Message */}
-      <div className="flex flex-col gap-1 mb-4">
-        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
-          Bonjour{" "}
-          <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent uppercase">
-            {fullName}
-          </span>
-          👋
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Voici un résumé de l'activité de votre clinique aujourd'hui.
-        </p>
-      </div>
+      <MotivationalHeader section="dashboard" />
 
       {/* Row 1: Top Stats */}
       <AsterTopStats metrics={metrics} />

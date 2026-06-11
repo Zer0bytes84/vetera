@@ -12,12 +12,15 @@ import {
   MoreVerticalIcon,
   SearchIcon,
   StarIcon,
+  Undo02Icon,
+  Redo02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FileText, Star, Pin, BookOpen, PenLine, Sparkles, Hash } from "lucide-react";
 import Editor from "@/components/Editor";
+import MotivationalHeader from "@/components/MotivationalHeader";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -125,6 +128,12 @@ const NotesPro: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [editorInstance, setEditorInstance] = useState<any>(null);
+  const [aiStatus, setAiStatus] = useState({
+    loading: false,
+    ready: false,
+    initializing: false,
+  });
 
   // Filter logic
   const filteredNotes = useMemo(() => {
@@ -365,17 +374,12 @@ const NotesPro: React.FC = () => {
   const getInitial = (title: string) => (title || "N").charAt(0).toUpperCase();
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 h-full pb-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 h-full pb-8 pt-16 md:pt-28">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">Notes</h1>
-          <p className="text-[12px] text-muted-foreground mt-0.5">
-            {stats.total} note{stats.total !== 1 ? "s" : ""} · {stats.totalWords.toLocaleString("fr-FR")} mots
-          </p>
-        </div>
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <MotivationalHeader section="notes" />
         <Button
-          className="h-9 rounded-xl px-4 gap-2 shadow-sm"
+          className="h-9 rounded-full px-5 gap-2 shadow-sm"
           onClick={handleCreateNote}
         >
           <HugeiconsIcon
@@ -638,7 +642,7 @@ const NotesPro: React.FC = () => {
         </aside>
 
         {/* ── EDITOR AREA ── */}
-        <main className="flex min-w-0 flex-1 flex-col bg-background">
+        <main className="flex min-w-0 flex-1 flex-col bg-white dark:bg-zinc-950">
           {selectedNoteId && activeNote ? (
             <div className="flex h-full flex-col">
 
@@ -685,6 +689,34 @@ const NotesPro: React.FC = () => {
                       Aperçu
                     </button>
                   </div>
+
+                  {!isPreviewMode && (
+                    <>
+                      <div className="w-px h-4 bg-border/60 mx-0.5" />
+                      <div className="flex items-center gap-0.5">
+                        <Button
+                          className="size-7 rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30"
+                          disabled={!editorInstance?.can().undo()}
+                          onClick={() => editorInstance?.chain().focus().undo().run()}
+                          size="icon-sm"
+                          variant="ghost"
+                          title="Annuler (Ctrl+Z)"
+                        >
+                          <HugeiconsIcon className="size-3.5" icon={Undo02Icon} />
+                        </Button>
+                        <Button
+                          className="size-7 rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30"
+                          disabled={!editorInstance?.can().redo()}
+                          onClick={() => editorInstance?.chain().focus().redo().run()}
+                          size="icon-sm"
+                          variant="ghost"
+                          title="Rétablir (Ctrl+Y)"
+                        >
+                          <HugeiconsIcon className="size-3.5" icon={Redo02Icon} />
+                        </Button>
+                      </div>
+                    </>
+                  )}
 
                   <div className="w-px h-4 bg-border/60 mx-0.5" />
 
@@ -794,10 +826,36 @@ const NotesPro: React.FC = () => {
               </div>
 
               {/* Editor content area */}
-              <div className="flex-1 overflow-y-auto">
-                <div className="mx-auto max-w-3xl px-8 py-8">
+              <div
+                className="flex-1 overflow-y-auto cursor-text pb-20 select-text bg-white dark:bg-zinc-950"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                    editorInstance?.commands.focus("end");
+                  }
+                }}
+              >
+                <div
+                  className="mx-auto max-w-3xl px-8 py-10 min-h-full flex flex-col"
+                  onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                      editorInstance?.commands.focus("end");
+                    }
+                  }}
+                >
                   {isPreviewMode ? (
                     <div className="prose prose-sm dark:prose-invert max-w-none">
+                      {/* Document icon in preview */}
+                      <div className="mb-6 flex">
+                        <div
+                          className={cn(
+                            "flex size-14 items-center justify-center rounded-2xl font-bold shadow-[0_8px_30px_rgb(0,0,0,0.02)] ring-1 ring-border/40 select-none",
+                            getNoteAccent(activeNote.title || "N")
+                          )}
+                        >
+                          <FileText className="size-6 stroke-[1.8]" />
+                        </div>
+                      </div>
+
                       <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
                       <p className="text-muted-foreground text-xs mt-1 mb-6">
                         {formatFullDate(activeNote.updatedAt)}
@@ -806,17 +864,29 @@ const NotesPro: React.FC = () => {
                     </div>
                   ) : (
                     <>
+                      {/* Document icon */}
+                      <div className="mb-6 flex">
+                        <div
+                          className={cn(
+                            "flex size-14 items-center justify-center rounded-2xl font-bold shadow-[0_8px_30px_rgb(0,0,0,0.02)] ring-1 ring-border/40 select-none",
+                            getNoteAccent(activeNote.title || "N")
+                          )}
+                        >
+                          <FileText className="size-6 stroke-[1.8]" />
+                        </div>
+                      </div>
+
                       {/* Note title */}
                       <input
-                        className="w-full bg-transparent font-bold text-[26px] leading-tight text-foreground tracking-tight outline-none placeholder:text-muted-foreground/20 mb-2"
+                        className="w-full bg-transparent font-heading font-bold text-[32px] leading-tight text-foreground tracking-tight outline-none placeholder:text-muted-foreground/15 mb-2.5"
                         onChange={(e) => handleTitleChange(e.target.value)}
-                        placeholder="Titre de la note"
+                        placeholder="Sans titre"
                         type="text"
                         value={title}
                       />
 
                       {/* Meta line below title */}
-                      <div className="flex items-center gap-2.5 mb-7">
+                      <div className="flex items-center gap-2.5 mb-8">
                         <p className="text-[11px] text-muted-foreground/50">
                           {formatFullDate(activeNote.updatedAt)}
                         </p>
@@ -852,11 +922,46 @@ const NotesPro: React.FC = () => {
                       <Editor
                         content={content}
                         onUpdate={handleContentChange}
+                        onEditorCreated={setEditorInstance}
+                        onAiStatusChange={setAiStatus}
                       />
                     </>
                   )}
                 </div>
               </div>
+
+              {/* Editor footer */}
+              {!isPreviewMode && (
+                <div className="flex items-center justify-between border-t border-border/40 bg-white dark:bg-zinc-950 px-4 py-2 text-[11px] text-muted-foreground/40 shrink-0 select-none">
+                  <span className="flex items-center gap-1">
+                    <span>Tapez</span>
+                    <kbd className="rounded bg-muted/80 dark:bg-zinc-800/80 px-1 py-px font-mono text-[10px] text-muted-foreground/60">
+                      /
+                    </kbd>
+                    <span>pour les commandes</span>
+                  </span>
+
+                  {/* AI Status */}
+                  {aiStatus.loading && (
+                    <span className="flex items-center gap-1.5 text-primary font-medium">
+                      <span className="animate-spin size-3 border-2 border-primary border-t-transparent rounded-full" />
+                      Assistant IA en cours...
+                    </span>
+                  )}
+                  {!aiStatus.loading && aiStatus.ready && (
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                      <span className="size-1.5 rounded-full bg-emerald-500 status-dot-alive" />
+                      Assistant IA prêt
+                    </span>
+                  )}
+                  {!aiStatus.loading && aiStatus.initializing && !aiStatus.ready && (
+                    <span className="flex items-center gap-1 text-amber-500">
+                      <span className="animate-pulse size-1.5 rounded-full bg-amber-500" />
+                      Préparation de l'IA...
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center p-12 relative overflow-hidden bg-white dark:bg-zinc-950">
@@ -878,7 +983,7 @@ const NotesPro: React.FC = () => {
               {/* Actions */}
               <div className="mt-7 flex items-center gap-2.5">
                 <Button
-                  className="rounded-xl gap-2 shadow-sm h-9 px-4"
+                  className="rounded-full gap-2 shadow-sm h-9 px-5"
                   onClick={handleCreateNote}
                 >
                   <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
@@ -886,7 +991,7 @@ const NotesPro: React.FC = () => {
                 </Button>
                 {!showSidebar && (
                   <Button
-                    className="rounded-xl gap-2 h-9 px-4"
+                    className="rounded-full gap-2 h-9 px-5"
                     onClick={() => setShowSidebar(true)}
                     variant="outline"
                   >

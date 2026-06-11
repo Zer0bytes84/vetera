@@ -22,6 +22,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
+import MotivationalHeader from "@/components/MotivationalHeader";
 import { StockStatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -552,10 +553,11 @@ const Stock: React.FC = () => {
   };
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button className="h-10 rounded-xl px-4" onClick={handleOpenAdd}>
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <MotivationalHeader section="stock" />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Button className="h-10 rounded-full px-5" onClick={handleOpenAdd}>
             <HugeiconsIcon
               className="size-4"
               icon={Add01Icon}

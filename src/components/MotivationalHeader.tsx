@@ -138,36 +138,52 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   const heading = title || headerCopy.text;
   const resolvedSubtitle = subtitle || headerCopy.subtitle;
 
-  return (
-    <div
-      className={cn(
-        "flex flex-col gap-1.5 rounded-[24px] border border-border/70 bg-background/70 px-5 py-4 shadow-[0_12px_40px_rgba(15,23,42,0.04)] backdrop-blur-sm lg:gap-2 lg:px-6 lg:py-5",
-        section === "dashboard" &&
-          "bg-gradient-to-br from-background via-background to-[rgba(16,185,129,0.045)]"
-      )}
-    >
-      {headerCopy.eyebrow && (
-        <span className="font-semibold text-[11px] text-muted-foreground/80 uppercase tracking-[0.2em]">
-          {headerCopy.eyebrow}
+  const renderTitle = (titleText: string, emoji: string) => {
+    if (!userName || !titleText.includes(userName)) {
+      return (
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+          <span>{titleText}</span>
+          <span aria-hidden="true" className="shrink-0 text-[1em]">
+            {emoji}
+          </span>
+        </h1>
+      );
+    }
+
+    const parts = titleText.split(userName);
+    return (
+      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground flex flex-wrap items-center gap-x-2 gap-y-1">
+        {parts.map((part, index) => (
+          <React.Fragment key={index}>
+            {part}
+            {index < parts.length - 1 && (
+              <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent uppercase font-semibold">
+                {userName}
+              </span>
+            )}
+          </React.Fragment>
+        ))}
+        <span aria-hidden="true" className="shrink-0 text-[1em]">
+          {emoji}
         </span>
-      )}
+      </h1>
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-1 w-full">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="flex items-center gap-3 font-medium text-[2rem] text-foreground tracking-[-0.06em] lg:text-[2.4rem]">
-            <span>{heading}</span>
-            <span aria-hidden="true" className="shrink-0 text-[0.92em]">
-              {headerCopy.emoji}
-            </span>
-          </h1>
+          {renderTitle(heading, headerCopy.emoji)}
           {resolvedSubtitle && (
-            <p className="max-w-[60ch] text-[var(--text-muted)] text-sm leading-6">
+            <p className="text-sm text-muted-foreground max-w-[70ch] leading-relaxed">
               {resolvedSubtitle}
             </p>
           )}
         </div>
         {onNavigate && (
           <div className="flex shrink-0 items-center gap-2">
-            <Button onClick={() => onNavigate("clinique")} variant="default">
+            <Button onClick={() => onNavigate("clinique")} className="h-10 rounded-full px-5">
               <HugeiconsIcon
                 data-icon="inline-start"
                 icon={StethoscopeIcon}

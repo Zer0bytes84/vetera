@@ -32,12 +32,20 @@ interface EditorProps {
   content: string;
   onUpdate: (content: string) => void;
   readOnly?: boolean;
+  onEditorCreated?: (editor: any) => void;
+  onAiStatusChange?: (status: {
+    loading: boolean;
+    ready: boolean;
+    initializing: boolean;
+  }) => void;
 }
 
 const Editor: React.FC<EditorProps> = ({
   content,
   onUpdate,
   readOnly = false,
+  onEditorCreated,
+  onAiStatusChange,
 }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [writeModalOpen, setWriteModalOpen] = useState(false);
@@ -159,6 +167,25 @@ const Editor: React.FC<EditorProps> = ({
     },
   });
 
+  // Share the editor instance with the parent component
+  useEffect(() => {
+    if (editor) {
+      onEditorCreated?.(editor);
+    }
+    return () => {
+      onEditorCreated?.(null);
+    };
+  }, [editor, onEditorCreated]);
+
+  // Share the AI status with the parent component
+  useEffect(() => {
+    onAiStatusChange?.({
+      loading: isAiLoading,
+      ready: aiReady,
+      initializing: aiInitializing,
+    });
+  }, [isAiLoading, aiReady, aiInitializing, onAiStatusChange]);
+
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content, { emitUpdate: false });
@@ -174,80 +201,12 @@ const Editor: React.FC<EditorProps> = ({
   }
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Minimal toolbar — undo/redo + discreet AI status */}
-      <div className="flex items-center justify-between border-border/40 border-b px-4 py-1.5 dark:border-border/30">
-        <div className="flex items-center gap-1.5">
-          {isAiLoading && (
-            <div className="flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-0.5 text-[11px] text-primary dark:bg-primary/15">
-              <Spinner className="size-2.5" />
-              <span className="font-medium">Génération...</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-0.5">
-          <Button
-            className="size-7 rounded-md"
-            disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().undo().run()}
-            size="icon-sm"
-            title="Annuler (Ctrl+Z)"
-            variant="ghost"
-          >
-            <HugeiconsIcon
-              className="size-3.5"
-              icon={Undo02Icon}
-              strokeWidth={2}
-            />
-          </Button>
-          <Button
-            className="size-7 rounded-md"
-            disabled={!editor.can().redo()}
-            onClick={() => editor.chain().focus().redo().run()}
-            size="icon-sm"
-            title="Rétablir (Ctrl+Y)"
-            variant="ghost"
-          >
-            <HugeiconsIcon
-              className="size-3.5"
-              icon={Redo02Icon}
-              strokeWidth={2}
-            />
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-auto">
-        <SelectionBubbleMenu editor={editor} onAiAction={handleAiAction} />
-        <EditorContent
-          className="tiptap-editor prose prose-neutral dark:prose-invert min-h-full max-w-none p-6 focus:outline-none"
-          editor={editor}
-        />
-      </div>
-
-      {/* Subtle footer hint */}
-      <div className="flex items-center justify-between border-border/40 border-t px-4 py-1.5 text-[11px] text-muted-foreground/50 dark:border-border/30">
-        <span>
-          Tapez{" "}
-          <kbd className="rounded bg-muted/70 px-1 py-px font-mono text-[10px] text-muted-foreground dark:bg-muted/40">
-            /
-          </kbd>{" "}
-          pour les commandes
-        </span>
-        {aiReady && (
-          <span className="flex items-center gap-1">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
-            Assistant prêt
-          </span>
-        )}
-        {aiInitializing && !aiReady && (
-          <span className="flex items-center gap-1">
-            <Spinner className="size-2" />
-            Préparation...
-          </span>
-        )}
-      </div>
+    <div className="w-full">
+      <SelectionBubbleMenu editor={editor} onAiAction={handleAiAction} />
+      <EditorContent
+        className="tiptap-editor prose prose-neutral dark:prose-invert max-w-none focus:outline-none"
+        editor={editor}
+      />
 
       <Dialog onOpenChange={setWriteModalOpen} open={writeModalOpen}>
         <DialogContent>

@@ -16,6 +16,7 @@ import { jsPDF } from "jspdf";
 import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
+import MotivationalHeader from "@/components/MotivationalHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -651,11 +652,12 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
   };
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
-        <div className="flex flex-col gap-2 sm:flex-row">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <MotivationalHeader section="finances" />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button
-            className="h-10 rounded-xl px-4"
+            className="h-10 rounded-full px-5"
             onClick={() => onNavigate?.("finances_analytics")}
             variant="outline"
           >
@@ -667,7 +669,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
             Vue analytique
           </Button>
           <Button
-            className="h-10 rounded-xl px-4"
+            className="h-10 rounded-full px-5"
             disabled={visibleTransactions.length === 0}
             onClick={handleExport}
             variant="outline"
@@ -680,7 +682,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
             Exporter
           </Button>
           <Button
-            className="h-10 rounded-xl px-4"
+            className="h-10 rounded-full px-5"
             onClick={() => setIsDialogOpen(true)}
           >
             <HugeiconsIcon

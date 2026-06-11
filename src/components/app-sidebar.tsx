@@ -299,22 +299,20 @@ export function AppSidebar({
           "shrink-0 transition-all duration-300 relative z-10",
           isCollapsed
             ? "mx-0 mb-0 mt-auto px-0 pt-2 pb-2 flex flex-col items-center gap-0.5"
-            : "mx-3 mb-1 mt-auto rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 px-2 pt-2 pb-1 shadow-sm backdrop-blur-md"
+            : "mx-0 mb-0 mt-auto px-4 pt-1 pb-3 bg-transparent"
         )}
       >
         {/* Divider above footer */}
-        {isCollapsed && (
+        {isCollapsed ? (
           <div className="mb-2 h-px w-8 bg-zinc-900/8 dark:bg-white/8 rounded-full" />
+        ) : (
+          <div className="mb-3 h-px w-full bg-zinc-900/5 dark:bg-white/5" />
         )}
-        <NavSecondary
-          className="p-0"
-          items={secondaryItems}
-        />
-        <div className={cn("my-1.5 h-px w-full bg-zinc-900/5 dark:bg-white/5", isCollapsed && "hidden")} />
         <NavUser
           onFinances={() => onNavigate("finances")}
           onNotifications={() => onNavigate("taches")}
           onProfile={() => onNavigate("equipe")}
+          onSettings={() => onNavigate("parametres")}
           user={{
             name: resolvedUserName,
             email: currentUserEmail,

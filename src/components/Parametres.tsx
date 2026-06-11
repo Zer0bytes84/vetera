@@ -74,6 +74,7 @@ import {
   subscribeToProgress,
 } from "@/services/webLLMService";
 import Avatar from "./Avatar";
+import MotivationalHeader from "@/components/MotivationalHeader";
 import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
 
@@ -1875,11 +1876,12 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-end">
-        <div className="flex flex-col gap-2 sm:flex-row">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <MotivationalHeader section="parametres" />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Badge
-            className="h-10 rounded-xl px-4 font-normal text-sm"
+            className="h-10 rounded-full px-5 font-normal text-sm"
             variant="outline"
           >
             {roleLabel}
