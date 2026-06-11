@@ -970,7 +970,6 @@ const Parametres: React.FC<ParametresProps> = ({
     icon: typeof UserCircle02Icon;
   }[] = [
     { id: "profil", label: "Profil", icon: UserCircle02Icon },
-    { id: "apparence", label: "Apparence", icon: Settings01Icon },
     { id: "notifications", label: "Notifications", icon: Notification02Icon },
     { id: "securite", label: "Sécurité", icon: Shield01Icon },
     { id: "ia", label: "IA Locale", icon: SparklesIcon },

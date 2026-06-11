@@ -33,7 +33,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNotesRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Note } from "@/types/db";
-import { SectionCards, type SectionCardItem } from "@/components/section-cards";
+import { StatsTrending, type StatItem } from "@/components/StatsTrending";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -191,43 +191,35 @@ const NotesPro: React.FC = () => {
     return { total, favorites, pinned, recent, totalWords, lastModifiedText };
   }, [notes, currentUser]);
 
-  const sectionCardItems = useMemo<SectionCardItem[]>(
+  const sectionCardItems = useMemo<StatItem[]>(
     () => [
       {
+        id: "total",
         title: "Total Notes",
         value: String(stats.total),
-        badge: stats.total === 0 ? "Vide" : stats.total === 1 ? "1 doc" : `${stats.total} docs`,
-        trend: "neutral",
-        footerTitle: "Base de connaissances",
-        footerDescription: stats.lastModifiedText,
-        icon: FileText,
+        trend: stats.recent > 0 ? `+${stats.recent}` : "0",
+        trendDirection: stats.recent > 0 ? "up" : "neutral",
       },
       {
+        id: "favorites",
         title: "Favoris",
         value: String(stats.favorites),
-        badge: "Accès rapide",
-        trend: "neutral",
-        footerTitle: "Raccourcis étoilés",
-        footerDescription: "Notes marquées d'une étoile",
-        icon: Star,
+        trend: `${stats.total > 0 ? Math.round((stats.favorites / stats.total) * 100) : 0}%`,
+        trendDirection: "neutral",
       },
       {
+        id: "pinned",
         title: "Épinglées",
         value: String(stats.pinned),
-        badge: "Prioritaire",
-        trend: "neutral",
-        footerTitle: "Accès immédiat",
-        footerDescription: "Notes fixées en haut",
-        icon: Pin,
+        trend: `${stats.total > 0 ? Math.round((stats.pinned / stats.total) * 100) : 0}%`,
+        trendDirection: "neutral",
       },
       {
-        title: "Volume Rédigé",
+        id: "words",
+        title: "Mots Rédigés",
         value: stats.totalWords.toLocaleString("fr-FR"),
-        badge: "Mots",
-        trend: "neutral",
-        footerTitle: "Productivité",
-        footerDescription: "Nombre total de mots rédigés",
-        icon: BookOpen,
+        trend: `~${stats.total > 0 ? Math.round(stats.totalWords / stats.total) : 0} m/note`,
+        trendDirection: "neutral",
       },
     ],
     [stats]
@@ -396,15 +388,14 @@ const NotesPro: React.FC = () => {
       </div>
 
       {/* Widget Cards Row */}
-      <SectionCards items={sectionCardItems} />
+      <StatsTrending items={sectionCardItems} className="shrink-0" />
 
       {/* Main workspace */}
       <div className="flex flex-1 min-h-[520px] gap-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
 
-        {/* ── LEFT SIDEBAR ── */}
         <aside
           className={cn(
-            "flex flex-col shrink-0 border-r border-border/50 transition-all duration-300 ease-in-out bg-zinc-50/80 dark:bg-zinc-900/60",
+            "flex flex-col shrink-0 border-r border-border/50 transition-all duration-300 ease-in-out bg-white dark:bg-zinc-950",
             showSidebar ? "w-[300px]" : "w-0 overflow-hidden"
           )}
         >
@@ -426,14 +417,14 @@ const NotesPro: React.FC = () => {
           </div>
 
           {/* Search bar */}
-          <div className="px-3 pb-2">
+          <div className="px-3 pb-3">
             <div className="relative">
               <HugeiconsIcon
-                className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground/40"
+                className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground/50"
                 icon={SearchIcon}
               />
               <Input
-                className="h-8 rounded-lg border-border/40 bg-white/70 dark:bg-zinc-800/60 pl-8 text-xs placeholder:text-muted-foreground/40 focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:border-primary/30 shadow-none"
+                className="h-8 rounded-lg border-border/40 bg-white dark:bg-zinc-950 pl-8 text-xs placeholder:text-muted-foreground/40 focus-visible:ring-1 focus-visible:ring-primary/30 shadow-xs"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Rechercher..."
                 value={searchTerm}
@@ -442,40 +433,30 @@ const NotesPro: React.FC = () => {
           </div>
 
           {/* Filter tabs */}
-          <div className="flex gap-0.5 px-3 pb-3">
-            {(
-              [
-                { id: "all", label: "Toutes", count: stats.total },
-                { id: "favorites", label: "Favoris", count: stats.favorites },
-                { id: "pinned", label: "Épinglées", count: stats.pinned },
-                { id: "recent", label: "7 jours", count: stats.recent },
-              ] as const
-            ).map((f) => (
-              <button
-                className={cn(
-                  "flex items-center gap-1 rounded-lg px-2.5 py-1.5 font-medium text-[11px] transition-all duration-150",
-                  filter === f.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/80 hover:text-foreground dark:hover:bg-zinc-800/80"
-                )}
-                key={f.id}
-                onClick={() => setFilter(f.id)}
-              >
-                {f.label}
-                {f.count > 0 && (
-                  <span
-                    className={cn(
-                      "min-w-[16px] rounded-full px-1 py-0 text-center text-[10px] font-semibold tabular-nums leading-4",
-                      filter === f.id
-                        ? "bg-white/25 text-white"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {f.count}
-                  </span>
-                )}
-              </button>
-            ))}
+          <div className="px-3 pb-3">
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800/80 rounded-md p-1">
+              {(
+                [
+                  { id: "all", label: "Toutes", count: stats.total },
+                  { id: "favorites", label: "Favoris", count: stats.favorites },
+                  { id: "pinned", label: "Épinglées", count: stats.pinned },
+                  { id: "recent", label: "Récents", count: stats.recent },
+                ] as const
+              ).map((f) => (
+                <button
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1 rounded px-2 py-1 font-medium text-[10px] transition-colors",
+                    filter === f.id
+                      ? "bg-white dark:bg-zinc-700 text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  key={f.id}
+                  onClick={() => setFilter(f.id)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="mx-3 border-t border-border/40" />
@@ -484,9 +465,9 @@ const NotesPro: React.FC = () => {
           <ScrollArea className="flex-1 mt-1">
             {filteredNotes.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-14 text-center px-4">
-                <div className="flex size-14 items-center justify-center rounded-2xl bg-muted/60 dark:bg-zinc-800/60 mb-3">
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 dark:bg-primary/15 mb-3 ring-1 ring-primary/20 shadow-sm">
                   <HugeiconsIcon
-                    className="size-7 text-muted-foreground/30"
+                    className="size-7 text-primary/70 dark:text-primary/60"
                     icon={File01Icon}
                   />
                 </div>
@@ -522,7 +503,7 @@ const NotesPro: React.FC = () => {
                       className={cn(
                         "group relative flex w-full flex-col gap-1.5 rounded-xl p-3 text-left transition-all duration-150 cursor-pointer",
                         isSelected
-                          ? "bg-white dark:bg-zinc-800 shadow-sm ring-1 ring-border/60 dark:ring-zinc-700/60"
+                          ? "bg-white dark:bg-zinc-800/90 shadow-sm ring-1 ring-primary/30 dark:ring-primary/40"
                           : "hover:bg-white/70 dark:hover:bg-zinc-800/50"
                       )}
                       key={note.id}
@@ -546,7 +527,7 @@ const NotesPro: React.FC = () => {
                               accent
                             )}
                           >
-                            {getInitial(note.title)}
+                            <FileText className="size-3.5" strokeWidth={2.5} />
                           </div>
                           <p
                             className={cn(
@@ -878,30 +859,12 @@ const NotesPro: React.FC = () => {
               </div>
             </div>
           ) : (
-            /* ── PREMIUM EMPTY STATE ── */
-            <div className="flex flex-1 flex-col items-center justify-center p-12 relative overflow-hidden">
-              {/* Decorative background radial */}
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="size-[500px] rounded-full bg-gradient-to-br from-primary/5 via-transparent to-transparent blur-3xl" />
-              </div>
-              <div className="pointer-events-none absolute top-8 right-8">
-                <div className="size-[200px] rounded-full bg-gradient-to-br from-emerald-200/20 to-transparent blur-2xl dark:from-emerald-500/10" />
-              </div>
-
-              {/* Icon cluster */}
-              <div className="relative mb-7">
-                {/* Background glow ring */}
-                <div className="absolute inset-0 rounded-3xl bg-primary/10 blur-xl scale-150 dark:bg-primary/15" />
-                <div className="relative flex size-24 items-center justify-center rounded-3xl bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 ring-1 ring-primary/20 dark:from-primary/20 dark:via-primary/10 dark:ring-primary/15 shadow-lg">
-                  <PenLine className="size-10 text-primary/70 dark:text-primary/60" />
-                </div>
-                {/* Floating accent badges */}
-                <div className="absolute -top-2 -right-3 flex size-8 items-center justify-center rounded-xl bg-amber-400/20 ring-1 ring-amber-400/30 shadow-sm backdrop-blur-sm">
-                  <Star className="size-3.5 fill-amber-400 text-amber-400" />
-                </div>
-                <div className="absolute -bottom-2 -left-3 flex size-7 items-center justify-center rounded-lg bg-emerald-400/20 ring-1 ring-emerald-400/30 shadow-sm backdrop-blur-sm">
-                  <Sparkles className="size-3 text-emerald-500" />
-                </div>
+            <div className="flex flex-1 flex-col items-center justify-center p-12 relative overflow-hidden bg-white dark:bg-zinc-950">
+              {/* Clean Icon */}
+              <div className="relative mb-6 flex size-20 items-center justify-center rounded-3xl bg-white dark:bg-zinc-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-border/50">
+                <PenLine className="size-8 text-zinc-400 dark:text-zinc-500 stroke-[1.5]" />
+                {/* Subtle accent dot */}
+                <div className="absolute top-4 right-4 size-2 rounded-full bg-primary/40" />
               </div>
 
               {/* Text */}
