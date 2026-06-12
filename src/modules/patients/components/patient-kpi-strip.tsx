@@ -4,10 +4,7 @@ import {
   Stethoscope,
   Syringe,
 } from "@phosphor-icons/react";
-import { TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-import { cn } from "@/lib/utils";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
 
@@ -47,7 +44,8 @@ export function PatientKpiStrip({
   const now = new Date();
 
   const sortedWeights = [...weightEntries].sort(
-    (a, b) => new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime()
+    (a, b) =>
+      new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime()
   );
   const lastWeight = sortedWeights[sortedWeights.length - 1];
   const previousWeight = sortedWeights[sortedWeights.length - 2];
@@ -86,7 +84,8 @@ export function PatientKpiStrip({
       value: lastWeight
         ? `${lastWeight.weightKg.toFixed(2)} kg`
         : t("patientDetail.kpi.noWeight"),
-      badge: weightDelta ?? (lastWeight ? t("patientDetail.kpi.lastWeight") : "—"),
+      badge:
+        weightDelta ?? (lastWeight ? t("patientDetail.kpi.lastWeight") : "—"),
       footerTitle: lastWeight
         ? (formatDateShort(lastWeight.measuredAt) ?? "—")
         : t("patientDetail.kpi.noWeight"),
@@ -123,8 +122,7 @@ export function PatientKpiStrip({
     },
     {
       title: t("patientDetail.kpi.nextVaccine"),
-      value:
-        nextVaccination?.vaccineName ?? t("patientDetail.kpi.nonePlanned"),
+      value: nextVaccination?.vaccineName ?? t("patientDetail.kpi.nonePlanned"),
       badge:
         nextVaccDaysOut == null
           ? "—"
@@ -162,8 +160,7 @@ export function PatientKpiStrip({
     },
     {
       title: t("patientDetail.kpi.nextAppointment"),
-      value:
-        nextAppointment?.title ?? t("patientDetail.kpi.noAppointment"),
+      value: nextAppointment?.title ?? t("patientDetail.kpi.noAppointment"),
       badge:
         nextApptDaysOut == null
           ? "—"
@@ -181,7 +178,5 @@ export function PatientKpiStrip({
     },
   ];
 
-  return (
-    <SectionCards items={items} />
-  );
+  return <SectionCards items={items} />;
 }

@@ -143,7 +143,7 @@ function KanbanCardBody({
           </p>
 
           {task.description ? (
-            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+            <p className="mt-1 line-clamp-2 text-muted-foreground text-xs">
               {task.description}
             </p>
           ) : null}
@@ -409,8 +409,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 >
                   {columnTasks.length === 0 ? (
                     <div className="flex h-32 flex-col items-center justify-center gap-2 rounded-xl border-2 border-border border-dashed bg-muted/10 transition-colors hover:border-primary/20 hover:bg-muted/20">
-                      <HugeiconsIcon className="size-6 text-muted-foreground/30" icon={Icon} strokeWidth={1.5} />
-                      <p className="text-muted-foreground text-xs font-medium">
+                      <HugeiconsIcon
+                        className="size-6 text-muted-foreground/30"
+                        icon={Icon}
+                        strokeWidth={1.5}
+                      />
+                      <p className="font-medium text-muted-foreground text-xs">
                         Rien ici pour le moment
                       </p>
                     </div>

@@ -83,9 +83,9 @@ export function useSpeechToText(
 ): SpeechToTextState {
   const { lang = "fr-FR", onError, onFinalResult } = options;
 
-  const [isSupported] = useState<boolean>(() => {
-    return getSpeechRecognitionCtor() !== null;
-  });
+  const [isSupported] = useState<boolean>(
+    () => getSpeechRecognitionCtor() !== null
+  );
   const [isListening, setIsListening] = useState<boolean>(false);
   const [transcript, setTranscript] = useState<string>("");
   const [interimTranscript, setInterimTranscript] = useState<string>("");
@@ -155,9 +155,7 @@ export function useSpeechToText(
       }
       if (final) {
         setTranscript((previous) => {
-          const next = previous
-            ? `${previous} ${final}`.trim()
-            : final.trim();
+          const next = previous ? `${previous} ${final}`.trim() : final.trim();
           onFinalRef.current?.(next);
           return next;
         });

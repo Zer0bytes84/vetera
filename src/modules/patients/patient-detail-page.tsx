@@ -1,26 +1,39 @@
-import { ArrowLeft, FirstAid, ShieldCheck, Pill, Hospital, Syringe, Notebook } from "@phosphor-icons/react";
+import {
+  ArrowLeft,
+  FirstAid,
+  Hospital,
+  Pill,
+  Syringe,
+} from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
-
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAppointmentsRepository, usePatientsRepository } from "@/data/repositories";
+import { useAuth } from "@/contexts/AuthContext";
 import {
+  useAppointmentsRepository,
+  useOwnersRepository,
+  usePatientsRepository,
   useVaccinationsRepository,
   useWeightEntriesRepository,
-  useOwnersRepository,
 } from "@/data/repositories";
+import { AnesthesiaDetail, AnesthesiaList } from "@/modules/anesthesia";
 import { ConsultationSessionDrawer } from "@/modules/consultations";
-import type { View } from "@/types";
-import type { Vaccination, WeightEntry, Hospitalization, AnesthesiaSheet } from "@/types/db";
-
-import { PatientDocumentsList } from "./components/patient-documents-list";
+import {
+  HospitalizationDetail,
+  HospitalizationList,
+} from "@/modules/hospitalizations";
 import { PrescriptionList, PrescriptionSheet } from "@/modules/prescriptions";
-import { AnesthesiaList, AnesthesiaDetail } from "@/modules/anesthesia";
-import { HospitalizationList, HospitalizationDetail } from "@/modules/hospitalizations";
+import type { View } from "@/types";
+import type {
+  AnesthesiaSheet,
+  Hospitalization,
+  Vaccination,
+  WeightEntry,
+} from "@/types/db";
+import { PatientDocumentsList } from "./components/patient-documents-list";
 import { PatientHeader } from "./components/patient-header";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
 import { PatientTimeline } from "./components/patient-timeline";
@@ -50,16 +63,23 @@ export function PatientDetailPage({
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
   const [editingWeight, setEditingWeight] = useState<WeightEntry | null>(null);
   const [vaccinationDialogOpen, setVaccinationDialogOpen] = useState(false);
-  const [editingVaccination, setEditingVaccination] = useState<Vaccination | null>(null);
+  const [editingVaccination, setEditingVaccination] =
+    useState<Vaccination | null>(null);
   const [activeTab, setActiveTab] = useState("timeline");
-  const [soapAppointmentId, setSoapAppointmentId] = useState<string | null>(null);
+  const [soapAppointmentId, setSoapAppointmentId] = useState<string | null>(
+    null
+  );
   const [soapOpen, setSoapOpen] = useState<boolean>(false);
-  
-  const [selectedHospitalization, setSelectedHospitalization] = useState<Hospitalization | null>(null);
-  const [selectedAnesthesia, setSelectedAnesthesia] = useState<AnesthesiaSheet | null>(null);
+
+  const [selectedHospitalization, setSelectedHospitalization] =
+    useState<Hospitalization | null>(null);
+  const [selectedAnesthesia, setSelectedAnesthesia] =
+    useState<AnesthesiaSheet | null>(null);
 
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
-  const [prescriptionAppointmentId, setPrescriptionAppointmentId] = useState<string | null>(null);
+  const [prescriptionAppointmentId, setPrescriptionAppointmentId] = useState<
+    string | null
+  >(null);
 
   // Stable "now" snapshot — évite l'avertissement React `Date.now()` impurity
   // tout en restant à jour toutes les 60s pour les KPIs temporels.
@@ -143,12 +163,12 @@ export function PatientDetailPage({
 
       try {
         const newApt = await appointmentsRepo.saveAppointment({
-          patientId: patientId,
+          patientId,
           title: `Consultation - ${patient?.name || ""}`,
           type: "Consultation",
           status: "in_progress",
           startTime: nowTime,
-          endTime: endTime,
+          endTime,
           vetId: currentUser?.id,
           reason: "Consultation rapide / Note médicale",
         });
@@ -159,7 +179,9 @@ export function PatientDetailPage({
         }
       } catch (err) {
         console.error("Failed to create quick appointment", err);
-        toast.error("Impossible de créer une nouvelle session de consultation.");
+        toast.error(
+          "Impossible de créer une nouvelle session de consultation."
+        );
       }
     }
   };
@@ -175,17 +197,14 @@ export function PatientDetailPage({
   if (!patient) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-8 text-center">
-        <p className="text-lg font-semibold">
+        <p className="font-semibold text-lg">
           {t("patientDetail.notFoundDetails.title")}
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {t("patientDetail.notFoundDetails.description")}
         </p>
-        <Button
-          onClick={() => onNavigate("patients")}
-          variant="outline"
-        >
-          <ArrowLeft weight="duotone" className="size-4" />
+        <Button onClick={() => onNavigate("patients")} variant="outline">
+          <ArrowLeft className="size-4" weight="duotone" />
           {t("patientDetail.notFoundDetails.back")}
         </Button>
       </div>
@@ -214,7 +233,7 @@ export function PatientDetailPage({
   };
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       <div className="mx-auto w-full max-w-6xl space-y-8">
         <Button
           className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
@@ -222,15 +241,15 @@ export function PatientDetailPage({
           size="sm"
           variant="ghost"
         >
-          <ArrowLeft weight="duotone" className="size-4" />
+          <ArrowLeft className="size-4" weight="duotone" />
           {t("patientDetail.back")}
         </Button>
 
         <PatientHeader
-          onNewNote={handleNewNote}
           onNewAppointment={() => onNavigate("agenda")}
-          patient={patient}
+          onNewNote={handleNewNote}
           owner={owner}
+          patient={patient}
         />
 
         <PatientKpiStrip
@@ -242,54 +261,62 @@ export function PatientDetailPage({
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Main Clinical Section (2/3 columns wide) */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             <Tabs
               className="w-full"
               onValueChange={handleTabChange}
               value={activeTab}
             >
-              <TabsList className="inline-flex items-center gap-1 bg-zinc-100/80 dark:bg-zinc-900/60 p-1 rounded-full border border-zinc-200/50 dark:border-white/[0.04] backdrop-blur-sm shadow-sm" variant="line">
-                <TabsTrigger 
-                  value="timeline" 
-                  className="rounded-full px-4 py-1.5 text-xs font-semibold gap-1.5 transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground"
+              <TabsList
+                className="inline-flex items-center gap-1 rounded-full border border-zinc-200/50 bg-zinc-100/80 p-1 shadow-sm backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/60"
+                variant="line"
+              >
+                <TabsTrigger
+                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  value="timeline"
                 >
-                  <FirstAid weight="duotone" className="size-4" />
+                  <FirstAid className="size-4" weight="duotone" />
                   Chronologie
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="prescriptions" 
-                  className="rounded-full px-4 py-1.5 text-xs font-semibold gap-1.5 transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground"
+                <TabsTrigger
+                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  value="prescriptions"
                 >
-                  <Pill weight="duotone" className="size-4" />
+                  <Pill className="size-4" weight="duotone" />
                   Ordonnances
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="hospitalizations" 
-                  className="rounded-full px-4 py-1.5 text-xs font-semibold gap-1.5 transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground"
+                <TabsTrigger
+                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  value="hospitalizations"
                 >
-                  <Hospital weight="duotone" className="size-4" />
+                  <Hospital className="size-4" weight="duotone" />
                   Hospitalisations
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="anesthesia" 
-                  className="rounded-full px-4 py-1.5 text-xs font-semibold gap-1.5 transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground"
+                <TabsTrigger
+                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  value="anesthesia"
                 >
-                  <Syringe weight="duotone" className="size-4" />
+                  <Syringe className="size-4" weight="duotone" />
                   Anesthésies
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent className="mt-4 space-y-4 focus-visible:outline-none" value="timeline">
+              <TabsContent
+                className="mt-4 space-y-4 focus-visible:outline-none"
+                value="timeline"
+              >
                 <PatientTimeline
                   onJumpToAppointment={openSoapForAppointment}
                   patientId={patientId}
                 />
               </TabsContent>
 
-              <TabsContent className="mt-4 space-y-4 focus-visible:outline-none" value="prescriptions">
+              <TabsContent
+                className="mt-4 space-y-4 focus-visible:outline-none"
+                value="prescriptions"
+              >
                 {patient ? (
-                  <PrescriptionList 
-                    patient={patient} 
+                  <PrescriptionList
                     onNew={async () => {
                       const todayStart = new Date();
                       todayStart.setHours(0, 0, 0, 0);
@@ -298,7 +325,11 @@ export function PatientDetailPage({
 
                       const todayApt = appointments.find((apt) => {
                         const d = new Date(apt.startTime);
-                        return d >= todayStart && d <= todayEnd && apt.status !== "cancelled";
+                        return (
+                          d >= todayStart &&
+                          d <= todayEnd &&
+                          apt.status !== "cancelled"
+                        );
                       });
 
                       if (todayApt) {
@@ -306,36 +337,51 @@ export function PatientDetailPage({
                         setPrescriptionOpen(true);
                       } else {
                         const nowTime = new Date();
-                        const endTime = new Date(nowTime.getTime() + 30 * 60 * 1000);
+                        const endTime = new Date(
+                          nowTime.getTime() + 30 * 60 * 1000
+                        );
 
                         try {
-                          const newApt = await appointmentsRepo.saveAppointment({
-                            patientId: patientId,
-                            title: `Consultation - ${patient.name}`,
-                            type: "Consultation",
-                            status: "in_progress",
-                            startTime: nowTime,
-                            endTime: endTime,
-                            vetId: currentUser?.id,
-                            reason: "Ordonnance",
-                          });
+                          const newApt = await appointmentsRepo.saveAppointment(
+                            {
+                              patientId,
+                              title: `Consultation - ${patient.name}`,
+                              type: "Consultation",
+                              status: "in_progress",
+                              startTime: nowTime,
+                              endTime,
+                              vetId: currentUser?.id,
+                              reason: "Ordonnance",
+                            }
+                          );
 
                           if (newApt && newApt.id) {
                             setPrescriptionAppointmentId(newApt.id);
                             setPrescriptionOpen(true);
-                            toast.success("Nouvelle session de consultation créée pour l'ordonnance.");
+                            toast.success(
+                              "Nouvelle session de consultation créée pour l'ordonnance."
+                            );
                           }
                         } catch (err) {
-                          console.error("Failed to create quick appointment", err);
-                          toast.error("Impossible de créer une nouvelle session de consultation.");
+                          console.error(
+                            "Failed to create quick appointment",
+                            err
+                          );
+                          toast.error(
+                            "Impossible de créer une nouvelle session de consultation."
+                          );
                         }
                       }
                     }}
+                    patient={patient}
                   />
                 ) : null}
               </TabsContent>
 
-              <TabsContent className="mt-4 space-y-4 focus-visible:outline-none" value="hospitalizations">
+              <TabsContent
+                className="mt-4 space-y-4 focus-visible:outline-none"
+                value="hospitalizations"
+              >
                 {patient ? (
                   selectedHospitalization ? (
                     <HospitalizationDetail
@@ -345,25 +391,28 @@ export function PatientDetailPage({
                     />
                   ) : (
                     <HospitalizationList
-                      patient={patient}
                       onSelect={setSelectedHospitalization}
+                      patient={patient}
                     />
                   )
                 ) : null}
               </TabsContent>
 
-              <TabsContent className="mt-4 space-y-4 focus-visible:outline-none" value="anesthesia">
+              <TabsContent
+                className="mt-4 space-y-4 focus-visible:outline-none"
+                value="anesthesia"
+              >
                 {patient ? (
                   selectedAnesthesia ? (
                     <AnesthesiaDetail
-                      sheet={selectedAnesthesia}
                       onBack={() => setSelectedAnesthesia(null)}
                       patient={patient}
+                      sheet={selectedAnesthesia}
                     />
                   ) : (
                     <AnesthesiaList
-                      patient={patient}
                       onSelect={setSelectedAnesthesia}
+                      patient={patient}
                     />
                   )
                 ) : null}

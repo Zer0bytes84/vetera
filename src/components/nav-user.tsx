@@ -1,15 +1,14 @@
 "use client";
 
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   MoreVerticalIcon,
   Notification01Icon,
+  Settings01Icon,
   UserCircleIcon,
   Wallet01Icon,
-  Settings01Icon,
 } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,28 +61,34 @@ export function NavUser({
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem className="flex flex-row items-center justify-between w-full gap-0.5">
+      <SidebarMenuItem className="flex w-full flex-row items-center justify-between gap-0.5">
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
-                className="flex-1 group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-9 h-10 px-1.5 hover:bg-zinc-950/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all"
+                className="group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 h-10 flex-1 rounded-lg px-1.5 transition-all hover:bg-zinc-950/[0.03] aria-expanded:bg-sidebar-accent dark:hover:bg-white/[0.04] [@media(max-height:820px)]:h-9"
                 size="lg"
               />
             }
           >
-            <Avatar className="size-8 rounded-full shadow-sm border border-border/50 transition-all group-data-[collapsible=icon]:size-8">
+            <Avatar className="size-8 rounded-full border border-border/50 shadow-sm transition-all group-data-[collapsible=icon]:size-8">
               <AvatarImage alt={user.name} src={normalizedAvatar} />
-              <AvatarFallback className="rounded-full bg-primary/10 text-primary text-[11px] font-medium">{fallback}</AvatarFallback>
+              <AvatarFallback className="rounded-full bg-primary/10 font-medium text-[11px] text-primary">
+                {fallback}
+              </AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 min-w-0 ms-1.5 text-start text-xs group-data-[collapsible=icon]:hidden leading-tight">
-              <span className="truncate font-medium tracking-tight text-[13px] text-foreground antialiased">{user.name}</span>
-              <span className="truncate text-[10px] text-muted-foreground/70 mt-0.5">{user.email}</span>
+            <div className="ms-1.5 grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
+              <span className="truncate font-medium text-[13px] text-foreground tracking-tight antialiased">
+                {user.name}
+              </span>
+              <span className="mt-0.5 truncate text-[10px] text-muted-foreground/70">
+                {user.email}
+              </span>
             </div>
             <HugeiconsIcon
+              className="ms-auto size-3.5 text-muted-foreground/45 transition-colors group-hover:text-foreground group-data-[collapsible=icon]:hidden"
               icon={MoreVerticalIcon}
               strokeWidth={1.5}
-              className="ms-auto size-3.5 text-muted-foreground/45 transition-colors group-hover:text-foreground group-data-[collapsible=icon]:hidden"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -95,14 +100,16 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-3 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="size-10 rounded-full shadow-sm border border-border/50">
+                  <Avatar className="size-10 rounded-full border border-border/50 shadow-sm">
                     <AvatarImage alt={user.name} src={normalizedAvatar} />
-                    <AvatarFallback className="rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    <AvatarFallback className="rounded-full bg-primary/10 font-medium text-primary text-sm">
                       {fallback}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-start text-sm leading-tight">
-                    <span className="truncate font-medium tracking-tight text-[15px] antialiased">{user.name}</span>
+                    <span className="truncate font-medium text-[15px] tracking-tight antialiased">
+                      {user.name}
+                    </span>
                     <span className="truncate text-muted-foreground/80 text-xs">
                       {user.email}
                     </span>
@@ -113,36 +120,40 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={onProfile}>
-                <HugeiconsIcon icon={UserCircleIcon} strokeWidth={1.5} className="size-5" />
+                <HugeiconsIcon
+                  className="size-5"
+                  icon={UserCircleIcon}
+                  strokeWidth={1.5}
+                />
                 Mon profil
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onFinances}>
-                <HugeiconsIcon icon={Wallet01Icon} strokeWidth={1.5} className="size-5" />
+                <HugeiconsIcon
+                  className="size-5"
+                  icon={Wallet01Icon}
+                  strokeWidth={1.5}
+                />
                 Finances
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onNotifications}>
-                <HugeiconsIcon icon={Notification01Icon} strokeWidth={1.5} className="size-5" />
+                <HugeiconsIcon
+                  className="size-5"
+                  icon={Notification01Icon}
+                  strokeWidth={1.5}
+                />
                 Notifications
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onSettings}>
+                <HugeiconsIcon
+                  className="size-5"
+                  icon={Settings01Icon}
+                  strokeWidth={1.5}
+                />
+                Paramètres
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {/* Settings Button on the right of More dots */}
-        <div className="group-data-[collapsible=icon]:hidden flex items-center">
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSettings?.();
-            }}
-            className="size-7 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-zinc-950/[0.03] dark:hover:bg-white/[0.04] transition-colors"
-            size="icon-sm"
-            variant="ghost"
-            title="Paramètres"
-          >
-            <HugeiconsIcon icon={Settings01Icon} className="size-3.5" strokeWidth={1.5} />
-          </Button>
-        </div>
       </SidebarMenuItem>
     </SidebarMenu>
   );

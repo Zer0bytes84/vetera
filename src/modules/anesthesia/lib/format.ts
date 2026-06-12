@@ -45,12 +45,16 @@ export function computeAnesthesiaDurationMinutes(
   endedAt: string | null | undefined,
   now: Date = new Date()
 ): number {
-  if (!startedAt) return 0;
+  if (!startedAt) {
+    return 0;
+  }
   const start = new Date(startedAt).getTime();
-  if (Number.isNaN(start)) return 0;
-  const end = endedAt
-    ? new Date(endedAt).getTime()
-    : now.getTime();
-  if (Number.isNaN(end) || end < start) return 0;
-  return Math.floor((end - start) / 60000);
+  if (Number.isNaN(start)) {
+    return 0;
+  }
+  const end = endedAt ? new Date(endedAt).getTime() : now.getTime();
+  if (Number.isNaN(end) || end < start) {
+    return 0;
+  }
+  return Math.floor((end - start) / 60_000);
 }

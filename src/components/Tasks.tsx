@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 import {
   Add01Icon,
   Calendar01Icon,
@@ -17,8 +18,8 @@ import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import MotivationalHeader from "@/components/MotivationalHeader";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -41,7 +42,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   NativeSelect,
   NativeSelectOption,
@@ -59,6 +59,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { PRIORITY_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
@@ -428,7 +429,7 @@ const Tasks: React.FC = () => {
   ]);
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="taches" />
         <div className="flex flex-wrap items-center gap-3">
@@ -486,16 +487,23 @@ const Tasks: React.FC = () => {
       <Card
         className={cn(
           "card-vibrant overflow-hidden transition-all duration-300",
-          isAdding 
-            ? "rounded-[24px] border border-border bg-card shadow-lg shadow-black/5 ring-1 ring-primary/20" 
-            : "rounded-[24px] border-2 border-muted-foreground/15 bg-muted/10 hover:border-primary/30 hover:bg-muted/20 shadow-sm cursor-text"
+          isAdding
+            ? "rounded-[24px] border border-border bg-card shadow-black/5 shadow-lg ring-1 ring-primary/20"
+            : "cursor-text rounded-[24px] border-2 border-muted-foreground/15 bg-muted/10 shadow-sm hover:border-primary/30 hover:bg-muted/20"
         )}
         onClick={() => {
-          if (!isAdding) setIsAdding(true);
+          if (!isAdding) {
+            setIsAdding(true);
+          }
         }}
         size="sm"
       >
-        <CardContent className={cn("transition-all duration-300", isAdding ? "p-5" : "p-3")}>
+        <CardContent
+          className={cn(
+            "transition-all duration-300",
+            isAdding ? "p-5" : "p-3"
+          )}
+        >
           <form className="flex flex-col gap-3" onSubmit={handleAddTask}>
             <div className="flex items-start gap-3">
               {isAdding ? (
@@ -505,12 +513,14 @@ const Tasks: React.FC = () => {
               ) : (
                 <div className="mt-2.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/30" />
               )}
-              
+
               <div className="flex flex-1 flex-col">
                 <Input
                   className={cn(
-                    "border-none bg-transparent shadow-none focus-visible:ring-0 px-0",
-                    isAdding ? "text-lg font-medium placeholder:text-muted-foreground/60" : "text-sm placeholder:text-muted-foreground/80"
+                    "border-none bg-transparent px-0 shadow-none focus-visible:ring-0",
+                    isAdding
+                      ? "font-medium text-lg placeholder:text-muted-foreground/60"
+                      : "text-sm placeholder:text-muted-foreground/80"
                   )}
                   onChange={(e) => {
                     setNewTaskTitle(e.target.value);
@@ -519,15 +529,17 @@ const Tasks: React.FC = () => {
                     }
                   }}
                   onFocus={() => setIsAdding(true)}
-                  placeholder={isAdding ? "Titre de la tâche..." : "Que devez-vous faire ?"}
+                  placeholder={
+                    isAdding ? "Titre de la tâche..." : "Que devez-vous faire ?"
+                  }
                   type="text"
                   value={newTaskTitle}
                 />
-                
+
                 {isAdding && (
-                  <div className="fade-in slide-in-from-top-1 animate-in mt-2">
+                  <div className="fade-in slide-in-from-top-1 mt-2 animate-in">
                     <Textarea
-                      className="min-h-[60px] resize-none border-none bg-transparent px-0 py-1 shadow-none focus-visible:ring-0 text-sm text-muted-foreground placeholder:text-muted-foreground/40"
+                      className="min-h-[60px] resize-none border-none bg-transparent px-0 py-1 text-muted-foreground text-sm shadow-none placeholder:text-muted-foreground/40 focus-visible:ring-0"
                       onChange={(e) => setNewTaskDescription(e.target.value)}
                       placeholder="Ajouter des notes, des détails ou un contexte..."
                       value={newTaskDescription}
@@ -535,15 +547,19 @@ const Tasks: React.FC = () => {
                   </div>
                 )}
               </div>
-              
+
               {!isAdding && (
                 <Button
-                  className="rounded-full size-9 p-0 bg-primary/10 text-primary hover:bg-primary/20 shrink-0"
+                  className="size-9 shrink-0 rounded-full bg-primary/10 p-0 text-primary hover:bg-primary/20"
                   onClick={() => setIsAdding(true)}
                   type="button"
                   variant="ghost"
                 >
-                  <HugeiconsIcon className="size-5" icon={Add01Icon} strokeWidth={2.5} />
+                  <HugeiconsIcon
+                    className="size-5"
+                    icon={Add01Icon}
+                    strokeWidth={2.5}
+                  />
                 </Button>
               )}
             </div>
@@ -556,7 +572,7 @@ const Tasks: React.FC = () => {
                     <PopoverTrigger
                       render={
                         <Button
-                          className="h-8 rounded-full bg-muted/40 px-3 font-medium text-xs hover:bg-muted/60 text-foreground/80"
+                          className="h-8 rounded-full bg-muted/40 px-3 font-medium text-foreground/80 text-xs hover:bg-muted/60"
                           size="sm"
                           variant="ghost"
                         />
@@ -576,7 +592,7 @@ const Tasks: React.FC = () => {
                     </PopoverTrigger>
                     <PopoverContent
                       align="start"
-                      className="w-auto rounded-[1.35rem] p-2.5 shadow-xl shadow-black/5"
+                      className="w-auto rounded-[1.35rem] p-2.5 shadow-black/5 shadow-xl"
                       sideOffset={8}
                     >
                       <Calendar
@@ -584,7 +600,9 @@ const Tasks: React.FC = () => {
                         locale={calendarLocale}
                         mode="single"
                         onSelect={(date) => {
-                          if (!date) return;
+                          if (!date) {
+                            return;
+                          }
                           setNewTaskDetails({
                             ...newTaskDetails,
                             dueDate: formatDateInput(date),
@@ -605,7 +623,7 @@ const Tasks: React.FC = () => {
                       strokeWidth={2.5}
                     />
                     <NativeSelect
-                      className="w-auto border-none bg-transparent p-0 text-xs font-medium focus:ring-0"
+                      className="w-auto border-none bg-transparent p-0 font-medium text-xs focus:ring-0"
                       onChange={handleStartTimeChange}
                       value={newTaskDetails.startTime}
                     >
@@ -616,9 +634,11 @@ const Tasks: React.FC = () => {
                         </NativeSelectOption>
                       ))}
                     </NativeSelect>
-                    <span className="text-muted-foreground/50 text-[10px]">-</span>
+                    <span className="text-[10px] text-muted-foreground/50">
+                      -
+                    </span>
                     <NativeSelect
-                      className="w-auto border-none bg-transparent p-0 text-xs font-medium focus:ring-0"
+                      className="w-auto border-none bg-transparent p-0 font-medium text-xs focus:ring-0"
                       onChange={(e) =>
                         setNewTaskDetails({
                           ...newTaskDetails,
@@ -651,7 +671,7 @@ const Tasks: React.FC = () => {
                       strokeWidth={2.5}
                     />
                     <NativeSelect
-                      className="w-auto border-none bg-transparent p-0 text-xs font-medium focus:ring-0"
+                      className="w-auto border-none bg-transparent p-0 font-medium text-xs focus:ring-0"
                       onChange={(e) =>
                         setNewTaskDetails({
                           ...newTaskDetails,
@@ -661,15 +681,19 @@ const Tasks: React.FC = () => {
                       value={newTaskDetails.priority}
                     >
                       <NativeSelectOption value="low">Basse</NativeSelectOption>
-                      <NativeSelectOption value="medium">Moyenne</NativeSelectOption>
-                      <NativeSelectOption value="high">Haute</NativeSelectOption>
+                      <NativeSelectOption value="medium">
+                        Moyenne
+                      </NativeSelectOption>
+                      <NativeSelectOption value="high">
+                        Haute
+                      </NativeSelectOption>
                     </NativeSelect>
                   </div>
 
                   {/* Reminder Toggle */}
                   <Button
                     className={cn(
-                      "gap-1.5 rounded-full text-xs h-8 px-3 font-medium transition-colors",
+                      "h-8 gap-1.5 rounded-full px-3 font-medium text-xs transition-colors",
                       newTaskDetails.isReminder
                         ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400"
                         : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
@@ -691,10 +715,10 @@ const Tasks: React.FC = () => {
                     Rappel
                   </Button>
                 </div>
-                
-                <div className="flex items-center gap-2 ms-auto">
+
+                <div className="ms-auto flex items-center gap-2">
                   <Button
-                    className="rounded-full px-4 text-xs h-8"
+                    className="h-8 rounded-full px-4 text-xs"
                     onClick={() => {
                       setIsAdding(false);
                       setNewTaskTitle("");
@@ -706,7 +730,7 @@ const Tasks: React.FC = () => {
                     Annuler
                   </Button>
                   <Button
-                    className="rounded-full px-5 text-xs h-8 shadow-md shadow-primary/20"
+                    className="h-8 rounded-full px-5 text-xs shadow-md shadow-primary/20"
                     disabled={!newTaskTitle.trim()}
                     type="submit"
                   >
@@ -811,17 +835,21 @@ const Tasks: React.FC = () => {
                 <TableBody>
                   {tableTasks.length === 0 ? (
                     <TableRow>
-                      <TableCell
-                        className="h-64 text-center"
-                        colSpan={6}
-                      >
+                      <TableCell className="h-64 text-center" colSpan={6}>
                         <div className="flex flex-col items-center justify-center gap-3">
                           <div className="flex size-12 items-center justify-center rounded-full bg-muted/40 text-muted-foreground/50">
-                            <HugeiconsIcon className="size-6" icon={Task01Icon} strokeWidth={1.5} />
+                            <HugeiconsIcon
+                              className="size-6"
+                              icon={Task01Icon}
+                              strokeWidth={1.5}
+                            />
                           </div>
-                          <p className="text-sm font-medium text-foreground">Aucune tâche trouvée</p>
-                          <p className="text-xs text-muted-foreground max-w-[250px] mx-auto text-balance">
-                            Vous êtes à jour ! Profitez-en pour vous concentrer sur vos patients ou créez une nouvelle tâche.
+                          <p className="font-medium text-foreground text-sm">
+                            Aucune tâche trouvée
+                          </p>
+                          <p className="mx-auto max-w-[250px] text-balance text-muted-foreground text-xs">
+                            Vous êtes à jour ! Profitez-en pour vous concentrer
+                            sur vos patients ou créez une nouvelle tâche.
                           </p>
                         </div>
                       </TableCell>

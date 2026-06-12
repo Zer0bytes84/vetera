@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
+// Keep some essential widgets
+import { DeferredWidget } from "@/components/deferred-widget";
+import MotivationalHeader from "@/components/MotivationalHeader";
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -9,18 +12,12 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { buildDashboardMetrics } from "@/lib/metrics";
-import MotivationalHeader from "@/components/MotivationalHeader";
-
+import { AsterConsultationsChartWidget } from "./components/aster/aster-consultations-chart-widget";
+import { AsterRanking } from "./components/aster/aster-ranking";
+import { AsterScoreChart } from "./components/aster/aster-score-chart";
+import { AsterTasksChartWidget } from "./components/aster/aster-tasks-chart-widget";
 // Import Aster widgets
 import { AsterTopStats } from "./components/aster-top-stats";
-import { AsterScoreChart } from "./components/aster/aster-score-chart";
-import { AsterRanking } from "./components/aster/aster-ranking";
-
-import { AsterTasksChartWidget } from "./components/aster/aster-tasks-chart-widget";
-import { AsterConsultationsChartWidget } from "./components/aster/aster-consultations-chart-widget";
-
-// Keep some essential widgets
-import { DeferredWidget } from "@/components/deferred-widget";
 import { WaitingRoomWidget } from "./components/waiting-room-widget";
 
 interface DashboardOrbitPageProps {
@@ -44,7 +41,11 @@ function parseDashboardDate(value?: string): Date | null {
   return Number.isFinite(date.getTime()) ? date : null;
 }
 
-export function DashboardOrbitPage({ onNavigate, onNavigateToPatient, userDisplayName }: DashboardOrbitPageProps) {
+export function DashboardOrbitPage({
+  onNavigate,
+  onNavigateToPatient,
+  userDisplayName,
+}: DashboardOrbitPageProps) {
   const { data: appointments } = useAppointmentsRepository();
   const { data: owners } = useOwnersRepository();
   const { data: patients } = usePatientsRepository();
@@ -109,8 +110,7 @@ export function DashboardOrbitPage({ onNavigate, onNavigateToPatient, userDispla
   const fullName = userDisplayName || "Dr.";
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
-      
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       {/* Welcome Message */}
       <MotivationalHeader section="dashboard" />
 
@@ -118,15 +118,18 @@ export function DashboardOrbitPage({ onNavigate, onNavigateToPatient, userDispla
       <AsterTopStats metrics={metrics} />
 
       {/* Row 2: Score & Ranking */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
+      <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-2">
         <AsterScoreChart metrics={metrics} />
         <AsterRanking metrics={metrics} />
       </div>
 
       {/* Row 3: Tâches & Consultations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
-        <AsterTasksChartWidget metrics={metrics} className="min-h-[220px]" />
-        <AsterConsultationsChartWidget metrics={metrics} className="min-h-[220px]" />
+      <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-2">
+        <AsterTasksChartWidget className="min-h-[220px]" metrics={metrics} />
+        <AsterConsultationsChartWidget
+          className="min-h-[220px]"
+          metrics={metrics}
+        />
       </div>
 
       {/* Row 4: Salle d'attente (Waiting Room) */}

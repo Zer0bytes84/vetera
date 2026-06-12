@@ -857,4 +857,3 @@ CREATE TABLE notification_state (
 CREATE INDEX IF NOT EXISTS idx_notification_state_dismissed
   ON notification_state(dismissed_at);
 `;
-

@@ -32,14 +32,14 @@ export function RevenueBreakdownOrbit({
 }: RevenueBreakdownOrbitProps) {
   const total = categories.reduce((sum, c) => sum + c.value, 0) || 1;
 
-  let offset = 0;
-  const normalized = categories.map((category) => {
+  const normalized = [];
+  let currentOffset = 0;
+  for (const category of categories) {
     const percent = Math.round((category.value / total) * 100);
     const dash = Math.max(percent, 7);
-    const item = { ...category, percent, dash, offset };
-    offset += dash + 4;
-    return item;
-  });
+    normalized.push({ ...category, percent, dash, offset: currentOffset });
+    currentOffset += dash + 4;
+  }
 
   return (
     <Card className="dashboard-luxe-card overflow-hidden rounded-[26px] bg-card shadow-none">

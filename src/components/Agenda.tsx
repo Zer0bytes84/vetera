@@ -15,13 +15,12 @@ import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
 import React, { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { type SectionCardItem, SectionCards } from "@/components/section-cards";
+import { AgendaListView } from "@/components/AgendaListView";
 import MotivationalHeader from "@/components/MotivationalHeader";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { AgendaListView } from "@/components/AgendaListView";
 import {
   Card,
   CardAction,
@@ -31,6 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -69,9 +69,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Spinner } from "@/components/ui/spinner";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -86,25 +85,25 @@ import {
   APPOINTMENT_STATUS_META,
   APPOINTMENT_TYPE_META,
 } from "@/config/status-meta";
-import { generateId } from "@/services/sqlite/database";
+import { useFocus } from "@/contexts/focus-provider";
 import {
-  useAppointmentsRepository,
   useAppointmentRecurrencesRepository,
+  useAppointmentsRepository,
   useOwnersRepository,
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
-import { useFocus } from "@/contexts/focus-provider";
 import i18n from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/auditService";
+import { generateId } from "@/services/sqlite/database";
 import type {
   Appointment,
   AppointmentRecurrence,
-  RecurrenceFrequency,
   User as AppUser,
   Owner,
   Patient,
+  RecurrenceFrequency,
 } from "@/types/db";
 
 const APPOINTMENT_TYPES: Appointment["type"][] = [
@@ -171,8 +170,8 @@ function addMinutesToTime(value: string, delta: number): string {
 
 interface TimePickerProps {
   durationMinutes: number;
-  value: string;
   onChange: (value: string) => void;
+  value: string;
 }
 
 function AppointmentTimePicker({
@@ -226,7 +225,7 @@ function AppointmentTimePicker({
         </div>
         <div className="flex flex-col items-center">
           <Input
-            className="w-24 text-center text-base font-semibold tabular-nums"
+            className="w-24 text-center font-semibold text-base tabular-nums"
             onChange={(event) => {
               const next = event.target.value;
               if (/^([0-1]?\d|2[0-3]):[0-5]\d$/.test(next)) {
@@ -239,8 +238,7 @@ function AppointmentTimePicker({
           <span className="mt-0.5 text-[10px] text-muted-foreground/80">
             {t("appointment.time.endsAt", {
               defaultValue: "Fin",
-            })}
-            {" "}
+            })}{" "}
             {endLabel}
           </span>
         </div>
@@ -293,7 +291,7 @@ function AppointmentTimePicker({
         }
         return (
           <div className="space-y-1.5" key={period.id}>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+            <p className="font-bold text-[10px] text-muted-foreground/80 uppercase tracking-wider">
               {period.label}
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -331,7 +329,10 @@ const APPOINTMENT_ROOMS = [
   { value: "imaging", i18nKey: "scheduling.rooms.imaging" },
 ] as const;
 
-const RECURRENCE_FREQUENCIES: { value: RecurrenceFrequency; i18nKey: string }[] = [
+const RECURRENCE_FREQUENCIES: {
+  value: RecurrenceFrequency;
+  i18nKey: string;
+}[] = [
   { value: "weekly", i18nKey: "scheduling.recurrence.frequencies.weekly" },
   { value: "biweekly", i18nKey: "scheduling.recurrence.frequencies.biweekly" },
   { value: "monthly", i18nKey: "scheduling.recurrence.frequencies.monthly" },
@@ -516,11 +517,6 @@ function formatDuration(minutes: number) {
 
 function getTimePosition(time: Date) {
   return (time.getHours() - CALENDAR_START_HOUR) * 60 + time.getMinutes();
-}
-
-function getDurationHeight(start: Date, end: Date) {
-  const diffMs = end.getTime() - start.getTime();
-  return Math.max(18, diffMs / 60_000);
 }
 
 function getMinutesFromDayStart(value: Date) {
@@ -1236,7 +1232,10 @@ const Agenda: React.FC = () => {
       } else if (focus.kind === "patient") {
         const patientAppts = appointments
           .filter((a) => a.patientId === focus.id)
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+          .sort(
+            (a, b) =>
+              new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+          );
         if (patientAppts.length > 0) {
           setSelectedAppointmentId(patientAppts[0].id);
           setSelectedDate(new Date(patientAppts[0].startTime));
@@ -1824,22 +1823,6 @@ const Agenda: React.FC = () => {
     }
   };
 
-  const navigate = (direction: number) => {
-    const next = new Date(selectedDate);
-
-    if (viewMode === "day") {
-      next.setDate(next.getDate() + direction);
-    }
-    if (viewMode === "week") {
-      next.setDate(next.getDate() + direction * 7);
-    }
-    if (viewMode === "month") {
-      next.setMonth(next.getMonth() + direction);
-    }
-
-    setSelectedDate(next);
-  };
-
   const deleteAppointment = async (appointment: Appointment) => {
     const confirmed = window.confirm(
       "Supprimer ce rendez-vous du planning ? Cette action est immédiate."
@@ -1859,7 +1842,10 @@ const Agenda: React.FC = () => {
         action: "delete",
         entity: "appointment",
         entityId: appointment.id,
-        payload: { patientId: appointment.patientId, startTime: appointment.startTime },
+        payload: {
+          patientId: appointment.patientId,
+          startTime: appointment.startTime,
+        },
       });
       toast.success("Le rendez-vous a été supprimé du planning.");
 
@@ -1948,21 +1934,21 @@ const Agenda: React.FC = () => {
 
     const roomConflict = appointments.find((appointment) => {
       if (appointment.id === editingAppointmentId) {
-        return undefined;
+        return;
       }
       if ((appointment.room ?? "consult-1") !== formRoom) {
-        return undefined;
+        return;
       }
       if (
         appointment.status === "cancelled" ||
         appointment.status === "no_show"
       ) {
-        return undefined;
+        return;
       }
       const appointmentStart = normalizeDate(appointment.startTime);
       const appointmentEnd = normalizeDate(appointment.endTime);
       if (!(appointmentStart && appointmentEnd)) {
-        return undefined;
+        return;
       }
       return start < appointmentEnd && end > appointmentStart
         ? appointment
@@ -1986,7 +1972,8 @@ const Agenda: React.FC = () => {
           minute: "2-digit",
         }),
         patient: conflictPatientName,
-        defaultValue: `La salle « {{room}} » est déjà réservée entre {{start}} et {{end}} pour {{patient}}.`,
+        defaultValue:
+          "La salle « {{room}} » est déjà réservée entre {{start}} et {{end}} pour {{patient}}.",
       });
       setFormError(message);
       toast.error(message);
@@ -2179,7 +2166,7 @@ const Agenda: React.FC = () => {
   const visibleRowsCount = tableRowsByTab[tableTab].length;
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="agenda" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -2275,7 +2262,9 @@ const Agenda: React.FC = () => {
                 </div>
 
                 <TabsList>
-                  <TabsTrigger value="list">{t("agenda.list", { defaultValue: "Vue liste" })}</TabsTrigger>
+                  <TabsTrigger value="list">
+                    {t("agenda.list", { defaultValue: "Vue liste" })}
+                  </TabsTrigger>
                   <TabsTrigger value="day">{t("agenda.day")}</TabsTrigger>
                   <TabsTrigger value="week">{t("agenda.week")}</TabsTrigger>
                   <TabsTrigger value="month">{t("agenda.month")}</TabsTrigger>
@@ -2290,8 +2279,11 @@ const Agenda: React.FC = () => {
                 <>
                   <TabsContent className="min-h-0 flex-1" value="list">
                     <AgendaListView
+                      formatTime={formatTime}
                       getAppointmentsForDate={getAppointmentsForDate}
-                      getOwnerName={(ownerId) => ownerId ? ownersById.get(ownerId)?.lastName || "" : ""}
+                      getOwnerName={(ownerId) =>
+                        ownerId ? ownersById.get(ownerId)?.lastName || "" : ""
+                      }
                       getPatient={(id) => patientsById.get(id)}
                       getPatientName={getPatientName}
                       isSameDay={isSameDay}
@@ -2300,7 +2292,6 @@ const Agenda: React.FC = () => {
                       onSelectAppointment={selectAppointment}
                       selectedAppointmentId={selectedAppointmentId}
                       selectedDate={selectedDate}
-                      formatTime={formatTime}
                     />
                   </TabsContent>
 
@@ -2452,14 +2443,14 @@ const Agenda: React.FC = () => {
 
               <CardFooter className="gap-2 border-t px-6 py-4">
                 <Button
-                  className="flex-1 rounded-xl h-10"
+                  className="h-10 flex-1 rounded-xl"
                   onClick={() => handleOpenEdit(selectedAppointment)}
                   variant="outline"
                 >
                   Modifier
                 </Button>
                 <Button
-                  className="flex-1 rounded-xl h-10"
+                  className="h-10 flex-1 rounded-xl"
                   onClick={() => handleOpenCreate(selectedDate)}
                 >
                   Nouveau RDV
@@ -2467,27 +2458,37 @@ const Agenda: React.FC = () => {
               </CardFooter>
             </Card>
           ) : (
-            <div className="flex flex-col items-center justify-center border border-dashed border-border/80 bg-muted/5 rounded-[24px] p-8 text-center min-h-[420px] h-full shadow-none transition-all duration-200">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/10 dark:bg-white/5 dark:ring-white/10 mb-4">
-                <HugeiconsIcon className="size-6 text-muted-foreground opacity-80" icon={Calendar01Icon} strokeWidth={1.5} />
-              </div>
-              <h3 className="text-lg font-medium text-foreground tracking-tight">Aucun rendez-vous sélectionné</h3>
-              <p className="text-muted-foreground text-sm mt-2 max-w-sm leading-6">
-                Cliquez sur un créneau dans le planning ou dans le tableau ci-dessous pour afficher les détails contextuels.
-              </p>
-              <Button onClick={() => handleOpenCreate()} className="mt-6 h-10 rounded-full px-5 gap-2">
+            <div className="flex h-full min-h-[420px] flex-col items-center justify-center rounded-[24px] border border-border/80 border-dashed bg-muted/5 p-8 text-center shadow-none transition-all duration-200">
+              <div className="mb-4 flex size-12 shrink-0 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/10 dark:bg-white/5 dark:ring-white/10">
                 <HugeiconsIcon
+                  className="size-6 text-muted-foreground opacity-80"
+                  icon={Calendar01Icon}
+                  strokeWidth={1.5}
+                />
+              </div>
+              <h3 className="font-medium text-foreground text-lg tracking-tight">
+                Aucun rendez-vous sélectionné
+              </h3>
+              <p className="mt-2 max-w-sm text-muted-foreground text-sm leading-6">
+                Cliquez sur un créneau dans le planning ou dans le tableau
+                ci-dessous pour afficher les détails contextuels.
+              </p>
+              <Button
+                className="mt-6 h-10 gap-2 rounded-full px-5"
+                onClick={() => handleOpenCreate()}
+              >
+                <HugeiconsIcon
+                  className="size-4"
                   data-icon="inline-start"
                   icon={Add01Icon}
                   strokeWidth={1.5}
-                  className="size-4"
                 />
                 Nouveau rendez-vous
               </Button>
             </div>
           )}
 
-          <Card className="h-full flex flex-col justify-between rounded-[24px] border border-border bg-card shadow-none">
+          <Card className="flex h-full flex-col justify-between rounded-[24px] border border-border bg-card shadow-none">
             <div>
               <CardHeader className="border-border border-b px-6 py-5">
                 <CardDescription>Cadence de la journée</CardDescription>
@@ -2515,19 +2516,27 @@ const Agenda: React.FC = () => {
                             {entry.type}
                           </span>
                         </div>
-                        <Badge variant="outline" className="rounded-lg">{entry.count}</Badge>
+                        <Badge className="rounded-lg" variant="outline">
+                          {entry.count}
+                        </Badge>
                       </div>
                     ))
                   ) : (
                     <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
-                      <HugeiconsIcon icon={Calendar01Icon} className="size-8 opacity-30 mb-2" strokeWidth={1.5} />
-                      <p className="text-sm">Aucun rendez-vous programmé aujourd'hui</p>
+                      <HugeiconsIcon
+                        className="mb-2 size-8 opacity-30"
+                        icon={Calendar01Icon}
+                        strokeWidth={1.5}
+                      />
+                      <p className="text-sm">
+                        Aucun rendez-vous programmé aujourd'hui
+                      </p>
                     </div>
                   )}
                 </div>
 
                 {dayLoadSummary.length > 0 ? (
-                  <div className="grid gap-2 border-t pt-4 border-border/40">
+                  <div className="grid gap-2 border-border/40 border-t pt-4">
                     {dayLoadSummary.map((entry) => (
                       <div
                         className="flex items-center justify-between gap-3 rounded-2xl bg-muted/20 px-4 py-2.5 text-sm"
@@ -2541,7 +2550,9 @@ const Agenda: React.FC = () => {
                             {entry.vet.specialty || "Consultation générale"}
                           </p>
                         </div>
-                        <Badge variant="outline" className="rounded-lg">{entry.count}</Badge>
+                        <Badge className="rounded-lg" variant="outline">
+                          {entry.count}
+                        </Badge>
                       </div>
                     ))}
                   </div>
@@ -2549,19 +2560,31 @@ const Agenda: React.FC = () => {
               </CardContent>
             </div>
 
-            <CardContent className="px-6 pb-5 pt-0 mt-auto">
-              <div className="grid grid-cols-3 gap-3 border-t border-border/40 pt-5">
+            <CardContent className="mt-auto px-6 pt-0 pb-5">
+              <div className="grid grid-cols-3 gap-3 border-border/40 border-t pt-5">
                 <div className="text-center">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Charge</p>
-                  <p className="mt-1 font-semibold text-foreground text-base tracking-tight">{formatDuration(totalPlannedMinutes)}</p>
+                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Charge
+                  </p>
+                  <p className="mt-1 font-semibold text-base text-foreground tracking-tight">
+                    {formatDuration(totalPlannedMinutes)}
+                  </p>
                 </div>
-                <div className="text-center border-x border-border/40 px-1">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Urgences</p>
-                  <p className="mt-1 font-semibold text-foreground text-base">{urgentOpenCount}</p>
+                <div className="border-border/40 border-x px-1 text-center">
+                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Urgences
+                  </p>
+                  <p className="mt-1 font-semibold text-base text-foreground">
+                    {urgentOpenCount}
+                  </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Mobilisés</p>
-                  <p className="mt-1 font-semibold text-foreground text-base">{engagedVetsCount}</p>
+                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Mobilisés
+                  </p>
+                  <p className="mt-1 font-semibold text-base text-foreground">
+                    {engagedVetsCount}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -2591,13 +2614,17 @@ const Agenda: React.FC = () => {
             <div className="flex flex-col gap-3 border-b px-6 py-4 xl:flex-row xl:items-center xl:justify-between">
               <TabsList className="group-data-horizontal/tabs:!h-9 rounded-xl">
                 {TABLE_TABS.map((tab) => (
-                  <TabsTrigger className="rounded-lg" key={tab.value} value={tab.value}>
+                  <TabsTrigger
+                    className="rounded-lg"
+                    key={tab.value}
+                    value={tab.value}
+                  >
                     {tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
 
-              <div className="grid w-full gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px] xl:flex-1 xl:max-w-4xl xl:ml-auto">
+              <div className="grid w-full gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px] xl:ml-auto xl:max-w-4xl xl:flex-1">
                 <div className="relative">
                   <HugeiconsIcon
                     className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
@@ -2605,7 +2632,7 @@ const Agenda: React.FC = () => {
                     strokeWidth={1.5}
                   />
                   <Input
-                    className="h-9 rounded-xl bg-muted/40 pl-10 text-sm border-border/60 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500"
+                    className="h-9 rounded-xl border-border/60 bg-muted/40 pl-10 text-sm focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20"
                     onChange={(event) => setSearchTerm(event.target.value)}
                     placeholder="Rechercher un patient, un motif..."
                     value={searchTerm}
@@ -2613,7 +2640,7 @@ const Agenda: React.FC = () => {
                 </div>
 
                 <NativeSelect
-                  className="w-full [&>select]:bg-muted/40 [&>select]:border-border/60 [&>select]:focus-visible:ring-emerald-500/20 [&>select]:focus-visible:border-emerald-500"
+                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-emerald-500 [&>select]:focus-visible:ring-emerald-500/20"
                   onChange={(event) => setVetFilter(event.target.value)}
                   value={vetFilter}
                 >
@@ -2628,7 +2655,7 @@ const Agenda: React.FC = () => {
                 </NativeSelect>
 
                 <NativeSelect
-                  className="w-full [&>select]:bg-muted/40 [&>select]:border-border/60 [&>select]:focus-visible:ring-emerald-500/20 [&>select]:focus-visible:border-emerald-500"
+                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-emerald-500 [&>select]:focus-visible:ring-emerald-500/20"
                   onChange={(event) => setStatusFilter(event.target.value)}
                   value={statusFilter}
                 >
@@ -2704,21 +2731,37 @@ const Agenda: React.FC = () => {
                     <Table>
                       <TableHeader className="bg-muted/5">
                         <TableRow className="hover:bg-transparent">
-                          <TableHead className="w-[22%] min-w-[130px] pl-6 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Dossier</TableHead>
-                          <TableHead className="w-[18%] min-w-[110px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Propriétaire</TableHead>
-                          <TableHead className="w-[12%] min-w-[80px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Acte</TableHead>
-                          <TableHead className="w-[20%] min-w-[130px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Créneau</TableHead>
-                          <TableHead className="w-[12%] min-w-[80px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Statut</TableHead>
-                          <TableHead className="w-[12%] min-w-[100px] text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5">Vétérinaire</TableHead>
-                          <TableHead className="w-[4%] min-w-[40px] pr-6 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 py-3.5 text-right">
+                          <TableHead className="w-[22%] min-w-[130px] py-3.5 pl-6 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                            Dossier
+                          </TableHead>
+                          <TableHead className="w-[18%] min-w-[110px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                            Propriétaire
+                          </TableHead>
+                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                            Acte
+                          </TableHead>
+                          <TableHead className="w-[20%] min-w-[130px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                            Créneau
+                          </TableHead>
+                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                            Statut
+                          </TableHead>
+                          <TableHead className="w-[12%] min-w-[100px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                            Vétérinaire
+                          </TableHead>
+                          <TableHead className="w-[4%] min-w-[40px] py-3.5 pr-6 text-right font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
                             Action
                           </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {rows.map((row) => {
-                          const timePart = row.appointmentAt.includes(" · ") ? row.appointmentAt.split(" · ")[1] : row.appointmentAt;
-                          const datePart = row.appointmentAt.includes(" · ") ? row.appointmentAt.split(" · ")[0] : "";
+                          const timePart = row.appointmentAt.includes(" · ")
+                            ? row.appointmentAt.split(" · ")[1]
+                            : row.appointmentAt;
+                          const datePart = row.appointmentAt.includes(" · ")
+                            ? row.appointmentAt.split(" · ")[0]
+                            : "";
                           return (
                             <TableRow
                               className="cursor-pointer transition-colors hover:bg-muted/10"
@@ -2729,7 +2772,7 @@ const Agenda: React.FC = () => {
                             >
                               <TableCell className="w-[22%] min-w-[130px] pl-6">
                                 <div className="flex items-center gap-3.5">
-                                  <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500/10 to-teal-500/5 ring-1 ring-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-sm">
+                                  <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500/10 to-teal-500/5 font-semibold text-emerald-600 text-sm ring-1 ring-emerald-500/20 dark:text-emerald-400">
                                     {(row.patientName || "?")
                                       .slice(0, 2)
                                       .toUpperCase()}
@@ -2738,7 +2781,7 @@ const Agenda: React.FC = () => {
                                     <p className="truncate font-semibold text-foreground text-sm tracking-tight">
                                       {row.patientName}
                                     </p>
-                                    <p className="truncate text-muted-foreground text-xs mt-0.5 font-medium">
+                                    <p className="mt-0.5 truncate font-medium text-muted-foreground text-xs">
                                       {getPatientProfile(row.patient)}
                                     </p>
                                   </div>
@@ -2750,8 +2793,11 @@ const Agenda: React.FC = () => {
                                   <p className="truncate font-semibold text-foreground text-sm tracking-tight">
                                     {row.ownerName}
                                   </p>
-                                  <p className="truncate text-muted-foreground text-xs mt-0.5 font-medium flex items-center gap-1">
-                                    <span className="opacity-60 text-[10px]">📞</span> {row.owner?.phone || "Non renseigné"}
+                                  <p className="mt-0.5 flex items-center gap-1 truncate font-medium text-muted-foreground text-xs">
+                                    <span className="text-[10px] opacity-60">
+                                      📞
+                                    </span>{" "}
+                                    {row.owner?.phone || "Non renseigné"}
                                   </p>
                                 </div>
                               </TableCell>
@@ -2759,7 +2805,7 @@ const Agenda: React.FC = () => {
                               <TableCell className="w-[12%] min-w-[80px]">
                                 <div className="flex items-center">
                                   <AppointmentTypeBadge
-                                    className="font-semibold text-xs tracking-tight rounded-lg px-2.5 py-0.5 border"
+                                    className="rounded-lg border px-2.5 py-0.5 font-semibold text-xs tracking-tight"
                                     type={row.appointment.type}
                                   />
                                 </div>
@@ -2767,17 +2813,24 @@ const Agenda: React.FC = () => {
 
                               <TableCell className="w-[20%] min-w-[130px]">
                                 <div className="min-w-0">
-                                  <p className="truncate font-semibold text-foreground text-sm tracking-tight flex items-center gap-1.5">
-                                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">{timePart}</span>
+                                  <p className="flex items-center gap-1.5 truncate font-semibold text-foreground text-sm tracking-tight">
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                      {timePart}
+                                    </span>
                                     {datePart && (
                                       <>
-                                        <span className="text-muted-foreground/40 text-xs">|</span>
-                                        <span className="text-muted-foreground/80 text-xs font-normal">{datePart}</span>
+                                        <span className="text-muted-foreground/40 text-xs">
+                                          |
+                                        </span>
+                                        <span className="font-normal text-muted-foreground/80 text-xs">
+                                          {datePart}
+                                        </span>
                                       </>
                                     )}
                                   </p>
-                                  <p className="truncate text-muted-foreground/80 text-xs mt-0.5 font-medium italic font-serif">
-                                    {row.appointment.reason || "Motif non renseigné"}
+                                  <p className="mt-0.5 truncate font-medium font-serif text-muted-foreground/80 text-xs italic">
+                                    {row.appointment.reason ||
+                                      "Motif non renseigné"}
                                   </p>
                                 </div>
                               </TableCell>
@@ -2793,13 +2846,17 @@ const Agenda: React.FC = () => {
 
                               <TableCell className="w-[12%] min-w-[100px]">
                                 <div className="min-w-0">
-                                  <p className="truncate font-semibold text-foreground text-sm tracking-tight flex items-center gap-1.5">
-                                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
-                                      {row.vetName.split(" ").pop()?.slice(0, 1).toUpperCase() || "V"}
+                                  <p className="flex items-center gap-1.5 truncate font-semibold text-foreground text-sm tracking-tight">
+                                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted font-bold text-[10px] text-muted-foreground">
+                                      {row.vetName
+                                        .split(" ")
+                                        .pop()
+                                        ?.slice(0, 1)
+                                        .toUpperCase() || "V"}
                                     </span>
                                     {row.vetName}
                                   </p>
-                                  <p className="truncate text-muted-foreground text-xs mt-0.5 font-medium pl-[26px]">
+                                  <p className="mt-0.5 truncate pl-[26px] font-medium text-muted-foreground text-xs">
                                     {row.vet?.specialty || "Pratique générale"}
                                   </p>
                                 </div>
@@ -3045,7 +3102,9 @@ const Agenda: React.FC = () => {
                 </Field>
 
                 <Field>
-                  <FieldLabel>{t("scheduling.room", { defaultValue: "Salle" })}</FieldLabel>
+                  <FieldLabel>
+                    {t("scheduling.room", { defaultValue: "Salle" })}
+                  </FieldLabel>
                   <NativeSelect
                     className="w-full"
                     onChange={(event) => setFormRoom(event.target.value)}
@@ -3083,8 +3142,8 @@ const Agenda: React.FC = () => {
                 </div>
               </Field>
 
-              <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-4">
-                <Field orientation="horizontal" className="items-center gap-3">
+              <div className="space-y-4 rounded-lg border border-border/50 bg-muted/20 p-4">
+                <Field className="items-center gap-3" orientation="horizontal">
                   <Checkbox
                     checked={recurrenceEnabled}
                     disabled={!!editingAppointmentId}
@@ -3125,11 +3184,18 @@ const Agenda: React.FC = () => {
                       >
                         {RECURRENCE_FREQUENCIES.map((freq) => (
                           <label
+                            className="flex cursor-pointer items-center gap-2 rounded-md border border-border/60 bg-background px-3 py-2 text-sm hover:bg-muted/40"
                             key={freq.value}
-                            className="flex items-center gap-2 rounded-md border border-border/60 bg-background px-3 py-2 text-sm cursor-pointer hover:bg-muted/40"
                           >
-                            <RadioGroupItem id={`freq-${freq.value}`} value={freq.value} />
-                            <span>{t(`scheduling.recurrence.frequencies.${freq.value}`)}</span>
+                            <RadioGroupItem
+                              id={`freq-${freq.value}`}
+                              value={freq.value}
+                            />
+                            <span>
+                              {t(
+                                `scheduling.recurrence.frequencies.${freq.value}`
+                              )}
+                            </span>
                           </label>
                         ))}
                       </RadioGroup>
@@ -3202,10 +3268,13 @@ const Agenda: React.FC = () => {
                           value={recurrenceMaxOccurrences ?? ""}
                         />
                         <FieldDescription>
-                          {t("scheduling.recurrence.maxOccurrencesDescription", {
-                            defaultValue:
-                              "Laissez vide pour une récurrence sans limite (jusqu'à la date de fin).",
-                          })}
+                          {t(
+                            "scheduling.recurrence.maxOccurrencesDescription",
+                            {
+                              defaultValue:
+                                "Laissez vide pour une récurrence sans limite (jusqu'à la date de fin).",
+                            }
+                          )}
                         </FieldDescription>
                       </Field>
                     </div>

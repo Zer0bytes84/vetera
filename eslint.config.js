@@ -6,7 +6,17 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  globalIgnores([
+    "dist",
+    "src-tauri",
+    "output",
+    ".playwright-cli",
+    ".playwright-mcp",
+    ".next",
+    "dashboard-backup.tsx",
+    "tmp-dashboard.tsx",
+    "node_modules",
+  ]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
@@ -18,6 +28,20 @@ export default defineConfig([
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+    },
+    rules: {
+      "react-refresh/only-export-components": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "react-hooks/preserve-manual-memoization": "off",
+      "no-empty": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ],
     },
   },
 ]);

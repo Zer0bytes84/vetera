@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
+import { DeferredWidget } from "@/components/deferred-widget";
 import type { SectionCardItem } from "@/components/section-cards";
 import { SectionCards as SectionCardsBase } from "@/components/section-cards";
-import { DeferredWidget } from "@/components/deferred-widget";
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -12,20 +12,19 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { buildDashboardMetrics } from "@/lib/metrics";
-
+import { ActivityWidget as ActivityWidgetBase } from "./components/activity-widget";
+import { AutomationWidgets as AutomationWidgetsBase } from "./components/automation-widgets";
 // Import our premium widgets
 import { ClinicalChartsCenter as ClinicalChartsCenterBase } from "./components/clinical-charts-center";
+import { ConsultationSummaryWidget as ConsultationSummaryWidgetBase } from "./components/consultation-summary-widget";
 import { NextAppointmentsFeed as NextAppointmentsFeedBase } from "./components/next-appointments-feed";
-import { RemindersWidget as RemindersWidgetBase } from "./components/reminders-widget";
-import { ActivityWidget as ActivityWidgetBase } from "./components/activity-widget";
-import { SpecialtiesDistribution as SpecialtiesDistributionBase } from "./components/specialties-distribution";
-import { TasksAlertsBoard as TasksAlertsBoardBase } from "./components/tasks-alerts-board";
 import { PipelineActivityFunnel as PipelineActivityFunnelBase } from "./components/pipeline-activity-funnel";
+import { PostOpFollowUpWidget as PostOpFollowUpWidgetBase } from "./components/post-op-follow-up-widget";
+import { RemindersWidget as RemindersWidgetBase } from "./components/reminders-widget";
+import { SpecialtiesDistribution as SpecialtiesDistributionBase } from "./components/specialties-distribution";
 import { StaffStatusWidget as StaffStatusWidgetBase } from "./components/staff-status-widget";
 import { StockAlertsWidget as StockAlertsWidgetBase } from "./components/stock-alerts-widget";
-import { AutomationWidgets as AutomationWidgetsBase } from "./components/automation-widgets";
-import { ConsultationSummaryWidget as ConsultationSummaryWidgetBase } from "./components/consultation-summary-widget";
-import { PostOpFollowUpWidget as PostOpFollowUpWidgetBase } from "./components/post-op-follow-up-widget";
+import { TasksAlertsBoard as TasksAlertsBoardBase } from "./components/tasks-alerts-board";
 
 const SectionCards = React.memo(SectionCardsBase);
 const ClinicalChartsCenter = React.memo(ClinicalChartsCenterBase);
@@ -122,7 +121,11 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
   const clinicalActivityData = useMemo(() => {
     const ref = new Date(metrics.referenceDate);
     ref.setHours(23, 59, 59, 999);
-    const days: Array<{ date: string; consultations: number; interventions: number }> = [];
+    const days: Array<{
+      date: string;
+      consultations: number;
+      interventions: number;
+    }> = [];
     for (let i = 89; i >= 0; i -= 1) {
       const day = new Date(ref);
       day.setDate(day.getDate() - i);
@@ -232,12 +235,12 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
   ];
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       {/* Row 1 — Main Interactive Charts (full width) */}
       <ClinicalChartsCenter
         activityData={clinicalActivityData}
-        monthlyRevenue={metrics.monthlyRevenue}
         monthlyAppointments={metrics.monthlyAppointments}
+        monthlyRevenue={metrics.monthlyRevenue}
       />
 
       {/* Row 2 — Legacy Glowing KPI Cards */}
@@ -251,16 +254,16 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
       {/* Row 2.6 — Consultation Summary (W9.2) */}
       <DeferredWidget minHeight={400}>
         <ConsultationSummaryWidget
-          onPatientClick={handlePatientClick}
           onOpenClinique={handleOpenClinique}
+          onPatientClick={handlePatientClick}
         />
       </DeferredWidget>
 
       {/* Row 2.7 — Post-Op Follow-Up (W9.3) */}
       <DeferredWidget minHeight={300}>
         <PostOpFollowUpWidget
-          onPatientClick={handlePatientClick}
           onOpenPatientFile={handlePatientClick}
+          onPatientClick={handlePatientClick}
         />
       </DeferredWidget>
 
@@ -269,8 +272,8 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div>
             <SpecialtiesDistribution
-              categories={metrics.topCategories}
               appointmentTypes={metrics.topAppointmentTypes}
+              categories={metrics.topCategories}
             />
           </div>
           <div>
@@ -278,8 +281,8 @@ export function DashboardOrbitPage({ onNavigate }: DashboardOrbitPageProps) {
           </div>
           <div>
             <PipelineActivityFunnel
-              pipelineRows={metrics.pipelineRows}
               activityDays={metrics.activityDays}
+              pipelineRows={metrics.pipelineRows}
             />
           </div>
         </div>

@@ -9,15 +9,15 @@
  * the schedule survives an app restart.
  */
 
-import { createBackup, getLastBackupDate, listBackups } from "./backupService";
 import { getSetting, setSetting } from "./appSettingsService";
+import { createBackup, getLastBackupDate, listBackups } from "./backupService";
 
 export type BackupFrequency = "off" | "daily" | "weekly";
 
 export interface BackupSchedulerSettings {
   frequency: BackupFrequency;
-  passphrase: string | null;
   lastRunAt: string | null;
+  passphrase: string | null;
 }
 
 const SETTINGS_KEY = "backup_scheduler";
@@ -109,7 +109,10 @@ function scheduleNextRun(delay: number): void {
         timerHandle = null;
         return;
       }
-      const result = await createBackup("scheduled", current.passphrase ?? undefined);
+      const result = await createBackup(
+        "scheduled",
+        current.passphrase ?? undefined
+      );
       if (result) {
         await saveSchedulerSettings({
           ...current,
@@ -121,10 +124,10 @@ function scheduleNextRun(delay: number): void {
         );
       }
       const nextDelay = computeNextDelay(getCachedSettings());
-      if (nextDelay != null) {
-        scheduleNextRun(nextDelay);
-      } else {
+      if (nextDelay == null) {
         timerHandle = null;
+      } else {
+        scheduleNextRun(nextDelay);
       }
     } catch (e) {
       console.error("[BackupScheduler] Scheduled run failed:", e);
@@ -142,10 +145,10 @@ export function stopScheduler(): void {
 }
 
 export interface SchedulerStatus {
-  settings: BackupSchedulerSettings;
+  backupCount: number;
   isRunning: boolean;
   lastBackupAt: string | null;
-  backupCount: number;
+  settings: BackupSchedulerSettings;
 }
 
 export async function getSchedulerStatus(): Promise<SchedulerStatus> {
@@ -173,13 +176,12 @@ export async function bootstrapScheduler(): Promise<void> {
   }
   const lastBackupAt = await getLastBackupDate();
   const reference = lastBackupAt ?? settings.lastRunAt;
-  const interval =
-    settings.frequency === "daily" ? DAILY_MS : WEEKLY_MS;
+  const interval = settings.frequency === "daily" ? DAILY_MS : WEEKLY_MS;
   if (reference) {
     const elapsed = Date.now() - new Date(reference).getTime();
     if (elapsed >= interval) {
       // Catch-up: run immediately on app boot.
-      scheduleNextRun(2_000);
+      scheduleNextRun(2000);
       return;
     }
   }

@@ -27,16 +27,16 @@ export type NotificationTarget =
  * read/dismiss même quand l'entité source mute.
  */
 export interface NotificationItem {
-  id: string;
-  source: NotificationSource;
-  severity: NotificationSeverity;
-  title: string;
-  description: string;
   /** Court libellé affiché en CTA (ex: "Ouvrir la fiche patient"). */
   clickHint: string;
-  target: NotificationTarget;
   createdAt: string;
   data?: Record<string, unknown>;
+  description: string;
+  id: string;
+  severity: NotificationSeverity;
+  source: NotificationSource;
+  target: NotificationTarget;
+  title: string;
 }
 
 /**
@@ -45,15 +45,18 @@ export interface NotificationItem {
  * données métier (l'entité source reste la source de vérité).
  */
 export interface NotificationState {
+  createdAt: string;
+  dismissedAt: string | null;
   notificationId: string;
   readAt: string | null;
-  dismissedAt: string | null;
-  createdAt: string;
 }
 
 export type NotificationFilter = "all" | "unread" | "critical";
 
-export const NOTIFICATION_SEVERITY_WEIGHT: Record<NotificationSeverity, number> = {
+export const NOTIFICATION_SEVERITY_WEIGHT: Record<
+  NotificationSeverity,
+  number
+> = {
   critical: 3,
   warn: 2,
   info: 1,

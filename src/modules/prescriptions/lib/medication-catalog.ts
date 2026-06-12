@@ -8,8 +8,8 @@
  * Ne PAS muter `vetKnowledgeService` : tout passe par des copies légères.
  */
 
-import { vetKnowledgeService } from "@/services/vetKnowledgeService";
 import type { Medication } from "@/services/vetKnowledgeService";
+import { vetKnowledgeService } from "@/services/vetKnowledgeService";
 
 import { parsePosology } from "./dose-calculator";
 
@@ -43,12 +43,22 @@ const SPECIES_LABEL_EN: Record<SpeciesKey, string> = {
 export function patientSpeciesToCatalogKey(
   species: string | undefined
 ): SpeciesKey | null {
-  if (!species) return null;
+  if (!species) {
+    return null;
+  }
   const normalized = species.toLowerCase().trim();
-  if (normalized.startsWith("chien") || normalized === "dog") return "chien";
-  if (normalized.startsWith("chat") || normalized === "cat") return "chat";
-  if (normalized.startsWith("bovin")) return "bovins";
-  if (normalized.startsWith("ovin")) return "ovins";
+  if (normalized.startsWith("chien") || normalized === "dog") {
+    return "chien";
+  }
+  if (normalized.startsWith("chat") || normalized === "cat") {
+    return "chat";
+  }
+  if (normalized.startsWith("bovin")) {
+    return "bovins";
+  }
+  if (normalized.startsWith("ovin")) {
+    return "ovins";
+  }
   if (
     normalized.startsWith("cheval") ||
     normalized.startsWith("equin") ||
@@ -70,23 +80,25 @@ export function speciesLabel(
 }
 
 export interface MedicationSearchResult extends Medication {
-  /** Posologie résolue pour l'espèce du patient (texte original). */
-  posologyForSpecies?: string;
-  /** Voie d'administration préférée pour l'espèce. */
-  routeForSpecies?: string;
   /** Durée recommandée pour l'espèce. */
   durationForSpecies?: string;
   /** Fréquence recommandée pour l'espèce. */
   frequencyForSpecies?: string;
   /** true si la posologie est parsable en mg/kg. */
   hasComputableDose: boolean;
+  /** Posologie résolue pour l'espèce du patient (texte original). */
+  posologyForSpecies?: string;
+  /** Voie d'administration préférée pour l'espèce. */
+  routeForSpecies?: string;
 }
 
 /**
  * Liste les médicaments disponibles, enrichis d'une posologie par espèce
  * si possible.
  */
-export function listMedications(speciesKey?: SpeciesKey | null): MedicationSearchResult[] {
+export function listMedications(
+  speciesKey?: SpeciesKey | null
+): MedicationSearchResult[] {
   return vetKnowledgeService.getAllMedications().map((med) => {
     const poso = speciesKey ? med.posologies?.[speciesKey] : undefined;
     const parsed = poso ? parsePosology(poso.dose) : null;
@@ -112,7 +124,9 @@ export function searchMedications(
   speciesKey?: SpeciesKey | null
 ): MedicationSearchResult[] {
   const term = query.trim().toLowerCase();
-  if (!term) return listMedications(speciesKey);
+  if (!term) {
+    return listMedications(speciesKey);
+  }
 
   const candidates = listMedications(speciesKey);
   const scored = candidates
@@ -126,7 +140,9 @@ export function searchMedications(
         .join(" ")
         .toLowerCase();
       const index = haystack.indexOf(term);
-      if (index < 0) return null;
+      if (index < 0) {
+        return null;
+      }
       return { med, score: index };
     })
     .filter((entry): entry is { med: MedicationSearchResult; score: number } =>
@@ -140,11 +156,11 @@ export function searchMedications(
 /**
  * Récupère un médicament par son id (typiquement depuis l'ordonnance).
  */
-export function getMedicationById(
-  id: string
-): MedicationSearchResult | null {
+export function getMedicationById(id: string): MedicationSearchResult | null {
   const med = vetKnowledgeService.getAllMedications().find((m) => m.id === id);
-  if (!med) return null;
+  if (!med) {
+    return null;
+  }
   return {
     ...med,
     hasComputableDose: false,

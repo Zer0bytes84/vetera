@@ -1,8 +1,5 @@
 "use client";
 
-
-import type { UnlistenFn } from "@tauri-apps/api/event";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LayoutLeftIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as React from "react";
@@ -21,7 +18,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -50,8 +46,6 @@ export function AppSidebar({
   currentUserName,
   currentUserEmail,
   currentUserAvatar,
-  onLogout,
-  onOpenPalette: _onOpenPalette,
   ...props
 }: AppSidebarProps) {
   const { t } = useTranslation();
@@ -83,56 +77,18 @@ export function AppSidebar({
   );
   const resolvedUserName =
     currentUserRecord?.displayName ||
-    currentUserName ||
-    cachedProfile?.displayName;
+    cachedProfile?.displayName ||
+    (currentUserName && currentUserName !== currentUserEmail
+      ? currentUserName
+      : null) ||
+    currentUserEmail ||
+    "Utilisateur";
   const resolvedUserAvatar =
     currentUserRecord?.avatarUrl ||
     currentUserAvatar ||
     cachedProfile?.avatarUrl;
 
   const isDesktopRuntime = isTauriRuntime();
-  const isClassicSidebar = props.variant === "sidebar";
-  const [isFullscreen, setIsFullscreen] = React.useState(false);
-  const appWindow = React.useMemo(
-    () => (isDesktopRuntime ? getCurrentWindow() : null),
-    [isDesktopRuntime]
-  );
-
-  React.useEffect(() => {
-    if (!appWindow) {
-      return;
-    }
-
-    let unlistenResize: UnlistenFn | null = null;
-    let active = true;
-
-    const syncWindowMode = async () => {
-      try {
-        const fullscreen = await appWindow.isFullscreen();
-        if (active) {
-          setIsFullscreen(fullscreen);
-        }
-      } catch {
-        // no-op
-      }
-    };
-
-    void syncWindowMode();
-    void appWindow
-      .onResized(() => {
-        void syncWindowMode();
-      })
-      .then((unlisten) => {
-        unlistenResize = unlisten;
-      });
-
-    return () => {
-      active = false;
-      if (unlistenResize) {
-        unlistenResize();
-      }
-    };
-  }, [appWindow]);
 
   const overviewSection = navigationSections[0];
   const patientSection = navigationSections[1];
@@ -142,46 +98,42 @@ export function AppSidebar({
   const mainItems = [
     ...(overviewSection?.items ?? []),
     ...(patientSection?.items.slice(0, 4) ?? []),
-  ].map((item, index) => {
-    return {
-      title: t(item.labelKey),
-      icon: (
-        <HugeiconsIcon
-          icon={item.icon}
-          strokeWidth={1.5}
-          className="transition-all duration-200 ease-out size-[18px]"
-        />
-      ),
-      isActive: currentView === item.view,
-      onClick: () => onNavigate(item.view),
-    };
-  });
+  ].map((item) => ({
+    title: t(item.labelKey),
+    icon: (
+      <HugeiconsIcon
+        className="size-[19.5px] transition-all duration-200 ease-out"
+        icon={item.icon}
+        strokeWidth={1.5}
+      />
+    ),
+    isActive: currentView === item.view,
+    onClick: () => onNavigate(item.view),
+  }));
 
   const documents = [
     ...(patientSection?.items.slice(4) ?? []),
     ...(operationsSection?.items ?? []),
-  ].map((item) => {
-    return {
-      name: t(item.labelKey),
-      icon: (
-        <HugeiconsIcon
-          icon={item.icon}
-          strokeWidth={1.5}
-          className="transition-all duration-200 ease-out size-[18px]"
-        />
-      ),
-      isActive: currentView === item.view,
-      onClick: () => onNavigate(item.view),
-    };
-  });
+  ].map((item) => ({
+    name: t(item.labelKey),
+    icon: (
+      <HugeiconsIcon
+        className="size-[19.5px] transition-all duration-200 ease-out"
+        icon={item.icon}
+        strokeWidth={1.5}
+      />
+    ),
+    isActive: currentView === item.view,
+    onClick: () => onNavigate(item.view),
+  }));
 
   const secondaryItems = (configSection?.items ?? []).map((item) => ({
     title: t(item.labelKey),
     icon: (
       <HugeiconsIcon
+        className="size-[19.5px] transition-all duration-200 ease-out"
         icon={item.icon}
         strokeWidth={1.5}
-        className="transition-all duration-200 ease-out size-[18px]"
       />
     ),
     isActive: currentView === item.view,
@@ -193,9 +145,9 @@ export function AppSidebar({
       title: "Développer",
       icon: (
         <HugeiconsIcon
+          className="size-[19.5px] rotate-180 transition-all duration-200 ease-out"
           icon={LayoutLeftIcon}
           strokeWidth={1.5}
-          className="transition-all duration-200 ease-out size-[18px] rotate-180"
         />
       ),
       isActive: false,
@@ -204,83 +156,82 @@ export function AppSidebar({
   }
 
   return (
-    <Sidebar
-      {...props}
-      className={cn("border-none", props.className)}
-    >
+    <Sidebar {...props} className={cn("border-none", props.className)}>
       <div className="apple-sidebar-glow" />
 
       <SidebarHeader
         className={cn(
-          "flex shrink-0 flex-row items-center relative z-10",
+          "relative z-10 flex shrink-0 flex-row items-center",
           "h-[64px] transition-all duration-300",
-          isCollapsed ? "px-0 justify-center" : "px-4",
-          "bg-transparent w-full"
+          isCollapsed ? "justify-center px-0" : "px-4",
+          "w-full bg-transparent"
         )}
       >
         {/* Hairline separator */}
         <div
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute z-50 top-full -translate-y-[6px] h-px bg-zinc-900/7.5 dark:bg-white/7.5",
-            isCollapsed 
-              ? "w-[var(--sidebar-width-icon)] left-0" 
-              : "w-[calc(var(--sidebar-width)+1px)] -left-4"
+            "pointer-events-none absolute top-full z-50 h-px -translate-y-[6px] bg-zinc-900/7.5 dark:bg-white/7.5",
+            isCollapsed
+              ? "left-0 w-[var(--sidebar-width-icon)]"
+              : "-left-4 w-[calc(var(--sidebar-width)+1px)]"
           )}
         />
 
         {/* Invisible drag area to fill remaining space */}
         {isDesktopRuntime && (
-          <div data-tauri-drag-region="true" className="absolute inset-x-0 top-0 h-[40px] z-0 cursor-grab active:cursor-grabbing" />
+          <div
+            className="absolute inset-x-0 top-0 z-0 h-[40px] cursor-grab active:cursor-grabbing"
+            data-tauri-drag-region="true"
+          />
         )}
         <SidebarMenu className="relative z-10 w-full">
-          <SidebarMenuItem className="flex flex-row items-center justify-between w-full">
-              <SidebarMenuButton
-                className={cn(
-                  "hover:bg-transparent active:bg-transparent h-13 px-1 flex-1",
-                  "transition-all duration-300 ease-out",
-                  isCollapsed && "px-0 justify-center ms-0"
-                )}
-                render={
-                  <button onClick={() => onNavigate("dashboard")} type="button" />
-                }
-                tooltip="bAItari"
-              >
-                <Logo
-                  className="text-sidebar-foreground"
-                  collapsed={isCollapsed}
-                  flatMark={isCollapsed}
-                  size="2xl"
-                  textSize="md"
-                />
-              </SidebarMenuButton>
-              {!isCollapsed && (
-                <SidebarTrigger className="-mr-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent" />
+          <SidebarMenuItem className="flex w-full flex-row items-center justify-between">
+            <SidebarMenuButton
+              className={cn(
+                "h-13 flex-1 px-1 hover:bg-transparent active:bg-transparent",
+                "transition-all duration-300 ease-out",
+                isCollapsed && "ms-0 justify-center px-0"
               )}
+              render={
+                <button onClick={() => onNavigate("dashboard")} type="button" />
+              }
+              tooltip="bAItari"
+            >
+              <Logo
+                className="text-sidebar-foreground"
+                collapsed={isCollapsed}
+                flatMark={isCollapsed}
+                size="2xl"
+                textSize="md"
+              />
+            </SidebarMenuButton>
+            {!isCollapsed && (
+              <SidebarTrigger className="-mr-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground" />
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent
         className={cn(
-          "overflow-y-auto relative z-10",
+          "relative z-10 overflow-y-auto",
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-          isCollapsed ? "px-0 pt-2 flex flex-col items-center" : "px-4 pt-2 pb-6"
+          isCollapsed
+            ? "flex flex-col items-center px-0 pt-2"
+            : "px-4 pt-2 pb-6"
         )}
       >
         <div
           className={cn(
             "flex min-h-full flex-1 flex-col",
-            isCollapsed ? "gap-0.5 items-center w-full" : "gap-6"
+            isCollapsed ? "w-full items-center gap-0.5" : "gap-6"
           )}
         >
-          <NavMain
-            items={mainItems}
-            title={t("nav.sections.patientJourney")}
-          />
+          <NavMain items={mainItems} title={t("nav.sections.patientJourney")} />
 
           {/* Subtle divider between groups in collapsed mode */}
           {isCollapsed && (
-            <div className="my-2 h-px w-8 bg-zinc-900/8 dark:bg-white/8 rounded-full" />
+            <div className="my-2 h-px w-8 rounded-full bg-zinc-900/8 dark:bg-white/8" />
           )}
 
           <NavDocuments
@@ -292,33 +243,42 @@ export function AppSidebar({
             }))}
             title={t("nav.sections.operations")}
           />
+          
+          {secondaryItems.length > 0 && (
+            <NavSecondary items={secondaryItems} className="mt-auto" />
+          )}
         </div>
       </SidebarContent>
       <SidebarFooter
         className={cn(
-          "shrink-0 transition-all duration-300 relative z-10",
+          "relative z-10 shrink-0 transition-all duration-300",
           isCollapsed
-            ? "mx-0 mb-0 mt-auto px-0 pt-2 pb-2 flex flex-col items-center gap-0.5"
-            : "mx-0 mb-0 mt-auto px-4 pt-1 pb-3 bg-transparent"
+            ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-0.5 px-0 pt-2 pb-2"
+            : "mx-0 mt-auto mb-0 bg-transparent px-4 pt-1 pb-4"
         )}
       >
-        {/* Divider above footer */}
         {isCollapsed ? (
-          <div className="mb-2 h-px w-8 bg-zinc-900/8 dark:bg-white/8 rounded-full" />
-        ) : (
-          <div className="mb-3 h-px w-full bg-zinc-900/5 dark:bg-white/5" />
-        )}
-        <NavUser
-          onFinances={() => onNavigate("finances")}
-          onNotifications={() => onNavigate("taches")}
-          onProfile={() => onNavigate("equipe")}
-          onSettings={() => onNavigate("parametres")}
-          user={{
-            name: resolvedUserName,
-            email: currentUserEmail,
-            avatar: resolvedUserAvatar,
-          }}
-        />
+          <div className="mb-2 h-px w-8 rounded-full bg-zinc-900/8 dark:bg-white/8" />
+        ) : null}
+        <div
+          className={cn(
+            "transition-all duration-300",
+            !isCollapsed &&
+              "rounded-2xl border border-zinc-200/50 bg-zinc-50/30 p-2 dark:border-white/[0.04] dark:bg-zinc-900/20"
+          )}
+        >
+          <NavUser
+            onFinances={() => onNavigate("finances")}
+            onNotifications={() => onNavigate("taches")}
+            onProfile={() => onNavigate("equipe")}
+            onSettings={() => onNavigate("parametres")}
+            user={{
+              name: resolvedUserName,
+              email: currentUserEmail,
+              avatar: resolvedUserAvatar,
+            }}
+          />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

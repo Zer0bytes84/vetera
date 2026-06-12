@@ -32,6 +32,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type { View } from "@/types";
 
+// Repositories & Local LLM Imports
+import { 
+  usePatientsRepository, 
+  useRemindersRepository,
+  useAppointmentsRepository,
+  useProductsRepository,
+  useNotesRepository,
+  useWeightEntriesRepository
+} from "@/data/repositories";
+import {
+  isWebLLMReady,
+  isWebLLMLoading,
+  initializeWebLLM,
+  generateText,
+  subscribeToProgress,
+} from "@/services/webLLMService";
+import { AI_MODELS } from "@/lib/ai-models";
+import { Paperclip, Eye, Sun, Contrast, RotateCw, Bot, Sparkles } from "lucide-react";
+
 interface Message {
   content: string;
   id: string;
@@ -84,8 +103,10 @@ const WELCOME_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
   content: `Bonjour Docteur.
+  
+Je suis votre assistant clinique local spécialisé pour le cabinet. Je suis connecté à vos dossiers de patients SQLite en toute sécurité.
 
-Je suis votre assistant spécialisé pour le cabinet vétérinaire. Je peux vous aider avec les fiches patients, les comptes-rendus de consultation, les protocoles vaccinaux, ou la rédaction de messages pour vos clients.
+Vous pouvez charger un cliché radiologique ou une photo clinique pour l'analyser avec Phi-3.5 Vision, ou me demander d'interagir avec vos dossiers locaux (recherche, rappels).
 
 Comment puis-je vous assister aujourd'hui ?`,
   timestamp: new Date(),
@@ -94,7 +115,7 @@ Comment puis-je vous assister aujourd'hui ?`,
 export function AIAgentChat({
   isOpen,
   onClose,
-  currentView,
+  currentView: _currentView,
 }: AIAgentChatProps) {
   const [conversations, setConversations] = useState<Conversation[]>([
     {
@@ -111,10 +132,46 @@ export function AIAgentChat({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Local LLM & Vision State
+  const [modelProgress, setModelProgress] = useState<{ progress: number; text: string } | null>(null);
+  const [isLlmReady, setIsLlmReady] = useState(false);
+  const [isLlmLoading, setIsLlmLoading] = useState(false);
+  const [selectedModelId, setSelectedModelId] = useState("Phi-3.5-vision-instruct-q4f16_1-MLC");
+
+  // Image attachment & Visualizer State
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [contrast, setContrast] = useState(100);
+  const [brightness, setBrightness] = useState(100);
+  const [isInverted, setIsInverted] = useState(false);
+  const [showVisualizer, setShowVisualizer] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Repositories hooks
+  const patientsRepository = usePatientsRepository();
+  const remindersRepository = useRemindersRepository();
+  const appointmentsRepository = useAppointmentsRepository();
+  const productsRepository = useProductsRepository();
+  const notesRepository = useNotesRepository();
+  const weightRepository = useWeightEntriesRepository();
+
   const activeConversation = conversations.find(
     (c) => c.id === activeConversationId
   );
   const messages = activeConversation?.messages || [];
+
+  // Track model progress & availability
+  useEffect(() => {
+    setIsLlmReady(isWebLLMReady());
+    setIsLlmLoading(isWebLLMLoading());
+
+    const unsubscribe = subscribeToProgress((report) => {
+      setModelProgress(report);
+      setIsLlmReady(isWebLLMReady());
+      setIsLlmLoading(isWebLLMLoading());
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -126,118 +183,200 @@ export function AIAgentChat({
     }
   }, [isOpen, activeConversationId]);
 
-  const simulateResponse = useCallback(
-    async (userMessage: string): Promise<string> => {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+  const handleLoadModel = async (modelId: string) => {
+    try {
+      setSelectedModelId(modelId);
+      setIsLlmLoading(true);
+      await initializeWebLLM(modelId);
+      setIsLlmReady(true);
+    } catch (err) {
+      console.error("[WebLLM] Error initializing model:", err);
+    } finally {
+      setIsLlmLoading(false);
+    }
+  };
 
-      const lowerMsg = userMessage.toLowerCase();
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
 
-      if (lowerMsg.includes("fiche") || lowerMsg.includes("patient")) {
-        return `# Fiche Patient - Structure Proposée
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-## Anamnèse
-**Motif de consultation** : [À compléter]
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImage(reader.result as string);
+      // Switch automatically to vision model when attaching files
+      if (selectedModelId !== "Phi-3.5-vision-instruct-q4f16_1-MLC") {
+        setSelectedModelId("Phi-3.5-vision-instruct-q4f16_1-MLC");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
-**Antécédents** :
-- Médicaux/chirurgicaux :
-- Traitements en cours :
-- Mode de vie :
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
-## Examen Clinique
-| Paramètre | Valeur | Norme |
-|-----------|--------|-------|
-| Température | ___°C | 38-39°C |
-| FC | ___ bpm | 70-120 |
-| FR | ___ rpm | 10-30 |
-| BCS | /9 | 4-5 |
+  // Agentic Tool Execution
+  const executeTool = async (name: string, argsStr: string): Promise<string> => {
+    const args: Record<string, string> = {};
+    const regex = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+))/g;
+    let match;
+    while ((match = regex.exec(argsStr)) !== null) {
+      const key = match[1];
+      const val = match[2] || match[3] || match[4];
+      args[key] = val;
+    }
 
-## Diagnostic & Traitement
-**Hypothèse principale** :
+    if (name === "search_patients") {
+      const query = args.query || argsStr.replace(/["']/g, "").trim();
+      if (!query) return "Erreur: Recherche vide.";
 
-**Prescription** :
-1. 
-2. 
-3. 
+      const found = patientsRepository.data.filter((p) =>
+        p.name.toLowerCase().includes(query.toLowerCase()) ||
+        p.breed?.toLowerCase().includes(query.toLowerCase())
+      );
 
-**Suivi** : Revoir dans ___`;
+      if (found.length === 0) return `Aucun patient trouvé pour "${query}".`;
+
+      return `Trouvé ${found.length} patient(s) :\n` + found.map((p) => {
+        const owner = patientsRepository.owners.find((o) => o.id === p.ownerId);
+        return `- ID: ${p.id}, Nom: ${p.name}, Espèce: ${p.species}, Race: ${p.breed || "N/A"}, Propriétaire: ${owner ? `${owner.firstName} ${owner.lastName}` : "Inconnu"}`;
+      }).join("\n");
+    }
+
+    if (name === "create_reminder") {
+      const patientId = args.patient_id || args.patientId;
+      const text = args.text || args.message;
+      const date = args.date || args.scheduled_for;
+
+      if (!patientId || !text || !date) {
+        return "Erreur: Paramètres requis manquants (patient_id, text, date).";
       }
 
-      if (
-        lowerMsg.includes("compte-rendu") ||
-        lowerMsg.includes("consultation")
-      ) {
-        return `# Compte-Rendu de Consultation
+      const patient = patientsRepository.data.find((p) => String(p.id) === String(patientId));
+      if (!patient) return `Erreur: Patient ID ${patientId} introuvable.`;
 
-**Patient** : [Nom] — [Espèce] — [Âge]
-**Date** : ${new Date().toLocaleDateString("fr-FR")}
-**Propriétaire** : [Nom]
+      await remindersRepository.add({
+        appointmentId: "",
+        channel: "in_app",
+        message: `${patient.name} : ${text}`,
+        minutesBefore: 0,
+        scheduledFor: new Date(date).toISOString(),
+        status: "pending",
+      } as any);
 
-## Motif
-[Description]
+      return `Succès : Rappel créé pour ${patient.name} le ${date} : "${text}"`;
+    }
 
-## Examen
-[Constatations cliniques]
+    if (name === "get_appointments") {
+      const dateStr = args.date || argsStr.replace(/["']/g, "").trim();
+      const targetDate = dateStr ? new Date(dateStr) : new Date();
+      if (isNaN(targetDate.getTime())) return "Erreur: Format de date invalide.";
+      
+      const targetDateString = targetDate.toISOString().split("T")[0];
+      const todayAppts = appointmentsRepository.data.filter(a => a.startTime.startsWith(targetDateString));
+      
+      if (todayAppts.length === 0) return `Aucun rendez-vous trouvé pour la date ${targetDateString}.`;
+      
+      return `Trouvé ${todayAppts.length} rendez-vous pour ${targetDateString}:\n` + todayAppts.map(a => {
+        const patient = patientsRepository.data.find(p => p.id === a.patientId);
+        return `- ${a.startTime.split("T")[1].slice(0,5)} : ${a.title} (Patient: ${patient?.name || "Inconnu"}, Statut: ${a.status})`;
+      }).join("\n");
+    }
 
-## Conduite
-[Diagnostic et traitement prescrit]
+    if (name === "search_stock") {
+      const query = args.query || argsStr.replace(/["']/g, "").trim();
+      if (!query) return "Erreur: Recherche vide.";
+      
+      const found = productsRepository.data.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+      if (found.length === 0) return `Aucun produit trouvé pour "${query}".`;
+      
+      return `Stock pour "${query}":\n` + found.map(p => `- ${p.name}: ${p.quantity} unités restantes`).join("\n");
+    }
 
----
-*Dr [Votre nom]*`;
-      }
+    if (name === "get_patient_history") {
+      const patientId = args.patient_id || args.patientId || argsStr.replace(/["']/g, "").trim();
+      if (!patientId) return "Erreur: ID du patient manquant.";
+      
+      const patient = patientsRepository.data.find(p => String(p.id) === String(patientId));
+      if (!patient) return `Erreur: Patient introuvable.`;
+      
+      const latestWeight = weightRepository.latestFor(patient.id);
+      
+      return `Historique de ${patient.name} (${patient.species}):
+Poids le plus récent: ${latestWeight ? `${latestWeight.weight} kg (${latestWeight.measuredAt.split("T")[0]})` : "Aucun"}
+Allergies: ${patient.allergies || "Aucune connue"}
+Notes générales: ${patient.generalNotes || "Aucune"}`;
+    }
 
-      if (lowerMsg.includes("protocole") || lowerMsg.includes("vaccin")) {
-        return `# Protocole Vaccinal WSAVA 2022
+    if (name === "add_note") {
+      const title = args.title || "Note IA";
+      const content = args.content || args.text;
+      if (!content) return "Erreur: Contenu de la note manquant.";
+      
+      // Notes require a user ID. In a real app we'd get the current user, here we use a dummy or first user.
+      await notesRepository.add({
+        userId: "system",
+        title: title,
+        content: content,
+        isFavorite: false,
+      } as any);
+      
+      return `Succès: Note "${title}" enregistrée.`;
+    }
 
-## Core Vaccines (obligatoires)
+    return `Erreur : Outil "${name}" inconnu.`;
+  };
 
-**CVRP** (Carré/Parvo/Hépatite/Parainfluenza)
-- Rappel : annuel ou triennal
-- Voie : SC
+  const SYSTEM_PROMPT_WITH_TOOLS = `Tu es l'assistant clinique vétérinaire expert. Tu as accès à la base de données locale du cabinet.
+  
+Pour t'aider, tu peux appeler des outils locaux en écrivant exactement sous ce format : \`[TOOL: nom_outil(parametre="valeur")]\`.
+L'application exécutera l'outil et te renverra le résultat sous la forme \`[TOOL_RESULT: ...]\`. Tu pourras ensuite formuler ta réponse finale.
 
-**Leptospirose**
-- Rappel : **annuel obligatoire**
-- Attention : immunité courte
+Outils disponibles :
+1. \`search_patients(query="nom ou race")\` : Cherche des patients dans le cabinet.
+2. \`create_reminder(patient_id="ID", text="Vaccin/Suivi", date="YYYY-MM-DD")\` : Crée un rappel clinique.
+3. \`get_appointments(date="YYYY-MM-DD")\` : Récupère les rendez-vous pour une date donnée.
+4. \`search_stock(query="nom du produit")\` : Vérifie la disponibilité d'un produit en stock.
+5. \`get_patient_history(patient_id="ID")\` : Récupère le résumé clinique et la dernière pesée d'un patient.
+6. \`add_note(title="Titre", content="Contenu")\` : Ajoute un pense-bête ou une note générale pour le vétérinaire.
 
-## Non-Core (selon risque)
-- **Rage** — voyage, chasse
-- **Bordetella** — pension, multi-chiens
-- **Leishmaniose** — zones endémiques
-
-## Points Vigilance
-- Déparasitage préalable
-- Attente 48h avant chirurgie
-- Surveillance 15-30 min post-vaccin`;
-      }
-
-      if (lowerMsg.includes("sms") || lowerMsg.includes("rappel")) {
-        return `SMS de rappel vaccinal :
-
-> Bonjour, c'est la Clinique Vétérinaire. Le vaccin de [Nom] est dû cette semaine. Pour maintenir sa protection, merci de prendre rendez-vous au 01 23 45 67 89. À bientôt !
-
-SMS confirmation RDV :
-
-> Bonjour [Prénom], je confirme votre RDV demain [date] à [heure] pour [Nom]. En cas d'empêchement, merci de nous appeler au 01 23 45 67 89. À demain !`;
-      }
-
-      return `Je comprends votre demande. Pour vous assister au mieux, pourriez-vous préciser :
-
-• S'agit-il d'une **rédaction documentaire** ?
-• D'une **question médicale** (protocole, posologie) ?
-• D'une **communication client** ?
-• Ou d'une **aide au diagnostic** ?`;
-    },
-    []
-  );
+Règles :
+- Sois factuel, médical, structuré (Évaluation, Hypothèses, Actions).
+- Si tu utilises un outil, attends de voir [TOOL_RESULT: ...] avant de conclure.
+- Réponds en français.`;
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading) {
+    if ((!input.trim() && !selectedImage) || isLoading) {
       return;
     }
 
+    if (!isLlmReady) {
+      const loadMsg: Message = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: "Veuillez d'abord initialiser le modèle local IA en cliquant sur le bouton de chargement dans le panneau latéral gauche.",
+        timestamp: new Date(),
+      };
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === activeConversationId
+            ? { ...conv, messages: [...conv.messages, loadMsg] }
+            : conv
+        )
+      );
+      return;
+    }
+
+    const userInputText = input;
     const userMsg: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      content: selectedImage ? `[Cliché Joint] ${userInputText}` : userInputText,
       timestamp: new Date(),
     };
 
@@ -250,7 +389,7 @@ SMS confirmation RDV :
               updatedAt: new Date(),
               title:
                 conv.title === "Nouvelle conversation"
-                  ? input.slice(0, 25) + (input.length > 25 ? "..." : "")
+                  ? userInputText.slice(0, 25) + (userInputText.length > 25 ? "..." : "")
                   : conv.title,
             }
           : conv
@@ -258,15 +397,66 @@ SMS confirmation RDV :
     );
 
     setInput("");
+    const imagePayload = selectedImage;
+    handleRemoveImage();
     setIsLoading(true);
 
     try {
-      const response = await simulateResponse(userMsg.content);
+      const historyTurns = messages
+        .filter((m) => m.id !== "welcome")
+        .map((m) => ({
+          role: m.role,
+          text: m.content,
+        }));
+
+      let currentPrompt = userInputText;
+      let finalAnswer = "";
+      let attempts = 0;
+      const history = [...historyTurns];
+
+      while (attempts < 3) {
+        const response = await generateText(currentPrompt, "", {
+          history,
+          imageUri: imagePayload || undefined,
+          systemPrompt: SYSTEM_PROMPT_WITH_TOOLS,
+          temperature: 0.2,
+        });
+
+        const toolMatch = response.match(/\[TOOL:\s*(\w+)\s*\(([^)]*)\)\s*\]/);
+        if (toolMatch) {
+          const [_, toolName, argsStr] = toolMatch;
+
+          // Inform user of tool call
+          const toolCallMsg: Message = {
+            id: `tool-${Date.now()}-${attempts}`,
+            role: "assistant",
+            content: `🔧 *Appel de l'outil local : ${toolName}(${argsStr})*...`,
+            timestamp: new Date(),
+          };
+          setConversations((prev) =>
+            prev.map((conv) =>
+              conv.id === activeConversationId
+                ? { ...conv, messages: [...conv.messages, toolCallMsg] }
+                : conv
+            )
+          );
+
+          const toolResult = await executeTool(toolName, argsStr);
+
+          history.push({ role: "assistant", text: response });
+          history.push({ role: "user", text: `[TOOL_RESULT: ${toolResult}]` });
+          currentPrompt = `Rédige la réponse finale ou poursuis par rapport au résultat de l'outil : ${toolResult}`;
+          attempts++;
+        } else {
+          finalAnswer = response;
+          break;
+        }
+      }
 
       const assistantMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: response,
+        content: finalAnswer || "Je n'ai pas pu générer de réponse.",
         timestamp: new Date(),
       };
 
@@ -282,10 +472,11 @@ SMS confirmation RDV :
         )
       );
     } catch (error) {
+      console.error("[LocalAI] Chat generation failed:", error);
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Une erreur est survenue. Veuillez réessayer.",
+        content: "Désolé, une erreur de calcul est survenue avec le modèle IA local (possible surcharge VRAM WebGPU). Veuillez réessayer.",
         timestamp: new Date(),
       };
       setConversations((prev) =>
@@ -348,62 +539,102 @@ SMS confirmation RDV :
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
-      <DialogContent showCloseButton={false} className="!max-w-[85vw] flex h-[85vh] w-[85vw] flex-col gap-0 overflow-hidden rounded-2xl border border-border/50 p-0 shadow-2xl">
+      <DialogContent
+        className="!max-w-[85vw] flex h-[85vh] w-[85vw] flex-col gap-0 overflow-hidden rounded-3xl border border-zinc-200/50 p-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:border-white/10 dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]"
+        showCloseButton={false}
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>Assistant Vétérinaire</DialogTitle>
         </DialogHeader>
 
-        {/* Header Épuré */}
-        <div className="flex h-16 shrink-0 items-center justify-between bg-gradient-to-r from-background to-muted/30 px-6">
-          <div className="flex items-center gap-4">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20">
-              <HugeiconsIcon
-                className="size-5 text-emerald-600"
-                icon={StethoscopeIcon}
-              />
+        {/* Premium Header */}
+        <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-border/40 bg-white/40 px-6 backdrop-blur-xl dark:bg-zinc-950/40">
+          <div className="absolute inset-0 z-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-orange-500/5 opacity-50" />
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="relative flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-sm">
+              <div className="absolute inset-0 rounded-xl bg-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]" />
+              <Bot className="relative z-10 size-5 text-white" />
             </div>
             <div>
-              <h2 className="font-semibold text-foreground text-sm">
-                Assistant Vétérinaire
+              <h2 className="font-serif text-lg font-semibold tracking-tight text-foreground">
+                Assistant IA
               </h2>
-              <p className="text-muted-foreground text-xs">
-                Spécialisé pour le cabinet
+              <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
+                100% Local · Base Sécurisée
               </p>
             </div>
           </div>
           <Button
-            className="size-9 rounded-full hover:bg-muted"
+            className="relative z-10 size-9 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20"
             onClick={onClose}
             size="icon"
             variant="ghost"
           >
             <HugeiconsIcon
-              className="size-4 text-muted-foreground"
+              className="size-4 text-foreground"
               icon={Cancel01Icon}
             />
           </Button>
         </div>
 
         {/* Content */}
-        <div className="flex flex-1 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="flex flex-1 overflow-hidden bg-background">
           {/* Sidebar */}
-          <div className="flex w-60 flex-col border-border/50 border-r bg-muted/20">
+          <div className="flex w-64 flex-col border-r border-border/40 bg-zinc-50/50 dark:bg-zinc-900/30">
+            {/* Local LLM Status */}
+            <div className="border-b border-border/40 p-5 space-y-3">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Moteur IA Local (Vision)
+              </label>
+
+              {isLlmReady ? (
+                <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-50/50 px-3 py-2 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex size-2 rounded-full bg-blue-500"></span>
+                  </span>
+                  Modèle en ligne
+                </div>
+              ) : isLlmLoading ? (
+                <div className="space-y-2 rounded-lg border border-border/40 bg-white p-3 shadow-sm dark:bg-zinc-950">
+                  <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
+                    <span>Initialisation...</span>
+                    <span>{Math.round((modelProgress?.progress ?? 0) * 100)}%</span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                    <div
+                      className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+                      style={{ width: `${(modelProgress?.progress ?? 0) * 100}%` }}
+                    />
+                  </div>
+                  <p className="truncate font-mono text-[9px] text-muted-foreground/80">
+                    {modelProgress?.text || "Chargement..."}
+                  </p>
+                </div>
+              ) : (
+                <Button
+                  className="h-9 w-full rounded-lg bg-black text-xs font-medium text-white shadow-md transition-transform hover:scale-[1.02] hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                  onClick={() => handleLoadModel(selectedModelId)}
+                >
+                  Activer l'assistant
+                </Button>
+              )}
+            </div>
+
             {/* New conversation */}
             <div className="p-4">
               <Button
-                className="h-11 w-full justify-start gap-2 rounded-xl border border-border/60 bg-background shadow-sm transition-all hover:border-border hover:bg-muted"
+                className="h-10 w-full justify-start gap-2.5 rounded-xl border border-border/60 bg-white px-3 shadow-sm transition-all hover:border-border hover:bg-zinc-50 dark:bg-zinc-950 dark:hover:bg-zinc-900"
                 onClick={createNewConversation}
                 variant="ghost"
               >
-                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-500/10">
+                <div className="flex size-5 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
                   <HugeiconsIcon
-                    className="size-3.5 text-emerald-600"
+                    className="size-3.5 text-foreground"
                     icon={Add01Icon}
                   />
                 </div>
-                <span className="font-medium text-sm">
-                  Nouvelle conversation
-                </span>
+                <span className="text-sm font-medium">Nouvelle discussion</span>
               </Button>
             </div>
 
@@ -413,10 +644,10 @@ SMS confirmation RDV :
                 {conversations.map((conv) => (
                   <div
                     className={cn(
-                      "group flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
+                      "group flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-200",
                       activeConversationId === conv.id
-                        ? "bg-emerald-500/10 text-emerald-700 shadow-sm"
-                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                        ? "bg-zinc-200/50 text-foreground shadow-sm dark:bg-zinc-800/50"
+                        : "text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800/30"
                     )}
                     key={conv.id}
                     onClick={() => setActiveConversationId(conv.id)}
@@ -426,7 +657,7 @@ SMS confirmation RDV :
                         className={cn(
                           "size-4 shrink-0",
                           activeConversationId === conv.id
-                            ? "text-emerald-500"
+                            ? "text-foreground"
                             : "text-muted-foreground/60"
                         )}
                         icon={Chatting01Icon}
@@ -479,49 +710,52 @@ SMS confirmation RDV :
           </div>
 
           {/* Chat Area */}
-          <div className="flex min-w-0 flex-1 flex-col">
+          <div className="relative flex min-w-0 flex-1 flex-col">
+            {/* Ambient Mesh Background (Very subtle) */}
+            <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/20 via-background to-orange-50/20 opacity-60 dark:from-blue-900/10 dark:to-orange-900/10" />
+            
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="relative z-10 flex-1 overflow-y-auto">
               <div className="mx-auto max-w-3xl px-8 py-8">
                 {messages.length === 0 ? (
-                  <div className="flex h-full flex-col items-center justify-center gap-8 pt-12">
+                  <div className="flex h-full flex-col items-center justify-center gap-10 pt-12">
                     <div className="relative">
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/30 to-teal-400/30 blur-2xl" />
-                      <div className="relative flex size-20 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25">
-                        <HugeiconsIcon
-                          className="size-10 text-white"
-                          icon={StethoscopeIcon}
-                        />
+                      {/* Vibrant animated glow behind icon */}
+                      <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-orange-400 blur-3xl opacity-30 dark:opacity-20" />
+                      
+                      {/* Premium Icon Container */}
+                      <div className="relative flex size-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-white to-zinc-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,1)] dark:from-zinc-800 dark:to-zinc-900 dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                        <Bot className="size-10 text-zinc-800 dark:text-zinc-200" />
                       </div>
                     </div>
-                    <div className="space-y-2 text-center">
-                      <h2 className="font-semibold text-2xl tracking-tight">
-                        Assistant Vétérinaire
+                    <div className="space-y-3 text-center">
+                      <h2 className="font-serif text-3xl font-bold tracking-tight text-foreground">
+                        Bonjour Docteur
                       </h2>
-                      <p className="max-w-sm text-muted-foreground text-sm">
-                        Je suis spécialisé pour vous aider dans les tâches
-                        quotidiennes du cabinet.
+                      <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+                        Je suis votre assistant IA clinique. Je peux analyser vos radiographies, interroger vos dossiers patients et vous aider dans votre quotidien.
                       </p>
                     </div>
-                    <div className="grid w-full max-w-lg grid-cols-2 gap-3">
+                    <div className="grid w-full max-w-xl grid-cols-2 gap-4">
                       {QUICK_ACTIONS.map((action) => (
                         <button
-                          className="group flex flex-col items-start gap-2 rounded-xl border border-border/60 bg-background/80 p-4 text-left transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/30 hover:shadow-md"
+                          className="group relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl border border-zinc-200/60 bg-white/50 p-5 text-left shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-white hover:shadow-md dark:border-white/10 dark:bg-zinc-900/50 dark:hover:border-white/20 dark:hover:bg-zinc-900"
                           key={action.id}
                           onClick={() => handleQuickAction(action)}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/10 to-teal-500/10 transition-all group-hover:from-emerald-500/20 group-hover:to-teal-500/20">
+                          <div className="absolute -right-4 -top-4 size-24 rounded-full bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                          <div className="flex items-center gap-3">
+                            <div className="flex size-8 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 transition-colors group-hover:bg-black group-hover:text-white dark:bg-zinc-800 dark:text-zinc-400 dark:group-hover:bg-white dark:group-hover:text-black">
                               <HugeiconsIcon
-                                className="size-4 text-emerald-600"
+                                className="size-4"
                                 icon={action.icon}
                               />
                             </div>
-                            <span className="font-medium text-sm">
+                            <span className="font-medium text-sm text-foreground">
                               {action.label}
                             </span>
                           </div>
-                          <span className="pl-9.5 text-muted-foreground text-xs">
+                          <span className="text-xs text-muted-foreground">
                             {action.description}
                           </span>
                         </button>
@@ -542,19 +776,13 @@ SMS confirmation RDV :
                         style={{ animationDelay: `${idx * 50}ms` }}
                       >
                         {message.role === "assistant" && (
-                          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md shadow-emerald-500/20">
-                            <HugeiconsIcon
-                              className="size-4 text-white"
-                              icon={StethoscopeIcon}
-                            />
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-sm">
+                            <Sparkles className="size-4 text-white" />
                           </div>
                         )}
                         {message.role === "user" && (
-                          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted">
-                            <HugeiconsIcon
-                              className="size-4 text-muted-foreground"
-                              icon={EditIcon}
-                            />
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-background shadow-sm">
+                            <span className="text-xs font-medium text-muted-foreground">MOI</span>
                           </div>
                         )}
                         <div
@@ -565,16 +793,15 @@ SMS confirmation RDV :
                         >
                           <div
                             className={cn(
-                              "inline-block max-w-[90%] text-left text-[15px] leading-relaxed",
+                              "inline-block max-w-[90%] text-left text-[15px] leading-relaxed shadow-sm",
                               message.role === "user"
-                                ? "rounded-2xl rounded-tr-sm bg-muted px-5 py-3 text-foreground"
-                                : "px-1 py-1 text-foreground"
+                                ? "rounded-3xl rounded-tr-sm bg-black px-5 py-3 text-white dark:bg-white dark:text-black"
+                                : "rounded-3xl rounded-tl-sm border border-zinc-200/60 bg-white/80 px-5 py-4 text-foreground backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/80"
                             )}
                           >
                             {message.content.split("\n").map((line, i) => {
                               const isHeading = line.startsWith("# ");
                               const isSubHeading = line.startsWith("## ");
-                              const isTableRow = line.startsWith("|");
                               const isListItem =
                                 line.startsWith("•") || line.startsWith("-");
                               const isQuote = line.startsWith(">");
@@ -614,10 +841,10 @@ SMS confirmation RDV :
                               if (isQuote) {
                                 return (
                                   <div
-                                    className="my-3 rounded-r-lg border-emerald-300 border-l-2 bg-emerald-50/50 py-2 pl-4"
+                                    className="my-3 rounded-r-lg border-l-2 border-blue-400 bg-blue-50/50 py-2 pl-4 dark:border-blue-500 dark:bg-blue-900/20"
                                     key={i}
                                   >
-                                    <p className="text-muted-foreground text-sm italic">
+                                    <p className="text-sm italic text-muted-foreground">
                                       {cleanLine}
                                     </p>
                                   </div>
@@ -651,7 +878,7 @@ SMS confirmation RDV :
 
                     {isLoading && (
                       <div className="fade-in flex animate-in gap-4 duration-300">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md shadow-emerald-500/20">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 shadow-emerald-500/20 shadow-md">
                           <HugeiconsIcon
                             className="size-4 text-white"
                             icon={StethoscopeIcon}
@@ -681,46 +908,57 @@ SMS confirmation RDV :
             </div>
 
             {/* Input Area */}
-            <div className="border-border/50 border-t bg-gradient-to-t from-muted/30 to-background px-8 py-5">
-              <div className="mx-auto max-w-3xl space-y-3">
-                {/* Quick Actions */}
-                <div className="flex flex-wrap gap-2">
-                  {QUICK_ACTIONS.map((action) => (
-                    <button
-                      className="flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/60 px-3 py-1.5 font-medium text-muted-foreground text-xs transition-all duration-200 hover:border-emerald-200 hover:bg-emerald-100/50 hover:text-emerald-700"
-                      key={action.id}
-                      onClick={() => handleQuickAction(action)}
-                    >
-                      <HugeiconsIcon className="size-3" icon={action.icon} />
-                      {action.label}
-                    </button>
-                  ))}
-                </div>
+            <div className="relative z-10 border-t border-border/40 bg-white/80 p-4 backdrop-blur-xl dark:bg-zinc-950/80">
+              <div className="mx-auto flex max-w-3xl items-end gap-3 rounded-2xl border border-zinc-200/80 bg-white p-2 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-shadow focus-within:border-zinc-300 focus-within:shadow-md dark:border-white/10 dark:bg-zinc-900 dark:focus-within:border-white/20">
+                <Button
+                  className="size-10 shrink-0 rounded-xl text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
+                  onClick={handleImageClick}
+                  size="icon"
+                  type="button"
+                  variant="ghost"
+                  title="Joindre une image (Vision)"
+                >
+                  <Paperclip className="size-5" />
+                </Button>
 
-                {/* Input */}
-                <div className="relative">
+                <div className="relative flex-1">
+                  {selectedImage && (
+                    <div className="mb-2 flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-1.5 dark:border-zinc-800 dark:bg-zinc-950">
+                      <div className="relative h-10 w-10 shrink-0 rounded overflow-hidden">
+                        <img src={selectedImage} alt="Preview" className="h-full w-full object-cover" />
+                      </div>
+                      <span className="text-xs text-muted-foreground">Cliché chargé</span>
+                      <button onClick={handleRemoveImage} className="ml-auto p-1 hover:bg-zinc-200 rounded">✕</button>
+                    </div>
+                  )}
+                  {/* Hidden Image input */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                  />
+
                   <Textarea
-                    className="max-h-[200px] min-h-[60px] resize-none rounded-xl border-border/60 bg-background pr-14 text-[15px] shadow-sm transition-shadow placeholder:text-muted-foreground/50 focus:shadow-md"
-                    disabled={isLoading}
+                    className="max-h-[120px] min-h-[40px] w-full resize-none border-0 bg-transparent px-0 py-2.5 text-[15px] placeholder:text-muted-foreground/50 focus-visible:ring-0"
+                    placeholder="Posez votre question clinique..."
+                    value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Posez votre question..."
                     ref={textareaRef}
-                    value={input}
                   />
+
                   <Button
-                    className="absolute right-2 bottom-2 size-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 shadow-md shadow-emerald-500/25 transition-all hover:from-emerald-600 hover:to-teal-600 disabled:shadow-none"
-                    disabled={!input.trim() || isLoading}
+                    className="size-10 shrink-0 rounded-xl bg-black text-white shadow-sm transition-transform hover:scale-105 hover:bg-zinc-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                    disabled={(!input.trim() && !selectedImage) || isLoading}
                     onClick={handleSend}
                     size="icon"
                   >
                     {isLoading ? (
-                      <Spinner className="size-4 text-white" />
+                      <Spinner className="size-4 text-white dark:text-black" />
                     ) : (
-                      <HugeiconsIcon
-                        className="size-4 text-white"
-                        icon={TelegramIcon}
-                      />
+                      <HugeiconsIcon className="size-5" icon={TelegramIcon} />
                     )}
                   </Button>
                 </div>
@@ -731,6 +969,128 @@ SMS confirmation RDV :
             </div>
           </div>
         </div>
+
+        {/* Radiography DICOM Style Visualizer Dialog */}
+        <Dialog open={showVisualizer} onOpenChange={setShowVisualizer}>
+          <DialogContent className="max-w-3xl rounded-2xl border border-border/50 bg-zinc-950 text-white shadow-2xl p-6">
+            <DialogHeader className="flex flex-row items-center justify-between border-b border-white/10 pb-4">
+              <div>
+                <DialogTitle className="text-lg font-bold text-white">
+                  Visualiseur Radiologique & Clinique
+                </DialogTitle>
+                <p className="text-xs text-zinc-400">
+                  Ajustez les contrastes et les niveaux pour faciliter l'analyse
+                </p>
+              </div>
+              <Button
+                className="size-9 rounded-full bg-white/10 text-white hover:bg-white/20"
+                onClick={() => setShowVisualizer(false)}
+                size="icon"
+                variant="ghost"
+              >
+                <HugeiconsIcon className="size-4" icon={Cancel01Icon} />
+              </Button>
+            </DialogHeader>
+
+            <div className="mt-6 flex flex-col md:flex-row gap-6">
+              {/* Image Preview Screen */}
+              <div className="flex-1 flex items-center justify-center rounded-xl bg-black border border-white/10 p-4 min-h-[300px] overflow-hidden">
+                {selectedImage ? (
+                  <img
+                    src={selectedImage}
+                    alt="Radiographie"
+                    className="max-h-[400px] w-auto object-contain rounded transition-all"
+                    style={{
+                      filter: `contrast(${contrast}%) brightness(${brightness}%) ${isInverted ? "invert(1)" : ""}`,
+                    }}
+                  />
+                ) : (
+                  <p className="text-zinc-500 text-sm">Aucun cliché chargé</p>
+                )}
+              </div>
+
+              {/* Controls Column */}
+              <div className="w-full md:w-64 space-y-5 flex flex-col justify-between">
+                <div className="space-y-4">
+                  {/* Brightness */}
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs font-medium text-zinc-300">
+                      <span className="flex items-center gap-1"><Sun className="size-3" /> Luminosité</span>
+                      <span>{brightness}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="50"
+                      max="200"
+                      value={brightness}
+                      onChange={(e) => setBrightness(Number(e.target.value))}
+                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5"
+                    />
+                  </div>
+
+                  {/* Contrast */}
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs font-medium text-zinc-300">
+                      <span className="flex items-center gap-1"><Contrast className="size-3" /> Contraste</span>
+                      <span>{contrast}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="50"
+                      max="300"
+                      value={contrast}
+                      onChange={(e) => setContrast(Number(e.target.value))}
+                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5"
+                    />
+                  </div>
+
+                  {/* Invert */}
+                  <div className="flex items-center justify-between border-t border-white/10 pt-4">
+                    <span className="text-xs font-medium text-zinc-300 flex items-center gap-1">
+                      <RotateCw className="size-3" /> Inverser les couleurs
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsInverted(!isInverted)}
+                      className={cn(
+                        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+                        isInverted ? "bg-blue-500" : "bg-zinc-800"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                          isInverted ? "translate-x-5" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Reset button */}
+                <Button
+                  className="w-full h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs text-white"
+                  onClick={() => {
+                    setBrightness(100);
+                    setContrast(100);
+                    setIsInverted(false);
+                  }}
+                >
+                  Réinitialiser les réglages
+                </Button>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button
+                className="rounded-xl bg-white hover:bg-zinc-200 px-5 text-sm font-semibold text-black"
+                onClick={() => setShowVisualizer(false)}
+              >
+                Appliquer et Fermer
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );

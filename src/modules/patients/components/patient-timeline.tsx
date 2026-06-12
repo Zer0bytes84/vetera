@@ -10,30 +10,19 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { useAppointmentsRepository } from "@/data/repositories";
 import {
+  useAppointmentsRepository,
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import type {
-  Appointment,
-  Vaccination,
-  WeightEntry,
-} from "@/types/db";
+import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
 
 type TimelineKind = "consultation" | "vaccination" | "weight";
 
@@ -54,11 +43,11 @@ const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
 };
 
 const KIND_COLOR: Record<TimelineKind, string> = {
-  consultation:
-    "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
+  consultation: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
   vaccination:
     "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300",
-  weight: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+  weight:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
 };
 
 interface PatientTimelineProps {
@@ -88,11 +77,13 @@ const APPOINTMENT_STATUS_META: Record<
   },
   cancelled: {
     label: "Annulé",
-    className: "bg-zinc-200 text-zinc-700 dark:bg-zinc-700/40 dark:text-zinc-300",
+    className:
+      "bg-zinc-200 text-zinc-700 dark:bg-zinc-700/40 dark:text-zinc-300",
   },
   no_show: {
     label: "Absent",
-    className: "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300",
+    className:
+      "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300",
   },
 };
 
@@ -168,7 +159,7 @@ function buildEntries(
       kind: "weight",
       title: `${w.weightKg.toFixed(2)} kg`,
       description: w.notes,
-      meta: w.bcs != null ? `BCS ${w.bcs}/9` : undefined,
+      meta: w.bcs == null ? undefined : `BCS ${w.bcs}/9`,
     });
   }
 
@@ -194,22 +185,22 @@ export function PatientTimeline({
         vaccinationsRepo.forPatient(patientId),
         weightsRepo.forPatient(patientId)
       ),
-    [
-      appointmentsRepo.data,
-      vaccinationsRepo,
-      weightsRepo,
-      patientId,
-    ]
+    [appointmentsRepo.data, vaccinationsRepo, weightsRepo, patientId]
   );
 
   return (
-    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
-      <div className="flex justify-between items-center mb-6">
-        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+    <div
+      className={cn(
+        "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
+        className
+      )}
+    >
+      <div className="mb-6 flex items-center justify-between">
+        <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
           {t("patientDetail.timeline.title")}
         </div>
       </div>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-1 flex-col">
         {entries.length === 0 ? (
           <Empty>
             <EmptyHeader>
@@ -229,7 +220,7 @@ export function PatientTimeline({
           <ol className="relative space-y-4">
             <span
               aria-hidden
-              className="absolute left-[11px] top-1 bottom-1 w-px bg-border/60"
+              className="absolute top-1 bottom-1 left-[11px] w-px bg-border/60"
             />
             {entries.map((entry) => {
               const Icon = KIND_ICON[entry.kind];
@@ -248,18 +239,18 @@ export function PatientTimeline({
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                      <span className="truncate text-sm font-semibold">
+                      <span className="truncate font-semibold text-sm">
                         {entry.title}
                       </span>
                       {entry.meta ? (
-                        <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        <span className="text-[11px] text-muted-foreground uppercase tracking-wide">
                           {entry.meta}
                         </span>
                       ) : null}
                       {entry.statusBadge ? (
                         <Badge
                           className={cn(
-                            "rounded-full px-1.5 py-0 text-[10px] font-medium",
+                            "rounded-full px-1.5 py-0 font-medium text-[10px]",
                             entry.statusBadge.className
                           )}
                           variant="secondary"
@@ -269,7 +260,7 @@ export function PatientTimeline({
                       ) : null}
                     </div>
                     {entry.description ? (
-                      <p className="line-clamp-2 text-xs text-muted-foreground">
+                      <p className="line-clamp-2 text-muted-foreground text-xs">
                         {entry.description}
                       </p>
                     ) : null}
@@ -283,9 +274,7 @@ export function PatientTimeline({
                         <Button
                           className="h-5 px-1.5 text-[10px]"
                           onClick={() =>
-                            onJumpToAppointment(
-                              entry.id.replace(/^apt-/, "")
-                            )
+                            onJumpToAppointment(entry.id.replace(/^apt-/, ""))
                           }
                           size="sm"
                           variant="ghost"

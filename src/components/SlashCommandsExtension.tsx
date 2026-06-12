@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Extension } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
 import Suggestion from "@tiptap/suggestion";

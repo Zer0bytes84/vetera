@@ -1,8 +1,7 @@
+import { Heartbeat } from "@phosphor-icons/react";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
-
-import { Heartbeat } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +24,12 @@ import type { AnesthesiaPhase, AnesthesiaSheet } from "@/types/db";
 
 import { ANESTHESIA_PHASE_LABELS } from "../lib/format";
 
-const PHASES: AnesthesiaPhase[] = ["premed", "induction", "maintenance", "recovery"];
+const PHASES: AnesthesiaPhase[] = [
+  "premed",
+  "induction",
+  "maintenance",
+  "recovery",
+];
 
 function defaultState() {
   return {
@@ -57,7 +61,9 @@ export function AnesthesiaMonitoringEntryDialog({
   const repo = useAnesthesiaMonitoringRepository();
   const initial = defaultState();
   const [heartRateBpm, setHeartRateBpm] = useState(initial.heartRateBpm);
-  const [respiratoryRateBpm, setRespiratoryRateBpm] = useState(initial.respiratoryRateBpm);
+  const [respiratoryRateBpm, setRespiratoryRateBpm] = useState(
+    initial.respiratoryRateBpm
+  );
   const [spo2Percent, setSpo2Percent] = useState(initial.spo2Percent);
   const [etco2Mmhg, setEtco2Mmhg] = useState(initial.etco2Mmhg);
   const [mapMmhg, setMapMmhg] = useState(initial.mapMmhg);
@@ -94,7 +100,9 @@ export function AnesthesiaMonitoringEntryDialog({
       recordedAt: new Date().toISOString(),
       phase,
       heartRateBpm: heartRateBpm ? Number(heartRateBpm) : null,
-      respiratoryRateBpm: respiratoryRateBpm ? Number(respiratoryRateBpm) : null,
+      respiratoryRateBpm: respiratoryRateBpm
+        ? Number(respiratoryRateBpm)
+        : null,
       spo2Percent: spo2Percent ? Number(spo2Percent) : null,
       etco2Mmhg: etco2Mmhg ? Number(etco2Mmhg) : null,
       mapMmhg: mapMmhg ? Number(mapMmhg) : null,
@@ -118,7 +126,10 @@ export function AnesthesiaMonitoringEntryDialog({
             </div>
             <div>
               <DialogTitle>
-                {t("modules.anesthesia.monitoring.addEntry", "Ajouter un point monitoring")}
+                {t(
+                  "modules.anesthesia.monitoring.addEntry",
+                  "Ajouter un point monitoring"
+                )}
               </DialogTitle>
               <DialogDescription>{sheet.procedureName}</DialogDescription>
             </div>
@@ -136,7 +147,10 @@ export function AnesthesiaMonitoringEntryDialog({
             />
             <Field
               id="mon-fr"
-              label={t("modules.anesthesia.monitoring.respiratoryRate", "FR (/min)")}
+              label={t(
+                "modules.anesthesia.monitoring.respiratoryRate",
+                "FR (/min)"
+              )}
               onChange={setRespiratoryRateBpm}
               placeholder="12"
               value={respiratoryRateBpm}
@@ -217,9 +231,7 @@ export function AnesthesiaMonitoringEntryDialog({
           <Button onClick={handleCancel} variant="outline">
             Annuler
           </Button>
-          <Button onClick={() => void handleSubmit()}>
-            Enregistrer
-          </Button>
+          <Button onClick={() => void handleSubmit()}>Enregistrer</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

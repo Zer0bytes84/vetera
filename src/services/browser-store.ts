@@ -84,10 +84,10 @@ export function isTauriRuntime() {
 
   return Boolean(
     window.__TAURI__ ||
-    window.__TAURI_INTERNALS__ ||
-    window.__TAURI_IPC__ ||
-    // @ts-ignore
-    import.meta.env.TAURI_ENV_PLATFORM
+      window.__TAURI_INTERNALS__ ||
+      window.__TAURI_IPC__ ||
+      // @ts-expect-error: TAURI_ENV_PLATFORM is dynamically injected by Tauri compiler env
+      import.meta.env.TAURI_ENV_PLATFORM
   );
 }
 

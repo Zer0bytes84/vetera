@@ -142,7 +142,7 @@ export function ChartAreaInteractive({
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className="shadow-lg border-border/50 dark:border-border/30 bg-background/95 backdrop-blur-md"
+                  className="border-border/50 bg-background/95 shadow-lg backdrop-blur-md dark:border-border/30"
                   indicator="dot"
                   labelFormatter={(value) =>
                     new Date(

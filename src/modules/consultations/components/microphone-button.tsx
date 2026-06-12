@@ -44,10 +44,10 @@ export function MicrophoneButton({
               }
               className={cn(
                 dim,
-                "rounded-full relative transition-all duration-300",
+                "relative rounded-full transition-all duration-300",
                 isListening
                   ? "bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.5)] hover:bg-rose-600 hover:shadow-[0_0_20px_rgba(244,63,94,0.6)]"
-                  : "bg-background/80 hover:bg-muted/80 backdrop-blur-sm shadow-sm",
+                  : "bg-background/80 shadow-sm backdrop-blur-sm hover:bg-muted/80",
                 className
               )}
               disabled={disabled || !isSupported}
@@ -60,19 +60,19 @@ export function MicrophoneButton({
                 <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-rose-400 opacity-75" />
               )}
               {isListening ? (
-                <Stop weight="fill" className={iconDim} />
+                <Stop className={iconDim} weight="fill" />
               ) : (
-                <Microphone weight="duotone" className={iconDim} />
+                <Microphone className={iconDim} weight="duotone" />
               )}
             </Button>
           }
         />
         <TooltipContent side="bottom" sideOffset={6}>
-          {!isSupported
-            ? t("consultations.soap.ai.unsupportedBrowser")
-            : isListening
+          {isSupported
+            ? isListening
               ? t("consultations.soap.ai.stopDictation")
-              : t("consultations.soap.ai.startDictation")}
+              : t("consultations.soap.ai.startDictation")
+            : t("consultations.soap.ai.unsupportedBrowser")}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

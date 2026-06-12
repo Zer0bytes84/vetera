@@ -1,5 +1,19 @@
 "use client";
 
+import {
+  ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  ClipboardList,
+  MonitorSmartphone,
+  MoreVertical,
+  Play,
+  RefreshCcw,
+  Stethoscope,
+  Syringe,
+  Timer,
+  User,
+} from "lucide-react";
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -10,30 +24,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { View } from "@/types";
-import {
-  ArrowRight,
-  CalendarDays,
-  CheckCircle2,
-  ClipboardList,
-  Clock3,
-  MonitorSmartphone,
-  MoreVertical,
-  Play,
-  RefreshCcw,
-  Stethoscope,
-  Syringe,
-  Timer,
-  User,
-} from "lucide-react";
 
 export interface TodayAppointment {
   id: string | number;
-  patient: string;
   owner: string;
+  patient: string;
   species: string;
-  type: string;
-  time: string;
   status: string;
+  time: string;
+  type: string;
 }
 
 interface NextAppointmentsFeedProps {
@@ -47,9 +46,15 @@ interface NextAppointmentsFeedProps {
 
 function getTypeIcon(type: string) {
   const t = (type || "").toLowerCase();
-  if (/(tele|télé|visio|virtuel|distance)/.test(t)) return MonitorSmartphone;
-  if (/(vaccin|injection|piqûre|piqure)/.test(t)) return Syringe;
-  if (/(suivi|contrôle|controle|follow|recheck|post)/.test(t)) return RefreshCcw;
+  if (/(tele|télé|visio|virtuel|distance)/.test(t)) {
+    return MonitorSmartphone;
+  }
+  if (/(vaccin|injection|piqûre|piqure)/.test(t)) {
+    return Syringe;
+  }
+  if (/(suivi|contrôle|controle|follow|recheck|post)/.test(t)) {
+    return RefreshCcw;
+  }
   return Stethoscope;
 }
 
@@ -102,8 +107,10 @@ const STATUS_COPY: Record<
 
 function parseHHMM(t: string): number {
   const m = /^(\d{1,2}):(\d{2})/.exec(t || "");
-  if (!m) return Number.POSITIVE_INFINITY;
-  return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  if (!m) {
+    return Number.POSITIVE_INFINITY;
+  }
+  return Number.parseInt(m[1], 10) * 60 + Number.parseInt(m[2], 10);
 }
 
 // ───────────────────────────────────────────────────────────────────
@@ -126,18 +133,20 @@ export function NextAppointmentsFeed({
   const [filter, setFilter] = React.useState<Filter>("all");
 
   const sorted = React.useMemo(
-    () => [...appointments].sort((a, b) => parseHHMM(a.time) - parseHHMM(b.time)),
+    () =>
+      [...appointments].sort((a, b) => parseHHMM(a.time) - parseHHMM(b.time)),
     [appointments]
   );
 
-  const stats = React.useMemo(() => {
-    return {
+  const stats = React.useMemo(
+    () => ({
       total: sorted.length,
       inProgress: sorted.filter((a) => a.status === "in_progress").length,
       upcoming: sorted.filter((a) => a.status === "scheduled").length,
       completed: sorted.filter((a) => a.status === "completed").length,
-    };
-  }, [sorted]);
+    }),
+    [sorted]
+  );
 
   const completionRatio = stats.total > 0 ? stats.completed / stats.total : 0;
 
@@ -169,10 +178,10 @@ export function NextAppointmentsFeed({
   }, [onNavigate]);
 
   return (
-    <Card className="dashboard-luxe-card group relative flex flex-col overflow-hidden shadow-none !border-zinc-200 dark:!border-white/10">
+    <Card className="dashboard-luxe-card group !border-zinc-200 dark:!border-white/10 relative flex flex-col overflow-hidden shadow-none">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute -left-32 top-0 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/5" />
+        <div className="absolute top-0 -left-32 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/5" />
         <div className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl dark:bg-indigo-500/5" />
       </div>
 
@@ -187,14 +196,14 @@ export function NextAppointmentsFeed({
                   strokeWidth={2.2}
                 />
               </span>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-400 dark:from-blue-400 dark:to-indigo-300 font-sans">
+              <span className="bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text font-extrabold font-sans text-[10px] text-transparent uppercase tracking-widest dark:from-blue-400 dark:to-indigo-300">
                 Programme du Jour
               </span>
             </div>
-            <h3 className="mt-2 text-2xl font-display font-semibold tracking-tight text-foreground">
+            <h3 className="mt-2 font-display font-semibold text-2xl text-foreground tracking-tight">
               Salle d'Attente &amp; Rendez-vous
             </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-muted-foreground text-sm">
               {stats.total > 0
                 ? `${stats.total} consultation${stats.total > 1 ? "s" : ""} prévue${stats.total > 1 ? "s" : ""} • ${stats.completed} terminée${stats.completed > 1 ? "s" : ""}`
                 : "Aucune consultation prévue aujourd'hui"}
@@ -204,23 +213,23 @@ export function NextAppointmentsFeed({
           <div className="flex flex-wrap items-center gap-2">
             {FILTERS.map((f) => (
               <button
-                key={f.id}
-                onClick={() => setFilter(f.id)}
-                type="button"
                 className={cn(
-                  "rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-200",
+                  "rounded-full border px-3 py-1.5 font-semibold text-xs transition-all duration-200",
                   filter === f.id
                     ? "border-zinc-900 bg-zinc-900 text-white shadow-sm dark:border-white dark:bg-white dark:text-zinc-900"
                     : "border-zinc-200 bg-white/60 text-muted-foreground hover:border-zinc-300 hover:text-foreground dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-white/20"
                 )}
+                key={f.id}
+                onClick={() => setFilter(f.id)}
+                type="button"
               >
                 {f.label}
               </button>
             ))}
             <button
-              type="button"
+              className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-3.5 py-1.5 font-semibold text-white text-xs shadow-sm transition-all hover:bg-blue-700 active:scale-[0.97] dark:bg-blue-500 dark:hover:bg-blue-400"
               onClick={goAgenda}
-              className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-[0.97] dark:bg-blue-500 dark:hover:bg-blue-400"
+              type="button"
             >
               Voir tout
               <ArrowRight className="h-3 w-3" strokeWidth={2.5} />
@@ -233,45 +242,45 @@ export function NextAppointmentsFeed({
           <StatPill
             icon={<CalendarDays className="h-4 w-4" strokeWidth={2} />}
             label="Aujourd'hui"
-            value={stats.total}
             tone="blue"
+            value={stats.total}
           />
           <StatPill
             icon={<Play className="h-3.5 w-3.5" strokeWidth={2.5} />}
             label="En consultation"
-            value={stats.inProgress}
-            tone="emerald"
             live={stats.inProgress > 0}
+            tone="emerald"
+            value={stats.inProgress}
           />
           <StatPill
             icon={<Timer className="h-4 w-4" strokeWidth={2} />}
             label="À venir"
-            value={stats.upcoming}
             tone="violet"
+            value={stats.upcoming}
           />
           <StatPill
             icon={<CheckCircle2 className="h-4 w-4" strokeWidth={2} />}
             label="Terminés"
-            value={stats.completed}
-            tone="zinc"
             progress={completionRatio}
+            tone="zinc"
+            value={stats.completed}
           />
         </div>
 
         {/* ── Empty State ─────────────────────────────────────────── */}
         {stats.total === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-200/80 bg-white/40 py-16 text-center dark:border-white/10 dark:bg-white/[0.02]">
+          <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-zinc-200/80 border-dashed bg-white/40 py-16 text-center dark:border-white/10 dark:bg-white/[0.02]">
             <span className="text-4xl">🌿</span>
-            <p className="text-sm italic text-foreground">
+            <p className="text-foreground text-sm italic">
               Votre agenda est libre aujourd'hui
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Profitez-en pour souffler ou préparer la semaine
             </p>
             <button
-              type="button"
+              className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-4 py-1.5 font-semibold text-white text-xs hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
               onClick={goAgenda}
-              className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-4 py-1.5 text-xs font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+              type="button"
             >
               Ouvrir l'agenda
               <ArrowRight className="h-3 w-3" strokeWidth={2.5} />
@@ -289,15 +298,15 @@ export function NextAppointmentsFeed({
             {/* ── Grid: Other appointments ───────────────────── */}
             <div className={cn(upNext ? "lg:col-span-7" : "lg:col-span-12")}>
               {filtered.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-200/80 bg-white/40 py-12 text-center dark:border-white/10 dark:bg-white/[0.02]">
+                <div className="flex h-full flex-col items-center justify-center gap-2 rounded-2xl border border-zinc-200/80 border-dashed bg-white/40 py-12 text-center dark:border-white/10 dark:bg-white/[0.02]">
                   <ClipboardList className="h-5 w-5 text-muted-foreground" />
-                  <p className="text-sm text-foreground">
+                  <p className="text-foreground text-sm">
                     Aucun rendez-vous dans cette catégorie
                   </p>
                   <button
-                    type="button"
+                    className="mt-1 font-semibold text-blue-600 text-xs hover:underline dark:text-blue-400"
                     onClick={() => setFilter("all")}
-                    className="mt-1 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                    type="button"
                   >
                     Réinitialiser le filtre
                   </button>
@@ -306,10 +315,7 @@ export function NextAppointmentsFeed({
                 <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {filtered.slice(0, 6).map((appt) => (
                     <li key={appt.id}>
-                      <AppointmentTile
-                        appointment={appt}
-                        onStart={goAgenda}
-                      />
+                      <AppointmentTile appointment={appt} onStart={goAgenda} />
                     </li>
                   ))}
                 </ul>
@@ -329,13 +335,16 @@ export function NextAppointmentsFeed({
 interface StatPillProps {
   icon: React.ReactNode;
   label: string;
-  value: number;
-  tone: "blue" | "emerald" | "violet" | "zinc";
   live?: boolean;
   progress?: number;
+  tone: "blue" | "emerald" | "violet" | "zinc";
+  value: number;
 }
 
-const STAT_TONES: Record<StatPillProps["tone"], { ring: string; icon: string; ring2: string }> = {
+const STAT_TONES: Record<
+  StatPillProps["tone"],
+  { ring: string; icon: string; ring2: string }
+> = {
   blue: {
     ring: "from-blue-500/10 to-blue-500/[0.02] ring-blue-500/15 dark:from-blue-400/10 dark:ring-blue-400/15",
     icon: "text-blue-600 dark:text-blue-300",
@@ -368,7 +377,7 @@ function StatPill({ icon, label, value, tone, live, progress }: StatPillProps) {
     >
       <div
         className={cn(
-          "pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gradient-to-br ring-1",
+          "pointer-events-none absolute -top-6 -right-6 h-20 w-20 rounded-full bg-gradient-to-br ring-1",
           t.ring
         )}
       />
@@ -382,11 +391,11 @@ function StatPill({ icon, label, value, tone, live, progress }: StatPillProps) {
           {icon}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
             {label}
           </p>
           <div className="mt-0.5 flex items-baseline gap-1.5">
-            <span className="text-xl font-display font-semibold tabular-nums tracking-tight text-foreground leading-none">
+            <span className="font-display font-semibold text-foreground text-xl tabular-nums leading-none tracking-tight">
               {value}
             </span>
             {live && (
@@ -416,7 +425,7 @@ interface HeroAppointmentProps {
 }
 
 function HeroAppointment({ appointment, onStart }: HeroAppointmentProps) {
-  const Icon = getTypeIcon(appointment.type);
+  const typeIcon = getTypeIcon(appointment.type);
   const status = STATUS_COPY[appointment.status] || STATUS_COPY.scheduled;
   const inProgress = appointment.status === "in_progress";
   const emoji = emojiFor(appointment.species);
@@ -431,12 +440,12 @@ function HeroAppointment({ appointment, onStart }: HeroAppointmentProps) {
       )}
     >
       {/* Animated gradient orb */}
-      <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-blue-500/30 blur-3xl" />
+      <div className="pointer-events-none absolute -top-10 -right-10 h-44 w-44 rounded-full bg-blue-500/30 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-indigo-500/30 blur-3xl" />
 
       {/* Top label */}
       <div className="relative flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/90 ring-1 ring-white/15">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 font-bold text-[10px] text-white/90 uppercase tracking-wider ring-1 ring-white/15">
           <span
             className={cn(
               "relative inline-flex h-1.5 w-1.5 rounded-full",
@@ -449,24 +458,24 @@ function HeroAppointment({ appointment, onStart }: HeroAppointmentProps) {
           </span>
           {inProgress ? "En consultation" : "Prochain RDV"}
         </span>
-        <span className="font-mono text-xs text-white/60 tabular-nums">
+        <span className="font-mono text-white/60 text-xs tabular-nums">
           {appointment.time}
         </span>
       </div>
 
       {/* Patient hero */}
       <div className="relative mt-5 flex items-center gap-4">
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-500 text-2xl font-bold uppercase tracking-tight text-white shadow-lg">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-500 font-bold text-2xl text-white uppercase tracking-tight shadow-lg">
           {appointment.patient.slice(0, 2)}
-          <span className="absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white text-base shadow-md ring-2 ring-zinc-900 dark:ring-zinc-900">
+          <span className="absolute -right-1.5 -bottom-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white text-base shadow-md ring-2 ring-zinc-900 dark:ring-zinc-900">
             {emoji}
           </span>
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="font-display text-xl font-semibold leading-tight tracking-tight text-white">
+          <h4 className="font-display font-semibold text-white text-xl leading-tight tracking-tight">
             {appointment.patient}
           </h4>
-          <p className="mt-1 flex items-center gap-1.5 text-xs text-white/70">
+          <p className="mt-1 flex items-center gap-1.5 text-white/70 text-xs">
             <User className="h-3 w-3" />
             <span className="truncate">{appointment.owner}</span>
           </p>
@@ -476,19 +485,19 @@ function HeroAppointment({ appointment, onStart }: HeroAppointmentProps) {
       {/* Type and metadata */}
       <div className="relative mt-4 flex items-center gap-2.5 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-white/90">
-          <Icon className="h-4 w-4" strokeWidth={2} />
+          {React.createElement(typeIcon, { className: "h-4 w-4", strokeWidth: 2 })}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+          <p className="font-bold text-[10px] text-white/50 uppercase tracking-wider">
             Type de consultation
           </p>
-          <p className="mt-0.5 truncate text-sm font-semibold text-white">
+          <p className="mt-0.5 truncate font-semibold text-sm text-white">
             {appointment.type}
           </p>
         </div>
         <span
           className={cn(
-            "rounded-full border px-2 py-0.5 text-[10px] font-bold tracking-wide",
+            "rounded-full border px-2 py-0.5 font-bold text-[10px] tracking-wide",
             status.tone
           )}
         >
@@ -498,14 +507,11 @@ function HeroAppointment({ appointment, onStart }: HeroAppointmentProps) {
 
       {/* Start button */}
       <button
-        type="button"
+        className="group/start relative mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-semibold text-sm text-zinc-900 shadow-lg transition-all duration-200 hover:bg-zinc-100 hover:shadow-xl active:scale-[0.98]"
         onClick={onStart}
-        className="group/start relative mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-lg transition-all duration-200 hover:bg-zinc-100 hover:shadow-xl active:scale-[0.98]"
+        type="button"
       >
-        <Play
-          className="h-3.5 w-3.5 fill-current"
-          strokeWidth={2.5}
-        />
+        <Play className="h-3.5 w-3.5 fill-current" strokeWidth={2.5} />
         {inProgress ? "Reprendre la consultation" : "Démarrer la consultation"}
         <ArrowRight
           className="h-3.5 w-3.5 transition-transform duration-200 group-hover/start:translate-x-1"
@@ -522,7 +528,7 @@ interface AppointmentTileProps {
 }
 
 function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
-  const Icon = getTypeIcon(appointment.type);
+  const typeIcon = getTypeIcon(appointment.type);
   const status = STATUS_COPY[appointment.status] || STATUS_COPY.scheduled;
   const inProgress = appointment.status === "in_progress";
   const completed = appointment.status === "completed";
@@ -556,15 +562,15 @@ function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
                 : "bg-zinc-100 text-zinc-600 ring-zinc-200/80 dark:bg-white/5 dark:text-zinc-300 dark:ring-white/10"
             )}
           >
-            <Icon className="h-4 w-4" strokeWidth={2} />
+            {React.createElement(typeIcon, { className: "h-4 w-4", strokeWidth: 2 })}
           </span>
           <div>
-            <p className="font-mono text-sm font-bold text-foreground tabular-nums leading-none">
+            <p className="font-bold font-mono text-foreground text-sm tabular-nums leading-none">
               {appointment.time}
             </p>
             <span
               className={cn(
-                "mt-1 inline-flex items-center gap-1 rounded-full border px-1.5 py-0 text-[9px] font-bold uppercase tracking-wide",
+                "mt-1 inline-flex items-center gap-1 rounded-full border px-1.5 py-0 font-bold text-[9px] uppercase tracking-wide",
                 status.tone
               )}
             >
@@ -577,9 +583,9 @@ function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
           <DropdownMenuTrigger
             render={
               <button
-                type="button"
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all hover:bg-zinc-100 hover:text-foreground group-hover/tile:opacity-100 dark:hover:bg-white/10"
                 aria-label="Plus d'options"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all hover:bg-zinc-100 hover:text-foreground group-hover/tile:opacity-100 dark:hover:bg-white/10"
+                type="button"
               />
             }
           >
@@ -589,9 +595,7 @@ function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
             <DropdownMenuItem onClick={onStart}>
               Voir le détail
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onStart}>
-              Reprogrammer
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onStart}>Reprogrammer</DropdownMenuItem>
             <DropdownMenuItem
               className="text-rose-600 focus:text-rose-600 dark:text-rose-400"
               onClick={onStart}
@@ -606,10 +610,16 @@ function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
       <div className="mt-3 flex items-start gap-2">
         <span className="text-lg leading-none">{emoji}</span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-foreground leading-tight" title={appointment.patient}>
+          <p
+            className="font-bold text-foreground text-sm leading-tight"
+            title={appointment.patient}
+          >
             {appointment.patient}
           </p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground leading-snug" title={appointment.owner}>
+          <p
+            className="mt-0.5 text-[11px] text-muted-foreground leading-snug"
+            title={appointment.owner}
+          >
             {appointment.owner}
           </p>
         </div>
@@ -617,7 +627,7 @@ function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
 
       {/* Type */}
       <p
-        className="mt-2.5 text-[11px] font-medium italic text-muted-foreground leading-snug"
+        className="mt-2.5 font-medium text-[11px] text-muted-foreground italic leading-snug"
         title={appointment.type}
       >
         {appointment.type}
@@ -625,16 +635,16 @@ function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
 
       {/* CTA */}
       <button
-        type="button"
-        onClick={onStart}
         className={cn(
-          "mt-3 inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all",
+          "mt-3 inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-1.5 font-semibold text-xs transition-all",
           completed
             ? "border-zinc-200 bg-white text-muted-foreground hover:bg-zinc-50 dark:border-white/10 dark:bg-transparent"
             : inProgress
               ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-300"
-              : "border-blue-500/30 bg-blue-500/5 text-blue-700 hover:bg-blue-500/10 dark:text-blue-300 dark:border-blue-400/30 dark:bg-blue-500/10"
+              : "border-blue-500/30 bg-blue-500/5 text-blue-700 hover:bg-blue-500/10 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-300"
         )}
+        onClick={onStart}
+        type="button"
       >
         {completed ? (
           <>

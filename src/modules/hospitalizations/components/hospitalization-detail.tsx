@@ -1,6 +1,3 @@
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-
 import {
   ArrowLeft,
   Heartbeat,
@@ -11,6 +8,8 @@ import {
   Printer,
   Thermometer,
 } from "@phosphor-icons/react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,14 +20,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import {
   useHospitalizationsRepository,
   useHospitalizationVitalsRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import type { Hospitalization, HospitalizationStatus, Patient } from "@/types/db";
+import type {
+  Hospitalization,
+  HospitalizationStatus,
+  Patient,
+} from "@/types/db";
 
 import {
   computeHospitalizationDurationMinutes,
@@ -60,8 +68,12 @@ export function HospitalizationDetail({
 
   const vitals = vitalsRepo.forHospitalization(hospitalization.id);
   const latest = useMemo(() => {
-    if (vitals.length === 0) return null;
-    return [...vitals].sort((a, b) => b.recordedAt.localeCompare(a.recordedAt))[0];
+    if (vitals.length === 0) {
+      return null;
+    }
+    return [...vitals].sort((a, b) =>
+      b.recordedAt.localeCompare(a.recordedAt)
+    )[0];
   }, [vitals]);
 
   const durationMin = computeHospitalizationDurationMinutes(
@@ -75,18 +87,18 @@ export function HospitalizationDetail({
       status: next,
       dischargeDate:
         next === "discharged" || next === "transferred" || next === "deceased"
-          ? hospitalization.dischargeDate ?? now
+          ? (hospitalization.dischargeDate ?? now)
           : null,
     });
   };
 
   return (
     <div className={cn("grid gap-6 lg:grid-cols-12", className)}>
-      <Card className="overflow-hidden lg:col-span-5 h-fit">
+      <Card className="h-fit overflow-hidden lg:col-span-5">
         <CardHeader className="border-border/40 border-b bg-gradient-to-b from-sky-500/[0.04] to-transparent">
           <div className="flex items-start gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10">
-              <Hospital weight="duotone" className="size-5 text-sky-600" />
+              <Hospital className="size-5 text-sky-600" weight="duotone" />
             </div>
             <div className="grid flex-1 gap-0.5">
               <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
@@ -97,19 +109,26 @@ export function HospitalizationDetail({
               </CardTitle>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <HospitalizationStatusBadge status={hospitalization.status} />
-                <Badge className="border-border/40 bg-background" variant="outline">
+                <Badge
+                  className="border-border/40 bg-background"
+                  variant="outline"
+                >
                   <IdentificationBadge className="mr-1 size-3" />
                   {t("modules.hospitalizations.fields.cage", "Box")}{" "}
                   {hospitalization.cage ?? "—"}
                 </Badge>
-                <Badge className="border-border/40 bg-background" variant="outline">
+                <Badge
+                  className="border-border/40 bg-background"
+                  variant="outline"
+                >
                   {formatDuration(durationMin)}
                 </Badge>
-                <Badge className="border-border/40 bg-background" variant="outline">
-                  {t(
-                    "modules.hospitalizations.fields.admittedAt",
-                    "Admis"
-                  )}: {formatTimeAgo(hospitalization.admissionDate)}
+                <Badge
+                  className="border-border/40 bg-background"
+                  variant="outline"
+                >
+                  {t("modules.hospitalizations.fields.admittedAt", "Admis")}:{" "}
+                  {formatTimeAgo(hospitalization.admissionDate)}
                 </Badge>
               </div>
             </div>
@@ -121,10 +140,10 @@ export function HospitalizationDetail({
               ) : null}
               {onPrint ? (
                 <Button
+                  aria-label={t("modules.hospitalizations.print", "Imprimer")}
                   onClick={onPrint}
                   size="icon"
                   variant="ghost"
-                  aria-label={t("modules.hospitalizations.print", "Imprimer")}
                 >
                   <Printer className="size-4" weight="duotone" />
                 </Button>
@@ -135,7 +154,7 @@ export function HospitalizationDetail({
         <CardContent className="grid gap-4 p-6">
           {hospitalization.diagnosis ? (
             <div className="grid gap-1">
-              <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+              <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
                 {t("modules.hospitalizations.fields.diagnosis", "Diagnostic")}
               </p>
               <p className="text-sm">{hospitalization.diagnosis}</p>
@@ -145,16 +164,21 @@ export function HospitalizationDetail({
           <div className="grid gap-3 sm:grid-cols-2">
             {hospitalization.weightKg ? (
               <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
-                <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+                <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
                   {t("modules.hospitalizations.fields.weightKg", "Poids")}
                 </p>
-                <p className="font-semibold text-base">{hospitalization.weightKg} kg</p>
+                <p className="font-semibold text-base">
+                  {hospitalization.weightKg} kg
+                </p>
               </div>
             ) : null}
             {hospitalization.temperatureC ? (
               <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
-                <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
-                  {t("modules.hospitalizations.fields.temperatureC", "T° initiale")}
+                <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
+                  {t(
+                    "modules.hospitalizations.fields.temperatureC",
+                    "T° initiale"
+                  )}
                 </p>
                 <p className="font-semibold text-base">
                   {hospitalization.temperatureC} °C
@@ -163,53 +187,65 @@ export function HospitalizationDetail({
             ) : null}
             {hospitalization.ivFluids ? (
               <div className="rounded-lg border border-border/40 bg-muted/20 p-3 sm:col-span-2">
-                <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+                <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
                   {t("modules.hospitalizations.fields.ivFluids", "Fluides IV")}
                 </p>
-                <p className="font-medium text-sm">{hospitalization.ivFluids}</p>
+                <p className="font-medium text-sm">
+                  {hospitalization.ivFluids}
+                </p>
               </div>
             ) : null}
           </div>
 
-          {(hospitalization.feedingPlan || hospitalization.specialCare) ? (
+          {hospitalization.feedingPlan || hospitalization.specialCare ? (
             <Separator />
           ) : null}
           {hospitalization.feedingPlan ? (
             <div className="grid gap-1">
-              <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
-                {t("modules.hospitalizations.fields.feedingPlan", "Alimentation")}
+              <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
+                {t(
+                  "modules.hospitalizations.fields.feedingPlan",
+                  "Alimentation"
+                )}
               </p>
               <p className="text-sm">{hospitalization.feedingPlan}</p>
             </div>
           ) : null}
           {hospitalization.specialCare ? (
             <div className="grid gap-1">
-              <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+              <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
                 {t("modules.hospitalizations.fields.specialCare", "Soins")}
               </p>
-              <p className="text-sm whitespace-pre-wrap">{hospitalization.specialCare}</p>
+              <p className="whitespace-pre-wrap text-sm">
+                {hospitalization.specialCare}
+              </p>
             </div>
           ) : null}
 
           <Separator />
 
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
               {t("modules.hospitalizations.fields.changeStatus", "Statut")}
             </span>
             {(
-              ["admitted", "monitoring", "critical", "discharged"] as HospitalizationStatus[]
+              [
+                "admitted",
+                "monitoring",
+                "critical",
+                "discharged",
+              ] as HospitalizationStatus[]
             ).map((s) => (
               <button
-                key={s}
-                type="button"
-                onClick={() => void handleStatusChange(s)}
                 className={cn(
-                  "rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
+                  "rounded-full border px-2.5 py-0.5 font-medium text-xs transition-all",
                   hospitalization.status === s
                     ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-200"
                     : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"
                 )}
+                key={s}
+                onClick={() => void handleStatusChange(s)}
+                type="button"
               >
                 {t(`modules.hospitalizations.status.${s}`, s)}
               </button>
@@ -218,7 +254,7 @@ export function HospitalizationDetail({
         </CardContent>
       </Card>
 
-      <Card className="lg:col-span-7 h-fit">
+      <Card className="h-fit lg:col-span-7">
         <CardHeader className="flex-row items-center justify-between border-border/40 border-b">
           <div className="grid gap-0.5">
             <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
@@ -242,50 +278,93 @@ export function HospitalizationDetail({
           {latest ? (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
               <VitalCell
+                critical={
+                  latest.temperatureC != null &&
+                  (latest.temperatureC < 37 || latest.temperatureC > 40)
+                }
                 icon={<Thermometer className="size-3.5" weight="duotone" />}
                 label={t("modules.hospitalizations.vitals.temperature", "T°")}
-                value={latest.temperatureC != null ? `${latest.temperatureC}°C` : "—"}
-                critical={latest.temperatureC != null && (latest.temperatureC < 37 || latest.temperatureC > 40)}
+                value={
+                  latest.temperatureC == null ? "—" : `${latest.temperatureC}°C`
+                }
               />
               <VitalCell
+                critical={
+                  latest.heartRateBpm != null &&
+                  (latest.heartRateBpm < 50 || latest.heartRateBpm > 180)
+                }
                 icon={<Heartbeat className="size-3.5" weight="duotone" />}
                 label={t("modules.hospitalizations.vitals.heartRate", "FC")}
-                value={latest.heartRateBpm != null ? `${latest.heartRateBpm} bpm` : "—"}
-                critical={latest.heartRateBpm != null && (latest.heartRateBpm < 50 || latest.heartRateBpm > 180)}
+                value={
+                  latest.heartRateBpm == null
+                    ? "—"
+                    : `${latest.heartRateBpm} bpm`
+                }
               />
               <VitalCell
+                critical={
+                  latest.respiratoryRateBpm != null &&
+                  (latest.respiratoryRateBpm < 8 ||
+                    latest.respiratoryRateBpm > 60)
+                }
                 icon={<Heartbeat className="size-3.5" weight="duotone" />}
-                label={t("modules.hospitalizations.vitals.respiratoryRate", "FR")}
-                value={latest.respiratoryRateBpm != null ? `${latest.respiratoryRateBpm} /min` : "—"}
-                critical={latest.respiratoryRateBpm != null && (latest.respiratoryRateBpm < 8 || latest.respiratoryRateBpm > 60)}
+                label={t(
+                  "modules.hospitalizations.vitals.respiratoryRate",
+                  "FR"
+                )}
+                value={
+                  latest.respiratoryRateBpm == null
+                    ? "—"
+                    : `${latest.respiratoryRateBpm} /min`
+                }
               />
               <VitalCell
+                critical={latest.spo2Percent != null && latest.spo2Percent < 92}
                 icon={<Heartbeat className="size-3.5" weight="duotone" />}
                 label={t("modules.hospitalizations.vitals.spo2", "SpO2")}
-                value={latest.spo2Percent != null ? `${latest.spo2Percent}%` : "—"}
-                critical={latest.spo2Percent != null && latest.spo2Percent < 92}
+                value={
+                  latest.spo2Percent == null ? "—" : `${latest.spo2Percent}%`
+                }
               />
               <VitalCell
                 icon={<Notebook className="size-3.5" weight="duotone" />}
                 label={t("modules.hospitalizations.vitals.bp", "PAS")}
-                value={latest.bloodPressureSys != null ? `${latest.bloodPressureSys} mmHg` : "—"}
+                value={
+                  latest.bloodPressureSys == null
+                    ? "—"
+                    : `${latest.bloodPressureSys} mmHg`
+                }
               />
               <VitalCell
                 icon={<Notebook className="size-3.5" weight="duotone" />}
                 label={t("modules.hospitalizations.vitals.bp", "PAD")}
-                value={latest.bloodPressureDia != null ? `${latest.bloodPressureDia} mmHg` : "—"}
+                value={
+                  latest.bloodPressureDia == null
+                    ? "—"
+                    : `${latest.bloodPressureDia} mmHg`
+                }
               />
               <VitalCell
                 icon={<Notebook className="size-3.5" weight="duotone" />}
-                label={t("modules.hospitalizations.vitals.painScore", "Douleur")}
-                value={latest.painScore != null ? `${latest.painScore}/10` : "—"}
+                label={t(
+                  "modules.hospitalizations.vitals.painScore",
+                  "Douleur"
+                )}
                 tone={painScoreTone(latest.painScore)}
+                value={
+                  latest.painScore == null ? "—" : `${latest.painScore}/10`
+                }
               />
             </div>
           ) : (
             <Empty className="border border-dashed">
               <EmptyHeader>
-                <EmptyTitle>{t("modules.hospitalizations.vitals.empty", "Aucune constante")}</EmptyTitle>
+                <EmptyTitle>
+                  {t(
+                    "modules.hospitalizations.vitals.empty",
+                    "Aucune constante"
+                  )}
+                </EmptyTitle>
                 <EmptyDescription>
                   {t(
                     "modules.hospitalizations.vitals.emptyDescription",
@@ -322,20 +401,18 @@ function VitalCell({
   critical?: boolean;
   tone?: "success" | "warning" | "destructive" | "neutral";
 }) {
-  const colorTone =
-    tone ??
-    (critical ? "destructive" : "neutral");
+  const colorTone = tone ?? (critical ? "destructive" : "neutral");
   const bgClass =
     colorTone === "destructive"
       ? "border-rose-500/40 bg-rose-500/5"
       : colorTone === "warning"
-      ? "border-amber-500/40 bg-amber-500/5"
-      : colorTone === "success"
-      ? "border-emerald-500/40 bg-emerald-500/5"
-      : "border-border/40 bg-muted/20";
+        ? "border-amber-500/40 bg-amber-500/5"
+        : colorTone === "success"
+          ? "border-emerald-500/40 bg-emerald-500/5"
+          : "border-border/40 bg-muted/20";
   return (
     <div className={cn("rounded-lg border p-3", bgClass)}>
-      <p className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+      <p className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
         {icon}
         {label}
       </p>

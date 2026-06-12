@@ -1,31 +1,35 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import {
-  Mail,
-  Calendar,
-  Clock,
-  History,
-  MailCheck,
-  Lightbulb,
   Activity,
-  Timer,
-  ArrowUpRight,
-  ArrowDownRight,
-  Sparkles,
-  Settings2,
-  ChevronDown,
-  ChevronUp,
-  Play,
   AlertCircle,
   AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  History,
   Info,
+  Lightbulb,
+  Mail,
+  MailCheck,
+  Play,
+  Settings2,
+  Sparkles,
+  Timer,
 } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { useAutomations, type AutomationItemLive } from "../hooks/useAutomations";
+import {
+  type AutomationItemLive,
+  useAutomations,
+} from "../hooks/useAutomations";
 import { AutomationConfigDialog } from "./automation-config-dialog";
 
 const iconMap: Record<string, any> = {
@@ -40,10 +44,14 @@ const iconMap: Record<string, any> = {
 const severityTone: Record<string, string> = {
   info: "text-sky-700 dark:text-sky-300 bg-sky-500/10 border-sky-500/20",
   warn: "text-amber-700 dark:text-amber-300 bg-amber-500/10 border-amber-500/20",
-  critical: "text-rose-700 dark:text-rose-300 bg-rose-500/10 border-rose-500/20",
+  critical:
+    "text-rose-700 dark:text-rose-300 bg-rose-500/10 border-rose-500/20",
 };
 
-const severityIcon: Record<string, React.ComponentType<{ className?: string }>> = {
+const severityIcon: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   info: Info,
   warn: AlertTriangle,
   critical: AlertCircle,
@@ -53,7 +61,18 @@ function formatCompact(n: number): string {
   return new Intl.NumberFormat("fr-FR").format(n);
 }
 
-function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, onToggleDrilldown, loadingDrilldown, drilldown, onPatientClick, t }: {
+function AutomationCard({
+  item,
+  onToggle,
+  onRunNow,
+  onConfigure,
+  drilldownOpen,
+  onToggleDrilldown,
+  loadingDrilldown,
+  drilldown,
+  onPatientClick,
+  t,
+}: {
   item: AutomationItemLive;
   onToggle: (id: string, active: boolean) => void;
   onRunNow: (id: string) => void;
@@ -83,9 +102,9 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
     : (chartData as number[]);
 
   return (
-    <Card className="dashboard-kpi-card relative overflow-hidden flex flex-col p-0 shadow-sm border-0 group">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between p-6 gap-6 transition-colors group-hover:bg-zinc-50/50 dark:group-hover:bg-zinc-900/20">
-        <div className="flex gap-4 min-w-0 flex-1">
+    <Card className="dashboard-kpi-card group relative flex flex-col overflow-hidden border-0 p-0 shadow-sm">
+      <div className="flex flex-col justify-between gap-6 p-6 transition-colors group-hover:bg-zinc-50/50 sm:flex-row sm:items-start dark:group-hover:bg-zinc-900/20">
+        <div className="flex min-w-0 flex-1 gap-4">
           <div
             className={cn(
               "mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white shadow-sm",
@@ -94,36 +113,36 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
           >
             <Icon className="h-4 w-4" strokeWidth={2.5} />
           </div>
-          <div className="flex flex-col gap-1.5 min-w-0">
-            <h3 className="text-base font-semibold text-foreground tracking-tight">
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <h3 className="font-semibold text-base text-foreground tracking-tight">
               {item.title}
             </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+            <p className="max-w-3xl text-muted-foreground text-sm leading-relaxed">
               {item.description}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0 flex-wrap">
+        <div className="mt-2 flex shrink-0 flex-wrap items-center gap-2 sm:mt-0">
           <Button
-            variant="ghost"
-            size="icon"
+            aria-label="Configurer"
             className="h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={() => onConfigure(item)}
-            aria-label="Configurer"
+            size="icon"
+            variant="ghost"
           >
             <Settings2 className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
-            size="sm"
             className="h-8 gap-1.5 text-xs"
-            onClick={() => onRunNow(item.id)}
             disabled={!item.active}
+            onClick={() => onRunNow(item.id)}
+            size="sm"
+            variant="outline"
           >
             <Play className="h-3.5 w-3.5" strokeWidth={2.5} />
             {t("dashboard.automations.runNow", "Exécuter")}
           </Button>
-          <span className="text-sm font-medium text-muted-foreground">
+          <span className="font-medium text-muted-foreground text-sm">
             {item.active ? "Actif" : "Inactif"}
           </span>
           <Switch
@@ -133,36 +152,40 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
         </div>
       </div>
 
-      <div className="w-full h-px bg-zinc-950/5 dark:bg-white/5" />
+      <div className="h-px w-full bg-zinc-950/5 dark:bg-white/5" />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-zinc-950/5 dark:divide-white/5 bg-zinc-50/30 dark:bg-zinc-900/10 transition-colors group-hover:bg-zinc-50/80 dark:group-hover:bg-zinc-900/30">
-        <div className="flex flex-col p-6 gap-3">
+      <div className="grid grid-cols-1 divide-y divide-zinc-950/5 bg-zinc-50/30 transition-colors group-hover:bg-zinc-50/80 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4 dark:divide-white/5 dark:bg-zinc-900/10 dark:group-hover:bg-zinc-900/30">
+        <div className="flex flex-col gap-3 p-6">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="h-4 w-4 stroke-[2px]" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">
+            <span className="font-bold text-[10px] uppercase tracking-wider">
               Planification
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">{item.schedule}</span>
-            <span className="text-sm font-medium text-muted-foreground">{item.time}</span>
+            <span className="font-semibold text-foreground text-sm">
+              {item.schedule}
+            </span>
+            <span className="font-medium text-muted-foreground text-sm">
+              {item.time}
+            </span>
           </div>
         </div>
 
-        <div className="flex flex-col p-6 gap-3">
+        <div className="flex flex-col gap-3 p-6">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4 stroke-[2px]" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">
+            <span className="font-bold text-[10px] uppercase tracking-wider">
               Dernier passage
             </span>
           </div>
-          <div className="flex flex-col gap-1.5 items-start">
-            <span className="text-sm font-semibold text-foreground">
+          <div className="flex flex-col items-start gap-1.5">
+            <span className="font-semibold text-foreground text-sm">
               {item.lastRunDate || "—"}
             </span>
             <span
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-bold",
+                "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-bold text-xs",
                 item.lastRunStatus === "Completed"
                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                   : item.lastRunStatus === "Scheduled"
@@ -189,64 +212,69 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
           </div>
         </div>
 
-        <div className="flex flex-col p-6 gap-3">
+        <div className="flex flex-col gap-3 p-6">
           <div className="flex items-center gap-2 text-muted-foreground">
             <History className="h-4 w-4 stroke-[2px]" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">
+            <span className="font-bold text-[10px] uppercase tracking-wider">
               Prochain passage
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">
+            <span className="font-semibold text-foreground text-sm">
               {item.nextRunDate || "—"}
             </span>
             {item.nextRunRelative && (
-              <span className="text-sm font-medium text-muted-foreground">
+              <span className="font-medium text-muted-foreground text-sm">
                 {item.nextRunRelative}
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex flex-col p-6 gap-3 lg:col-span-1">
+        <div className="flex flex-col gap-3 p-6 lg:col-span-1">
           <div className="flex items-center gap-2 text-muted-foreground">
             <MetricIcon className="h-4 w-4 stroke-[2px]" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">
+            <span className="font-bold text-[10px] uppercase tracking-wider">
               {item.metricLabel}
             </span>
           </div>
-          <div className="flex items-end justify-between gap-4 mt-auto">
+          <div className="mt-auto flex items-end justify-between gap-4">
             <div className="flex flex-col gap-1">
-              <span className="text-2xl font-extrabold tracking-tight tabular-nums leading-none">
+              <span className="font-extrabold text-2xl tabular-nums leading-none tracking-tight">
                 {metricValue}
               </span>
               <span
                 className={cn(
-                  "flex items-center text-[10px] font-bold tracking-wider",
+                  "flex items-center font-bold text-[10px] tracking-wider",
                   trendUp
                     ? "text-emerald-600 dark:text-emerald-400"
                     : "text-amber-600 dark:text-amber-400"
                 )}
               >
                 {trendUp ? (
-                  <ArrowUpRight className="h-3 w-3 mr-0.5" />
+                  <ArrowUpRight className="mr-0.5 h-3 w-3" />
                 ) : (
-                  <ArrowDownRight className="h-3 w-3 mr-0.5" />
+                  <ArrowDownRight className="mr-0.5 h-3 w-3" />
                 )}
                 {trendLabel} vs période précédente
               </span>
             </div>
-            <div className="h-7 w-24 flex items-end justify-end shrink-0 mb-1">
+            <div className="mb-1 flex h-7 w-24 shrink-0 items-end justify-end">
               {isArea ? (
-                <div className="h-full w-full relative">
-                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+                <div className="relative h-full w-full">
+                  <ResponsiveContainer
+                    height="100%"
+                    minHeight={0}
+                    minWidth={0}
+                    width="100%"
+                  >
                     <AreaChart data={chartPoints as Array<{ value: number }>}>
                       <defs>
                         <linearGradient
                           id={`grad-${item.id}`}
                           x1="0"
-                          y1="0"
                           x2="0"
+                          y1="0"
                           y2="1"
                         >
                           <stop
@@ -262,25 +290,27 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
                         </linearGradient>
                       </defs>
                       <Area
-                        type="monotone"
                         dataKey="value"
-                        stroke={item.chartColor}
-                        strokeWidth={2}
                         fill={`url(#grad-${item.id})`}
                         isAnimationActive={true}
+                        stroke={item.chartColor}
+                        strokeWidth={2}
+                        type="monotone"
                       />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="flex items-end gap-[2px] h-full w-full">
+                <div className="flex h-full w-full items-end gap-[2px]">
                   {(chartPoints as number[]).map((val, idx) => (
                     <div
-                      key={idx}
                       className={cn(
-                        "flex-1 h-full rounded-[1px] transition-colors duration-500",
-                        val > 0 ? item.chartColor : "bg-zinc-950/10 dark:bg-white/10"
+                        "h-full flex-1 rounded-[1px] transition-colors duration-500",
+                        val > 0
+                          ? item.chartColor
+                          : "bg-zinc-950/10 dark:bg-white/10"
                       )}
+                      key={idx}
                     />
                   ))}
                 </div>
@@ -291,9 +321,9 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
       </div>
 
       <button
-        type="button"
+        className="flex w-full items-center justify-between gap-2 border-zinc-950/5 border-t bg-zinc-50/20 px-6 py-3 font-bold text-muted-foreground text-xs uppercase tracking-wider transition-colors hover:bg-zinc-100/60 dark:border-white/5 dark:bg-zinc-900/5 dark:hover:bg-zinc-900/30"
         onClick={() => onToggleDrilldown(item.id)}
-        className="flex items-center justify-between gap-2 w-full px-6 py-3 border-t border-zinc-950/5 dark:border-white/5 bg-zinc-50/20 dark:bg-zinc-900/5 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/30 transition-colors text-xs font-bold uppercase tracking-wider text-muted-foreground"
+        type="button"
       >
         <span>
           {drilldown.length > 0
@@ -308,13 +338,13 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
       </button>
 
       {drilldownOpen && (
-        <div className="border-t border-zinc-950/5 dark:border-white/5 bg-background/40 p-3 max-h-72 overflow-y-auto">
+        <div className="max-h-72 overflow-y-auto border-zinc-950/5 border-t bg-background/40 p-3 dark:border-white/5">
           {loadingDrilldown ? (
-            <div className="flex items-center justify-center py-8 text-xs text-muted-foreground">
+            <div className="flex items-center justify-center py-8 text-muted-foreground text-xs">
               Chargement…
             </div>
           ) : drilldown.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-xs text-muted-foreground">
+            <div className="flex items-center justify-center py-8 text-muted-foreground text-xs">
               Aucun élément à afficher pour cette automation.
             </div>
           ) : (
@@ -324,9 +354,9 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
                 return (
                   <li key={row.id}>
                     <button
-                      type="button"
+                      className="flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left transition-colors hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40"
                       onClick={() => onPatientClick(row.patientId)}
-                      className="w-full text-left flex items-center gap-3 py-2.5 px-2 rounded-md hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40 transition-colors"
+                      type="button"
                     >
                       <span
                         className={cn(
@@ -337,19 +367,20 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
                         <SevIcon className="h-3.5 w-3.5" />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-foreground truncate">
+                        <p className="truncate font-semibold text-foreground text-sm">
                           {row.patientName}
                           {row.species ? (
-                            <span className="text-muted-foreground font-normal">
-                              {" "}· {row.species}
+                            <span className="font-normal text-muted-foreground">
+                              {" "}
+                              · {row.species}
                             </span>
                           ) : null}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="truncate text-muted-foreground text-xs">
                           {row.contextLabel}
                         </p>
                       </div>
-                      <span className="text-[10px] font-mono text-muted-foreground/70 shrink-0">
+                      <span className="shrink-0 font-mono text-[10px] text-muted-foreground/70">
                         {row.contextDate.slice(0, 10)}
                       </span>
                     </button>
@@ -364,12 +395,25 @@ function AutomationCard({ item, onToggle, onRunNow, onConfigure, drilldownOpen, 
   );
 }
 
-export function AutomationWidgets({ onPatientClick }: { onPatientClick?: (patientId: string) => void }) {
-  const { automations, isLoading, updateAutomation, toggleAutomation, runNow, loadDrilldown } =
-    useAutomations();
+export function AutomationWidgets({
+  onPatientClick,
+}: {
+  onPatientClick?: (patientId: string) => void;
+}) {
+  const {
+    automations,
+    isLoading,
+    updateAutomation,
+    toggleAutomation,
+    runNow,
+    loadDrilldown,
+  } = useAutomations();
   const { t } = useTranslation();
-  const [editingAutomation, setEditingAutomation] = useState<AutomationItemLive | null>(null);
-  const [openDrilldown, setOpenDrilldown] = useState<Record<string, boolean>>({});
+  const [editingAutomation, setEditingAutomation] =
+    useState<AutomationItemLive | null>(null);
+  const [openDrilldown, setOpenDrilldown] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const handleToggleDrilldown = (id: string) => {
     const willOpen = !openDrilldown[id];
@@ -388,20 +432,23 @@ export function AutomationWidgets({ onPatientClick }: { onPatientClick?: (patien
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-6 w-full mt-6">
+      <div className="mt-6 flex w-full flex-col gap-6">
         <div className="flex flex-col gap-1 px-2">
-          <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
+          <h3 className="font-display font-semibold text-foreground text-xl tracking-tight">
             {t("dashboard.automations.title", "Automatisations Actives")}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            {t("dashboard.automations.subtitle", "Règles métier en arrière-plan.")}
+          <p className="text-muted-foreground text-sm">
+            {t(
+              "dashboard.automations.subtitle",
+              "Règles métier en arrière-plan."
+            )}
           </p>
         </div>
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, idx) => (
             <div
+              className="h-32 animate-pulse rounded-2xl bg-zinc-100/60 dark:bg-zinc-900/40"
               key={idx}
-              className="h-32 rounded-2xl bg-zinc-100/60 dark:bg-zinc-900/40 animate-pulse"
             />
           ))}
         </div>
@@ -410,12 +457,12 @@ export function AutomationWidgets({ onPatientClick }: { onPatientClick?: (patien
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full mt-6">
+    <div className="mt-6 flex w-full flex-col gap-6">
       <div className="flex flex-col gap-1 px-2">
-        <h3 className="text-xl font-display font-semibold tracking-tight text-foreground">
+        <h3 className="font-display font-semibold text-foreground text-xl tracking-tight">
           {t("dashboard.automations.title", "Automatisations Actives")}
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {t(
             "dashboard.automations.subtitle",
             "Règles métier en arrière-plan — compteurs calculés depuis vos données."

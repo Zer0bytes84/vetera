@@ -86,9 +86,12 @@ export function runDbOperation<T>(
     } catch (error) {
       // Si on a une erreur fatale (ex: connexion perdue après la mise en veille du Mac),
       // on force la réinitialisation de la connexion pour les prochaines requêtes.
-      console.warn("[DB] Fatal SQLite error encountered, dropping connection cache.", error);
+      console.warn(
+        "[DB] Fatal SQLite error encountered, dropping connection cache.",
+        error
+      );
       await closeDatabaseConnection();
-      
+
       // On tente de recharger la base une fois immédiatement
       database = await getDatabase();
       return await withLockRetry(() => operation(database));
@@ -126,8 +129,6 @@ export function runDbTransaction<T>(
   });
 }
 
-import { appDataDir, join } from "@tauri-apps/api/path";
-
 /**
  * Obtient ou crée la connexion à la base de données SQLite
  */
@@ -139,7 +140,7 @@ export async function getDatabase(): Promise<Database> {
   if (!dbInitPromise) {
     dbInitPromise = (async () => {
       console.log("[DB] Loading database...");
-      
+
       const loadedDb = await Database.load("sqlite:baitari.db");
       await runMigrations(loadedDb);
       await applyDatabaseSafetyPragmas(loadedDb);
@@ -212,14 +213,15 @@ async function runMigrations(database: Database): Promise<void> {
           try {
             await database.execute(statement);
             successCount++;
-          } catch (err: any) {
+          } catch (err: unknown) {
             console.error(
               "[DB] Error executing statement:",
               statement.substring(0, 150)
             );
             console.error("[DB] Error details:", err);
+            const errMsg = err instanceof Error ? err.message : String(err);
             throw new Error(
-              `Migration failed at statement ${successCount + 1}: ${err.message}`
+              `Migration failed at statement ${successCount + 1}: ${errMsg}`
             );
           }
         }

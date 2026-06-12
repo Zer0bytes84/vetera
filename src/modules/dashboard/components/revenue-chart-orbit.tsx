@@ -130,7 +130,12 @@ export function RevenueChartOrbit({
 
       <CardContent className="p-6">
         <div className="h-[280px]">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+          <ResponsiveContainer
+            height="100%"
+            minHeight={0}
+            minWidth={0}
+            width="100%"
+          >
             <BarChart
               data={chartData}
               margin={{ top: 30, right: 10, left: -10, bottom: 0 }}

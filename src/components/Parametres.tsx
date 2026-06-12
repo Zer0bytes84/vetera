@@ -12,7 +12,6 @@ import {
   Package02Icon,
   Refresh01Icon,
   SaveIcon,
-  Settings01Icon,
   Shield01Icon,
   SmartPhone01Icon,
   SparklesIcon,
@@ -23,6 +22,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { relaunch } from "@tauri-apps/plugin-process";
 import React, { useEffect, useRef, useState } from "react";
+import MotivationalHeader from "@/components/MotivationalHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,7 +74,6 @@ import {
   subscribeToProgress,
 } from "@/services/webLLMService";
 import Avatar from "./Avatar";
-import MotivationalHeader from "@/components/MotivationalHeader";
 import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
 
@@ -1822,11 +1821,11 @@ const Parametres: React.FC<ParametresProps> = ({
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
                     <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-                      Developpement
+                      Conception & Ingénierie
                     </p>
-                    <div className="mt-3 flex items-center gap-3">
+                    <div className="mt-3 flex items-start gap-3">
                       <Avatar
-                        name="Zouhir Kherroubi"
+                        name="Zohir Kherroubi"
                         size="lg"
                         src={sanitizeAvatarValue(
                           userDoc?.avatarUrl ||
@@ -1836,19 +1835,22 @@ const Parametres: React.FC<ParametresProps> = ({
                       />
                       <div>
                         <p className="font-medium text-foreground text-sm">
-                          Zouhir Kherroubi
+                          Zohir Kherroubi
                         </p>
-                        <p className="text-muted-foreground text-sm">
-                          Developpeur de bAItari
+                        <p className="font-medium text-primary text-xs mt-0.5">
+                          Créateur & Ingénieur Logiciel
+                        </p>
+                        <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed">
+                          Visionnaire et développeur principal de bAItari. Responsable de la conception technique, de l'ingénierie logicielle et de l'intégration des technologies d'Intelligence Artificielle au cœur du système.
                         </p>
                       </div>
                     </div>
                   </div>
                   <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
                     <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-                      Contribution medicale
+                      Expertise Vétérinaire
                     </p>
-                    <div className="mt-3 flex items-center gap-3">
+                    <div className="mt-3 flex items-start gap-3">
                       <Avatar
                         name="Dr Aissa Zeghouini"
                         size="lg"
@@ -1858,9 +1860,11 @@ const Parametres: React.FC<ParametresProps> = ({
                         <p className="font-medium text-foreground text-sm">
                           Dr Aissa Zeghouini
                         </p>
-                        <p className="text-muted-foreground text-sm">
-                          Contributeur cite dans la conception et l'evolution
-                          clinique de bAItari.
+                        <p className="font-medium text-primary text-xs mt-0.5">
+                          Co-fondateur & Conseiller Clinique
+                        </p>
+                        <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed">
+                          Pilier médical de bAItari. Apporte son expertise vétérinaire inestimable pour garantir que l'application réponde de manière optimale aux exigences et réalités de la clinique au quotidien.
                         </p>
                       </div>
                     </div>
@@ -1876,7 +1880,7 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="parametres" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">

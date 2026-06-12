@@ -8,7 +8,7 @@ export {
   EMPTY_SOAP_DRAFT,
   extractJsonObject,
   normalizeSoapDraft,
-  structureDictationIntoSoap,
   type SoapDraft,
   type StructureOptions,
+  structureDictationIntoSoap,
 } from "./lib/voice-to-soap";

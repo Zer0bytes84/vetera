@@ -1,13 +1,19 @@
 "use client";
 
-import React from "react";
+import {
+  Calendar,
+  ClipboardList,
+  DollarSign,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import type { DashboardMetrics } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
-import { TrendingDown, TrendingUp, DollarSign, Users, Calendar, ClipboardList } from "lucide-react";
-import { DashboardMetrics } from "@/lib/metrics";
 
 interface AsterTopStatsProps {
-  metrics: DashboardMetrics;
   className?: string;
+  metrics: DashboardMetrics;
 }
 
 export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
@@ -20,14 +26,25 @@ export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
   };
 
   const getDeltaPercent = (current: number, previous: number) => {
-    if (previous <= 0) return current > 0 ? 100 : 0;
+    if (previous <= 0) {
+      return current > 0 ? 100 : 0;
+    }
     return ((current - previous) / previous) * 100;
   };
 
   // Derive trends using actual metrics
-  const revenueTrend = getDeltaPercent(metrics.summary.income30, metrics.summary.previousIncome30);
-  const apptsTrend = getDeltaPercent(metrics.summary.todayAppointments, metrics.summary.yesterdayAppointments);
-  const returningTrend = getDeltaPercent(metrics.summary.currentReturningPatients, metrics.summary.previousReturningPatients);
+  const revenueTrend = getDeltaPercent(
+    metrics.summary.income30,
+    metrics.summary.previousIncome30
+  );
+  const apptsTrend = getDeltaPercent(
+    metrics.summary.todayAppointments,
+    metrics.summary.yesterdayAppointments
+  );
+  const returningTrend = getDeltaPercent(
+    metrics.summary.currentReturningPatients,
+    metrics.summary.previousReturningPatients
+  );
 
   const stats = [
     {
@@ -65,37 +82,49 @@ export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
   ];
 
   return (
-    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 lg:p-8 shadow-sm", className)}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-6">
+    <div
+      className={cn(
+        "rounded-[16px] border border-border bg-card p-6 shadow-sm lg:p-8 dark:border-border",
+        className
+      )}
+    >
+      <div className="grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           const isUp = stat.trend >= 0;
           return (
-            <div key={idx} className="relative flex flex-col stat-col">
+            <div className="stat-col relative flex flex-col" key={idx}>
               {/* Divider for desktop (between columns) */}
               {idx !== stats.length - 1 && (
-                <div className="hidden lg:block absolute -right-3 top-0 bottom-0 w-px bg-zinc-200 dark:bg-[#333333]" />
+                <div className="absolute top-0 -right-3 bottom-0 hidden w-px bg-zinc-200 lg:block dark:bg-[#333333]" />
               )}
-              
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                <Icon className={cn("w-4 h-4 drop-shadow-sm", stat.iconColor)} />
+
+              <div className="mb-3 flex items-center gap-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+                <Icon
+                  className={cn("h-4 w-4 drop-shadow-sm", stat.iconColor)}
+                />
                 {stat.title}
               </div>
-              
-              <div className="text-3xl font-semibold mb-2 tracking-tight text-foreground">
+
+              <div className="mb-2 font-semibold text-3xl text-foreground tracking-tight">
                 {stat.value}
               </div>
-              
-              <div className="flex justify-between items-center text-xs mt-auto">
-                <div className={cn("flex items-center gap-1 font-semibold", isUp ? "text-emerald-500" : "text-rose-500")}>
-                  {Math.abs(stat.trend).toFixed(2)}% 
+
+              <div className="mt-auto flex items-center justify-between text-xs">
+                <div
+                  className={cn(
+                    "flex items-center gap-1 font-semibold",
+                    isUp ? "text-emerald-500" : "text-rose-500"
+                  )}
+                >
+                  {Math.abs(stat.trend).toFixed(2)}%
                   {isUp ? (
-                    <TrendingUp className="w-3.5 h-3.5 stroke-[3]" />
+                    <TrendingUp className="h-3.5 w-3.5 stroke-[3]" />
                   ) : (
-                    <TrendingDown className="w-3.5 h-3.5 stroke-[3]" />
+                    <TrendingDown className="h-3.5 w-3.5 stroke-[3]" />
                   )}
                 </div>
-                <div className="text-muted-foreground font-medium uppercase tracking-wider text-[10px]">
+                <div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wider">
                   {stat.period}
                 </div>
               </div>

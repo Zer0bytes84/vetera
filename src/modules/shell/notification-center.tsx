@@ -1,16 +1,16 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Tick01Icon,
-  Notification01Icon,
-  StethoscopeIcon,
-  InjectionIcon,
-  CalendarCheckIn01Icon,
   Calendar01Icon,
-  Task01Icon,
-  PackageIcon,
+  CalendarCheckIn01Icon,
   Cancel01Icon,
+  InjectionIcon,
+  Notification01Icon,
+  PackageIcon,
+  StethoscopeIcon,
+  Task01Icon,
+  Tick01Icon,
 } from "@hugeicons/core-free-icons";
-import { useMemo, useState, type ComponentType } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useFocus, type FocusEntityKind } from "@/contexts/focus-provider";
+import { type FocusEntityKind, useFocus } from "@/contexts/focus-provider";
 import { cn } from "@/lib/utils";
-import { useNotificationCenter } from "@/services/notifications/useNotificationCenter";
 import {
   NOTIFICATION_SOURCE_ACCENT,
   type NotificationItem,
@@ -29,6 +28,7 @@ import {
   type NotificationSource,
   type NotificationTarget,
 } from "@/services/notifications/types";
+import { useNotificationCenter } from "@/services/notifications/useNotificationCenter";
 import type { View } from "@/types";
 
 const NOTIFICATION_FILTERS = ["all", "unread", "critical"] as const;
@@ -57,9 +57,7 @@ const SEVERITY_DOT_CLASS: Record<NotificationSeverity, string> = {
   info: "bg-sky-500",
 };
 
-function targetEntityKind(
-  target: NotificationTarget
-): FocusEntityKind | null {
+function targetEntityKind(target: NotificationTarget): FocusEntityKind | null {
   if (target.view === "patient_detail" || target.view === "clinique") {
     return "patient";
   }
@@ -122,7 +120,7 @@ function NotificationItemRow({
       >
         <button
           aria-label={item.clickHint}
-          className="flex min-w-0 flex-1 cursor-pointer items-start gap-3.5 px-3.5 py-3 text-left transition-transform duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset"
+          className="flex min-w-0 flex-1 cursor-pointer items-start gap-3.5 px-3.5 py-3 text-left transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset active:scale-[0.98]"
           onClick={() => onActivate(item)}
           type="button"
         >
@@ -130,23 +128,23 @@ function NotificationItemRow({
             <span
               aria-hidden="true"
               className={cn(
-                "flex size-8 items-center justify-center rounded-full ring-1 shadow-sm",
+                "flex size-8 items-center justify-center rounded-full shadow-sm ring-1",
                 SEVERITY_RING_CLASS[item.severity]
               )}
             >
-              <HugeiconsIcon icon={Icon} className="size-4" strokeWidth={1.5} />
+              <HugeiconsIcon className="size-4" icon={Icon} strokeWidth={1.5} />
             </span>
-            {!item.isRead ? (
+            {item.isRead ? null : (
               <span
                 aria-hidden="true"
                 className={cn(
-                  "absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-background",
+                  "absolute -top-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
                   SEVERITY_DOT_CLASS[item.severity]
                 )}
               />
-            ) : null}
+            )}
           </div>
-          
+
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span
@@ -161,16 +159,18 @@ function NotificationItemRow({
                 {accent.label}
               </span>
             </div>
-            
+
             <span
               className={cn(
                 "mt-1 line-clamp-2 block text-[12px] leading-relaxed",
-                item.isRead ? "text-muted-foreground/70" : "text-muted-foreground/90"
+                item.isRead
+                  ? "text-muted-foreground/70"
+                  : "text-muted-foreground/90"
               )}
             >
               {item.description}
             </span>
-            
+
             <div
               className={cn(
                 "mt-2.5 flex items-center gap-1.5 font-semibold text-[10px] uppercase tracking-wider transition-all duration-300",
@@ -179,35 +179,56 @@ function NotificationItemRow({
                   : "text-primary/70 group-hover/row:text-primary"
               )}
             >
-              <span className={cn(
-                "rounded-md px-1.5 py-0.5 transition-colors",
-                !item.isRead && "bg-primary/10 group-hover/row:bg-primary/15"
-              )}>
+              <span
+                className={cn(
+                  "rounded-md px-1.5 py-0.5 transition-colors",
+                  !item.isRead && "bg-primary/10 group-hover/row:bg-primary/15"
+                )}
+              >
                 {item.clickHint}
               </span>
-              <span aria-hidden="true" className="transition-transform group-hover/row:translate-x-1">→</span>
+              <span
+                aria-hidden="true"
+                className="transition-transform group-hover/row:translate-x-1"
+              >
+                →
+              </span>
             </div>
           </div>
         </button>
 
         {/* Floating actions container */}
-        <div className="absolute right-2 top-2 flex items-center gap-1 opacity-0 transition-opacity duration-300 group-hover/row:opacity-100">
+        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 transition-opacity duration-300 group-hover/row:opacity-100">
           <div className="flex items-center gap-0.5 rounded-lg border border-foreground/5 bg-background/80 p-0.5 shadow-sm backdrop-blur-md">
             <button
               aria-label={item.isRead ? "Marquer non lu" : "Marquer lu"}
               className="flex size-7 cursor-pointer items-center justify-center rounded-md text-foreground/50 transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:outline-none"
-              onClick={(e) => { e.stopPropagation(); onToggleRead(item); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleRead(item);
+              }}
               type="button"
             >
-              <HugeiconsIcon icon={Tick01Icon} className="size-3.5" strokeWidth={item.isRead ? 1.5 : 2} />
+              <HugeiconsIcon
+                className="size-3.5"
+                icon={Tick01Icon}
+                strokeWidth={item.isRead ? 1.5 : 2}
+              />
             </button>
             <button
               aria-label="Ignorer"
               className="flex size-7 cursor-pointer items-center justify-center rounded-md text-foreground/50 transition-colors hover:bg-rose-500/15 hover:text-rose-600 focus-visible:outline-none"
-              onClick={(e) => { e.stopPropagation(); onDismiss(item); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDismiss(item);
+              }}
               type="button"
             >
-              <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" strokeWidth={2} />
+              <HugeiconsIcon
+                className="size-3.5"
+                icon={Cancel01Icon}
+                strokeWidth={2}
+              />
             </button>
           </div>
         </div>
@@ -242,18 +263,18 @@ export function NotificationCenter({
   const [filter, setFilter] = useState<NotificationFilter>("all");
 
   const filteredItems = useMemo(() => {
-    if (filter === "unread") return items.filter((i) => !i.isRead);
-    if (filter === "critical")
+    if (filter === "unread") {
+      return items.filter((i) => !i.isRead);
+    }
+    if (filter === "critical") {
       return items.filter((i) => i.severity === "critical");
+    }
     return items;
   }, [filter, items]);
 
   // Top 3 most important = critical first, then unread warn
   const topItems = useMemo(
-    () =>
-      items
-        .filter((i) => !i.isRead)
-        .slice(0, 3),
+    () => items.filter((i) => !i.isRead).slice(0, 3),
     [items]
   );
 
@@ -304,7 +325,11 @@ export function NotificationCenter({
           />
         }
       >
-        <HugeiconsIcon icon={Notification01Icon} strokeWidth={1.5} className="size-5" />
+        <HugeiconsIcon
+          className="size-5"
+          icon={Notification01Icon}
+          strokeWidth={1.5}
+        />
         {unreadCount > 0 ? (
           <span
             aria-label={`${unreadCount} non lues`}
@@ -322,7 +347,7 @@ export function NotificationCenter({
         className="w-[400px] gap-0 p-0"
         sideOffset={8}
       >
-        <div className="flex items-center justify-between gap-2 border-b border-foreground/10 px-4 py-3">
+        <div className="flex items-center justify-between gap-2 border-foreground/10 border-b px-4 py-3">
           <div className="min-w-0">
             <p className="font-semibold text-foreground text-sm">
               {t("notifications.title", { defaultValue: "Notifications" })}
@@ -342,14 +367,18 @@ export function NotificationCenter({
               size="sm"
               variant="ghost"
             >
-              <HugeiconsIcon icon={Tick01Icon} className="size-3.5" strokeWidth={2} />
+              <HugeiconsIcon
+                className="size-3.5"
+                icon={Tick01Icon}
+                strokeWidth={2}
+              />
               Tout lire
             </Button>
           ) : null}
         </div>
 
         {topItems.length > 0 ? (
-          <div className="border-b border-foreground/5 bg-gradient-to-b from-muted/30 to-background/50 px-4 py-3">
+          <div className="border-foreground/5 border-b bg-gradient-to-b from-muted/30 to-background/50 px-4 py-3">
             <p className="font-semibold text-[10px] text-primary uppercase tracking-wider">
               Priorité absolue
             </p>
@@ -360,30 +389,34 @@ export function NotificationCenter({
                 return (
                   <li key={item.id}>
                     <button
-                      className="group/quick relative flex w-full cursor-pointer items-start gap-3 rounded-xl bg-background px-3 py-2.5 text-left shadow-sm ring-1 ring-foreground/5 transition-all duration-200 active:scale-[0.98] hover:bg-muted/30 hover:ring-foreground/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                      className="group/quick relative flex w-full cursor-pointer items-start gap-3 rounded-xl bg-background px-3 py-2.5 text-left shadow-sm ring-1 ring-foreground/5 transition-all duration-200 hover:bg-muted/30 hover:ring-foreground/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98]"
                       onClick={() => handleActivate(item)}
                       type="button"
                     >
                       <div className="relative mt-0.5 flex shrink-0 items-center justify-center">
                         <span
                           className={cn(
-                            "flex size-7 items-center justify-center rounded-full ring-1 shadow-sm",
+                            "flex size-7 items-center justify-center rounded-full shadow-sm ring-1",
                             SEVERITY_RING_CLASS[item.severity]
                           )}
                         >
-                          <HugeiconsIcon icon={Icon} className="size-3.5" strokeWidth={1.5} />
+                          <HugeiconsIcon
+                            className="size-3.5"
+                            icon={Icon}
+                            strokeWidth={1.5}
+                          />
                         </span>
-                        {!item.isRead ? (
+                        {item.isRead ? null : (
                           <span
                             aria-hidden="true"
                             className={cn(
-                              "absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-background",
+                              "absolute -top-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
                               SEVERITY_DOT_CLASS[item.severity]
                             )}
                           />
-                        ) : null}
+                        )}
                       </div>
-                      
+
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="truncate font-semibold text-[12px] text-foreground tracking-tight">
@@ -405,7 +438,7 @@ export function NotificationCenter({
           </div>
         ) : null}
 
-        <div className="flex items-center gap-1 border-b border-foreground/10 bg-muted/20 px-3 py-1.5">
+        <div className="flex items-center gap-1 border-foreground/10 border-b bg-muted/20 px-3 py-1.5">
           {NOTIFICATION_FILTERS.map((option) => {
             const active = filter === option;
             const label =
@@ -441,8 +474,8 @@ export function NotificationCenter({
           ) : filteredItems.length === 0 ? (
             <div className="px-3 py-10 text-center">
               <HugeiconsIcon
-                icon={Notification01Icon}
                 className="mx-auto mb-2 size-7 text-muted-foreground/50"
+                icon={Notification01Icon}
                 strokeWidth={1.5}
               />
               <p className="font-medium text-foreground text-sm">

@@ -1,8 +1,7 @@
+import { Pill } from "@phosphor-icons/react";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
-
-import { Pill } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,11 +20,23 @@ import {
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAnesthesiaDrugLogRepository } from "@/data/repositories";
-import type { AnesthesiaPhase, AnesthesiaRoute, AnesthesiaSheet } from "@/types/db";
+import type {
+  AnesthesiaPhase,
+  AnesthesiaRoute,
+  AnesthesiaSheet,
+} from "@/types/db";
 
-import { ANESTHESIA_PHASE_LABELS, ANESTHESIA_ROUTE_LABELS } from "../lib/format";
+import {
+  ANESTHESIA_PHASE_LABELS,
+  ANESTHESIA_ROUTE_LABELS,
+} from "../lib/format";
 
-const PHASES: AnesthesiaPhase[] = ["premed", "induction", "maintenance", "recovery"];
+const PHASES: AnesthesiaPhase[] = [
+  "premed",
+  "induction",
+  "maintenance",
+  "recovery",
+];
 const ROUTES: AnesthesiaRoute[] = ["IM", "SC", "IV", "IO", "IR", "PO", "IN"];
 
 function defaultState() {
@@ -75,7 +86,9 @@ export function AnesthesiaDrugLogEntryDialog({
   };
 
   const handleSubmit = async () => {
-    if (!drugName.trim()) return;
+    if (!drugName.trim()) {
+      return;
+    }
     await repo.add({
       anesthesiaSheetId: sheet.id,
       administeredAt: new Date().toISOString(),
@@ -101,7 +114,10 @@ export function AnesthesiaDrugLogEntryDialog({
             </div>
             <div>
               <DialogTitle>
-                {t("modules.anesthesia.drugLog.addEntry", "Ajouter un médicament")}
+                {t(
+                  "modules.anesthesia.drugLog.addEntry",
+                  "Ajouter un médicament"
+                )}
               </DialogTitle>
               <DialogDescription>{sheet.procedureName}</DialogDescription>
             </div>

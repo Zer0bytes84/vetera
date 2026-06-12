@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@fontsource/ibm-plex-mono/400.css";

@@ -49,12 +49,12 @@ interface BackupMetadata {
 
 export interface BackupInfo {
   date: string;
+  encrypted: boolean;
   filename: string;
+  integrity: "verified" | "unknown" | "failed";
+  reason: string;
   size: number;
   version: string;
-  encrypted: boolean;
-  reason: string;
-  integrity: "verified" | "unknown" | "failed";
 }
 
 async function getAppDataPath(): Promise<string> {
@@ -429,9 +429,7 @@ export async function restoreBackup(
     }
 
     if (!hasSqliteHeader(plaintext)) {
-      throw new Error(
-        "Le fichier déchiffré n'est pas une base SQLite valide."
-      );
+      throw new Error("Le fichier déchiffré n'est pas une base SQLite valide.");
     }
 
     // Checkpoint WAL before restore to avoid conflicts
@@ -678,9 +676,7 @@ async function decodeBackupBytes(
     return parsed.rawPayload;
   }
   if (!hasSqliteHeader(bytes)) {
-    throw new Error(
-      "Le fichier sélectionné n'est pas une base SQLite valide"
-    );
+    throw new Error("Le fichier sélectionné n'est pas une base SQLite valide");
   }
   return bytes;
 }

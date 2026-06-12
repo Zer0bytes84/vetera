@@ -225,7 +225,11 @@ export function getSpeciesTone(species?: string): string {
   return "bg-muted text-muted-foreground";
 }
 
-export type VaccinationStatus = "up_to_date" | "due_soon" | "overdue" | "unknown";
+export type VaccinationStatus =
+  | "up_to_date"
+  | "due_soon"
+  | "overdue"
+  | "unknown";
 
 export const VACCINATION_STATUS_META: Record<
   VaccinationStatus,
@@ -249,10 +253,22 @@ export const VACCINATION_STATUS_META: Record<
   },
 };
 
-export const COMMON_VACCINES: Array<{ type: string; label: string; intervalDays: number }> = [
-  { type: "CHPL", label: "CHPL (Carré, Hépatite, Parvo, Lepto)", intervalDays: 365 },
+export const COMMON_VACCINES: Array<{
+  type: string;
+  label: string;
+  intervalDays: number;
+}> = [
+  {
+    type: "CHPL",
+    label: "CHPL (Carré, Hépatite, Parvo, Lepto)",
+    intervalDays: 365,
+  },
   { type: "Rage", label: "Rage", intervalDays: 365 },
-  { type: "Toux de chenil", label: "Toux de chenil (Bordetella)", intervalDays: 365 },
+  {
+    type: "Toux de chenil",
+    label: "Toux de chenil (Bordetella)",
+    intervalDays: 365,
+  },
   { type: "Piroplasmose", label: "Piroplasmose", intervalDays: 365 },
   { type: "Leishmaniose", label: "Leishmaniose", intervalDays: 365 },
   { type: "FeLV", label: "FeLV (Leucose féline)", intervalDays: 365 },

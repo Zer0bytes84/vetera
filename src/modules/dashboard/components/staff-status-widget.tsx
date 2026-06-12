@@ -1,18 +1,18 @@
 "use client";
 
-import * as React from "react";
-import { Card } from "@/components/ui/card";
-import {
-  useUsersRepository,
-  useAppointmentsRepository,
-} from "@/data/repositories";
 import {
   ArrowRight,
   CalendarCheck2,
-  Users,
   UserRoundCog,
+  Users,
   Zap,
 } from "lucide-react";
+import * as React from "react";
+import { Card } from "@/components/ui/card";
+import {
+  useAppointmentsRepository,
+  useUsersRepository,
+} from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { View } from "@/types";
 
@@ -21,36 +21,34 @@ interface StaffStatusWidgetProps {
   referenceDate?: string | Date;
 }
 
-const ROLE_META: Record<
-  string,
-  { label: string; chip: string; bar: string }
-> = {
-  admin: {
-    label: "Admin",
-    chip: "text-purple-700 dark:text-purple-300 bg-purple-500/10 border-purple-500/20",
-    bar: "bg-purple-500",
-  },
-  vet_principal: {
-    label: "Vet Principal",
-    chip: "text-amber-700 dark:text-amber-300 bg-amber-500/10 border-amber-500/20",
-    bar: "bg-amber-500",
-  },
-  vet_adjoint: {
-    label: "Vet Adjoint",
-    chip: "text-blue-700 dark:text-blue-300 bg-blue-500/10 border-blue-500/20",
-    bar: "bg-blue-500",
-  },
-  assistant: {
-    label: "Assistant(e)",
-    chip: "text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
-    bar: "bg-emerald-500",
-  },
-  stagiaire: {
-    label: "Stagiaire",
-    chip: "text-zinc-600 dark:text-zinc-300 bg-zinc-500/10 border-zinc-500/20",
-    bar: "bg-zinc-400",
-  },
-};
+const ROLE_META: Record<string, { label: string; chip: string; bar: string }> =
+  {
+    admin: {
+      label: "Admin",
+      chip: "text-purple-700 dark:text-purple-300 bg-purple-500/10 border-purple-500/20",
+      bar: "bg-purple-500",
+    },
+    vet_principal: {
+      label: "Vet Principal",
+      chip: "text-amber-700 dark:text-amber-300 bg-amber-500/10 border-amber-500/20",
+      bar: "bg-amber-500",
+    },
+    vet_adjoint: {
+      label: "Vet Adjoint",
+      chip: "text-blue-700 dark:text-blue-300 bg-blue-500/10 border-blue-500/20",
+      bar: "bg-blue-500",
+    },
+    assistant: {
+      label: "Assistant(e)",
+      chip: "text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
+      bar: "bg-emerald-500",
+    },
+    stagiaire: {
+      label: "Stagiaire",
+      chip: "text-zinc-600 dark:text-zinc-300 bg-zinc-500/10 border-zinc-500/20",
+      bar: "bg-zinc-400",
+    },
+  };
 
 const AVATAR_GRADIENTS = [
   "from-cyan-400 to-sky-500",
@@ -61,7 +59,9 @@ const AVATAR_GRADIENTS = [
 ];
 
 function parseDashboardDate(value?: string): Date | null {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   const sqliteLike = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value);
   const normalized = sqliteLike ? `${value.replace(" ", "T")}Z` : value;
   const date = new Date(normalized);
@@ -74,24 +74,27 @@ function parseDashboardDate(value?: string): Date | null {
 
 function workloadTone(load: number, capacity: number) {
   const ratio = capacity > 0 ? load / capacity : 0;
-  if (ratio === 0)
+  if (ratio === 0) {
     return {
       label: "Libre",
       tone: "text-zinc-500 dark:text-zinc-400",
       bar: "bg-zinc-300 dark:bg-zinc-700",
     };
-  if (ratio < 0.5)
+  }
+  if (ratio < 0.5) {
     return {
       label: "Calme",
       tone: "text-sky-700 dark:text-sky-300",
       bar: "bg-sky-500",
     };
-  if (ratio < 0.85)
+  }
+  if (ratio < 0.85) {
     return {
       label: "Actif",
       tone: "text-emerald-700 dark:text-emerald-300",
       bar: "bg-emerald-500",
     };
+  }
   return {
     label: "Saturé",
     tone: "text-rose-700 dark:text-rose-300",
@@ -120,9 +123,13 @@ export function StaffStatusWidget({
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     for (const appt of appointments) {
-      if (["cancelled", "no_show"].includes(appt.status)) continue;
+      if (["cancelled", "no_show"].includes(appt.status)) {
+        continue;
+      }
       const date = parseDashboardDate(appt.startTime);
-      if (!date || date < today || date >= tomorrow) continue;
+      if (!date || date < today || date >= tomorrow) {
+        continue;
+      }
       if (appt.vetId) {
         loadMap.set(appt.vetId, (loadMap.get(appt.vetId) || 0) + 1);
       }
@@ -138,16 +145,16 @@ export function StaffStatusWidget({
   const capacity = 10; // soft capacity per vet/day
 
   return (
-    <Card className="dashboard-luxe-card group relative flex h-full flex-col overflow-hidden shadow-none !border-zinc-200 dark:!border-white/10 transition-[transform,shadow] duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20">
+    <Card className="dashboard-luxe-card group !border-zinc-200 dark:!border-white/10 relative flex h-full flex-col overflow-hidden shadow-none transition-[transform,shadow] duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/5 dark:hover:shadow-black/20">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-cyan-500/10 blur-3xl dark:bg-cyan-500/5" />
-        <div className="absolute -left-12 -bottom-12 h-40 w-40 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-500/5" />
+        <div className="absolute -top-12 -right-12 h-44 w-44 rounded-full bg-cyan-500/10 blur-3xl dark:bg-cyan-500/5" />
+        <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-500/5" />
       </div>
 
       <div className="relative z-10 flex h-full flex-col p-6">
         {/* ── Header ──────────────────────────────────────────── */}
-        <div className="flex items-start justify-between gap-4 border-b border-zinc-950/10 pb-4 dark:border-white/10">
+        <div className="flex items-start justify-between gap-4 border-zinc-950/10 border-b pb-4 dark:border-white/10">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/15 to-sky-500/10 ring-1 ring-cyan-500/15 dark:ring-cyan-400/15">
@@ -156,21 +163,21 @@ export function StaffStatusWidget({
                   strokeWidth={2.2}
                 />
               </span>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-400 dark:from-cyan-400 dark:to-blue-300 font-sans">
+              <span className="bg-gradient-to-r from-cyan-500 to-blue-400 bg-clip-text font-extrabold font-sans text-[10px] text-transparent uppercase tracking-widest dark:from-cyan-400 dark:to-blue-300">
                 Équipe en Service
               </span>
             </div>
-            <h3 className="mt-2 truncate font-display text-xl font-semibold tracking-tight text-foreground">
+            <h3 className="mt-2 truncate font-display font-semibold text-foreground text-xl tracking-tight">
               Personnel en Clinique
             </h3>
           </div>
 
           {/* Hero count */}
           <div className="flex shrink-0 flex-col items-end">
-            <span className="font-display text-2xl font-semibold tabular-nums leading-none text-foreground">
+            <span className="font-display font-semibold text-2xl text-foreground tabular-nums leading-none">
               {activeStaff.length}
             </span>
-            <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="mt-0.5 font-bold text-[9px] text-muted-foreground uppercase tracking-wider">
               actifs
             </span>
           </div>
@@ -180,24 +187,24 @@ export function StaffStatusWidget({
         <div className="mt-4 grid grid-cols-3 gap-2">
           <SummaryStat
             icon={<Users className="h-3.5 w-3.5" />}
-            value={activeStaff.length}
             label="Effectif"
             tone="cyan"
+            value={activeStaff.length}
           />
           <SummaryStat
             icon={<CalendarCheck2 className="h-3.5 w-3.5" />}
-            value={totalTodayLoad}
             label="RDV jour"
             tone="emerald"
+            value={totalTodayLoad}
           />
           <SummaryStat
             icon={<Zap className="h-3.5 w-3.5" />}
+            label="Charge"
+            suffix="%"
+            tone="amber"
             value={Math.round(
               (totalTodayLoad / (activeStaff.length * capacity || 1)) * 100
             )}
-            suffix="%"
-            label="Charge"
-            tone="amber"
           />
         </div>
 
@@ -206,10 +213,10 @@ export function StaffStatusWidget({
           {activeStaff.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
               <span className="text-3xl">👥</span>
-              <p className="text-sm italic text-foreground">
+              <p className="text-foreground text-sm italic">
                 Aucun membre actif
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Configurez l'équipe dans les paramètres
               </p>
             </div>
@@ -217,24 +224,25 @@ export function StaffStatusWidget({
             activeStaff.slice(0, 4).map((user, idx) => {
               const load = todayVetLoad.get(user.id) || 0;
               const grad = AVATAR_GRADIENTS[idx % AVATAR_GRADIENTS.length];
-              const initials = user.displayName?.slice(0, 2).toUpperCase() || "EQ";
+              const initials =
+                user.displayName?.slice(0, 2).toUpperCase() || "EQ";
               const role = ROLE_META[user.role] || ROLE_META.assistant;
               const wl = workloadTone(load, capacity);
               const loadRatio = Math.min(1, load / capacity);
 
               return (
                 <div
+                  className="group/row rounded-2xl border border-transparent p-2.5 transition-all hover:border-zinc-200/60 hover:bg-white/60 hover:shadow-xs dark:hover:border-white/10 dark:hover:bg-white/[0.04]"
                   key={user.id}
-                  className="group/row rounded-2xl border border-transparent p-2.5 transition-all hover:bg-white/60 hover:border-zinc-200/60 hover:shadow-xs dark:hover:bg-white/[0.04] dark:hover:border-white/10"
                 >
                   <div className="flex items-center gap-3">
                     {/* Avatar */}
                     <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
                       {user.avatarUrl ? (
                         <img
-                          src={user.avatarUrl}
                           alt={user.displayName}
                           className="h-full w-full rounded-full border border-zinc-950/10 object-cover dark:border-white/10"
+                          src={user.avatarUrl}
                         />
                       ) : (
                         <>
@@ -244,26 +252,26 @@ export function StaffStatusWidget({
                               grad
                             )}
                           />
-                          <span className="relative font-bold text-xs uppercase tracking-tight text-white">
+                          <span className="relative font-bold text-white text-xs uppercase tracking-tight">
                             {initials}
                           </span>
                         </>
                       )}
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 rounded-full border-2 border-white bg-emerald-500 shadow-[0_0_6px_#22c55e] dark:border-zinc-900" />
+                      <span className="absolute -right-0.5 -bottom-0.5 flex h-3 w-3 rounded-full border-2 border-white bg-emerald-500 shadow-[0_0_6px_#22c55e] dark:border-zinc-900" />
                     </div>
 
                     {/* Name + role */}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <p
-                          className="truncate text-sm font-bold text-foreground"
+                          className="truncate font-bold text-foreground text-sm"
                           title={user.displayName}
                         >
                           {user.displayName}
                         </p>
                         <span
                           className={cn(
-                            "shrink-0 text-[10px] font-bold tabular-nums",
+                            "shrink-0 font-bold text-[10px] tabular-nums",
                             wl.tone
                           )}
                         >
@@ -273,7 +281,7 @@ export function StaffStatusWidget({
                       <div className="mt-0.5 flex items-center gap-2">
                         <span
                           className={cn(
-                            "shrink-0 rounded-full border px-1.5 py-0 text-[9px] font-bold uppercase tracking-wide leading-tight",
+                            "shrink-0 rounded-full border px-1.5 py-0 font-bold text-[9px] uppercase leading-tight tracking-wide",
                             role.chip
                           )}
                         >
@@ -281,7 +289,7 @@ export function StaffStatusWidget({
                         </span>
                         {user.specialty && (
                           <span
-                            className="truncate text-[10px] font-medium italic text-muted-foreground"
+                            className="truncate font-medium text-[10px] text-muted-foreground italic"
                             title={user.specialty}
                           >
                             {user.specialty}
@@ -304,7 +312,7 @@ export function StaffStatusWidget({
                     </div>
                     <span
                       className={cn(
-                        "shrink-0 text-[10px] font-bold uppercase tracking-wide",
+                        "shrink-0 font-bold text-[10px] uppercase tracking-wide",
                         wl.tone
                       )}
                     >
@@ -319,11 +327,11 @@ export function StaffStatusWidget({
 
         {/* ── Footer ──────────────────────────────────────────── */}
         {onNavigate && (
-          <div className="mt-4 border-t border-zinc-950/10 pt-4 dark:border-white/10">
+          <div className="mt-4 border-zinc-950/10 border-t pt-4 dark:border-white/10">
             <button
-              type="button"
+              className="group/btn flex w-full items-center justify-center gap-1.5 rounded-2xl bg-zinc-900 px-4 py-2.5 font-semibold text-white text-xs transition-all hover:bg-zinc-800 hover:shadow-md active:scale-[0.98] dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
               onClick={() => onNavigate("equipe")}
-              className="group/btn flex w-full items-center justify-center gap-1.5 rounded-2xl bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white transition-all hover:bg-zinc-800 hover:shadow-md active:scale-[0.98] dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+              type="button"
             >
               <Users className="h-3.5 w-3.5" />
               Voir toute l'équipe
@@ -338,23 +346,25 @@ export function StaffStatusWidget({
 
 interface SummaryStatProps {
   icon: React.ReactNode;
-  value: number;
-  suffix?: string;
   label: string;
+  suffix?: string;
   tone: "cyan" | "emerald" | "amber";
+  value: number;
 }
 
 const SUMMARY_TONES: Record<SummaryStatProps["tone"], string> = {
   cyan: "from-cyan-500/15 to-cyan-500/[0.03] ring-cyan-500/15 text-cyan-700 dark:text-cyan-300",
-  emerald: "from-emerald-500/15 to-emerald-500/[0.03] ring-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  amber: "from-amber-500/15 to-amber-500/[0.03] ring-amber-500/15 text-amber-700 dark:text-amber-300",
+  emerald:
+    "from-emerald-500/15 to-emerald-500/[0.03] ring-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  amber:
+    "from-amber-500/15 to-amber-500/[0.03] ring-amber-500/15 text-amber-700 dark:text-amber-300",
 };
 
 function SummaryStat({ icon, value, suffix, label, tone }: SummaryStatProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl border border-zinc-200/70 bg-clip-padding bg-gradient-to-br p-2.5 ring-1 ring-inset dark:border-white/10",
+        "flex items-center gap-2 rounded-xl border border-zinc-200/70 bg-gradient-to-br bg-clip-padding p-2.5 ring-1 ring-inset dark:border-white/10",
         SUMMARY_TONES[tone]
       )}
     >
@@ -362,13 +372,15 @@ function SummaryStat({ icon, value, suffix, label, tone }: SummaryStatProps) {
         {icon}
       </span>
       <div className="min-w-0">
-        <p className="font-display text-base font-semibold tabular-nums leading-none text-foreground">
+        <p className="font-display font-semibold text-base text-foreground tabular-nums leading-none">
           {value}
           {suffix && (
-            <span className="text-xs font-bold text-muted-foreground">{suffix}</span>
+            <span className="font-bold text-muted-foreground text-xs">
+              {suffix}
+            </span>
           )}
         </p>
-        <p className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+        <p className="mt-0.5 font-bold text-[9px] text-muted-foreground uppercase tracking-wider">
           {label}
         </p>
       </div>

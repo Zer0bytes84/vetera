@@ -1,16 +1,15 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { useNotificationCenter } from "@/services/notifications/useNotificationCenter";
 import type {
   NotificationItem,
   NotificationSeverity,
 } from "@/services/notifications/types";
+import { useNotificationCenter } from "@/services/notifications/useNotificationCenter";
 import type { View } from "@/types";
 
 const TOAST_DEDUPE_WINDOW_MS = 90_000;
-const POLL_INTERVAL_MS = 5_000;
+const POLL_INTERVAL_MS = 5000;
 
 const SEVERITY_DESCRIPTION_CLASS: Record<NotificationSeverity, string> = {
   critical: "text-rose-700 dark:text-rose-300/90",
@@ -40,7 +39,7 @@ function toastNotification(
   const options: Parameters<typeof toast>[1] = {
     description,
     descriptionClassName: SEVERITY_DESCRIPTION_CLASS[item.severity],
-    duration: item.severity === "critical" ? 8_000 : 5_000,
+    duration: item.severity === "critical" ? 8000 : 5000,
     action: {
       label: actionLabel,
       onClick: handleAction,

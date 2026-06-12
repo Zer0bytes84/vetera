@@ -1,18 +1,15 @@
+import { ArrowsClockwise, Hospital, Plus } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-import { ArrowsClockwise, Hospital, Plus } from "@phosphor-icons/react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { useHospitalizationsRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Hospitalization, Patient } from "@/types/db";
@@ -55,36 +52,56 @@ export function HospitalizationList({
 
   const all = repo.forPatient(patient.id);
   const filtered = all.filter((h) => {
-    if (filter === "all") return true;
-    if (filter === "active")
+    if (filter === "all") {
+      return true;
+    }
+    if (filter === "active") {
       return (
         h.status === "admitted" ||
         h.status === "monitoring" ||
         h.status === "critical"
       );
+    }
     return h.status === filter;
   });
 
   const filters: { value: HospitalizationStatusFilter; label: string }[] = [
-    { value: "active", label: t("modules.hospitalizations.status.monitoring", "En cours") },
-    { value: "admitted", label: t("modules.hospitalizations.status.admitted", "Admis") },
-    { value: "critical", label: t("modules.hospitalizations.status.critical", "Critique") },
-    { value: "discharged", label: t("modules.hospitalizations.status.discharged", "Sorti") },
+    {
+      value: "active",
+      label: t("modules.hospitalizations.status.monitoring", "En cours"),
+    },
+    {
+      value: "admitted",
+      label: t("modules.hospitalizations.status.admitted", "Admis"),
+    },
+    {
+      value: "critical",
+      label: t("modules.hospitalizations.status.critical", "Critique"),
+    },
+    {
+      value: "discharged",
+      label: t("modules.hospitalizations.status.discharged", "Sorti"),
+    },
     { value: "all", label: t("common.all", "Tous") },
   ];
 
   return (
-    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] shadow-sm flex flex-col overflow-hidden", className)}>
+    <div
+      className={cn(
+        "flex flex-col overflow-hidden rounded-[16px] border border-border bg-card shadow-sm dark:border-border",
+        className
+      )}
+    >
       <div className="border-border/40 border-b p-6">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10">
-            <Hospital weight="duotone" className="size-5 text-sky-600" />
+            <Hospital className="size-5 text-sky-600" weight="duotone" />
           </div>
           <div className="grid flex-1 gap-0.5">
-            <div className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+            <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
               {t("modules.hospitalizations.subtitle", "Suivi 24h")}
             </div>
-            <div className="text-lg tracking-tight font-semibold">
+            <div className="font-semibold text-lg tracking-tight">
               {t("modules.hospitalizations.title", "Hospitalisation")}
             </div>
           </div>
@@ -94,7 +111,10 @@ export function HospitalizationList({
             size="sm"
           >
             <Plus className="size-3.5" weight="bold" />
-            {t("modules.hospitalizations.newHospitalization", "Nouvelle hospitalisation")}
+            {t(
+              "modules.hospitalizations.newHospitalization",
+              "Nouvelle hospitalisation"
+            )}
           </Button>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-1.5">
@@ -115,7 +135,7 @@ export function HospitalizationList({
           ))}
         </div>
       </div>
-      <div className="flex flex-col flex-1 p-0">
+      <div className="flex flex-1 flex-col p-0">
         {filtered.length === 0 ? (
           <Empty className="m-6 border border-dashed">
             <EmptyHeader>
@@ -123,7 +143,10 @@ export function HospitalizationList({
                 <Hospital className="size-6 text-sky-600" weight="duotone" />
               </div>
               <EmptyTitle>
-                {t("modules.hospitalizations.empty.title", "Aucune hospitalisation")}
+                {t(
+                  "modules.hospitalizations.empty.title",
+                  "Aucune hospitalisation"
+                )}
               </EmptyTitle>
               <EmptyDescription>
                 {t(
@@ -136,15 +159,16 @@ export function HospitalizationList({
         ) : (
           <ul className="divide-y divide-border/40">
             {filtered.map((h) => {
-              const durationMin = h.status === "discharged" && h.dischargeDate
-                ? Math.floor(
-                    (new Date(h.dischargeDate).getTime() -
-                      new Date(h.admissionDate).getTime()) /
-                      60000
-                  )
-                : Math.floor(
-                    (now - new Date(h.admissionDate).getTime()) / 60000
-                  );
+              const durationMin =
+                h.status === "discharged" && h.dischargeDate
+                  ? Math.floor(
+                      (new Date(h.dischargeDate).getTime() -
+                        new Date(h.admissionDate).getTime()) /
+                        60_000
+                    )
+                  : Math.floor(
+                      (now - new Date(h.admissionDate).getTime()) / 60_000
+                    );
               return (
                 <li key={h.id}>
                   <button
@@ -154,13 +178,20 @@ export function HospitalizationList({
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <HospitalizationStatusBadge status={h.status} />
-                      <Badge className="border-border/40 bg-background" variant="outline">
+                      <Badge
+                        className="border-border/40 bg-background"
+                        variant="outline"
+                      >
                         <ArrowsClockwise className="mr-1 size-3" />
                         {formatDuration(durationMin)}
                       </Badge>
                       {h.cage ? (
-                        <Badge className="border-border/40 bg-background" variant="outline">
-                          {t("modules.hospitalizations.fields.cage", "Box")} {h.cage}
+                        <Badge
+                          className="border-border/40 bg-background"
+                          variant="outline"
+                        >
+                          {t("modules.hospitalizations.fields.cage", "Box")}{" "}
+                          {h.cage}
                         </Badge>
                       ) : null}
                     </div>
@@ -173,8 +204,8 @@ export function HospitalizationList({
                       </p>
                     ) : null}
                     <p className="text-[11px] text-muted-foreground/80">
-                      {t("modules.hospitalizations.fields.admittedAt", "Admis")} :{" "}
-                      {formatTimeAgo(h.admissionDate)}
+                      {t("modules.hospitalizations.fields.admittedAt", "Admis")}{" "}
+                      : {formatTimeAgo(h.admissionDate)}
                     </p>
                   </button>
                 </li>

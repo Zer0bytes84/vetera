@@ -1,8 +1,7 @@
+import { Syringe } from "@phosphor-icons/react";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
-
-import { Syringe } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -87,7 +86,9 @@ export function AnesthesiaSheetDialog({
   };
 
   const handleSubmit = async () => {
-    if (!procedureName.trim()) return;
+    if (!procedureName.trim()) {
+      return;
+    }
     const row: Omit<AnesthesiaSheet, "id" | "createdAt" | "updatedAt"> = {
       patientId: patient.id,
       hospitalizationId: null,
@@ -130,7 +131,10 @@ export function AnesthesiaSheetDialog({
             </div>
             <div>
               <DialogTitle>
-                {t("modules.anesthesia.newSheet", "Nouvelle feuille d'anesthésie")}
+                {t(
+                  "modules.anesthesia.newSheet",
+                  "Nouvelle feuille d'anesthésie"
+                )}
               </DialogTitle>
               <DialogDescription>
                 {patient.name} · {patient.species}
@@ -184,15 +188,15 @@ export function AnesthesiaSheetDialog({
                 {t("modules.anesthesia.fields.emergency", "Urgence")}
               </Label>
               <button
-                id="anes-emergency"
-                onClick={() => setEmergency((v) => !v)}
-                type="button"
                 className={
-                  "h-9 rounded-md border px-3 text-sm font-medium transition-colors " +
+                  "h-9 rounded-md border px-3 font-medium text-sm transition-colors" +
                   (emergency
                     ? "border-rose-500/40 bg-rose-500/10 text-rose-700"
                     : "border-border/60 bg-background text-muted-foreground hover:border-border hover:text-foreground")
                 }
+                id="anes-emergency"
+                onClick={() => setEmergency((v) => !v)}
+                type="button"
               >
                 {emergency ? "Oui" : "Non"}
               </button>
@@ -227,7 +231,10 @@ export function AnesthesiaSheetDialog({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="anes-induction-agent">
-                {t("modules.anesthesia.fields.inductionAgent", "Agent d'induction")}
+                {t(
+                  "modules.anesthesia.fields.inductionAgent",
+                  "Agent d'induction"
+                )}
               </Label>
               <Textarea
                 id="anes-induction-agent"
@@ -254,7 +261,10 @@ export function AnesthesiaSheetDialog({
 
           <div className="grid gap-2">
             <Label htmlFor="anes-monitoring">
-              {t("modules.anesthesia.fields.monitoringPlan", "Plan de monitoring")}
+              {t(
+                "modules.anesthesia.fields.monitoringPlan",
+                "Plan de monitoring"
+              )}
             </Label>
             <Textarea
               id="anes-monitoring"

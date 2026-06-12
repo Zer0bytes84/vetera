@@ -1,48 +1,51 @@
-import { useEffect, useState, useCallback } from "react";
 import type Database from "@tauri-apps/plugin-sql";
+import { useCallback, useEffect, useState } from "react";
 import { runDbOperation } from "@/services/sqlite/database";
 
 export interface ConsultationSummary {
-  /** SOAPs créés sur les 7 derniers jours */
-  total7d: number;
-  /** SOAPs créés sur les 7 jours d'avant (pour trend) */
-  totalPrev7d: number;
-  /** SOAPs où les 4 sections S/O/A/P sont remplies */
-  completed7d: number;
-  /** SOAPs créés >24h sans update (à compléter) */
-  backlog: number;
-  /** Délai moyen en heures entre createdAt et dernière update (pour complétés) */
-  avgCompletionHours: number;
   /** SOAPs générés par IA (ai_draft non null) sur 7j */
   aiGenerated: number;
   /** Confiance IA moyenne (ai_confidence) sur 7j */
   avgAiConfidence: number;
+  /** Délai moyen en heures entre createdAt et dernière update (pour complétés) */
+  avgCompletionHours: number;
+  /** SOAPs créés >24h sans update (à compléter) */
+  backlog: number;
+  /** SOAPs où les 4 sections S/O/A/P sont remplies */
+  completed7d: number;
   /** Série journalière des SOAPs créés sur 7 jours */
   dailySeries: number[];
-  /** Top 5 diagnostics (assessment non-vide) sur 7j */
-  topDiagnostics: Array<{ label: string; count: number }>;
-  /** Répartition par type d'appointment associé */
-  typeBreakdown: Array<{ type: string; count: number }>;
   /** Dernière mise à jour des données (pour le cache busting) */
   fetchedAt: string;
+  /** Top 5 diagnostics (assessment non-vide) sur 7j */
+  topDiagnostics: Array<{ label: string; count: number }>;
+  /** SOAPs créés sur les 7 derniers jours */
+  total7d: number;
+  /** SOAPs créés sur les 7 jours d'avant (pour trend) */
+  totalPrev7d: number;
+  /** Répartition par type d'appointment associé */
+  typeBreakdown: Array<{ type: string; count: number }>;
 }
 
 export interface ConsultationSoap {
+  filledSections: number;
+  hoursIdle: number;
   id: string;
+  isComplete: boolean;
+  lastUpdateIso: string;
+  ownerName?: string;
   patientId: string;
   patientName: string;
   species?: string;
-  ownerName?: string;
-  filledSections: number;
-  isComplete: boolean;
-  lastUpdateIso: string;
-  hoursIdle: number;
 }
 
 const REFRESH_INTERVAL_MS = 60_000;
 const BACKLOG_THRESHOLD_HOURS = 24;
 
-function diffPercent(current: number, previous: number): { trendPercent: number; trendUp: boolean } {
+function diffPercent(
+  current: number,
+  previous: number
+): { trendPercent: number; trendUp: boolean } {
   if (previous > 0) {
     const pct = Math.round(((current - previous) / previous) * 100);
     return { trendPercent: pct, trendUp: current >= previous };
@@ -58,7 +61,9 @@ export function useConsultationSummary(referenceDate: Date = new Date()) {
 
   const fetchSummary = useCallback(async () => {
     try {
-      const data = await runDbOperation(async (db) => computeSummary(db, referenceDate));
+      const data = await runDbOperation(async (db) =>
+        computeSummary(db, referenceDate)
+      );
       setSummary(data);
       setError(null);
     } catch (err) {
@@ -71,7 +76,9 @@ export function useConsultationSummary(referenceDate: Date = new Date()) {
 
   const fetchBacklog = useCallback(async () => {
     try {
-      const rows = await runDbOperation(async (db) => computeBacklog(db, referenceDate));
+      const rows = await runDbOperation(async (db) =>
+        computeBacklog(db, referenceDate)
+      );
       setBacklogRows(rows);
     } catch (err) {
       console.error("Failed to fetch SOAP backlog", err);
@@ -94,9 +101,10 @@ export function useConsultationSummary(referenceDate: Date = new Date()) {
   const trendUp = summary
     ? diffPercent(summary.total7d, summary.totalPrev7d).trendUp
     : false;
-  const completionRate = summary && summary.total7d > 0
-    ? Math.round((summary.completed7d / summary.total7d) * 100)
-    : 0;
+  const completionRate =
+    summary && summary.total7d > 0
+      ? Math.round((summary.completed7d / summary.total7d) * 100)
+      : 0;
 
   return {
     summary,
@@ -118,10 +126,12 @@ async function computeSummary(
   ref: Date
 ): Promise<ConsultationSummary> {
   const nowIso = ref.toISOString();
-  const in7Iso = new Date(ref.getTime() - 7 * 86400_000).toISOString();
-  const in14Iso = new Date(ref.getTime() - 14 * 86400_000).toISOString();
-  const in8dIso = new Date(ref.getTime() - 8 * 86400_000).toISOString();
-  const backlogIso = new Date(ref.getTime() - BACKLOG_THRESHOLD_HOURS * 3600_000).toISOString();
+  const in7Iso = new Date(ref.getTime() - 7 * 86_400_000).toISOString();
+  const in14Iso = new Date(ref.getTime() - 14 * 86_400_000).toISOString();
+  const in8dIso = new Date(ref.getTime() - 8 * 86_400_000).toISOString();
+  const backlogIso = new Date(
+    ref.getTime() - BACKLOG_THRESHOLD_HOURS * 3_600_000
+  ).toISOString();
 
   const counts = await db.select<any[]>(
     `SELECT
@@ -212,8 +222,13 @@ async function computeSummary(
   };
 }
 
-async function computeBacklog(db: Database, ref: Date): Promise<ConsultationSoap[]> {
-  const backlogIso = new Date(ref.getTime() - BACKLOG_THRESHOLD_HOURS * 3600_000).toISOString();
+async function computeBacklog(
+  db: Database,
+  ref: Date
+): Promise<ConsultationSoap[]> {
+  const backlogIso = new Date(
+    ref.getTime() - BACKLOG_THRESHOLD_HOURS * 3_600_000
+  ).toISOString();
   const rows = await db.select<any[]>(
     `SELECT s.id, s.patient_id, s.subjective, s.objective, s.assessment, s.plan,
             s.updated_at,
@@ -233,7 +248,9 @@ async function computeBacklog(db: Database, ref: Date): Promise<ConsultationSoap
       (s) => s && s.trim().length > 0
     ).length;
     const lastUpdate = new Date(r.updated_at);
-    const hoursIdle = Math.floor((ref.getTime() - lastUpdate.getTime()) / 3600_000);
+    const hoursIdle = Math.floor(
+      (ref.getTime() - lastUpdate.getTime()) / 3_600_000
+    );
     return {
       id: r.id,
       patientId: r.patient_id,
@@ -254,10 +271,12 @@ function bucketizeDaily(
   ref: Date
 ): number[] {
   const map = new Map<string, number>();
-  for (const r of rows) map.set(r.day, Number(r.cnt));
+  for (const r of rows) {
+    map.set(r.day, Number(r.cnt));
+  }
   const out: number[] = [];
   for (let i = points - 1; i >= 0; i--) {
-    const d = new Date(ref.getTime() - i * 86400_000);
+    const d = new Date(ref.getTime() - i * 86_400_000);
     const key = d.toISOString().slice(0, 10);
     out.push(map.get(key) ?? 0);
   }
@@ -265,8 +284,12 @@ function bucketizeDaily(
 }
 
 function truncateAssessment(value: string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) {
+    return "—";
+  }
   const cleaned = value.replace(/\s+/g, " ").trim();
-  if (cleaned.length <= 40) return cleaned;
+  if (cleaned.length <= 40) {
+    return cleaned;
+  }
   return `${cleaned.slice(0, 37)}…`;
 }

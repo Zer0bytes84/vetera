@@ -737,7 +737,8 @@ const resources = {
         },
         overview: {
           weightChart: "Évolution du poids",
-          weightEmpty: "Aucune pesée enregistrée. Cliquez sur « Nouvelle pesée » pour commencer.",
+          weightEmpty:
+            "Aucune pesée enregistrée. Cliquez sur « Nouvelle pesée » pour commencer.",
           newWeight: "Nouvelle pesée",
           quickInfo: "Informations rapides",
           allergies: "Allergies",
@@ -839,8 +840,7 @@ const resources = {
             objective:
               "Constantes, examen clinique, résultats d'examens complémentaires…",
             assessment: "Diagnostic différentiel, hypothèses, conclusion…",
-            plan:
-              "Traitements prescrits, examens à réaliser, suivi, conseils au propriétaire…",
+            plan: "Traitements prescrits, examens à réaliser, suivi, conseils au propriétaire…",
           },
           ai: {
             title: "Assistant SOAP (IA locale)",
@@ -923,7 +923,8 @@ const resources = {
             noEntries: "Aucune mesure enregistrée",
             timeAgo: "il y a {duration}",
             empty: "Aucune constante enregistrée",
-            emptyDescription: "Ajoutez la première mesure pour démarrer le suivi.",
+            emptyDescription:
+              "Ajoutez la première mesure pour démarrer le suivi.",
             save: "Enregistrer",
           },
           mucous: {
@@ -940,7 +941,8 @@ const resources = {
           },
           empty: {
             title: "Aucune hospitalisation",
-            description: "Cliquez sur « Nouvelle hospitalisation » pour démarrer le suivi.",
+            description:
+              "Cliquez sur « Nouvelle hospitalisation » pour démarrer le suivi.",
           },
           chart: {
             title: "Courbes des constantes (24h)",
@@ -955,7 +957,8 @@ const resources = {
           newSheet: "Nouvelle feuille d'anesthésie",
           empty: {
             title: "Aucune feuille d'anesthésie",
-            description: "Démarrez une procédure pour enregistrer le protocole.",
+            description:
+              "Démarrez une procédure pour enregistrer le protocole.",
           },
           fields: {
             procedureName: "Procédure",
@@ -1029,7 +1032,8 @@ const resources = {
         newPrescription: "Nouvelle ordonnance",
         empty: {
           title: "Aucune ordonnance",
-          description: "Sélectionnez un médicament dans le catalogue pour démarrer.",
+          description:
+            "Sélectionnez un médicament dans le catalogue pour démarrer.",
         },
         builder: {
           addMedication: "Ajouter un médicament",
@@ -1804,7 +1808,8 @@ const resources = {
         back: "Back",
         notFoundDetails: {
           title: "Patient not found",
-          description: "This patient record no longer exists or has been removed.",
+          description:
+            "This patient record no longer exists or has been removed.",
           back: "Back to list",
         },
         tabs: {
@@ -1845,7 +1850,8 @@ const resources = {
         },
         overview: {
           weightChart: "Weight evolution",
-          weightEmpty: "No weight recorded. Click « New measurement » to start.",
+          weightEmpty:
+            "No weight recorded. Click « New measurement » to start.",
           newWeight: "New measurement",
           quickInfo: "Quick info",
           allergies: "Allergies",
@@ -1942,13 +1948,10 @@ const resources = {
             plan: "Plan",
           },
           placeholders: {
-            subjective:
-              "Reason for visit, history, owner observations…",
-            objective:
-              "Vitals, clinical exam, complementary test results…",
+            subjective: "Reason for visit, history, owner observations…",
+            objective: "Vitals, clinical exam, complementary test results…",
             assessment: "Differential diagnosis, hypotheses, conclusion…",
-            plan:
-              "Treatments, follow-up tests, recommendations, owner advice…",
+            plan: "Treatments, follow-up tests, recommendations, owner advice…",
           },
           ai: {
             title: "SOAP assistant (local AI)",
@@ -1965,8 +1968,7 @@ const resources = {
             notAvailable: "AI engine not loaded",
             unsupportedBrowser:
               "Speech recognition unavailable in this browser",
-            micDenied:
-              "Microphone access denied. Check browser permissions.",
+            micDenied: "Microphone access denied. Check browser permissions.",
             transcriptPlaceholder: "Live dictation…",
             parseError:
               "Could not parse the AI response. Retry or adjust the dictation.",
@@ -2169,8 +2171,7 @@ const resources = {
           low: "Low bound",
           high: "High bound",
           unit: "Unit",
-          warning:
-            "Verify the formulation concentration before administering.",
+          warning: "Verify the formulation concentration before administering.",
         },
         item: {
           name: "Medication",
@@ -2184,8 +2185,7 @@ const resources = {
           quantity: "Quantity to dispense",
           quantityPlaceholder: "e.g. 1 box of 30 tablets",
           instructions: "Owner instructions",
-          instructionsPlaceholder:
-            "e.g. give with food, every 12 hours…",
+          instructionsPlaceholder: "e.g. give with food, every 12 hours…",
           warnings: "Precautions",
           warningsPlaceholder: "Side effects, interactions…",
         },
@@ -2224,8 +2224,7 @@ const resources = {
           weight: "Weight",
           diagnosis: "Diagnosis",
           instructions: "Instructions",
-          notes:
-            "Keep out of reach of children. Follow the prescribed dosage.",
+          notes: "Keep out of reach of children. Follow the prescribed dosage.",
         },
         list: {
           title: "Prescriptions",
@@ -3407,7 +3406,6 @@ const resources = {
     },
   },
 } as const;
-
 
 const savedLanguage =
   (localStorage.getItem("vetera.language") as SupportedLanguage | null) || "fr";

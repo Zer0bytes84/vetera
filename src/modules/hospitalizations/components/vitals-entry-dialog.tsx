@@ -1,8 +1,7 @@
+import { Heartbeat } from "@phosphor-icons/react";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
-
-import { Heartbeat } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -69,16 +68,30 @@ export function VitalsEntryDialog({
   const initial = defaultVitalsState();
   const [temperatureC, setTemperatureC] = useState(initial.temperatureC);
   const [heartRateBpm, setHeartRateBpm] = useState(initial.heartRateBpm);
-  const [respiratoryRateBpm, setRespiratoryRateBpm] = useState(initial.respiratoryRateBpm);
+  const [respiratoryRateBpm, setRespiratoryRateBpm] = useState(
+    initial.respiratoryRateBpm
+  );
   const [spo2Percent, setSpo2Percent] = useState(initial.spo2Percent);
-  const [bloodPressureSys, setBloodPressureSys] = useState(initial.bloodPressureSys);
-  const [bloodPressureDia, setBloodPressureDia] = useState(initial.bloodPressureDia);
+  const [bloodPressureSys, setBloodPressureSys] = useState(
+    initial.bloodPressureSys
+  );
+  const [bloodPressureDia, setBloodPressureDia] = useState(
+    initial.bloodPressureDia
+  );
   const [weightKg, setWeightKg] = useState(initial.weightKg);
-  const [bloodGlucoseMmolL, setBloodGlucoseMmolL] = useState(initial.bloodGlucoseMmolL);
-  const [capillaryRefillTimeS, setCapillaryRefillTimeS] = useState(initial.capillaryRefillTimeS);
+  const [bloodGlucoseMmolL, setBloodGlucoseMmolL] = useState(
+    initial.bloodGlucoseMmolL
+  );
+  const [capillaryRefillTimeS, setCapillaryRefillTimeS] = useState(
+    initial.capillaryRefillTimeS
+  );
   const [painScore, setPainScore] = useState(initial.painScore);
-  const [mucousMembranes, setMucousMembranes] = useState<MucousMembrane>(initial.mucousMembranes);
-  const [mentalState, setMentalState] = useState<MentalState>(initial.mentalState);
+  const [mucousMembranes, setMucousMembranes] = useState<MucousMembrane>(
+    initial.mucousMembranes
+  );
+  const [mentalState, setMentalState] = useState<MentalState>(
+    initial.mentalState
+  );
   const [notes, setNotes] = useState(initial.notes);
 
   const resetForm = () => {
@@ -112,13 +125,17 @@ export function VitalsEntryDialog({
       recordedAt: now,
       temperatureC: temperatureC ? Number(temperatureC) : null,
       heartRateBpm: heartRateBpm ? Number(heartRateBpm) : null,
-      respiratoryRateBpm: respiratoryRateBpm ? Number(respiratoryRateBpm) : null,
+      respiratoryRateBpm: respiratoryRateBpm
+        ? Number(respiratoryRateBpm)
+        : null,
       spo2Percent: spo2Percent ? Number(spo2Percent) : null,
       bloodPressureSys: bloodPressureSys ? Number(bloodPressureSys) : null,
       bloodPressureDia: bloodPressureDia ? Number(bloodPressureDia) : null,
       weightKg: weightKg ? Number(weightKg) : null,
       bloodGlucoseMmolL: bloodGlucoseMmolL ? Number(bloodGlucoseMmolL) : null,
-      capillaryRefillTimeS: capillaryRefillTimeS ? Number(capillaryRefillTimeS) : null,
+      capillaryRefillTimeS: capillaryRefillTimeS
+        ? Number(capillaryRefillTimeS)
+        : null,
       painScore: painScore ? Number(painScore) : null,
       mucousMembranes,
       mentalState,
@@ -139,11 +156,12 @@ export function VitalsEntryDialog({
             </div>
             <div>
               <DialogTitle>
-                {t("modules.hospitalizations.vitals.addEntry", "Ajouter des constantes")}
+                {t(
+                  "modules.hospitalizations.vitals.addEntry",
+                  "Ajouter des constantes"
+                )}
               </DialogTitle>
-              <DialogDescription>
-                {hospitalization.reason}
-              </DialogDescription>
+              <DialogDescription>{hospitalization.reason}</DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -152,7 +170,10 @@ export function VitalsEntryDialog({
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Field
               id="v-temp"
-              label={t("modules.hospitalizations.vitals.temperature", "T° (°C)")}
+              label={t(
+                "modules.hospitalizations.vitals.temperature",
+                "T° (°C)"
+              )}
               onChange={setTemperatureC}
               placeholder="38.5"
               value={temperatureC}
@@ -166,7 +187,10 @@ export function VitalsEntryDialog({
             />
             <Field
               id="v-fr"
-              label={t("modules.hospitalizations.vitals.respiratoryRate", "FR (/min)")}
+              label={t(
+                "modules.hospitalizations.vitals.respiratoryRate",
+                "FR (/min)"
+              )}
               onChange={setRespiratoryRateBpm}
               placeholder="24"
               value={respiratoryRateBpm}
@@ -201,7 +225,10 @@ export function VitalsEntryDialog({
             />
             <Field
               id="v-gly"
-              label={t("modules.hospitalizations.vitals.glucose", "Glycémie (mmol/L)")}
+              label={t(
+                "modules.hospitalizations.vitals.glucose",
+                "Glycémie (mmol/L)"
+              )}
               onChange={setBloodGlucoseMmolL}
               placeholder="6.5"
               value={bloodGlucoseMmolL}
@@ -211,14 +238,20 @@ export function VitalsEntryDialog({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Field
               id="v-trc"
-              label={t("modules.hospitalizations.vitals.capillaryRefill", "TRC (s)")}
+              label={t(
+                "modules.hospitalizations.vitals.capillaryRefill",
+                "TRC (s)"
+              )}
               onChange={setCapillaryRefillTimeS}
               placeholder="< 2"
               value={capillaryRefillTimeS}
             />
             <div className="grid gap-2">
               <Label htmlFor="v-pain">
-                {t("modules.hospitalizations.vitals.painScore", "Douleur (0-10)")}
+                {t(
+                  "modules.hospitalizations.vitals.painScore",
+                  "Douleur (0-10)"
+                )}
               </Label>
               <Input
                 id="v-pain"
@@ -235,11 +268,16 @@ export function VitalsEntryDialog({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="v-mucous">
-                {t("modules.hospitalizations.vitals.mucousMembranes", "Muqueuses")}
+                {t(
+                  "modules.hospitalizations.vitals.mucousMembranes",
+                  "Muqueuses"
+                )}
               </Label>
               <NativeSelect
                 id="v-mucous"
-                onChange={(e) => setMucousMembranes(e.target.value as MucousMembrane)}
+                onChange={(e) =>
+                  setMucousMembranes(e.target.value as MucousMembrane)
+                }
                 value={mucousMembranes}
               >
                 {MUCOUS.map((m) => (
@@ -251,7 +289,10 @@ export function VitalsEntryDialog({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="v-mental">
-                {t("modules.hospitalizations.vitals.mentalState", "État mental")}
+                {t(
+                  "modules.hospitalizations.vitals.mentalState",
+                  "État mental"
+                )}
               </Label>
               <NativeSelect
                 id="v-mental"

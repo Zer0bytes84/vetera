@@ -1,11 +1,11 @@
 import { useId } from "react";
 
 interface GridPatternProps extends React.ComponentPropsWithoutRef<"svg"> {
-  width: number;
   height: number;
+  squares?: Array<[x: number, y: number]>;
+  width: number;
   x: string | number;
   y: string | number;
-  squares?: Array<[x: number, y: number]>;
 }
 
 export function GridPattern({
@@ -22,10 +22,10 @@ export function GridPattern({
     <svg aria-hidden="true" {...props}>
       <defs>
         <pattern
-          id={patternId}
-          width={width}
           height={height}
+          id={patternId}
           patternUnits="userSpaceOnUse"
+          width={width}
           x={x}
           y={y}
         >
@@ -33,19 +33,19 @@ export function GridPattern({
         </pattern>
       </defs>
       <rect
-        width="100%"
+        fill={`url(#${patternId})`}
         height="100%"
         strokeWidth={0}
-        fill={`url(#${patternId})`}
+        width="100%"
       />
       {squares && (
-        <svg x={x} y={y} className="overflow-visible">
+        <svg className="overflow-visible" x={x} y={y}>
           {squares.map(([sx, sy]) => (
             <rect
-              strokeWidth="0"
-              key={`${sx}-${sy}`}
-              width={width + 1}
               height={height + 1}
+              key={`${sx}-${sy}`}
+              strokeWidth="0"
+              width={width + 1}
               x={sx * width}
               y={sy * height}
             />

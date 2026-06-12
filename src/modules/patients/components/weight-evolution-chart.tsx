@@ -1,3 +1,5 @@
+import { Plus } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
   Line,
@@ -7,23 +9,13 @@ import {
   YAxis,
 } from "recharts";
 
-import { Plus } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
-
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 import type { WeightEntry } from "@/types/db";
 
 const chartConfig = {
@@ -77,9 +69,16 @@ export function WeightEvolutionChart({
 
   if (data.length === 0) {
     return (
-      <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
-        <div className="flex flex-row items-center justify-between gap-2 mb-6">
-          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{title}</div>
+      <div
+        className={cn(
+          "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
+          className
+        )}
+      >
+        <div className="mb-6 flex flex-row items-center justify-between gap-2">
+          <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+            {title}
+          </div>
           {onAdd ? (
             <Button
               className="h-8 gap-1.5 rounded-lg"
@@ -87,24 +86,31 @@ export function WeightEvolutionChart({
               size="sm"
               variant="default"
             >
-              <Plus weight="bold" className="size-3.5" />
+              <Plus className="size-3.5" weight="bold" />
               {t("patientDetail.overview.newWeight")}
             </Button>
           ) : null}
         </div>
-        <div className="flex h-[200px] flex-col items-center justify-center rounded-[16px] border border-dashed border-border/60 bg-muted/20 p-8 text-center sm:p-12">
-          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+        <div className="flex h-[200px] flex-col items-center justify-center rounded-[16px] border border-border/60 border-dashed bg-muted/20 p-8 text-center sm:p-12">
+          <p className="text-muted-foreground text-sm">{emptyMessage}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
-      <div className="flex flex-row items-center justify-between gap-2 mb-6">
+    <div
+      className={cn(
+        "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
+        className
+      )}
+    >
+      <div className="mb-6 flex flex-row items-center justify-between gap-2">
         <div>
-          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{title}</div>
-          <div className="text-xs text-muted-foreground mt-1">
+          <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+            {title}
+          </div>
+          <div className="mt-1 text-muted-foreground text-xs">
             {data.length} {data.length > 1 ? "mesures" : "mesure"}
           </div>
         </div>
@@ -115,7 +121,7 @@ export function WeightEvolutionChart({
             size="sm"
             variant="default"
           >
-            <Plus weight="bold" className="size-3.5" />
+            <Plus className="size-3.5" weight="bold" />
             {t("patientDetail.overview.newWeight")}
           </Button>
         ) : null}
@@ -159,7 +165,7 @@ export function WeightEvolutionChart({
             <Tooltip
               content={
                 <ChartTooltipContent
-                  className="shadow-lg border-border/50 dark:border-border/30 bg-background/95 backdrop-blur-md"
+                  className="border-border/50 bg-background/95 shadow-lg backdrop-blur-md dark:border-border/30"
                   indicator="line"
                   labelFormatter={(_, payload) => {
                     const measuredAt = payload?.[0]?.payload?.measuredAt;

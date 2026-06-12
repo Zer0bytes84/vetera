@@ -1,6 +1,6 @@
+import { CaretUpDown, Check, Pill } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CaretUpDown, Check, Pill } from "@phosphor-icons/react";
 
 import {
   type MedicationSearchResult,
@@ -64,7 +63,7 @@ export function MedicationPicker({
             variant="outline"
           >
             <span className="flex items-center gap-2 text-muted-foreground">
-              <Pill weight="duotone" className="size-3.5" />
+              <Pill className="size-3.5" weight="duotone" />
               {t("prescriptions.builder.addMedication")}
             </span>
             <CaretUpDown className="size-3.5 opacity-50" />
@@ -83,11 +82,11 @@ export function MedicationPicker({
             value={query}
           />
           <CommandList className="max-h-[320px]">
-            <CommandEmpty className="py-6 text-center text-xs text-muted-foreground">
+            <CommandEmpty className="py-6 text-center text-muted-foreground text-xs">
               {t("prescriptions.builder.noResults")}
             </CommandEmpty>
             {speciesKey ? (
-              <div className="border-b border-border/50 bg-muted/30 px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              <div className="border-border/50 border-b bg-muted/30 px-2 py-1.5 font-medium text-[10px] text-muted-foreground uppercase tracking-wider">
                 {speciesLabel(speciesKey, language)}
               </div>
             ) : null}
@@ -125,11 +124,11 @@ function MedicationRow({
       value={med.id}
     >
       <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-        <Pill weight="duotone" className="size-3.5" />
+        <Pill className="size-3.5" weight="duotone" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium">{med.nom}</span>
+          <span className="truncate font-medium text-sm">{med.nom}</span>
           {med.nomCommercial?.[0] ? (
             <span className="truncate text-[11px] text-muted-foreground">
               ({med.nomCommercial[0]})

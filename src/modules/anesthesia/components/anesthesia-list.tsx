@@ -1,21 +1,18 @@
+import { Syringe } from "@phosphor-icons/react";
 import { useState as useReactState } from "react";
 import { useTranslation } from "react-i18next";
-
-import { Syringe } from "@phosphor-icons/react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { useAnesthesiaSheetsRepository } from "@/data/repositories";
-import { formatDuration } from "@/modules/hospitalizations/lib/format";
 import { cn } from "@/lib/utils";
+import { formatDuration } from "@/modules/hospitalizations/lib/format";
 import type { AnesthesiaSheet, Patient } from "@/types/db";
 
 import { computeAnesthesiaDurationMinutes } from "../lib/format";
@@ -46,32 +43,55 @@ export function AnesthesiaList({
   const all = repo.forPatient(patient.id);
 
   const filtered = all.filter((s) => {
-    if (filter === "all") return true;
-    if (filter === "active")
+    if (filter === "all") {
+      return true;
+    }
+    if (filter === "active") {
       return s.status === "planned" || s.status === "in_progress";
+    }
     return s.status === filter;
   });
 
   const filters: { value: AnesthesiaStatusFilter; label: string }[] = [
-    { value: "active", label: t("modules.anesthesia.status.in_progress", "En cours") },
-    { value: "planned", label: t("modules.anesthesia.status.planned", "Planifiée") },
-    { value: "completed", label: t("modules.anesthesia.status.completed", "Terminée") },
-    { value: "cancelled", label: t("modules.anesthesia.status.cancelled", "Annulée") },
+    {
+      value: "active",
+      label: t("modules.anesthesia.status.in_progress", "En cours"),
+    },
+    {
+      value: "planned",
+      label: t("modules.anesthesia.status.planned", "Planifiée"),
+    },
+    {
+      value: "completed",
+      label: t("modules.anesthesia.status.completed", "Terminée"),
+    },
+    {
+      value: "cancelled",
+      label: t("modules.anesthesia.status.cancelled", "Annulée"),
+    },
     { value: "all", label: t("common.all", "Tous") },
   ];
 
   return (
-    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] shadow-sm flex flex-col overflow-hidden", className)}>
+    <div
+      className={cn(
+        "flex flex-col overflow-hidden rounded-[16px] border border-border bg-card shadow-sm dark:border-border",
+        className
+      )}
+    >
       <div className="border-border/40 border-b p-6">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10">
-            <Syringe weight="duotone" className="size-5 text-violet-600" />
+            <Syringe className="size-5 text-violet-600" weight="duotone" />
           </div>
           <div className="grid flex-1 gap-0.5">
-            <div className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
-              {t("modules.anesthesia.subtitle", "Induction · Maintenance · Réveil")}
+            <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
+              {t(
+                "modules.anesthesia.subtitle",
+                "Induction · Maintenance · Réveil"
+              )}
             </div>
-            <div className="text-lg tracking-tight font-semibold">
+            <div className="font-semibold text-lg tracking-tight">
               {t("modules.anesthesia.title", "Anesthésie")}
             </div>
           </div>
@@ -102,7 +122,7 @@ export function AnesthesiaList({
           ))}
         </div>
       </div>
-      <div className="flex flex-col flex-1 p-0">
+      <div className="flex flex-1 flex-col p-0">
         {filtered.length === 0 ? (
           <Empty className="m-6 border border-dashed">
             <EmptyHeader>
@@ -110,7 +130,10 @@ export function AnesthesiaList({
                 <Syringe className="size-6 text-violet-600" weight="duotone" />
               </div>
               <EmptyTitle>
-                {t("modules.anesthesia.empty.title", "Aucune feuille d'anesthésie")}
+                {t(
+                  "modules.anesthesia.empty.title",
+                  "Aucune feuille d'anesthésie"
+                )}
               </EmptyTitle>
               <EmptyDescription>
                 {t(
@@ -137,17 +160,26 @@ export function AnesthesiaList({
                     <div className="flex flex-wrap items-center gap-2">
                       <AnesthesiaStatusBadge status={s.status} />
                       {s.asaStatus ? (
-                        <Badge className="border-border/40 bg-background" variant="outline">
+                        <Badge
+                          className="border-border/40 bg-background"
+                          variant="outline"
+                        >
                           ASA {s.asaStatus}
                         </Badge>
                       ) : null}
                       {s.emergency ? (
-                        <Badge className="border-rose-500/40 bg-rose-500/10 text-rose-700" variant="outline">
+                        <Badge
+                          className="border-rose-500/40 bg-rose-500/10 text-rose-700"
+                          variant="outline"
+                        >
                           Urgence
                         </Badge>
                       ) : null}
                       {s.startedAt ? (
-                        <Badge className="border-border/40 bg-background" variant="outline">
+                        <Badge
+                          className="border-border/40 bg-background"
+                          variant="outline"
+                        >
                           {formatDuration(durationMin)}
                         </Badge>
                       ) : null}
@@ -157,7 +189,11 @@ export function AnesthesiaList({
                     </p>
                     {s.scheduledAt ? (
                       <p className="text-[11px] text-muted-foreground/80">
-                        {t("modules.anesthesia.fields.scheduledAt", "Planifiée")} :{" "}
+                        {t(
+                          "modules.anesthesia.fields.scheduledAt",
+                          "Planifiée"
+                        )}{" "}
+                        :{" "}
                         {new Date(s.scheduledAt).toLocaleString("fr-FR", {
                           dateStyle: "short",
                           timeStyle: "short",

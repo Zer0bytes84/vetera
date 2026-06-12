@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   CalendarBlank,
   CalendarPlus,
   Notebook,
@@ -10,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PATIENT_STATUS_META, getSpeciesTone } from "@/config/status-meta";
+import { getSpeciesTone, PATIENT_STATUS_META } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import type { Owner, Patient } from "@/types/db";
 import { computeAge, formatAge } from "../lib";
@@ -34,11 +33,7 @@ function buildInitials(name: string) {
 
 function getAgeKey(
   age: ReturnType<typeof computeAge>
-):
-  | "ageYears"
-  | "ageMonths"
-  | "ageDays"
-  | "ageUnknown" {
+): "ageYears" | "ageMonths" | "ageDays" | "ageUnknown" {
   if (!age) {
     return "ageUnknown";
   }
@@ -90,19 +85,18 @@ export function PatientHeader({
       )}
     >
       <div className="flex flex-1 items-start gap-5">
-
-        <Avatar className="size-20 ring-2 ring-background shadow-sm">
+        <Avatar className="size-20 shadow-sm ring-2 ring-background">
           {patient.avatarUrl ? (
             <AvatarImage alt={patient.name} src={patient.avatarUrl} />
           ) : null}
-          <AvatarFallback className="bg-gradient-to-br from-emerald-100 to-sky-100 text-lg font-semibold text-emerald-700 dark:from-emerald-900/40 dark:to-sky-900/40 dark:text-emerald-300">
+          <AvatarFallback className="bg-gradient-to-br from-emerald-100 to-sky-100 font-semibold text-emerald-700 text-lg dark:from-emerald-900/40 dark:to-sky-900/40 dark:text-emerald-300">
             {buildInitials(patient.name)}
           </AvatarFallback>
         </Avatar>
 
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="truncate font-display text-2xl font-semibold tracking-tight text-foreground">
+            <h1 className="truncate font-display font-semibold text-2xl text-foreground tracking-tight">
               {patient.name}
             </h1>
             <Badge
@@ -112,14 +106,17 @@ export function PatientHeader({
               {status.label}
             </Badge>
             <Badge
-              className={cn("rounded-full px-2.5 py-0.5", getSpeciesTone(patient.species))}
+              className={cn(
+                "rounded-full px-2.5 py-0.5",
+                getSpeciesTone(patient.species)
+              )}
               variant="secondary"
             >
               {patient.species}
             </Badge>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-sm">
             {patient.breed ? (
               <span className="font-medium">{patient.breed}</span>
             ) : null}
@@ -141,26 +138,26 @@ export function PatientHeader({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 md:flex-col md:items-end md:gap-1.5">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+        <span className="font-bold text-[10px] text-muted-foreground/80 uppercase tracking-widest">
           {t("patientDetail.header.quickActions")}
         </span>
         <div className="flex flex-wrap gap-2">
           <Button
-            className="h-9 rounded-full px-4 gap-2"
+            className="h-9 gap-2 rounded-full px-4"
             onClick={onNewAppointment}
             size="sm"
             variant="default"
           >
-            <CalendarPlus weight="duotone" className="size-4" />
+            <CalendarPlus className="size-4" weight="duotone" />
             {t("patientDetail.header.newAppointment")}
           </Button>
           <Button
-            className="h-9 rounded-full px-4 gap-2"
+            className="h-9 gap-2 rounded-full px-4"
             onClick={onNewNote}
             size="sm"
             variant="outline"
           >
-            <Notebook weight="duotone" className="size-4" />
+            <Notebook className="size-4" weight="duotone" />
             {t("patientDetail.header.newNote")}
           </Button>
         </div>

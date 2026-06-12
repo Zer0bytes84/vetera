@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
+  type AutomationDrilldownRow,
+  type AutomationMetrics,
+  getAutomationDrilldown,
+  getAutomationMetrics,
   getGlobalAutomations,
   updateGlobalAutomation,
-  getAutomationMetrics,
-  getAutomationDrilldown,
-  type AutomationMetrics,
-  type AutomationDrilldownRow,
 } from "@/services/sqlite/automations";
 
 export type AutomationItem = {
@@ -53,7 +53,9 @@ export function useAutomations() {
       // Hydrate chaque automation avec ses métriques live
       const enriched = await Promise.all(
         rows.map(async (row) => {
-          const liveMetrics = await getAutomationMetrics(row.id).catch(() => null);
+          const liveMetrics = await getAutomationMetrics(row.id).catch(
+            () => null
+          );
           return {
             ...row,
             liveMetrics,
@@ -76,7 +78,10 @@ export function useAutomations() {
     return () => clearInterval(id);
   }, [refresh]);
 
-  const updateAutomation = async (id: string, data: Partial<AutomationItem>) => {
+  const updateAutomation = async (
+    id: string,
+    data: Partial<AutomationItem>
+  ) => {
     setAutomations((prev) =>
       prev.map((a) => (a.id === id ? { ...a, ...data } : a))
     );
@@ -88,7 +93,11 @@ export function useAutomations() {
     setAutomations((prev) =>
       prev.map((a) => {
         if (a.id === id) {
-          return { ...a, active, lastRunStatus: nextRunStatus as "Scheduled" | "Stopped" };
+          return {
+            ...a,
+            active,
+            lastRunStatus: nextRunStatus as "Scheduled" | "Stopped",
+          };
         }
         return a;
       })
@@ -101,11 +110,15 @@ export function useAutomations() {
 
   const runNow = async (id: string) => {
     const target = automations.find((a) => a.id === id);
-    if (!target) return;
+    if (!target) {
+      return;
+    }
     const now = format(new Date(), "dd MMM yyyy, HH:mm", { locale: fr });
     setAutomations((prev) =>
       prev.map((a) => {
-        if (a.id !== id) return a;
+        if (a.id !== id) {
+          return a;
+        }
         return {
           ...a,
           lastRunStatus: "Completed" as const,

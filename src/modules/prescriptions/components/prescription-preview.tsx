@@ -13,24 +13,24 @@ import type { Patient, User } from "@/types/db";
 import { PrescriptionPrintLayout } from "./prescription-print-layout";
 
 export interface PreviewItem {
-  id: string;
-  medicationName: string;
-  medicationClass?: string;
-  form?: string;
-  dosagePerKg: number;
-  dosageUnit: string;
-  dosageMin?: number;
-  dosageMax?: number;
-  concentrationMgPerMl?: number;
   computedDoseMg?: number;
   computedVolumeMl?: number;
-  frequency: string;
+  concentrationMgPerMl?: number;
+  dosageMax?: number;
+  dosageMin?: number;
+  dosagePerKg: number;
+  dosageUnit: string;
   duration: string;
-  route?: string;
-  quantity?: string;
+  form?: string;
+  frequency: string;
+  id: string;
   instructions?: string;
-  warnings?: string;
+  medicationClass?: string;
+  medicationName: string;
+  quantity?: string;
+  route?: string;
   sortOrder: number;
+  warnings?: string;
   weightKgSnapshot?: number;
 }
 
@@ -63,7 +63,7 @@ export function PrescriptionPreview({
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
       <DialogContent className="max-h-[90dvh] w-full max-w-3xl gap-0 overflow-hidden p-0 sm:rounded-xl">
-        <DialogHeader className="border-b border-border/60 bg-muted/30 px-5 py-3">
+        <DialogHeader className="border-border/60 border-b bg-muted/30 px-5 py-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <DialogTitle className="text-base">

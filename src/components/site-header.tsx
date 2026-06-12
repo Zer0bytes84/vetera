@@ -309,7 +309,7 @@ export function SiteHeader({
               className="min-w-64 p-2"
               sideOffset={8}
             >
-              <div className="px-2 py-1.5 mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <div className="mb-1 px-2 py-1.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">
                 {t("language.label")}
               </div>
               {SUPPORTED_LANGUAGES.map((language) => {
@@ -317,7 +317,7 @@ export function SiteHeader({
                 return (
                   <DropdownMenuItem
                     className={cn(
-                      "flex items-center justify-between rounded-lg px-2.5 py-2 cursor-pointer transition-colors",
+                      "flex cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 transition-colors",
                       active ? "bg-primary/5 dark:bg-primary/10" : ""
                     )}
                     key={language.code}
@@ -325,10 +325,14 @@ export function SiteHeader({
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-base">{language.flag}</span>
-                      <span className={cn(
-                        "text-sm font-medium",
-                        active ? "text-primary dark:text-emerald-400" : "text-foreground/80"
-                      )}>
+                      <span
+                        className={cn(
+                          "font-medium text-sm",
+                          active
+                            ? "text-primary dark:text-emerald-400"
+                            : "text-foreground/80"
+                        )}
+                      >
                         {language.nativeName}
                       </span>
                     </div>
@@ -340,7 +344,9 @@ export function SiteHeader({
                           strokeWidth={2.5}
                         />
                       ) : (
-                        <Kbd className="text-[10px] bg-transparent shadow-none border-border/40 text-muted-foreground/50">⌘⇧{language.shortcut}</Kbd>
+                        <Kbd className="border-border/40 bg-transparent text-[10px] text-muted-foreground/50 shadow-none">
+                          ⌘⇧{language.shortcut}
+                        </Kbd>
                       )}
                     </div>
                   </DropdownMenuItem>

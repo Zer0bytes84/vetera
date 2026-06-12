@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface DeferredWidgetProps {
   children: React.ReactNode;
+  className?: string;
   fallback?: React.ReactNode;
   minHeight?: number;
-  className?: string;
 }
 
 export function DeferredWidget({
@@ -14,12 +15,13 @@ export function DeferredWidget({
   minHeight = 300,
   className,
 }: DeferredWidgetProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(
+    () => typeof IntersectionObserver === "undefined"
+  );
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") {
-      setIsVisible(true);
       return;
     }
 
@@ -46,12 +48,12 @@ export function DeferredWidget({
 
   return (
     <div
-      ref={ref}
-      style={{ minHeight }}
       className={cn(
-        "w-full rounded-2xl bg-zinc-100/50 dark:bg-zinc-900/30 animate-pulse",
+        "w-full animate-pulse rounded-2xl bg-zinc-100/50 dark:bg-zinc-900/30",
         className
       )}
+      ref={ref}
+      style={{ minHeight }}
     >
       {fallback}
     </div>

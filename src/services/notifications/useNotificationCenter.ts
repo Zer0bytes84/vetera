@@ -16,14 +16,11 @@ import {
   NOTIFICATION_SEVERITY_WEIGHT,
   type NotificationItem,
   type NotificationSeverity,
-  type NotificationSource,
-  type NotificationTarget,
 } from "./types";
 
 const NOTIFICATION_HORIZON_MIN = 240;
 const SOAP_BACKLOG_HORIZON_MIN = 60 * 24 * 7; // 7 jours
 const VACCINATION_HORIZON_DAYS = 30;
-const POSTOP_HORIZON_DAYS = 30;
 const APPOINTMENT_GRACE_MIN = 5; // démarre 5 min avant l'heure pile
 const APPOINTMENT_IN_PROGRESS_AFTER_MIN = 15; // SOAP attendu après 15 min
 
@@ -63,10 +60,11 @@ export function useNotificationCenter() {
     // 0) Rendez-vous en cours / imminents (couverture explicite, pas juste
     // via les rappels) — permet d'attraper les RDV sans reminder lié.
     for (const appt of appointments) {
-      if (appt.status === "cancelled" || appt.status === "no_show") continue;
+      if (appt.status === "cancelled" || appt.status === "no_show") {
+        continue;
+      }
       const start = new Date(appt.startTime);
-      const minutesUntilStart =
-        (start.getTime() - now.getTime()) / 60_000;
+      const minutesUntilStart = (start.getTime() - now.getTime()) / 60_000;
       const patientName = patientNameById.get(appt.patientId) ?? "Patient";
       const time = start.toLocaleTimeString("fr-FR", {
         hour: "2-digit",
@@ -116,13 +114,15 @@ export function useNotificationCenter() {
     // 1) Reminders RDV (4 offsets: 15/30/60/1440 min avant)
     const upcomingReminders = remindersStore.upcoming(NOTIFICATION_HORIZON_MIN);
     for (const reminder of upcomingReminders) {
-      if (reminder.status === "dismissed") continue;
+      if (reminder.status === "dismissed") {
+        continue;
+      }
       const minutes = reminder.minutesBefore ?? 0;
       const severity: NotificationSeverity =
         minutes <= 15 ? "critical" : minutes <= 60 ? "warn" : "info";
       const appt = appointments.find((a) => a.id === reminder.appointmentId);
       const patientName = appt
-        ? patientNameById.get(appt.patientId) ?? "Patient"
+        ? (patientNameById.get(appt.patientId) ?? "Patient")
         : "Rendez-vous";
       const targetAt = new Date(reminder.scheduledFor);
       const targetTime = targetAt.toLocaleTimeString("fr-FR", {
@@ -140,7 +140,10 @@ export function useNotificationCenter() {
           ? { view: "agenda", appointmentId: appt.id }
           : { view: "agenda" },
         createdAt: reminder.createdAt,
-        data: { appointmentId: reminder.appointmentId, reminderId: reminder.id },
+        data: {
+          appointmentId: reminder.appointmentId,
+          reminderId: reminder.id,
+        },
       });
     }
 
@@ -175,11 +178,15 @@ export function useNotificationCenter() {
 
     // 3) Tasks urgentes (non terminées, priorité haute ou échue)
     for (const task of tasksStore.data) {
-      if (task.status === "done") continue;
+      if (task.status === "done") {
+        continue;
+      }
       const isOverdue =
         task.dueDate !== undefined && new Date(task.dueDate) < now;
       const isUrgent = task.priority === "high" || isOverdue;
-      if (!isUrgent) continue;
+      if (!isUrgent) {
+        continue;
+      }
       const patientName = task.patientId
         ? patientNameById.get(task.patientId)
         : null;
@@ -202,7 +209,9 @@ export function useNotificationCenter() {
 
     // 4) Stock bas (rupture ou sous le seuil)
     for (const product of productsStore.data) {
-      if (product.quantity > product.minStock) continue;
+      if (product.quantity > product.minStock) {
+        continue;
+      }
       const isOutOfStock = product.quantity === 0;
       list.push({
         id: buildNotificationId("stock", product.id),
@@ -225,12 +234,20 @@ export function useNotificationCenter() {
       soapsByAppointment.set(soap.appointmentId, soap);
     }
     for (const appt of appointments) {
-      if (appt.status !== "completed") continue;
-      if (soapsByAppointment.has(appt.id)) continue;
-      if (!appt.endTime) continue;
+      if (appt.status !== "completed") {
+        continue;
+      }
+      if (soapsByAppointment.has(appt.id)) {
+        continue;
+      }
+      if (!appt.endTime) {
+        continue;
+      }
       const completedAt = new Date(appt.endTime);
       const hoursAgo = (now.getTime() - completedAt.getTime()) / 3_600_000;
-      if (hoursAgo > SOAP_BACKLOG_HORIZON_MIN / 60) continue;
+      if (hoursAgo > SOAP_BACKLOG_HORIZON_MIN / 60) {
+        continue;
+      }
       const patientName = patientNameById.get(appt.patientId) ?? "Patient";
       list.push({
         id: buildNotificationId("soap", appt.id),
@@ -247,13 +264,18 @@ export function useNotificationCenter() {
 
     // 6) Vaccinations à venir (≤ 30 jours)
     for (const vaccination of vaccinations) {
-      if (!vaccination.nextDueAt) continue;
+      if (!vaccination.nextDueAt) {
+        continue;
+      }
       const due = new Date(vaccination.nextDueAt);
       const daysLeft = Math.round(
         (due.getTime() - now.getTime()) / (24 * 3_600_000)
       );
-      if (daysLeft > VACCINATION_HORIZON_DAYS) continue;
-      const patientName = patientNameById.get(vaccination.patientId) ?? "Patient";
+      if (daysLeft > VACCINATION_HORIZON_DAYS) {
+        continue;
+      }
+      const patientName =
+        patientNameById.get(vaccination.patientId) ?? "Patient";
       const severity: NotificationSeverity =
         daysLeft <= 0 ? "critical" : daysLeft <= 7 ? "warn" : "info";
       list.push({
@@ -268,20 +290,24 @@ export function useNotificationCenter() {
         clickHint: "Ouvrir la fiche patient",
         target: { view: "patient_detail", patientId: vaccination.patientId },
         createdAt: vaccination.createdAt,
-        data: { vaccinationId: vaccination.id, patientId: vaccination.patientId },
+        data: {
+          vaccinationId: vaccination.id,
+          patientId: vaccination.patientId,
+        },
       });
     }
 
     // Tri : severity desc → createdAt desc
     return list.sort((a, b) => {
       const sev = severityToLevel(b.severity) - severityToLevel(a.severity);
-      if (sev !== 0) return sev;
+      if (sev !== 0) {
+        return sev;
+      }
       return a.createdAt < b.createdAt ? 1 : -1;
     });
   }, [
     now,
     remindersStore,
-    remindersStore.data,
     appointments,
     postOp.patients,
     tasksStore.data,
@@ -292,18 +318,20 @@ export function useNotificationCenter() {
   ]);
 
   // Annotate with read/dismiss state
-  const annotated = useMemo(() => {
-    return items
-      .map((item) => {
-        const state = stateStore.stateFor(item.id);
-        return {
-          ...item,
-          isRead: state?.readAt != null,
-          isDismissed: state?.dismissedAt != null,
-        };
-      })
-      .filter((item) => !item.isDismissed);
-  }, [items, stateStore.data]);
+  const annotated = useMemo(
+    () =>
+      items
+        .map((item) => {
+          const state = stateStore.stateFor(item.id);
+          return {
+            ...item,
+            isRead: state?.readAt != null,
+            isDismissed: state?.dismissedAt != null,
+          };
+        })
+        .filter((item) => !item.isDismissed),
+    [items, stateStore]
+  );
 
   const unreadCount = useMemo(
     () => annotated.filter((item) => !item.isRead).length,
@@ -336,4 +364,9 @@ export function useNotificationCenter() {
 export type NotificationCenter = ReturnType<typeof useNotificationCenter>;
 
 // Re-export so other modules can import from the same path.
-export type { NotificationItem, NotificationTarget, NotificationSource, NotificationSeverity } from "./types";
+export type {
+  NotificationItem,
+  NotificationSeverity,
+  NotificationSource,
+  NotificationTarget,
+} from "./types";

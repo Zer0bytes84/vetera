@@ -1,8 +1,7 @@
+import { Hospital } from "@phosphor-icons/react";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
-
-import { Hospital } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +20,11 @@ import {
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { useHospitalizationsRepository } from "@/data/repositories";
-import type { Hospitalization, HospitalizationStatus, Patient } from "@/types/db";
+import type {
+  Hospitalization,
+  HospitalizationStatus,
+  Patient,
+} from "@/types/db";
 
 const STATUSES: { value: HospitalizationStatus; label: string }[] = [
   { value: "admitted", label: "Admis" },
@@ -88,7 +91,9 @@ export function HospitalizationDialog({
   };
 
   const handleSubmit = async () => {
-    if (!reason.trim()) return;
+    if (!reason.trim()) {
+      return;
+    }
     const now = new Date().toISOString();
     const row: Omit<Hospitalization, "id" | "createdAt" | "updatedAt"> = {
       patientId: patient.id,
@@ -126,7 +131,10 @@ export function HospitalizationDialog({
             </div>
             <div>
               <DialogTitle>
-                {t("modules.hospitalizations.newHospitalization", "Nouvelle hospitalisation")}
+                {t(
+                  "modules.hospitalizations.newHospitalization",
+                  "Nouvelle hospitalisation"
+                )}
               </DialogTitle>
               <DialogDescription>
                 {patient.name} · {patient.species}
@@ -193,7 +201,10 @@ export function HospitalizationDialog({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="hosp-temp">
-                {t("modules.hospitalizations.fields.temperatureC", "T° initiale (°C)")}
+                {t(
+                  "modules.hospitalizations.fields.temperatureC",
+                  "T° initiale (°C)"
+                )}
               </Label>
               <Input
                 id="hosp-temp"
@@ -230,7 +241,10 @@ export function HospitalizationDialog({
 
           <div className="grid gap-2">
             <Label htmlFor="hosp-special">
-              {t("modules.hospitalizations.fields.specialCare", "Soins particuliers")}
+              {t(
+                "modules.hospitalizations.fields.specialCare",
+                "Soins particuliers"
+              )}
             </Label>
             <Textarea
               id="hosp-special"
@@ -259,10 +273,7 @@ export function HospitalizationDialog({
           <Button onClick={handleCancel} variant="outline">
             Annuler
           </Button>
-          <Button
-            disabled={!reason.trim()}
-            onClick={() => void handleSubmit()}
-          >
+          <Button disabled={!reason.trim()} onClick={() => void handleSubmit()}>
             {t("modules.hospitalizations.admit", "Admettre")}
           </Button>
         </DialogFooter>

@@ -80,6 +80,17 @@ const extractPreview = (content: string) => {
 // Filter types
 type FilterType = "all" | "favorites" | "recent";
 
+const FORMAT_BUTTONS = [
+  { type: "bold", icon: TextBoldIcon, label: "Gras" },
+  { type: "italic", icon: TextItalicIcon, label: "Italique" },
+  { type: "strike", icon: TextStrikethroughIcon, label: "Barré" },
+  { type: "h1", icon: Heading01Icon, label: "Titre" },
+  { type: "bullet", icon: LeftToRightListBulletIcon, label: "Liste" },
+  { type: "number", icon: LeftToRightListNumberIcon, label: "Numérotée" },
+  { type: "quote", icon: TextAlignLeft01Icon, label: "Citation" },
+  { type: "link", icon: Link01Icon, label: "Lien" },
+];
+
 const Notes: React.FC = () => {
   const { currentUser } = useAuth();
   const {
@@ -301,48 +312,34 @@ const Notes: React.FC = () => {
     }, 0);
   };
 
-  const formatButtons = [
-    {
-      icon: TextBoldIcon,
-      action: () => insertFormatting("**", "**"),
-      label: "Gras",
-    },
-    {
-      icon: TextItalicIcon,
-      action: () => insertFormatting("*", "*"),
-      label: "Italique",
-    },
-    {
-      icon: TextStrikethroughIcon,
-      action: () => insertFormatting("~~", "~~"),
-      label: "Barré",
-    },
-    {
-      icon: Heading01Icon,
-      action: () => insertFormatting("# ", ""),
-      label: "Titre",
-    },
-    {
-      icon: LeftToRightListBulletIcon,
-      action: () => insertFormatting("\n- ", ""),
-      label: "Liste",
-    },
-    {
-      icon: LeftToRightListNumberIcon,
-      action: () => insertFormatting("\n1. ", ""),
-      label: "Numérotée",
-    },
-    {
-      icon: TextAlignLeft01Icon,
-      action: () => insertFormatting("> ", ""),
-      label: "Citation",
-    },
-    {
-      icon: Link01Icon,
-      action: () => insertFormatting("[", "](url)"),
-      label: "Lien",
-    },
-  ];
+  const handleFormatAction = (type: string) => {
+    switch (type) {
+      case "bold":
+        insertFormatting("**", "**");
+        break;
+      case "italic":
+        insertFormatting("*", "*");
+        break;
+      case "strike":
+        insertFormatting("~~", "~~");
+        break;
+      case "h1":
+        insertFormatting("# ", "");
+        break;
+      case "bullet":
+        insertFormatting("\n- ", "");
+        break;
+      case "number":
+        insertFormatting("\n1. ", "");
+        break;
+      case "quote":
+        insertFormatting("> ", "");
+        break;
+      case "link":
+        insertFormatting("[", "](url)");
+        break;
+    }
+  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -583,11 +580,11 @@ const Notes: React.FC = () => {
             {/* Simple toolbar */}
             <div className="flex items-center justify-between border-border/50 border-b px-6 py-2">
               <div className="flex items-center gap-1">
-                {formatButtons.map((btn) => (
+                {FORMAT_BUTTONS.map((btn) => (
                   <Button
                     className="size-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                     key={btn.label}
-                    onClick={btn.action}
+                    onClick={() => handleFormatAction(btn.type)}
                     size="icon-sm"
                     title={`${btn.label} (Ctrl+${btn.label[0]})`}
                     variant="ghost"

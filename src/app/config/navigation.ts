@@ -1,16 +1,15 @@
 import {
-  DashboardSquare01Icon,
-  StethoscopeIcon,
-  Calendar01Icon,
-  Hospital01Icon,
   BookOpenTextIcon,
-  Task01Icon,
+  Calendar01Icon,
+  DashboardSquare01Icon,
+  Hospital01Icon,
   PackageIcon,
-  Wallet01Icon,
-  UserGroupIcon,
   Settings01Icon,
+  StethoscopeIcon,
+  Task01Icon,
+  UserGroupIcon,
+  Wallet01Icon,
 } from "@hugeicons/core-free-icons";
-import type { ReactNode } from "react";
 import type { TFunction } from "i18next";
 
 import type { View } from "@/types";
@@ -61,16 +60,6 @@ export const navigationSections: Array<{
       { view: "stock", labelKey: "views.stock", icon: PackageIcon },
       { view: "finances", labelKey: "views.finances", icon: Wallet01Icon },
       { view: "equipe", labelKey: "views.equipe", icon: UserGroupIcon },
-    ],
-  },
-  {
-    titleKey: "nav.sections.configuration",
-    items: [
-      {
-        view: "parametres",
-        labelKey: "views.parametres",
-        icon: Settings01Icon,
-      },
     ],
   },
 ];

@@ -1,14 +1,16 @@
 import type { HospitalizationStatus } from "@/types/db";
 
-export const HOSPITALIZATION_STATUS_LABELS: Record<HospitalizationStatus, string> =
-  {
-    admitted: "Admis",
-    monitoring: "Surveillance",
-    critical: "Critique",
-    discharged: "Sorti",
-    transferred: "Transféré",
-    deceased: "Décédé",
-  };
+export const HOSPITALIZATION_STATUS_LABELS: Record<
+  HospitalizationStatus,
+  string
+> = {
+  admitted: "Admis",
+  monitoring: "Surveillance",
+  critical: "Critique",
+  discharged: "Sorti",
+  transferred: "Transféré",
+  deceased: "Décédé",
+};
 
 export const HOSPITALIZATION_STATUS_TONE: Record<
   HospitalizationStatus,
@@ -32,16 +34,20 @@ export function computeHospitalizationDurationMinutes(
   now: Date = new Date()
 ): number {
   const start = new Date(admissionDate).getTime();
-  if (Number.isNaN(start)) return 0;
-  const end = dischargeDate
-    ? new Date(dischargeDate).getTime()
-    : now.getTime();
-  if (Number.isNaN(end) || end < start) return 0;
-  return Math.floor((end - start) / 60000);
+  if (Number.isNaN(start)) {
+    return 0;
+  }
+  const end = dischargeDate ? new Date(dischargeDate).getTime() : now.getTime();
+  if (Number.isNaN(end) || end < start) {
+    return 0;
+  }
+  return Math.floor((end - start) / 60_000);
 }
 
 export function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes} min`;
+  if (minutes < 60) {
+    return `${minutes} min`;
+  }
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
   const remainingHours = hours % 24;
@@ -55,22 +61,31 @@ export function formatDuration(minutes: number): string {
 /**
  * "il y a 2h", "il y a 15min", "il y a 3j"
  */
-export function formatTimeAgo(
-  date: string,
-  now: Date = new Date()
-): string {
+export function formatTimeAgo(date: string, now: Date = new Date()): string {
   const target = new Date(date).getTime();
-  if (Number.isNaN(target)) return "—";
+  if (Number.isNaN(target)) {
+    return "—";
+  }
   const diffMs = now.getTime() - target;
-  if (diffMs < 60000) return "à l'instant";
-  const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 60) return `il y a ${minutes} min`;
+  if (diffMs < 60_000) {
+    return "à l'instant";
+  }
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 60) {
+    return `il y a ${minutes} min`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `il y a ${hours} h`;
+  if (hours < 24) {
+    return `il y a ${hours} h`;
+  }
   const days = Math.floor(hours / 24);
-  if (days < 7) return `il y a ${days} j`;
+  if (days < 7) {
+    return `il y a ${days} j`;
+  }
   const weeks = Math.floor(days / 7);
-  if (weeks < 4) return `il y a ${weeks} sem`;
+  if (weeks < 4) {
+    return `il y a ${weeks} sem`;
+  }
   const months = Math.floor(days / 30);
   return `il y a ${months} mois`;
 }
@@ -82,9 +97,15 @@ export function formatTimeAgo(
 export function painScoreTone(
   score: number | null | undefined
 ): "success" | "warning" | "destructive" | "neutral" {
-  if (score == null) return "neutral";
-  if (score <= 3) return "success";
-  if (score <= 6) return "warning";
+  if (score == null) {
+    return "neutral";
+  }
+  if (score <= 3) {
+    return "success";
+  }
+  if (score <= 6) {
+    return "warning";
+  }
   return "destructive";
 }
 
@@ -97,7 +118,9 @@ export function vitalIsCritical(
   kind: "temperature" | "heartRate" | "respiratoryRate" | "spo2",
   value: number | null | undefined
 ): boolean {
-  if (value == null) return false;
+  if (value == null) {
+    return false;
+  }
   switch (kind) {
     case "temperature":
       return value < 37 || value > 40;

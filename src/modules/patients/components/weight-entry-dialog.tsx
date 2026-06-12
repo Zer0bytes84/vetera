@@ -25,8 +25,8 @@ import {
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { useWeightEntriesRepository } from "@/data/repositories";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWeightEntriesRepository } from "@/data/repositories";
 import type { WeightEntry } from "@/types/db";
 
 interface WeightEntryDialogProps {
@@ -70,7 +70,9 @@ export function WeightEntryDialog({
   const isEditing = Boolean(weightEntry?.id);
 
   const [weight, setWeight] = useState("");
-  const [date, setDate] = useState(() => toDateInputValue(new Date().toISOString()));
+  const [date, setDate] = useState(() =>
+    toDateInputValue(new Date().toISOString())
+  );
   const [bcs, setBcs] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,7 +87,7 @@ export function WeightEntryDialog({
     if (weightEntry) {
       setWeight(String(weightEntry.weightKg ?? ""));
       setDate(toDateInputValue(weightEntry.measuredAt));
-      setBcs(weightEntry.bcs != null ? String(weightEntry.bcs) : "");
+      setBcs(weightEntry.bcs == null ? "" : String(weightEntry.bcs));
       setNotes(weightEntry.notes ?? "");
     } else {
       setWeight("");
@@ -120,7 +122,10 @@ export function WeightEntryDialog({
         toast.success(t("patientDetail.weight.dialogTitle"));
       } else {
         const created = await repo.add(
-          payload as unknown as Omit<WeightEntry, "id" | "createdAt" | "updatedAt">
+          payload as unknown as Omit<
+            WeightEntry,
+            "id" | "createdAt" | "updatedAt"
+          >
         );
         if (!created) {
           throw new Error("Insert failed");
@@ -234,7 +239,10 @@ export function WeightEntryDialog({
           </Field>
 
           {error ? (
-            <p className="text-sm text-rose-600 dark:text-rose-400" role="alert">
+            <p
+              className="text-rose-600 text-sm dark:text-rose-400"
+              role="alert"
+            >
               {error}
             </p>
           ) : null}
@@ -252,7 +260,7 @@ export function WeightEntryDialog({
               {isDeleting ? (
                 <Spinner className="size-4" />
               ) : (
-                <Trash weight="duotone" className="size-4" />
+                <Trash className="size-4" weight="duotone" />
               )}
               {t("patientDetail.weight.delete")}
             </Button>
@@ -277,7 +285,7 @@ export function WeightEntryDialog({
               {isSubmitting ? (
                 <Spinner className="size-4" />
               ) : (
-                <Plus weight="duotone" className="size-4" />
+                <Plus className="size-4" weight="duotone" />
               )}
               {t("patientDetail.weight.save")}
             </Button>

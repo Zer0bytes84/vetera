@@ -1,17 +1,26 @@
 import { useEffect, useState } from "react";
-import type Database from "@tauri-apps/plugin-sql";
+import {
+  type ClinicalAlert,
+  evaluateVitals,
+  type Species,
+} from "@/lib/clinical-alerts";
 import { runDbOperation } from "@/services/sqlite/database";
-import { evaluateVitals, type ClinicalAlert, type Species } from "@/lib/clinical-alerts";
 
 export interface PostOpPatient {
+  alerts: ClinicalAlert[];
+  daysPostOp: number;
+  endedAt: Date;
+  hasCritical: boolean;
+  hasTasks: boolean;
+  hasVitals: boolean;
+  hasWarn: boolean;
+  ownerName: string | null;
   patientId: string;
   patientName: string;
-  species: Species | null;
-  ownerName: string | null;
   procedure: string | null;
-  endedAt: Date;
-  daysPostOp: number;
-  hasVitals: boolean;
+  species: Species | null;
+  tasksOpen: number;
+  tasksTotal: number;
   vitals: {
     temperatureC: number | null;
     heartRateBpm: number | null;
@@ -20,12 +29,6 @@ export interface PostOpPatient {
     painScore: number | null;
     recordedAt: Date | null;
   };
-  alerts: ClinicalAlert[];
-  hasCritical: boolean;
-  hasWarn: boolean;
-  hasTasks: boolean;
-  tasksOpen: number;
-  tasksTotal: number;
 }
 
 export type PostOpFilter = "all" | "critical" | "warn" | "ok" | "tasks";
@@ -85,9 +88,7 @@ export function usePostOpFollowUp() {
         );
         return rows;
       });
-      const computed: PostOpPatient[] = data.map((row) =>
-        computePatient(row)
-      );
+      const computed: PostOpPatient[] = data.map((row) => computePatient(row));
       setPatients(computed);
       setError(null);
     } catch (err) {
@@ -112,18 +113,18 @@ export function usePostOpFollowUp() {
 }
 
 interface PostOpPatientRaw {
+  anesthesiaId: string;
+  endedAt: string;
+  heartRateBpm: number | null;
+  ownerName: string | null;
+  painScore: number | null;
   patientId: string;
   patientName: string;
-  species: string | null;
-  ownerName: string | null;
   procedure: string | null;
-  endedAt: string;
-  anesthesiaId: string;
-  temperatureC: number | null;
-  heartRateBpm: number | null;
   respiratoryRate: number | null;
+  species: string | null;
   spo2Percent: number | null;
-  painScore: number | null;
+  temperatureC: number | null;
   vitalsRecordedAt: string | null;
 }
 
@@ -135,7 +136,9 @@ function computePatient(row: PostOpPatientRaw): PostOpPatient {
     Math.floor((now.getTime() - endedAt.getTime()) / 86_400_000)
   );
   const species = (row.species ?? null) as Species | null;
-  const recordedAt = row.vitalsRecordedAt ? new Date(row.vitalsRecordedAt) : null;
+  const recordedAt = row.vitalsRecordedAt
+    ? new Date(row.vitalsRecordedAt)
+    : null;
   const alerts = evaluateVitals({
     species,
     recordedAt: recordedAt ?? new Date(0),

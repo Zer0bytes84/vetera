@@ -289,9 +289,12 @@ export function generatePrompt(
 
   if (typeof templateFn === "function") {
     if (customData) {
-      return (templateFn as Function)(customData, context);
+      return (templateFn as (data: string, ctx: VeterinaryContext) => string)(
+        customData,
+        context
+      );
     }
-    return (templateFn as Function)(context);
+    return (templateFn as (ctx: VeterinaryContext) => string)(context);
   }
 
   return templateFn as string;

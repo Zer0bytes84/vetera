@@ -5,9 +5,9 @@ import { useAuditLogRepository } from "@/data/repositories";
 import type { AuditLogEntry } from "@/types/db";
 
 interface AuditUser {
-  id: string;
   displayName: string | null;
   email: string | null;
+  id: string;
 }
 
 /**
@@ -86,7 +86,8 @@ export function useAudit() {
         await repo.log({
           ...entry,
           userId: currentUser?.id ?? null,
-          userDisplayName: currentUser?.displayName ?? currentUser?.email ?? null,
+          userDisplayName:
+            currentUser?.displayName ?? currentUser?.email ?? null,
         });
       } catch (error) {
         // L'audit ne doit jamais casser l'action métier : on log en console

@@ -5,13 +5,6 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -72,13 +65,18 @@ export function VaccinationList({
   };
 
   return (
-    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
-      <div className="flex flex-row items-start justify-between gap-4 mb-6">
+    <div
+      className={cn(
+        "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
+        className
+      )}
+    >
+      <div className="mb-6 flex flex-row items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider truncate">
+          <div className="truncate font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
             {t("patientDetail.vaccinations.title")}
           </div>
-          <div className="text-xs text-muted-foreground mt-1 truncate">
+          <div className="mt-1 truncate text-muted-foreground text-xs">
             {entries.length}{" "}
             {entries.length > 1
               ? t("patientDetail.vaccinations.plural")
@@ -87,22 +85,25 @@ export function VaccinationList({
         </div>
         {onNew ? (
           <Button
-            className="h-8 gap-1.5 rounded-lg shrink-0"
+            className="h-8 shrink-0 gap-1.5 rounded-lg"
             onClick={onNew}
             size="sm"
             variant="default"
           >
-            <Plus weight="bold" className="size-3.5" />
+            <Plus className="size-3.5" weight="bold" />
             {t("patientDetail.vaccinations.newVaccine")}
           </Button>
         ) : null}
       </div>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-1 flex-col">
         {entries.length === 0 ? (
           <Empty>
             <EmptyHeader>
               <EmptyMedia>
-                <Syringe weight="duotone" className="size-7 text-muted-foreground" />
+                <Syringe
+                  className="size-7 text-muted-foreground"
+                  weight="duotone"
+                />
               </EmptyMedia>
               <EmptyTitle>{t("patientDetail.vaccinations.empty")}</EmptyTitle>
               <EmptyDescription>
@@ -110,8 +111,13 @@ export function VaccinationList({
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button onClick={onNew} size="sm" variant="outline" className="rounded-lg">
-                <Plus weight="bold" className="size-4 mr-1.5" />
+              <Button
+                className="rounded-lg"
+                onClick={onNew}
+                size="sm"
+                variant="outline"
+              >
+                <Plus className="mr-1.5 size-4" weight="bold" />
                 {t("patientDetail.vaccinations.newVaccine")}
               </Button>
             </EmptyContent>
@@ -128,12 +134,12 @@ export function VaccinationList({
                 >
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="truncate text-sm font-semibold">
+                      <span className="truncate font-semibold text-sm">
                         {entry.vaccineName}
                       </span>
                       {entry.vaccineType ? (
                         <Badge
-                          className="rounded-full px-1.5 py-0 text-[10px] font-medium"
+                          className="rounded-full px-1.5 py-0 font-medium text-[10px]"
                           variant="outline"
                         >
                           {entry.vaccineType}
@@ -141,7 +147,7 @@ export function VaccinationList({
                       ) : null}
                       <Badge
                         className={cn(
-                          "rounded-full px-2 py-0 text-[10px] font-medium",
+                          "rounded-full px-2 py-0 font-medium text-[10px]",
                           meta.className
                         )}
                         variant="secondary"
@@ -149,7 +155,7 @@ export function VaccinationList({
                         {meta.label}
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-muted-foreground text-xs">
                       <span>✓ {formatDateShort(entry.administeredAt)}</span>
                       {entry.nextDueAt ? (
                         <span>↻ {formatDateShort(entry.nextDueAt)}</span>
@@ -162,7 +168,7 @@ export function VaccinationList({
                       ) : null}
                     </div>
                     {entry.notes ? (
-                      <p className="line-clamp-1 text-xs text-muted-foreground/80">
+                      <p className="line-clamp-1 text-muted-foreground/80 text-xs">
                         {entry.notes}
                       </p>
                     ) : null}
@@ -175,7 +181,7 @@ export function VaccinationList({
                       size="icon"
                       variant="ghost"
                     >
-                      <PencilSimple weight="duotone" className="size-4" />
+                      <PencilSimple className="size-4" weight="duotone" />
                     </Button>
                     <Button
                       aria-label={t("patientDetail.vaccinations.delete")}
@@ -184,7 +190,7 @@ export function VaccinationList({
                       size="icon"
                       variant="ghost"
                     >
-                      <Trash weight="duotone" className="size-4" />
+                      <Trash className="size-4" weight="duotone" />
                     </Button>
                   </div>
                 </li>

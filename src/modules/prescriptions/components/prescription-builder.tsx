@@ -1,14 +1,17 @@
+import {
+  ArrowDown,
+  ArrowsDownUp,
+  ArrowUp,
+  Pill,
+  Trash,
+  X,
+} from "@phosphor-icons/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { ArrowDown, ArrowUp, ArrowsDownUp, Pill, Trash, X } from "@phosphor-icons/react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -23,18 +26,17 @@ import {
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/auditService";
-import type { Patient, User } from "@/types/db";
-import type { PrescriptionItem } from "@/types/db";
+import type { Patient, PrescriptionItem, User } from "@/types/db";
 
 import {
-  type DoseComputation,
   computeDose,
+  type DoseComputation,
   parsePosology,
 } from "../lib/dose-calculator";
 import {
   type MedicationSearchResult,
-  type SpeciesKey,
   patientSpeciesToCatalogKey,
+  type SpeciesKey,
 } from "../lib/medication-catalog";
 import { DoseCalculatorCard } from "./dose-calculator-card";
 import { MedicationPicker } from "./medication-picker";
@@ -43,33 +45,33 @@ import { PrescriptionPreview } from "./prescription-preview";
 export interface PrescriptionBuilderProps {
   appointmentId: string;
   className?: string;
+  onPreviewChange?: (open: boolean) => void;
   /** Patient sélectionné (pour species + weight). */
   patient: Patient;
   /** Vétérinaire prescripteur (par défaut: user courant). */
   vet?: User | null;
-  onPreviewChange?: (open: boolean) => void;
 }
 
 interface DraftItem {
-  id: string;
-  medicationId?: string;
-  medicationName: string;
-  medicationClass?: string;
-  form?: string;
-  dosagePerKg: number;
-  dosageUnit: PrescriptionItem["dosageUnit"];
-  dosageMin?: number;
-  dosageMax?: number;
-  concentrationMgPerMl?: number;
   computedDoseMg?: number;
   computedVolumeMl?: number;
-  frequency: string;
+  concentrationMgPerMl?: number;
+  dosageMax?: number;
+  dosageMin?: number;
+  dosagePerKg: number;
+  dosageUnit: PrescriptionItem["dosageUnit"];
   duration: string;
-  route?: string;
-  quantity?: string;
+  form?: string;
+  frequency: string;
+  id: string;
   instructions?: string;
-  warnings?: string;
+  medicationClass?: string;
+  medicationId?: string;
+  medicationName: string;
+  quantity?: string;
+  route?: string;
   sortOrder: number;
+  warnings?: string;
 }
 
 const FORM_OPTIONS = [
@@ -172,9 +174,11 @@ export function PrescriptionBuilder({
       setWeightKg(existing.weightKg);
       setDiagnosis(existing.diagnosis ?? "");
       setGeneralInstructions(existing.generalInstructions ?? "");
-      setStatus((existing.status === "signed" ? "signed" : "draft") as
-        | "draft"
-        | "signed");
+      setStatus(
+        (existing.status === "signed" ? "signed" : "draft") as
+          | "draft"
+          | "signed"
+      );
       setSavedAt(existing.updatedAt);
       const existingItems = itemsRepo.forPrescription(existing.id);
       setItems(
@@ -215,10 +219,7 @@ export function PrescriptionBuilder({
   const handleAddMedication = useCallback(
     (med: MedicationSearchResult) => {
       setItems((prev) => {
-        const next = [
-          ...prev,
-          medToDraft(med, prev.length, speciesKey),
-        ];
+        const next = [...prev, medToDraft(med, prev.length, speciesKey)];
         return next;
       });
     },
@@ -229,7 +230,9 @@ export function PrescriptionBuilder({
     (id: string, patch: Partial<DraftItem>) => {
       setItems((prev) =>
         prev.map((it) => {
-          if (it.id !== id) return it;
+          if (it.id !== id) {
+            return it;
+          }
           const merged = { ...it, ...patch };
           // Recompute the dose
           const computation = computeItemDose(merged, weightKg);
@@ -246,19 +249,25 @@ export function PrescriptionBuilder({
 
   const removeItem = useCallback((id: string) => {
     setItems((prev) =>
-      prev.filter((it) => it.id !== id).map((it, idx) => ({
-        ...it,
-        sortOrder: idx,
-      }))
+      prev
+        .filter((it) => it.id !== id)
+        .map((it, idx) => ({
+          ...it,
+          sortOrder: idx,
+        }))
     );
   }, []);
 
   const moveItem = useCallback((id: string, dir: -1 | 1) => {
     setItems((prev) => {
       const idx = prev.findIndex((it) => it.id === id);
-      if (idx < 0) return prev;
+      if (idx < 0) {
+        return prev;
+      }
       const nextIdx = idx + dir;
-      if (nextIdx < 0 || nextIdx >= prev.length) return prev;
+      if (nextIdx < 0 || nextIdx >= prev.length) {
+        return prev;
+      }
       const next = prev.slice();
       [next[idx], next[nextIdx]] = [next[nextIdx], next[idx]];
       return next.map((it, i) => ({ ...it, sortOrder: i }));
@@ -386,7 +395,7 @@ export function PrescriptionBuilder({
           <div className="grid gap-3 sm:grid-cols-2">
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <Label className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.diagnosis")}
                 </Label>
                 <Textarea
@@ -399,7 +408,7 @@ export function PrescriptionBuilder({
             </Card>
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <Label className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.generalInstructions")}
                 </Label>
                 <Textarea
@@ -498,13 +507,13 @@ function BuilderHeader({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
+    <div className="flex flex-wrap items-center justify-between gap-2 border-border/60 border-b pb-3">
       <div>
-        <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight">
-          <Pill weight="duotone" className="size-4 text-primary" />
+        <h2 className="flex items-center gap-2 font-semibold text-base tracking-tight">
+          <Pill className="size-4 text-primary" weight="duotone" />
           {t("prescriptions.title")}
         </h2>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           {t("prescriptions.subtitle")}
         </p>
       </div>
@@ -515,7 +524,10 @@ function BuilderHeader({
           </Badge>
         ) : null}
         {status === "signed" ? (
-          <Badge className="bg-emerald-500/10 text-[10px] text-emerald-700 dark:text-emerald-300" variant="secondary">
+          <Badge
+            className="bg-emerald-500/10 text-[10px] text-emerald-700 dark:text-emerald-300"
+            variant="secondary"
+          >
             {t("prescriptions.builder.signed")}
           </Badge>
         ) : (
@@ -568,15 +580,17 @@ function WeightCard({
     <Card className="border-primary/15 bg-gradient-to-br from-primary/5 via-background to-background">
       <CardContent className="space-y-2 px-3 py-3">
         <Label
-          className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
+          className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider"
           htmlFor="weight-input"
         >
           {t("prescriptions.builder.weightLabel")}
-          <span className="ml-1 text-muted-foreground/60">· {patientSpecies}</span>
+          <span className="ml-1 text-muted-foreground/60">
+            · {patientSpecies}
+          </span>
         </Label>
         <div className="flex items-baseline gap-2">
           <Input
-            className="h-10 border-0 bg-background/60 text-2xl font-semibold tabular-nums shadow-none focus-visible:ring-1"
+            className="h-10 border-0 bg-background/60 font-semibold text-2xl tabular-nums shadow-none focus-visible:ring-1"
             id="weight-input"
             inputMode="decimal"
             min={0}
@@ -589,7 +603,7 @@ function WeightCard({
             type="number"
             value={weightKg ?? ""}
           />
-          <span className="text-sm font-medium text-muted-foreground">kg</span>
+          <span className="font-medium text-muted-foreground text-sm">kg</span>
         </div>
         <p className="text-[10px] text-muted-foreground">
           {t("prescriptions.builder.weightHelper")}
@@ -603,7 +617,7 @@ function PatientInfoCard({ patient }: { patient: Patient }) {
   return (
     <Card>
       <CardContent className="space-y-1 px-3 py-3 text-xs">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
           {patient.name}
         </p>
         <p className="text-muted-foreground">
@@ -621,14 +635,14 @@ function PatientInfoCard({ patient }: { patient: Patient }) {
 function EmptyState({ action }: { action: React.ReactNode }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/20 px-6 py-12 text-center">
+    <div className="flex flex-col items-center justify-center rounded-lg border border-border/60 border-dashed bg-muted/20 px-6 py-12 text-center">
       <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Pill weight="duotone" className="size-6" />
+        <Pill className="size-6" weight="duotone" />
       </div>
-      <h3 className="mt-3 text-sm font-semibold tracking-tight">
+      <h3 className="mt-3 font-semibold text-sm tracking-tight">
         {t("prescriptions.empty.title")}
       </h3>
-      <p className="mt-1 max-w-xs text-xs text-muted-foreground">
+      <p className="mt-1 max-w-xs text-muted-foreground text-xs">
         {t("prescriptions.empty.description")}
       </p>
       <div className="mt-4 w-full max-w-sm">{action}</div>
@@ -668,11 +682,11 @@ function ItemRow({
           {/* Ligne 1 : nom + actions */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
                 {item.sortOrder + 1}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">
+                <p className="truncate font-semibold text-sm">
                   {item.medicationName}
                 </p>
                 {item.medicationClass ? (
@@ -692,7 +706,7 @@ function ItemRow({
                 type="button"
                 variant="ghost"
               >
-                <ArrowUp weight="duotone" className="size-3.5" />
+                <ArrowUp className="size-3.5" weight="duotone" />
               </Button>
               <Button
                 aria-label={t("prescriptions.builder.moveDown")}
@@ -703,7 +717,7 @@ function ItemRow({
                 type="button"
                 variant="ghost"
               >
-                <ArrowDown weight="duotone" className="size-3.5" />
+                <ArrowDown className="size-3.5" weight="duotone" />
               </Button>
               <Button
                 aria-label={t("prescriptions.builder.remove")}
@@ -713,7 +727,7 @@ function ItemRow({
                 type="button"
                 variant="ghost"
               >
-                <Trash weight="duotone" className="size-3.5" />
+                <Trash className="size-3.5" weight="duotone" />
               </Button>
             </div>
           </div>
@@ -774,7 +788,9 @@ function ItemRow({
                 value={item.quantity ?? ""}
               />
             </FieldShell>
-            <FieldShell label={`${t("prescriptions.item.name")} (concentration mg/mL)`}>
+            <FieldShell
+              label={`${t("prescriptions.item.name")} (concentration mg/mL)`}
+            >
               <Input
                 className="h-8 text-xs"
                 inputMode="decimal"
@@ -813,7 +829,7 @@ function ItemRow({
         </div>
 
         {/* Colonne droite : dose calculator + état */}
-        <div className="space-y-2 border-t border-border/40 bg-muted/20 px-3 py-3 lg:border-l lg:border-t-0">
+        <div className="space-y-2 border-border/40 border-t bg-muted/20 px-3 py-3 lg:border-t-0 lg:border-l">
           <DoseCalculatorCard
             className="bg-background"
             computation={computation}
@@ -821,7 +837,7 @@ function ItemRow({
             weightKg={weightKg}
           />
           <p className="text-center text-[10px] text-muted-foreground">
-            <ArrowsDownUp weight="duotone" className="mr-1 inline size-3" />
+            <ArrowsDownUp className="mr-1 inline size-3" weight="duotone" />
             {t("prescriptions.calculator.perKg")}
           </p>
         </div>
@@ -839,7 +855,7 @@ function FieldShell({
 }) {
   return (
     <div className="space-y-1">
-      <Label className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+      <Label className="font-medium text-[10px] text-muted-foreground uppercase tracking-wider">
         {label}
       </Label>
       {children}

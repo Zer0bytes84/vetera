@@ -28,6 +28,23 @@ export interface AuthUser {
   role: string;
 }
 
+interface DbUserRecord {
+  id: string;
+  email: string;
+  password_hash: string;
+  display_name: string;
+  role: string;
+  avatar_url?: string | null;
+  status?: string;
+}
+
+interface DbSessionRecord {
+  id: string;
+  user_id: string;
+  token: string;
+  expires_at: string;
+}
+
 async function getRegistrationRole(): Promise<string> {
   if (!isTauriRuntime()) {
     const existingUsers = getBrowserTable<BrowserUserRecord>("users");
@@ -221,7 +238,7 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
   console.log("[AUTH] Starting login for:", credentials.email);
 
   const users = await runDbOperation((db) =>
-    db.select<any[]>("SELECT * FROM users WHERE email = ? AND status = ?", [
+    db.select<DbUserRecord[]>("SELECT * FROM users WHERE email = ? AND status = ?", [
       credentials.email,
       "active",
     ])
@@ -309,7 +326,7 @@ export async function register(data: RegisterData): Promise<AuthUser> {
 
   // Vérifier si l'email existe déjà
   const existing = await runDbOperation((db) =>
-    db.select<any[]>("SELECT id FROM users WHERE email = ?", [data.email])
+    db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [data.email])
   );
 
   if (existing.length > 0) {
@@ -406,7 +423,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 
   // Vérifier la session
   const sessions = await runDbOperation((db) =>
-    db.select<any[]>(
+    db.select<DbSessionRecord[]>(
       "SELECT * FROM sessions WHERE token = ? AND expires_at > ?",
       [token, new Date().toISOString()]
     )
@@ -421,7 +438,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 
   // Récupérer l'utilisateur
   const users = await runDbOperation((db) =>
-    db.select<any[]>("SELECT * FROM users WHERE id = ?", [session.user_id])
+    db.select<DbUserRecord[]>("SELECT * FROM users WHERE id = ?", [session.user_id])
   );
 
   if (users.length === 0) {
@@ -495,7 +512,7 @@ export async function createInitialAdmin(
   }
 
   const existing = await runDbOperation((db) =>
-    db.select<any[]>("SELECT id FROM users WHERE email = ?", [data.email])
+    db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [data.email])
   );
 
   if (existing.length > 0) {

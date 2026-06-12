@@ -23,8 +23,6 @@ Regles:
 - Si une info est incertaine, signale-le simplement.
 - Ne fournis jamais de conseils dangereux.`;
 
-const MODEL_CACHE_KEY = "webllm-active-model";
-
 let engine: MLCEngine | null = null;
 let activeModelId: string | null = null;
 let initPromise: Promise<void> | null = null;
@@ -38,7 +36,7 @@ const notifyProgress = (report: ProgressReport) => {
   progressListeners.forEach((listener) => listener(report));
 };
 
-export const getLocalModelId = () => activeModelId || "Qwen3-1.7B-q4f16_1-MLC";
+export const getLocalModelId = () => activeModelId || "Phi-3.5-vision-instruct-q4f16_1-MLC";
 
 export const getActiveModelId = () => activeModelId;
 
@@ -62,10 +60,10 @@ export const initializeWebLLM = async (
   let callback: ((report: ProgressReport) => void) | undefined;
 
   if (typeof modelIdOrCallback === "function") {
-    modelId = "Qwen3-1.7B-q4f16_1-MLC";
+    modelId = "Phi-3.5-vision-instruct-q4f16_1-MLC";
     callback = modelIdOrCallback;
   } else {
-    modelId = modelIdOrCallback || "Qwen3-1.7B-q4f16_1-MLC";
+    modelId = modelIdOrCallback || "Phi-3.5-vision-instruct-q4f16_1-MLC";
     callback = onProgress;
   }
 
@@ -119,6 +117,8 @@ export const generateText = async (
     systemPrompt?: string;
     temperature?: number;
     maxTokens?: number;
+    imageUri?: string;
+    onToken?: (text: string) => void;
   }
 ): Promise<string> => {
   if (!engine) {
@@ -144,17 +144,41 @@ export const generateText = async (
     content: turn.text,
   }));
 
+  const promptWithContext = enrichedContext.length > 0
+    ? `${prompt}\n\nContexte:\n${enrichedContext}`
+    : prompt;
+
+  const content: any = options?.imageUri
+    ? [
+        { type: "text", text: promptWithContext },
+        { type: "image_url", image_url: { url: options.imageUri } }
+      ]
+    : promptWithContext;
+
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: options?.systemPrompt ?? DEFAULT_SYSTEM_PROMPT },
     ...historyMessages,
     {
       role: "user",
-      content:
-        enrichedContext.length > 0
-          ? `${prompt}\n\nContexte:\n${enrichedContext}`
-          : prompt,
+      content
     },
   ];
+
+  if (options?.onToken) {
+    const responseStream = await engine.chat.completions.create({
+      messages,
+      temperature: options?.temperature ?? 0.3,
+      max_tokens: options?.maxTokens ?? 1024,
+      stream: true,
+    });
+    let fullText = "";
+    for await (const chunk of responseStream) {
+      const token = chunk.choices[0]?.delta?.content || "";
+      fullText += token;
+      options.onToken(fullText);
+    }
+    return fullText;
+  }
 
   const response = await engine.chat.completions.create({
     messages,

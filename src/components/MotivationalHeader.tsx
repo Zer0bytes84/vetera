@@ -4,7 +4,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { cn } from "@/lib/utils";
 
 interface MotivationalHeaderProps {
   onNavigate?: (view: string) => void;
@@ -139,9 +138,9 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   const resolvedSubtitle = subtitle || headerCopy.subtitle;
 
   const renderTitle = (titleText: string, emoji: string) => {
-    if (!userName || !titleText.includes(userName)) {
+    if (!(userName && titleText.includes(userName))) {
       return (
-        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+        <h1 className="flex items-center gap-2 font-semibold text-2xl text-foreground tracking-tight md:text-3xl">
           <span>{titleText}</span>
           <span aria-hidden="true" className="shrink-0 text-[1em]">
             {emoji}
@@ -152,12 +151,12 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
 
     const parts = titleText.split(userName);
     return (
-      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground flex flex-wrap items-center gap-x-2 gap-y-1">
+      <h1 className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-2xl text-foreground tracking-tight md:text-3xl">
         {parts.map((part, index) => (
           <React.Fragment key={index}>
             {part}
             {index < parts.length - 1 && (
-              <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent uppercase font-semibold">
+              <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 bg-clip-text font-semibold text-transparent uppercase dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
                 {userName}
               </span>
             )}
@@ -171,19 +170,22 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className="flex w-full flex-col gap-1">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           {renderTitle(heading, headerCopy.emoji)}
           {resolvedSubtitle && (
-            <p className="text-sm text-muted-foreground max-w-[70ch] leading-relaxed">
+            <p className="max-w-[70ch] text-muted-foreground text-sm leading-relaxed">
               {resolvedSubtitle}
             </p>
           )}
         </div>
         {onNavigate && (
           <div className="flex shrink-0 items-center gap-2">
-            <Button onClick={() => onNavigate("clinique")} className="h-10 rounded-full px-5">
+            <Button
+              className="h-10 rounded-full px-5"
+              onClick={() => onNavigate("clinique")}
+            >
               <HugeiconsIcon
                 data-icon="inline-start"
                 icon={StethoscopeIcon}

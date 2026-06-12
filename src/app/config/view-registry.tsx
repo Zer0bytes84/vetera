@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { lazy, type ReactNode, Suspense } from "react";
 import type { ThemeMode } from "@/app/hooks/use-theme-mode";
 import { Spinner } from "@/components/ui/spinner";

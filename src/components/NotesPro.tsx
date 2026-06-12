@@ -10,17 +10,19 @@ import {
   File01Icon,
   Folder01Icon,
   MoreVerticalIcon,
+  Redo02Icon,
   SearchIcon,
   StarIcon,
   Undo02Icon,
-  Redo02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { FileText, Hash, PenLine, Pin, Star } from "lucide-react";
 import type React from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { FileText, Star, Pin, BookOpen, PenLine, Sparkles, Hash } from "lucide-react";
 import Editor from "@/components/Editor";
 import MotivationalHeader from "@/components/MotivationalHeader";
+import { type StatItem, StatsTrending } from "@/components/StatsTrending";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -31,15 +33,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotesRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Note } from "@/types/db";
-import { StatsTrending, type StatItem } from "@/components/StatsTrending";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
 
 // Utils
 const normalizeDate = (dateInput: any): Date =>
@@ -183,15 +180,21 @@ const NotesPro: React.FC = () => {
     ).length;
 
     const totalWords = userNotes.reduce((acc, n) => {
-      if (!n.content) return acc;
+      if (!n.content) {
+        return acc;
+      }
       const text = n.content.replace(/<[^>]*>?/gm, "").trim();
-      if (!text) return acc;
+      if (!text) {
+        return acc;
+      }
       const count = text.split(/\s+/).filter(Boolean).length;
       return acc + count;
     }, 0);
 
     const sortedByDate = [...userNotes].sort(
-      (a, b) => normalizeDate(b.updatedAt).getTime() - normalizeDate(a.updatedAt).getTime()
+      (a, b) =>
+        normalizeDate(b.updatedAt).getTime() -
+        normalizeDate(a.updatedAt).getTime()
     );
     const lastModifiedText = sortedByDate[0]
       ? `Dernière modif. : ${formatDate(sortedByDate[0].updatedAt).toLowerCase()}`
@@ -352,8 +355,6 @@ const NotesPro: React.FC = () => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   }, [content]);
 
-  const charCount = useMemo(() => content.length, [content]);
-
   // Color accent for note (based on title hash)
   const getNoteAccent = (noteTitle: string) => {
     const accents = [
@@ -371,15 +372,13 @@ const NotesPro: React.FC = () => {
     return accents[Math.abs(hash) % accents.length];
   };
 
-  const getInitial = (title: string) => (title || "N").charAt(0).toUpperCase();
-
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 h-full pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex h-full w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="notes" />
         <Button
-          className="h-9 rounded-full px-5 gap-2 shadow-sm"
+          className="h-9 gap-2 rounded-full px-5 shadow-sm"
           onClick={handleCreateNote}
         >
           <HugeiconsIcon
@@ -392,14 +391,13 @@ const NotesPro: React.FC = () => {
       </div>
 
       {/* Widget Cards Row */}
-      <StatsTrending items={sectionCardItems} className="shrink-0" />
+      <StatsTrending className="shrink-0" items={sectionCardItems} />
 
       {/* Main workspace */}
-      <div className="flex flex-1 min-h-[520px] gap-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
-
+      <div className="flex min-h-[520px] flex-1 gap-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
         <aside
           className={cn(
-            "flex flex-col shrink-0 border-r border-border/50 transition-all duration-300 ease-in-out bg-white dark:bg-zinc-950",
+            "flex shrink-0 flex-col border-border/50 border-r bg-white transition-all duration-300 ease-in-out dark:bg-zinc-950",
             showSidebar ? "w-[300px]" : "w-0 overflow-hidden"
           )}
         >
@@ -409,14 +407,20 @@ const NotesPro: React.FC = () => {
               <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/15">
                 <PenLine className="size-3.5 text-primary" />
               </div>
-              <span className="font-semibold text-sm tracking-tight">Mes notes</span>
+              <span className="font-semibold text-sm tracking-tight">
+                Mes notes
+              </span>
             </div>
             <Button
-              className="size-7 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+              className="size-7 rounded-lg bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
               onClick={handleCreateNote}
               size="icon-sm"
             >
-              <HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={2} />
+              <HugeiconsIcon
+                className="size-3.5"
+                icon={Add01Icon}
+                strokeWidth={2}
+              />
             </Button>
           </div>
 
@@ -428,7 +432,7 @@ const NotesPro: React.FC = () => {
                 icon={SearchIcon}
               />
               <Input
-                className="h-8 rounded-lg border-border/40 bg-white dark:bg-zinc-950 pl-8 text-xs placeholder:text-muted-foreground/40 focus-visible:ring-1 focus-visible:ring-primary/30 shadow-xs"
+                className="h-8 rounded-lg border-border/40 bg-white pl-8 text-xs shadow-xs placeholder:text-muted-foreground/40 focus-visible:ring-1 focus-visible:ring-primary/30 dark:bg-zinc-950"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Rechercher..."
                 value={searchTerm}
@@ -438,7 +442,7 @@ const NotesPro: React.FC = () => {
 
           {/* Filter tabs */}
           <div className="px-3 pb-3">
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800/80 rounded-md p-1">
+            <div className="flex items-center rounded-md bg-zinc-100 p-1 dark:bg-zinc-800/80">
               {(
                 [
                   { id: "all", label: "Toutes", count: stats.total },
@@ -449,9 +453,9 @@ const NotesPro: React.FC = () => {
               ).map((f) => (
                 <button
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1 rounded px-2 py-1 font-medium text-[10px] transition-colors",
+                    "flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 font-medium text-[10px] transition-colors",
                     filter === f.id
-                      ? "bg-white dark:bg-zinc-700 text-foreground shadow-sm"
+                      ? "bg-white text-foreground shadow-sm dark:bg-zinc-700"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                   key={f.id}
@@ -463,13 +467,13 @@ const NotesPro: React.FC = () => {
             </div>
           </div>
 
-          <div className="mx-3 border-t border-border/40" />
+          <div className="mx-3 border-border/40 border-t" />
 
           {/* Notes list */}
-          <ScrollArea className="flex-1 mt-1">
+          <ScrollArea className="mt-1 flex-1">
             {filteredNotes.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-14 text-center px-4">
-                <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 dark:bg-primary/15 mb-3 ring-1 ring-primary/20 shadow-sm">
+              <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
+                <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-primary/10 shadow-sm ring-1 ring-primary/20 dark:bg-primary/15">
                   <HugeiconsIcon
                     className="size-7 text-primary/70 dark:text-primary/60"
                     icon={File01Icon}
@@ -479,11 +483,13 @@ const NotesPro: React.FC = () => {
                   {searchTerm ? "Aucun résultat" : "Aucune note"}
                 </p>
                 <p className="mt-1 text-muted-foreground/50 text-xs">
-                  {searchTerm ? "Essayez un autre terme" : "Créez votre première note"}
+                  {searchTerm
+                    ? "Essayez un autre terme"
+                    : "Créez votre première note"}
                 </p>
                 {!searchTerm && (
                   <Button
-                    className="mt-4 h-7 rounded-lg text-xs gap-1.5"
+                    className="mt-4 h-7 gap-1.5 rounded-lg text-xs"
                     onClick={handleCreateNote}
                     size="sm"
                     variant="outline"
@@ -500,14 +506,16 @@ const NotesPro: React.FC = () => {
                   const isPinned = (note as any).isPinned;
                   const preview = extractPreview(note.content);
                   const accent = getNoteAccent(note.title || "N");
-                  const noteWordCount = preview ? preview.split(/\s+/).filter(Boolean).length : 0;
+                  const noteWordCount = preview
+                    ? preview.split(/\s+/).filter(Boolean).length
+                    : 0;
 
                   return (
                     <div
                       className={cn(
-                        "group relative flex w-full flex-col gap-1.5 rounded-xl p-3 text-left transition-all duration-150 cursor-pointer",
+                        "group relative flex w-full cursor-pointer flex-col gap-1.5 rounded-xl p-3 text-left transition-all duration-150",
                         isSelected
-                          ? "bg-white dark:bg-zinc-800/90 shadow-sm ring-1 ring-primary/30 dark:ring-primary/40"
+                          ? "bg-white shadow-sm ring-1 ring-primary/30 dark:bg-zinc-800/90 dark:ring-primary/40"
                           : "hover:bg-white/70 dark:hover:bg-zinc-800/50"
                       )}
                       key={note.id}
@@ -523,7 +531,7 @@ const NotesPro: React.FC = () => {
                     >
                       {/* Title row */}
                       <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="flex min-w-0 flex-1 items-center gap-2">
                           {/* Color pill */}
                           <div
                             className={cn(
@@ -536,7 +544,9 @@ const NotesPro: React.FC = () => {
                           <p
                             className={cn(
                               "truncate font-semibold text-[13px] leading-tight",
-                              isSelected ? "text-foreground" : "text-foreground/85"
+                              isSelected
+                                ? "text-foreground"
+                                : "text-foreground/85"
                             )}
                           >
                             {note.title || "Sans titre"}
@@ -557,7 +567,7 @@ const NotesPro: React.FC = () => {
                       {preview && (
                         <p
                           className={cn(
-                            "line-clamp-2 text-[11px] leading-relaxed pl-9",
+                            "line-clamp-2 pl-9 text-[11px] leading-relaxed",
                             isSelected
                               ? "text-muted-foreground"
                               : "text-muted-foreground/60"
@@ -582,8 +592,10 @@ const NotesPro: React.FC = () => {
                       {/* Hover actions */}
                       <div
                         className={cn(
-                          "absolute top-2 right-2 flex items-center gap-0.5 rounded-lg bg-white/95 dark:bg-zinc-900/95 p-0.5 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-opacity",
-                          isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                          "absolute top-2 right-2 flex items-center gap-0.5 rounded-lg bg-white/95 p-0.5 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-opacity dark:bg-zinc-900/95",
+                          isSelected
+                            ? "opacity-100"
+                            : "opacity-0 group-hover:opacity-100"
                         )}
                       >
                         <Button
@@ -593,7 +605,12 @@ const NotesPro: React.FC = () => {
                           variant="ghost"
                         >
                           <HugeiconsIcon
-                            className={cn("size-2.5", isPinned ? "text-amber-500" : "text-muted-foreground")}
+                            className={cn(
+                              "size-2.5",
+                              isPinned
+                                ? "text-amber-500"
+                                : "text-muted-foreground"
+                            )}
                             icon={Bookmark01Icon}
                           />
                         </Button>
@@ -614,12 +631,24 @@ const NotesPro: React.FC = () => {
                             }
                           />
                           <DropdownMenuContent align="end" className="w-44">
-                            <DropdownMenuItem onClick={() => toggleFavorite(note)}>
-                              <HugeiconsIcon className="mr-2 size-4" icon={StarIcon} />
-                              {note.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                            <DropdownMenuItem
+                              onClick={() => toggleFavorite(note)}
+                            >
+                              <HugeiconsIcon
+                                className="mr-2 size-4"
+                                icon={StarIcon}
+                              />
+                              {note.isFavorite
+                                ? "Retirer des favoris"
+                                : "Ajouter aux favoris"}
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleExportNote("md")}>
-                              <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} />
+                            <DropdownMenuItem
+                              onClick={() => handleExportNote("md")}
+                            >
+                              <HugeiconsIcon
+                                className="mr-2 size-4"
+                                icon={DownloadIcon}
+                              />
                               Exporter (.md)
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
@@ -627,7 +656,10 @@ const NotesPro: React.FC = () => {
                               className="text-destructive focus:text-destructive"
                               onClick={() => handleDeleteNote(note.id)}
                             >
-                              <HugeiconsIcon className="mr-2 size-4" icon={Delete01Icon} />
+                              <HugeiconsIcon
+                                className="mr-2 size-4"
+                                icon={Delete01Icon}
+                              />
                               Supprimer
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -645,31 +677,32 @@ const NotesPro: React.FC = () => {
         <main className="flex min-w-0 flex-1 flex-col bg-white dark:bg-zinc-950">
           {selectedNoteId && activeNote ? (
             <div className="flex h-full flex-col">
-
               {/* Editor toolbar — glassmorphic */}
-              <div className="flex items-center justify-between gap-2 border-b border-border/40 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm px-4 py-2 sticky top-0 z-10">
+              <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-border/40 border-b bg-white/80 px-4 py-2 backdrop-blur-sm dark:bg-zinc-900/80">
                 <div className="flex items-center gap-1.5">
                   {/* Toggle sidebar */}
                   <Button
-                    className="size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/70"
+                    className="size-7 rounded-lg text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                     onClick={() => setShowSidebar(!showSidebar)}
                     size="icon-sm"
+                    title={
+                      showSidebar ? "Masquer la liste" : "Afficher la liste"
+                    }
                     variant="ghost"
-                    title={showSidebar ? "Masquer la liste" : "Afficher la liste"}
                   >
                     <HugeiconsIcon className="size-3.5" icon={Folder01Icon} />
                   </Button>
 
-                  <div className="w-px h-4 bg-border/60 mx-0.5" />
+                  <div className="mx-0.5 h-4 w-px bg-border/60" />
 
                   {/* Edit / Preview toggle */}
-                  <div className="flex items-center rounded-lg bg-muted/60 dark:bg-zinc-800/60 p-0.5 gap-0.5">
+                  <div className="flex items-center gap-0.5 rounded-lg bg-muted/60 p-0.5 dark:bg-zinc-800/60">
                     <button
                       className={cn(
                         "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium text-[11px] transition-all duration-150",
-                        !isPreviewMode
-                          ? "bg-white dark:bg-zinc-700 text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
+                        isPreviewMode
+                          ? "text-muted-foreground hover:text-foreground"
+                          : "bg-white text-foreground shadow-sm dark:bg-zinc-700"
                       )}
                       onClick={() => setIsPreviewMode(false)}
                     >
@@ -680,7 +713,7 @@ const NotesPro: React.FC = () => {
                       className={cn(
                         "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium text-[11px] transition-all duration-150",
                         isPreviewMode
-                          ? "bg-white dark:bg-zinc-700 text-foreground shadow-sm"
+                          ? "bg-white text-foreground shadow-sm dark:bg-zinc-700"
                           : "text-muted-foreground hover:text-foreground"
                       )}
                       onClick={() => setIsPreviewMode(true)}
@@ -692,33 +725,43 @@ const NotesPro: React.FC = () => {
 
                   {!isPreviewMode && (
                     <>
-                      <div className="w-px h-4 bg-border/60 mx-0.5" />
+                      <div className="mx-0.5 h-4 w-px bg-border/60" />
                       <div className="flex items-center gap-0.5">
                         <Button
                           className="size-7 rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30"
                           disabled={!editorInstance?.can().undo()}
-                          onClick={() => editorInstance?.chain().focus().undo().run()}
+                          onClick={() =>
+                            editorInstance?.chain().focus().undo().run()
+                          }
                           size="icon-sm"
-                          variant="ghost"
                           title="Annuler (Ctrl+Z)"
+                          variant="ghost"
                         >
-                          <HugeiconsIcon className="size-3.5" icon={Undo02Icon} />
+                          <HugeiconsIcon
+                            className="size-3.5"
+                            icon={Undo02Icon}
+                          />
                         </Button>
                         <Button
                           className="size-7 rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30"
                           disabled={!editorInstance?.can().redo()}
-                          onClick={() => editorInstance?.chain().focus().redo().run()}
+                          onClick={() =>
+                            editorInstance?.chain().focus().redo().run()
+                          }
                           size="icon-sm"
-                          variant="ghost"
                           title="Rétablir (Ctrl+Y)"
+                          variant="ghost"
                         >
-                          <HugeiconsIcon className="size-3.5" icon={Redo02Icon} />
+                          <HugeiconsIcon
+                            className="size-3.5"
+                            icon={Redo02Icon}
+                          />
                         </Button>
                       </div>
                     </>
                   )}
 
-                  <div className="w-px h-4 bg-border/60 mx-0.5" />
+                  <div className="mx-0.5 h-4 w-px bg-border/60" />
 
                   {/* Save status */}
                   {isSaving ? (
@@ -731,7 +774,10 @@ const NotesPro: React.FC = () => {
                     </span>
                   ) : lastSaved ? (
                     <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
-                      <HugeiconsIcon className="size-3" icon={CheckmarkCircle02Icon} />
+                      <HugeiconsIcon
+                        className="size-3"
+                        icon={CheckmarkCircle02Icon}
+                      />
                       Sauvegardé
                     </span>
                   ) : null}
@@ -741,14 +787,14 @@ const NotesPro: React.FC = () => {
                 <div className="flex items-center gap-0.5">
                   {/* Word / char count badge */}
                   <Badge
+                    className="hidden h-6 gap-1 border-border/40 font-normal text-[10px] text-muted-foreground/60 tabular-nums sm:flex"
                     variant="outline"
-                    className="hidden sm:flex h-6 gap-1 text-[10px] text-muted-foreground/60 border-border/40 font-normal tabular-nums"
                   >
                     <Hash className="size-2.5" />
                     {wordCount} mots
                   </Badge>
 
-                  <div className="w-px h-4 bg-border/60 mx-1" />
+                  <div className="mx-1 h-4 w-px bg-border/60" />
 
                   <Button
                     className={cn(
@@ -759,8 +805,8 @@ const NotesPro: React.FC = () => {
                     )}
                     onClick={() => togglePin(activeNote)}
                     size="icon-sm"
-                    variant="ghost"
                     title="Épingler"
+                    variant="ghost"
                   >
                     <HugeiconsIcon className="size-3.5" icon={Bookmark01Icon} />
                   </Button>
@@ -773,8 +819,8 @@ const NotesPro: React.FC = () => {
                     )}
                     onClick={() => toggleFavorite(activeNote)}
                     size="icon-sm"
-                    variant="ghost"
                     title="Favori"
+                    variant="ghost"
                   >
                     <HugeiconsIcon
                       className="size-3.5"
@@ -786,8 +832,8 @@ const NotesPro: React.FC = () => {
                     className="size-7 rounded-lg text-muted-foreground hover:text-foreground"
                     onClick={handleCopyNote}
                     size="icon-sm"
-                    variant="ghost"
                     title="Copier"
+                    variant="ghost"
                   >
                     <HugeiconsIcon className="size-3.5" icon={CopyIcon} />
                   </Button>
@@ -799,17 +845,26 @@ const NotesPro: React.FC = () => {
                           size="icon-sm"
                           variant="ghost"
                         >
-                          <HugeiconsIcon className="size-3.5" icon={MoreVerticalIcon} />
+                          <HugeiconsIcon
+                            className="size-3.5"
+                            icon={MoreVerticalIcon}
+                          />
                         </Button>
                       }
                     />
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => handleExportNote("md")}>
-                        <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} />
+                        <HugeiconsIcon
+                          className="mr-2 size-4"
+                          icon={DownloadIcon}
+                        />
                         Exporter en Markdown
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleExportNote("txt")}>
-                        <HugeiconsIcon className="mr-2 size-4" icon={DownloadIcon} />
+                        <HugeiconsIcon
+                          className="mr-2 size-4"
+                          icon={DownloadIcon}
+                        />
                         Exporter en Texte
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -817,7 +872,10 @@ const NotesPro: React.FC = () => {
                         className="text-destructive focus:text-destructive"
                         onClick={() => handleDeleteNote(activeNote.id)}
                       >
-                        <HugeiconsIcon className="mr-2 size-4" icon={Delete01Icon} />
+                        <HugeiconsIcon
+                          className="mr-2 size-4"
+                          icon={Delete01Icon}
+                        />
                         Supprimer
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -827,7 +885,7 @@ const NotesPro: React.FC = () => {
 
               {/* Editor content area */}
               <div
-                className="flex-1 overflow-y-auto cursor-text pb-20 select-text bg-white dark:bg-zinc-950"
+                className="flex-1 cursor-text select-text overflow-y-auto bg-white pb-20 dark:bg-zinc-950"
                 onClick={(e) => {
                   if (e.target === e.currentTarget) {
                     editorInstance?.commands.focus("end");
@@ -835,7 +893,7 @@ const NotesPro: React.FC = () => {
                 }}
               >
                 <div
-                  className="mx-auto max-w-3xl px-8 py-10 min-h-full flex flex-col"
+                  className="mx-auto flex min-h-full max-w-3xl flex-col px-8 py-10"
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       editorInstance?.commands.focus("end");
@@ -848,7 +906,7 @@ const NotesPro: React.FC = () => {
                       <div className="mb-6 flex">
                         <div
                           className={cn(
-                            "flex size-14 items-center justify-center rounded-2xl font-bold shadow-[0_8px_30px_rgb(0,0,0,0.02)] ring-1 ring-border/40 select-none",
+                            "flex size-14 select-none items-center justify-center rounded-2xl font-bold shadow-[0_8px_30px_rgb(0,0,0,0.02)] ring-1 ring-border/40",
                             getNoteAccent(activeNote.title || "N")
                           )}
                         >
@@ -856,8 +914,10 @@ const NotesPro: React.FC = () => {
                         </div>
                       </div>
 
-                      <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-                      <p className="text-muted-foreground text-xs mt-1 mb-6">
+                      <h1 className="font-bold text-2xl tracking-tight">
+                        {title}
+                      </h1>
+                      <p className="mt-1 mb-6 text-muted-foreground text-xs">
                         {formatFullDate(activeNote.updatedAt)}
                       </p>
                       <div dangerouslySetInnerHTML={{ __html: content }} />
@@ -868,7 +928,7 @@ const NotesPro: React.FC = () => {
                       <div className="mb-6 flex">
                         <div
                           className={cn(
-                            "flex size-14 items-center justify-center rounded-2xl font-bold shadow-[0_8px_30px_rgb(0,0,0,0.02)] ring-1 ring-border/40 select-none",
+                            "flex size-14 select-none items-center justify-center rounded-2xl font-bold shadow-[0_8px_30px_rgb(0,0,0,0.02)] ring-1 ring-border/40",
                             getNoteAccent(activeNote.title || "N")
                           )}
                         >
@@ -878,7 +938,7 @@ const NotesPro: React.FC = () => {
 
                       {/* Note title */}
                       <input
-                        className="w-full bg-transparent font-heading font-bold text-[32px] leading-tight text-foreground tracking-tight outline-none placeholder:text-muted-foreground/15 mb-2.5"
+                        className="mb-2.5 w-full bg-transparent font-bold font-heading text-[32px] text-foreground leading-tight tracking-tight outline-none placeholder:text-muted-foreground/15"
                         onChange={(e) => handleTitleChange(e.target.value)}
                         placeholder="Sans titre"
                         type="text"
@@ -886,7 +946,7 @@ const NotesPro: React.FC = () => {
                       />
 
                       {/* Meta line below title */}
-                      <div className="flex items-center gap-2.5 mb-8">
+                      <div className="mb-8 flex items-center gap-2.5">
                         <p className="text-[11px] text-muted-foreground/50">
                           {formatFullDate(activeNote.updatedAt)}
                         </p>
@@ -921,9 +981,9 @@ const NotesPro: React.FC = () => {
                       {/* Rich text editor */}
                       <Editor
                         content={content}
-                        onUpdate={handleContentChange}
-                        onEditorCreated={setEditorInstance}
                         onAiStatusChange={setAiStatus}
+                        onEditorCreated={setEditorInstance}
+                        onUpdate={handleContentChange}
                       />
                     </>
                   )}
@@ -932,10 +992,10 @@ const NotesPro: React.FC = () => {
 
               {/* Editor footer */}
               {!isPreviewMode && (
-                <div className="flex items-center justify-between border-t border-border/40 bg-white dark:bg-zinc-950 px-4 py-2 text-[11px] text-muted-foreground/40 shrink-0 select-none">
+                <div className="flex shrink-0 select-none items-center justify-between border-border/40 border-t bg-white px-4 py-2 text-[11px] text-muted-foreground/40 dark:bg-zinc-950">
                   <span className="flex items-center gap-1">
                     <span>Tapez</span>
-                    <kbd className="rounded bg-muted/80 dark:bg-zinc-800/80 px-1 py-px font-mono text-[10px] text-muted-foreground/60">
+                    <kbd className="rounded bg-muted/80 px-1 py-px font-mono text-[10px] text-muted-foreground/60 dark:bg-zinc-800/80">
                       /
                     </kbd>
                     <span>pour les commandes</span>
@@ -943,55 +1003,62 @@ const NotesPro: React.FC = () => {
 
                   {/* AI Status */}
                   {aiStatus.loading && (
-                    <span className="flex items-center gap-1.5 text-primary font-medium">
-                      <span className="animate-spin size-3 border-2 border-primary border-t-transparent rounded-full" />
+                    <span className="flex items-center gap-1.5 font-medium text-primary">
+                      <span className="size-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                       Assistant IA en cours...
                     </span>
                   )}
                   {!aiStatus.loading && aiStatus.ready && (
                     <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                      <span className="size-1.5 rounded-full bg-emerald-500 status-dot-alive" />
+                      <span className="status-dot-alive size-1.5 rounded-full bg-emerald-500" />
                       Assistant IA prêt
                     </span>
                   )}
-                  {!aiStatus.loading && aiStatus.initializing && !aiStatus.ready && (
-                    <span className="flex items-center gap-1 text-amber-500">
-                      <span className="animate-pulse size-1.5 rounded-full bg-amber-500" />
-                      Préparation de l'IA...
-                    </span>
-                  )}
+                  {!aiStatus.loading &&
+                    aiStatus.initializing &&
+                    !aiStatus.ready && (
+                      <span className="flex items-center gap-1 text-amber-500">
+                        <span className="size-1.5 animate-pulse rounded-full bg-amber-500" />
+                        Préparation de l'IA...
+                      </span>
+                    )}
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex flex-1 flex-col items-center justify-center p-12 relative overflow-hidden bg-white dark:bg-zinc-950">
+            <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-white p-12 dark:bg-zinc-950">
               {/* Clean Icon */}
-              <div className="relative mb-6 flex size-20 items-center justify-center rounded-3xl bg-white dark:bg-zinc-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-border/50">
-                <PenLine className="size-8 text-zinc-400 dark:text-zinc-500 stroke-[1.5]" />
+              <div className="relative mb-6 flex size-20 items-center justify-center rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-border/50 dark:bg-zinc-800">
+                <PenLine className="size-8 stroke-[1.5] text-zinc-400 dark:text-zinc-500" />
                 {/* Subtle accent dot */}
                 <div className="absolute top-4 right-4 size-2 rounded-full bg-primary/40" />
               </div>
 
               {/* Text */}
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+              <h2 className="font-semibold text-foreground text-xl tracking-tight">
                 Prêt à écrire ?
               </h2>
               <p className="mt-2 max-w-xs text-center text-[13px] text-muted-foreground/70 leading-relaxed">
-                Sélectionnez une note dans la liste ou créez-en une nouvelle pour commencer à rédiger.
+                Sélectionnez une note dans la liste ou créez-en une nouvelle
+                pour commencer à rédiger.
               </p>
 
               {/* Actions */}
               <div className="mt-7 flex items-center gap-2.5">
                 <Button
-                  className="rounded-full gap-2 shadow-sm h-9 px-5"
+                  className="h-9 gap-2 rounded-full px-5 shadow-sm"
                   onClick={handleCreateNote}
                 >
-                  <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
+                  <HugeiconsIcon
+                    className="size-4"
+                    icon={Add01Icon}
+                    strokeWidth={1.5}
+                  />
                   Créer une note
                 </Button>
                 {!showSidebar && (
                   <Button
-                    className="rounded-full gap-2 h-9 px-5"
+                    className="h-9 gap-2 rounded-full px-5"
                     onClick={() => setShowSidebar(true)}
                     variant="outline"
                   >
@@ -1004,7 +1071,9 @@ const NotesPro: React.FC = () => {
               {/* Footer hint */}
               {stats.total > 0 && (
                 <p className="mt-8 text-[11px] text-muted-foreground/35">
-                  {stats.total} note{stats.total !== 1 ? "s" : ""} enregistrée{stats.total !== 1 ? "s" : ""} · {stats.totalWords.toLocaleString("fr-FR")} mots rédigés
+                  {stats.total} note{stats.total === 1 ? "" : "s"} enregistrée
+                  {stats.total === 1 ? "" : "s"} ·{" "}
+                  {stats.totalWords.toLocaleString("fr-FR")} mots rédigés
                 </p>
               )}
             </div>
@@ -1016,4 +1085,3 @@ const NotesPro: React.FC = () => {
 };
 
 export default NotesPro;
-

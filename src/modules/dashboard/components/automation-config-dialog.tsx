@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from "react";
+import { addHours, addMinutes, format } from "date-fns";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { NativeSelect } from "@/components/ui/native-select";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { addMinutes, addHours, format } from "date-fns";
+import {
+  getPatientsForAutomation,
+  type PatientAutomation,
+  updatePatientAutomationStatus,
+} from "@/services/sqlite/automations";
 import type { AutomationItem } from "../hooks/useAutomations";
-import { getPatientsForAutomation, updatePatientAutomationStatus, type PatientAutomation } from "@/services/sqlite/automations";
 
 interface AutomationConfigDialogProps {
   automation: AutomationItem | null;
@@ -55,11 +59,16 @@ export function AutomationConfigDialog({
     }
   };
 
-  const handlePatientToggle = async (patientAutoId: string, isActive: boolean) => {
+  const handlePatientToggle = async (
+    patientAutoId: string,
+    isActive: boolean
+  ) => {
     try {
       await updatePatientAutomationStatus(patientAutoId, isActive);
-      setPatients(prev => 
-        prev.map(p => p.id === patientAutoId ? { ...p, is_active: isActive } : p)
+      setPatients((prev) =>
+        prev.map((p) =>
+          p.id === patientAutoId ? { ...p, is_active: isActive } : p
+        )
       );
     } catch (error) {
       console.error("Failed to update patient automation", error);
@@ -67,7 +76,9 @@ export function AutomationConfigDialog({
   };
 
   const handleSave = () => {
-    if (!automation) return;
+    if (!automation) {
+      return;
+    }
 
     const update: Partial<AutomationItem> = {
       active,
@@ -76,33 +87,44 @@ export function AutomationConfigDialog({
     if (remindIn !== "never") {
       const now = new Date();
       let nextDate = now;
-      if (remindIn === "1m") nextDate = addMinutes(now, 1);
-      if (remindIn === "5m") nextDate = addMinutes(now, 5);
-      if (remindIn === "1h") nextDate = addHours(now, 1);
-      if (remindIn === "tomorrow") nextDate = addHours(now, 24);
+      if (remindIn === "1m") {
+        nextDate = addMinutes(now, 1);
+      }
+      if (remindIn === "5m") {
+        nextDate = addMinutes(now, 5);
+      }
+      if (remindIn === "1h") {
+        nextDate = addHours(now, 1);
+      }
+      if (remindIn === "tomorrow") {
+        nextDate = addHours(now, 24);
+      }
 
       update.nextRunISO = nextDate.toISOString();
-      
+
       const formatRelative = {
         "1m": "Dans 1 minute",
         "5m": "Dans 5 minutes",
         "1h": "Dans 1 heure",
-        "tomorrow": "Demain",
+        tomorrow: "Demain",
       };
-      
-      update.nextRunRelative = formatRelative[remindIn as keyof typeof formatRelative];
+
+      update.nextRunRelative =
+        formatRelative[remindIn as keyof typeof formatRelative];
       update.nextRunDate = format(nextDate, "dd MMM yyyy, HH:mm");
-      update.lastRunStatus = "Scheduled" as "Scheduled";
+      update.lastRunStatus = "Scheduled" as const;
     }
 
     onSave(automation.id, update);
     onClose();
   };
 
-  if (!automation) return null;
+  if (!automation) {
+    return null;
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog onOpenChange={onClose} open={isOpen}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Configurer l'automatisation</DialogTitle>
@@ -111,39 +133,39 @@ export function AutomationConfigDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="general" className="w-full mt-2">
+        <Tabs className="mt-2 w-full" defaultValue="general">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="general">Général</TabsTrigger>
             <TabsTrigger value="patients">Patients Ciblés</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="general" className="mt-4 space-y-6">
+          <TabsContent className="mt-4 space-y-6" value="general">
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-1">
-                <Label htmlFor="active" className="text-base font-semibold">
+                <Label className="font-semibold text-base" htmlFor="active">
                   Statut Global
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Activer ou désactiver cette tâche pour tous.
                 </p>
               </div>
               <Switch
-                id="active"
                 checked={active}
+                id="active"
                 onCheckedChange={setActive}
               />
             </div>
 
             {active && (
               <div className="flex flex-col gap-3">
-                <Label htmlFor="remind" className="text-base font-semibold">
+                <Label className="font-semibold text-base" htmlFor="remind">
                   Prochaine exécution globale :
                 </Label>
                 <NativeSelect
-                  id="remind"
-                  value={remindIn}
-                  onChange={(e) => setRemindIn(e.target.value)}
                   className="w-full"
+                  id="remind"
+                  onChange={(e) => setRemindIn(e.target.value)}
+                  value={remindIn}
                 >
                   <option value="never">Ne rien changer</option>
                   <option value="1m">Dans 1 minute (Test rapide)</option>
@@ -151,35 +173,49 @@ export function AutomationConfigDialog({
                   <option value="1h">Dans 1 heure</option>
                   <option value="tomorrow">Demain</option>
                 </NativeSelect>
-                <p className="text-xs text-muted-foreground">
-                  Définit la prochaine date d'exécution pour l'ensemble des patients sélectionnés.
+                <p className="text-muted-foreground text-xs">
+                  Définit la prochaine date d'exécution pour l'ensemble des
+                  patients sélectionnés.
                 </p>
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="patients" className="mt-4">
+          <TabsContent className="mt-4" value="patients">
             <div className="flex flex-col gap-2">
-              <p className="text-sm text-muted-foreground mb-2">
+              <p className="mb-2 text-muted-foreground text-sm">
                 Sélectionnez les patients concernés par cette automatisation.
               </p>
-              
-              <div className="border rounded-md max-h-[300px] overflow-y-auto">
+
+              <div className="max-h-[300px] overflow-y-auto rounded-md border">
                 {isLoadingPatients ? (
-                  <div className="p-4 text-center text-sm text-muted-foreground">Chargement...</div>
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    Chargement...
+                  </div>
                 ) : patients.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-muted-foreground">Aucun patient trouvé.</div>
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    Aucun patient trouvé.
+                  </div>
                 ) : (
                   <div className="divide-y">
-                    {patients.map(p => (
-                      <div key={p.id} className="flex items-center justify-between p-3 hover:bg-muted/50">
+                    {patients.map((p) => (
+                      <div
+                        className="flex items-center justify-between p-3 hover:bg-muted/50"
+                        key={p.id}
+                      >
                         <div className="flex flex-col">
-                          <span className="font-medium text-sm">{p.patient_name}</span>
-                          <span className="text-xs text-muted-foreground">Propriétaire: {p.owner_name}</span>
+                          <span className="font-medium text-sm">
+                            {p.patient_name}
+                          </span>
+                          <span className="text-muted-foreground text-xs">
+                            Propriétaire: {p.owner_name}
+                          </span>
                         </div>
-                        <Switch 
-                          checked={p.is_active} 
-                          onCheckedChange={(checked) => handlePatientToggle(p.id, checked)}
+                        <Switch
+                          checked={p.is_active}
+                          onCheckedChange={(checked) =>
+                            handlePatientToggle(p.id, checked)
+                          }
                         />
                       </div>
                     ))}
@@ -191,7 +227,7 @@ export function AutomationConfigDialog({
         </Tabs>
 
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onClose}>
+          <Button onClick={onClose} variant="outline">
             Annuler
           </Button>
           <Button onClick={handleSave}>Enregistrer</Button>

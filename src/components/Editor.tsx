@@ -1,5 +1,3 @@
-import { Redo02Icon, Undo02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -30,14 +28,14 @@ import SlashCommands, {
 
 interface EditorProps {
   content: string;
-  onUpdate: (content: string) => void;
-  readOnly?: boolean;
-  onEditorCreated?: (editor: any) => void;
   onAiStatusChange?: (status: {
     loading: boolean;
     ready: boolean;
     initializing: boolean;
   }) => void;
+  onEditorCreated?: (editor: any) => void;
+  onUpdate: (content: string) => void;
+  readOnly?: boolean;
 }
 
 const Editor: React.FC<EditorProps> = ({

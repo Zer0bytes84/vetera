@@ -24,6 +24,7 @@ import {
   WorkHistoryIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Hospital, Pill, Syringe } from "@phosphor-icons/react";
 import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
 import React, {
@@ -38,12 +39,10 @@ import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-import { Hospital, Pill, Syringe } from "@phosphor-icons/react";
-
 import Avatar from "@/components/Avatar";
+import MotivationalHeader from "@/components/MotivationalHeader";
 import { QuickPatientPicker } from "@/components/QuickPatientPicker";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
-import MotivationalHeader from "@/components/MotivationalHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -104,26 +103,24 @@ import {
   CLINIQUE_STATUS_META,
   PATIENT_STATUS_META,
 } from "@/config/status-meta";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
   useOwnersRepository,
   usePatientsRepository,
+  useUsersRepository,
 } from "@/data/repositories";
 import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
-import { ConsultationSessionDrawer } from "@/modules/consultations";
 import { AnesthesiaSheet } from "@/modules/anesthesia";
+import { ConsultationSessionDrawer } from "@/modules/consultations";
 import { HospitalizationSheet } from "@/modules/hospitalizations";
 import { PrescriptionSheet } from "@/modules/prescriptions";
-import { useAuth } from "@/contexts/AuthContext";
-import { useFocus } from "@/contexts/focus-provider";
-import { useUsersRepository } from "@/data/repositories";
-import { useAudit } from "@/services/auditService";
 import { getSetting } from "@/services/appSettingsService";
-import {
-  useAppointmentReminderSync,
-} from "@/services/reminderService";
+import { useAudit } from "@/services/auditService";
+import { useAppointmentReminderSync } from "@/services/reminderService";
 import type { View } from "@/types";
 import type {
   Appointment,
@@ -873,7 +870,7 @@ function ConsultationSessionDialog({
                 type="button"
                 variant="outline"
               >
-                <Pill weight="duotone" size={14} />
+                <Pill size={14} weight="duotone" />
                 Ordonnance
               </Button>
               <Button
@@ -883,7 +880,7 @@ function ConsultationSessionDialog({
                 type="button"
                 variant="outline"
               >
-                <Hospital weight="duotone" size={14} />
+                <Hospital size={14} weight="duotone" />
                 Hospitaliser
               </Button>
               <Button
@@ -893,7 +890,7 @@ function ConsultationSessionDialog({
                 type="button"
                 variant="outline"
               >
-                <Syringe weight="duotone" size={14} />
+                <Syringe size={14} weight="duotone" />
                 Anesthésie
               </Button>
               <Badge className="bg-background/90" variant="outline">
@@ -1639,7 +1636,8 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     useState<Appointment | null>(null);
   const [soapOpen, setSoapOpen] = useState<boolean>(false);
   const [prescriptionOpen, setPrescriptionOpen] = useState<boolean>(false);
-  const [hospitalizationOpen, setHospitalizationOpen] = useState<boolean>(false);
+  const [hospitalizationOpen, setHospitalizationOpen] =
+    useState<boolean>(false);
   const [anesthesiaOpen, setAnesthesiaOpen] = useState<boolean>(false);
   const [billingAppointment, setBillingAppointment] =
     useState<Appointment | null>(null);
@@ -1647,7 +1645,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const { currentUser: authUser } = useAuth();
   const usersRepo = useUsersRepository();
   const currentUser = authUser
-    ? usersRepo.data.find((u) => u.id === authUser.id) ?? null
+    ? (usersRepo.data.find((u) => u.id === authUser.id) ?? null)
     : null;
   const deferredSearch = useDeferredValue(searchQuery);
   const [listTab, setListTab] = useState<ListTab>("all");
@@ -1675,16 +1673,30 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   useEffect(() => {
     if (focus) {
       if (focus.kind === "appointment") {
-        setSelectedAppointmentId(focus.id);
-        clearFocus();
+        const timer = setTimeout(() => {
+          setSelectedAppointmentId(focus.id);
+          clearFocus();
+        }, 0);
+        return () => clearTimeout(timer);
       } else if (focus.kind === "patient") {
         const patientAppts = appointments
           .filter((a) => a.patientId === focus.id)
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+          .sort(
+            (a, b) =>
+              new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+          );
         if (patientAppts.length > 0) {
-          setSelectedAppointmentId(patientAppts[0].id);
+          const timer = setTimeout(() => {
+            setSelectedAppointmentId(patientAppts[0].id);
+            clearFocus();
+          }, 0);
+          return () => clearTimeout(timer);
+        } else {
+          const timer = setTimeout(() => {
+            clearFocus();
+          }, 0);
+          return () => clearTimeout(timer);
         }
-        clearFocus();
       }
     }
   }, [focus, appointments, clearFocus]);
@@ -1743,13 +1755,12 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     });
   }, [deferredSearch, listTab, ownersById, patientsById, todaysAppointments]);
 
-  useEffect(() => {
+  const [prevFilteredAppts, setPrevFilteredAppts] = useState<any[]>([]);
+  if (prevFilteredAppts !== filteredAppointments) {
+    setPrevFilteredAppts(filteredAppointments);
     if (filteredAppointments.length === 0) {
       setSelectedAppointmentId(null);
-      return;
-    }
-
-    if (
+    } else if (
       !(
         selectedAppointmentId &&
         filteredAppointments.some((item) => item.id === selectedAppointmentId)
@@ -1757,7 +1768,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     ) {
       setSelectedAppointmentId(filteredAppointments[0].id);
     }
-  }, [filteredAppointments, selectedAppointmentId]);
+  }
 
   const selectedAppointment = useMemo(
     () =>
@@ -1775,17 +1786,25 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   // consultation drawer for the matching appointment so a single click
   // is enough — no need to re-select the row in Clinique.
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (loadingAppointments) return;
+    if (typeof window === "undefined") {
+      return;
+    }
+    if (loadingAppointments) {
+      return;
+    }
     const pendingId = window.sessionStorage.getItem(
       "vetera:pending-consultation-start"
     );
-    if (!pendingId) return;
+    if (!pendingId) {
+      return;
+    }
 
     // Wait until target is found or appointments are fully loaded
     const target = appointments.find((a) => a.id === pendingId);
-    if (!target) return;
-    
+    if (!target) {
+      return;
+    }
+
     window.sessionStorage.removeItem("vetera:pending-consultation-start");
 
     if (
@@ -1827,8 +1846,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   // QuickPatientPicker so the user can choose which patient to attach
   // the new prescription/hospitalization/anesthesia to.
   const [palettePickerOpen, setPalettePickerOpen] = useState(false);
-  const [palettePickerAction, setPalettePickerAction] =
-    useState<"prescription" | "hospitalization" | "anesthesia" | null>(null);
+  const [palettePickerAction, setPalettePickerAction] = useState<
+    "prescription" | "hospitalization" | "anesthesia" | null
+  >(null);
   const [palettePatient, setPalettePatient] = useState<Patient | null>(null);
 
   const selectedPatient = selectedAppointment
@@ -2255,7 +2275,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const effectiveAppointmentId = activeConsultation?.id ?? "";
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="clinique" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -3069,9 +3089,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           onClose={() => setActiveConsultation(null)}
           onComplete={handleConsultationComplete}
           onDeleteDocument={handleConsultationDocumentDelete}
-          onOpenPrescription={() => setPrescriptionOpen(true)}
-          onOpenHospitalization={() => setHospitalizationOpen(true)}
           onOpenAnesthesia={() => setAnesthesiaOpen(true)}
+          onOpenHospitalization={() => setHospitalizationOpen(true)}
+          onOpenPrescription={() => setPrescriptionOpen(true)}
           onOpenSoap={() => setSoapOpen(true)}
           onSaveDraft={handleConsultationSaveDraft}
           onUploadDocument={handleConsultationDocumentUpload}
@@ -3107,7 +3127,8 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         patientId={activeConsultation?.patientId ?? ""}
         patientName={
           activeConsultation
-            ? (patientsById.get(activeConsultation.patientId)?.name ?? undefined)
+            ? (patientsById.get(activeConsultation.patientId)?.name ??
+              undefined)
             : undefined
         }
       />
@@ -3162,8 +3183,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
               })
             : palettePickerAction === "hospitalization"
               ? t("quickPatientPicker.descHospitalization", {
-                  defaultValue:
-                    "Choisissez le patient à hospitaliser.",
+                  defaultValue: "Choisissez le patient à hospitaliser.",
                 })
               : t("quickPatientPicker.descAnesthesia", {
                   defaultValue:

@@ -83,24 +83,20 @@ export interface Appointment {
   vetId: string;
 }
 
-export type RecurrenceFrequency =
-  | "weekly"
-  | "biweekly"
-  | "monthly"
-  | "yearly";
+export type RecurrenceFrequency = "weekly" | "biweekly" | "monthly" | "yearly";
 
 export interface AppointmentRecurrence {
-  id: string;
-  parentAppointmentId: string;
-  frequency: RecurrenceFrequency;
-  intervalCount: number;
+  createdAt: string;
   /** JSON-encoded array of weekday indexes 0..6 (0=Sun). null for non-weekly. */
   daysOfWeek?: string | null;
   /** ISO date string YYYY-MM-DD. null = no end. */
   endDate?: string | null;
-  maxOccurrences?: number | null;
+  frequency: RecurrenceFrequency;
   generatedCount: number;
-  createdAt: string;
+  id: string;
+  intervalCount: number;
+  maxOccurrences?: number | null;
+  parentAppointmentId: string;
   updatedAt: string;
 }
 
@@ -108,17 +104,17 @@ export type ReminderChannel = "in_app" | "email" | "sms";
 export type ReminderStatus = "pending" | "sent" | "snoozed" | "dismissed";
 
 export interface Reminder {
-  id: string;
   appointmentId: string;
-  minutesBefore: number;
   channel: ReminderChannel;
-  status: ReminderStatus;
+  createdAt: string;
+  id: string;
+  message?: string | null;
+  minutesBefore: number;
   /** ISO datetime — appointment.start_time − minutes_before. */
   scheduledFor: string;
   sentAt?: string | null;
   snoozedUntil?: string | null;
-  message?: string | null;
-  createdAt: string;
+  status: ReminderStatus;
   updatedAt: string;
 }
 
@@ -148,17 +144,17 @@ export type AuditEntity =
   | "session";
 
 export interface AuditLogEntry {
-  id: string;
   action: AuditAction;
+  createdAt: string;
   entity: AuditEntity;
   entityId?: string | null;
-  userId?: string | null;
-  userDisplayName?: string | null;
-  /** JSON sérialisé (champs modifiés, ancienne valeur, etc.). */
-  payload?: string | null;
+  id: string;
   /** JSON libre (reason, ip, userAgent, source, etc.). */
   metadata?: string | null;
-  createdAt: string;
+  /** JSON sérialisé (champs modifiés, ancienne valeur, etc.). */
+  payload?: string | null;
+  userDisplayName?: string | null;
+  userId?: string | null;
 }
 
 export interface Transaction {
@@ -251,25 +247,25 @@ export interface Vaccination {
  * S/O/A/P sont la source de vérité.
  */
 export interface ConsultationSoap {
-  id: string;
-  appointmentId: string;
-  patientId: string;
-  subjective: string;
-  objective: string;
-  assessment: string;
-  plan: string;
-  /** JSON libre sérialisé (signes vitaux, médocs, etc.) — extension future */
-  content: string;
-  /** Brouillon généré par l'IA (JSON.stringify) ou null */
-  aiDraft: string | null;
   /** Score de confiance 0-1 retourné par l'IA */
   aiConfidence: number | null;
+  /** Brouillon généré par l'IA (JSON.stringify) ou null */
+  aiDraft: string | null;
+  appointmentId: string;
+  assessment: string;
+  /** JSON libre sérialisé (signes vitaux, médocs, etc.) — extension future */
+  content: string;
+  createdAt: string;
+  id: string;
+  objective: string;
+  patientId: string;
+  plan: string;
+  subjective: string;
+  templateVersion: string;
   /** Texte brut dicté par le véto avant structuration */
   transcript: string | null;
-  templateVersion: string;
-  vetId?: string;
-  createdAt: string;
   updatedAt: string;
+  vetId?: string;
 }
 
 /** Type pratique pour les appels S/O/A/P. */
@@ -289,55 +285,55 @@ export type PrescriptionDosageUnit =
   | "cp/kg";
 
 export interface Prescription {
-  id: string;
   appointmentId: string;
-  patientId: string;
-  vetId?: string;
-  /** Date affichée sur l'ordonnance (par défaut, date du jour). */
-  prescriptionDate: string;
-  /** Poids utilisé pour le calcul des doses (snapshot, en kg). */
-  weightKg?: number;
+  createdAt: string;
   diagnosis?: string;
   /** Instructions globales (ex: "À donner pendant les repas"). */
   generalInstructions?: string;
-  status: PrescriptionStatus;
+  id: string;
+  patientId: string;
+  /** Date affichée sur l'ordonnance (par défaut, date du jour). */
+  prescriptionDate: string;
   signedAt?: string;
+  status: PrescriptionStatus;
   templateVersion: string;
-  createdAt: string;
   updatedAt: string;
+  vetId?: string;
+  /** Poids utilisé pour le calcul des doses (snapshot, en kg). */
+  weightKg?: number;
 }
 
 export interface PrescriptionItem {
+  computedDoseMg?: number;
+  computedVolumeMl?: number;
+  /** Concentration pour conversion mg → mL. */
+  concentrationMgPerMl?: number;
+  createdAt: string;
+  dosageMax?: number;
+  dosageMin?: number;
+  dosagePerKg: number;
+  dosageUnit: PrescriptionDosageUnit;
+  /** "5-7 jours", "14 jours"… */
+  duration: string;
+  /** Comprimé, solution buvable, injectable, gel, pommade… */
+  form?: string;
+  /** "2x/jour", "toutes les 8h"… */
+  frequency: string;
   id: string;
-  prescriptionId: string;
+  instructions?: string;
+  medicationClass?: string;
   /** Référence au catalogue (nullable : médicament hors base). */
   medicationId?: string;
   /** Snapshot du nom (DCI ou commercial). */
   medicationName: string;
-  medicationClass?: string;
-  /** Comprimé, solution buvable, injectable, gel, pommade… */
-  form?: string;
-  dosagePerKg: number;
-  dosageUnit: PrescriptionDosageUnit;
-  dosageMin?: number;
-  dosageMax?: number;
-  /** Concentration pour conversion mg → mL. */
-  concentrationMgPerMl?: number;
-  computedDoseMg?: number;
-  computedVolumeMl?: number;
-  /** "2x/jour", "toutes les 8h"… */
-  frequency: string;
-  /** "5-7 jours", "14 jours"… */
-  duration: string;
-  /** PO, IM, SC, IV, topique… */
-  route?: string;
+  prescriptionId: string;
   /** "1 boîte de 30 comprimés" */
   quantity?: string;
-  instructions?: string;
-  warnings?: string;
+  /** PO, IM, SC, IV, topique… */
+  route?: string;
   sortOrder: number;
-  createdAt: string;
   updatedAt: string;
+  warnings?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -356,45 +352,45 @@ export type MucousMembrane = "pink" | "pale" | "cyanotic" | "icteric";
 export type MentalState = "alert" | "lethargic" | "comatose" | "agitated";
 
 export interface Hospitalization {
-  id: string;
-  patientId: string;
-  appointmentId?: string | null;
-  reason: string;
-  diagnosis?: string | null;
-  status: HospitalizationStatus;
   admissionDate: string;
-  dischargeDate?: string | null;
+  appointmentId?: string | null;
   cage?: string | null;
-  weightKg?: number | null;
-  temperatureC?: number | null;
-  ivFluids?: string | null;
-  feedingPlan?: string | null;
-  specialCare?: string | null;
-  dischargeSummary?: string | null;
-  vetId?: string | null;
-  templateVersion: string;
   createdAt: string;
+  diagnosis?: string | null;
+  dischargeDate?: string | null;
+  dischargeSummary?: string | null;
+  feedingPlan?: string | null;
+  id: string;
+  ivFluids?: string | null;
+  patientId: string;
+  reason: string;
+  specialCare?: string | null;
+  status: HospitalizationStatus;
+  temperatureC?: number | null;
+  templateVersion: string;
   updatedAt: string;
+  vetId?: string | null;
+  weightKg?: number | null;
 }
 
 export interface HospitalizationVital {
-  id: string;
-  hospitalizationId: string;
-  recordedAt: string;
-  temperatureC?: number | null;
+  bloodGlucoseMmolL?: number | null;
+  bloodPressureDia?: number | null;
+  bloodPressureSys?: number | null;
+  capillaryRefillTimeS?: number | null;
   heartRateBpm?: number | null;
+  hospitalizationId: string;
+  id: string;
+  mentalState?: MentalState | null;
+  mucousMembranes?: MucousMembrane | null;
+  notes?: string | null;
+  painScore?: number | null;
+  recordedAt: string;
+  recordedBy?: string | null;
   respiratoryRateBpm?: number | null;
   spo2Percent?: number | null;
+  temperatureC?: number | null;
   weightKg?: number | null;
-  bloodGlucoseMmolL?: number | null;
-  bloodPressureSys?: number | null;
-  bloodPressureDia?: number | null;
-  capillaryRefillTimeS?: number | null;
-  mucousMembranes?: MucousMembrane | null;
-  mentalState?: MentalState | null;
-  painScore?: number | null;
-  notes?: string | null;
-  recordedBy?: string | null;
 }
 
 export type AnesthesiaStatus =
@@ -403,61 +399,65 @@ export type AnesthesiaStatus =
   | "completed"
   | "cancelled";
 
-export type AnesthesiaPhase = "premed" | "induction" | "maintenance" | "recovery";
+export type AnesthesiaPhase =
+  | "premed"
+  | "induction"
+  | "maintenance"
+  | "recovery";
 export type AnesthesiaRoute = "IM" | "SC" | "IV" | "IO" | "IR" | "PO" | "IN";
 
 export interface AnesthesiaSheet {
-  id: string;
-  patientId: string;
-  hospitalizationId?: string | null;
   appointmentId?: string | null;
-  procedureName: string;
   asaStatus?: number | null;
+  complications?: string | null;
+  createdAt: string;
   emergency: boolean;
-  status: AnesthesiaStatus;
-  scheduledAt?: string | null;
-  startedAt?: string | null;
   endedAt?: string | null;
-  weightKg?: number | null;
   fastingSince?: string | null;
-  premedication?: string | null;
+  hospitalizationId?: string | null;
+  id: string;
   induction?: string | null;
   inductionAgent?: string | null;
   maintenance?: string | null;
   monitoringPlan?: string | null;
+  patientId: string;
+  premedication?: string | null;
+  procedureName: string;
   recoveryNotes?: string | null;
   recoveryScore?: number | null;
-  complications?: string | null;
-  vetId?: string | null;
+  scheduledAt?: string | null;
+  startedAt?: string | null;
+  status: AnesthesiaStatus;
   templateVersion: string;
-  createdAt: string;
   updatedAt: string;
+  vetId?: string | null;
+  weightKg?: number | null;
 }
 
 export interface AnesthesiaDrugLogEntry {
-  id: string;
-  anesthesiaSheetId: string;
   administeredAt: string;
-  phase: AnesthesiaPhase;
-  drugName: string;
-  dose?: string | null;
-  route?: AnesthesiaRoute | null;
   administeredBy?: string | null;
+  anesthesiaSheetId: string;
+  dose?: string | null;
+  drugName: string;
+  id: string;
   notes?: string | null;
+  phase: AnesthesiaPhase;
+  route?: AnesthesiaRoute | null;
 }
 
 export interface AnesthesiaMonitoringEntry {
-  id: string;
   anesthesiaSheetId: string;
-  recordedAt: string;
-  phase: AnesthesiaPhase;
+  etco2Mmhg?: number | null;
   heartRateBpm?: number | null;
+  id: string;
+  isofluranePct?: number | null;
+  mapMmhg?: number | null;
+  notes?: string | null;
+  oxygenFlowLMin?: number | null;
+  phase: AnesthesiaPhase;
+  recordedAt: string;
   respiratoryRateBpm?: number | null;
   spo2Percent?: number | null;
-  etco2Mmhg?: number | null;
-  mapMmhg?: number | null;
   temperatureC?: number | null;
-  isofluranePct?: number | null;
-  oxygenFlowLMin?: number | null;
-  notes?: string | null;
 }

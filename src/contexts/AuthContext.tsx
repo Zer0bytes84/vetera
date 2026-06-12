@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { writeCachedProfile } from "@/lib/profile-cache";
 import { bootstrapScheduler, stopScheduler } from "@/services/backupScheduler";
 import * as AuthService from "@/services/sqlite/auth";
 
@@ -111,6 +112,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           role: user.role,
           avatarUrl: user.avatarUrl ?? null,
         });
+        writeCachedProfile(user.email, {
+          displayName: user.displayName || undefined,
+          avatarUrl: user.avatarUrl ?? undefined,
+        });
       } else if (isInitialLoad) {
         // Only clear the user on the initial load. After bootstrap,
         // a transient null result (StrictMode double-invoke, race condition,
@@ -190,6 +195,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         role: user.role,
         avatarUrl: user.avatarUrl ?? null,
       });
+      writeCachedProfile(user.email, {
+        displayName: user.displayName || undefined,
+        avatarUrl: user.avatarUrl ?? undefined,
+      });
       setError(null);
       // Audit log: login (ne doit jamais casser la session)
       try {
@@ -221,6 +230,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       displayName: user.displayName,
       role: user.role,
       avatarUrl: user.avatarUrl ?? null,
+    });
+    writeCachedProfile(user.email, {
+      displayName: user.displayName || undefined,
+      avatarUrl: user.avatarUrl ?? undefined,
     });
     return {
       id: user.id,

@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type Database from "@tauri-apps/plugin-sql";
-import { runDbOperation } from "./database";
 import type { AutomationItem } from "@/modules/dashboard/hooks/useAutomations";
+import { runDbOperation } from "./database";
 
 export interface PatientAutomation {
-  id: string;
-  patient_id: string;
-  patient_name: string;
-  owner_name: string;
   automation_id: string;
+  id: string;
   is_active: boolean;
   last_run_date: string | null;
   next_run_iso: string | null;
+  owner_name: string;
+  patient_id: string;
+  patient_name: string;
 }
 
 /**
@@ -18,25 +19,28 @@ export interface PatientAutomation {
  * Calculées depuis les tables métier — aucune valeur hardcodée.
  */
 export interface AutomationMetrics {
+  chartData: number[];
   count: number;
   prevCount: number;
   trendPercent: number;
   trendUp: boolean;
-  chartData: number[];
 }
 
 export interface AutomationDrilldownRow {
+  contextDate: string;
+  contextLabel: string;
   id: string;
+  ownerName?: string;
   patientId: string;
   patientName: string;
-  species?: string;
-  ownerName?: string;
-  contextLabel: string;
-  contextDate: string;
   severity: "info" | "warn" | "critical";
+  species?: string;
 }
 
-function diffPercent(count: number, prevCount: number): { trendPercent: number; trendUp: boolean } {
+function diffPercent(
+  count: number,
+  prevCount: number
+): { trendPercent: number; trendUp: boolean } {
   if (prevCount > 0) {
     const pct = Math.round(((count - prevCount) / prevCount) * 100);
     return { trendPercent: pct, trendUp: count >= prevCount };
@@ -117,7 +121,9 @@ export async function updateGlobalAutomation(
       values.push(JSON.stringify(data.chartData));
     }
 
-    if (updates.length === 0) return;
+    if (updates.length === 0) {
+      return;
+    }
 
     values.push(id);
     const query = `UPDATE automations SET ${updates.join(", ")} WHERE id = ?`;
@@ -143,15 +149,24 @@ export async function getAutomationMetrics(
     if (automationId === "auto-003") {
       return postOpMetrics(db, referenceDate);
     }
-    return { count: 0, prevCount: 0, trendPercent: 0, trendUp: false, chartData: [] };
+    return {
+      count: 0,
+      prevCount: 0,
+      trendPercent: 0,
+      trendUp: false,
+      chartData: [],
+    };
   });
 }
 
-async function vaccinationMetrics(db: Database, ref: Date): Promise<AutomationMetrics> {
+async function vaccinationMetrics(
+  db: Database,
+  ref: Date
+): Promise<AutomationMetrics> {
   const nowIso = ref.toISOString();
-  const in30Iso = new Date(ref.getTime() + 30 * 86400_000).toISOString();
-  const in60Iso = new Date(ref.getTime() + 60 * 86400_000).toISOString();
-  const start8w = new Date(ref.getTime() - 56 * 86400_000).toISOString();
+  const in30Iso = new Date(ref.getTime() + 30 * 86_400_000).toISOString();
+  const in60Iso = new Date(ref.getTime() + 60 * 86_400_000).toISOString();
+  const start8w = new Date(ref.getTime() - 56 * 86_400_000).toISOString();
 
   const current = await db.select<any[]>(
     `SELECT COUNT(DISTINCT patient_id) as cnt
@@ -185,11 +200,14 @@ async function vaccinationMetrics(db: Database, ref: Date): Promise<AutomationMe
   return { count, prevCount, ...diffPercent(count, prevCount), chartData };
 }
 
-async function soapMetrics(db: Database, ref: Date): Promise<AutomationMetrics> {
+async function soapMetrics(
+  db: Database,
+  ref: Date
+): Promise<AutomationMetrics> {
   const nowIso = ref.toISOString();
-  const in7Iso = new Date(ref.getTime() - 7 * 86400_000).toISOString();
-  const in14Iso = new Date(ref.getTime() - 14 * 86400_000).toISOString();
-  const start8d = new Date(ref.getTime() - 8 * 86400_000).toISOString();
+  const in7Iso = new Date(ref.getTime() - 7 * 86_400_000).toISOString();
+  const in14Iso = new Date(ref.getTime() - 14 * 86_400_000).toISOString();
+  const start8d = new Date(ref.getTime() - 8 * 86_400_000).toISOString();
 
   const current = await db.select<any[]>(
     `SELECT COUNT(*) as cnt FROM consultation_soaps
@@ -217,11 +235,14 @@ async function soapMetrics(db: Database, ref: Date): Promise<AutomationMetrics> 
   return { count, prevCount, ...diffPercent(count, prevCount), chartData };
 }
 
-async function postOpMetrics(db: Database, ref: Date): Promise<AutomationMetrics> {
+async function postOpMetrics(
+  db: Database,
+  ref: Date
+): Promise<AutomationMetrics> {
   const nowIso = ref.toISOString();
-  const in14Iso = new Date(ref.getTime() - 14 * 86400_000).toISOString();
-  const in28Iso = new Date(ref.getTime() - 28 * 86400_000).toISOString();
-  const start56d = new Date(ref.getTime() - 56 * 86400_000).toISOString();
+  const in14Iso = new Date(ref.getTime() - 14 * 86_400_000).toISOString();
+  const in28Iso = new Date(ref.getTime() - 28 * 86_400_000).toISOString();
+  const start56d = new Date(ref.getTime() - 56 * 86_400_000).toISOString();
 
   const current = await db.select<any[]>(
     `SELECT COUNT(*) as cnt FROM anesthesia_sheets
@@ -259,10 +280,12 @@ function bucketizeDaily(
   ref: Date
 ): number[] {
   const map = new Map<string, number>();
-  for (const r of rows) map.set(r.day, Number(r.cnt));
+  for (const r of rows) {
+    map.set(r.day, Number(r.cnt));
+  }
   const out: number[] = [];
   for (let i = points - 1; i >= 0; i--) {
-    const d = new Date(ref.getTime() - i * 86400_000);
+    const d = new Date(ref.getTime() - i * 86_400_000);
     const key = d.toISOString().slice(0, 10);
     out.push(map.get(key) ?? 0);
   }
@@ -275,13 +298,17 @@ function bucketizeWeekly(
   ref: Date
 ): number[] {
   const map = new Map<string, number>();
-  for (const r of rows) map.set(r.bucket, Number(r.cnt));
+  for (const r of rows) {
+    map.set(r.bucket, Number(r.cnt));
+  }
   const out: number[] = [];
   for (let i = points - 1; i >= 0; i--) {
-    const d = new Date(ref.getTime() - i * 7 * 86400_000);
+    const d = new Date(ref.getTime() - i * 7 * 86_400_000);
     const year = d.getUTCFullYear();
     const startOfYear = new Date(Date.UTC(year, 0, 1));
-    const week = Math.floor((d.getTime() - startOfYear.getTime()) / (7 * 86400_000));
+    const week = Math.floor(
+      (d.getTime() - startOfYear.getTime()) / (7 * 86_400_000)
+    );
     const key = `${year}-${String(week).padStart(2, "0")}`;
     out.push(map.get(key) ?? 0);
   }
@@ -315,7 +342,7 @@ async function vaccinationDrilldown(
   ref: Date
 ): Promise<AutomationDrilldownRow[]> {
   const nowIso = ref.toISOString();
-  const in30Iso = new Date(ref.getTime() + 30 * 86400_000).toISOString();
+  const in30Iso = new Date(ref.getTime() + 30 * 86_400_000).toISOString();
   const rows = await db.select<any[]>(
     `SELECT v.id, v.patient_id, v.vaccine_name, v.next_due_at,
             p.name as patient_name, p.species,
@@ -331,7 +358,7 @@ async function vaccinationDrilldown(
   );
   return rows.map((r) => {
     const due = new Date(r.next_due_at);
-    const daysUntil = Math.floor((due.getTime() - ref.getTime()) / 86400_000);
+    const daysUntil = Math.floor((due.getTime() - ref.getTime()) / 86_400_000);
     return {
       id: r.id,
       patientId: r.patient_id,
@@ -340,7 +367,12 @@ async function vaccinationDrilldown(
       ownerName: r.owner_name,
       contextLabel: `${r.vaccine_name} · ${daysUntil <= 0 ? "aujourd'hui" : `dans ${daysUntil}j`}`,
       contextDate: r.next_due_at,
-      severity: daysUntil <= 3 ? ("critical" as const) : daysUntil <= 14 ? ("warn" as const) : ("info" as const),
+      severity:
+        daysUntil <= 3
+          ? ("critical" as const)
+          : daysUntil <= 14
+            ? ("warn" as const)
+            : ("info" as const),
     };
   });
 }
@@ -349,7 +381,7 @@ async function soapDrilldown(
   db: Database,
   ref: Date
 ): Promise<AutomationDrilldownRow[]> {
-  const in7Iso = new Date(ref.getTime() - 7 * 86400_000).toISOString();
+  const in7Iso = new Date(ref.getTime() - 7 * 86_400_000).toISOString();
   const rows = await db.select<any[]>(
     `SELECT s.id, s.patient_id, s.created_at, s.updated_at,
             s.subjective, s.objective, s.assessment, s.plan,
@@ -368,7 +400,9 @@ async function soapDrilldown(
     const filled = sections.filter((s) => s && s.trim().length > 0).length;
     const isComplete = filled === 4;
     const lastUpdate = new Date(r.updated_at);
-    const hoursIdle = Math.floor((ref.getTime() - lastUpdate.getTime()) / 3600_000);
+    const hoursIdle = Math.floor(
+      (ref.getTime() - lastUpdate.getTime()) / 3_600_000
+    );
     return {
       id: r.id,
       patientId: r.patient_id,
@@ -379,7 +413,11 @@ async function soapDrilldown(
         ? `SOAP complet · ${filled}/4 sections`
         : `SOAP partiel · ${filled}/4 sections${hoursIdle > 0 ? ` · inactif ${hoursIdle}h` : ""}`,
       contextDate: r.updated_at,
-      severity: isComplete ? ("info" as const) : hoursIdle > 24 ? ("critical" as const) : ("warn" as const),
+      severity: isComplete
+        ? ("info" as const)
+        : hoursIdle > 24
+          ? ("critical" as const)
+          : ("warn" as const),
     };
   });
 }
@@ -388,7 +426,7 @@ async function postOpDrilldown(
   db: Database,
   ref: Date
 ): Promise<AutomationDrilldownRow[]> {
-  const in14Iso = new Date(ref.getTime() - 14 * 86400_000).toISOString();
+  const in14Iso = new Date(ref.getTime() - 14 * 86_400_000).toISOString();
   const rows = await db.select<any[]>(
     `SELECT a.id, a.patient_id, a.procedure_name, a.ended_at,
             p.name as patient_name, p.species,
@@ -404,7 +442,9 @@ async function postOpDrilldown(
   );
   return rows.map((r) => {
     const ended = new Date(r.ended_at);
-    const daysPostOp = Math.floor((ref.getTime() - ended.getTime()) / 86400_000);
+    const daysPostOp = Math.floor(
+      (ref.getTime() - ended.getTime()) / 86_400_000
+    );
     return {
       id: r.id,
       patientId: r.patient_id,

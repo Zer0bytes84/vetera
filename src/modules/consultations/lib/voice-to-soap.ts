@@ -1,4 +1,8 @@
-import { generateText, isWebLLMReady, initializeWebLLM } from "@/services/webLLMService";
+import {
+  generateText,
+  initializeWebLLM,
+  isWebLLMReady,
+} from "@/services/webLLMService";
 import type { SoapSectionKey } from "@/types/db";
 
 export type SoapDraft = {
@@ -40,7 +44,9 @@ Réponds UNIQUEMENT avec un objet JSON valide de la forme :
  * ajouter du texte autour (surtout les modèles < 2B paramètres), donc on
  * tente d'abord un parse direct, puis une extraction par regex.
  */
-export function extractJsonObject(input: string): Record<string, unknown> | null {
+export function extractJsonObject(
+  input: string
+): Record<string, unknown> | null {
   const trimmed = input.trim();
   try {
     const direct = JSON.parse(trimmed);
@@ -110,12 +116,12 @@ export function normalizeSoapDraft(raw: Record<string, unknown>): SoapDraft {
 }
 
 export interface StructureOptions {
-  /** Active l'estimation de confiance (JSON avec clé "confidence"). */
-  withConfidence?: boolean;
   /** Prompt optionnel ajouté après la dictée (ex : instructions espèce). */
   extraUserHint?: string;
   /** Modèle explicite à utiliser (sinon celui par défaut). */
   modelId?: string;
+  /** Active l'estimation de confiance (JSON avec clé "confidence"). */
+  withConfidence?: boolean;
 }
 
 /**

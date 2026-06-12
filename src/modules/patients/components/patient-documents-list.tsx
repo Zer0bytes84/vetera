@@ -12,13 +12,6 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -50,8 +43,7 @@ const CATEGORY_META: Record<
   image: {
     icon: ImageIcon,
     label: "Image",
-    className:
-      "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
+    className: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
   },
   other: {
     icon: FileText,
@@ -101,10 +93,14 @@ export function PatientDocumentsList({
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    
+    if (!file) {
+      return;
+    }
+
     if (file.size > 12 * 1024 * 1024) {
       toast.error("Le fichier dépasse 12 Mo.");
       return;
@@ -118,9 +114,9 @@ export function PatientDocumentsList({
         const category = file.type.includes("pdf")
           ? "pdf"
           : file.type.startsWith("image/")
-          ? "image"
-          : "other";
-        
+            ? "image"
+            : "other";
+
         await repo.add({
           patientId,
           appointmentId: "",
@@ -135,7 +131,9 @@ export function PatientDocumentsList({
         toast.error("Erreur lors de l'ajout du document.");
       } finally {
         setIsUploading(false);
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
       }
     };
     reader.readAsDataURL(file);
@@ -168,35 +166,40 @@ export function PatientDocumentsList({
   };
 
   return (
-    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
-      <div className="flex flex-row items-start justify-between gap-2 mb-6">
+    <div
+      className={cn(
+        "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
+        className
+      )}
+    >
+      <div className="mb-6 flex flex-row items-start justify-between gap-2">
         <div>
-          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+          <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
             {t("patientDetail.documents.title")}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">
+          <div className="mt-1 text-muted-foreground text-xs">
             {t("patientDetail.documents.count", { count: docs.length })}
           </div>
         </div>
         <input
-          type="file"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={handleFileChange}
           accept=".pdf,image/*"
+          className="hidden"
+          onChange={handleFileChange}
+          ref={fileInputRef}
+          type="file"
         />
         <Button
           className="h-8 gap-1.5 rounded-lg"
+          disabled={isUploading}
           onClick={triggerUpload}
           size="sm"
           variant="default"
-          disabled={isUploading}
         >
-          <Plus weight="bold" className="size-3.5" />
+          <Plus className="size-3.5" weight="bold" />
           {isUploading ? "Import..." : t("patientDetail.documents.upload")}
         </Button>
       </div>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-1 flex-col">
         {docs.length === 0 ? (
           <Empty>
             <EmptyHeader>
@@ -212,9 +215,16 @@ export function PatientDocumentsList({
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button onClick={triggerUpload} size="sm" variant="outline" disabled={isUploading}>
-                <UploadSimple weight="duotone" className="size-4" />
-                {isUploading ? "Import..." : t("patientDetail.documents.upload")}
+              <Button
+                disabled={isUploading}
+                onClick={triggerUpload}
+                size="sm"
+                variant="outline"
+              >
+                <UploadSimple className="size-4" weight="duotone" />
+                {isUploading
+                  ? "Import..."
+                  : t("patientDetail.documents.upload")}
               </Button>
             </EmptyContent>
           </Empty>
@@ -234,20 +244,20 @@ export function PatientDocumentsList({
                       meta.className
                     )}
                   >
-                    <Icon weight="duotone" className="size-4" />
+                    <Icon className="size-4" weight="duotone" />
                   </span>
-                  <div className="min-w-0 flex-1 flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
                     <button
                       className="min-w-0 flex-1 text-left"
                       onClick={() => handleOpen(doc)}
                       type="button"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="truncate text-sm font-medium">
+                        <span className="truncate font-medium text-sm">
                           {doc.fileName}
                         </span>
                         <Badge
-                          className="rounded-full px-1.5 py-0 text-[10px] font-medium"
+                          className="rounded-full px-1.5 py-0 font-medium text-[10px]"
                           variant="outline"
                         >
                           {meta.label}
@@ -267,12 +277,12 @@ export function PatientDocumentsList({
                     </button>
                     <Button
                       aria-label="Supprimer le document"
-                      className="size-8 text-muted-foreground hover:text-destructive shrink-0"
+                      className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
                       onClick={(e) => void handleDelete(doc.id, e)}
                       size="icon"
                       variant="ghost"
                     >
-                      <Trash weight="duotone" className="size-4" />
+                      <Trash className="size-4" weight="duotone" />
                     </Button>
                   </div>
                 </li>

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import {
   useAppointmentsRepository,
   useRemindersRepository,
@@ -117,14 +117,18 @@ export function useReminderToasts() {
           continue;
         }
         lastToastedAt.current.set(dedupeKey, now.getTime());
-        toast.message(t("reminders.toast.due", {
-          defaultValue: "Rappel : rendez-vous imminent",
-        }), {
-          description: t("reminders.toast.dueDescription", {
-            defaultValue: "Un rendez-vous arrive à échéance dans quelques minutes.",
+        toast.message(
+          t("reminders.toast.due", {
+            defaultValue: "Rappel : rendez-vous imminent",
           }),
-          duration: 6000,
-        });
+          {
+            description: t("reminders.toast.dueDescription", {
+              defaultValue:
+                "Un rendez-vous arrive à échéance dans quelques minutes.",
+            }),
+            duration: 6000,
+          }
+        );
         void remindersStore.markSent(reminder.id);
       }
     };

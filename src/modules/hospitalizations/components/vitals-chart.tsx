@@ -18,7 +18,9 @@ export function VitalsChart({
     [vitals]
   );
 
-  if (sorted.length < 2) return null;
+  if (sorted.length < 2) {
+    return null;
+  }
 
   const W = 600;
   const H = 160;
@@ -34,7 +36,12 @@ export function VitalsChart({
     return padX + ((ms - firstT) / span) * (W - padX * 2);
   };
 
-  const series: { key: string; color: string; values: (number | null | undefined)[]; domain: [number, number] }[] = [
+  const series: {
+    key: string;
+    color: string;
+    values: (number | null | undefined)[];
+    domain: [number, number];
+  }[] = [
     {
       key: "T°",
       color: "#f97316",
@@ -62,52 +69,68 @@ export function VitalsChart({
   ];
 
   return (
-    <div className={cn("rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-4 shadow-inner relative overflow-hidden", className)}>
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 p-4 shadow-inner dark:border-zinc-800 dark:bg-zinc-950",
+        className
+      )}
+    >
       {/* Background grid for "monitor" effect */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]" 
-           style={{ backgroundImage: 'linear-gradient(to right, #888 1px, transparent 1px), linear-gradient(to bottom, #888 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-           
-      <div className="mb-4 flex flex-wrap items-center gap-4 text-[10px] relative z-10">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #888 1px, transparent 1px), linear-gradient(to bottom, #888 1px, transparent 1px)",
+          backgroundSize: "20px 20px",
+        }}
+      />
+
+      <div className="relative z-10 mb-4 flex flex-wrap items-center gap-4 text-[10px]">
         {series.map((s) => (
-          <div className="flex items-center gap-2 rounded-md bg-white/50 dark:bg-white/5 px-2 py-1 shadow-sm border border-black/5 dark:border-white/5" key={s.key}>
+          <div
+            className="flex items-center gap-2 rounded-md border border-black/5 bg-white/50 px-2 py-1 shadow-sm dark:border-white/5 dark:bg-white/5"
+            key={s.key}
+          >
             <span
               className="inline-block size-2.5 rounded-full shadow-[0_0_8px_currentColor]"
               style={{ backgroundColor: s.color, color: s.color }}
             />
-            <span className="font-bold uppercase tracking-widest text-foreground/80">
+            <span className="font-bold text-foreground/80 uppercase tracking-widest">
               {s.key}
             </span>
           </div>
         ))}
       </div>
-      <div className="relative z-10 w-full rounded-lg bg-zinc-900 dark:bg-black p-2 shadow-inner border border-zinc-800">
+      <div className="relative z-10 w-full rounded-lg border border-zinc-800 bg-zinc-900 p-2 shadow-inner dark:bg-black">
         <svg
           className="h-[180px] w-full overflow-visible"
-          viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="none"
+          viewBox={`0 0 ${W} ${H}`}
         >
           {/* Grid lines */}
           {Array.from({ length: 5 }).map((_, i) => {
             const y = padY + (i * (H - padY * 2)) / 4;
             return (
               <line
+                className="text-zinc-500"
                 key={`grid-${i}`}
+                stroke="currentColor"
+                strokeOpacity={0.1}
                 x1={padX}
                 x2={W - padX}
                 y1={y}
                 y2={y}
-                stroke="currentColor"
-                strokeOpacity={0.1}
-                className="text-zinc-500"
               />
             );
           })}
-          
+
           {series.map((s) => {
             const [dmin, dmax] = s.domain;
             const range = dmax - dmin;
             const yOf = (val: number | null | undefined) => {
-              if (val == null) return null;
+              if (val == null) {
+                return null;
+              }
               return H - padY - ((val - dmin) / range) * (H - padY * 2);
             };
             const points = s.values
@@ -127,33 +150,35 @@ export function VitalsChart({
                   stroke={s.color}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={4}
                   strokeOpacity={0.2}
+                  strokeWidth={4}
                   vectorEffect="non-scaling-stroke"
                 />
                 {/* Main line */}
                 <polyline
+                  className="drop-shadow-[0_0_3px_currentColor]"
                   fill="none"
                   points={points}
                   stroke={s.color}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  vectorEffect="non-scaling-stroke"
-                  className="drop-shadow-[0_0_3px_currentColor]"
                   style={{ color: s.color }}
+                  vectorEffect="non-scaling-stroke"
                 />
                 {s.values.map((v, i) => {
                   const y = yOf(v);
-                  if (y == null) return null;
+                  if (y == null) {
+                    return null;
+                  }
                   return (
                     <circle
+                      className="drop-shadow-[0_0_4px_currentColor]"
                       cx={xOf(sorted[i].recordedAt)}
                       cy={y}
                       fill={s.color}
                       key={i}
                       r={3}
-                      className="drop-shadow-[0_0_4px_currentColor]"
                       style={{ color: s.color }}
                     />
                   );

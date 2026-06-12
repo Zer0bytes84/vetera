@@ -12,11 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-} from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -24,10 +20,7 @@ import {
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  COMMON_VACCINES,
-  VACCINATION_STATUS_META,
-} from "@/config/status-meta";
+import { COMMON_VACCINES, VACCINATION_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useVaccinationsRepository } from "@/data/repositories";
 import type { Vaccination, VaccinationStatus } from "@/types/db";
@@ -206,9 +199,9 @@ export function VaccinationDialog({
         </DialogHeader>
 
         <FieldGroup>
-          {!isEditing ? (
+          {isEditing ? null : (
             <Field>
-              <label className="text-sm font-medium" htmlFor="vaccine-preset">
+              <label className="font-medium text-sm" htmlFor="vaccine-preset">
                 {t("patientDetail.vaccinations.presetLabel")}
               </label>
               <NativeSelect
@@ -229,10 +222,10 @@ export function VaccinationDialog({
                 ))}
               </NativeSelect>
             </Field>
-          ) : null}
+          )}
 
           <Field>
-            <label className="text-sm font-medium" htmlFor="vaccine-name">
+            <label className="font-medium text-sm" htmlFor="vaccine-name">
               {t("patientDetail.vaccinations.nameLabel")}
             </label>
             <Input
@@ -245,7 +238,7 @@ export function VaccinationDialog({
           </Field>
 
           <Field>
-            <label className="text-sm font-medium" htmlFor="vaccine-type">
+            <label className="font-medium text-sm" htmlFor="vaccine-type">
               {t("patientDetail.vaccinations.typeLabel")}
             </label>
             <Input
@@ -259,7 +252,7 @@ export function VaccinationDialog({
           <div className="grid grid-cols-2 gap-3">
             <Field>
               <label
-                className="text-sm font-medium"
+                className="font-medium text-sm"
                 htmlFor="vaccine-administered"
               >
                 {t("patientDetail.vaccinations.administeredLabel")}
@@ -274,7 +267,7 @@ export function VaccinationDialog({
               />
             </Field>
             <Field>
-              <label className="text-sm font-medium" htmlFor="vaccine-next-due">
+              <label className="font-medium text-sm" htmlFor="vaccine-next-due">
                 {t("patientDetail.vaccinations.nextDueLabel")}
               </label>
               <Input
@@ -288,7 +281,7 @@ export function VaccinationDialog({
 
           <div className="grid grid-cols-2 gap-3">
             <Field>
-              <label className="text-sm font-medium" htmlFor="vaccine-batch">
+              <label className="font-medium text-sm" htmlFor="vaccine-batch">
                 {t("patientDetail.vaccinations.batchLabel")}
               </label>
               <Input
@@ -299,7 +292,7 @@ export function VaccinationDialog({
             </Field>
             <Field>
               <label
-                className="text-sm font-medium"
+                className="font-medium text-sm"
                 htmlFor="vaccine-manufacturer"
               >
                 {t("patientDetail.vaccinations.manufacturerLabel")}
@@ -313,7 +306,7 @@ export function VaccinationDialog({
           </div>
 
           <Field>
-            <label className="text-sm font-medium" htmlFor="vaccine-notes">
+            <label className="font-medium text-sm" htmlFor="vaccine-notes">
               {t("patientDetail.vaccinations.notesLabel")}
             </label>
             <Textarea
@@ -338,7 +331,7 @@ export function VaccinationDialog({
 
           {error ? (
             <p
-              className="text-sm text-rose-600 dark:text-rose-400"
+              className="text-rose-600 text-sm dark:text-rose-400"
               role="alert"
             >
               {error}
@@ -347,8 +340,8 @@ export function VaccinationDialog({
         </FieldGroup>
 
         <DialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <Syringe weight="duotone" className="size-3.5" />
+          <span className="inline-flex items-center gap-1 text-muted-foreground text-xs">
+            <Syringe className="size-3.5" weight="duotone" />
             {t("patientDetail.vaccinations.subtitle")}
           </span>
           <div className="flex items-center gap-2">
@@ -369,7 +362,7 @@ export function VaccinationDialog({
               {isSubmitting ? (
                 <Spinner className="size-4" />
               ) : (
-                <Plus weight="duotone" className="size-4" />
+                <Plus className="size-4" weight="duotone" />
               )}
               {t("patientDetail.vaccinations.save")}
             </Button>

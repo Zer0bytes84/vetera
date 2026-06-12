@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { SlashCommandItem } from "./SlashCommandsExtension";
 
@@ -10,6 +10,12 @@ interface SlashCommandMenuProps {
 const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
   ({ items, command }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [prevItems, setPrevItems] = useState(items);
+
+    if (prevItems !== items) {
+      setPrevItems(items);
+      setSelectedIndex(0);
+    }
 
     const selectItem = (index: number) => {
       const item = items[index];
@@ -29,10 +35,6 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
     const enterHandler = () => {
       selectItem(selectedIndex);
     };
-
-    useEffect(() => {
-      setSelectedIndex(0);
-    }, [items]);
 
     useImperativeHandle(ref, () => ({
       onKeyDown: ({ event }: { event: KeyboardEvent }) => {

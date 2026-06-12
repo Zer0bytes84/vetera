@@ -1,11 +1,11 @@
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 
 /**
@@ -13,15 +13,11 @@ import {
  * ou un widget cliquable. La vue cible lit cette valeur pour scroller
  * jusqu'à l'élément et le highlight brièvement.
  */
-export type FocusEntityKind =
-  | "appointment"
-  | "task"
-  | "product"
-  | "patient";
+export type FocusEntityKind = "appointment" | "task" | "product" | "patient";
 
 export interface FocusRequest {
-  kind: FocusEntityKind;
   id: string;
+  kind: FocusEntityKind;
   /** Token incrémental pour distinguer deux focus successifs sur la même entité. */
   nonce: number;
 }

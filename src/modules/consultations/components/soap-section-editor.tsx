@@ -1,4 +1,9 @@
-import { Brain, ChatText, ClipboardText, Stethoscope } from "@phosphor-icons/react";
+import {
+  Brain,
+  ChatText,
+  ClipboardText,
+  Stethoscope,
+} from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 import { Textarea } from "@/components/ui/textarea";
@@ -13,9 +18,9 @@ interface SoapSectionEditorProps {
   placeholder: string;
   rows?: number;
   sectionKey: SoapSectionKey;
-  title: string;
   /** "active" affiche un ring autour de la section (utilisé par le dictation target) */
   status?: "active" | "default";
+  title: string;
   value: string;
 }
 
@@ -33,8 +38,7 @@ const SECTION_COLOR: Record<SoapSectionKey, string> = {
     "border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-500/20 dark:bg-emerald-500/5",
   assessment:
     "border-amber-200/60 bg-amber-50/40 dark:border-amber-500/20 dark:bg-amber-500/5",
-  plan:
-    "border-violet-200/60 bg-violet-50/40 dark:border-violet-500/20 dark:bg-violet-500/5",
+  plan: "border-violet-200/60 bg-violet-50/40 dark:border-violet-500/20 dark:bg-violet-500/5",
 };
 
 const SECTION_BADGE: Record<SoapSectionKey, string> = {
@@ -63,30 +67,34 @@ export function SoapSectionEditor({
   return (
     <div
       className={cn(
-        "rounded-xl border p-3.5 transition-all duration-300 backdrop-blur-sm relative group overflow-hidden",
+        "group relative overflow-hidden rounded-xl border p-3.5 backdrop-blur-sm transition-all duration-300",
         SECTION_COLOR[sectionKey],
-        status === "active" ? "ring-2 ring-primary/40 ring-offset-0 shadow-md" : "hover:shadow-sm",
+        status === "active"
+          ? "shadow-md ring-2 ring-primary/40 ring-offset-0"
+          : "hover:shadow-sm",
         className
       )}
       onClick={() => onFocusSection?.(sectionKey)}
     >
-      <div className="mb-2.5 flex items-center justify-between gap-2 relative z-10">
+      <div className="relative z-10 mb-2.5 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span
+            aria-hidden
             className={cn(
               "flex size-6 items-center justify-center rounded-lg shadow-sm",
               SECTION_BADGE[sectionKey]
             )}
-            aria-hidden
           >
-            <IconComponent weight="duotone" className="size-3.5" />
+            <IconComponent className="size-3.5" weight="duotone" />
           </span>
-          <h4 className="text-sm font-semibold tracking-tight text-foreground/90">{title}</h4>
+          <h4 className="font-semibold text-foreground/90 text-sm tracking-tight">
+            {title}
+          </h4>
         </div>
       </div>
 
       <Textarea
-        className="min-h-[120px] resize-y border-0 bg-transparent text-sm shadow-none focus-visible:ring-0 px-0 py-1 text-foreground/90 placeholder:text-muted-foreground/50 relative z-10"
+        className="relative z-10 min-h-[120px] resize-y border-0 bg-transparent px-0 py-1 text-foreground/90 text-sm shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-0"
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
         onFocus={() => onFocusSection?.(sectionKey)}

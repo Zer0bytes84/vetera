@@ -2,22 +2,35 @@ import {
   Alert02Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
-  LockIcon,
-  MailIcon,
-  UserIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { motion } from "framer-motion";
 import type React from "react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { MeshGradient } from "@/components/ui/mesh-gradient";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
-import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
+import { APP_NAME } from "@/lib/brand";
 import Logo from "./Logo";
+
+// Radiant-inspired background gradient
+export function GradientBackground() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute top-0 right-0 left-0 h-96 overflow-hidden"
+    >
+      <div className="relative mx-auto h-full max-w-7xl">
+        <div
+          className="absolute -top-44 -right-60 h-60 w-[36rem] rotate-[-10deg] transform-gpu rounded-full opacity-60 blur-3xl md:right-0 dark:opacity-20"
+          style={{
+            background:
+              "linear-gradient(115deg, #fff1be 28%, #ee87cb 70%, #b060ff)",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 const Auth: React.FC = () => {
   const [view, setView] = useState<"login" | "register">("login");
@@ -49,267 +62,189 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <MeshGradient className="min-h-screen p-4 lg:p-8">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-auto flex min-h-[calc(100vh-2rem)] lg:min-h-[calc(100vh-4rem)] w-full max-w-[1200px] flex-col overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08)] backdrop-blur-3xl dark:border-white/10 dark:bg-black/50 dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] lg:grid lg:grid-cols-2"
-      >
-        {/* Left Panel - Hero Visuals */}
-        <div className="relative hidden w-full flex-col justify-between p-12 lg:flex border-r border-white/20 dark:border-white/5">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="flex items-center justify-between"
-          >
-            <Logo className="shrink-0 drop-shadow-sm" size="xl" />
-            <span className="rounded-full border border-white/30 bg-white/30 px-3 py-1 font-medium text-foreground/80 text-xs shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5 dark:text-foreground/70">
-              {APP_TAGLINE}
-            </span>
-          </motion.div>
+    <main className="relative min-h-screen overflow-hidden bg-[#FCFCFC] dark:bg-zinc-950">
+      <GradientBackground />
+      <div className="isolate flex min-h-screen items-center justify-center p-6 lg:p-8">
+        <motion.div
+          animate={{ opacity: 1, scale: 1 }}
+          className="relative z-10 w-full max-w-md overflow-hidden rounded-xl border border-zinc-200/50 bg-white shadow-md ring-1 ring-black/5 dark:border-white/[0.04] dark:bg-zinc-900 dark:ring-white/5"
+          initial={{ opacity: 0, scale: 0.96 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <form className="p-7 sm:p-11" onSubmit={handleSubmit}>
+            <div className="flex justify-start">
+              <Logo
+                className="shrink-0 text-foreground drop-shadow-sm"
+                size="xl"
+              />
+            </div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="max-w-[29rem]"
-          >
-            <h1 className="font-heading font-semibold text-5xl text-foreground leading-[1.1] tracking-tight text-balance">
-              L'innovation vétérinaire commence ici.
+            <h1 className="mt-8 font-semibold text-base text-zinc-950 dark:text-white">
+              {view === "login"
+                ? "Bon retour parmi nous !"
+                : `Rejoignez ${APP_NAME}`}
             </h1>
-            <p className="mt-6 max-w-md text-lg text-foreground/70 leading-relaxed text-balance font-medium">
-              Une interface claire, rapide et premium pour gérer les patients, les
-              rendez-vous et les opérations de la clinique.
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              {view === "login"
+                ? "Connectez-vous à votre compte pour continuer."
+                : "Créez votre compte et gérez votre clinique en toute simplicité."}
             </p>
-          </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="w-full max-w-md rounded-2xl border border-white/30 bg-white/40 p-5 shadow-lg backdrop-blur-xl transition-transform hover:scale-[1.02] dark:border-white/10 dark:bg-black/40"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex -space-x-2">
-                {["DR", "AS", "KM", "LV"].map((initials, i) => (
-                  <div
-                    className="flex size-11 items-center justify-center rounded-full border-2 border-white/50 bg-gradient-to-br from-primary/20 to-primary/10 font-semibold text-foreground text-xs backdrop-blur-md dark:border-white/10 dark:from-primary/30 dark:to-primary/5"
-                    key={initials}
-                    style={{ zIndex: 4 - i }}
+            {(authError || formError) && (
+              <motion.div
+                animate={{ opacity: 1, height: "auto" }}
+                className="mt-6 flex items-center gap-3 overflow-hidden rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-destructive text-xs leading-snug"
+                initial={{ opacity: 0, height: 0 }}
+              >
+                <HugeiconsIcon
+                  className="size-4 shrink-0"
+                  icon={Alert02Icon}
+                  strokeWidth={2}
+                />
+                <span className="font-medium">{authError || formError}</span>
+              </motion.div>
+            )}
+
+            <div className="mt-8 space-y-6">
+              {view === "register" && (
+                <div className="space-y-2">
+                  <label
+                    className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
+                    htmlFor="name"
                   >
-                    {initials}
-                  </div>
-                ))}
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-foreground text-sm">
-                  +2,000 professionnels
-                </p>
-                <p className="text-foreground/60 text-xs font-medium">
-                  font avancer la médecine vétérinaire
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Right Panel - Login Form */}
-        <div className="relative z-10 flex w-full flex-col items-center justify-center p-6 lg:p-12">
-          {/* Only show logo here on small screens */}
-          <div className="mb-10 flex flex-col items-center text-center lg:hidden">
-            <Logo className="mb-6 drop-shadow-md" size="xl" />
-          </div>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-[28rem] flex-col items-center"
-          >
-            <div className="mb-8 flex flex-col items-center text-center">
-              <h2 className="font-heading font-semibold text-3xl text-foreground drop-shadow-sm sm:text-4xl tracking-tight">
-                {view === "login" ? "Bon retour parmi nous" : `Rejoignez ${APP_NAME}`}
-              </h2>
-              <p className="mt-3 text-foreground/70 text-base font-medium">
-                {view === "login"
-                  ? "Gérez votre clinique en toute simplicité."
-                  : "Créez votre compte et découvrez l'outil de demain."}
-              </p>
-            </div>
-
-            <div className="relative w-full rounded-3xl border border-white/50 bg-white/50 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-black/40 sm:p-10">
-              {(authError || formError) && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                  animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
-                  className="flex items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-destructive text-sm backdrop-blur-md overflow-hidden"
-                >
-                  <HugeiconsIcon
-                    className="size-5 shrink-0"
-                    icon={Alert02Icon}
-                    strokeWidth={2.5}
+                    Nom complet
+                  </label>
+                  <input
+                    className="block w-full rounded-lg border border-transparent bg-white px-3.5 py-2 text-base text-zinc-950 shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
+                    id="name"
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Dr. Prénom Nom"
+                    required
+                    type="text"
+                    value={name}
                   />
-                  <span className="font-medium leading-snug">
-                    {authError || formError}
-                  </span>
-                </motion.div>
+                </div>
               )}
 
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                {view === "register" && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="space-y-2.5"
-                  >
-                    <Label className="ml-1 text-foreground/80 text-xs font-semibold uppercase tracking-wider" htmlFor="name">
-                      Nom complet
-                    </Label>
-                    <div className="group relative">
-                      <HugeiconsIcon
-                        className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-foreground/40 transition-colors group-focus-within:text-primary"
-                        icon={UserIcon}
-                        strokeWidth={2}
-                      />
-                      <Input
-                        className="h-14 rounded-2xl border-white/40 bg-white/50 pl-12 text-base shadow-inner transition-all hover:bg-white/60 focus:border-primary focus:bg-white/80 focus:ring-4 focus:ring-primary/10 dark:border-white/10 dark:bg-black/40 dark:hover:bg-black/50 dark:focus:bg-black/60"
-                        id="name"
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Dr. Prénom Nom"
-                        required
-                        type="text"
-                        value={name}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-
-                <div className="space-y-2.5">
-                  <Label className="ml-1 text-foreground/80 text-xs font-semibold uppercase tracking-wider" htmlFor="email">
-                    E-mail pro
-                  </Label>
-                  <div className="group relative">
-                    <HugeiconsIcon
-                      className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-foreground/40 transition-colors group-focus-within:text-primary"
-                      icon={MailIcon}
-                      strokeWidth={2}
-                    />
-                    <Input
-                      className="h-14 rounded-2xl border-white/40 bg-white/50 pl-12 text-base shadow-inner transition-all hover:bg-white/60 focus:border-primary focus:bg-white/80 focus:ring-4 focus:ring-primary/10 dark:border-white/10 dark:bg-black/40 dark:hover:bg-black/50 dark:focus:bg-black/60"
-                      id="email"
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="exemple@clinique.com"
-                      required
-                      type="email"
-                      value={email}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <Label className="ml-1 text-foreground/80 text-xs font-semibold uppercase tracking-wider" htmlFor="password">
-                      Mot de passe
-                    </Label>
-                    {view === "login" && (
-                      <button
-                        className="text-[11px] font-semibold text-primary/80 uppercase tracking-wider transition-colors hover:text-primary"
-                        type="button"
-                      >
-                        Oublié ?
-                      </button>
-                    )}
-                  </div>
-                  <div className="group relative">
-                    <HugeiconsIcon
-                      className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-foreground/40 transition-colors group-focus-within:text-primary"
-                      icon={LockIcon}
-                      strokeWidth={2}
-                    />
-                    <Input
-                      className="h-14 rounded-2xl border-white/40 bg-white/50 pl-12 text-base shadow-inner transition-all hover:bg-white/60 focus:border-primary focus:bg-white/80 focus:ring-4 focus:ring-primary/10 dark:border-white/10 dark:bg-black/40 dark:hover:bg-black/50 dark:focus:bg-black/60"
-                      id="password"
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      type="password"
-                      value={password}
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  className="mt-8 h-14 w-full rounded-2xl text-lg font-medium shadow-[0_4px_14px_0_var(--tw-shadow-color)] shadow-primary/30 transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_var(--tw-shadow-color)] active:translate-y-0"
-                  disabled={loading}
-                  type="submit"
+              <div className="space-y-2">
+                <label
+                  className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
+                  htmlFor="email"
                 >
-                  {loading ? (
-                    <Spinner className="size-6 text-primary-foreground" />
-                  ) : (
-                    <>
-                      {view === "login" ? "Se connecter" : "Créer mon compte"}
-                      <HugeiconsIcon
-                        className="ml-2 size-5"
-                        icon={ArrowRight01Icon}
-                        strokeWidth={2.5}
-                      />
-                    </>
-                  )}
-                </Button>
-              </form>
+                  E-mail
+                </label>
+                <input
+                  className="block w-full rounded-lg border border-transparent bg-white px-3.5 py-2 text-base text-zinc-950 shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
+                  id="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="exemple@clinique.com"
+                  required
+                  type="email"
+                  value={email}
+                />
+              </div>
 
-              <div className="mt-8 text-center text-foreground/70 text-sm font-medium">
-                {view === "login" ? (
-                  <div className="flex flex-col gap-3">
-                    <span>Pas encore de compte ?</span>
-                    <Button
-                      className="h-12 w-full rounded-2xl border-white/40 bg-white/30 text-foreground hover:bg-white/50 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
-                      onClick={() => {
-                        setView("register");
-                        setFormError("");
-                      }}
-                      variant="outline"
-                    >
-                      Demander un accès
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    className="h-12 w-full rounded-2xl text-foreground hover:bg-white/30 dark:hover:bg-white/10"
-                    onClick={() => {
-                      setView("login");
-                      setFormError("");
-                    }}
-                    variant="ghost"
-                  >
-                    <HugeiconsIcon
-                      className="mr-2 size-4"
-                      icon={ArrowLeft01Icon}
-                      strokeWidth={2}
-                    />
-                    Retour à la connexion
-                  </Button>
-                )}
+              <div className="space-y-2">
+                <label
+                  className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
+                  htmlFor="password"
+                >
+                  Mot de passe
+                </label>
+                <input
+                  className="block w-full rounded-lg border border-transparent bg-white px-3.5 py-2 text-base text-zinc-950 shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
+                  id="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  type="password"
+                  value={password}
+                />
               </div>
             </div>
 
-            <div className="mt-8 flex items-center justify-center gap-6 font-medium text-foreground/50 text-xs uppercase tracking-wider">
-              <span className="cursor-pointer transition-colors hover:text-foreground/80">
-                Conditions
-              </span>
-              <span className="size-1 rounded-full bg-foreground/20" />
-              <span className="cursor-pointer transition-colors hover:text-foreground/80">
-                Confidentialité
-              </span>
+            {view === "login" && (
+              <div className="mt-8 flex items-center justify-between text-sm/5">
+                <div className="flex items-center gap-3">
+                  <input
+                    className="size-4 cursor-pointer rounded-sm border-0 bg-white text-zinc-950 accent-zinc-950 ring-1 ring-black/10 focus:outline focus:outline-2 focus:outline-black focus:outline-offset-2 dark:bg-zinc-800 dark:text-white dark:accent-white dark:ring-white/20 dark:focus:outline-white"
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                  />
+                  <label
+                    className="cursor-pointer select-none font-medium text-zinc-950 dark:text-zinc-200"
+                    htmlFor="remember-me"
+                  >
+                    Se souvenir de moi
+                  </label>
+                </div>
+                <button
+                  className="cursor-pointer font-medium text-zinc-950 transition-colors hover:text-zinc-600 dark:text-zinc-200 dark:hover:text-zinc-400"
+                  type="button"
+                >
+                  Oublié ?
+                </button>
+              </div>
+            )}
+
+            <div className="mt-8">
+              <button
+                className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-transparent bg-zinc-950 px-4 py-2.5 font-semibold text-sm text-white shadow-md transition-colors hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-40 sm:text-base dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100"
+                disabled={loading}
+                type="submit"
+              >
+                {loading ? (
+                  <Spinner className="size-4 text-white dark:text-zinc-950" />
+                ) : (
+                  <>
+                    {view === "login" ? "Se connecter" : "Créer mon compte"}
+                    <HugeiconsIcon
+                      className="size-4"
+                      icon={ArrowRight01Icon}
+                      strokeWidth={2.5}
+                    />
+                  </>
+                )}
+              </button>
             </div>
-          </motion.div>
-        </div>
-      </motion.div>
-    </MeshGradient>
+          </form>
+
+          <div className="m-1.5 rounded-lg bg-zinc-50/70 py-4 text-center text-sm/5 ring-1 ring-black/5 dark:bg-zinc-950/60 dark:ring-white/5">
+            {view === "login" ? (
+              <>
+                Pas encore de compte ?{" "}
+                <button
+                  className="ml-1 cursor-pointer font-medium text-zinc-950 transition-colors hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
+                  onClick={() => {
+                    setView("register");
+                    setFormError("");
+                  }}
+                >
+                  Créer un compte
+                </button>
+              </>
+            ) : (
+              <button
+                className="mx-auto flex cursor-pointer items-center justify-center gap-1.5 font-medium text-zinc-950 transition-colors hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
+                onClick={() => {
+                  setView("login");
+                  setFormError("");
+                }}
+              >
+                <HugeiconsIcon
+                  className="size-3.5"
+                  icon={ArrowLeft01Icon}
+                  strokeWidth={2}
+                />
+                Retour à la connexion
+              </button>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    </main>
   );
 };
 
 export default Auth;
-

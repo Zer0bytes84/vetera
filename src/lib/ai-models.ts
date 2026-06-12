@@ -137,7 +137,7 @@ export const MODEL_CATEGORIES: {
   },
 ];
 
-export const DEFAULT_MODEL_ID = "Qwen3-1.7B-q4f16_1-MLC";
+export const DEFAULT_MODEL_ID = "Phi-3.5-vision-instruct-q4f16_1-MLC";
 
 export function getModelById(id: string): AIModel | undefined {
   return AI_MODELS.find((m) => m.id === id);

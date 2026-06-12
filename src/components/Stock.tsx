@@ -1,8 +1,6 @@
 import {
   Activity01Icon,
   Add01Icon,
-  Alert02Icon,
-  ArrowDown01Icon,
   Bug01Icon,
   Calendar01Icon,
   Cancel01Icon,
@@ -15,14 +13,13 @@ import {
   Refresh01Icon,
   Scissor01Icon,
   SearchIcon,
-  ShoppingCart01Icon,
   SparklesIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useDeferredValue, useMemo, useState } from "react";
-import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import MotivationalHeader from "@/components/MotivationalHeader";
+import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { StockStatusBadge } from "@/components/shared/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -241,43 +238,6 @@ const CATEGORIES = [
   "Autre",
 ];
 
-const STAT_ITEMS = [
-  {
-    key: "total",
-    icon: Package02Icon,
-    colorClass:
-      "bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400",
-    label: "Total Produits",
-  },
-  {
-    key: "low",
-    icon: ArrowDown01Icon,
-    colorClass:
-      "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
-    label: "Stock Bas",
-  },
-  {
-    key: "out",
-    icon: Alert02Icon,
-    colorClass: "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400",
-    label: "Ruptures",
-  },
-  {
-    key: "expiring",
-    icon: Calendar01Icon,
-    colorClass:
-      "bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400",
-    label: "Expirations",
-  },
-  {
-    key: "value",
-    icon: ShoppingCart01Icon,
-    colorClass:
-      "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
-    label: "Valeur Stock",
-  },
-] as const;
-
 const Stock: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState("Tous");
   const [searchTerm, setSearchTerm] = useState("");
@@ -318,22 +278,10 @@ const Stock: React.FC = () => {
     (p) => p.quantity <= p.minStock && p.quantity > 0
   ).length;
   const outOfStock = products.filter((p) => p.quantity === 0).length;
-  const todayStr = new Date().toISOString().split("T")[0];
-  const expiringSoon = products.filter(
-    (p) => p.expiryDate && p.expiryDate < todayStr
-  ).length;
   const stockValue = products.reduce(
     (sum, product) => sum + product.quantity * product.purchasePriceAmount,
     0
   );
-
-  const statValues: Record<string, string | number> = {
-    total: totalProducts,
-    low: lowStock,
-    out: outOfStock,
-    expiring: expiringSoon,
-    value: formatDZD(stockValue),
-  };
 
   const sectionCards = useMemo<SectionCardItem[]>(
     () => [
@@ -494,7 +442,7 @@ const Stock: React.FC = () => {
               status: "paid",
             } as any);
           } catch (txError) {
-            // Transaction creation failed silently
+            console.error("Failed to add initial stock transaction:", txError);
           }
         }
       }
@@ -553,7 +501,7 @@ const Stock: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 lg:px-6 pb-8 pt-16 md:pt-28">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="stock" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">

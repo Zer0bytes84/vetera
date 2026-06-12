@@ -16,12 +16,12 @@ import {
 } from "@/components/ui/card";
 
 interface QuotaItem {
+  color?: "blue" | "emerald" | "slate";
   icon: LucideIcon;
   label: string;
-  used: number;
   total: number;
   unit?: string;
-  color?: "blue" | "emerald" | "slate";
+  used: number;
 }
 
 const barColorMap: Record<string, { track: string; fill: string }> = {
@@ -40,11 +40,43 @@ const barColorMap: Record<string, { track: string; fill: string }> = {
 };
 
 const defaultQuotas: QuotaItem[] = [
-  { icon: Users, label: "Patients actifs", used: 847, total: 1000, color: "blue" },
-  { icon: Database, label: "Stockage DPI", used: 3.2, total: 10, unit: "GB", color: "slate" },
-  { icon: Activity, label: "API mensuelle", used: 12450, total: 50000, color: "emerald" },
-  { icon: HardDrive, label: "Espace fichiers", used: 1.8, total: 5, unit: "GB", color: "slate" },
-  { icon: Server, label: "Sessions actives", used: 3, total: 10, color: "slate" },
+  {
+    icon: Users,
+    label: "Patients actifs",
+    used: 847,
+    total: 1000,
+    color: "blue",
+  },
+  {
+    icon: Database,
+    label: "Stockage DPI",
+    used: 3.2,
+    total: 10,
+    unit: "GB",
+    color: "slate",
+  },
+  {
+    icon: Activity,
+    label: "API mensuelle",
+    used: 12_450,
+    total: 50_000,
+    color: "emerald",
+  },
+  {
+    icon: HardDrive,
+    label: "Espace fichiers",
+    used: 1.8,
+    total: 5,
+    unit: "GB",
+    color: "slate",
+  },
+  {
+    icon: Server,
+    label: "Sessions actives",
+    used: 3,
+    total: 10,
+    color: "slate",
+  },
 ];
 
 function formatQuotaValue(value: number, unit?: string): string {
@@ -71,7 +103,7 @@ export function QuotaUsageWidget({
   return (
     <Card className="dashboard-luxe-card @container">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold">{title}</CardTitle>
+        <CardTitle className="font-semibold text-base">{title}</CardTitle>
         <CardDescription>Ressources et capacité</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3.5">
@@ -83,13 +115,15 @@ export function QuotaUsageWidget({
           return (
             <div key={quota.label}>
               <div className="mb-1 flex items-center gap-2.5">
-                <span className={`flex size-6 shrink-0 items-center justify-center rounded-md ${colors.track}`}>
+                <span
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-md ${colors.track}`}
+                >
                   <Icon className="size-3 text-foreground/70" />
                 </span>
-                <span className="min-w-0 flex-1 text-sm text-foreground">
+                <span className="min-w-0 flex-1 text-foreground text-sm">
                   {quota.label}
                 </span>
-                <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+                <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
                   {formatQuotaValue(quota.used, quota.unit)}
                   {" / "}
                   {formatQuotaValue(quota.total, quota.unit)}

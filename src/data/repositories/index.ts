@@ -564,8 +564,7 @@ export function useWeightEntriesRepository() {
         .filter((entry) => entry.patientId === patientId)
         .sort(
           (a, b) =>
-            new Date(b.measuredAt).getTime() -
-            new Date(a.measuredAt).getTime()
+            new Date(b.measuredAt).getTime() - new Date(a.measuredAt).getTime()
         );
       return entries[0] ?? null;
     },
@@ -723,10 +722,7 @@ export function useHospitalizationVitalsRepository() {
       store.data
         .filter((row) => row.hospitalizationId === hospitalizationId)
         .sort((a, b) => (a.recordedAt < b.recordedAt ? -1 : 1)),
-    forPatient: (
-      patientId: string,
-      hospitalizations: Hospitalization[]
-    ) => {
+    forPatient: (patientId: string, hospitalizations: Hospitalization[]) => {
       const ids = new Set(
         hospitalizations
           .filter((h) => h.patientId === patientId)
@@ -743,15 +739,20 @@ export function useAnesthesiaSheetsRepository() {
   const store = useSQLite<AnesthesiaSheet>("anesthesia_sheets");
   const tasksStore = useSQLite<Task>("tasks");
   const ensurePostOpTasks = async (sheet: AnesthesiaSheet) => {
-    if (sheet.status !== "completed" || !sheet.endedAt) return;
+    if (sheet.status !== "completed" || !sheet.endedAt) {
+      return;
+    }
     const endedDate = new Date(sheet.endedAt);
-    if (Number.isNaN(endedDate.getTime())) return;
+    if (Number.isNaN(endedDate.getTime())) {
+      return;
+    }
     const exists = tasksStore.data.some(
       (t) =>
-        t.patientId === sheet.patientId &&
-        t.title.startsWith("Suivi post-op :")
+        t.patientId === sheet.patientId && t.title.startsWith("Suivi post-op :")
     );
-    if (exists) return;
+    if (exists) {
+      return;
+    }
     const offsets: { day: 1 | 3 | 7; label: string }[] = [
       { day: 1, label: "J+1 — contrôle douleur & état général" },
       { day: 3, label: "J+3 — vérification cicatrisation & traitement" },
@@ -970,7 +971,9 @@ export function useNotificationStateRepository() {
     notificationId: string,
     patch: Partial<Pick<NotificationStateRow, "readAt" | "dismissedAt">>
   ) => {
-    const existing = store.data.find((row) => row.notificationId === notificationId);
+    const existing = store.data.find(
+      (row) => row.notificationId === notificationId
+    );
     if (existing) {
       await store.update(existing.id, patch as Partial<NotificationStateRow>);
     } else {
@@ -997,7 +1000,9 @@ export function useNotificationStateRepository() {
       }),
     markAllRead: (notificationIds: string[]) => {
       const now = new Date().toISOString();
-      return Promise.all(notificationIds.map((id) => upsert(id, { readAt: now })));
+      return Promise.all(
+        notificationIds.map((id) => upsert(id, { readAt: now }))
+      );
     },
   };
 }

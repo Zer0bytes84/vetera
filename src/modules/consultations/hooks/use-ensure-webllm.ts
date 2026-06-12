@@ -51,7 +51,11 @@ export function useEnsureWebLLM(): WebLLMState {
 
   const ensure = async () => {
     if (isWebLLMReady()) {
-      setState((previous) => ({ ...previous, isReady: true, isLoading: false }));
+      setState((previous) => ({
+        ...previous,
+        isReady: true,
+        isLoading: false,
+      }));
       return;
     }
     setState((previous) => ({

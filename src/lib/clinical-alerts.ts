@@ -25,32 +25,39 @@
  * @see https://www.vasg.org/ (douleur)
  */
 
-export type Species = "Chien" | "Chat" | "Lapin" | "Furet" | "Oiseau" | "Reptile" | "Autre";
+export type Species =
+  | "Chien"
+  | "Chat"
+  | "Lapin"
+  | "Furet"
+  | "Oiseau"
+  | "Reptile"
+  | "Autre";
 
 export type AlertSeverity = "info" | "warn" | "critical";
 
 export interface VitalReading {
-  species: Species | null;
-  recordedAt: Date;
-  temperatureC: number | null;
   heartRateBpm: number | null;
-  respiratoryRate: number | null;
-  spo2Percent: number | null;
-  weightKg: number | null;
   painScore: number | null; // 0-10
+  recordedAt: Date;
+  respiratoryRate: number | null;
+  species: Species | null;
+  spo2Percent: number | null;
+  temperatureC: number | null;
+  weightKg: number | null;
 }
 
 export interface ClinicalAlert {
-  severity: AlertSeverity;
-  metric: string;
-  value: number | null;
-  threshold: string;
   message: string;
+  metric: string;
+  severity: AlertSeverity;
+  threshold: string;
+  value: number | null;
 }
 
 interface SpeciesRange {
-  min: number;
   max: number;
+  min: number;
 }
 
 const TEMP_RANGE: Record<Species, SpeciesRange> = {
@@ -259,9 +266,15 @@ export function evaluateVitals(reading: VitalReading): ClinicalAlert[] {
  * rapidement un badge ou un compteur (vert / ambre / rouge).
  */
 export function highestSeverity(alerts: ClinicalAlert[]): AlertSeverity | null {
-  if (alerts.some((a) => a.severity === "critical")) return "critical";
-  if (alerts.some((a) => a.severity === "warn")) return "warn";
-  if (alerts.length > 0) return "info";
+  if (alerts.some((a) => a.severity === "critical")) {
+    return "critical";
+  }
+  if (alerts.some((a) => a.severity === "warn")) {
+    return "warn";
+  }
+  if (alerts.length > 0) {
+    return "info";
+  }
   return null;
 }
 

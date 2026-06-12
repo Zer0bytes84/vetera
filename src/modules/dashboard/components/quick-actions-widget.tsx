@@ -1,8 +1,8 @@
 import {
   CalendarPlus,
   FilePlus,
-  MessageSquarePlus,
   type LucideIcon,
+  MessageSquarePlus,
   Plus,
   Stethoscope,
   Syringe,
@@ -19,12 +19,12 @@ import {
 } from "@/components/ui/card";
 
 interface QuickAction {
+  color?: "blue" | "emerald" | "slate";
+  description: string;
   icon: LucideIcon;
   label: string;
-  description: string;
-  shortcut?: string;
-  color?: "blue" | "emerald" | "slate";
   onClick?: () => void;
+  shortcut?: string;
 }
 
 const colorMap: Record<string, { bg: string; hover: string; icon: string }> = {
@@ -98,7 +98,7 @@ export function QuickActionsWidget({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base font-semibold">{title}</CardTitle>
+            <CardTitle className="font-semibold text-base">{title}</CardTitle>
             <CardDescription>Tâches courantes</CardDescription>
           </div>
           <Badge className="shrink-0" variant="vibrant">
@@ -125,7 +125,7 @@ export function QuickActionsWidget({
                   <Icon className="size-[16px]" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium text-foreground">
+                  <span className="block truncate font-medium text-foreground text-sm">
                     {action.label}
                   </span>
                 </span>

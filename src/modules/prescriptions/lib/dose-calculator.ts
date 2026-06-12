@@ -23,29 +23,29 @@ import type { PrescriptionDosageUnit } from "@/types/db";
 export type DoseUnit = PrescriptionDosageUnit | string;
 
 export interface ParsedPosology {
-  /** Unité reconnue */
-  unit: DoseUnit;
-  /** Borne basse (en unité de `unit`, ex. 10 mg/kg) */
-  min: number;
   /** Borne haute (idem) */
   max: number;
+  /** Borne basse (en unité de `unit`, ex. 10 mg/kg) */
+  min: number;
   /** Si intervalle (min != max) */
   range: boolean;
+  /** Unité reconnue */
+  unit: DoseUnit;
 }
 
 export interface DoseComputation {
-  unit: DoseUnit;
-  min: number;
-  max: number;
-  range: boolean;
   /** Dose totale calculée (mg), si calculable */
   computedMg?: number;
   /** Volume calculé (mL), si concentration fournie */
   computedMl?: number;
-  /** Texte original (debug / affichage) */
-  raw: string;
   /** Erreur éventuelle (parsing) */
   error?: string;
+  max: number;
+  min: number;
+  range: boolean;
+  /** Texte original (debug / affichage) */
+  raw: string;
+  unit: DoseUnit;
 }
 
 const NUMBER = "\\d+(?:[.,]\\d+)?";
@@ -58,7 +58,9 @@ const UNIT_ALT =
  *                     "20 mg / kg", "10–20 mg/kg" (tiret en dash).
  */
 export function parsePosology(input: string): ParsedPosology | null {
-  if (!input) return null;
+  if (!input) {
+    return null;
+  }
   const text = input.trim().toLowerCase().replace(/\s+/g, " ");
 
   // 1. Intervalle : "min-max unit"
@@ -169,7 +171,9 @@ export function formatComputedDose(computation: DoseComputation): string {
  * Formate un nombre avec 2 décimales max et suppression des zéros inutiles.
  */
 export function formatNumber(value: number): string {
-  if (!Number.isFinite(value)) return "0";
+  if (!Number.isFinite(value)) {
+    return "0";
+  }
   const fixed = value.toFixed(2);
   return fixed.replace(/\.?0+$/, "");
 }

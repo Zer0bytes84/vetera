@@ -16,7 +16,7 @@
 
 const MAGIC = new Uint8Array([0x42, 0x41, 0x49, 0x54, 0x44, 0x42, 0x00, 0x00]); // "BAITDB\0\0"
 const VERSION = 1;
-const FLAG_ENCRYPTED = 0x0001;
+const FLAG_ENCRYPTED = 0x00_01;
 const HEADER_LENGTH = 8 + 2 + 2 + 16 + 12; // = 40 bytes (salt+iv offsets only)
 const PBKDF2_ITERATIONS = 120_000;
 
@@ -60,10 +60,10 @@ async function importAesKey(
 }
 
 export interface EncryptedContainer {
-  salt: Uint8Array;
-  iv: Uint8Array;
   ciphertext: Uint8Array;
+  iv: Uint8Array;
   plaintextHash: Uint8Array;
+  salt: Uint8Array;
 }
 
 export async function encryptPayload(
@@ -102,15 +102,15 @@ export async function decryptPayload(
       container.ciphertext as BufferSource
     );
   } catch (e) {
-    throw new Error(
-      "Mot de passe invalide ou sauvegarde chiffrée corrompue."
-    );
+    throw new Error("Mot de passe invalide ou sauvegarde chiffrée corrompue.");
   }
   const expectedHash = new Uint8Array(
     await subtle.digest("SHA-256", plaintext as BufferSource)
   );
   if (!constantTimeEqual(expectedHash, container.plaintextHash)) {
-    throw new Error("Intégrité de la sauvegarde compromise (hash SHA-256 invalide).");
+    throw new Error(
+      "Intégrité de la sauvegarde compromise (hash SHA-256 invalide)."
+    );
   }
   return new Uint8Array(plaintext);
 }
@@ -126,9 +126,7 @@ function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
   return diff === 0;
 }
 
-export function serializeContainer(
-  container: EncryptedContainer
-): Uint8Array {
+export function serializeContainer(container: EncryptedContainer): Uint8Array {
   const header = new Uint8Array(HEADER_LENGTH);
   header.set(MAGIC, 0);
   // version
@@ -151,13 +149,13 @@ export function serializeContainer(
 }
 
 export interface ParsedContainer {
-  encrypted: boolean;
-  salt: Uint8Array;
-  iv: Uint8Array;
   ciphertext: Uint8Array;
+  encrypted: boolean;
+  iv: Uint8Array;
   plaintextHash: Uint8Array;
   /** When `encrypted` is false, the entire post-header payload is the raw DB. */
   rawPayload: Uint8Array;
+  salt: Uint8Array;
 }
 
 export function parseContainer(bytes: Uint8Array): ParsedContainer {

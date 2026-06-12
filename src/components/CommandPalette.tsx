@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/purity */
 
 import {
   BookOpenTextIcon,
@@ -18,9 +19,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { Locale } from "date-fns";
 import { format } from "date-fns";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
-import type { Locale } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -39,8 +40,8 @@ import {
   useAppointmentsRepository,
   usePatientsRepository,
 } from "@/data/repositories";
-import type { Appointment, Patient } from "@/types/db";
 import type { View } from "@/types";
+import type { Appointment, Patient } from "@/types/db";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -64,11 +65,11 @@ const RECENTS_MAX = 5;
 type RecentKind = "patient" | "view";
 
 interface RecentEntry {
-  kind: RecentKind;
+  at: number;
   id: string;
+  kind: RecentKind;
   label: string;
   sub?: string;
-  at: number;
 }
 
 const loadRecents = (): RecentEntry[] => {
@@ -117,11 +118,11 @@ const pushRecent = (entry: RecentEntry) => {
 };
 
 interface NavAction {
+  category: string;
+  icon: IconSvgElement;
   id: View;
   label: string;
   sub: string;
-  icon: IconSvgElement;
-  category: string;
 }
 
 export default function CommandPalette({
@@ -236,9 +237,7 @@ export default function CommandPalette({
     }
     return patients
       .filter((p) => {
-        const haystack = normalize(
-          `${p.name} ${p.species} ${p.breed ?? ""}`
-        );
+        const haystack = normalize(`${p.name} ${p.species} ${p.breed ?? ""}`);
         return haystack.includes(q);
       })
       .slice(0, 5);
@@ -251,9 +250,7 @@ export default function CommandPalette({
     const now = Date.now();
     return appointments
       .filter((a) => {
-        const haystack = normalize(
-          `${a.title} ${a.type} ${a.notes ?? ""}`
-        );
+        const haystack = normalize(`${a.title} ${a.type} ${a.notes ?? ""}`);
         return haystack.includes(q);
       })
       .filter((a) => {
@@ -345,10 +342,10 @@ export default function CommandPalette({
         <CommandList>
           <CommandEmpty>
             <div className="flex flex-col items-center gap-1.5 py-3">
-              <span className="text-sm font-medium text-muted-foreground">
+              <span className="font-medium text-muted-foreground text-sm">
                 {t("commandPalette.empty.title")}
               </span>
-              <span className="text-xs text-muted-foreground/70">
+              <span className="text-muted-foreground/70 text-xs">
                 {t("commandPalette.empty.hint")}
               </span>
             </div>
@@ -381,11 +378,11 @@ export default function CommandPalette({
                       />
                     </div>
                     <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
-                      <span className="text-sm font-medium leading-none text-foreground">
+                      <span className="font-medium text-foreground text-sm leading-none">
                         {entry.label}
                       </span>
                       {entry.sub && (
-                        <span className="text-[11px] font-medium leading-none text-muted-foreground/70">
+                        <span className="font-medium text-[11px] text-muted-foreground/70 leading-none">
                           {entry.sub}
                         </span>
                       )}
@@ -413,10 +410,10 @@ export default function CommandPalette({
                     />
                   </div>
                   <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
-                    <span className="text-sm font-medium leading-none text-foreground">
+                    <span className="font-medium text-foreground text-sm leading-none">
                       {patient.name}
                     </span>
-                    <span className="text-[11px] font-medium leading-none text-muted-foreground/70">
+                    <span className="font-medium text-[11px] text-muted-foreground/70 leading-none">
                       {patient.species}
                       {patient.breed ? ` · ${patient.breed}` : ""}
                     </span>
@@ -445,10 +442,10 @@ export default function CommandPalette({
                       />
                     </div>
                     <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
-                      <span className="text-sm font-medium leading-none text-foreground">
+                      <span className="font-medium text-foreground text-sm leading-none">
                         {appt.title}
                       </span>
-                      <span className="text-[11px] font-medium leading-none text-muted-foreground/70">
+                      <span className="font-medium text-[11px] text-muted-foreground/70 leading-none">
                         {patient?.name ?? t("commandPalette.unlinkedPatient")}
                         {" · "}
                         {format(new Date(appt.startTime), "PPP HH:mm", {
@@ -486,10 +483,10 @@ export default function CommandPalette({
                       />
                     </div>
                     <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
-                      <span className="text-sm font-medium leading-none text-foreground">
+                      <span className="font-medium text-foreground text-sm leading-none">
                         {action.label}
                       </span>
-                      <span className="text-[11px] font-medium leading-none text-muted-foreground/70">
+                      <span className="font-medium text-[11px] text-muted-foreground/70 leading-none">
                         {action.sub}
                       </span>
                     </div>
@@ -519,9 +516,7 @@ export default function CommandPalette({
               <Kbd className="ml-auto">⌘N</Kbd>
             </CommandItem>
             <CommandItem
-              onSelect={() =>
-                fireAction("agenda", "vetera:new-appointment")
-              }
+              onSelect={() => fireAction("agenda", "vetera:new-appointment")}
               value={`${t("commandPalette.action.newAppointment")} agenda`}
             >
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-sky-200/50 bg-sky-50/80 text-sky-700 shadow-[0_2px_4px_rgba(0,0,0,0.02)] dark:border-sky-900/30 dark:bg-sky-950/40 dark:text-sky-400">
@@ -537,7 +532,9 @@ export default function CommandPalette({
               <Kbd className="ml-auto">⌘R</Kbd>
             </CommandItem>
             <CommandItem
-              onSelect={() => fireAction("clinique", "vetera:open-consultation")}
+              onSelect={() =>
+                fireAction("clinique", "vetera:open-consultation")
+              }
               value={`${t("commandPalette.action.openConsultation")} clinique`}
             >
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-violet-200/50 bg-violet-50/80 text-violet-700 shadow-[0_2px_4px_rgba(0,0,0,0.02)] dark:border-violet-900/30 dark:bg-violet-950/40 dark:text-violet-400">
@@ -552,7 +549,9 @@ export default function CommandPalette({
               </span>
             </CommandItem>
             <CommandItem
-              onSelect={() => fireAction("clinique", "vetera:open-prescription")}
+              onSelect={() =>
+                fireAction("clinique", "vetera:open-prescription")
+              }
               value={`${t("commandPalette.action.newPrescription")} clinique`}
             >
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-fuchsia-200/50 bg-fuchsia-50/80 text-fuchsia-700 shadow-[0_2px_4px_rgba(0,0,0,0.02)] dark:border-fuchsia-900/30 dark:bg-fuchsia-950/40 dark:text-fuchsia-400">
@@ -602,7 +601,7 @@ export default function CommandPalette({
         </CommandList>
 
         {/* Footer with keyboard hints */}
-        <div className="flex items-center justify-between border-t border-black/5 px-3 py-2 text-[11px] text-muted-foreground/70 dark:border-white/5">
+        <div className="flex items-center justify-between border-black/5 border-t px-3 py-2 text-[11px] text-muted-foreground/70 dark:border-white/5">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5">
               <Kbd className="h-4 px-1 text-[9px]">↑</Kbd>
