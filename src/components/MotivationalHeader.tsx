@@ -109,7 +109,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
       }).format(new Date());
       return {
         eyebrow: today,
-        text: `Bonjour ${userName} 👋`,
+        text: `Bonjour ${userName}`,
         subtitle: "Voici ce qui se passe dans votre cabinet aujourd'hui",
         emoji: sectionCopy.dashboard.emoji,
         compact: false,

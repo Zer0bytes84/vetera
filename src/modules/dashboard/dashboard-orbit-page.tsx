@@ -16,8 +16,8 @@ import { AsterTopStats } from "./components/aster-top-stats";
 import { AsterScoreChart } from "./components/aster/aster-score-chart";
 import { AsterRanking } from "./components/aster/aster-ranking";
 
-import { AsterTasksAlerts } from "./components/aster/aster-tasks-alerts";
-import { AsterConsultationsWidget } from "./components/aster/aster-consultations-widget";
+import { AsterTasksChartWidget } from "./components/aster/aster-tasks-chart-widget";
+import { AsterConsultationsChartWidget } from "./components/aster/aster-consultations-chart-widget";
 
 // Keep some essential widgets
 import { DeferredWidget } from "@/components/deferred-widget";
@@ -125,8 +125,8 @@ export function DashboardOrbitPage({ onNavigate, onNavigateToPatient, userDispla
 
       {/* Row 3: Tâches & Consultations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
-        <AsterTasksAlerts className="min-h-[260px]" />
-        <AsterConsultationsWidget metrics={metrics} className="min-h-[260px]" />
+        <AsterTasksChartWidget metrics={metrics} className="min-h-[220px]" />
+        <AsterConsultationsChartWidget metrics={metrics} className="min-h-[220px]" />
       </div>
 
       {/* Row 4: Salle d'attente (Waiting Room) */}
