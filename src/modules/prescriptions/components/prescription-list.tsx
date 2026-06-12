@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Pill, Printer } from "@phosphor-icons/react";
+import { Pill, Printer, Plus } from "@phosphor-icons/react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ export interface PrescriptionListProps {
   /** Limite du nombre d'ordonnances affichées. */
   limit?: number;
   vet?: User | null;
+  onNew?: () => void;
 }
 
 export function PrescriptionList({
@@ -40,6 +41,7 @@ export function PrescriptionList({
   appointmentId,
   limit = 5,
   vet,
+  onNew,
 }: PrescriptionListProps) {
   const { t } = useTranslation();
   const prescriptions = usePrescriptionsRepository();
@@ -50,62 +52,76 @@ export function PrescriptionList({
     : prescriptions.forPatient(patient.id)
   ).slice(0, limit);
 
-  if (list.length === 0) {
-    return (
-      <div className={cn("border border-dashed border-border/60 bg-muted/20 rounded-[16px] flex flex-col items-center justify-center px-4 py-8 text-center text-xs text-muted-foreground", className)}>
-        <Pill weight="duotone" className="mb-2 size-6 text-muted-foreground/50" />
-        {t("prescriptions.list.empty")}
-      </div>
-    );
-  }
-
   return (
-    <div className={cn("space-y-2", className)}>
-      <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
-          <Pill weight="duotone" className="size-3.5 text-primary" />
-          {t("prescriptions.list.title")}
-        </h3>
-        <span className="text-[11px] text-muted-foreground">
-          {t("prescriptions.list.count", { count: list.length })}
-        </span>
+    <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-6 shadow-sm flex flex-col", className)}>
+      <div className="flex flex-row items-start justify-between gap-4 mb-6">
+        <div className="min-w-0 flex-1">
+          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider truncate flex items-center gap-1.5">
+            <Pill weight="duotone" className="size-3.5 text-primary" />
+            {t("prescriptions.list.title")}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1 truncate">
+            {list.length} {t("prescriptions.list.count", { count: list.length })}
+          </div>
+        </div>
+        {onNew ? (
+          <Button
+            className="h-8 gap-1.5 rounded-lg shrink-0"
+            onClick={onNew}
+            size="sm"
+            variant="default"
+          >
+            <Plus weight="bold" className="size-3.5" />
+            Nouvelle ordonnance
+          </Button>
+        ) : null}
       </div>
-      <ul className="space-y-2">
-        {list.map((p) => {
-          const pItems = items.forPrescription(p.id);
-          return (
-            <PrescriptionRow
-              diagnosis={p.diagnosis}
-              items={pItems.map<PreviewItem>((it) => ({
-                id: it.id,
-                medicationName: it.medicationName,
-                medicationClass: it.medicationClass,
-                form: it.form,
-                dosagePerKg: it.dosagePerKg,
-                dosageUnit: it.dosageUnit,
-                dosageMin: it.dosageMin,
-                dosageMax: it.dosageMax,
-                concentrationMgPerMl: it.concentrationMgPerMl,
-                computedDoseMg: it.computedDoseMg,
-                computedVolumeMl: it.computedVolumeMl,
-                frequency: it.frequency,
-                duration: it.duration,
-                route: it.route,
-                quantity: it.quantity,
-                instructions: it.instructions,
-                warnings: it.warnings,
-                sortOrder: it.sortOrder,
-                weightKgSnapshot: p.weightKg,
-              }))}
-              key={p.id}
-              patient={patient}
-              prescriptionDate={p.prescriptionDate}
-              status={p.status}
-              vet={vet}
-            />
-          );
-        })}
-      </ul>
+
+      <div className="flex flex-col flex-1">
+        {list.length === 0 ? (
+          <div className="border border-dashed border-border/60 bg-muted/20 rounded-xl flex flex-col items-center justify-center px-4 py-8 text-center text-xs text-muted-foreground">
+            <Pill weight="duotone" className="mb-2 size-6 text-muted-foreground/50" />
+            {t("prescriptions.list.empty")}
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {list.map((p) => {
+              const pItems = items.forPrescription(p.id);
+              return (
+                <PrescriptionRow
+                  diagnosis={p.diagnosis}
+                  items={pItems.map<PreviewItem>((it) => ({
+                    id: it.id,
+                    medicationName: it.medicationName,
+                    medicationClass: it.medicationClass,
+                    form: it.form,
+                    dosagePerKg: it.dosagePerKg,
+                    dosageUnit: it.dosageUnit,
+                    dosageMin: it.dosageMin,
+                    dosageMax: it.dosageMax,
+                    concentrationMgPerMl: it.concentrationMgPerMl,
+                    computedDoseMg: it.computedDoseMg,
+                    computedVolumeMl: it.computedVolumeMl,
+                    frequency: it.frequency,
+                    duration: it.duration,
+                    route: it.route,
+                    quantity: it.quantity,
+                    instructions: it.instructions,
+                    warnings: it.warnings,
+                    sortOrder: it.sortOrder,
+                    weightKgSnapshot: p.weightKg,
+                  }))}
+                  key={p.id}
+                  patient={patient}
+                  prescriptionDate={p.prescriptionDate}
+                  status={p.status}
+                  vet={vet}
+                />
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
