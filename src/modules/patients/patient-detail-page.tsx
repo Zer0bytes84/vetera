@@ -18,7 +18,7 @@ import type { View } from "@/types";
 import type { Vaccination, WeightEntry, Hospitalization, AnesthesiaSheet } from "@/types/db";
 
 import { PatientDocumentsList } from "./components/patient-documents-list";
-import { PrescriptionList } from "@/modules/prescriptions";
+import { PrescriptionList, PrescriptionSheet } from "@/modules/prescriptions";
 import { AnesthesiaList, AnesthesiaDetail } from "@/modules/anesthesia";
 import { HospitalizationList, HospitalizationDetail } from "@/modules/hospitalizations";
 import { PatientHeader } from "./components/patient-header";
