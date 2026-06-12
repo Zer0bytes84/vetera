@@ -2,9 +2,17 @@
 
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { useTasksRepository } from "@/data/repositories";
+import { useTasksRepository, useAppointmentsRepository } from "@/data/repositories";
 import { DashboardMetrics } from "@/lib/metrics";
 import { motion } from "framer-motion";
+
+const parseDate = (value?: string) => {
+  if (!value) return null;
+  const sqliteLike = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value);
+  const normalized = sqliteLike ? value.replace(" ", "T") : value;
+  const d = new Date(normalized);
+  return Number.isFinite(d.getTime()) ? d : null;
+};
 
 const PremiumSegmentedBar = ({ 
   label, 
@@ -73,22 +81,55 @@ const PremiumSegmentedBar = ({
   );
 };
 
-export function AsterTasksChartWidget({ className }: { className?: string; metrics?: DashboardMetrics }) {
+export function AsterTasksChartWidget({ className, metrics }: { className?: string; metrics?: DashboardMetrics }) {
   const { data: allTasks } = useTasksRepository();
+  const { data: allAppointments } = useAppointmentsRepository();
+
+  const refDate = useMemo(() => {
+    if (metrics?.referenceDate) {
+      return new Date(metrics.referenceDate);
+    }
+    return new Date();
+  }, [metrics?.referenceDate]);
+
+  const todayAppointments = useMemo(() => {
+    const start = new Date(refDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(refDate);
+    end.setHours(23, 59, 59, 999);
+
+    return allAppointments.filter((item) => {
+      const date = parseDate(item.startTime);
+      const isToday = date && date >= start && date <= end;
+      const isValidStatus = !["cancelled", "no_show"].includes(item.status);
+      return isToday && isValidStatus;
+    });
+  }, [allAppointments, refDate]);
 
   const stats = useMemo(() => {
     const normalTasks = allTasks.filter(t => !t.isReminder && t.priority !== "high");
     const reminders = allTasks.filter(t => t.isReminder);
     const urgentTasks = allTasks.filter(t => !t.isReminder && t.priority === "high");
 
-    const getRates = (items: typeof allTasks) => {
-      const total = items.length;
+    const normalAppts = todayAppointments.filter(a => a.type !== "Urgence" && a.type !== "Vaccin");
+    const reminderAppts = todayAppointments.filter(a => a.type === "Vaccin");
+    const urgentAppts = todayAppointments.filter(a => a.type === "Urgence");
+
+    const getRates = (tasksList: typeof allTasks, apptsList: typeof todayAppointments) => {
+      const totalTasks = tasksList.length;
+      const doneTasks = tasksList.filter(t => t.status === "done").length;
+
+      const totalAppts = apptsList.length;
+      const doneAppts = apptsList.filter(a => a.status === "completed").length;
+
+      const total = totalTasks + totalAppts;
+      const done = doneTasks + doneAppts;
+
       if (total === 0) return { total: 0, done: 0, percentage: 0 };
-      const done = items.filter(i => i.status === "done").length;
       return { total, done, percentage: Math.round((done / total) * 100) };
     };
 
-    if (allTasks.length === 0) {
+    if (allTasks.length === 0 && todayAppointments.length === 0) {
       // Fake data for visual testing when DB is empty
       return {
         tasks: { percentage: 75 },
@@ -98,11 +139,11 @@ export function AsterTasksChartWidget({ className }: { className?: string; metri
     }
 
     return {
-      tasks: getRates(normalTasks),
-      reminders: getRates(reminders),
-      urgent: getRates(urgentTasks)
+      tasks: getRates(normalTasks, normalAppts),
+      reminders: getRates(reminders, reminderAppts),
+      urgent: getRates(urgentTasks, urgentAppts)
     };
-  }, [allTasks]);
+  }, [allTasks, todayAppointments]);
 
   return (
     <div className={cn("bg-card border border-border dark:border-border rounded-[16px] p-2 shadow-sm flex flex-col justify-center", className)}>
