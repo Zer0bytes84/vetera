@@ -88,20 +88,7 @@ function findLastIndexBy<T>(items: T[], predicate: (item: T) => boolean) {
   return -1;
 }
 
-function getReferenceDate(
-  appointments: Appointment[],
-  transactions: Transaction[]
-) {
-  const latestDataDate = [
-    ...appointments.map((item) => item.startTime),
-    ...transactions.map((item) => item.date),
-  ]
-    .map((value) => safeDate(value))
-    .filter((date): date is Date => Boolean(date))
-    .sort((a, b) => b.getTime() - a.getTime())[0];
 
-  return latestDataDate ?? new Date();
-}
 
 export type DashboardMetrics = ReturnType<typeof buildDashboardMetrics>;
 
@@ -120,7 +107,7 @@ export function buildDashboardMetrics({
   transactions: Transaction[];
   locale?: string;
 }) {
-  const referenceDate = getReferenceDate(appointments, transactions);
+  const referenceDate = new Date();
   const todayStart = startOfDay(referenceDate);
   const todayEnd = endOfDay(referenceDate);
   const yesterdayStart = startOfDay(addDays(referenceDate, -1));
