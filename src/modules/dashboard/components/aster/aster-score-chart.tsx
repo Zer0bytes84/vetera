@@ -25,20 +25,18 @@ export function AsterScoreChart({
       .slice(days, days * 2)
       .reverse();
 
-    const avgBasket = metrics.summary.averageBasket || 2500; // fallback avg basket
-
     const data = recent.map((day, i) => ({
       name: day.date.toLocaleDateString("fr-FR", {
         day: "numeric",
         month: "short",
       }),
-      value: day.value * avgBasket,
+      value: day.revenue || 0,
       index: i + 1,
     }));
 
     const sumRecent = data.reduce((sum, d) => sum + d.value, 0);
     const sumPrevious = previous.reduce(
-      (sum, d) => sum + d.value * avgBasket,
+      (sum, d) => sum + (d.revenue || 0),
       0
     );
 

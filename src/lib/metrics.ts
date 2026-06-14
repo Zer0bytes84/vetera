@@ -127,13 +127,12 @@ export function buildDashboardMetrics({
     (item) => item.type === "expense"
   );
 
-  const income30 =
-    paidIncome
-      .filter((item) => {
-        const date = safeDate(item.date);
-        return date && date >= last30Start && date <= todayEnd;
-      })
-      .reduce((sum, item) => sum + item.amount, 0) / 100;
+  const paidIncome30 = paidIncome.filter((item) => {
+    const date = safeDate(item.date);
+    return date && date >= last30Start && date <= todayEnd;
+  });
+
+  const income30 = paidIncome30.reduce((sum, item) => sum + item.amount, 0) / 100;
 
   const previousIncome30 =
     paidIncome
@@ -159,9 +158,9 @@ export function buildDashboardMetrics({
       })
       .reduce((sum, item) => sum + item.amount, 0) / 100;
 
-  const averageBasket = paidIncome.length
-    ? paidIncome.reduce((sum, item) => sum + item.amount, 0) /
-      paidIncome.length /
+  const averageBasket = paidIncome30.length
+    ? paidIncome30.reduce((sum, item) => sum + item.amount, 0) /
+      paidIncome30.length /
       100
     : 0;
 
@@ -303,7 +302,7 @@ export function buildDashboardMetrics({
     };
   });
 
-  const categoryTotals = paidIncome.reduce<Map<string, number>>((acc, item) => {
+  const categoryTotals = paidIncome30.reduce<Map<string, number>>((acc, item) => {
     const category = item.category || i18n.t("dashboardV2.fallbacks.other");
     acc.set(category, (acc.get(category) || 0) + item.amount);
     return acc;
@@ -318,7 +317,12 @@ export function buildDashboardMetrics({
       color: ["#21aceb", "#ff7a1a", "#f6c21d", "#23c7b7"][index] ?? "#a1a1aa",
     }));
 
-  const appointmentTypeTotals = appointments.reduce<Map<string, number>>(
+  const appointments30 = appointments.filter((item) => {
+    const date = safeDate(item.startTime);
+    return date && date >= last30Start && date <= todayEnd;
+  });
+
+  const appointmentTypeTotals = appointments30.reduce<Map<string, number>>(
     (acc, item) => {
       if (["cancelled", "no_show"].includes(item.status)) {
         return acc;
@@ -375,9 +379,17 @@ export function buildDashboardMetrics({
       );
     }).length;
 
+    const revenueForDay = paidIncome
+      .filter((item) => {
+        const date = safeDate(item.date);
+        return date && isSameDay(date, day);
+      })
+      .reduce((sum, item) => sum + item.amount, 0) / 100;
+
     return {
       date: day,
       value: total,
+      revenue: revenueForDay,
     };
   });
 
@@ -464,10 +476,15 @@ export function buildDashboardMetrics({
     return date >= sevenDaysAgo;
   });
 
+  const todayAppointmentsAll = appointments.filter((item) => {
+    const date = safeDate(item.startTime);
+    return date && date >= todayStart && date <= todayEnd;
+  });
+
   const pipelineRows = [
     {
       label: i18n.t("dashboardV2.pipeline.new"),
-      value: appointments.filter((item) => item.status === "scheduled").length,
+      value: todayAppointmentsAll.filter((item) => item.status === "scheduled").length,
       color: "#21aceb",
     },
     {
@@ -477,12 +494,12 @@ export function buildDashboardMetrics({
     },
     {
       label: i18n.t("dashboardV2.pipeline.completed"),
-      value: appointments.filter((item) => item.status === "completed").length,
+      value: todayAppointmentsAll.filter((item) => item.status === "completed").length,
       color: "#f6c21d",
     },
     {
       label: i18n.t("dashboardV2.pipeline.followUp"),
-      value: appointments.filter((item) => item.status === "no_show").length,
+      value: todayAppointmentsAll.filter((item) => item.status === "no_show").length,
       color: "#23c7b7",
     },
   ];
