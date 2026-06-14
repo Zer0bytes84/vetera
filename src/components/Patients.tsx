@@ -4,9 +4,11 @@ import {
   Calendar01Icon,
   CheckmarkCircle02Icon,
   Edit01Icon,
+  Folder01Icon,
   SaveIcon,
   SearchIcon,
   StethoscopeIcon,
+  ViewIcon,
   WorkHistoryIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -2077,46 +2079,12 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
 
       <div className="min-h-0 flex-1">
         <Card className="card-vibrant card-hover-lift min-h-[640px] rounded-[24px] border border-border bg-card shadow-none">
-          <CardHeader className="border-border border-b px-6 py-5">
-            <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge className="rounded-full px-3 py-1.5" variant="outline">
-                    Registre clinique
-                  </Badge>
-                  <Badge className="rounded-full border-0 bg-blue-500/8 px-3 py-1.5 text-blue-700 dark:text-blue-300">
-                    {visiblePatients.length} dossier
-                    {visiblePatients.length > 1 ? "s" : ""} visible
-                    {visiblePatients.length > 1 ? "s" : ""}
-                  </Badge>
-                </div>
-                <div className="space-y-1">
-                  <CardTitle className="font-normal text-[24px] tracking-[-0.05em]">
-                    Liste des patients
-                  </CardTitle>
-                  <CardDescription className="max-w-[70ch] text-sm leading-6">
-                    Une vue plus claire pour parcourir les dossiers, repérer les
-                    patients à suivre et ouvrir rapidement la fiche utile.
-                  </CardDescription>
-                </div>
-              </div>
 
-              <CardAction className="flex flex-wrap items-center gap-2 self-start">
-                <Badge className="rounded-full px-3 py-1.5" variant="secondary">
-                  Page {currentPage}/{totalPages}
-                </Badge>
-                <Badge className="rounded-full px-3 py-1.5" variant="outline">
-                  {pageStart > 0 ? `${pageStart}-${pageEnd}` : "0"} sur{" "}
-                  {visiblePatients.length}
-                </Badge>
-              </CardAction>
-            </div>
-          </CardHeader>
 
           <CardContent className="flex min-h-0 flex-1 flex-col gap-4 px-0 pb-0">
             {/* Search & Filters Row */}
-            <div className="border-border/40 border-b px-6 py-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="border-border/40 border-b px-8 py-6">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative max-w-md flex-1">
                   <HugeiconsIcon
                     className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground/60"
@@ -2131,7 +2099,7 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                   />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 sm:w-auto">
+                <div className="flex flex-wrap items-center gap-3 sm:w-auto">
                   <NativeSelect
                     className="h-10 rounded-full border-zinc-200 bg-transparent text-xs dark:border-zinc-800 [&>[data-slot=native-select]]:h-10 [&>[data-slot=native-select]]:rounded-full [&>[data-slot=native-select]]:border-zinc-200 [&>[data-slot=native-select]]:bg-transparent [&>[data-slot=native-select]]:pr-8 [&>[data-slot=native-select]]:pl-4 [&>[data-slot=native-select]]:text-xs [&>[data-slot=native-select]]:dark:border-zinc-800"
                     onChange={(event) => setSpeciesFilter(event.target.value)}
@@ -2178,23 +2146,6 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                   )}
                 </div>
               </div>
-
-              {/* Status Summary row */}
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Badge
-                  className="rounded-full border-zinc-200/60 bg-zinc-50/50 px-2.5 py-0.5 font-medium text-[10px] tracking-wide dark:border-zinc-800 dark:bg-zinc-900/30"
-                  variant="outline"
-                >
-                  {owners.length} propriétaire{owners.length > 1 ? "s" : ""}
-                </Badge>
-                <Badge
-                  className="rounded-full border-zinc-200/60 bg-zinc-50/50 px-2.5 py-0.5 font-medium text-[10px] tracking-wide dark:border-zinc-800 dark:bg-zinc-900/30"
-                  variant="outline"
-                >
-                  {speciesOptions.length} espèce
-                  {speciesOptions.length > 1 ? "s" : ""}
-                </Badge>
-              </div>
             </div>
 
             {loadingPatients ? (
@@ -2232,166 +2183,137 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                 </Empty>
               </div>
             ) : (
-              <div className="px-6 pt-2 pb-6">
-                <div className="overflow-x-auto rounded-2xl border border-zinc-200/60 bg-background/50 backdrop-blur-md dark:border-white/[0.04]">
-                  <table className="min-w-full divide-y divide-zinc-200/50 text-left dark:divide-white/[0.04]">
+              <div className="px-6 pt-2 pb-6 flex-1 min-h-0 flex flex-col">
+                <div className="flex-1 overflow-auto rounded-2xl border border-zinc-200/60 bg-background/50 backdrop-blur-md dark:border-white/[0.04]">
+                  <table className="min-w-full border-separate border-spacing-0 text-left">
                     <thead className="bg-zinc-50/50 dark:bg-zinc-900/30">
                       <tr className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
                         <th
-                          className="whitespace-nowrap py-3.5 pr-3 pl-6"
+                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 py-3.5 pr-3 pl-6 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Patient
                         </th>
                         <th
-                          className="whitespace-nowrap px-3 py-3.5"
+                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 px-3 py-3.5 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Propriétaire
                         </th>
                         <th
-                          className="whitespace-nowrap px-3 py-3.5"
+                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 px-3 py-3.5 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Statut
                         </th>
                         <th
-                          className="whitespace-nowrap px-3 py-3.5"
+                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 px-3 py-3.5 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Dernière visite
                         </th>
                         <th
-                          className="relative whitespace-nowrap py-3.5 pr-6 pl-3 text-right"
+                          className="relative sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 py-3.5 pr-6 pl-3 whitespace-nowrap text-right backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           <span className="sr-only">Actions</span>
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-200/50 dark:divide-white/[0.04]">
-                      {paginatedPatients.map((entry) => (
-                        <tr
-                          className="group cursor-pointer transition-colors duration-150 hover:bg-zinc-50/70 dark:hover:bg-white/[0.02]"
-                          key={entry.patient.id}
-                          onClick={() => {
-                            if (onNavigateToPatient) {
-                              onNavigateToPatient(entry.patient.id);
-                            } else {
-                              openPatientDetails(entry.patient, "info");
-                            }
-                          }}
-                        >
-                          {/* Col 1: Patient Details */}
-                          <td className="whitespace-nowrap py-4 pr-3 pl-6">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={cn(
-                                  "flex size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-md shadow-inner dark:bg-zinc-800",
-                                  getSpeciesTone(entry.patient.species)
-                                )}
-                              >
-                                {getSpeciesIcon(entry.patient.species)}
-                              </div>
-                              <div className="min-w-0">
-                                <span className="block font-semibold text-foreground text-sm tracking-tight">
-                                  {entry.patient.name}
-                                </span>
-                                <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-muted-foreground text-xs">
-                                  <span>{entry.patient.species}</span>
-                                  {entry.patient.breed && (
-                                    <>
-                                      <span className="text-muted-foreground/30">
-                                        ·
-                                      </span>
-                                      <span>{entry.patient.breed}</span>
-                                    </>
+                    <tbody className="">
+                      {paginatedPatients.map((entry, index) => {
+                        const isLast = index === paginatedPatients.length - 1;
+                        const borderClass = isLast ? "" : "border-b border-zinc-200/50 dark:border-white/[0.04]";
+                        
+                        return (
+                          <tr
+                            className="group cursor-pointer transition-colors duration-150 hover:bg-zinc-50/70 dark:hover:bg-white/[0.02]"
+                            key={entry.patient.id}
+                            onClick={() => {
+                              if (onNavigateToPatient) {
+                                onNavigateToPatient(entry.patient.id);
+                              } else {
+                                openPatientDetails(entry.patient, "info");
+                              }
+                            }}
+                          >
+                            {/* Col 1: Patient Details */}
+                            <td className={cn("whitespace-nowrap py-4 pr-3 pl-6", borderClass)}>
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={cn(
+                                    "flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm shadow-sm ring-1 ring-black/5 dark:bg-zinc-800 dark:ring-white/10",
+                                    getSpeciesTone(entry.patient.species)
                                   )}
-                                  <span className="text-muted-foreground/30">
-                                    ·
-                                  </span>
-                                  <span>
-                                    {getAgeLabel(entry.patient.dateOfBirth)}
-                                  </span>
-                                  <span className="text-muted-foreground/30">
-                                    ·
-                                  </span>
-                                  <span>
-                                    {entry.patient.sex === "F"
-                                      ? "Femelle"
-                                      : entry.patient.sex === "M"
-                                        ? "Mâle"
-                                        : "N/S"}
-                                  </span>
+                                >
+                                  {getSpeciesIcon(entry.patient.species)}
                                 </div>
+                                <span className="font-semibold text-zinc-950 dark:text-white text-sm tracking-tight capitalize">
+                                  {entry.patient.name}{" "}
+                                  <span className="font-medium text-zinc-500 dark:text-zinc-400 ml-1 normal-case">
+                                    ({entry.patient.species}
+                                    {entry.patient.breed ? ` - ${entry.patient.breed}` : ""})
+                                  </span>
+                                </span>
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          {/* Col 2: Owner Contact */}
-                          <td className="whitespace-nowrap px-3 py-4">
-                            <div className="font-medium text-foreground text-sm">
+                            {/* Col 2: Owner Contact */}
+                            <td className={cn("whitespace-nowrap px-3 py-4 text-zinc-800 dark:text-zinc-200 font-medium text-sm capitalize", borderClass)}>
                               {formatOwnerName(entry.owner)}
-                            </div>
-                            {entry.owner?.phone && (
-                              <div className="mt-0.5 text-muted-foreground text-xs">
-                                {entry.owner.phone}
-                              </div>
-                            )}
-                          </td>
+                            </td>
 
-                          {/* Col 3: Statut */}
-                          <td className="whitespace-nowrap px-3 py-4">
-                            <PatientStatusBadge status={entry.patient.status} />
-                          </td>
+                            {/* Col 3: Statut */}
+                            <td className={cn("whitespace-nowrap px-3 py-4", borderClass)}>
+                              <PatientStatusBadge status={entry.patient.status} />
+                            </td>
 
-                          {/* Col 4: Last & Next Visit */}
-                          <td className="whitespace-nowrap px-3 py-4 text-foreground text-sm">
-                            <div className="font-medium text-sm">
-                              {formatPatientDate(entry.lastVisit)}
-                            </div>
-                            <div className="mt-0.5 text-muted-foreground text-xs">
-                              {entry.upcomingAppointment
-                                ? `Prochain RDV : ${formatPatientDate(entry.upcomingAppointment.startTime)}`
-                                : "Aucun RDV planifié"}
-                            </div>
-                          </td>
+                            {/* Col 4: Last Visit */}
+                            <td className={cn("whitespace-nowrap px-3 py-4 text-zinc-800 dark:text-zinc-200 font-medium text-sm", borderClass)}>
+                              {formatPatientDate(entry.lastVisit) !== "Date indisponible" ? formatPatientDate(entry.lastVisit) : "-"}
+                            </td>
 
-                          {/* Col 5: Actions */}
-                          <td className="whitespace-nowrap py-4 pr-6 pl-3 text-right font-medium text-sm">
-                            <div className="flex items-center justify-end gap-2">
-                              <Button
-                                className="h-8 rounded-full border-zinc-200 bg-transparent px-3 font-normal text-muted-foreground text-xs shadow-none transition-all hover:bg-zinc-50 hover:text-foreground dark:border-zinc-800 dark:hover:bg-zinc-900"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  openPatientDetails(entry.patient, "info");
-                                }}
-                                size="sm"
-                                variant="outline"
-                              >
-                                Résumé
-                              </Button>
-                              {onNavigateToPatient && (
+                            {/* Col 5: Actions */}
+                            <td className={cn("relative whitespace-nowrap py-4 pr-6 pl-3 text-right font-medium text-sm", borderClass)}>
+                              <div className="flex items-center justify-end gap-1">
                                 <Button
-                                  className="h-8 rounded-full bg-zinc-900 px-3 font-medium text-white text-xs shadow-none transition-all hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100"
+                                  className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
                                   onClick={(event) => {
                                     event.stopPropagation();
-                                    onNavigateToPatient(entry.patient.id);
+                                    openPatientDetails(entry.patient, "info");
                                   }}
-                                  size="sm"
+                                  size="icon"
+                                  title="Résumé"
+                                  variant="ghost"
                                 >
-                                  Dossier
+                                  <HugeiconsIcon className="size-4" icon={ViewIcon} strokeWidth={2} />
+                                  <span className="sr-only">Résumé</span>
                                 </Button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                                {onNavigateToPatient && (
+                                  <Button
+                                    className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      onNavigateToPatient(entry.patient.id);
+                                    }}
+                                    size="icon"
+                                    title="Dossier"
+                                    variant="ghost"
+                                  >
+                                    <HugeiconsIcon className="size-4" icon={Folder01Icon} strokeWidth={2} />
+                                    <span className="sr-only">Dossier</span>
+                                  </Button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
 
-                <div className="flex flex-col gap-3 border-border/70 border-t px-5 py-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-col gap-3 px-5 pt-4 pb-2 md:flex-row md:items-center md:justify-between">
                   <p className="text-muted-foreground text-sm">
                     Affichage de{" "}
                     <span className="font-medium text-foreground">
