@@ -2427,7 +2427,7 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
         }}
         open={!!createdPatientPrompt}
       >
-        <DialogContent className="modal-medical-shell modal-hero-frame max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0">
+        <DialogContent className="modal-medical-shell modal-hero-frame w-full max-w-[min(560px,calc(100%-2rem))] sm:max-w-[560px] overflow-hidden p-0">
           <DialogHeader className="modal-hero-shell gap-0 px-6 py-5">
             <div className="relative z-[1] grid gap-4">
               <div className="modal-hero-badge w-fit px-3 py-2">
