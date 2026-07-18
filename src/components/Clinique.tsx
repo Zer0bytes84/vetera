@@ -2,6 +2,7 @@ import {
   Activity01Icon,
   Add01Icon,
   ArrowRight01Icon,
+  AttachmentIcon,
   BirdIcon,
   Calendar01Icon,
   CheckmarkCircle01Icon,
@@ -9,6 +10,7 @@ import {
   Clock01Icon,
   Delete01Icon,
   Dollar01Icon,
+  File01Icon,
   HourglassIcon,
   Mail01Icon,
   MoreVerticalCircle01Icon,
@@ -910,71 +912,77 @@ function ConsultationSessionDialog({
         </DialogHeader>
 
         <div className="modal-medical-body min-h-0 overflow-y-auto p-6">
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)]">
-            <div className="grid gap-6">
-              <Card size="sm">
-                <CardHeader>
-                  <CardTitle className="text-base">Résumé du créneau</CardTitle>
-                  <CardDescription>
+          <div className="grid gap-8 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)]">
+            {/* Left Column: Patient File & Metadata */}
+            <div className="flex flex-col gap-6">
+              {/* Section 1: Résumé du créneau */}
+              <div className="flex flex-col gap-4">
+                <div className="border-b border-zinc-100 pb-2 dark:border-zinc-800/80">
+                  <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                    Résumé du créneau
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {patientName} · {appointment.type} ·{" "}
                     {formatTime(appointment.startTime)}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                    <p className="text-muted-foreground text-sm">Patient</p>
-                    <p className="mt-1 font-medium text-foreground">
+                  </p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 px-4 py-3">
+                    <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">Patient</p>
+                    <p className="mt-1 font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                       {patient.name}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                    <p className="text-muted-foreground text-sm">
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 px-4 py-3">
+                    <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">
                       Propriétaire
                     </p>
-                    <p className="mt-1 font-medium text-foreground">
+                    <p className="mt-1 font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                       {formatOwnerName(owner)}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                    <p className="text-muted-foreground text-sm">
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 px-4 py-3">
+                    <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">
                       Heure de début
                     </p>
-                    <p className="mt-1 font-medium text-foreground">
+                    <p className="mt-1 font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                       {formatTime(startedAt)}
                     </p>
                   </div>
-                  <div className="rounded-3xl bg-muted/30 px-4 py-3 transition-all duration-200 ease-out hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                    <p className="text-muted-foreground text-sm">Téléphone</p>
-                    <p className="mt-1 font-medium text-foreground">
+                  <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 px-4 py-3">
+                    <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">Téléphone</p>
+                    <p className="mt-1 font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                       {owner?.phone || "Non renseigné"}
                     </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card size="sm">
-                <CardHeader>
-                  <CardTitle className="text-base">Historique récent</CardTitle>
-                  <CardDescription>
-                    Les dernières consultations restent visibles pendant
-                    l’examen.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+              {/* Section 2: Historique récent */}
+              <div className="flex flex-col gap-4">
+                <div className="border-b border-zinc-100 pb-2 dark:border-zinc-800/80">
+                  <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                    Historique récent
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Les dernières consultations enregistrées pour ce patient.
+                  </p>
+                </div>
+                <div>
                   {historyAppointments.length > 0 ? (
                     <div className="grid gap-2">
                       {historyAppointments.map((entry) => (
                         <div
-                          className="rounded-2xl border bg-background/70 px-4 py-3"
+                          className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 shadow-3xs"
                           key={entry.id}
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2">
-                            <p className="font-medium text-foreground text-sm">
+                            <p className="font-bold text-zinc-800 dark:text-zinc-200 text-xs">
                               {entry.type} · {formatShortDate(entry.startTime)}
                             </p>
                             <AppointmentStatusBadge status={entry.status} />
                           </div>
-                          <p className="mt-2 line-clamp-2 text-muted-foreground text-sm">
+                          <p className="mt-1.5 line-clamp-2 text-muted-foreground text-xs leading-relaxed">
                             {entry.diagnosis ||
                               entry.treatment ||
                               entry.notes ||
@@ -985,138 +993,137 @@ function ConsultationSessionDialog({
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-2xl border border-dashed bg-muted/20 px-4 py-3 text-muted-foreground text-sm">
+                    <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-850 bg-zinc-50/20 px-4 py-4 text-center text-muted-foreground text-xs">
                       Première consultation enregistrée pour ce patient.
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card size="sm">
-                <CardHeader>
-                  <CardTitle className="text-base">
+              {/* Section 3: Mise à jour du patient */}
+              <div className="flex flex-col gap-4">
+                <div className="border-b border-zinc-100 pb-2 dark:border-zinc-800/80">
+                  <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
                     Mise à jour du patient
-                  </CardTitle>
-                  <CardDescription>
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     Ajustez les informations utiles pendant l’examen.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <FieldGroup className="grid gap-4 sm:grid-cols-2">
-                    <Field>
-                      <FieldLabel>Nom du patient</FieldLabel>
-                      <Input
-                        onChange={(event) =>
-                          setPatientNameValue(event.target.value)
-                        }
-                        value={patientNameValue}
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel>Espèce</FieldLabel>
-                      <Input
-                        onChange={(event) =>
-                          setPatientSpecies(event.target.value)
-                        }
-                        value={patientSpecies}
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel>Race</FieldLabel>
-                      <Input
-                        onChange={(event) =>
-                          setPatientBreed(event.target.value)
-                        }
-                        placeholder="Race ou profil"
-                        value={patientBreed}
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel>Sexe</FieldLabel>
-                      <NativeSelect
-                        className="w-full"
-                        onChange={(event) =>
-                          setPatientSex(event.target.value as Patient["sex"])
-                        }
-                        value={patientSex}
-                      >
-                        <NativeSelectOption value="M">Mâle</NativeSelectOption>
-                        <NativeSelectOption value="F">
-                          Femelle
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Statut clinique</FieldLabel>
-                      <NativeSelect
-                        className="w-full"
-                        onChange={(event) =>
-                          setPatientStatus(
-                            event.target.value as Patient["status"]
-                          )
-                        }
-                        value={patientStatus}
-                      >
-                        <NativeSelectOption value="sante">
-                          En bonne santé
-                        </NativeSelectOption>
-                        <NativeSelectOption value="traitement">
-                          En traitement
-                        </NativeSelectOption>
-                        <NativeSelectOption value="hospitalise">
-                          Hospitalisé
-                        </NativeSelectOption>
-                        <NativeSelectOption value="decede">
-                          Décédé
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </Field>
-                    <Field className="sm:col-span-2">
-                      <FieldLabel>Allergies</FieldLabel>
-                      <Input
-                        onChange={(event) => setAllergies(event.target.value)}
-                        placeholder="Aucune allergie connue, pénicilline, etc."
-                        value={allergies}
-                      />
-                    </Field>
-                    <Field className="sm:col-span-2">
-                      <FieldLabel>Affections chroniques</FieldLabel>
-                      <Textarea
-                        className="min-h-24"
-                        onChange={(event) =>
-                          setChronicConditions(event.target.value)
-                        }
-                        placeholder="Arthrose, insuffisance rénale, diabète..."
-                        value={chronicConditions}
-                      />
-                    </Field>
-                    <Field className="sm:col-span-2">
-                      <FieldLabel>Notes générales du patient</FieldLabel>
-                      <Textarea
-                        className="min-h-28"
-                        onChange={(event) =>
-                          setGeneralNotes(event.target.value)
-                        }
-                        placeholder="Comportement, sensibilité, consignes particulières..."
-                        value={generalNotes}
-                      />
-                    </Field>
-                  </FieldGroup>
-                </CardContent>
-              </Card>
+                  </p>
+                </div>
+                <FieldGroup className="grid gap-4 sm:grid-cols-2">
+                  <Field>
+                    <FieldLabel>Nom du patient</FieldLabel>
+                    <Input
+                      onChange={(event) =>
+                        setPatientNameValue(event.target.value)
+                      }
+                      value={patientNameValue}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Espèce</FieldLabel>
+                    <Input
+                      onChange={(event) =>
+                        setPatientSpecies(event.target.value)
+                      }
+                      value={patientSpecies}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Race</FieldLabel>
+                    <Input
+                      onChange={(event) =>
+                        setPatientBreed(event.target.value)
+                      }
+                      placeholder="Race ou profil"
+                      value={patientBreed}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Sexe</FieldLabel>
+                    <NativeSelect
+                      className="w-full cursor-pointer"
+                      onChange={(event) =>
+                        setPatientSex(event.target.value as Patient["sex"])
+                      }
+                      value={patientSex}
+                    >
+                      <NativeSelectOption value="M">Mâle</NativeSelectOption>
+                      <NativeSelectOption value="F">
+                        Femelle
+                      </NativeSelectOption>
+                    </NativeSelect>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Statut clinique</FieldLabel>
+                    <NativeSelect
+                      className="w-full cursor-pointer"
+                      onChange={(event) =>
+                        setPatientStatus(
+                          event.target.value as Patient["status"]
+                        )
+                      }
+                      value={patientStatus}
+                    >
+                      <NativeSelectOption value="sante">
+                        En bonne santé
+                      </NativeSelectOption>
+                      <NativeSelectOption value="traitement">
+                        En traitement
+                      </NativeSelectOption>
+                      <NativeSelectOption value="hospitalise">
+                        Hospitalisé
+                      </NativeSelectOption>
+                      <NativeSelectOption value="decede">
+                        Décédé
+                      </NativeSelectOption>
+                    </NativeSelect>
+                  </Field>
+                  <Field className="sm:col-span-2">
+                    <FieldLabel>Allergies</FieldLabel>
+                    <Input
+                      onChange={(event) => setAllergies(event.target.value)}
+                      placeholder="Aucune allergie connue, pénicilline, etc."
+                      value={allergies}
+                    />
+                  </Field>
+                  <Field className="sm:col-span-2">
+                    <FieldLabel>Affections chroniques</FieldLabel>
+                    <Textarea
+                      className="min-h-24"
+                      onChange={(event) =>
+                        setChronicConditions(event.target.value)
+                      }
+                      placeholder="Arthrose, insuffisance rénale, diabète..."
+                      value={chronicConditions}
+                    />
+                  </Field>
+                  <Field className="sm:col-span-2">
+                    <FieldLabel>Notes générales du patient</FieldLabel>
+                    <Textarea
+                      className="min-h-28"
+                      onChange={(event) =>
+                        setGeneralNotes(event.target.value)
+                      }
+                      placeholder="Comportement, sensibilité, consignes particulières..."
+                      value={generalNotes}
+                    />
+                  </Field>
+                </FieldGroup>
+              </div>
             </div>
 
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle className="text-base">
-                  Conduite de consultation
-                </CardTitle>
-                <CardDescription>
-                  Notez le motif, l’examen, le diagnostic et le traitement au
-                  fil de l’eau.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+            {/* Right Column: SOAP & Clinical documentation */}
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4">
+                <div className="border-b border-zinc-100 pb-2 dark:border-zinc-800/80">
+                  <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                    Conduite de consultation
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Notez le motif, l’examen, le diagnostic et le traitement au fil de l’eau.
+                  </p>
+                </div>
                 <FieldGroup className="grid gap-5">
                   <Field>
                     <FieldLabel>Motif</FieldLabel>
@@ -1139,14 +1146,13 @@ function ConsultationSessionDialog({
                       value={consultationNotes}
                     />
                     <FieldDescription>
-                      Gardez cette zone ouverte pendant la consultation pour
-                      saisir vos observations.
+                      Gardez cette zone ouverte pendant la consultation pour saisir vos observations.
                     </FieldDescription>
                   </Field>
 
                   <Field>
                     <FieldLabel>Documents de consultation</FieldLabel>
-                    <div className="grid gap-3 rounded-3xl border border-border/70 bg-muted/20 p-4">
+                    <div className="grid gap-3 rounded-xl border border-zinc-150/70 bg-zinc-50/30 p-4 dark:border-zinc-800/60 dark:bg-zinc-900/10">
                       <Input
                         onChange={(event) =>
                           setDocumentDescription(event.target.value)
@@ -1161,42 +1167,30 @@ function ConsultationSessionDialog({
                         ref={uploadInputRef}
                         type="file"
                       />
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          disabled={isUploadingDocument}
-                          onClick={triggerDocumentPicker}
-                          type="button"
-                          variant="outline"
-                        >
-                          <HugeiconsIcon
-                            data-icon="inline-start"
-                            icon={Add01Icon}
-                            strokeWidth={2}
-                          />
-                          {isUploadingDocument
-                            ? "Import..."
-                            : "Importer PDF / photo"}
-                        </Button>
-                        <p className="self-center text-muted-foreground text-xs">
-                          Historique patient centralisé, accessible depuis
-                          l’onglet Historique.
-                        </p>
-                      </div>
-
+                      <Button
+                        className="w-full cursor-pointer h-9 gap-1.5"
+                        onClick={triggerDocumentPicker}
+                        type="button"
+                        variant="outline"
+                      >
+                        <HugeiconsIcon icon={AttachmentIcon} size={14} strokeWidth={2} />
+                        Sélectionner et attacher un fichier
+                      </Button>
                       {documents.length > 0 ? (
-                        <div className="grid gap-2">
+                        <div className="grid gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800/80">
                           {documents.map((document) => (
                             <div
-                              className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border bg-background/80 px-3 py-2"
+                              className="flex items-center justify-between gap-4 rounded-lg bg-white dark:bg-zinc-950 p-2.5 shadow-3xs border border-zinc-100 dark:border-zinc-900"
                               key={document.id}
                             >
-                              <div className="min-w-0">
-                                <p className="truncate font-medium text-foreground text-sm">
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <HugeiconsIcon
+                                  className="size-4 shrink-0 text-muted-foreground"
+                                  icon={File01Icon}
+                                  strokeWidth={2}
+                                />
+                                <p className="truncate font-medium text-zinc-800 dark:text-zinc-200 text-xs">
                                   {document.fileName}
-                                </p>
-                                <p className="text-muted-foreground text-xs">
-                                  {formatFileSize(Number(document.sizeBytes))} ·{" "}
-                                  {formatShortDate(document.createdAt)}
                                   {document.description
                                     ? ` · ${document.description}`
                                     : ""}
@@ -1204,6 +1198,7 @@ function ConsultationSessionDialog({
                               </div>
                               <div className="flex items-center gap-2">
                                 <Button
+                                  className="cursor-pointer"
                                   onClick={() =>
                                     window.open(document.dataUrl, "_blank")
                                   }
@@ -1214,6 +1209,7 @@ function ConsultationSessionDialog({
                                   Ouvrir
                                 </Button>
                                 <Button
+                                  className="cursor-pointer"
                                   onClick={() =>
                                     void onDeleteDocument(document.id)
                                   }
@@ -1255,8 +1251,8 @@ function ConsultationSessionDialog({
                     />
                   </Field>
                 </FieldGroup>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1444,37 +1440,37 @@ function BillingDialog({
 
         <div className="modal-medical-body min-h-0 overflow-y-auto p-6">
           <div className="grid gap-6">
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle className="text-base">
+            <div>
+              <div className="border-b border-zinc-100 pb-3 dark:border-zinc-800/80 mb-4">
+                <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
                   Résumé avant facturation
-                </CardTitle>
-                <CardDescription>
-                  Vérifiez le patient, le propriétaire et le total avant de
-                  générer la facture.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-3 sm:grid-cols-4">
-                <div className="rounded-2xl bg-muted/30 px-4 py-3">
-                  <p className="text-muted-foreground text-xs">Patient</p>
-                  <p className="mt-1 font-medium">{patientName}</p>
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Vérifiez le patient, le propriétaire et le total avant de générer la facture.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-4">
+                <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 px-4 py-3">
+                  <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">Patient</p>
+                  <p className="mt-1.5 font-bold text-zinc-800 dark:text-zinc-200 text-sm">{patientName}</p>
                 </div>
-                <div className="rounded-2xl bg-muted/30 px-4 py-3">
-                  <p className="text-muted-foreground text-xs">Client</p>
-                  <p className="mt-1 font-medium">
+                <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 px-4 py-3">
+                  <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">Client</p>
+                  <p className="mt-1.5 font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                     {ownerName || "Non renseigné"}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-muted/30 px-4 py-3">
-                  <p className="text-muted-foreground text-xs">Acte</p>
-                  <p className="mt-1 font-medium">{appointment.type}</p>
+                <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 px-4 py-3">
+                  <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">Acte</p>
+                  <p className="mt-1.5 font-bold text-zinc-800 dark:text-zinc-200 text-sm">{appointment.type}</p>
                 </div>
-                <div className="rounded-2xl bg-primary/10 px-4 py-3 text-primary">
-                  <p className="text-xs">Total provisoire</p>
-                  <p className="mt-1 font-semibold">{total} DA</p>
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/10 px-4 py-3 text-emerald-700 dark:text-emerald-300">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider">Total provisoire</p>
+                  <p className="mt-1.5 font-extrabold text-base tracking-tight">{total} DA</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             <FieldGroup className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px_auto]">
               <Field>

@@ -208,6 +208,7 @@ export function WeightEntryDialog({
               {t("patientDetail.weight.bcsLabel")}
             </FieldLabel>
             <NativeSelect
+              className="w-full cursor-pointer"
               id="weight-bcs"
               onChange={(event) => setBcs(event.target.value)}
               value={bcs}
@@ -251,7 +252,7 @@ export function WeightEntryDialog({
         <DialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
           {isEditing ? (
             <Button
-              className="text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
+              className="text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400 cursor-pointer"
               disabled={isDeleting || isSubmitting}
               onClick={handleDelete}
               type="button"
@@ -269,6 +270,7 @@ export function WeightEntryDialog({
           )}
           <div className="flex items-center gap-2">
             <Button
+              className="cursor-pointer"
               disabled={isSubmitting || isDeleting}
               onClick={() => onOpenChange(false)}
               type="button"
@@ -277,6 +279,7 @@ export function WeightEntryDialog({
               {t("patientDetail.weight.cancel")}
             </Button>
             <Button
+              className="cursor-pointer"
               disabled={isSubmitting || isDeleting}
               onClick={handleSave}
               type="button"

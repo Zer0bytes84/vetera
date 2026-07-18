@@ -1,25 +1,19 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Activity, TrendingDown, TrendingUp, HelpCircle } from "lucide-react";
 import type { DashboardMetrics } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
+
+// Format date nicely
+const formatDateLong = (date: Date) => {
+  return date.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
 
 export function AsterConsultationsChartWidget({
   metrics,
@@ -28,244 +22,260 @@ export function AsterConsultationsChartWidget({
   metrics: DashboardMetrics;
   className?: string;
 }) {
-  const [period, setPeriod] = useState<7 | 14 | 30 | 60 | 84>(30);
+  const [hoveredDay, setHoveredDay] = useState<{
+    date: Date;
+    value: number;
+    revenue: number;
+  } | null>(null);
 
-  const chartData = useMemo(
-    () =>
-      metrics.activityDays.slice(-period).map((d) => ({
-        name: new Date(d.date).toLocaleDateString("fr-FR", {
-          day: "numeric",
-          month: "short",
-        }),
-        value: d.value,
-      })),
-    [metrics.activityDays, period]
-  );
+  // We show a 21-week (147-day) activity heatmap of daily consultations and revenue
+  const heatmapData = useMemo(() => {
+    const totalDays = 147;
+    return metrics.activityDays.slice(-totalDays);
+  }, [metrics.activityDays]);
 
-  const totalPeriod = chartData.reduce((sum, item) => sum + item.value, 0);
-  const previousData = metrics.activityDays.slice(-period * 2, -period);
-  const totalPrevious = previousData.reduce((sum, d) => sum + d.value, 0);
+  // Group into weeks (arrays of 7 days)
+  const weeks = useMemo(() => {
+    const w: typeof heatmapData[] = [];
+    let currentWeek: typeof heatmapData = [];
+    
+    heatmapData.forEach((day) => {
+      currentWeek.push(day);
+      if (currentWeek.length === 7) {
+        w.push(currentWeek);
+        currentWeek = [];
+      }
+    });
+    if (currentWeek.length > 0) {
+      w.push(currentWeek);
+    }
+    return w;
+  }, [heatmapData]);
 
-  const trend =
-    totalPrevious > 0
-      ? ((totalPeriod - totalPrevious) / totalPrevious) * 100
-      : totalPeriod > 0
-        ? 100
-        : 0;
+  // Calculations for stats
+  const stats = useMemo(() => {
+    const totalRDV = heatmapData.reduce((sum, d) => sum + d.value, 0);
+    const totalRev = heatmapData.reduce((sum, d) => sum + d.revenue, 0);
+    const activeDays = heatmapData.filter((d) => d.value > 0 || d.revenue > 0).length;
+    const peakAppointments = Math.max(...heatmapData.map((d) => d.value), 0);
+    const peakRevenue = Math.max(...heatmapData.map((d) => d.revenue), 0);
+
+    return { totalRDV, totalRev, activeDays, peakAppointments, peakRevenue };
+  }, [heatmapData]);
+
+  // Calculate trend comparing this period vs previous period
+  const trend = useMemo(() => {
+    const totalDays = 147;
+    const currentPeriod = metrics.activityDays.slice(-totalDays);
+    const previousPeriod = metrics.activityDays.slice(-totalDays * 2, -totalDays);
+    
+    const currentRDV = currentPeriod.reduce((sum, d) => sum + d.value, 0);
+    const previousRDV = previousPeriod.reduce((sum, d) => sum + d.value, 0);
+
+    if (previousRDV <= 0) {
+      return currentRDV > 0 ? 100 : 0;
+    }
+    return ((currentRDV - previousRDV) / previousRDV) * 100;
+  }, [metrics.activityDays]);
+
+  const maxActivity = useMemo(() => {
+    return Math.max(...heatmapData.map((d) => d.value), 1);
+  }, [heatmapData]);
+
+  // Color mapping based on daily consultation volume (GitHub contribution style)
+  const getCellColorClass = (value: number) => {
+    if (value === 0) {
+      return "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700";
+    }
+    const ratio = value / maxActivity;
+    if (ratio <= 0.25) {
+      return "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 hover:scale-110";
+    }
+    if (ratio <= 0.5) {
+      return "bg-orange-300 dark:bg-orange-850 text-orange-800 dark:text-orange-350 hover:scale-110";
+    }
+    if (ratio <= 0.75) {
+      return "bg-orange-500 dark:bg-orange-600 text-white hover:scale-110";
+    }
+    return "bg-orange-600 dark:bg-orange-500 text-white hover:scale-110";
+  };
+
+  // Month labels position
+  const monthLabels = useMemo(() => {
+    const labels: { label: string; index: number }[] = [];
+    let lastMonth = -1;
+
+    weeks.forEach((week, wIdx) => {
+      const firstDay = week[0]?.date ? new Date(week[0].date) : null;
+      if (firstDay && firstDay.getMonth() !== lastMonth) {
+        lastMonth = firstDay.getMonth();
+        labels.push({
+          label: firstDay.toLocaleDateString("fr-FR", { month: "short" }),
+          index: wIdx,
+        });
+      }
+    });
+
+    return labels;
+  }, [weeks]);
 
   const isUp = trend >= 0;
 
   return (
     <div
       className={cn(
-        "dashboard-luxe-card group relative flex flex-col overflow-hidden rounded-[16px] border border-zinc-200 bg-card p-6 shadow-sm lg:p-8 dark:border-white/[0.05]",
+        "flex flex-col rounded-[20px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/30 pt-3 px-1.5 pb-1.5 shadow-xs relative",
         className
       )}
     >
-      {/* Background radial glow (Mesh gradient) */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-100">
-        <div className="absolute -top-24 -right-24 h-96 w-96 animate-pulse rounded-full bg-orange-500/20 blur-3xl duration-4000 dark:bg-orange-500/10" />
-        <div className="absolute -bottom-24 -left-24 h-96 w-96 animate-pulse rounded-full bg-amber-500/20 blur-3xl duration-4000 dark:bg-amber-500/10" />
-      </div>
-
-      <div className="relative z-10 mb-8 flex flex-col">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
-            <span className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
-              Volume de Consultations
-            </span>
+      {/* Outer Card Header */}
+      <div className="mb-3 flex items-center justify-between px-1 z-10 select-none">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-200/60 dark:bg-zinc-800">
+            <Activity className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
-
+          <span className="font-semibold text-sm text-zinc-800 dark:text-zinc-200 tracking-tight">
+            Activité
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
           <div
             className={cn(
-              "flex items-center gap-1 rounded-full border border-zinc-950/5 bg-white/50 px-2 py-0.5 font-bold text-[11px] shadow-sm backdrop-blur-sm dark:border-white/5 dark:bg-zinc-900/50",
-              isUp
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-rose-600 dark:text-rose-400"
+              "flex items-center gap-1 rounded-full border border-zinc-955/5 bg-white/50 px-2 py-0.5 font-bold text-[10px] shadow-sm backdrop-blur-sm dark:border-white/5 dark:bg-zinc-900/50 select-none",
+              isUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
             )}
           >
-            {isUp ? (
-              <TrendingUp className="size-3" />
-            ) : (
-              <TrendingDown className="size-3" />
-            )}
+            {isUp ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
             {Math.abs(trend).toFixed(1)}%
           </div>
-        </div>
 
-        <div className="flex items-baseline gap-2.5">
-          <span className="font-extrabold text-3xl text-zinc-900 tabular-nums tracking-tight dark:text-white">
-            {new Intl.NumberFormat("fr-FR").format(totalPeriod)}
+          <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            Intensité 5M
           </span>
-
-          {/* Subtle Inline Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="group/trigger flex items-center gap-1 border-muted-foreground/40 border-b border-dashed pb-[1px] font-semibold text-muted-foreground text-xs outline-none transition-colors hover:border-foreground/40 hover:text-foreground">
-                sur {period === 84 ? "12 semaines" : `${period} jours`}
-                <ChevronDown className="size-3 opacity-50 transition-opacity group-hover/trigger:opacity-100" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-40 rounded-xl">
-              <DropdownMenuItem
-                className={cn(
-                  "cursor-pointer text-xs",
-                  period === 7 &&
-                    "bg-orange-500/10 font-bold text-orange-500 dark:text-orange-400"
-                )}
-                onClick={() => setPeriod(7)}
-              >
-                7 jours
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={cn(
-                  "cursor-pointer text-xs",
-                  period === 14 &&
-                    "bg-orange-500/10 font-bold text-orange-500 dark:text-orange-400"
-                )}
-                onClick={() => setPeriod(14)}
-              >
-                14 jours
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={cn(
-                  "cursor-pointer text-xs",
-                  period === 30 &&
-                    "bg-orange-500/10 font-bold text-orange-500 dark:text-orange-400"
-                )}
-                onClick={() => setPeriod(30)}
-              >
-                30 jours
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={cn(
-                  "cursor-pointer text-xs",
-                  period === 60 &&
-                    "bg-orange-500/10 font-bold text-orange-500 dark:text-orange-400"
-                )}
-                onClick={() => setPeriod(60)}
-              >
-                60 jours
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={cn(
-                  "cursor-pointer text-xs",
-                  period === 84 &&
-                    "bg-orange-500/10 font-bold text-orange-500 dark:text-orange-400"
-                )}
-                onClick={() => setPeriod(84)}
-              >
-                12 semaines
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
-      {/* Recharts AreaChart Viewport with AnimatePresence for smooth transitions */}
-      <div className="relative z-10 mt-auto h-[180px] w-full">
-        <AnimatePresence mode="wait">
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="h-full w-full"
-            exit={{ opacity: 0, y: -10 }}
-            initial={{ opacity: 0, y: 10 }}
-            key={`chart-${period}`}
-            transition={{ duration: 0.3 }}
-          >
-            <ResponsiveContainer
-              height="100%"
-              minHeight={0}
-              minWidth={0}
-              width="100%"
-            >
-              <AreaChart
-                data={chartData}
-                margin={{ top: 10, right: 10, left: -30, bottom: 0 }}
-              >
-                <defs>
-                  <linearGradient
-                    id="consultationsFlowGrad"
-                    x1="0"
-                    x2="0"
-                    y1="0"
-                    y2="1"
-                  >
-                    <stop offset="0%" stopColor="#f97316" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#f97316" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  stroke="rgba(128,128,128,0.08)"
-                  strokeDasharray="3 4"
-                  vertical={false}
-                />
-                <XAxis
-                  axisLine={false}
-                  dataKey="name"
-                  tick={{
-                    fill: "var(--muted-foreground)",
-                    fontSize: 10,
-                    fontWeight: 600,
-                  }}
-                  tickFormatter={(value) =>
-                    period > 30 ? "" : String(value).split(" ")[0]
-                  } // Hide labels if period is too long to prevent clutter
-                  tickLine={false}
-                  tickMargin={8}
-                />
-                <YAxis
-                  axisLine={false}
-                  tick={{
-                    fill: "var(--muted-foreground)",
-                    fontSize: 10,
-                    fontWeight: 600,
-                  }}
-                  tickLine={false}
-                />
-                <Tooltip
-                  content={({ active, payload }) => {
-                    if (!(active && payload?.length)) {
-                      return null;
-                    }
-                    return (
-                      <div className="rounded-xl border border-zinc-200/80 bg-white/90 p-3 shadow-lg backdrop-blur-md dark:border-white/5 dark:bg-zinc-900/90">
-                        <p className="font-bold text-[10px] text-muted-foreground">
-                          {payload[0].payload.name}
-                        </p>
-                        <div className="mt-2 flex items-center justify-between gap-6 font-semibold text-xs">
-                          <div className="flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-orange-500" />
-                            <span className="text-zinc-500 dark:text-zinc-400">
-                              Consultations
-                            </span>
-                          </div>
-                          <span className="font-bold text-zinc-900 tabular-nums dark:text-white">
-                            {payload[0].payload.value}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  }}
-                />
-                <Area
-                  activeDot={{
-                    r: 4,
-                    strokeWidth: 1.5,
-                    fill: "var(--background)",
-                    stroke: "#f97316",
-                  }}
-                  dataKey="value"
-                  fill="url(#consultationsFlowGrad)"
-                  stroke="#f97316"
-                  strokeWidth={2.5}
-                  type="monotone"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </motion.div>
-        </AnimatePresence>
+      {/* Inner White Box */}
+      <div className="flex-1 rounded-[12px] border border-zinc-200/60 dark:border-zinc-800 bg-white p-5 shadow-xs dark:bg-zinc-950/80 flex flex-col justify-between z-10 relative">
+        
+        {/* Heatmap & Stats row */}
+        <div className="flex flex-col lg:flex-row items-stretch gap-6">
+          
+          {/* Calendar Grid */}
+          <div className="flex-1 flex flex-col justify-center min-w-[280px]">
+            {/* Months Header Row */}
+            <div className="relative h-5 w-full select-none text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase">
+              {monthLabels.map((lbl, idx) => (
+                <span
+                  key={idx}
+                  className="absolute"
+                  style={{ left: `${(lbl.index / weeks.length) * 100}%` }}
+                >
+                  {lbl.label}
+                </span>
+              ))}
+            </div>
+
+            {/* Heatmap Grid */}
+            <div className="flex items-start gap-2">
+              {/* Day Labels Column */}
+              <div className="flex flex-col justify-between h-[105px] text-[8px] font-bold text-zinc-400 dark:text-zinc-500 uppercase select-none pt-0.5 pb-1">
+                <span>Lun</span>
+                <span>Mer</span>
+                <span>Ven</span>
+                <span>Dim</span>
+              </div>
+
+              {/* Grid Column wrapper */}
+              <div className="flex-1 flex justify-between h-[105px]">
+                {weeks.map((week, wIdx) => (
+                  <div key={wIdx} className="flex flex-col gap-[3px] h-full justify-between">
+                    {week.map((day, dIdx) => (
+                      <div
+                        key={dIdx}
+                        className={cn(
+                          "h-3 w-3 rounded-[2px] transition-all duration-200 cursor-pointer shadow-3xs shrink-0",
+                          getCellColorClass(day.value)
+                        )}
+                        onMouseEnter={() => setHoveredDay({
+                          date: new Date(day.date),
+                          value: day.value,
+                          revenue: day.revenue,
+                        })}
+                        onMouseLeave={() => setHoveredDay(null)}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Heatmap Legend */}
+            <div className="mt-4 flex items-center justify-end gap-1.5 text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 select-none">
+              <span>Moins</span>
+              <div className="h-2.5 w-2.5 rounded-[1px] bg-zinc-100 dark:bg-zinc-800" />
+              <div className="h-2.5 w-2.5 rounded-[1px] bg-orange-100 dark:bg-orange-950/40" />
+              <div className="h-2.5 w-2.5 rounded-[1px] bg-orange-300 dark:bg-orange-850" />
+              <div className="h-2.5 w-2.5 rounded-[1px] bg-orange-500 dark:bg-orange-600" />
+              <div className="h-2.5 w-2.5 rounded-[1px] bg-orange-600 dark:bg-orange-500" />
+              <span>Plus</span>
+            </div>
+          </div>
+
+          {/* Stats Breakdown Side panel */}
+          <div className="w-full lg:w-48 border-t lg:border-t-0 lg:border-l border-zinc-100 dark:border-zinc-800/80 pt-4 lg:pt-0 lg:pl-5 flex flex-col justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                Total Consultations
+              </span>
+              <span className="text-xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight tabular-nums">
+                {stats.totalRDV} RDV
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                Volume Financier
+              </span>
+              <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 tabular-nums">
+                {new Intl.NumberFormat("fr-FR").format(stats.totalRev)} DA
+              </span>
+            </div>
+
+            <div className="mt-1 flex items-center gap-1.5 rounded-lg bg-orange-500/5 px-2 py-1.5 border border-orange-500/10 dark:bg-orange-500/10">
+              <Activity className="h-3.5 w-3.5 text-orange-500 dark:text-orange-450" />
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider leading-none">
+                  Productivité
+                </span>
+                <span className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 leading-none mt-0.5">
+                  {stats.activeDays} jours actifs
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Tooltip overlay on top of the card footer */}
+        <div className="mt-3 min-h-[32px] border-t border-zinc-150/60 dark:border-zinc-800/80 pt-2 flex items-center justify-between">
+          {hoveredDay ? (
+            <div className="flex items-center justify-between w-full select-none text-[10px]">
+              <span className="font-semibold text-zinc-500 dark:text-zinc-400">
+                {formatDateLong(hoveredDay.date)}
+              </span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
+                <span>{hoveredDay.value} RDV</span>
+                <span className="text-zinc-400 dark:text-zinc-500 font-medium">({new Intl.NumberFormat("fr-FR").format(hoveredDay.revenue)} DA)</span>
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 text-[9px] text-zinc-400 dark:text-zinc-500 font-medium select-none">
+              <HelpCircle className="h-3.5 w-3.5" />
+              Survolez un carré pour afficher le volume et les revenus journaliers.
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

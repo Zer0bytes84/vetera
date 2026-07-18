@@ -2970,7 +2970,7 @@ const Agenda: React.FC = () => {
                         unifiedAppointmentMatches.map(({ owner, patient }) => (
                           <button
                             className={cn(
-                              "rounded-2xl border px-4 py-3 text-left transition hover:border-primary/40 hover:bg-primary/5",
+                              "rounded-2xl border px-4 py-3 text-left transition hover:border-primary/40 hover:bg-primary/5 cursor-pointer",
                               selectedPatientId === patient.id
                                 ? "border-primary bg-primary/10"
                                 : "border-border/80 bg-background/70"
@@ -3051,7 +3051,7 @@ const Agenda: React.FC = () => {
                     value={patientSearchTerm}
                   />
                   <NativeSelect
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     onChange={(event) =>
                       handlePatientSelect(event.target.value)
                     }
@@ -3082,7 +3082,7 @@ const Agenda: React.FC = () => {
                 <Field>
                   <FieldLabel>Vétérinaire</FieldLabel>
                   <NativeSelect
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     onChange={(event) => setSelectedVetId(event.target.value)}
                     value={selectedVetId}
                   >
@@ -3106,7 +3106,7 @@ const Agenda: React.FC = () => {
                     {t("scheduling.room", { defaultValue: "Salle" })}
                   </FieldLabel>
                   <NativeSelect
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     onChange={(event) => setFormRoom(event.target.value)}
                     value={formRoom}
                   >
@@ -3142,7 +3142,7 @@ const Agenda: React.FC = () => {
                 </div>
               </Field>
 
-              <div className="space-y-4 rounded-lg border border-border/50 bg-muted/20 p-4">
+              <div className="space-y-4 rounded-xl border border-zinc-150/70 bg-zinc-50/30 p-4 dark:border-zinc-800/60 dark:bg-zinc-900/10">
                 <Field className="items-center gap-3" orientation="horizontal">
                   <Checkbox
                     checked={recurrenceEnabled}
@@ -3332,7 +3332,7 @@ const Agenda: React.FC = () => {
                 <Field>
                   <FieldLabel>Durée</FieldLabel>
                   <NativeSelect
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     onChange={(event) =>
                       setDuration(Number(event.target.value))
                     }
@@ -3361,9 +3361,9 @@ const Agenda: React.FC = () => {
                 </FieldDescription>
               </Field>
 
-              <div className="rounded-4xl border border-border/80 bg-muted/20 p-4">
+              <div className="rounded-xl border border-zinc-150/70 bg-zinc-50/30 p-4 dark:border-zinc-800/60 dark:bg-zinc-900/10">
                 <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-10 items-center justify-center rounded-2xl bg-background text-foreground">
+                  <div className="mt-0.5 flex size-10 items-center justify-center rounded-xl bg-background text-foreground border border-zinc-100 dark:border-zinc-900 shadow-3xs">
                     <HugeiconsIcon icon={UserCircle02Icon} strokeWidth={2} />
                   </div>
                   <div className="min-w-0">

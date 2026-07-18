@@ -508,7 +508,7 @@ function PatientDetailsDialog({
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-[min(1100px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(1100px,calc(100%-2rem))]">
+      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1100px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(1100px,calc(100%-2rem))]">
         <DialogHeader className="shrink-0 gap-0 border-b">
           <div className="flex flex-col gap-5 px-6 py-5">
             <div className="flex items-start justify-between gap-4 pr-10">
@@ -1312,239 +1312,242 @@ function PatientCreateDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="modal-medical-body min-h-0 overflow-y-auto px-6 py-4">
-          <div className="grid gap-4 xl:grid-cols-2">
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Propriétaire</CardTitle>
-                <CardDescription>
-                  Choisissez un contact existant ou renseignez un nouveau
-                  propriétaire.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel>Propriétaire existant</FieldLabel>
-                    <NativeSelect
-                      className="w-full"
-                      onChange={(event) =>
-                        setSelectedOwnerId(event.target.value)
-                      }
-                      value={selectedOwnerId}
-                    >
-                      <NativeSelectOption value="new">
-                        Créer un nouveau propriétaire
+        <div className="modal-medical-body min-h-0 overflow-y-auto px-6 py-6">
+          <div className="grid gap-8 xl:grid-cols-2">
+            {/* Section: Propriétaire */}
+            <div className="flex flex-col gap-5">
+              <div className="border-b border-zinc-100 pb-3 dark:border-zinc-800/80">
+                <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                  Propriétaire
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Associez un contact existant ou créez un nouveau propriétaire.
+                </p>
+              </div>
+
+              <FieldGroup>
+                <Field>
+                  <FieldLabel>Propriétaire existant</FieldLabel>
+                  <NativeSelect
+                    className="w-full cursor-pointer"
+                    onChange={(event) =>
+                      setSelectedOwnerId(event.target.value)
+                    }
+                    value={selectedOwnerId}
+                  >
+                    <NativeSelectOption value="new">
+                      Créer un nouveau propriétaire
+                    </NativeSelectOption>
+                    {ownerOptions.map((owner) => (
+                      <NativeSelectOption key={owner.id} value={owner.id}>
+                        {formatOwnerName(owner)} · {owner.phone}
                       </NativeSelectOption>
-                      {ownerOptions.map((owner) => (
-                        <NativeSelectOption key={owner.id} value={owner.id}>
-                          {formatOwnerName(owner)} · {owner.phone}
-                        </NativeSelectOption>
-                      ))}
-                    </NativeSelect>
-                    <FieldDescription>
-                      {selectedOwnerId === "new"
-                        ? "Un nouveau propriétaire sera créé avec ce dossier."
-                        : "Le patient sera rattaché à ce propriétaire (sans modifier sa fiche)."}
-                    </FieldDescription>
-                  </Field>
+                    ))}
+                  </NativeSelect>
+                  <FieldDescription>
+                    {selectedOwnerId === "new"
+                      ? "Un nouveau propriétaire sera créé avec ce dossier."
+                      : "Le patient sera rattaché à ce propriétaire (sans modifier sa fiche)."}
+                  </FieldDescription>
+                </Field>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Field>
-                      <FieldLabel>Nom</FieldLabel>
-                      <Input
-                        disabled={selectedOwnerId !== "new"}
-                        onChange={(event) =>
-                          setNewOwner((current) => ({
-                            ...current,
-                            lastName: event.target.value,
-                          }))
-                        }
-                        value={newOwner.lastName || ""}
-                      />
-                    </Field>
-
-                    <Field>
-                      <FieldLabel>Prénom</FieldLabel>
-                      <Input
-                        disabled={selectedOwnerId !== "new"}
-                        onChange={(event) =>
-                          setNewOwner((current) => ({
-                            ...current,
-                            firstName: event.target.value,
-                          }))
-                        }
-                        value={newOwner.firstName || ""}
-                      />
-                    </Field>
-
-                    <Field>
-                      <FieldLabel>Téléphone</FieldLabel>
-                      <Input
-                        disabled={selectedOwnerId !== "new"}
-                        onChange={(event) =>
-                          setNewOwner((current) => ({
-                            ...current,
-                            phone: event.target.value,
-                          }))
-                        }
-                        value={newOwner.phone || ""}
-                      />
-                    </Field>
-
-                    <Field>
-                      <FieldLabel>Email</FieldLabel>
-                      <Input
-                        disabled={selectedOwnerId !== "new"}
-                        onChange={(event) =>
-                          setNewOwner((current) => ({
-                            ...current,
-                            email: event.target.value,
-                          }))
-                        }
-                        type="email"
-                        value={newOwner.email || ""}
-                      />
-                    </Field>
-                  </div>
-
+                <div className="grid gap-4 sm:grid-cols-2">
                   <Field>
-                    <FieldLabel>Adresse</FieldLabel>
+                    <FieldLabel>Nom</FieldLabel>
                     <Input
                       disabled={selectedOwnerId !== "new"}
                       onChange={(event) =>
                         setNewOwner((current) => ({
                           ...current,
-                          address: event.target.value,
+                          lastName: event.target.value,
                         }))
                       }
-                      value={newOwner.address || ""}
+                      value={newOwner.lastName || ""}
                     />
                   </Field>
 
                   <Field>
-                    <FieldLabel>Ville</FieldLabel>
+                    <FieldLabel>Prénom</FieldLabel>
                     <Input
                       disabled={selectedOwnerId !== "new"}
                       onChange={(event) =>
                         setNewOwner((current) => ({
                           ...current,
-                          city: event.target.value,
+                          firstName: event.target.value,
                         }))
                       }
-                      value={newOwner.city || ""}
+                      value={newOwner.firstName || ""}
                     />
                   </Field>
-                </FieldGroup>
-              </CardContent>
-            </Card>
 
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Patient</CardTitle>
-                <CardDescription>
-                  Identité et statut initial du dossier.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FieldGroup>
                   <Field>
-                    <FieldLabel>Nom du patient</FieldLabel>
+                    <FieldLabel>Téléphone</FieldLabel>
                     <Input
+                      disabled={selectedOwnerId !== "new"}
+                      onChange={(event) =>
+                        setNewOwner((current) => ({
+                          ...current,
+                          phone: event.target.value,
+                        }))
+                      }
+                      value={newOwner.phone || ""}
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Email</FieldLabel>
+                    <Input
+                      disabled={selectedOwnerId !== "new"}
+                      onChange={(event) =>
+                        setNewOwner((current) => ({
+                          ...current,
+                          email: event.target.value,
+                        }))
+                      }
+                      type="email"
+                      value={newOwner.email || ""}
+                    />
+                  </Field>
+                </div>
+
+                <Field>
+                  <FieldLabel>Adresse</FieldLabel>
+                  <Input
+                    disabled={selectedOwnerId !== "new"}
+                    onChange={(event) =>
+                      setNewOwner((current) => ({
+                        ...current,
+                        address: event.target.value,
+                      }))
+                    }
+                    value={newOwner.address || ""}
+                  />
+                </Field>
+
+                <Field>
+                  <FieldLabel>Ville</FieldLabel>
+                  <Input
+                    disabled={selectedOwnerId !== "new"}
+                    onChange={(event) =>
+                      setNewOwner((current) => ({
+                        ...current,
+                        city: event.target.value,
+                      }))
+                    }
+                    value={newOwner.city || ""}
+                  />
+                </Field>
+              </FieldGroup>
+            </div>
+
+            {/* Section: Patient */}
+            <div className="flex flex-col gap-5">
+              <div className="border-b border-zinc-100 pb-3 dark:border-zinc-800/80">
+                <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                  Patient
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Identité, espèce, race et statut initial de l'animal.
+                </p>
+              </div>
+
+              <FieldGroup>
+                <Field>
+                  <FieldLabel>Nom du patient</FieldLabel>
+                  <Input
+                    onChange={(event) =>
+                      setNewPatient((current) => ({
+                        ...current,
+                        name: event.target.value,
+                      }))
+                    }
+                    value={newPatient.name || ""}
+                  />
+                </Field>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field>
+                    <FieldLabel>Espèce</FieldLabel>
+                    <Input
+                      list="new-patient-species-options"
                       onChange={(event) =>
                         setNewPatient((current) => ({
                           ...current,
-                          name: event.target.value,
+                          species: event.target.value,
                         }))
                       }
-                      value={newPatient.name || ""}
+                      placeholder="Chien, Chat..."
+                      value={newPatient.species || ""}
                     />
+                    <datalist id="new-patient-species-options">
+                      {COMMON_SPECIES.map((species) => (
+                        <option key={species} value={species} />
+                      ))}
+                    </datalist>
                   </Field>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Field>
-                      <FieldLabel>Espèce</FieldLabel>
-                      <Input
-                        list="new-patient-species-options"
-                        onChange={(event) =>
-                          setNewPatient((current) => ({
-                            ...current,
-                            species: event.target.value,
-                          }))
-                        }
-                        placeholder="Chien, Chat..."
-                        value={newPatient.species || ""}
-                      />
-                      <datalist id="new-patient-species-options">
-                        {COMMON_SPECIES.map((species) => (
-                          <option key={species} value={species} />
-                        ))}
-                      </datalist>
-                    </Field>
+                  <Field>
+                    <FieldLabel>Race</FieldLabel>
+                    <Input
+                      list="new-patient-breed-options"
+                      onChange={(event) =>
+                        setNewPatient((current) => ({
+                          ...current,
+                          breed: event.target.value,
+                        }))
+                      }
+                      value={newPatient.breed || ""}
+                    />
+                    <datalist id="new-patient-breed-options">
+                      {breedSuggestions.map((breed) => (
+                        <option key={breed} value={breed} />
+                      ))}
+                    </datalist>
+                  </Field>
 
-                    <Field>
-                      <FieldLabel>Race</FieldLabel>
-                      <Input
-                        list="new-patient-breed-options"
-                        onChange={(event) =>
-                          setNewPatient((current) => ({
-                            ...current,
-                            breed: event.target.value,
-                          }))
-                        }
-                        value={newPatient.breed || ""}
-                      />
-                      <datalist id="new-patient-breed-options">
-                        {breedSuggestions.map((breed) => (
-                          <option key={breed} value={breed} />
-                        ))}
-                      </datalist>
-                    </Field>
+                  <Field>
+                    <FieldLabel>Sexe</FieldLabel>
+                    <NativeSelect
+                      className="w-full cursor-pointer"
+                      onChange={(event) =>
+                        setNewPatient((current) => ({
+                          ...current,
+                          sex: event.target.value as Patient["sex"],
+                        }))
+                      }
+                      value={(newPatient.sex || "M") as string}
+                    >
+                      <NativeSelectOption value="M">Mâle</NativeSelectOption>
+                      <NativeSelectOption value="F">
+                        Femelle
+                      </NativeSelectOption>
+                    </NativeSelect>
+                  </Field>
 
-                    <Field>
-                      <FieldLabel>Sexe</FieldLabel>
-                      <NativeSelect
-                        className="w-full"
-                        onChange={(event) =>
-                          setNewPatient((current) => ({
-                            ...current,
-                            sex: event.target.value as Patient["sex"],
-                          }))
-                        }
-                        value={(newPatient.sex || "M") as string}
-                      >
-                        <NativeSelectOption value="M">Mâle</NativeSelectOption>
-                        <NativeSelectOption value="F">
-                          Femelle
-                        </NativeSelectOption>
-                      </NativeSelect>
-                    </Field>
-
-                    <Field>
-                      <FieldLabel>Statut initial</FieldLabel>
-                      <NativeSelect
-                        className="w-full"
-                        onChange={(event) =>
-                          setNewPatient((current) => ({
-                            ...current,
-                            status: event.target.value as Patient["status"],
-                          }))
-                        }
-                        value={(newPatient.status || "sante") as string}
-                      >
-                        {Object.entries(PATIENT_STATUS_META).map(
-                          ([value, option]) => (
-                            <NativeSelectOption key={value} value={value}>
-                              {option.label}
-                            </NativeSelectOption>
-                          )
-                        )}
-                      </NativeSelect>
-                    </Field>
-                  </div>
-                </FieldGroup>
-              </CardContent>
-            </Card>
+                  <Field>
+                    <FieldLabel>Statut initial</FieldLabel>
+                    <NativeSelect
+                      className="w-full cursor-pointer"
+                      onChange={(event) =>
+                        setNewPatient((current) => ({
+                          ...current,
+                          status: event.target.value as Patient["status"],
+                        }))
+                      }
+                      value={(newPatient.status || "sante") as string}
+                    >
+                      {Object.entries(PATIENT_STATUS_META).map(
+                        ([value, option]) => (
+                          <NativeSelectOption key={value} value={value}>
+                            {option.label}
+                          </NativeSelectOption>
+                        )
+                      )}
+                    </NativeSelect>
+                  </Field>
+                </div>
+              </FieldGroup>
+            </div>
           </div>
         </div>
 

@@ -648,7 +648,7 @@ const Team: React.FC = () => {
               <Field>
                 <FieldLabel>Rôle</FieldLabel>
                 <NativeSelect
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onChange={(e) =>
                     setFormData({
                       ...formData,
@@ -677,7 +677,7 @@ const Team: React.FC = () => {
               <Field>
                 <FieldLabel>Statut</FieldLabel>
                 <NativeSelect
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onChange={(e) =>
                     setFormData({
                       ...formData,
@@ -708,10 +708,10 @@ const Team: React.FC = () => {
           </FieldGroup>
 
           <DialogFooter>
-            <Button onClick={() => setIsModalOpen(false)} variant="outline">
+            <Button className="cursor-pointer" onClick={() => setIsModalOpen(false)} variant="outline">
               Annuler
             </Button>
-            <Button disabled={isSubmitting} onClick={handleSave}>
+            <Button className="cursor-pointer" disabled={isSubmitting} onClick={handleSave}>
               {isSubmitting && <Spinner className="size-4" />}
               {editingId ? "Mettre à jour" : "Ajouter"}
             </Button>

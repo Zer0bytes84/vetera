@@ -16,6 +16,7 @@ import { AsterConsultationsChartWidget } from "./components/aster/aster-consulta
 import { AsterRanking } from "./components/aster/aster-ranking";
 import { AsterScoreChart } from "./components/aster/aster-score-chart";
 import { AsterTasksChartWidget } from "./components/aster/aster-tasks-chart-widget";
+import { AsterTopMotifsWidget } from "./components/aster/aster-top-motifs-widget";
 // Import Aster widgets
 import { AsterTopStats } from "./components/aster-top-stats";
 import { WaitingRoomWidget } from "./components/waiting-room-widget";
@@ -119,7 +120,7 @@ export function DashboardOrbitPage({
 
       {/* Row 2: Score & Ranking */}
       <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-2">
-        <AsterScoreChart metrics={metrics} />
+        <AsterScoreChart metrics={metrics} transactions={transactions} />
         <AsterRanking metrics={metrics} />
       </div>
 
@@ -132,15 +133,14 @@ export function DashboardOrbitPage({
         />
       </div>
 
-      {/* Row 4: Salle d'attente (Waiting Room) */}
-      <DeferredWidget minHeight={300}>
-        <div className="grid grid-cols-1 gap-5">
-          <WaitingRoomWidget
-            appointments={todayAppointmentsList as any}
-            onNavigateToPatient={handlePatientClick}
-          />
-        </div>
-      </DeferredWidget>
+      {/* Row 4: Motifs & Salle d'attente */}
+      <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-2">
+        <AsterTopMotifsWidget metrics={metrics} />
+        <WaitingRoomWidget
+          appointments={todayAppointmentsList as any}
+          onNavigateToPatient={handlePatientClick}
+        />
+      </div>
     </div>
   );
 }

@@ -293,13 +293,13 @@ function AppShellInner() {
 
       <SidebarInset
         className={cn(
-          "!bg-white/40 dark:!bg-zinc-950/40 !pb-0 p-2 backdrop-blur-xl",
+          "!bg-white/40 dark:!bg-zinc-950/40 !pb-2 p-2 backdrop-blur-xl",
           "!border-none !rounded-t-[24px] !rounded-b-none md:peer-data-[variant=inset]:!border-transparent shadow-sm ring-1 ring-black/5 dark:ring-white/5",
           "transition-all duration-300",
           "md:peer-data-[variant=inset]:max-h-dvh",
           "md:peer-data-[variant=floating]:max-h-dvh",
           "max-h-dvh",
-          "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0 md:peer-data-[variant=inset]:mt-2 md:peer-data-[variant=inset]:mr-2 md:peer-data-[variant=inset]:mb-0!"
+          "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0 md:peer-data-[variant=inset]:mt-2 md:peer-data-[variant=inset]:mr-2 md:peer-data-[variant=inset]:mb-2!"
         )}
       >
         <div

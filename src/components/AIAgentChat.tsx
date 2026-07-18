@@ -983,7 +983,7 @@ Règles :
                 </p>
               </div>
               <Button
-                className="size-9 rounded-full bg-white/10 text-white hover:bg-white/20"
+                className="size-9 rounded-full bg-white/10 text-white hover:bg-white/20 cursor-pointer"
                 onClick={() => setShowVisualizer(false)}
                 size="icon"
                 variant="ghost"
@@ -1024,7 +1024,7 @@ Règles :
                       max="200"
                       value={brightness}
                       onChange={(e) => setBrightness(Number(e.target.value))}
-                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5"
+                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5 cursor-pointer"
                     />
                   </div>
 
@@ -1040,7 +1040,7 @@ Règles :
                       max="300"
                       value={contrast}
                       onChange={(e) => setContrast(Number(e.target.value))}
-                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5"
+                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5 cursor-pointer"
                     />
                   </div>
 
@@ -1069,7 +1069,7 @@ Règles :
 
                 {/* Reset button */}
                 <Button
-                  className="w-full h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs text-white"
+                  className="w-full h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs text-white cursor-pointer"
                   onClick={() => {
                     setBrightness(100);
                     setContrast(100);
@@ -1083,7 +1083,7 @@ Règles :
 
             <div className="mt-6 flex justify-end">
               <Button
-                className="rounded-xl bg-white hover:bg-zinc-200 px-5 text-sm font-semibold text-black"
+                className="rounded-xl bg-white hover:bg-zinc-200 px-5 text-sm font-semibold text-black cursor-pointer"
                 onClick={() => setShowVisualizer(false)}
               >
                 Appliquer et Fermer

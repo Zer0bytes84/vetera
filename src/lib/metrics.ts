@@ -310,12 +310,48 @@ export function buildDashboardMetrics({
 
   const topCategories = Array.from(categoryTotals.entries())
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 4)
+    .slice(0, 5)
     .map(([label, value], index) => ({
       label,
       value: Math.round(value / 100),
-      color: ["#21aceb", "#ff7a1a", "#f6c21d", "#23c7b7"][index] ?? "#a1a1aa",
+      color: ["#6366f1", "#f43f5e", "#ec4899", "#10b981", "#f59e0b"][index] ?? "#a1a1aa",
     }));
+
+  if (!topCategories.length) {
+    const fallbacks = ["Consultation", "Pharmacie", "Analyses", "Vaccin", "Autre"];
+    fallbacks.forEach((label, index) => {
+      topCategories.push({
+        label,
+        value: 0,
+        color: ["#6366f1", "#f43f5e", "#ec4899", "#10b981", "#f59e0b"][index],
+      });
+    });
+  }
+
+  const categoryNames = topCategories.map((c) => c.label);
+  const last90DaysCategories = Array.from({ length: 90 }, (_, index) => {
+    const day = addDays(referenceDate, -89 + index);
+    const start = startOfDay(day);
+    const end = endOfDay(day);
+
+    const categoryValues: Record<string, number> = {};
+    categoryNames.forEach((catName) => {
+      const total = paidIncome
+        .filter((item) => {
+          const date = safeDate(item.date);
+          const matchesCategory =
+            (item.category || i18n.t("dashboardV2.fallbacks.other")) === catName;
+          return date && date >= start && date <= end && matchesCategory;
+        })
+        .reduce((sum, item) => sum + item.amount, 0);
+      categoryValues[catName] = total / 100;
+    });
+
+    return {
+      date: day,
+      ...categoryValues,
+    };
+  });
 
   const appointments30 = appointments.filter((item) => {
     const date = safeDate(item.startTime);
@@ -552,6 +588,7 @@ export function buildDashboardMetrics({
     monthlyRevenue,
     revenueTrend,
     topCategories,
+    last90DaysCategories,
     topAppointmentTypes,
     cashflowSeries,
     activityDays,

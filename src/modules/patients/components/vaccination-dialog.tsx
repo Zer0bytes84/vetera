@@ -205,6 +205,7 @@ export function VaccinationDialog({
                 {t("patientDetail.vaccinations.presetLabel")}
               </label>
               <NativeSelect
+                className="w-full cursor-pointer"
                 id="vaccine-preset"
                 onChange={(event) => handlePresetChange(event.target.value)}
                 value={presetId}
@@ -346,6 +347,7 @@ export function VaccinationDialog({
           </span>
           <div className="flex items-center gap-2">
             <Button
+              className="cursor-pointer"
               disabled={isSubmitting}
               onClick={() => onOpenChange(false)}
               type="button"
@@ -354,6 +356,7 @@ export function VaccinationDialog({
               {t("patientDetail.vaccinations.cancel")}
             </Button>
             <Button
+              className="cursor-pointer"
               disabled={isSubmitting}
               onClick={handleSave}
               type="button"

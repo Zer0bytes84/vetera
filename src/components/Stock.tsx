@@ -818,7 +818,7 @@ const Stock: React.FC = () => {
           <FieldGroup>
             {/* Auto-fill section */}
             {!selectedProduct && (
-              <div className="rounded-2xl border border-border border-dashed bg-muted/20 p-4">
+              <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/20 p-4">
                 <div className="mb-3 flex items-center gap-2">
                   <HugeiconsIcon
                     className="size-4 text-primary"
@@ -830,7 +830,7 @@ const Stock: React.FC = () => {
                   </span>
                 </div>
                 <NativeSelect
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   defaultValue=""
                   onChange={(e) => {
                     const template = COMMON_VET_PRODUCTS.find(
@@ -868,7 +868,7 @@ const Stock: React.FC = () => {
               <Field>
                 <FieldLabel>Catégorie</FieldLabel>
                 <NativeSelect
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onChange={(e) => {
                     if (e.target.value === "__custom__") {
                       setFormData({ ...formData, category: "" });
@@ -977,7 +977,7 @@ const Stock: React.FC = () => {
               <FieldLabel>Date d'expiration (optionnel)</FieldLabel>
               <div className="grid grid-cols-3 gap-3">
                 <NativeSelect
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onChange={(e) => {
                     const current = formData.expiryDate?.split("-") || [
                       new Date().getFullYear().toString(),
@@ -1032,7 +1032,7 @@ const Stock: React.FC = () => {
                 </NativeSelect>
 
                 <NativeSelect
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onChange={(e) => {
                     const current = formData.expiryDate?.split("-") || [
                       "",
@@ -1093,7 +1093,7 @@ const Stock: React.FC = () => {
             </Field>
 
             {!selectedProduct && Number(formData.quantity) > 0 && (
-              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-150 bg-zinc-50/30 p-4 transition-colors hover:bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/10 dark:hover:bg-zinc-900/20">
                 <Checkbox
                   checked={createExpense}
                   onCheckedChange={(checked) => setCreateExpense(!!checked)}
@@ -1119,12 +1119,13 @@ const Stock: React.FC = () => {
 
           <DialogFooter>
             <Button
+              className="cursor-pointer"
               onClick={() => setIsProductModalOpen(false)}
               variant="outline"
             >
               Annuler
             </Button>
-            <Button disabled={isSubmitting} onClick={handleSaveProduct}>
+            <Button className="cursor-pointer" disabled={isSubmitting} onClick={handleSaveProduct}>
               {isSubmitting ? (
                 <Spinner className="size-4" />
               ) : (
@@ -1171,7 +1172,7 @@ const Stock: React.FC = () => {
               </Field>
             </div>
 
-            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-150 bg-zinc-50/30 p-4 transition-colors hover:bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/10 dark:hover:bg-zinc-900/20">
               <Checkbox
                 checked={createExpense}
                 onCheckedChange={(checked) => setCreateExpense(!!checked)}
@@ -1192,12 +1193,14 @@ const Stock: React.FC = () => {
 
           <DialogFooter>
             <Button
+              className="cursor-pointer"
               onClick={() => setIsRestockModalOpen(false)}
               variant="outline"
             >
               Annuler
             </Button>
             <Button
+              className="cursor-pointer"
               disabled={isSubmitting || restockQty <= 0}
               onClick={handleRestockSubmit}
             >
