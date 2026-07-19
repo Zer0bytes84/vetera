@@ -126,6 +126,12 @@
   --dashboard-surface: #ffffff;
   --dashboard-panel: rgba(255, 255, 255, 0.86);
   --dashboard-border-soft: rgba(229, 229, 229, 0.7);
+  --radius-control: 12px;
+  --radius-panel: 16px;
+  --radius-feature: 24px;
+  --surface-subtle: #f7f7f6;
+  --shadow-panel: 0 1px 2px rgba(24, 24, 27, 0.04);
+  --shadow-feature: 0 10px 30px -24px rgba(24, 24, 27, 0.2);
 }
 
 .dark {
@@ -204,6 +210,11 @@
     255,
     0.08
   ); /* translucent 8% white card/panel border */
+  --surface-subtle: #1b1b1b;
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  --shadow-feature:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 18px 36px -28px rgba(0, 0, 0, 0.8);
 }
 
 @layer base {
@@ -577,6 +588,35 @@ button:focus-visible,
   background: linear-gradient(180deg, var(--bg-app), var(--background));
 }
 
+/* ─── Calm clinical workspace primitives ─── */
+.clinical-surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.clinical-feature-surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-feature);
+  box-shadow: var(--shadow-feature);
+}
+
+.clinical-subtle-surface {
+  background: var(--surface-subtle);
+  border: 1px solid color-mix(in oklch, var(--border) 78%, transparent);
+  border-radius: var(--radius-panel);
+}
+
+.clinical-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+}
+
 /* ─── Modal Medical ─── */
 .modal-medical-shell {
   overflow: hidden;
@@ -607,19 +647,6 @@ button:focus-visible,
   flex-wrap: wrap;
   gap: 12px;
   justify-content: flex-end;
-}
-
-/* Patient record tabs must not inherit the full list height from the generic Tabs primitive. */
-.patient-record-tabs {
-  height: 52px !important;
-  min-height: 52px;
-  overflow: hidden;
-}
-
-.patient-record-tabs [data-slot="tabs-trigger"] {
-  align-self: center;
-  height: 40px !important;
-  min-height: 40px;
 }
 
 .dark .modal-medical-shell {

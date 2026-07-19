@@ -70,10 +70,7 @@ export function WeightEvolutionChart({
   if (data.length === 0) {
     return (
       <div
-        className={cn(
-          "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
-          className
-        )}
+        className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}
       >
         <div className="mb-6 flex flex-row items-center justify-between gap-2">
           <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
@@ -99,12 +96,7 @@ export function WeightEvolutionChart({
   }
 
   return (
-    <div
-      className={cn(
-        "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
-        className
-      )}
-    >
+    <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
       <div className="mb-6 flex flex-row items-center justify-between gap-2">
         <div>
           <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">

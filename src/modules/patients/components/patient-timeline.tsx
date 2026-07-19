@@ -189,12 +189,7 @@ export function PatientTimeline({
   );
 
   return (
-    <div
-      className={cn(
-        "flex flex-col rounded-[16px] border border-border bg-card p-6 shadow-sm dark:border-border",
-        className
-      )}
-    >
+    <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
       <div className="mb-6 flex items-center justify-between">
         <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
           {t("patientDetail.timeline.title")}

@@ -12,6 +12,7 @@ interface PatientKpiStripProps {
   lastVisit?: string;
   nextAppointment?: Appointment;
   nextVaccination?: Vaccination | null;
+  now: number;
   weightEntries: WeightEntry[];
 }
 
@@ -38,10 +39,11 @@ export function PatientKpiStrip({
   lastVisit,
   nextAppointment,
   nextVaccination,
+  now,
   weightEntries,
 }: PatientKpiStripProps) {
   const { t } = useTranslation();
-  const now = new Date();
+  const currentDate = new Date(now);
 
   const sortedWeights = [...weightEntries].sort(
     (a, b) =>
@@ -65,18 +67,22 @@ export function PatientKpiStrip({
 
   const lastVisitFormatted = formatDateShort(lastVisit);
   const daysSinceLastVisit = lastVisitFormatted
-    ? -diffDays(new Date(lastVisit), now)
+    ? -diffDays(new Date(lastVisit), currentDate)
     : null;
 
   const nextApptDate = nextAppointment
     ? new Date(nextAppointment.startTime)
     : null;
-  const nextApptDaysOut = nextApptDate ? diffDays(nextApptDate, now) : null;
+  const nextApptDaysOut = nextApptDate
+    ? diffDays(nextApptDate, currentDate)
+    : null;
 
   const nextVaccDate = nextVaccination?.nextDueAt
     ? new Date(nextVaccination.nextDueAt)
     : null;
-  const nextVaccDaysOut = nextVaccDate ? diffDays(nextVaccDate, now) : null;
+  const nextVaccDaysOut = nextVaccDate
+    ? diffDays(nextVaccDate, currentDate)
+    : null;
 
   const items = [
     {
@@ -84,7 +90,9 @@ export function PatientKpiStrip({
       value: lastWeight
         ? `${lastWeight.weightKg.toFixed(2)} kg`
         : "À renseigner",
-      detail: weightDelta ?? (lastWeight ? t("patientDetail.kpi.lastWeight") : "Aucune pesée"),
+      detail:
+        weightDelta ??
+        (lastWeight ? t("patientDetail.kpi.lastWeight") : "Aucune pesée"),
       caption: lastWeight
         ? (formatDateShort(lastWeight.measuredAt) ?? "—")
         : "Ajoutez une première mesure",
@@ -181,12 +189,14 @@ export function PatientKpiStrip({
               : "bg-sky-500/10 text-sky-600 dark:text-sky-400";
 
         return (
-          <div
-            className="min-w-0 rounded-2xl border border-border bg-card px-4 py-4 shadow-sm"
-            key={item.title}
-          >
+          <div className="clinical-surface min-w-0 px-4 py-4" key={item.title}>
             <div className="flex items-center gap-2">
-              <span className={cn("flex size-8 items-center justify-center rounded-xl", tone)}>
+              <span
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-xl",
+                  tone
+                )}
+              >
                 <Icon className="size-4" weight="duotone" />
               </span>
               <span className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.08em]">

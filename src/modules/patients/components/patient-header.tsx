@@ -25,21 +25,6 @@ function buildInitials(name: string) {
     .slice(0, 2);
 }
 
-function getAgeKey(
-  age: ReturnType<typeof computeAge>
-): "ageYears" | "ageMonths" | "ageDays" | "ageUnknown" {
-  if (!age) {
-    return "ageUnknown";
-  }
-  if (age.years >= 1) {
-    return "ageYears";
-  }
-  if (age.months >= 1) {
-    return "ageMonths";
-  }
-  return "ageDays";
-}
-
 export function PatientHeader({
   className,
   onEditProfile,
@@ -59,13 +44,6 @@ export function PatientHeader({
     return t(`patientDetail.header.${typedKey}`, options);
   });
 
-  const ageKey = getAgeKey(age);
-  const ageFinalLabel = t(`patientDetail.header.${ageKey}`, {
-    count: age?.years ?? age?.months ?? age?.days ?? 0,
-  });
-
-  // formatAge inclut déjà potentially "X ans Y mois" — on simplifie :
-  void ageLabel;
   const ownerName = owner
     ? `${owner.firstName} ${owner.lastName}`.trim()
     : t("patientDetail.header.unknownOwner");
@@ -73,7 +51,7 @@ export function PatientHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-5 rounded-[24px] border border-border bg-card p-5 shadow-sm md:flex-row md:items-center md:gap-8 md:p-6",
+        "clinical-feature-surface flex flex-col gap-5 p-5 md:flex-row md:items-center md:gap-8 md:p-6",
         className
       )}
     >
@@ -120,7 +98,7 @@ export function PatientHeader({
               <span>{patient.sex === "M" ? "♂ Mâle" : "♀ Femelle"}</span>
             ) : null}
             <span className="text-muted-foreground/70">·</span>
-            <span>{ageFinalLabel}</span>
+            <span>{ageLabel}</span>
             <span className="text-muted-foreground/70">·</span>
             <span className="inline-flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-muted-foreground/40" />
@@ -136,7 +114,7 @@ export function PatientHeader({
         </span>
         <div className="flex flex-wrap gap-2">
           <Button
-            className="h-9 gap-2 rounded-full px-4"
+            className="h-9 gap-2 rounded-xl px-4"
             onClick={onNewAppointment}
             size="sm"
             variant="default"
@@ -145,7 +123,7 @@ export function PatientHeader({
             {t("patientDetail.header.newAppointment")}
           </Button>
           <Button
-            className="h-9 gap-2 rounded-full px-4"
+            className="h-9 gap-2 rounded-xl px-4"
             onClick={onEditProfile}
             size="sm"
             variant="outline"
@@ -155,7 +133,6 @@ export function PatientHeader({
           </Button>
         </div>
       </div>
-
     </div>
   );
 }
