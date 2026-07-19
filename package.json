@@ -81,17 +81,17 @@
     "build": "vite build",
     "build:strict": "tsc -b && vite build",
     "lint": "eslint .",
-    "format": "ultracite fix",
+    "format": "ultracite fix src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "check": "ultracite check",
-    "fix": "ultracite fix"
+    "check": "ultracite check src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts",
+    "fix": "ultracite fix src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts"
   },
   "type": "module",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "private": true,
   "overrides": {
     "@tauri-apps/api": "^2.10.1"

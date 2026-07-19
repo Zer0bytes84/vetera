@@ -818,7 +818,7 @@ const Stock: React.FC = () => {
           <FieldGroup>
             {/* Auto-fill section */}
             {!selectedProduct && (
-              <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/20 p-4">
+              <div className="rounded-xl border border-zinc-200 border-dashed bg-zinc-50/20 p-4 dark:border-zinc-800">
                 <div className="mb-3 flex items-center gap-2">
                   <HugeiconsIcon
                     className="size-4 text-primary"
@@ -1125,7 +1125,11 @@ const Stock: React.FC = () => {
             >
               Annuler
             </Button>
-            <Button className="cursor-pointer" disabled={isSubmitting} onClick={handleSaveProduct}>
+            <Button
+              className="cursor-pointer"
+              disabled={isSubmitting}
+              onClick={handleSaveProduct}
+            >
               {isSubmitting ? (
                 <Spinner className="size-4" />
               ) : (

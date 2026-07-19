@@ -4,12 +4,12 @@ import {
   DashboardSquare01Icon,
   Hospital01Icon,
   PackageIcon,
-  Settings01Icon,
   StethoscopeIcon,
   Task01Icon,
   UserGroupIcon,
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
+import type { IconSvgElement } from "@hugeicons/react";
 import type { TFunction } from "i18next";
 
 import type { View } from "@/types";
@@ -32,7 +32,7 @@ export const viewTitleKeys: Record<View, string> = {
 
 export const navigationSections: Array<{
   titleKey: string;
-  items: Array<{ view: View; labelKey: string; icon: React.FC<any> }>;
+  items: Array<{ view: View; labelKey: string; icon: IconSvgElement }>;
 }> = [
   {
     titleKey: "nav.sections.pilotage",

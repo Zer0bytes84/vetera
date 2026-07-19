@@ -11,13 +11,20 @@ import {
   User02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useScroll, useTransform } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
-import { AIAgentChat } from "@/components/AIAgentChat";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
 import { HeroPattern } from "@/components/HeroPattern";
@@ -59,6 +66,10 @@ const ALL_VIEWS: View[] = [
 ];
 
 const DEFAULT_VIEW: View = "dashboard";
+const AIAgentChat = lazy(async () => {
+  const module = await import("@/components/AIAgentChat");
+  return { default: module.AIAgentChat };
+});
 
 const HASH_PREFIX_REGEX = /^#\/?/;
 const PATIENT_DETAIL_PREFIX = /^patient\/([A-Za-z0-9_-]+)$/;
@@ -309,9 +320,9 @@ function AppShellInner() {
           <HeroPattern />
 
           {/* biome-ignore lint/a11y/noStaticElementInteractions: header needs onMouseDown for Tauri window drag */}
-          <header
+          <motion.header
             className={cn(
-              "app-shell-header sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 bg-background/[var(--bg-opacity-light)] backdrop-blur-xs transition-colors duration-300 dark:bg-background/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
+              "sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs transition-colors duration-300 dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
               "group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
             )}
             onMouseDown={handleMouseDown}
@@ -573,7 +584,7 @@ function AppShellInner() {
                 </DropdownMenu>
               </div>
             </div>
-          </header>
+          </motion.header>
 
           {/* View content */}
           <div className="flex min-h-0 flex-1 flex-col gap-4 py-4">
@@ -590,12 +601,15 @@ function AppShellInner() {
         onNavigateToPatient={handleNavigateToPatient}
       />
 
-      {/* AI Agent Chat */}
-      <AIAgentChat
-        currentView={currentView}
-        isOpen={aiAgentOpen}
-        onClose={() => setAiAgentOpen(false)}
-      />
+      {aiAgentOpen ? (
+        <Suspense fallback={null}>
+          <AIAgentChat
+            currentView={currentView}
+            isOpen={aiAgentOpen}
+            onClose={() => setAiAgentOpen(false)}
+          />
+        </Suspense>
+      ) : null}
     </SidebarProvider>
   );
 }

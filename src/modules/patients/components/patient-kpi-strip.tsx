@@ -5,7 +5,7 @@ import {
   Syringe,
 } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
-import { type SectionCardItem, SectionCards } from "@/components/section-cards";
+import { cn } from "@/lib/utils";
 import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
 
 interface PatientKpiStripProps {
@@ -78,44 +78,33 @@ export function PatientKpiStrip({
     : null;
   const nextVaccDaysOut = nextVaccDate ? diffDays(nextVaccDate, now) : null;
 
-  const items: SectionCardItem[] = [
+  const items = [
     {
       title: t("patientDetail.kpi.currentWeight"),
       value: lastWeight
         ? `${lastWeight.weightKg.toFixed(2)} kg`
-        : t("patientDetail.kpi.noWeight"),
-      badge:
-        weightDelta ?? (lastWeight ? t("patientDetail.kpi.lastWeight") : "—"),
-      footerTitle: lastWeight
+        : "À renseigner",
+      detail: weightDelta ?? (lastWeight ? t("patientDetail.kpi.lastWeight") : "Aucune pesée"),
+      caption: lastWeight
         ? (formatDateShort(lastWeight.measuredAt) ?? "—")
-        : t("patientDetail.kpi.noWeight"),
-      footerDescription: t("patientDetail.kpi.trend"),
+        : "Ajoutez une première mesure",
       trend: weightTrend,
       icon: Scales,
     },
     {
       title: t("patientDetail.kpi.lastVisit"),
       value: lastVisitFormatted ?? t("patientDetail.kpi.never"),
-      badge:
+      detail:
         daysSinceLastVisit == null
           ? "—"
           : daysSinceLastVisit === 0
             ? t("common.today", { defaultValue: "Aujourd'hui" })
             : `${Math.abs(daysSinceLastVisit)} j`,
-      footerTitle:
+      caption:
         daysSinceLastVisit == null
           ? "—"
           : daysSinceLastVisit > 0
             ? t("patientDetail.kpi.lastVisit")
-            : "",
-      footerDescription:
-        daysSinceLastVisit == null
-          ? ""
-          : daysSinceLastVisit > 0
-            ? t("common.daysAgo", {
-                count: daysSinceLastVisit,
-                defaultValue: "Il y a {{count}} jours",
-              })
             : "",
       trend: "neutral",
       icon: Stethoscope,
@@ -123,7 +112,7 @@ export function PatientKpiStrip({
     {
       title: t("patientDetail.kpi.nextVaccine"),
       value: nextVaccination?.vaccineName ?? t("patientDetail.kpi.nonePlanned"),
-      badge:
+      detail:
         nextVaccDaysOut == null
           ? "—"
           : nextVaccDaysOut < 0
@@ -131,10 +120,10 @@ export function PatientKpiStrip({
             : nextVaccDaysOut === 0
               ? t("common.today", { defaultValue: "Aujourd'hui" })
               : `${nextVaccDaysOut} j`,
-      footerTitle: nextVaccination?.nextDueAt
+      caption: nextVaccination?.nextDueAt
         ? (formatDateShort(nextVaccination.nextDueAt) ?? "—")
-        : "—",
-      footerDescription:
+        : "Aucun rappel programmé",
+      trendLabel:
         nextVaccDaysOut == null
           ? ""
           : nextVaccDaysOut < 0
@@ -161,7 +150,7 @@ export function PatientKpiStrip({
     {
       title: t("patientDetail.kpi.nextAppointment"),
       value: nextAppointment?.title ?? t("patientDetail.kpi.noAppointment"),
-      badge:
+      detail:
         nextApptDaysOut == null
           ? "—"
           : nextApptDaysOut === 0
@@ -169,14 +158,56 @@ export function PatientKpiStrip({
             : nextApptDaysOut < 0
               ? `${Math.abs(nextApptDaysOut)} j`
               : `${nextApptDaysOut} j`,
-      footerTitle: nextApptDate
+      caption: nextApptDate
         ? (formatDateShort(nextApptDate.toISOString()) ?? "—")
-        : "—",
-      footerDescription: nextAppointment?.type ?? "",
+        : "Aucun créneau à venir",
       trend: "neutral",
       icon: CalendarBlank,
     },
   ];
 
-  return <SectionCards items={items} />;
+  return (
+    <section
+      aria-label="Repères cliniques"
+      className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+    >
+      {items.map((item) => {
+        const Icon = item.icon;
+        const tone =
+          item.trend === "down"
+            ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+            : item.trend === "up"
+              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+              : "bg-sky-500/10 text-sky-600 dark:text-sky-400";
+
+        return (
+          <div
+            className="min-w-0 rounded-2xl border border-border bg-card px-4 py-4 shadow-sm"
+            key={item.title}
+          >
+            <div className="flex items-center gap-2">
+              <span className={cn("flex size-8 items-center justify-center rounded-xl", tone)}>
+                <Icon className="size-4" weight="duotone" />
+              </span>
+              <span className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.08em]">
+                {item.title}
+              </span>
+            </div>
+            <p className="mt-4 truncate font-semibold text-lg tracking-[-0.03em]">
+              {item.value}
+            </p>
+            <div className="mt-1 flex min-w-0 items-center justify-between gap-2 text-muted-foreground text-xs">
+              <span className="truncate">{item.detail}</span>
+              {"trendLabel" in item && item.trendLabel ? (
+                <span className="shrink-0">{item.trendLabel}</span>
+              ) : null}
+            </div>
+            <p className="mt-3 truncate border-border/70 border-t pt-3 text-muted-foreground text-xs">
+              {item.caption}
+            </p>
+          </div>
+        );
+      })}
+    </section>
+  );
 }

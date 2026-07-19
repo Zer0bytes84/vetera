@@ -2970,7 +2970,7 @@ const Agenda: React.FC = () => {
                         unifiedAppointmentMatches.map(({ owner, patient }) => (
                           <button
                             className={cn(
-                              "rounded-2xl border px-4 py-3 text-left transition hover:border-primary/40 hover:bg-primary/5 cursor-pointer",
+                              "cursor-pointer rounded-2xl border px-4 py-3 text-left transition hover:border-primary/40 hover:bg-primary/5",
                               selectedPatientId === patient.id
                                 ? "border-primary bg-primary/10"
                                 : "border-border/80 bg-background/70"
@@ -3363,7 +3363,7 @@ const Agenda: React.FC = () => {
 
               <div className="rounded-xl border border-zinc-150/70 bg-zinc-50/30 p-4 dark:border-zinc-800/60 dark:bg-zinc-900/10">
                 <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-10 items-center justify-center rounded-xl bg-background text-foreground border border-zinc-100 dark:border-zinc-900 shadow-3xs">
+                  <div className="mt-0.5 flex size-10 items-center justify-center rounded-xl border border-zinc-100 bg-background text-foreground shadow-3xs dark:border-zinc-900">
                     <HugeiconsIcon icon={UserCircle02Icon} strokeWidth={2} />
                   </div>
                   <div className="min-w-0">
@@ -3384,10 +3384,11 @@ const Agenda: React.FC = () => {
             </FieldGroup>
           </div>
 
-          <div className="modal-medical-footer flex flex-col gap-3 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          <div className="modal-medical-footer flex shrink-0 flex-col gap-3 border-t px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-h-11 items-center">
               {editingAppointmentId ? (
                 <Button
+                  className="h-11 min-w-[120px] justify-center"
                   onClick={() => {
                     const current = appointments.find(
                       (appointment) => appointment.id === editingAppointmentId
@@ -3403,34 +3404,36 @@ const Agenda: React.FC = () => {
               ) : null}
             </div>
 
-            <div className="modal-medical-actions">
-              <Button
-                className="min-w-[120px]"
-                onClick={closeDialog}
-                variant="outline"
-              >
-                Annuler
-              </Button>
+            <div className="flex w-full flex-col gap-3 sm:ml-auto sm:w-auto sm:items-end">
               {formError ? (
-                <div className="max-w-[360px] rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm">
+                <div className="w-full rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm sm:max-w-[360px]">
                   {formError}
                 </div>
               ) : null}
-              <Button
-                className="min-w-[170px]"
-                disabled={isSubmitting || !selectedPatientId}
-                onClick={handleSave}
-              >
-                {isSubmitting ? null : (
-                  <HugeiconsIcon
-                    data-icon="inline-start"
-                    icon={CheckmarkCircle02Icon}
-                    strokeWidth={2}
-                  />
-                )}
-                {isSubmitting ? <Spinner className="size-4" /> : null}
-                {editingAppointmentId ? "Enregistrer" : "Ajouter au planning"}
-              </Button>
+              <div className="modal-medical-actions w-full flex-col-reverse sm:w-auto sm:flex-row">
+                <Button
+                  className="h-11 min-w-[132px] justify-center"
+                  onClick={closeDialog}
+                  variant="outline"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  className="h-11 min-w-[190px] justify-center shadow-sm"
+                  disabled={isSubmitting || !selectedPatientId}
+                  onClick={handleSave}
+                >
+                  {isSubmitting ? null : (
+                    <HugeiconsIcon
+                      data-icon="inline-start"
+                      icon={CheckmarkCircle02Icon}
+                      strokeWidth={2}
+                    />
+                  )}
+                  {isSubmitting ? <Spinner className="size-4" /> : null}
+                  {editingAppointmentId ? "Enregistrer" : "Ajouter au planning"}
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>

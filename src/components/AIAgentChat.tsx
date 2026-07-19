@@ -4,7 +4,6 @@ import {
   Chatting01Icon,
   ClipboardIcon,
   Delete01Icon,
-  EditIcon,
   File01Icon,
   MedicineBottle01Icon,
   MoreVerticalIcon,
@@ -12,8 +11,16 @@ import {
   TelegramIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bot,
+  Contrast,
+  Paperclip,
+  RotateCw,
+  Sparkles,
+  Sun,
+} from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,27 +36,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import type { View } from "@/types";
-
 // Repositories & Local LLM Imports
-import { 
-  usePatientsRepository, 
-  useRemindersRepository,
-  useAppointmentsRepository,
-  useProductsRepository,
-  useNotesRepository,
-  useWeightEntriesRepository
-} from "@/data/repositories";
 import {
-  isWebLLMReady,
-  isWebLLMLoading,
-  initializeWebLLM,
+  useAppointmentsRepository,
+  useNotesRepository,
+  usePatientsRepository,
+  useProductsRepository,
+  useRemindersRepository,
+  useWeightEntriesRepository,
+} from "@/data/repositories";
+import { cn } from "@/lib/utils";
+import {
   generateText,
+  initializeWebLLM,
+  isWebLLMLoading,
+  isWebLLMReady,
   subscribeToProgress,
 } from "@/services/webLLMService";
-import { AI_MODELS } from "@/lib/ai-models";
-import { Paperclip, Eye, Sun, Contrast, RotateCw, Bot, Sparkles } from "lucide-react";
+import type { View } from "@/types";
 
 interface Message {
   content: string;
@@ -133,10 +137,15 @@ export function AIAgentChat({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Local LLM & Vision State
-  const [modelProgress, setModelProgress] = useState<{ progress: number; text: string } | null>(null);
+  const [modelProgress, setModelProgress] = useState<{
+    progress: number;
+    text: string;
+  } | null>(null);
   const [isLlmReady, setIsLlmReady] = useState(false);
   const [isLlmLoading, setIsLlmLoading] = useState(false);
-  const [selectedModelId, setSelectedModelId] = useState("Phi-3.5-vision-instruct-q4f16_1-MLC");
+  const [selectedModelId, setSelectedModelId] = useState(
+    "Phi-3.5-vision-instruct-q4f16_1-MLC"
+  );
 
   // Image attachment & Visualizer State
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -202,7 +211,9 @@ export function AIAgentChat({
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -217,11 +228,16 @@ export function AIAgentChat({
 
   const handleRemoveImage = () => {
     setSelectedImage(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   // Agentic Tool Execution
-  const executeTool = async (name: string, argsStr: string): Promise<string> => {
+  const executeTool = async (
+    name: string,
+    argsStr: string
+  ): Promise<string> => {
     const args: Record<string, string> = {};
     const regex = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+))/g;
     let match;
@@ -233,19 +249,31 @@ export function AIAgentChat({
 
     if (name === "search_patients") {
       const query = args.query || argsStr.replace(/["']/g, "").trim();
-      if (!query) return "Erreur: Recherche vide.";
+      if (!query) {
+        return "Erreur: Recherche vide.";
+      }
 
-      const found = patientsRepository.data.filter((p) =>
-        p.name.toLowerCase().includes(query.toLowerCase()) ||
-        p.breed?.toLowerCase().includes(query.toLowerCase())
+      const found = patientsRepository.data.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query.toLowerCase()) ||
+          p.breed?.toLowerCase().includes(query.toLowerCase())
       );
 
-      if (found.length === 0) return `Aucun patient trouvé pour "${query}".`;
+      if (found.length === 0) {
+        return `Aucun patient trouvé pour "${query}".`;
+      }
 
-      return `Trouvé ${found.length} patient(s) :\n` + found.map((p) => {
-        const owner = patientsRepository.owners.find((o) => o.id === p.ownerId);
-        return `- ID: ${p.id}, Nom: ${p.name}, Espèce: ${p.species}, Race: ${p.breed || "N/A"}, Propriétaire: ${owner ? `${owner.firstName} ${owner.lastName}` : "Inconnu"}`;
-      }).join("\n");
+      return (
+        `Trouvé ${found.length} patient(s) :\n` +
+        found
+          .map((p) => {
+            const owner = patientsRepository.owners.find(
+              (o) => o.id === p.ownerId
+            );
+            return `- ID: ${p.id}, Nom: ${p.name}, Espèce: ${p.species}, Race: ${p.breed || "N/A"}, Propriétaire: ${owner ? `${owner.firstName} ${owner.lastName}` : "Inconnu"}`;
+          })
+          .join("\n")
+      );
     }
 
     if (name === "create_reminder") {
@@ -253,12 +281,16 @@ export function AIAgentChat({
       const text = args.text || args.message;
       const date = args.date || args.scheduled_for;
 
-      if (!patientId || !text || !date) {
+      if (!(patientId && text && date)) {
         return "Erreur: Paramètres requis manquants (patient_id, text, date).";
       }
 
-      const patient = patientsRepository.data.find((p) => String(p.id) === String(patientId));
-      if (!patient) return `Erreur: Patient ID ${patientId} introuvable.`;
+      const patient = patientsRepository.data.find(
+        (p) => String(p.id) === String(patientId)
+      );
+      if (!patient) {
+        return `Erreur: Patient ID ${patientId} introuvable.`;
+      }
 
       await remindersRepository.add({
         appointmentId: "",
@@ -275,38 +307,71 @@ export function AIAgentChat({
     if (name === "get_appointments") {
       const dateStr = args.date || argsStr.replace(/["']/g, "").trim();
       const targetDate = dateStr ? new Date(dateStr) : new Date();
-      if (isNaN(targetDate.getTime())) return "Erreur: Format de date invalide.";
-      
+      if (isNaN(targetDate.getTime())) {
+        return "Erreur: Format de date invalide.";
+      }
+
       const targetDateString = targetDate.toISOString().split("T")[0];
-      const todayAppts = appointmentsRepository.data.filter(a => a.startTime.startsWith(targetDateString));
-      
-      if (todayAppts.length === 0) return `Aucun rendez-vous trouvé pour la date ${targetDateString}.`;
-      
-      return `Trouvé ${todayAppts.length} rendez-vous pour ${targetDateString}:\n` + todayAppts.map(a => {
-        const patient = patientsRepository.data.find(p => p.id === a.patientId);
-        return `- ${a.startTime.split("T")[1].slice(0,5)} : ${a.title} (Patient: ${patient?.name || "Inconnu"}, Statut: ${a.status})`;
-      }).join("\n");
+      const todayAppts = appointmentsRepository.data.filter((a) =>
+        a.startTime.startsWith(targetDateString)
+      );
+
+      if (todayAppts.length === 0) {
+        return `Aucun rendez-vous trouvé pour la date ${targetDateString}.`;
+      }
+
+      return (
+        `Trouvé ${todayAppts.length} rendez-vous pour ${targetDateString}:\n` +
+        todayAppts
+          .map((a) => {
+            const patient = patientsRepository.data.find(
+              (p) => p.id === a.patientId
+            );
+            return `- ${a.startTime.split("T")[1].slice(0, 5)} : ${a.title} (Patient: ${patient?.name || "Inconnu"}, Statut: ${a.status})`;
+          })
+          .join("\n")
+      );
     }
 
     if (name === "search_stock") {
       const query = args.query || argsStr.replace(/["']/g, "").trim();
-      if (!query) return "Erreur: Recherche vide.";
-      
-      const found = productsRepository.data.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
-      if (found.length === 0) return `Aucun produit trouvé pour "${query}".`;
-      
-      return `Stock pour "${query}":\n` + found.map(p => `- ${p.name}: ${p.quantity} unités restantes`).join("\n");
+      if (!query) {
+        return "Erreur: Recherche vide.";
+      }
+
+      const found = productsRepository.data.filter((p) =>
+        p.name.toLowerCase().includes(query.toLowerCase())
+      );
+      if (found.length === 0) {
+        return `Aucun produit trouvé pour "${query}".`;
+      }
+
+      return (
+        `Stock pour "${query}":\n` +
+        found
+          .map((p) => `- ${p.name}: ${p.quantity} unités restantes`)
+          .join("\n")
+      );
     }
 
     if (name === "get_patient_history") {
-      const patientId = args.patient_id || args.patientId || argsStr.replace(/["']/g, "").trim();
-      if (!patientId) return "Erreur: ID du patient manquant.";
-      
-      const patient = patientsRepository.data.find(p => String(p.id) === String(patientId));
-      if (!patient) return `Erreur: Patient introuvable.`;
-      
+      const patientId =
+        args.patient_id ||
+        args.patientId ||
+        argsStr.replace(/["']/g, "").trim();
+      if (!patientId) {
+        return "Erreur: ID du patient manquant.";
+      }
+
+      const patient = patientsRepository.data.find(
+        (p) => String(p.id) === String(patientId)
+      );
+      if (!patient) {
+        return "Erreur: Patient introuvable.";
+      }
+
       const latestWeight = weightRepository.latestFor(patient.id);
-      
+
       return `Historique de ${patient.name} (${patient.species}):
 Poids le plus récent: ${latestWeight ? `${latestWeight.weight} kg (${latestWeight.measuredAt.split("T")[0]})` : "Aucun"}
 Allergies: ${patient.allergies || "Aucune connue"}
@@ -316,16 +381,18 @@ Notes générales: ${patient.generalNotes || "Aucune"}`;
     if (name === "add_note") {
       const title = args.title || "Note IA";
       const content = args.content || args.text;
-      if (!content) return "Erreur: Contenu de la note manquant.";
-      
+      if (!content) {
+        return "Erreur: Contenu de la note manquant.";
+      }
+
       // Notes require a user ID. In a real app we'd get the current user, here we use a dummy or first user.
       await notesRepository.add({
         userId: "system",
-        title: title,
-        content: content,
+        title,
+        content,
         isFavorite: false,
       } as any);
-      
+
       return `Succès: Note "${title}" enregistrée.`;
     }
 
@@ -351,7 +418,7 @@ Règles :
 - Réponds en français.`;
 
   const handleSend = async () => {
-    if ((!input.trim() && !selectedImage) || isLoading) {
+    if (!(input.trim() || selectedImage) || isLoading) {
       return;
     }
 
@@ -359,7 +426,8 @@ Règles :
       const loadMsg: Message = {
         id: Date.now().toString(),
         role: "assistant",
-        content: "Veuillez d'abord initialiser le modèle local IA en cliquant sur le bouton de chargement dans le panneau latéral gauche.",
+        content:
+          "Veuillez d'abord initialiser le modèle local IA en cliquant sur le bouton de chargement dans le panneau latéral gauche.",
         timestamp: new Date(),
       };
       setConversations((prev) =>
@@ -376,7 +444,9 @@ Règles :
     const userMsg: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: selectedImage ? `[Cliché Joint] ${userInputText}` : userInputText,
+      content: selectedImage
+        ? `[Cliché Joint] ${userInputText}`
+        : userInputText,
       timestamp: new Date(),
     };
 
@@ -389,7 +459,8 @@ Règles :
               updatedAt: new Date(),
               title:
                 conv.title === "Nouvelle conversation"
-                  ? userInputText.slice(0, 25) + (userInputText.length > 25 ? "..." : "")
+                  ? userInputText.slice(0, 25) +
+                    (userInputText.length > 25 ? "..." : "")
                   : conv.title,
             }
           : conv
@@ -476,7 +547,8 @@ Règles :
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Désolé, une erreur de calcul est survenue avec le modèle IA local (possible surcharge VRAM WebGPU). Veuillez réessayer.",
+        content:
+          "Désolé, une erreur de calcul est survenue avec le modèle IA local (possible surcharge VRAM WebGPU). Veuillez réessayer.",
         timestamp: new Date(),
       };
       setConversations((prev) =>
@@ -548,7 +620,7 @@ Règles :
         </DialogHeader>
 
         {/* Premium Header */}
-        <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-border/40 bg-white/40 px-6 backdrop-blur-xl dark:bg-zinc-950/40">
+        <div className="relative flex h-16 shrink-0 items-center justify-between border-border/40 border-b bg-white/40 px-6 backdrop-blur-xl dark:bg-zinc-950/40">
           <div className="absolute inset-0 z-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-orange-500/5 opacity-50" />
           <div className="relative z-10 flex items-center gap-4">
             <div className="relative flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-sm">
@@ -556,10 +628,10 @@ Règles :
               <Bot className="relative z-10 size-5 text-white" />
             </div>
             <div>
-              <h2 className="font-serif text-lg font-semibold tracking-tight text-foreground">
+              <h2 className="font-semibold font-serif text-foreground text-lg tracking-tight">
                 Assistant IA
               </h2>
-              <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="font-medium text-[11px] text-muted-foreground uppercase tracking-wider">
                 100% Local · Base Sécurisée
               </p>
             </div>
@@ -580,31 +652,35 @@ Règles :
         {/* Content */}
         <div className="flex flex-1 overflow-hidden bg-background">
           {/* Sidebar */}
-          <div className="flex w-64 flex-col border-r border-border/40 bg-zinc-50/50 dark:bg-zinc-900/30">
+          <div className="flex w-64 flex-col border-border/40 border-r bg-zinc-50/50 dark:bg-zinc-900/30">
             {/* Local LLM Status */}
-            <div className="border-b border-border/40 p-5 space-y-3">
-              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            <div className="space-y-3 border-border/40 border-b p-5">
+              <label className="font-semibold text-[10px] text-muted-foreground uppercase tracking-widest">
                 Moteur IA Local (Vision)
               </label>
 
               {isLlmReady ? (
-                <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-50/50 px-3 py-2 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+                <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-50/50 px-3 py-2 font-medium text-blue-700 text-xs dark:bg-blue-500/10 dark:text-blue-300">
                   <span className="relative flex size-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex size-2 rounded-full bg-blue-500"></span>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
+                    <span className="relative inline-flex size-2 rounded-full bg-blue-500" />
                   </span>
                   Modèle en ligne
                 </div>
               ) : isLlmLoading ? (
                 <div className="space-y-2 rounded-lg border border-border/40 bg-white p-3 shadow-sm dark:bg-zinc-950">
-                  <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
+                  <div className="flex justify-between font-mono text-[10px] text-muted-foreground">
                     <span>Initialisation...</span>
-                    <span>{Math.round((modelProgress?.progress ?? 0) * 100)}%</span>
+                    <span>
+                      {Math.round((modelProgress?.progress ?? 0) * 100)}%
+                    </span>
                   </div>
                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
                     <div
                       className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
-                      style={{ width: `${(modelProgress?.progress ?? 0) * 100}%` }}
+                      style={{
+                        width: `${(modelProgress?.progress ?? 0) * 100}%`,
+                      }}
                     />
                   </div>
                   <p className="truncate font-mono text-[9px] text-muted-foreground/80">
@@ -613,7 +689,7 @@ Règles :
                 </div>
               ) : (
                 <Button
-                  className="h-9 w-full rounded-lg bg-black text-xs font-medium text-white shadow-md transition-transform hover:scale-[1.02] hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                  className="h-9 w-full rounded-lg bg-black font-medium text-white text-xs shadow-md transition-transform hover:scale-[1.02] hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                   onClick={() => handleLoadModel(selectedModelId)}
                 >
                   Activer l'assistant
@@ -634,7 +710,7 @@ Règles :
                     icon={Add01Icon}
                   />
                 </div>
-                <span className="text-sm font-medium">Nouvelle discussion</span>
+                <span className="font-medium text-sm">Nouvelle discussion</span>
               </Button>
             </div>
 
@@ -713,7 +789,7 @@ Règles :
           <div className="relative flex min-w-0 flex-1 flex-col">
             {/* Ambient Mesh Background (Very subtle) */}
             <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/20 via-background to-orange-50/20 opacity-60 dark:from-blue-900/10 dark:to-orange-900/10" />
-            
+
             {/* Messages */}
             <div className="relative z-10 flex-1 overflow-y-auto">
               <div className="mx-auto max-w-3xl px-8 py-8">
@@ -721,19 +797,21 @@ Règles :
                   <div className="flex h-full flex-col items-center justify-center gap-10 pt-12">
                     <div className="relative">
                       {/* Vibrant animated glow behind icon */}
-                      <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-orange-400 blur-3xl opacity-30 dark:opacity-20" />
-                      
+                      <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-orange-400 opacity-30 blur-3xl dark:opacity-20" />
+
                       {/* Premium Icon Container */}
                       <div className="relative flex size-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-white to-zinc-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,1)] dark:from-zinc-800 dark:to-zinc-900 dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)]">
                         <Bot className="size-10 text-zinc-800 dark:text-zinc-200" />
                       </div>
                     </div>
                     <div className="space-y-3 text-center">
-                      <h2 className="font-serif text-3xl font-bold tracking-tight text-foreground">
+                      <h2 className="font-bold font-serif text-3xl text-foreground tracking-tight">
                         Bonjour Docteur
                       </h2>
-                      <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-                        Je suis votre assistant IA clinique. Je peux analyser vos radiographies, interroger vos dossiers patients et vous aider dans votre quotidien.
+                      <p className="max-w-md text-muted-foreground text-sm leading-relaxed">
+                        Je suis votre assistant IA clinique. Je peux analyser
+                        vos radiographies, interroger vos dossiers patients et
+                        vous aider dans votre quotidien.
                       </p>
                     </div>
                     <div className="grid w-full max-w-xl grid-cols-2 gap-4">
@@ -743,7 +821,7 @@ Règles :
                           key={action.id}
                           onClick={() => handleQuickAction(action)}
                         >
-                          <div className="absolute -right-4 -top-4 size-24 rounded-full bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                          <div className="absolute -top-4 -right-4 size-24 rounded-full bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                           <div className="flex items-center gap-3">
                             <div className="flex size-8 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 transition-colors group-hover:bg-black group-hover:text-white dark:bg-zinc-800 dark:text-zinc-400 dark:group-hover:bg-white dark:group-hover:text-black">
                               <HugeiconsIcon
@@ -751,11 +829,11 @@ Règles :
                                 icon={action.icon}
                               />
                             </div>
-                            <span className="font-medium text-sm text-foreground">
+                            <span className="font-medium text-foreground text-sm">
                               {action.label}
                             </span>
                           </div>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-muted-foreground text-xs">
                             {action.description}
                           </span>
                         </button>
@@ -782,7 +860,9 @@ Règles :
                         )}
                         {message.role === "user" && (
                           <div className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-background shadow-sm">
-                            <span className="text-xs font-medium text-muted-foreground">MOI</span>
+                            <span className="font-medium text-muted-foreground text-xs">
+                              MOI
+                            </span>
                           </div>
                         )}
                         <div
@@ -841,10 +921,10 @@ Règles :
                               if (isQuote) {
                                 return (
                                   <div
-                                    className="my-3 rounded-r-lg border-l-2 border-blue-400 bg-blue-50/50 py-2 pl-4 dark:border-blue-500 dark:bg-blue-900/20"
+                                    className="my-3 rounded-r-lg border-blue-400 border-l-2 bg-blue-50/50 py-2 pl-4 dark:border-blue-500 dark:bg-blue-900/20"
                                     key={i}
                                   >
-                                    <p className="text-sm italic text-muted-foreground">
+                                    <p className="text-muted-foreground text-sm italic">
                                       {cleanLine}
                                     </p>
                                   </div>
@@ -908,15 +988,15 @@ Règles :
             </div>
 
             {/* Input Area */}
-            <div className="relative z-10 border-t border-border/40 bg-white/80 p-4 backdrop-blur-xl dark:bg-zinc-950/80">
+            <div className="relative z-10 border-border/40 border-t bg-white/80 p-4 backdrop-blur-xl dark:bg-zinc-950/80">
               <div className="mx-auto flex max-w-3xl items-end gap-3 rounded-2xl border border-zinc-200/80 bg-white p-2 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-shadow focus-within:border-zinc-300 focus-within:shadow-md dark:border-white/10 dark:bg-zinc-900 dark:focus-within:border-white/20">
                 <Button
                   className="size-10 shrink-0 rounded-xl text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-zinc-800"
                   onClick={handleImageClick}
                   size="icon"
+                  title="Joindre une image (Vision)"
                   type="button"
                   variant="ghost"
-                  title="Joindre une image (Vision)"
                 >
                   <Paperclip className="size-5" />
                 </Button>
@@ -924,34 +1004,45 @@ Règles :
                 <div className="relative flex-1">
                   {selectedImage && (
                     <div className="mb-2 flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-1.5 dark:border-zinc-800 dark:bg-zinc-950">
-                      <div className="relative h-10 w-10 shrink-0 rounded overflow-hidden">
-                        <img src={selectedImage} alt="Preview" className="h-full w-full object-cover" />
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
+                        <img
+                          alt="Preview"
+                          className="h-full w-full object-cover"
+                          src={selectedImage}
+                        />
                       </div>
-                      <span className="text-xs text-muted-foreground">Cliché chargé</span>
-                      <button onClick={handleRemoveImage} className="ml-auto p-1 hover:bg-zinc-200 rounded">✕</button>
+                      <span className="text-muted-foreground text-xs">
+                        Cliché chargé
+                      </span>
+                      <button
+                        className="ml-auto rounded p-1 hover:bg-zinc-200"
+                        onClick={handleRemoveImage}
+                      >
+                        ✕
+                      </button>
                     </div>
                   )}
                   {/* Hidden Image input */}
                   <input
-                    type="file"
                     accept="image/*"
                     className="hidden"
-                    ref={fileInputRef}
                     onChange={handleImageUpload}
+                    ref={fileInputRef}
+                    type="file"
                   />
 
                   <Textarea
                     className="max-h-[120px] min-h-[40px] w-full resize-none border-0 bg-transparent px-0 py-2.5 text-[15px] placeholder:text-muted-foreground/50 focus-visible:ring-0"
-                    placeholder="Posez votre question clinique..."
-                    value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    placeholder="Posez votre question clinique..."
                     ref={textareaRef}
+                    value={input}
                   />
 
                   <Button
                     className="size-10 shrink-0 rounded-xl bg-black text-white shadow-sm transition-transform hover:scale-105 hover:bg-zinc-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                    disabled={(!input.trim() && !selectedImage) || isLoading}
+                    disabled={!(input.trim() || selectedImage) || isLoading}
                     onClick={handleSend}
                     size="icon"
                   >
@@ -971,11 +1062,11 @@ Règles :
         </div>
 
         {/* Radiography DICOM Style Visualizer Dialog */}
-        <Dialog open={showVisualizer} onOpenChange={setShowVisualizer}>
-          <DialogContent className="max-w-3xl rounded-2xl border border-border/50 bg-zinc-950 text-white shadow-2xl p-6">
-            <DialogHeader className="flex flex-row items-center justify-between border-b border-white/10 pb-4">
+        <Dialog onOpenChange={setShowVisualizer} open={showVisualizer}>
+          <DialogContent className="max-w-3xl rounded-2xl border border-border/50 bg-zinc-950 p-6 text-white shadow-2xl">
+            <DialogHeader className="flex flex-row items-center justify-between border-white/10 border-b pb-4">
               <div>
-                <DialogTitle className="text-lg font-bold text-white">
+                <DialogTitle className="font-bold text-lg text-white">
                   Visualiseur Radiologique & Clinique
                 </DialogTitle>
                 <p className="text-xs text-zinc-400">
@@ -983,7 +1074,7 @@ Règles :
                 </p>
               </div>
               <Button
-                className="size-9 rounded-full bg-white/10 text-white hover:bg-white/20 cursor-pointer"
+                className="size-9 cursor-pointer rounded-full bg-white/10 text-white hover:bg-white/20"
                 onClick={() => setShowVisualizer(false)}
                 size="icon"
                 variant="ghost"
@@ -992,70 +1083,74 @@ Règles :
               </Button>
             </DialogHeader>
 
-            <div className="mt-6 flex flex-col md:flex-row gap-6">
+            <div className="mt-6 flex flex-col gap-6 md:flex-row">
               {/* Image Preview Screen */}
-              <div className="flex-1 flex items-center justify-center rounded-xl bg-black border border-white/10 p-4 min-h-[300px] overflow-hidden">
+              <div className="flex min-h-[300px] flex-1 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black p-4">
                 {selectedImage ? (
                   <img
-                    src={selectedImage}
                     alt="Radiographie"
-                    className="max-h-[400px] w-auto object-contain rounded transition-all"
+                    className="max-h-[400px] w-auto rounded object-contain transition-all"
+                    src={selectedImage}
                     style={{
                       filter: `contrast(${contrast}%) brightness(${brightness}%) ${isInverted ? "invert(1)" : ""}`,
                     }}
                   />
                 ) : (
-                  <p className="text-zinc-500 text-sm">Aucun cliché chargé</p>
+                  <p className="text-sm text-zinc-500">Aucun cliché chargé</p>
                 )}
               </div>
 
               {/* Controls Column */}
-              <div className="w-full md:w-64 space-y-5 flex flex-col justify-between">
+              <div className="flex w-full flex-col justify-between space-y-5 md:w-64">
                 <div className="space-y-4">
                   {/* Brightness */}
                   <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-medium text-zinc-300">
-                      <span className="flex items-center gap-1"><Sun className="size-3" /> Luminosité</span>
+                    <div className="flex justify-between font-medium text-xs text-zinc-300">
+                      <span className="flex items-center gap-1">
+                        <Sun className="size-3" /> Luminosité
+                      </span>
                       <span>{brightness}%</span>
                     </div>
                     <input
-                      type="range"
-                      min="50"
+                      className="h-1.5 w-full cursor-pointer rounded-lg bg-zinc-800 accent-blue-500"
                       max="200"
-                      value={brightness}
+                      min="50"
                       onChange={(e) => setBrightness(Number(e.target.value))}
-                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5 cursor-pointer"
+                      type="range"
+                      value={brightness}
                     />
                   </div>
 
                   {/* Contrast */}
                   <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-medium text-zinc-300">
-                      <span className="flex items-center gap-1"><Contrast className="size-3" /> Contraste</span>
+                    <div className="flex justify-between font-medium text-xs text-zinc-300">
+                      <span className="flex items-center gap-1">
+                        <Contrast className="size-3" /> Contraste
+                      </span>
                       <span>{contrast}%</span>
                     </div>
                     <input
-                      type="range"
-                      min="50"
+                      className="h-1.5 w-full cursor-pointer rounded-lg bg-zinc-800 accent-blue-500"
                       max="300"
-                      value={contrast}
+                      min="50"
                       onChange={(e) => setContrast(Number(e.target.value))}
-                      className="w-full accent-blue-500 bg-zinc-800 rounded-lg h-1.5 cursor-pointer"
+                      type="range"
+                      value={contrast}
                     />
                   </div>
 
                   {/* Invert */}
-                  <div className="flex items-center justify-between border-t border-white/10 pt-4">
-                    <span className="text-xs font-medium text-zinc-300 flex items-center gap-1">
+                  <div className="flex items-center justify-between border-white/10 border-t pt-4">
+                    <span className="flex items-center gap-1 font-medium text-xs text-zinc-300">
                       <RotateCw className="size-3" /> Inverser les couleurs
                     </span>
                     <button
-                      type="button"
-                      onClick={() => setIsInverted(!isInverted)}
                       className={cn(
                         "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
                         isInverted ? "bg-blue-500" : "bg-zinc-800"
                       )}
+                      onClick={() => setIsInverted(!isInverted)}
+                      type="button"
                     >
                       <span
                         className={cn(
@@ -1069,7 +1164,7 @@ Règles :
 
                 {/* Reset button */}
                 <Button
-                  className="w-full h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs text-white cursor-pointer"
+                  className="h-9 w-full cursor-pointer rounded-xl bg-zinc-800 text-white text-xs hover:bg-zinc-700"
                   onClick={() => {
                     setBrightness(100);
                     setContrast(100);
@@ -1083,7 +1178,7 @@ Règles :
 
             <div className="mt-6 flex justify-end">
               <Button
-                className="rounded-xl bg-white hover:bg-zinc-200 px-5 text-sm font-semibold text-black cursor-pointer"
+                className="cursor-pointer rounded-xl bg-white px-5 font-semibold text-black text-sm hover:bg-zinc-200"
                 onClick={() => setShowVisualizer(false)}
               >
                 Appliquer et Fermer

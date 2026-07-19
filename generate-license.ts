@@ -8,10 +8,9 @@ function simpleHash(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
+    hash = Math.imul(31, hash) + char;
   }
-  return Math.abs(hash);
+  return Math.abs(Math.imul(1, hash));
 }
 
 function toBase36(num: number, length: number): string {

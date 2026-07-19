@@ -1,7 +1,7 @@
 "use client";
 
+import { ListTodo, Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo } from "react";
-import { ListTodo, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import {
   useAppointmentsRepository,
   useTasksRepository,
@@ -108,7 +108,12 @@ export function AsterTasksChartWidget({
       color: "bg-cyan-400 dark:bg-cyan-500",
       trendColor: "text-emerald-600 dark:text-emerald-400",
       TrendIcon: stats.tasks.percentage >= 50 ? TrendingUp : TrendingDown,
-      status: stats.tasks.percentage >= 80 ? "Positif" : stats.tasks.percentage >= 50 ? "Neutre" : "Critique",
+      status:
+        stats.tasks.percentage >= 80
+          ? "Positif"
+          : stats.tasks.percentage >= 50
+            ? "Neutre"
+            : "Critique",
     },
     {
       label: "Rappels",
@@ -116,7 +121,12 @@ export function AsterTasksChartWidget({
       color: "bg-fuchsia-400 dark:bg-fuchsia-500",
       trendColor: "text-zinc-400 dark:text-zinc-500",
       TrendIcon: Minus,
-      status: stats.reminders.percentage >= 80 ? "Positif" : stats.reminders.percentage >= 50 ? "Neutre" : "Critique",
+      status:
+        stats.reminders.percentage >= 80
+          ? "Positif"
+          : stats.reminders.percentage >= 50
+            ? "Neutre"
+            : "Critique",
     },
     {
       label: "Urgences",
@@ -124,24 +134,29 @@ export function AsterTasksChartWidget({
       color: "bg-rose-400 dark:bg-rose-500",
       trendColor: "text-rose-600 dark:text-rose-400",
       TrendIcon: stats.urgent.percentage >= 50 ? TrendingUp : TrendingDown,
-      status: stats.urgent.percentage >= 80 ? "Positif" : stats.urgent.percentage >= 50 ? "Neutre" : "Critique",
+      status:
+        stats.urgent.percentage >= 80
+          ? "Positif"
+          : stats.urgent.percentage >= 50
+            ? "Neutre"
+            : "Critique",
     },
   ];
 
   return (
     <div
       className={cn(
-        "flex flex-col rounded-[20px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/30 pt-3 px-1.5 pb-1.5 shadow-xs",
+        "flex flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
         className
       )}
     >
       {/* Outer Card Header */}
-      <div className="mb-2 flex items-center justify-between px-1 select-none">
+      <div className="mb-2 flex select-none items-center justify-between px-1">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-200/60 dark:bg-zinc-800">
             <ListTodo className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
-          <span className="font-semibold text-sm text-zinc-800 dark:text-zinc-200 tracking-tight flex items-center gap-2">
+          <span className="flex items-center gap-2 font-semibold text-sm text-zinc-800 tracking-tight dark:text-zinc-200">
             Progression des objectifs
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -149,30 +164,36 @@ export function AsterTasksChartWidget({
             </span>
           </span>
         </div>
-        <button className="text-[11px] text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 font-medium transition-colors cursor-pointer">
+        <button className="cursor-pointer font-medium text-[11px] text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
           Voir plus
         </button>
       </div>
 
       {/* Inner White Box — Sentiment Analysis style */}
-      <div className="flex-1 rounded-[12px] border border-zinc-200/60 dark:border-zinc-800 bg-white p-5 shadow-xs dark:bg-zinc-950/80 flex flex-col">
+      <div className="flex flex-1 flex-col rounded-[12px] border border-zinc-200/60 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-950/80">
         {/* KPI Row */}
-        <div className="grid grid-cols-3 gap-3 select-none">
+        <div className="grid select-none grid-cols-3 gap-3">
           {categories.map((cat, idx) => (
             <div
-              key={cat.label}
               className={cn(
                 "flex flex-col gap-1",
-                idx === 1 && "border-x border-zinc-100 dark:border-zinc-800/80 px-4"
+                idx === 1 &&
+                  "border-zinc-100 border-x px-4 dark:border-zinc-800/80"
               )}
+              key={cat.label}
             >
-              <span className="font-semibold text-2xl text-zinc-900 dark:text-zinc-50 tracking-tight tabular-nums">
+              <span className="font-semibold text-2xl text-zinc-900 tabular-nums tracking-tight dark:text-zinc-50">
                 {cat.percentage}%
               </span>
-              <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              <span className="font-medium text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                 {cat.label}
               </span>
-              <span className={cn("text-[10px] font-semibold flex items-center gap-0.5", cat.trendColor)}>
+              <span
+                className={cn(
+                  "flex items-center gap-0.5 font-semibold text-[10px]",
+                  cat.trendColor
+                )}
+              >
                 <cat.TrendIcon className="h-3 w-3" />
                 {cat.percentage}%
               </span>
@@ -183,18 +204,21 @@ export function AsterTasksChartWidget({
         {/* Progress Bars */}
         <div className="mt-5 flex flex-col gap-3">
           {categories.map((cat) => (
-            <div key={cat.label} className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5" key={cat.label}>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                <span className="font-semibold text-[10px] text-zinc-500 uppercase tracking-wider dark:text-zinc-400">
                   {cat.label}
                 </span>
-                <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-300 tabular-nums">
+                <span className="font-bold text-[10px] text-zinc-600 tabular-nums dark:text-zinc-300">
                   {cat.percentage}%
                 </span>
               </div>
-              <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800/60 overflow-hidden">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800/60">
                 <div
-                  className={cn("h-full rounded-full transition-all duration-700 ease-out", cat.color)}
+                  className={cn(
+                    "h-full rounded-full transition-all duration-700 ease-out",
+                    cat.color
+                  )}
                   style={{ width: `${Math.max(cat.percentage, 2)}%` }}
                 />
               </div>

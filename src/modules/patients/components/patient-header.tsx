@@ -1,9 +1,4 @@
-import {
-  CalendarBlank,
-  CalendarPlus,
-  Notebook,
-  Pill,
-} from "@phosphor-icons/react";
+import { CalendarPlus, PencilSimple } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,9 +11,8 @@ import { computeAge, formatAge } from "../lib";
 
 interface PatientHeaderProps {
   className?: string;
-  onBack: () => void;
+  onEditProfile: () => void;
   onNewAppointment: () => void;
-  onNewNote: () => void;
   owner?: Owner;
   patient: Patient;
 }
@@ -48,9 +42,8 @@ function getAgeKey(
 
 export function PatientHeader({
   className,
-  onBack,
+  onEditProfile,
   onNewAppointment,
-  onNewNote,
   owner,
   patient,
 }: PatientHeaderProps) {
@@ -80,12 +73,12 @@ export function PatientHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-6 rounded-[16px] border border-border bg-card p-6 shadow-sm md:flex-row md:items-start md:gap-8",
+        "flex flex-col gap-5 rounded-[24px] border border-border bg-card p-5 shadow-sm md:flex-row md:items-center md:gap-8 md:p-6",
         className
       )}
     >
-      <div className="flex flex-1 items-start gap-5">
-        <Avatar className="size-20 shadow-sm ring-2 ring-background">
+      <div className="flex flex-1 items-start gap-4 sm:gap-5">
+        <Avatar className="size-16 shadow-sm ring-2 ring-background sm:size-20">
           {patient.avatarUrl ? (
             <AvatarImage alt={patient.name} src={patient.avatarUrl} />
           ) : null}
@@ -94,7 +87,7 @@ export function PatientHeader({
           </AvatarFallback>
         </Avatar>
 
-        <div className="min-w-0 flex-1 space-y-3">
+        <div className="min-w-0 flex-1 space-y-2.5">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="truncate font-display font-semibold text-2xl text-foreground tracking-tight">
               {patient.name}
@@ -153,21 +146,16 @@ export function PatientHeader({
           </Button>
           <Button
             className="h-9 gap-2 rounded-full px-4"
-            onClick={onNewNote}
+            onClick={onEditProfile}
             size="sm"
             variant="outline"
           >
-            <Notebook className="size-4" weight="duotone" />
-            {t("patientDetail.header.newNote")}
+            <PencilSimple className="size-4" weight="duotone" />
+            Modifier le dossier
           </Button>
         </div>
       </div>
 
-      {/* Unused imports — keep icons available for future actions */}
-      <div className="hidden">
-        <CalendarBlank />
-        <Pill />
-      </div>
     </div>
   );
 }

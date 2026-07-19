@@ -1,19 +1,18 @@
 "use client";
 
+import { Activity, HelpCircle, TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Activity, TrendingDown, TrendingUp, HelpCircle } from "lucide-react";
 import type { DashboardMetrics } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 
 // Format date nicely
-const formatDateLong = (date: Date) => {
-  return date.toLocaleDateString("fr-FR", {
+const formatDateLong = (date: Date) =>
+  date.toLocaleDateString("fr-FR", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-};
 
 export function AsterConsultationsChartWidget({
   metrics,
@@ -36,16 +35,16 @@ export function AsterConsultationsChartWidget({
 
   // Group into weeks (arrays of 7 days)
   const weeks = useMemo(() => {
-    const w: typeof heatmapData[] = [];
+    const w: (typeof heatmapData)[] = [];
     let currentWeek: typeof heatmapData = [];
-    
-    heatmapData.forEach((day) => {
+
+    for (const day of heatmapData) {
       currentWeek.push(day);
       if (currentWeek.length === 7) {
         w.push(currentWeek);
         currentWeek = [];
       }
-    });
+    }
     if (currentWeek.length > 0) {
       w.push(currentWeek);
     }
@@ -56,19 +55,21 @@ export function AsterConsultationsChartWidget({
   const stats = useMemo(() => {
     const totalRDV = heatmapData.reduce((sum, d) => sum + d.value, 0);
     const totalRev = heatmapData.reduce((sum, d) => sum + d.revenue, 0);
-    const activeDays = heatmapData.filter((d) => d.value > 0 || d.revenue > 0).length;
     const peakAppointments = Math.max(...heatmapData.map((d) => d.value), 0);
     const peakRevenue = Math.max(...heatmapData.map((d) => d.revenue), 0);
 
-    return { totalRDV, totalRev, activeDays, peakAppointments, peakRevenue };
+    return { totalRDV, totalRev, peakAppointments, peakRevenue };
   }, [heatmapData]);
 
   // Calculate trend comparing this period vs previous period
   const trend = useMemo(() => {
     const totalDays = 147;
     const currentPeriod = metrics.activityDays.slice(-totalDays);
-    const previousPeriod = metrics.activityDays.slice(-totalDays * 2, -totalDays);
-    
+    const previousPeriod = metrics.activityDays.slice(
+      -totalDays * 2,
+      -totalDays
+    );
+
     const currentRDV = currentPeriod.reduce((sum, d) => sum + d.value, 0);
     const previousRDV = previousPeriod.reduce((sum, d) => sum + d.value, 0);
 
@@ -78,9 +79,10 @@ export function AsterConsultationsChartWidget({
     return ((currentRDV - previousRDV) / previousRDV) * 100;
   }, [metrics.activityDays]);
 
-  const maxActivity = useMemo(() => {
-    return Math.max(...heatmapData.map((d) => d.value), 1);
-  }, [heatmapData]);
+  const maxActivity = useMemo(
+    () => Math.max(...heatmapData.map((d) => d.value), 1),
+    [heatmapData]
+  );
 
   // Color mapping based on daily consultation volume (GitHub contribution style)
   const getCellColorClass = (value: number) => {
@@ -124,51 +126,55 @@ export function AsterConsultationsChartWidget({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-[20px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/30 pt-3 px-1.5 pb-1.5 shadow-xs relative",
+        "relative flex flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
         className
       )}
     >
       {/* Outer Card Header */}
-      <div className="mb-3 flex items-center justify-between px-1 z-10 select-none">
+      <div className="z-10 mb-3 flex select-none items-center justify-between px-1">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-200/60 dark:bg-zinc-800">
             <Activity className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
-          <span className="font-semibold text-sm text-zinc-800 dark:text-zinc-200 tracking-tight">
+          <span className="font-semibold text-sm text-zinc-800 tracking-tight dark:text-zinc-200">
             Activité
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "flex items-center gap-1 rounded-full border border-zinc-955/5 bg-white/50 px-2 py-0.5 font-bold text-[10px] shadow-sm backdrop-blur-sm dark:border-white/5 dark:bg-zinc-900/50 select-none",
-              isUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+              "flex select-none items-center gap-1 rounded-full border border-zinc-955/5 bg-white/50 px-2 py-0.5 font-bold text-[10px] shadow-sm backdrop-blur-sm dark:border-white/5 dark:bg-zinc-900/50",
+              isUp
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-rose-600 dark:text-rose-400"
             )}
           >
-            {isUp ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
+            {isUp ? (
+              <TrendingUp className="size-3" />
+            ) : (
+              <TrendingDown className="size-3" />
+            )}
             {Math.abs(trend).toFixed(1)}%
           </div>
 
-          <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+          <span className="font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
             Intensité 5M
           </span>
         </div>
       </div>
 
       {/* Inner White Box */}
-      <div className="flex-1 rounded-[12px] border border-zinc-200/60 dark:border-zinc-800 bg-white p-5 shadow-xs dark:bg-zinc-950/80 flex flex-col justify-between z-10 relative">
-        
+      <div className="relative z-10 flex flex-1 flex-col justify-between rounded-[12px] border border-zinc-200/60 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-950/80">
         {/* Heatmap & Stats row */}
-        <div className="flex flex-col lg:flex-row items-stretch gap-6">
-          
+        <div className="flex flex-col items-stretch gap-6 lg:flex-row">
           {/* Calendar Grid */}
-          <div className="flex-1 flex flex-col justify-center min-w-[280px]">
+          <div className="flex min-w-[280px] flex-1 flex-col justify-center">
             {/* Months Header Row */}
-            <div className="relative h-5 w-full select-none text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase">
-              {monthLabels.map((lbl, idx) => (
+            <div className="relative h-5 w-full select-none font-semibold text-[9px] text-zinc-400 uppercase dark:text-zinc-500">
+              {monthLabels.map((lbl) => (
                 <span
-                  key={idx}
                   className="absolute"
+                  key={`${lbl.label}-${lbl.index}`}
                   style={{ left: `${(lbl.index / weeks.length) * 100}%` }}
                 >
                   {lbl.label}
@@ -179,7 +185,7 @@ export function AsterConsultationsChartWidget({
             {/* Heatmap Grid */}
             <div className="flex items-start gap-2">
               {/* Day Labels Column */}
-              <div className="flex flex-col justify-between h-[105px] text-[8px] font-bold text-zinc-400 dark:text-zinc-500 uppercase select-none pt-0.5 pb-1">
+              <div className="flex h-[105px] select-none flex-col justify-between pt-0.5 pb-1 font-bold text-[8px] text-zinc-400 uppercase dark:text-zinc-500">
                 <span>Lun</span>
                 <span>Mer</span>
                 <span>Ven</span>
@@ -187,22 +193,37 @@ export function AsterConsultationsChartWidget({
               </div>
 
               {/* Grid Column wrapper */}
-              <div className="flex-1 flex justify-between h-[105px]">
-                {weeks.map((week, wIdx) => (
-                  <div key={wIdx} className="flex flex-col gap-[3px] h-full justify-between">
-                    {week.map((day, dIdx) => (
-                      <div
-                        key={dIdx}
+              <div className="flex h-[105px] flex-1 justify-between">
+                {weeks.map((week) => (
+                  <div
+                    className="flex h-full flex-col justify-between gap-[3px]"
+                    key={week[0]?.date.toISOString()}
+                  >
+                    {week.map((day) => (
+                      <button
+                        aria-label={`${formatDateLong(new Date(day.date))}: ${day.value} rendez-vous`}
                         className={cn(
-                          "h-3 w-3 rounded-[2px] transition-all duration-200 cursor-pointer shadow-3xs shrink-0",
+                          "h-3 w-3 shrink-0 cursor-pointer rounded-[2px] shadow-3xs transition-all duration-200",
                           getCellColorClass(day.value)
                         )}
-                        onMouseEnter={() => setHoveredDay({
-                          date: new Date(day.date),
-                          value: day.value,
-                          revenue: day.revenue,
-                        })}
+                        key={day.date.toISOString()}
+                        onBlur={() => setHoveredDay(null)}
+                        onFocus={() =>
+                          setHoveredDay({
+                            date: new Date(day.date),
+                            value: day.value,
+                            revenue: day.revenue,
+                          })
+                        }
+                        onMouseEnter={() =>
+                          setHoveredDay({
+                            date: new Date(day.date),
+                            value: day.value,
+                            revenue: day.revenue,
+                          })
+                        }
                         onMouseLeave={() => setHoveredDay(null)}
+                        type="button"
                       />
                     ))}
                   </div>
@@ -211,7 +232,7 @@ export function AsterConsultationsChartWidget({
             </div>
 
             {/* Heatmap Legend */}
-            <div className="mt-4 flex items-center justify-end gap-1.5 text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 select-none">
+            <div className="mt-4 flex select-none items-center justify-end gap-1.5 font-semibold text-[9px] text-zinc-400 dark:text-zinc-500">
               <span>Moins</span>
               <div className="h-2.5 w-2.5 rounded-[1px] bg-zinc-100 dark:bg-zinc-800" />
               <div className="h-2.5 w-2.5 rounded-[1px] bg-orange-100 dark:bg-orange-950/40" />
@@ -223,59 +244,59 @@ export function AsterConsultationsChartWidget({
           </div>
 
           {/* Stats Breakdown Side panel */}
-          <div className="w-full lg:w-48 border-t lg:border-t-0 lg:border-l border-zinc-100 dark:border-zinc-800/80 pt-4 lg:pt-0 lg:pl-5 flex flex-col justify-between gap-3">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+          <div className="grid w-full grid-cols-3 gap-3 border-zinc-100 border-t pt-4 lg:w-56 lg:grid-cols-1 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-5 dark:border-zinc-800/80">
+            <div className="min-w-0">
+              <span className="font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                 Total Consultations
               </span>
-              <span className="text-xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight tabular-nums">
+              <span className="mt-1 block font-bold text-xl text-zinc-800 tabular-nums tracking-tight dark:text-zinc-100">
                 {stats.totalRDV} RDV
               </span>
             </div>
 
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            <div className="min-w-0">
+              <span className="font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                 Volume Financier
               </span>
-              <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 tabular-nums">
+              <span className="mt-1 block truncate font-bold text-sm text-zinc-700 tabular-nums dark:text-zinc-300">
                 {new Intl.NumberFormat("fr-FR").format(stats.totalRev)} DA
               </span>
             </div>
 
-            <div className="mt-1 flex items-center gap-1.5 rounded-lg bg-orange-500/5 px-2 py-1.5 border border-orange-500/10 dark:bg-orange-500/10">
-              <Activity className="h-3.5 w-3.5 text-orange-500 dark:text-orange-450" />
-              <div className="flex flex-col">
-                <span className="text-[9px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider leading-none">
-                  Productivité
-                </span>
-                <span className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 leading-none mt-0.5">
-                  {stats.activeDays} jours actifs
-                </span>
-              </div>
+            <div className="min-w-0">
+              <span className="font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                Pic quotidien
+              </span>
+              <span className="mt-1 block font-bold text-xl text-zinc-800 tabular-nums tracking-tight dark:text-zinc-100">
+                {stats.peakAppointments} RDV
+              </span>
             </div>
           </div>
         </div>
 
         {/* Dynamic Tooltip overlay on top of the card footer */}
-        <div className="mt-3 min-h-[32px] border-t border-zinc-150/60 dark:border-zinc-800/80 pt-2 flex items-center justify-between">
+        <div className="mt-3 flex min-h-[32px] items-center justify-between border-zinc-150/60 border-t pt-2 dark:border-zinc-800/80">
           {hoveredDay ? (
-            <div className="flex items-center justify-between w-full select-none text-[10px]">
+            <div className="flex w-full select-none items-center justify-between text-[10px]">
               <span className="font-semibold text-zinc-500 dark:text-zinc-400">
                 {formatDateLong(hoveredDay.date)}
               </span>
-              <span className="font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
+              <span className="flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-100">
                 <span>{hoveredDay.value} RDV</span>
-                <span className="text-zinc-400 dark:text-zinc-500 font-medium">({new Intl.NumberFormat("fr-FR").format(hoveredDay.revenue)} DA)</span>
+                <span className="font-medium text-zinc-400 dark:text-zinc-500">
+                  ({new Intl.NumberFormat("fr-FR").format(hoveredDay.revenue)}{" "}
+                  DA)
+                </span>
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-[9px] text-zinc-400 dark:text-zinc-500 font-medium select-none">
+            <div className="flex select-none items-center gap-1.5 font-medium text-[9px] text-zinc-400 dark:text-zinc-500">
               <HelpCircle className="h-3.5 w-3.5" />
-              Survolez un carré pour afficher le volume et les revenus journaliers.
+              Survolez un carré pour afficher le volume et les revenus
+              journaliers.
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

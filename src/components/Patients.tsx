@@ -26,7 +26,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -1316,11 +1315,11 @@ function PatientCreateDialog({
           <div className="grid gap-8 xl:grid-cols-2">
             {/* Section: Propriétaire */}
             <div className="flex flex-col gap-5">
-              <div className="border-b border-zinc-100 pb-3 dark:border-zinc-800/80">
-                <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              <div className="border-zinc-100 border-b pb-3 dark:border-zinc-800/80">
+                <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                   Propriétaire
                 </h3>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="mt-1 text-muted-foreground text-xs">
                   Associez un contact existant ou créez un nouveau propriétaire.
                 </p>
               </div>
@@ -1330,9 +1329,7 @@ function PatientCreateDialog({
                   <FieldLabel>Propriétaire existant</FieldLabel>
                   <NativeSelect
                     className="w-full cursor-pointer"
-                    onChange={(event) =>
-                      setSelectedOwnerId(event.target.value)
-                    }
+                    onChange={(event) => setSelectedOwnerId(event.target.value)}
                     value={selectedOwnerId}
                   >
                     <NativeSelectOption value="new">
@@ -1442,11 +1439,11 @@ function PatientCreateDialog({
 
             {/* Section: Patient */}
             <div className="flex flex-col gap-5">
-              <div className="border-b border-zinc-100 pb-3 dark:border-zinc-800/80">
-                <h3 className="font-bold text-[11px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              <div className="border-zinc-100 border-b pb-3 dark:border-zinc-800/80">
+                <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                   Patient
                 </h3>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="mt-1 text-muted-foreground text-xs">
                   Identité, espèce, race et statut initial de l'animal.
                 </p>
               </div>
@@ -1518,9 +1515,7 @@ function PatientCreateDialog({
                       value={(newPatient.sex || "M") as string}
                     >
                       <NativeSelectOption value="M">Mâle</NativeSelectOption>
-                      <NativeSelectOption value="F">
-                        Femelle
-                      </NativeSelectOption>
+                      <NativeSelectOption value="F">Femelle</NativeSelectOption>
                     </NativeSelect>
                   </Field>
 
@@ -1551,38 +1546,40 @@ function PatientCreateDialog({
           </div>
         </div>
 
-        <DialogFooter className="modal-medical-footer border-t px-6 py-4">
+        <DialogFooter className="modal-medical-footer !mx-0 !mb-0 !flex-col sm:!flex-row shrink-0 gap-3 px-6 py-5 sm:items-center sm:justify-end">
           {formError ? (
-            <div className="mr-auto rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm">
+            <div className="w-full rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm sm:mr-auto sm:w-auto">
               {formError}
             </div>
           ) : null}
-          <Button
-            className="min-w-[120px]"
-            disabled={isSubmitting}
-            onClick={() => onOpenChange(false)}
-            type="button"
-            variant="outline"
-          >
-            Annuler
-          </Button>
-          <Button
-            className="min-w-[168px]"
-            disabled={isSubmitting}
-            onClick={handleCreate}
-            type="button"
-          >
-            {isSubmitting ? (
-              <Spinner className="size-4" />
-            ) : (
-              <HugeiconsIcon
-                data-icon="inline-start"
-                icon={Add01Icon}
-                strokeWidth={2}
-              />
-            )}
-            Créer le dossier
-          </Button>
+          <div className="modal-medical-actions w-full flex-col-reverse sm:ml-auto sm:w-auto sm:flex-row">
+            <Button
+              className="h-11 min-w-[132px] justify-center"
+              disabled={isSubmitting}
+              onClick={() => onOpenChange(false)}
+              type="button"
+              variant="outline"
+            >
+              Annuler
+            </Button>
+            <Button
+              className="h-11 min-w-[184px] justify-center shadow-sm"
+              disabled={isSubmitting}
+              onClick={handleCreate}
+              type="button"
+            >
+              {isSubmitting ? (
+                <Spinner className="size-4" />
+              ) : (
+                <HugeiconsIcon
+                  data-icon="inline-start"
+                  icon={Add01Icon}
+                  strokeWidth={2}
+                />
+              )}
+              Créer le dossier
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -2082,8 +2079,6 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
 
       <div className="min-h-0 flex-1">
         <Card className="card-vibrant card-hover-lift min-h-[640px] rounded-[24px] border border-border bg-card shadow-none">
-
-
           <CardContent className="flex min-h-0 flex-1 flex-col gap-4 px-0 pb-0">
             {/* Search & Filters Row */}
             <div className="border-border/40 border-b px-8 py-6">
@@ -2186,37 +2181,37 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                 </Empty>
               </div>
             ) : (
-              <div className="px-6 pt-2 pb-6 flex-1 min-h-0 flex flex-col">
+              <div className="flex min-h-0 flex-1 flex-col px-6 pt-2 pb-6">
                 <div className="flex-1 overflow-auto rounded-2xl border border-zinc-200/60 bg-background/50 backdrop-blur-md dark:border-white/[0.04]">
                   <table className="min-w-full border-separate border-spacing-0 text-left">
                     <thead className="bg-zinc-50/50 dark:bg-zinc-900/30">
                       <tr className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
                         <th
-                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 py-3.5 pr-3 pl-6 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
+                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 py-3.5 pr-3 pl-6 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Patient
                         </th>
                         <th
-                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 px-3 py-3.5 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
+                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 px-3 py-3.5 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Propriétaire
                         </th>
                         <th
-                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 px-3 py-3.5 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
+                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 px-3 py-3.5 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Statut
                         </th>
                         <th
-                          className="sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 px-3 py-3.5 whitespace-nowrap backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
+                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 px-3 py-3.5 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           Dernière visite
                         </th>
                         <th
-                          className="relative sticky top-0 z-10 border-b border-zinc-200/50 bg-zinc-50/95 py-3.5 pr-6 pl-3 whitespace-nowrap text-right backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
+                          className="relative sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 py-3.5 pr-6 pl-3 text-right backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
                         >
                           <span className="sr-only">Actions</span>
@@ -2226,8 +2221,10 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                     <tbody className="">
                       {paginatedPatients.map((entry, index) => {
                         const isLast = index === paginatedPatients.length - 1;
-                        const borderClass = isLast ? "" : "border-b border-zinc-200/50 dark:border-white/[0.04]";
-                        
+                        const borderClass = isLast
+                          ? ""
+                          : "border-b border-zinc-200/50 dark:border-white/[0.04]";
+
                         return (
                           <tr
                             className="group cursor-pointer transition-colors duration-150 hover:bg-zinc-50/70 dark:hover:bg-white/[0.02]"
@@ -2241,7 +2238,12 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                             }}
                           >
                             {/* Col 1: Patient Details */}
-                            <td className={cn("whitespace-nowrap py-4 pr-3 pl-6", borderClass)}>
+                            <td
+                              className={cn(
+                                "whitespace-nowrap py-4 pr-3 pl-6",
+                                borderClass
+                              )}
+                            >
                               <div className="flex items-center gap-3">
                                 <div
                                   className={cn(
@@ -2251,33 +2253,61 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                                 >
                                   {getSpeciesIcon(entry.patient.species)}
                                 </div>
-                                <span className="font-semibold text-zinc-950 dark:text-white text-sm tracking-tight capitalize">
+                                <span className="font-semibold text-sm text-zinc-950 capitalize tracking-tight dark:text-white">
                                   {entry.patient.name}{" "}
-                                  <span className="font-medium text-zinc-500 dark:text-zinc-400 ml-1 normal-case">
+                                  <span className="ml-1 font-medium text-zinc-500 normal-case dark:text-zinc-400">
                                     ({entry.patient.species}
-                                    {entry.patient.breed ? ` - ${entry.patient.breed}` : ""})
+                                    {entry.patient.breed
+                                      ? ` - ${entry.patient.breed}`
+                                      : ""}
+                                    )
                                   </span>
                                 </span>
                               </div>
                             </td>
 
                             {/* Col 2: Owner Contact */}
-                            <td className={cn("whitespace-nowrap px-3 py-4 text-zinc-800 dark:text-zinc-200 font-medium text-sm capitalize", borderClass)}>
+                            <td
+                              className={cn(
+                                "whitespace-nowrap px-3 py-4 font-medium text-sm text-zinc-800 capitalize dark:text-zinc-200",
+                                borderClass
+                              )}
+                            >
                               {formatOwnerName(entry.owner)}
                             </td>
 
                             {/* Col 3: Statut */}
-                            <td className={cn("whitespace-nowrap px-3 py-4", borderClass)}>
-                              <PatientStatusBadge status={entry.patient.status} />
+                            <td
+                              className={cn(
+                                "whitespace-nowrap px-3 py-4",
+                                borderClass
+                              )}
+                            >
+                              <PatientStatusBadge
+                                status={entry.patient.status}
+                              />
                             </td>
 
                             {/* Col 4: Last Visit */}
-                            <td className={cn("whitespace-nowrap px-3 py-4 text-zinc-800 dark:text-zinc-200 font-medium text-sm", borderClass)}>
-                              {formatPatientDate(entry.lastVisit) !== "Date indisponible" ? formatPatientDate(entry.lastVisit) : "-"}
+                            <td
+                              className={cn(
+                                "whitespace-nowrap px-3 py-4 font-medium text-sm text-zinc-800 dark:text-zinc-200",
+                                borderClass
+                              )}
+                            >
+                              {formatPatientDate(entry.lastVisit) ===
+                              "Date indisponible"
+                                ? "-"
+                                : formatPatientDate(entry.lastVisit)}
                             </td>
 
                             {/* Col 5: Actions */}
-                            <td className={cn("relative whitespace-nowrap py-4 pr-6 pl-3 text-right font-medium text-sm", borderClass)}>
+                            <td
+                              className={cn(
+                                "relative whitespace-nowrap py-4 pr-6 pl-3 text-right font-medium text-sm",
+                                borderClass
+                              )}
+                            >
                               <div className="flex items-center justify-end gap-1">
                                 <Button
                                   className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
@@ -2289,7 +2319,11 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                                   title="Résumé"
                                   variant="ghost"
                                 >
-                                  <HugeiconsIcon className="size-4" icon={ViewIcon} strokeWidth={2} />
+                                  <HugeiconsIcon
+                                    className="size-4"
+                                    icon={ViewIcon}
+                                    strokeWidth={2}
+                                  />
                                   <span className="sr-only">Résumé</span>
                                 </Button>
                                 {onNavigateToPatient && (
@@ -2303,7 +2337,11 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                                     title="Dossier"
                                     variant="ghost"
                                   >
-                                    <HugeiconsIcon className="size-4" icon={Folder01Icon} strokeWidth={2} />
+                                    <HugeiconsIcon
+                                      className="size-4"
+                                      icon={Folder01Icon}
+                                      strokeWidth={2}
+                                    />
                                     <span className="sr-only">Dossier</span>
                                   </Button>
                                 )}
@@ -2430,7 +2468,7 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
         }}
         open={!!createdPatientPrompt}
       >
-        <DialogContent className="modal-medical-shell modal-hero-frame w-full max-w-[min(560px,calc(100%-2rem))] sm:max-w-[560px] overflow-hidden p-0">
+        <DialogContent className="modal-medical-shell modal-hero-frame w-full max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-[560px]">
           <DialogHeader className="modal-hero-shell gap-0 px-6 py-5">
             <div className="relative z-[1] grid gap-4">
               <div className="modal-hero-badge w-fit px-3 py-2">

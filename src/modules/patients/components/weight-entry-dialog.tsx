@@ -252,7 +252,7 @@ export function WeightEntryDialog({
         <DialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
           {isEditing ? (
             <Button
-              className="text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400 cursor-pointer"
+              className="cursor-pointer text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
               disabled={isDeleting || isSubmitting}
               onClick={handleDelete}
               type="button"

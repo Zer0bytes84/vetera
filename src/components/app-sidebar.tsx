@@ -243,9 +243,9 @@ export function AppSidebar({
             }))}
             title={t("nav.sections.operations")}
           />
-          
+
           {secondaryItems.length > 0 && (
-            <NavSecondary items={secondaryItems} className="mt-auto" />
+            <NavSecondary className="mt-auto" items={secondaryItems} />
           )}
         </div>
       </SidebarContent>

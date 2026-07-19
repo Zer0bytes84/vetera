@@ -31,17 +31,17 @@ export function WaitingRoomWidget({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-[20px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/30 pt-3 px-1.5 pb-1.5 shadow-xs",
+        "flex flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
         className
       )}
     >
       {/* Outer Card Header */}
-      <div className="mb-2 flex items-center justify-between px-1 select-none">
+      <div className="mb-2 flex select-none items-center justify-between px-1">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-200/60 dark:bg-zinc-800">
             <Clock className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
-          <span className="font-semibold text-sm text-zinc-800 dark:text-zinc-200 tracking-tight">
+          <span className="font-semibold text-sm text-zinc-800 tracking-tight dark:text-zinc-200">
             Salle d'attente
           </span>
         </div>
@@ -55,37 +55,37 @@ export function WaitingRoomWidget({
               {activeAppointments.length} en attente
             </div>
           )}
-          <button className="text-[11px] text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 font-medium transition-colors cursor-pointer">
+          <button className="cursor-pointer font-medium text-[11px] text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
             Voir plus
           </button>
         </div>
       </div>
 
       {/* Inner White Box (Widget inside a widget) */}
-      <div className="flex-1 rounded-[12px] border border-zinc-200/60 dark:border-zinc-800 bg-white p-5 shadow-xs dark:bg-zinc-950/80 flex flex-col gap-3">
+      <div className="flex flex-1 flex-col gap-3 rounded-[12px] border border-zinc-200/60 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-950/80">
         {/* Waiting Room Stats Header */}
-        <div className="grid grid-cols-3 gap-4 border-b border-zinc-100 dark:border-zinc-800/80 pb-4 select-none">
+        <div className="grid select-none grid-cols-3 gap-4 border-zinc-100 border-b pb-4 dark:border-zinc-800/80">
           <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            <span className="font-semibold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
               Total RDV
             </span>
             <span className="font-bold text-lg text-zinc-800 dark:text-zinc-200">
               {appointments.length}
             </span>
           </div>
-          <div className="flex flex-col gap-0.5 border-x border-zinc-100 dark:border-zinc-800/80 px-4">
-            <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+          <div className="flex flex-col gap-0.5 border-zinc-100 border-x px-4 dark:border-zinc-800/80">
+            <span className="font-semibold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
               En attente
             </span>
-            <span className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
+            <span className="font-bold text-emerald-600 text-lg dark:text-emerald-400">
               {activeAppointments.length}
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            <span className="font-semibold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
               Prochain
             </span>
-            <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400 font-mono">
+            <span className="font-bold font-mono text-indigo-600 text-lg dark:text-indigo-400">
               {activeAppointments[0]?.time || "—"}
             </span>
           </div>

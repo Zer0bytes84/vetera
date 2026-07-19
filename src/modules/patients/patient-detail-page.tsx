@@ -1,16 +1,25 @@
 import {
   ArrowLeft,
+  Check,
   FirstAid,
   Hospital,
   Pill,
   Syringe,
+  X,
 } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useAppointmentsRepository,
@@ -30,6 +39,7 @@ import type { View } from "@/types";
 import type {
   AnesthesiaSheet,
   Hospitalization,
+  Patient,
   Vaccination,
   WeightEntry,
 } from "@/types/db";
@@ -46,6 +56,33 @@ import { getNextDueVaccination } from "./lib";
 interface PatientDetailPageProps {
   onNavigate: (view: View) => void;
   patientId: string;
+}
+
+type PatientProfileDraft = Pick<
+  Patient,
+  | "allergies"
+  | "breed"
+  | "chronicConditions"
+  | "dateOfBirth"
+  | "generalNotes"
+  | "name"
+  | "sex"
+  | "species"
+  | "status"
+>;
+
+function createProfileDraft(patient: Patient): PatientProfileDraft {
+  return {
+    allergies: patient.allergies ?? "",
+    breed: patient.breed ?? "",
+    chronicConditions: patient.chronicConditions ?? "",
+    dateOfBirth: patient.dateOfBirth ?? "",
+    generalNotes: patient.generalNotes ?? "",
+    name: patient.name,
+    sex: patient.sex,
+    species: patient.species,
+    status: patient.status,
+  };
 }
 
 export function PatientDetailPage({
@@ -66,6 +103,10 @@ export function PatientDetailPage({
   const [editingVaccination, setEditingVaccination] =
     useState<Vaccination | null>(null);
   const [activeTab, setActiveTab] = useState("timeline");
+  const [isProfileEditorOpen, setIsProfileEditorOpen] = useState(false);
+  const [profileDraft, setProfileDraft] =
+    useState<PatientProfileDraft | null>(null);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [soapAppointmentId, setSoapAppointmentId] = useState<string | null>(
     null
   );
@@ -227,6 +268,45 @@ export function PatientDetailPage({
     setEditingVaccination(entry);
     setVaccinationDialogOpen(true);
   };
+  const openProfileEditor = () => {
+    setProfileDraft(createProfileDraft(patient));
+    setIsProfileEditorOpen(true);
+  };
+  const closeProfileEditor = () => {
+    setProfileDraft(null);
+    setIsProfileEditorOpen(false);
+  };
+  const saveProfile = async () => {
+    if (!profileDraft?.name.trim() || !profileDraft.species.trim()) {
+      toast.error("Le nom et l'espèce du patient sont obligatoires.");
+      return;
+    }
+
+    setIsSavingProfile(true);
+    try {
+      const updated = await patientsRepo.update(patient.id, {
+        ...profileDraft,
+        allergies: profileDraft.allergies?.trim() || undefined,
+        breed: profileDraft.breed?.trim() || undefined,
+        chronicConditions: profileDraft.chronicConditions?.trim() || undefined,
+        dateOfBirth: profileDraft.dateOfBirth || undefined,
+        generalNotes: profileDraft.generalNotes?.trim() || undefined,
+        name: profileDraft.name.trim(),
+        species: profileDraft.species.trim(),
+      });
+      if (!updated) {
+        toast.error("Le dossier n'a pas pu être mis à jour.");
+        return;
+      }
+      toast.success("Dossier patient mis à jour.");
+      closeProfileEditor();
+    } catch (error) {
+      console.error(error);
+      toast.error("Impossible d'enregistrer les modifications.");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
   const openSoapForAppointment = (appointmentId: string) => {
     setSoapAppointmentId(appointmentId);
     setSoapOpen(true);
@@ -234,7 +314,7 @@ export function PatientDetailPage({
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
-      <div className="mx-auto w-full max-w-6xl space-y-8">
+      <div className="mx-auto w-full max-w-6xl space-y-6">
         <Button
           className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
           onClick={() => onNavigate("patients")}
@@ -246,11 +326,181 @@ export function PatientDetailPage({
         </Button>
 
         <PatientHeader
+          onEditProfile={openProfileEditor}
           onNewAppointment={() => onNavigate("agenda")}
-          onNewNote={handleNewNote}
           owner={owner}
           patient={patient}
         />
+
+        {isProfileEditorOpen && profileDraft ? (
+          <section className="rounded-[24px] border border-border bg-card p-5 shadow-sm sm:p-6">
+            <div className="flex flex-col gap-4 border-border/70 border-b pb-5 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="font-semibold text-foreground text-lg tracking-[-0.02em]">
+                  Modifier le dossier
+                </p>
+                <p className="mt-1 text-muted-foreground text-sm">
+                  Les changements sont enregistrés directement dans la fiche patient.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  className="h-9"
+                  disabled={isSavingProfile}
+                  onClick={closeProfileEditor}
+                  size="sm"
+                  variant="outline"
+                >
+                  <X className="size-4" weight="bold" />
+                  Annuler
+                </Button>
+                <Button
+                  className="h-9"
+                  disabled={isSavingProfile}
+                  onClick={saveProfile}
+                  size="sm"
+                >
+                  {isSavingProfile ? (
+                    <Spinner className="size-4" />
+                  ) : (
+                    <Check className="size-4" weight="bold" />
+                  )}
+                  Enregistrer
+                </Button>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">Nom</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current ? { ...current, name: event.target.value } : current
+                    )
+                  }
+                  value={profileDraft.name}
+                />
+              </label>
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">Espèce</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current ? { ...current, species: event.target.value } : current
+                    )
+                  }
+                  placeholder="Chien, chat, NAC..."
+                  value={profileDraft.species}
+                />
+              </label>
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">Race</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current ? { ...current, breed: event.target.value } : current
+                    )
+                  }
+                  value={profileDraft.breed}
+                />
+              </label>
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">Date de naissance</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current ? { ...current, dateOfBirth: event.target.value } : current
+                    )
+                  }
+                  type="date"
+                  value={profileDraft.dateOfBirth}
+                />
+              </label>
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">Sexe</span>
+                <NativeSelect
+                  className="w-full"
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? { ...current, sex: event.target.value as Patient["sex"] }
+                        : current
+                    )
+                  }
+                  value={profileDraft.sex}
+                >
+                  <NativeSelectOption value="M">Mâle</NativeSelectOption>
+                  <NativeSelectOption value="F">Femelle</NativeSelectOption>
+                </NativeSelect>
+              </label>
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">Statut clinique</span>
+                <NativeSelect
+                  className="w-full"
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? {
+                            ...current,
+                            status: event.target.value as Patient["status"],
+                          }
+                        : current
+                    )
+                  }
+                  value={profileDraft.status}
+                >
+                  {Object.entries(PATIENT_STATUS_META).map(([value, meta]) => (
+                    <NativeSelectOption key={value} value={value}>
+                      {meta.label}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+              </label>
+              <label className="grid gap-2 text-sm md:col-span-2">
+                <span className="font-medium">Allergies</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current ? { ...current, allergies: event.target.value } : current
+                    )
+                  }
+                  placeholder="Aucune allergie connue"
+                  value={profileDraft.allergies}
+                />
+              </label>
+              <label className="grid gap-2 text-sm md:col-span-2">
+                <span className="font-medium">Antécédents / maladies chroniques</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? { ...current, chronicConditions: event.target.value }
+                        : current
+                    )
+                  }
+                  placeholder="Aucun antécédent signalé"
+                  value={profileDraft.chronicConditions}
+                />
+              </label>
+              <label className="grid gap-2 text-sm md:col-span-2 xl:col-span-4">
+                <span className="font-medium">Notes générales</span>
+                <Textarea
+                  className="min-h-20 resize-y"
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? { ...current, generalNotes: event.target.value }
+                        : current
+                    )
+                  }
+                  placeholder="Informations utiles pour le suivi de ce patient..."
+                  value={profileDraft.generalNotes}
+                />
+              </label>
+            </div>
+          </section>
+        ) : null}
 
         <PatientKpiStrip
           lastVisit={lastAppointment?.startTime}
@@ -259,41 +509,49 @@ export function PatientDetailPage({
           weightEntries={weightEntries}
         />
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Main Clinical Section (2/3 columns wide) */}
-          <div className="space-y-6 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+          <div className="min-w-0">
             <Tabs
               className="w-full"
               onValueChange={handleTabChange}
               value={activeTab}
             >
+              <div className="mb-3 flex items-end justify-between gap-4 px-1">
+                <div>
+                  <p className="font-semibold text-foreground text-sm">
+                    Dossier médical
+                  </p>
+                  <p className="mt-0.5 text-muted-foreground text-xs">
+                    Consultez l&apos;historique et les documents de soin.
+                  </p>
+                </div>
+              </div>
               <TabsList
-                className="inline-flex items-center gap-1 rounded-full border border-zinc-200/50 bg-zinc-100/80 p-1 shadow-sm backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/60"
-                variant="line"
+                className="patient-record-tabs grid w-full grid-cols-2 gap-1 rounded-2xl border border-border bg-muted/50 p-1.5 shadow-sm sm:grid-cols-4"
               >
                 <TabsTrigger
-                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  className="!h-10 gap-1.5 rounded-xl px-3 py-2 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
                   value="timeline"
                 >
                   <FirstAid className="size-4" weight="duotone" />
                   Chronologie
                 </TabsTrigger>
                 <TabsTrigger
-                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  className="!h-10 gap-1.5 rounded-xl px-3 py-2 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
                   value="prescriptions"
                 >
                   <Pill className="size-4" weight="duotone" />
                   Ordonnances
                 </TabsTrigger>
                 <TabsTrigger
-                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  className="!h-10 gap-1.5 rounded-xl px-3 py-2 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
                   value="hospitalizations"
                 >
                   <Hospital className="size-4" weight="duotone" />
                   Hospitalisations
                 </TabsTrigger>
                 <TabsTrigger
-                  className="gap-1.5 rounded-full px-4 py-1.5 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-zinc-800"
+                  className="!h-10 gap-1.5 rounded-xl px-3 py-2 font-semibold text-muted-foreground text-xs transition-all hover:text-foreground data-active:bg-background data-active:text-foreground data-active:shadow-sm"
                   value="anesthesia"
                 >
                   <Syringe className="size-4" weight="duotone" />
@@ -420,11 +678,10 @@ export function PatientDetailPage({
             </Tabs>
           </div>
 
-          {/* Quick-Reference Sidebar (1/3 column wide) */}
-          <div className="space-y-6">
+          <aside className="space-y-5 lg:sticky lg:top-5">
             <WeightEvolutionChart
               className="@container/card"
-              emptyMessage={t("patientDetail.weight.empty")}
+              emptyMessage={t("patientDetail.overview.weightEmpty")}
               entries={weightEntries}
               onAdd={openNewWeight}
               onEditEntry={openEditWeight}
@@ -437,7 +694,7 @@ export function PatientDetailPage({
               patientId={patientId}
             />
             <PatientDocumentsList patientId={patientId} />
-          </div>
+          </aside>
         </div>
       </div>
 

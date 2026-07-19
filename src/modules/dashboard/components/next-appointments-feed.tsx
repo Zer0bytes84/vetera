@@ -485,7 +485,10 @@ function HeroAppointment({ appointment, onStart }: HeroAppointmentProps) {
       {/* Type and metadata */}
       <div className="relative mt-4 flex items-center gap-2.5 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-white/90">
-          {React.createElement(typeIcon, { className: "h-4 w-4", strokeWidth: 2 })}
+          {React.createElement(typeIcon, {
+            className: "h-4 w-4",
+            strokeWidth: 2,
+          })}
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-bold text-[10px] text-white/50 uppercase tracking-wider">
@@ -562,7 +565,10 @@ function AppointmentTile({ appointment, onStart }: AppointmentTileProps) {
                 : "bg-zinc-100 text-zinc-600 ring-zinc-200/80 dark:bg-white/5 dark:text-zinc-300 dark:ring-white/10"
             )}
           >
-            {React.createElement(typeIcon, { className: "h-4 w-4", strokeWidth: 2 })}
+            {React.createElement(typeIcon, {
+              className: "h-4 w-4",
+              strokeWidth: 2,
+            })}
           </span>
           <div>
             <p className="font-bold font-mono text-foreground text-sm tabular-nums leading-none">

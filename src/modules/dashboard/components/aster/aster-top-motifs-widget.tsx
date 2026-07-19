@@ -1,16 +1,18 @@
 "use client";
 
-import { Heading2, TrendingUp, TrendingDown } from "lucide-react";
+import { Heading2, TrendingDown, TrendingUp } from "lucide-react";
+import { useMemo } from "react";
 import type { DashboardMetrics } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
-import { useMemo } from "react";
 
 // Generate deterministic sparkline data points based on name and trend
 function getSparklinePoints(name: string, isUp: boolean) {
-  const nameHash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const nameHash = name
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const points: number[] = [];
   const count = 7;
-  
+
   for (let i = 0; i < count; i++) {
     // Generate values between 5 and 25
     const val = 15 + Math.sin(nameHash + i) * 8 + (isUp ? i * 1.5 : -i * 1.5);
@@ -29,17 +31,21 @@ export function AsterTopMotifsWidget({
   // Use appointment types or fallback values
   const topTypes = useMemo(() => {
     const rawTypes = metrics.topAppointmentTypes || [];
-    const totalDemand = rawTypes.reduce((sum, item) => sum + item.demand, 0) || 1;
+    const totalDemand =
+      rawTypes.reduce((sum, item) => sum + item.demand, 0) || 1;
 
     // Map to Orbit table fields with deterministic trends/percentages based on name
     return rawTypes.slice(0, 5).map((item, index) => {
-      const nameHash = item.name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const nameHash = item.name
+        .split("")
+        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const trendVal = (nameHash % 45) + 5; // between 5% and 50%
       const isUp = nameHash % 2 === 0;
-      const percentage = Math.round((item.demand / totalDemand) * 100) || (25 - index * 4);
+      const percentage =
+        Math.round((item.demand / totalDemand) * 100) || 25 - index * 4;
 
       const sparkValues = getSparklinePoints(item.name, isUp);
-      
+
       // Build SVG path for sparkline (width 60, height 24)
       const width = 60;
       const height = 22;
@@ -73,33 +79,35 @@ export function AsterTopMotifsWidget({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-[20px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/30 pt-3 px-1.5 pb-1.5 shadow-xs",
+        "flex flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
         className
       )}
     >
       {/* Outer Card Header */}
-      <div className="mb-2 flex items-center justify-between px-1 select-none">
+      <div className="mb-2 flex select-none items-center justify-between px-1">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-200/60 dark:bg-zinc-800">
             <Heading2 className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
-          <span className="font-semibold text-sm text-zinc-800 dark:text-zinc-200 tracking-tight">
+          <span className="font-semibold text-sm text-zinc-800 tracking-tight dark:text-zinc-200">
             Top Motifs
           </span>
         </div>
-        <button className="text-[11px] text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 font-medium transition-colors cursor-pointer">
+        <button className="cursor-pointer font-medium text-[11px] text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
           Voir plus
         </button>
       </div>
 
       {/* Inner White Box */}
-      <div className="flex-1 rounded-[12px] border border-zinc-200/60 dark:border-zinc-800 bg-white p-5 shadow-xs dark:bg-zinc-950/80 flex flex-col justify-between">
+      <div className="flex flex-1 flex-col justify-between rounded-[12px] border border-zinc-200/60 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-950/80">
         <div className="w-full overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full border-collapse text-left text-xs">
             <thead>
-              <tr className="border-b border-zinc-100 dark:border-zinc-800/80 pb-2 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              <tr className="border-zinc-100 border-b pb-2 font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:border-zinc-800/80 dark:text-zinc-500">
                 <th className="pb-3 font-semibold">Par Motif</th>
-                <th className="pb-3 text-center font-semibold">Activité (7j)</th>
+                <th className="pb-3 text-center font-semibold">
+                  Activité (7j)
+                </th>
                 <th className="pb-3 text-right font-semibold">Pourcentage</th>
                 <th className="pb-3 text-right font-semibold">Tendance</th>
                 <th className="pb-3 text-right font-semibold">Volume</th>
@@ -108,20 +116,26 @@ export function AsterTopMotifsWidget({
             <tbody>
               {topTypes.map((type, idx) => (
                 <tr
+                  className="group border-zinc-50 border-b transition-colors last:border-none hover:bg-zinc-50/60 dark:border-zinc-900/30 dark:hover:bg-zinc-900/40"
                   key={idx}
-                  className="group hover:bg-zinc-50/60 dark:hover:bg-zinc-900/40 transition-colors border-b border-zinc-50 dark:border-zinc-900/30 last:border-none"
                 >
                   {/* Name */}
                   <td className="py-3 font-semibold text-zinc-800 dark:text-zinc-200">
                     {type.name}
                   </td>
-                  
+
                   {/* Sparkline column */}
                   <td className="py-3 text-center">
-                    <div className="inline-flex items-center justify-center w-[60px] h-[22px]">
-                      <svg width="60" height="22" className="overflow-visible">
+                    <div className="inline-flex h-[22px] w-[60px] items-center justify-center">
+                      <svg className="overflow-visible" height="22" width="60">
                         <defs>
-                          <linearGradient id={`sparkGrad-${idx}`} x1="0" y1="0" x2="0" y2="1">
+                          <linearGradient
+                            id={`sparkGrad-${idx}`}
+                            x1="0"
+                            x2="0"
+                            y1="0"
+                            y2="1"
+                          >
                             <stop
                               offset="0%"
                               stopColor={type.isUp ? "#10b981" : "#f43f5e"}
@@ -145,9 +159,9 @@ export function AsterTopMotifsWidget({
                           d={type.pathData}
                           fill="none"
                           stroke={type.isUp ? "#10b981" : "#f43f5e"}
-                          strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
+                          strokeWidth="1.5"
                         />
                       </svg>
                     </div>
@@ -178,7 +192,7 @@ export function AsterTopMotifsWidget({
                   </td>
 
                   {/* Volume */}
-                  <td className="py-3 text-right font-mono text-zinc-700 dark:text-zinc-300 font-semibold">
+                  <td className="py-3 text-right font-mono font-semibold text-zinc-700 dark:text-zinc-300">
                     {type.volume}
                   </td>
                 </tr>

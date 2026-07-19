@@ -29,20 +29,20 @@ export interface AuthUser {
 }
 
 interface DbUserRecord {
-  id: string;
-  email: string;
-  password_hash: string;
-  display_name: string;
-  role: string;
   avatar_url?: string | null;
+  display_name: string;
+  email: string;
+  id: string;
+  password_hash: string;
+  role: string;
   status?: string;
 }
 
 interface DbSessionRecord {
-  id: string;
-  user_id: string;
-  token: string;
   expires_at: string;
+  id: string;
+  token: string;
+  user_id: string;
 }
 
 async function getRegistrationRole(): Promise<string> {
@@ -235,34 +235,25 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
     };
   }
 
-  console.log("[AUTH] Starting login for:", credentials.email);
-
   const users = await runDbOperation((db) =>
-    db.select<DbUserRecord[]>("SELECT * FROM users WHERE email = ? AND status = ?", [
-      credentials.email,
-      "active",
-    ])
+    db.select<DbUserRecord[]>(
+      "SELECT * FROM users WHERE email = ? AND status = ?",
+      [credentials.email, "active"]
+    )
   );
 
-  console.log("[AUTH] Users found:", users.length);
-
   if (users.length === 0) {
-    console.error("[AUTH] No user found with email:", credentials.email);
     throw new Error("Email ou mot de passe incorrect");
   }
 
   const user = users[0];
-  console.log("[AUTH] User found:", user.email, "Role:", user.role);
 
   // Vérifier le mot de passe
   const isValid = await verifyPassword(
     credentials.password,
     user.password_hash
   );
-  console.log("[AUTH] Password valid:", isValid);
-
   if (!isValid) {
-    console.error("[AUTH] Invalid password for:", credentials.email);
     throw new Error("Email ou mot de passe incorrect");
   }
 
@@ -281,8 +272,6 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
 
   // Sauvegarder le token en localStorage
   localStorage.setItem("auth_token", token);
-  console.log("[AUTH] Login successful, token saved");
-
   return {
     id: user.id,
     email: user.email,
@@ -322,23 +311,20 @@ export async function register(data: RegisterData): Promise<AuthUser> {
     });
   }
 
-  console.log("[AUTH] Starting registration for:", data.email);
-
   // Vérifier si l'email existe déjà
   const existing = await runDbOperation((db) =>
-    db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [data.email])
+    db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [
+      data.email,
+    ])
   );
 
   if (existing.length > 0) {
-    console.error("[AUTH] Email already exists:", data.email);
     throw new Error("Cet email est déjà utilisé");
   }
 
   // Hasher le mot de passe
   const passwordHash = await hashPassword(data.password);
   const role = await getRegistrationRole();
-  console.log("[AUTH] Password hashed, creating user...");
-
   // Créer l'utilisateur
   const userId = generateId();
 
@@ -348,8 +334,6 @@ export async function register(data: RegisterData): Promise<AuthUser> {
       [userId, data.email, passwordHash, data.displayName, role, "active"]
     )
   );
-
-  console.log("[AUTH] User created, auto-logging in...");
 
   // Auto-login
   return login({
@@ -438,7 +422,9 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 
   // Récupérer l'utilisateur
   const users = await runDbOperation((db) =>
-    db.select<DbUserRecord[]>("SELECT * FROM users WHERE id = ?", [session.user_id])
+    db.select<DbUserRecord[]>("SELECT * FROM users WHERE id = ?", [
+      session.user_id,
+    ])
   );
 
   if (users.length === 0) {
@@ -512,7 +498,9 @@ export async function createInitialAdmin(
   }
 
   const existing = await runDbOperation((db) =>
-    db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [data.email])
+    db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [
+      data.email,
+    ])
   );
 
   if (existing.length > 0) {

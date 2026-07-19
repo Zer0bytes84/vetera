@@ -708,10 +708,18 @@ const Team: React.FC = () => {
           </FieldGroup>
 
           <DialogFooter>
-            <Button className="cursor-pointer" onClick={() => setIsModalOpen(false)} variant="outline">
+            <Button
+              className="cursor-pointer"
+              onClick={() => setIsModalOpen(false)}
+              variant="outline"
+            >
               Annuler
             </Button>
-            <Button className="cursor-pointer" disabled={isSubmitting} onClick={handleSave}>
+            <Button
+              className="cursor-pointer"
+              disabled={isSubmitting}
+              onClick={handleSave}
+            >
               {isSubmitting && <Spinner className="size-4" />}
               {editingId ? "Mettre à jour" : "Ajouter"}
             </Button>

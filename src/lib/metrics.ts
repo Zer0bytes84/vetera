@@ -88,8 +88,6 @@ function findLastIndexBy<T>(items: T[], predicate: (item: T) => boolean) {
   return -1;
 }
 
-
-
 export type DashboardMetrics = ReturnType<typeof buildDashboardMetrics>;
 
 export function buildDashboardMetrics({
@@ -132,7 +130,8 @@ export function buildDashboardMetrics({
     return date && date >= last30Start && date <= todayEnd;
   });
 
-  const income30 = paidIncome30.reduce((sum, item) => sum + item.amount, 0) / 100;
+  const income30 =
+    paidIncome30.reduce((sum, item) => sum + item.amount, 0) / 100;
 
   const previousIncome30 =
     paidIncome
@@ -302,11 +301,14 @@ export function buildDashboardMetrics({
     };
   });
 
-  const categoryTotals = paidIncome30.reduce<Map<string, number>>((acc, item) => {
-    const category = item.category || i18n.t("dashboardV2.fallbacks.other");
-    acc.set(category, (acc.get(category) || 0) + item.amount);
-    return acc;
-  }, new Map());
+  const categoryTotals = paidIncome30.reduce<Map<string, number>>(
+    (acc, item) => {
+      const category = item.category || i18n.t("dashboardV2.fallbacks.other");
+      acc.set(category, (acc.get(category) || 0) + item.amount);
+      return acc;
+    },
+    new Map()
+  );
 
   const topCategories = Array.from(categoryTotals.entries())
     .sort((a, b) => b[1] - a[1])
@@ -314,11 +316,19 @@ export function buildDashboardMetrics({
     .map(([label, value], index) => ({
       label,
       value: Math.round(value / 100),
-      color: ["#6366f1", "#f43f5e", "#ec4899", "#10b981", "#f59e0b"][index] ?? "#a1a1aa",
+      color:
+        ["#6366f1", "#f43f5e", "#ec4899", "#10b981", "#f59e0b"][index] ??
+        "#a1a1aa",
     }));
 
   if (!topCategories.length) {
-    const fallbacks = ["Consultation", "Pharmacie", "Analyses", "Vaccin", "Autre"];
+    const fallbacks = [
+      "Consultation",
+      "Pharmacie",
+      "Analyses",
+      "Vaccin",
+      "Autre",
+    ];
     fallbacks.forEach((label, index) => {
       topCategories.push({
         label,
@@ -340,7 +350,8 @@ export function buildDashboardMetrics({
         .filter((item) => {
           const date = safeDate(item.date);
           const matchesCategory =
-            (item.category || i18n.t("dashboardV2.fallbacks.other")) === catName;
+            (item.category || i18n.t("dashboardV2.fallbacks.other")) ===
+            catName;
           return date && date >= start && date <= end && matchesCategory;
         })
         .reduce((sum, item) => sum + item.amount, 0);
@@ -415,12 +426,13 @@ export function buildDashboardMetrics({
       );
     }).length;
 
-    const revenueForDay = paidIncome
-      .filter((item) => {
-        const date = safeDate(item.date);
-        return date && isSameDay(date, day);
-      })
-      .reduce((sum, item) => sum + item.amount, 0) / 100;
+    const revenueForDay =
+      paidIncome
+        .filter((item) => {
+          const date = safeDate(item.date);
+          return date && isSameDay(date, day);
+        })
+        .reduce((sum, item) => sum + item.amount, 0) / 100;
 
     return {
       date: day,
@@ -520,7 +532,8 @@ export function buildDashboardMetrics({
   const pipelineRows = [
     {
       label: i18n.t("dashboardV2.pipeline.new"),
-      value: todayAppointmentsAll.filter((item) => item.status === "scheduled").length,
+      value: todayAppointmentsAll.filter((item) => item.status === "scheduled")
+        .length,
       color: "#21aceb",
     },
     {
@@ -530,12 +543,14 @@ export function buildDashboardMetrics({
     },
     {
       label: i18n.t("dashboardV2.pipeline.completed"),
-      value: todayAppointmentsAll.filter((item) => item.status === "completed").length,
+      value: todayAppointmentsAll.filter((item) => item.status === "completed")
+        .length,
       color: "#f6c21d",
     },
     {
       label: i18n.t("dashboardV2.pipeline.followUp"),
-      value: todayAppointmentsAll.filter((item) => item.status === "no_show").length,
+      value: todayAppointmentsAll.filter((item) => item.status === "no_show")
+        .length,
       color: "#23c7b7",
     },
   ];

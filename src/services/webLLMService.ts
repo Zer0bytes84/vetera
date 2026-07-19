@@ -36,7 +36,8 @@ const notifyProgress = (report: ProgressReport) => {
   progressListeners.forEach((listener) => listener(report));
 };
 
-export const getLocalModelId = () => activeModelId || "Phi-3.5-vision-instruct-q4f16_1-MLC";
+export const getLocalModelId = () =>
+  activeModelId || "Phi-3.5-vision-instruct-q4f16_1-MLC";
 
 export const getActiveModelId = () => activeModelId;
 
@@ -144,14 +145,15 @@ export const generateText = async (
     content: turn.text,
   }));
 
-  const promptWithContext = enrichedContext.length > 0
-    ? `${prompt}\n\nContexte:\n${enrichedContext}`
-    : prompt;
+  const promptWithContext =
+    enrichedContext.length > 0
+      ? `${prompt}\n\nContexte:\n${enrichedContext}`
+      : prompt;
 
   const content: any = options?.imageUri
     ? [
         { type: "text", text: promptWithContext },
-        { type: "image_url", image_url: { url: options.imageUri } }
+        { type: "image_url", image_url: { url: options.imageUri } },
       ]
     : promptWithContext;
 
@@ -160,7 +162,7 @@ export const generateText = async (
     ...historyMessages,
     {
       role: "user",
-      content
+      content,
     },
   ];
 

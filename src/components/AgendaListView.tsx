@@ -74,7 +74,6 @@ export function AgendaListView({
     window.location.assign("#/clinique");
   };
 
-
   return (
     <div className="bg-transparent text-card-foreground">
       <div className="mx-auto max-w-lg px-6 py-8 lg:max-w-4xl xl:max-w-6xl">

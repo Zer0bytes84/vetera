@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -11,16 +11,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading:
-    "Geist", "Inter", sans-serif;
-  --font-sans:
-    "Manrope", sans-serif;
-  --font-serif:
-    "Geist", "Inter", sans-serif;
-  --font-display:
-    "Geist", "Inter", sans-serif;
-  --font-text:
-    "Manrope", sans-serif;
+  --font-heading: "Geist", "Inter", sans-serif;
+  --font-sans: "Manrope", sans-serif;
+  --font-serif: "Geist", "Inter", sans-serif;
+  --font-display: "Geist", "Inter", sans-serif;
+  --font-text: "Manrope", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -349,50 +344,6 @@
   border-top: 1px solid var(--border);
 }
 
-/* ─── Raycast Header (App Shell) ─── */
-.raycast-header {
-  background:
-    linear-gradient(180deg, oklch(1 0.006 86 / 0.88), oklch(0.985 0 0 / 0.78)),
-    var(--card);
-  border-color: var(--sidebar-border);
-  box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.64) inset,
-    0 12px 30px -26px oklch(0.4 0.04 82 / 0.3);
-  -webkit-backdrop-filter: blur(22px) saturate(1.2);
-  backdrop-filter: blur(22px) saturate(1.2);
-}
-
-.dark .raycast-header {
-  background:
-    linear-gradient(
-      180deg,
-      oklch(0.181 0.006 82 / 0.82),
-      oklch(0.141 0.005 82 / 0.78)
-    ),
-    var(--card);
-  border-color: var(--sidebar-border);
-}
-
-.raycast-header-scrolled {
-  background: oklch(0.985 0 0 / 0.58);
-  border-color: oklch(0.871 0.006 82 / 0.72);
-  box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.74) inset,
-    0 14px 32px -30px oklch(0.2 0.02 82 / 0.2);
-  -webkit-backdrop-filter: blur(26px) saturate(1.28);
-  backdrop-filter: blur(26px) saturate(1.28);
-}
-
-.dark .raycast-header-scrolled {
-  background: oklch(0.135 0.005 82 / 0.58);
-  border-color: oklch(0.37 0.013 82 / 0.76);
-  box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.07) inset,
-    0 18px 42px -32px oklch(0 0 0 / 0.74);
-}
-
-/* App Shell Header: glass effect entirely defined in app-shell.tsx (Tailwind utilities + framer-motion). */
-
 .app-shell-search {
   background: oklch(0.982 0.006 82 / 0.82);
   border-color: oklch(0.871 0.006 82 / 0.86);
@@ -628,34 +579,47 @@ button:focus-visible,
 
 /* ─── Modal Medical ─── */
 .modal-medical-shell {
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 20px;
-  overflow: hidden;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.4) inset,
     0 12px 40px -20px rgba(0, 0, 0, 0.12);
 }
 .modal-medical-header {
   background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 .modal-medical-body {
   background: #ffffff;
 }
 .modal-medical-footer {
   background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);
-  box-shadow: none;
+  box-shadow: 0 -10px 24px -24px rgba(0, 0, 0, 0.28);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 .modal-medical-footer .modal-medical-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
   justify-content: flex-end;
+}
+
+/* Patient record tabs must not inherit the full list height from the generic Tabs primitive. */
+.patient-record-tabs {
+  height: 52px !important;
+  min-height: 52px;
+  overflow: hidden;
+}
+
+.patient-record-tabs [data-slot="tabs-trigger"] {
+  align-self: center;
+  height: 40px !important;
+  min-height: 40px;
 }
 
 .dark .modal-medical-shell {

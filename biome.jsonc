@@ -1,4 +1,16 @@
 {
   "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "files": {
+    "includes": [
+      "src/**",
+      "biome.jsonc",
+      "components.json",
+      "eslint.config.js",
+      "generate-license.ts",
+      "package.json",
+      "tsconfig*.json",
+      "vite.config.ts"
+    ]
+  },
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json"
 }

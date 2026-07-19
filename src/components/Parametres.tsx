@@ -1837,11 +1837,15 @@ const Parametres: React.FC<ParametresProps> = ({
                         <p className="font-medium text-foreground text-sm">
                           Zohir Kherroubi
                         </p>
-                        <p className="font-medium text-primary text-xs mt-0.5">
+                        <p className="mt-0.5 font-medium text-primary text-xs">
                           Créateur & Ingénieur Logiciel
                         </p>
                         <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed">
-                          Visionnaire et développeur principal de bAItari. Responsable de la conception technique, de l'ingénierie logicielle et de l'intégration des technologies d'Intelligence Artificielle au cœur du système.
+                          Visionnaire et développeur principal de bAItari.
+                          Responsable de la conception technique, de
+                          l'ingénierie logicielle et de l'intégration des
+                          technologies d'Intelligence Artificielle au cœur du
+                          système.
                         </p>
                       </div>
                     </div>
@@ -1860,11 +1864,14 @@ const Parametres: React.FC<ParametresProps> = ({
                         <p className="font-medium text-foreground text-sm">
                           Dr Aissa Zeghouini
                         </p>
-                        <p className="font-medium text-primary text-xs mt-0.5">
+                        <p className="mt-0.5 font-medium text-primary text-xs">
                           Co-fondateur & Conseiller Clinique
                         </p>
                         <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed">
-                          Pilier médical de bAItari. Apporte son expertise vétérinaire inestimable pour garantir que l'application réponde de manière optimale aux exigences et réalités de la clinique au quotidien.
+                          Pilier médical de bAItari. Apporte son expertise
+                          vétérinaire inestimable pour garantir que
+                          l'application réponde de manière optimale aux
+                          exigences et réalités de la clinique au quotidien.
                         </p>
                       </div>
                     </div>

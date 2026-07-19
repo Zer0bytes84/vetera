@@ -7,6 +7,7 @@ import {
   Clock01Icon,
   CreditCardIcon,
   Download01Icon,
+  Edit01Icon,
   ReceiptTextIcon,
   SearchIcon,
   Wallet01Icon,
@@ -396,6 +397,8 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [draft, setDraft] = useState<TransactionDraft>(getDefaultDraft());
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -555,6 +558,26 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
     setDraft(getDefaultDraft());
   };
 
+  const closeTransactionDialog = () => {
+    setIsDialogOpen(false);
+    setEditingTransaction(null);
+    resetDraft();
+  };
+
+  const openEditTransaction = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setDraft({
+      amount: String(transaction.amount / 100),
+      category: transaction.category,
+      date: transaction.date.slice(0, 10),
+      description: transaction.description,
+      method: transaction.method,
+      status: transaction.status,
+      type: transaction.type,
+    });
+    setIsDialogOpen(true);
+  };
+
   const handleCreateTransaction = async () => {
     const amount = Number(draft.amount);
     const description = draft.description.trim();
@@ -589,20 +612,30 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
           : parsedDate.toISOString(),
       };
 
-      if (draft.type === "income") {
+      if (editingTransaction) {
+        const updated = await update(editingTransaction.id, {
+          ...payload,
+          type: draft.type,
+        });
+        if (!updated) {
+          toast.error("Cette écriture n'a pas pu être mise à jour.");
+          return;
+        }
+      } else if (draft.type === "income") {
         await recordIncome(payload);
       } else {
         await recordExpense(payload);
       }
 
       toast.success(
-        draft.type === "income"
-          ? "Revenu enregistré dans le journal."
-          : "Dépense enregistrée dans le journal."
+        editingTransaction
+          ? "Écriture mise à jour dans le journal."
+          : draft.type === "income"
+            ? "Revenu enregistré dans le journal."
+            : "Dépense enregistrée dans le journal."
       );
 
-      setIsDialogOpen(false);
-      resetDraft();
+      closeTransactionDialog();
     } catch (error) {
       console.error(error);
       toast.error("Impossible d'enregistrer cette écriture.");
@@ -829,6 +862,9 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                       Montant
                     </TableHead>
                     <TableHead className="w-[12%] text-right">Statut</TableHead>
+                    <TableHead className="w-[1%] text-right">
+                      <span className="sr-only">Modifier</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -921,6 +957,22 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                               strokeWidth={2}
                             />
                             {TRANSACTION_STATUS_META[transaction.status].label}
+                          </Button>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            aria-label={`Modifier ${transaction.description}`}
+                            className="h-8 gap-1.5 px-2.5 text-muted-foreground hover:text-foreground"
+                            onClick={() => openEditTransaction(transaction)}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <HugeiconsIcon
+                              className="size-3.5"
+                              icon={Edit01Icon}
+                              strokeWidth={2}
+                            />
+                            <span className="hidden xl:inline">Modifier</span>
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -1060,17 +1112,30 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         </Card>
       </div>
 
-      {/* New Transaction Dialog */}
-      <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
-        <DialogContent className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle>Nouvelle écriture</DialogTitle>
+      {/* Transaction editor */}
+      <Dialog
+        onOpenChange={(open) => {
+          if (!open) {
+            closeTransactionDialog();
+            return;
+          }
+          setIsDialogOpen(true);
+        }}
+        open={isDialogOpen}
+      >
+        <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(560px,calc(100%-2rem))] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[560px]">
+          <DialogHeader className="modal-medical-header border-b px-6 py-5">
+            <DialogTitle className="text-xl tracking-[-0.04em]">
+              {editingTransaction ? "Modifier l'écriture" : "Nouvelle écriture"}
+            </DialogTitle>
             <DialogDescription>
-              Ajoutez une recette ou une dépense dans le journal financier.
+              {editingTransaction
+                ? "Corrigez le montant, le type ou les informations de cette écriture."
+                : "Ajoutez une recette ou une dépense dans le journal financier."}
             </DialogDescription>
           </DialogHeader>
 
-          <FieldGroup className="gap-5">
+          <FieldGroup className="modal-medical-body max-h-[calc(100dvh-15rem)] gap-5 overflow-y-auto px-6 py-6 sm:max-h-[calc(100dvh-17rem)]">
             <Field>
               <FieldLabel>Type de mouvement</FieldLabel>
               <ToggleGroup
@@ -1217,17 +1282,16 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
             </Field>
           </FieldGroup>
 
-          <DialogFooter>
+          <DialogFooter className="modal-medical-footer !mx-0 !mb-0 !flex-col sm:!flex-row shrink-0 gap-3 px-6 py-5 sm:items-center sm:justify-end">
             <Button
-              onClick={() => {
-                setIsDialogOpen(false);
-                resetDraft();
-              }}
+              className="h-11 min-w-[132px] justify-center"
+              onClick={closeTransactionDialog}
               variant="outline"
             >
               Annuler
             </Button>
             <Button
+              className="h-11 min-w-[160px] justify-center shadow-sm"
               disabled={
                 isSubmitting || !draft.description.trim() || !draft.amount
               }
@@ -1242,7 +1306,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                   strokeWidth={2}
                 />
               )}
-              Enregistrer
+              {editingTransaction ? "Enregistrer" : "Ajouter au journal"}
             </Button>
           </DialogFooter>
         </DialogContent>
