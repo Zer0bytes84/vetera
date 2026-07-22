@@ -1,12 +1,9 @@
 import type React from "react";
-import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
   collapsed?: boolean;
-  flatMark?: boolean;
-  isDarkMode?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
   textSize?: "sm" | "md" | "lg" | "xl" | "2xl";
 }
@@ -27,53 +24,24 @@ const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
   "2xl": "text-[28px] leading-[36px]",
 };
 
-function BaitariMark({
-  sizePx,
-  flatMark = false,
-}: {
-  sizePx: number;
-  flatMark?: boolean;
-}) {
-  const id = useId().replace(/:/g, "");
-  const panelId = `logo-panel-${id}`;
-
+function BaitariMark({ sizePx }: { sizePx: number }) {
   return (
     <svg
       aria-hidden="true"
+      className="overflow-visible"
       style={{ width: sizePx, height: sizePx, flexShrink: 0 }}
       viewBox="0 0 40 40"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <linearGradient id={panelId} x1="0%" x2="100%" y1="0%" y2="100%">
-          <stop offset="0%" stopColor="#151c25" />
-          <stop offset="100%" stopColor="#101720" />
-        </linearGradient>
-      </defs>
-
-      <rect
-        fill={`url(#${panelId})`}
-        height="32"
-        rx="10"
-        width="32"
-        x="4"
-        y="4"
-      />
       <path
-        d="M15 11.5V28.5"
+        d="M12.5 6.5V24.8C12.5 31.1 17.4 35.5 23.5 35.5C29.7 35.5 34.5 30.8 34.5 24.7C34.5 18.7 29.8 14 23.7 14C18.5 14 14.2 17.6 13 22.5C13.5 27 16.8 30.2 21.1 30.2C25.5 30.2 28.9 26.8 28.9 22.6"
         fill="none"
-        stroke="#ffffff"
-        strokeLinecap="round"
-        strokeWidth="3.2"
-      />
-      <path
-        d="M15 20C15 16.686 17.686 14 21 14C24.314 14 27 16.686 27 20C27 23.314 24.314 26 21 26C17.686 26 15 23.314 15 20Z"
-        fill="none"
-        stroke="#ffffff"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="3.2"
+        strokeWidth="3.15"
       />
+      <circle cx="31.4" cy="8.9" fill="#38B990" r="2.45" />
     </svg>
   );
 }
@@ -83,8 +51,6 @@ const Logo: React.FC<LogoProps> = ({
   collapsed = false,
   size = "md",
   textSize = "md",
-  isDarkMode = false,
-  flatMark = false,
 }) => {
   const sizePx = collapsed ? 32 : SIZE_PX[size];
   const wordmarkClass = WORDMARK_CLASS_MAP[textSize];
@@ -92,27 +58,20 @@ const Logo: React.FC<LogoProps> = ({
     <div
       className={cn("flex select-none items-center text-current", className)}
     >
-      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-0")}>
-        <div className="logo-mark-shell z-10 flex items-center justify-center">
-          <BaitariMark flatMark={flatMark} sizePx={sizePx} />
+      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-2")}>
+        <div className="flex items-center justify-center text-[#191c20] dark:text-[#f5f6f4]">
+          <BaitariMark sizePx={sizePx} />
         </div>
         {collapsed ? null : (
-          <div className="z-0 -ml-1 flex items-baseline gap-0">
+          <div className="flex items-baseline">
             <span
               className={cn(
-                "text-zinc-900 tracking-tight dark:text-white",
+                "font-heading font-semibold text-zinc-900 dark:text-white",
                 wordmarkClass
               )}
-              style={{
-                fontFamily: "'Inter Variable', 'Inter', sans-serif",
-              }}
+              style={{ letterSpacing: "-0.045em" }}
             >
-              <span style={{ fontWeight: 800, letterSpacing: "-0.05em" }}>
-                AI
-              </span>
-              <span style={{ fontWeight: 500, letterSpacing: "-0.04em" }}>
-                tari
-              </span>
+              Baitari
             </span>
           </div>
         )}

@@ -19,6 +19,12 @@ interface RevenueBreakdownOrbitProps {
   title?: string;
 }
 
+interface NormalizedCategory extends CategoryRevenue {
+  dash: number;
+  offset: number;
+  percent: number;
+}
+
 function formatDA(value: number): string {
   if (value >= 100_000) {
     return (value / 1000).toFixed(0) + "k";
@@ -32,7 +38,7 @@ export function RevenueBreakdownOrbit({
 }: RevenueBreakdownOrbitProps) {
   const total = categories.reduce((sum, c) => sum + c.value, 0) || 1;
 
-  const normalized = [];
+  const normalized: NormalizedCategory[] = [];
   let currentOffset = 0;
   for (const category of categories) {
     const percent = Math.round((category.value / total) * 100);

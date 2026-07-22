@@ -26,7 +26,7 @@ function toastNotification(
   const actionLabel = t("notifications.toast.open", {
     defaultValue: "Ouvrir",
   });
-  const description = item.description ?? item.hint ?? "";
+  const description = item.description;
 
   const handleAction = () => {
     if (item.target.view === "patient_detail") {

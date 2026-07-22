@@ -16,6 +16,7 @@ import {
   SparklesIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Ban, Package, TriangleAlert, Wallet } from "lucide-react";
 import type React from "react";
 import { useDeferredValue, useMemo, useState } from "react";
 import MotivationalHeader from "@/components/MotivationalHeader";
@@ -27,7 +28,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -54,7 +54,6 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import {
   useProductsRepository,
@@ -288,34 +287,38 @@ const Stock: React.FC = () => {
       {
         title: "Produits",
         value: String(totalProducts),
-        badge: `${products.length} réf.`,
+        badge: `${products.length} au total`,
         trend: "neutral",
-        footerTitle: "Catalogue actif",
+        footerTitle: "Références actives",
         footerDescription: "Catalogue",
+        icon: Package,
       },
       {
         title: "Stock bas",
         value: String(lowStock),
-        badge: lowStock > 0 ? "à réapprovisionner" : "OK",
+        badge: lowStock > 0 ? "à commander" : "aucune alerte",
         trend: lowStock > 0 ? "down" : "neutral",
-        footerTitle: "Réapprovisionnement nécessaire",
+        footerTitle: "Sous le seuil minimum",
         footerDescription: "Seuil atteint",
+        icon: TriangleAlert,
       },
       {
         title: "Ruptures",
         value: String(outOfStock),
         badge: outOfStock > 0 ? "critique" : "aucune",
         trend: outOfStock > 0 ? "down" : "neutral",
-        footerTitle: "Stock épuisé",
+        footerTitle: "Produits indisponibles",
         footerDescription: "Stock épuisé",
+        icon: Ban,
       },
       {
         title: "Valeur stock",
         value: formatDZD(stockValue),
-        badge: "valorisation",
+        badge: "prix d'achat",
         trend: "neutral",
-        footerTitle: "Valorisation totale",
+        footerTitle: "Valeur immobilisée",
         footerDescription: "Coût d'acquisition total",
+        icon: Wallet,
       },
     ],
     [totalProducts, lowStock, outOfStock, stockValue, products.length]
@@ -502,7 +505,7 @@ const Stock: React.FC = () => {
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <MotivationalHeader section="stock" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button className="h-10 rounded-full px-5" onClick={handleOpenAdd}>
@@ -518,17 +521,30 @@ const Stock: React.FC = () => {
 
       <SectionCards items={sectionCards} />
 
-      {/* Main Table Card */}
-      <Card className="card-vibrant card-hover-lift flex min-h-[540px] flex-col rounded-[24px] border border-border bg-card shadow-none">
-        <CardHeader className="border-border border-b px-6 py-5">
-          <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
-            Inventaire
-          </CardDescription>
-          <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
-            Catalogue produits
-          </CardTitle>
+      <Card className="clinical-feature-surface flex min-h-[500px] flex-col overflow-hidden border-border shadow-none">
+        <CardHeader className="border-border/70 border-b px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900">
+              <HugeiconsIcon
+                className="size-5"
+                icon={Package02Icon}
+                strokeWidth={2}
+              />
+            </span>
+            <div>
+              <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.1em]">
+                Inventaire
+              </p>
+              <CardTitle className="mt-0.5 font-semibold text-xl tracking-[-0.03em]">
+                Catalogue produits
+              </CardTitle>
+            </div>
+          </div>
           <CardAction>
-            <Badge className="rounded-full px-3 py-1" variant="outline">
+            <Badge
+              className="rounded-full bg-muted/60 px-3 py-1 font-medium"
+              variant="secondary"
+            >
               {filteredProducts.length} produit
               {filteredProducts.length > 1 ? "s" : ""}
             </Badge>
@@ -536,15 +552,15 @@ const Stock: React.FC = () => {
         </CardHeader>
 
         <CardContent className="flex min-h-0 flex-1 flex-col px-0 pb-0">
-          <div className="flex flex-col gap-3 px-6 pt-5 pb-4 sm:flex-row sm:items-center">
-            <div className="relative max-w-sm flex-1">
+          <div className="flex flex-col gap-3 bg-muted/15 px-5 py-4 sm:flex-row sm:items-center sm:px-6">
+            <div className="relative min-w-0 flex-1">
               <HugeiconsIcon
                 className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
                 icon={SearchIcon}
                 strokeWidth={2}
               />
               <Input
-                className="h-10 rounded-xl bg-input/50 pl-11"
+                className="h-10 rounded-xl border-border/70 bg-background pl-11 shadow-none"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Rechercher un produit, une catégorie..."
                 value={searchTerm}
@@ -552,6 +568,7 @@ const Stock: React.FC = () => {
             </div>
 
             <NativeSelect
+              className="h-10 w-full cursor-pointer rounded-xl bg-background sm:w-[280px]"
               onChange={(e) => setActiveCategory(e.target.value)}
               value={activeCategory}
             >
@@ -585,19 +602,18 @@ const Stock: React.FC = () => {
             )}
           </div>
 
-          <div className="px-6">
-            <Separator />
-          </div>
-
-          <div className="flex-1 overflow-auto p-4">
+          <div className="flex-1 overflow-auto p-4 sm:p-5">
             {loading ? (
               <div className="flex items-center justify-center p-6">
                 <Spinner />
               </div>
             ) : filteredProducts.length === 0 ? (
-              <Empty className="border border-border/80 border-dashed bg-muted/20">
+              <Empty className="min-h-[300px] border border-border/70 border-dashed bg-[radial-gradient(circle_at_top,rgba(14,165,233,0.07),transparent_45%)]">
                 <EmptyHeader>
-                  <EmptyMedia variant="icon">
+                  <EmptyMedia
+                    className="bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900"
+                    variant="icon"
+                  >
                     <HugeiconsIcon
                       className="size-5"
                       icon={Package02Icon}
@@ -606,19 +622,23 @@ const Stock: React.FC = () => {
                   </EmptyMedia>
                   <EmptyTitle>Aucun produit trouvé</EmptyTitle>
                   <EmptyDescription>
-                    Modifiez votre recherche ou ajoutez un nouveau produit.
+                    {products.length === 0
+                      ? "Créez votre catalogue pour suivre les quantités, les seuils et la valeur du stock."
+                      : "Aucun produit ne correspond aux filtres sélectionnés."}
                   </EmptyDescription>
                 </EmptyHeader>
-                <EmptyContent className="sm:flex-row">
-                  <Button
-                    onClick={() => {
-                      setSearchTerm("");
-                      setActiveCategory("Tous");
-                    }}
-                    variant="outline"
-                  >
-                    Réinitialiser
-                  </Button>
+                <EmptyContent className="sm:flex-row sm:justify-center">
+                  {searchTerm || activeCategory !== "Tous" ? (
+                    <Button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setActiveCategory("Tous");
+                      }}
+                      variant="outline"
+                    >
+                      Réinitialiser
+                    </Button>
+                  ) : null}
                   <Button onClick={handleOpenAdd}>
                     <HugeiconsIcon
                       className="size-4"
@@ -633,6 +653,7 @@ const Stock: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product) => {
+                  const todayStr = new Date().toISOString().slice(0, 10);
                   const isLow = product.quantity <= product.minStock;
                   const isOut = product.quantity === 0;
                   const CatIcon = getCategoryIcon(product.category);
@@ -652,7 +673,7 @@ const Stock: React.FC = () => {
                   return (
                     <div
                       className={cn(
-                        "group cursor-pointer rounded-4xl border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+                        "clinical-interactive group rounded-2xl border bg-card p-4 text-left",
                         isOut
                           ? "border-red-200 dark:border-red-500/30"
                           : isLow
@@ -806,7 +827,7 @@ const Stock: React.FC = () => {
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {selectedProduct ? "Modifier le Produit" : "Nouveau Produit"}
+              {selectedProduct ? "Modifier le produit" : "Nouveau produit"}
             </DialogTitle>
             <DialogDescription>
               {selectedProduct
@@ -826,7 +847,7 @@ const Stock: React.FC = () => {
                     strokeWidth={2}
                   />
                   <span className="font-bold text-primary text-xs uppercase tracking-wider">
-                    Remplissage Rapide
+                    Remplissage rapide
                   </span>
                 </div>
                 <NativeSelect

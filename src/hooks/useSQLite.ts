@@ -353,7 +353,13 @@ export function useSQLite<T extends { id: string }>(
         mapKeys(created[0], toCamelCase)
       ) as T;
     },
-    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName]
+    [
+      loadData,
+      runSerializedTauriOp,
+      safeTableName,
+      syncTableAfterMutation,
+      tableName,
+    ]
   );
 
   const update = useCallback(
@@ -410,7 +416,13 @@ export function useSQLite<T extends { id: string }>(
         return false;
       }
     },
-    [runSerializedTauriOp, safeTableName, syncTableAfterMutation, tableName]
+    [
+      loadData,
+      runSerializedTauriOp,
+      safeTableName,
+      syncTableAfterMutation,
+      tableName,
+    ]
   );
 
   const remove = useCallback(
@@ -455,7 +467,7 @@ export function useSQLite<T extends { id: string }>(
       safeTableName,
       syncTableAfterMutation,
       tableName,
-      setError,
+      loadData,
     ]
   );
 

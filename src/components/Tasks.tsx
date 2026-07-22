@@ -1,1208 +1,982 @@
-/* eslint-disable react-hooks/purity */
 import {
-  Add01Icon,
-  Calendar01Icon,
-  CheckmarkCircle02Icon,
-  CircleIcon,
-  Clock01Icon,
-  Delete01Icon,
-  Flag01Icon,
-  LayoutGridIcon,
-  ListPlusIcon,
-  MoreVerticalCircle01Icon,
-  Notification02Icon,
-  Task01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
+  Bell,
+  CalendarDays,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  Clock3,
+  Pencil,
+  Plus,
+  RotateCcw,
+  Search,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 import type React from "react";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import MotivationalHeader from "@/components/MotivationalHeader";
-import { type SectionCardItem, SectionCards } from "@/components/section-cards";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { PRIORITY_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTasksRepository } from "@/data/repositories";
+import { useFocus } from "@/contexts/focus-provider";
+import {
+  useAppointmentsRepository,
+  usePatientsRepository,
+  useRemindersRepository,
+  useTasksRepository,
+} from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import type { Task } from "@/types/db";
-import KanbanBoard from "./KanbanBoard";
+import type { Appointment, Patient, Reminder, Task } from "@/types/db";
 
-const PRIORITY_COLORS: Record<string, string> = {
-  high: "bg-red-500/10 text-red-700 border-red-200 dark:text-red-300",
-  medium: "bg-amber-500/10 text-amber-700 border-amber-200 dark:text-amber-300",
-  low: "bg-blue-500/10 text-blue-700 border-blue-200 dark:text-blue-300",
-};
+type ReminderView = "today" | "upcoming" | "completed";
+type Scope = "mine" | "team";
 
-const PRIORITY_TABLE_BADGES: Record<string, string> = {
-  high: "border-red-200 bg-red-500/12 text-red-700 dark:border-red-500/30 dark:bg-red-500/18 dark:text-red-300",
-  medium:
-    "border-amber-200 bg-amber-500/12 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/18 dark:text-amber-300",
-  low: "border-sky-200 bg-sky-500/12 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/18 dark:text-sky-300",
-};
+interface TaskDraft {
+  description: string;
+  dueDate: string;
+  patientId: string;
+  priority: Task["priority"];
+  startTime: string;
+  title: string;
+}
 
-// Helper to generate time slots
-const generateTimeSlots = () => {
-  const slots: string[] = [];
-  for (let i = 7; i <= 20; i++) {
-    const hour = i.toString().padStart(2, "0");
-    slots.push(`${hour}:00`);
-    slots.push(`${hour}:30`);
-  }
-  return slots;
-};
+interface ManualReminderItem {
+  date: Date | null;
+  kind: "manual";
+  patient?: Patient;
+  task: Task;
+}
 
-const TIME_SLOTS = generateTimeSlots();
+interface AutomaticReminderItem {
+  appointment?: Appointment;
+  date: Date;
+  kind: "automatic";
+  patient?: Patient;
+  reminder: Reminder;
+}
 
-const formatDateInput = (value: Date) => {
-  const year = value.getFullYear();
-  const month = `${value.getMonth() + 1}`.padStart(2, "0");
-  const day = `${value.getDate()}`.padStart(2, "0");
+type ReminderItem = ManualReminderItem | AutomaticReminderItem;
+
+const emptyDraft = (): TaskDraft => ({
+  description: "",
+  dueDate: toDateKey(new Date()),
+  patientId: "",
+  priority: "medium",
+  startTime: "",
+  title: "",
+});
+
+function toDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
-};
+}
 
-const parseDateInput = (value?: string) => {
-  if (!value) {
+function parseTaskDate(task: Task) {
+  if (!task.dueDate) {
     return null;
   }
-  const [year, month, day] = value.split("-").map(Number);
-  if (!(year && month && day)) {
-    return null;
+  const time = task.startTime || "12:00";
+  const date = new Date(`${task.dueDate}T${time}:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function reminderDate(reminder: Reminder) {
+  const value =
+    reminder.status === "snoozed" && reminder.snoozedUntil
+      ? reminder.snoozedUntil
+      : reminder.scheduledFor;
+  return new Date(value);
+}
+
+function dateLabel(date: Date | null, view: ReminderView) {
+  if (!date) {
+    return "Sans date";
   }
-  return new Date(year, month - 1, day, 12, 0, 0, 0);
-};
+  const today = toDateKey(new Date());
+  const key = toDateKey(date);
+  if (key === today) {
+    return `Aujourd'hui · ${date.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
+  }
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  if (key === toDateKey(tomorrow)) {
+    return `Demain · ${date.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
+  }
+  const formatted = date.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    ...(view === "completed" ? { year: "numeric" } : {}),
+  });
+  return `${formatted} · ${date.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
+}
+
+function itemDate(item: ReminderItem) {
+  return item.date?.getTime() ?? Number.MAX_SAFE_INTEGER;
+}
+
+function itemIsCompleted(item: ReminderItem) {
+  if (item.kind === "manual") {
+    return item.task.status === "done";
+  }
+  return (
+    item.reminder.status === "sent" || item.reminder.status === "dismissed"
+  );
+}
+
+function itemMatchesView(item: ReminderItem, view: ReminderView) {
+  const completed = itemIsCompleted(item);
+  if (view === "completed") {
+    return completed;
+  }
+  if (completed) {
+    return false;
+  }
+  const key = item.date ? toDateKey(item.date) : null;
+  if (view === "today") {
+    return key !== null && key <= toDateKey(new Date());
+  }
+  return key === null || key > toDateKey(new Date());
+}
+
+function priorityLabel(priority: Task["priority"]) {
+  if (priority === "high") {
+    return "Prioritaire";
+  }
+  if (priority === "low") {
+    return "Faible";
+  }
+  return "Normal";
+}
 
 const Tasks: React.FC = () => {
-  const { i18n } = useTranslation();
   const { currentUser } = useAuth();
-  const {
-    data: tasks,
-    add: addTask,
-    update: updateTask,
-    remove: removeTask,
-  } = useTasksRepository();
+  const { clearFocus, focus } = useFocus();
+  const tasksRepository = useTasksRepository();
+  const remindersRepository = useRemindersRepository();
+  const { data: appointments } = useAppointmentsRepository();
+  const { data: patients } = usePatientsRepository();
+  const [activeView, setActiveView] = useState<ReminderView>("today");
+  const [scope, setScope] = useState<Scope>("mine");
+  const [query, setQuery] = useState("");
+  const [showDetails, setShowDetails] = useState(false);
+  const [draft, setDraft] = useState<TaskDraft>(emptyDraft);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<TaskDraft>(emptyDraft);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [newTaskDescription, setNewTaskDescription] = useState("");
-  const [isAdding, setIsAdding] = useState(false);
-  const [filter, setFilter] = useState<"all" | "mine">("mine");
-  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
-  const [taskSearch, setTaskSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | "todo" | "in_progress" | "done"
-  >("all");
-  const [priorityFilter, setPriorityFilter] = useState<
-    "all" | "high" | "medium" | "low"
-  >("all");
-  const [favoriteTaskIds, setFavoriteTaskIds] = useState<string[]>([]);
-  const [taskLabels, setTaskLabels] = useState<Record<string, string[]>>({});
-  const currentLocale = i18n.language.startsWith("ar")
-    ? "ar"
-    : i18n.language.startsWith("en")
-      ? "en-US"
-      : i18n.language.startsWith("es")
-        ? "es-ES"
-        : i18n.language.startsWith("pt")
-          ? "pt-PT"
-          : i18n.language.startsWith("de")
-            ? "de-DE"
-            : "fr-FR";
-  const calendarLocale = i18n.language.startsWith("ar")
-    ? ar
-    : i18n.language.startsWith("en")
-      ? enUS
-      : i18n.language.startsWith("es")
-        ? es
-        : i18n.language.startsWith("pt")
-          ? pt
-          : i18n.language.startsWith("de")
-            ? de
-            : fr;
-
-  // Extended form state
-  const [newTaskDetails, setNewTaskDetails] = useState<{
-    priority: "low" | "medium" | "high";
-    dueDate: string;
-    startTime: string;
-    endTime: string;
-    isReminder: boolean;
-  }>({
-    priority: "medium",
-    dueDate: new Date().toISOString().split("T")[0],
-    startTime: "08:00",
-    endTime: "09:00",
-    isReminder: false,
-  });
-
-  const handleStartTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newStart = e.target.value;
-    let newEnd = newTaskDetails.endTime;
-    const startIndex = TIME_SLOTS.indexOf(newStart);
-    if (startIndex !== -1 && startIndex + 2 < TIME_SLOTS.length) {
-      newEnd = TIME_SLOTS[startIndex + 2];
-    } else if (startIndex !== -1 && startIndex + 1 < TIME_SLOTS.length) {
-      newEnd = TIME_SLOTS[startIndex + 1];
-    }
-
-    setNewTaskDetails((prev) => ({
-      ...prev,
-      startTime: newStart,
-      endTime: newEnd > newStart ? newEnd : newStart,
-    }));
-  };
-
-  const handleAddTask = async (e?: React.FormEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
-    if (!newTaskTitle.trim()) {
-      return;
-    }
-
-    try {
-      await addTask({
-        title: newTaskTitle,
-        status: "todo",
-        priority: newTaskDetails.priority,
-        dueDate: newTaskDetails.dueDate,
-        startTime: newTaskDetails.startTime,
-        endTime: newTaskDetails.endTime,
-        isReminder: newTaskDetails.isReminder,
-        assignedTo: currentUser?.uid,
-        description: newTaskDescription.trim(),
-      } as any);
-
-      setNewTaskTitle("");
-      setNewTaskDescription("");
-      setIsAdding(false);
-      setNewTaskDetails((prev) => ({
-        ...prev,
-        startTime: "08:00",
-        endTime: "09:00",
-      }));
-    } catch (err: any) {
-      console.error(err);
-      alert(
-        "Erreur lors de la création de la tâche: " +
-          (err.message || JSON.stringify(err))
-      );
-    }
-  };
-
-  const handleEditTask = async (task: Task) => {
-    const nextTitle = window.prompt(
-      "Modifier le titre de la tâche",
-      task.title
-    );
-    if (!nextTitle || nextTitle.trim() === task.title) {
-      return;
-    }
-    await updateTask(task.id, { title: nextTitle.trim() });
-  };
-
-  const handleDuplicateTask = async (task: Task) => {
-    await addTask({
-      title: `${task.title} (copie)`,
-      status: task.status,
-      priority: task.priority,
-      dueDate: task.dueDate,
-      startTime: task.startTime,
-      endTime: task.endTime,
-      isReminder: task.isReminder,
-      assignedTo: task.assignedTo || currentUser?.uid,
-      patientId: task.patientId,
-    } as any);
-  };
-
-  const toggleFavoriteTask = (taskId: string) => {
-    setFavoriteTaskIds((prev) =>
-      prev.includes(taskId)
-        ? prev.filter((id) => id !== taskId)
-        : [...prev, taskId]
-    );
-  };
-
-  const setTaskLabel = (taskId: string, label: string) => {
-    setTaskLabels((prev) => {
-      const labels = prev[taskId] ?? [];
-      if (labels.includes(label)) {
-        return prev;
-      }
-      return {
-        ...prev,
-        [taskId]: [...labels, label],
-      };
-    });
-  };
-
-  const setCustomTaskLabel = (taskId: string) => {
-    const input = window.prompt("Nouvelle étiquette");
-    if (!(input && input.trim())) {
-      return;
-    }
-    setTaskLabel(taskId, input.trim());
-  };
-
-  const toggleStatus = async (task: Task) => {
-    const newStatus = task.status === "done" ? "todo" : "done";
-    await updateTask(task.id, { status: newStatus });
-  };
-
-  const filteredTasks = useMemo(() => {
-    let filtered = tasks;
-
-    if (filter === "mine" && currentUser?.uid) {
-      filtered = filtered.filter(
-        (task) => task.assignedTo === currentUser.uid || !task.assignedTo
-      );
-    }
-
-    return filtered.sort((a, b) => {
-      if (a.status === "done" && b.status !== "done") {
-        return 1;
-      }
-      if (a.status !== "done" && b.status === "done") {
-        return -1;
-      }
-
-      const dateA = a.dueDate || "9999-99-99";
-      const dateB = b.dueDate || "9999-99-99";
-      if (dateA !== dateB) {
-        return dateA.localeCompare(dateB);
-      }
-
-      const timeA = a.startTime || "00:00";
-      const timeB = b.startTime || "00:00";
-      return timeA.localeCompare(timeB);
-    });
-  }, [tasks, filter, currentUser]);
-
-  // Group by Date buckets
-  const groupedTasks = useMemo(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const tomorrow = new Date(Date.now() + 86_400_000)
-      .toISOString()
-      .split("T")[0];
-
-    const groups = {
-      overdue: [] as Task[],
-      today: [] as Task[],
-      tomorrow: [] as Task[],
-      upcoming: [] as Task[],
-      completed: [] as Task[],
-    };
-
-    filteredTasks.forEach((task) => {
-      if (task.status === "done") {
-        groups.completed.push(task);
-        return;
-      }
-
-      if (!task.dueDate) {
-        groups.upcoming.push(task);
-        return;
-      }
-
-      if (task.dueDate < today) {
-        groups.overdue.push(task);
-      } else if (task.dueDate === today) {
-        groups.today.push(task);
-      } else if (task.dueDate === tomorrow) {
-        groups.tomorrow.push(task);
-      } else {
-        groups.upcoming.push(task);
-      }
-    });
-
-    return groups;
-  }, [filteredTasks]);
-
-  const tableTasks = useMemo(
+  const patientsById = useMemo(
+    () => new Map(patients.map((patient) => [patient.id, patient])),
+    [patients]
+  );
+  const appointmentsById = useMemo(
     () =>
-      filteredTasks.filter((task) => {
-        const search = taskSearch.trim().toLowerCase();
-        const matchesSearch =
-          search.length === 0 ||
-          task.title.toLowerCase().includes(search) ||
-          task.id.toLowerCase().includes(search);
-        const matchesStatus =
-          statusFilter === "all" || task.status === statusFilter;
-        const matchesPriority =
-          priorityFilter === "all" || task.priority === priorityFilter;
-        return matchesSearch && matchesStatus && matchesPriority;
-      }),
-    [filteredTasks, priorityFilter, statusFilter, taskSearch]
+      new Map(appointments.map((appointment) => [appointment.id, appointment])),
+    [appointments]
   );
 
-  const sectionCards = useMemo<SectionCardItem[]>(() => {
-    const openTasks = filteredTasks.filter(
-      (task) => task.status !== "done"
-    ).length;
-    const urgentTasks = filteredTasks.filter(
-      (task) => task.status !== "done" && task.priority === "high"
-    ).length;
-    const completedTasks = filteredTasks.filter(
-      (task) => task.status === "done"
-    ).length;
+  const allItems = useMemo<ReminderItem[]>(() => {
+    const manual: ManualReminderItem[] = tasksRepository.data
+      .filter((task) => {
+        if (scope === "team" || !currentUser?.uid) {
+          return true;
+        }
+        return task.assignedTo === currentUser.uid || !task.assignedTo;
+      })
+      .map((task) => ({
+        date: parseTaskDate(task),
+        kind: "manual",
+        patient: task.patientId ? patientsById.get(task.patientId) : undefined,
+        task,
+      }));
 
-    return [
-      {
-        title: "Tâches ouvertes",
-        value: String(openTasks),
-        badge: filter === "mine" ? "vue perso" : "équipe complète",
-        trend: "neutral",
-        footerTitle: "Charge active",
-        footerDescription: "Charge active à absorber",
-      },
-      {
-        title: "À traiter aujourd'hui",
-        value: String(groupedTasks.today.length),
-        badge: `${groupedTasks.overdue.length} en retard`,
-        trend: "up",
-        footerTitle: "Priorités du jour",
-        footerDescription: "Priorités immédiates",
-      },
-      {
-        title: "Alertes prioritaires",
-        value: String(urgentTasks),
-        badge: `${groupedTasks.tomorrow.length} demain`,
-        trend: "up",
-        footerTitle: "Attention requise",
-        footerDescription: "Actions à surveiller",
-      },
-      {
-        title: "Clôturées",
-        value: String(completedTasks),
-        badge: `${tableTasks.length} dans la vue`,
-        trend: "up",
-        footerTitle: "Tâches terminées",
-        footerDescription: "Suivi",
-      },
-    ];
+    const automatic: AutomaticReminderItem[] = remindersRepository.data.map(
+      (reminder) => {
+        const appointment = appointmentsById.get(reminder.appointmentId);
+        return {
+          appointment,
+          date: reminderDate(reminder),
+          kind: "automatic",
+          patient: appointment
+            ? patientsById.get(appointment.patientId)
+            : undefined,
+          reminder,
+        };
+      }
+    );
+
+    return [...manual, ...automatic];
   }, [
-    filter,
-    filteredTasks,
-    groupedTasks.overdue.length,
-    groupedTasks.today.length,
-    groupedTasks.tomorrow.length,
-    tableTasks.length,
+    appointmentsById,
+    currentUser?.uid,
+    patientsById,
+    remindersRepository.data,
+    scope,
+    tasksRepository.data,
   ]);
 
+  const counts = useMemo(
+    () => ({
+      completed: allItems.filter((item) => itemMatchesView(item, "completed"))
+        .length,
+      today: allItems.filter((item) => itemMatchesView(item, "today")).length,
+      upcoming: allItems.filter((item) => itemMatchesView(item, "upcoming"))
+        .length,
+    }),
+    [allItems]
+  );
+
+  const visibleItems = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase("fr-FR");
+    return allItems
+      .filter((item) => itemMatchesView(item, activeView))
+      .filter((item) => {
+        if (!normalizedQuery) {
+          return true;
+        }
+        const searchable =
+          item.kind === "manual"
+            ? [item.task.title, item.task.description, item.patient?.name]
+            : [
+                item.reminder.message,
+                item.appointment?.title,
+                item.appointment?.reason,
+                item.patient?.name,
+              ];
+        return searchable.some((value) =>
+          value?.toLocaleLowerCase("fr-FR").includes(normalizedQuery)
+        );
+      })
+      .sort((a, b) => {
+        const direction = activeView === "completed" ? -1 : 1;
+        return (itemDate(a) - itemDate(b)) * direction;
+      })
+      .slice(0, 100);
+  }, [activeView, allItems, query]);
+
+  useEffect(() => {
+    if (focus?.kind !== "task") {
+      return;
+    }
+    const task = tasksRepository.data.find((entry) => entry.id === focus.id);
+    if (!task) {
+      clearFocus();
+      return;
+    }
+
+    setScope("team");
+    setQuery("");
+    setActiveView(
+      task.status === "done"
+        ? "completed"
+        : itemMatchesView(
+              {
+                date: parseTaskDate(task),
+                kind: "manual",
+                task,
+              },
+              "today"
+            )
+          ? "today"
+          : "upcoming"
+    );
+    setFocusedTaskId(task.id);
+
+    const timer = window.setTimeout(() => {
+      document
+        .querySelector(`[data-task-id="${task.id}"]`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      clearFocus();
+    }, 120);
+    const highlightTimer = window.setTimeout(
+      () => setFocusedTaskId(null),
+      2200
+    );
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(highlightTimer);
+    };
+  }, [clearFocus, focus, tasksRepository.data]);
+
+  const handleCreate = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!draft.title.trim()) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await tasksRepository.add({
+        assignedTo: currentUser?.uid,
+        description: draft.description.trim() || undefined,
+        dueDate: draft.dueDate || undefined,
+        endTime: undefined,
+        isReminder: true,
+        patientId: draft.patientId || undefined,
+        priority: draft.priority,
+        startTime: draft.startTime || undefined,
+        status: "todo",
+        title: draft.title.trim(),
+      });
+      setDraft(emptyDraft());
+      setShowDetails(false);
+      setActiveView("today");
+      toast.success("Rappel ajouté");
+    } catch (error) {
+      console.error("[Reminders] Unable to create reminder", error);
+      toast.error("Impossible d'ajouter le rappel");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const startEditing = (task: Task) => {
+    setEditingTaskId(task.id);
+    setPendingDeleteId(null);
+    setEditDraft({
+      description: task.description || "",
+      dueDate: task.dueDate || "",
+      patientId: task.patientId || "",
+      priority: task.priority,
+      startTime: task.startTime || "",
+      title: task.title,
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!(editingTaskId && editDraft.title.trim())) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await tasksRepository.update(editingTaskId, {
+        description: editDraft.description.trim() || undefined,
+        dueDate: editDraft.dueDate || undefined,
+        patientId: editDraft.patientId || undefined,
+        priority: editDraft.priority,
+        startTime: editDraft.startTime || undefined,
+        title: editDraft.title.trim(),
+      });
+      setEditingTaskId(null);
+      toast.success("Rappel mis à jour");
+    } catch (error) {
+      console.error("[Reminders] Unable to update reminder", error);
+      toast.error("Impossible de modifier le rappel");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleTask = async (task: Task) => {
+    await tasksRepository.update(task.id, {
+      status: task.status === "done" ? "todo" : "done",
+    });
+  };
+
+  const postponeTask = async (task: Task) => {
+    const date = parseTaskDate(task) ?? new Date();
+    date.setDate(date.getDate() + 1);
+    await tasksRepository.update(task.id, { dueDate: toDateKey(date) });
+    toast.success("Rappel reporté à demain");
+  };
+
+  const deleteTask = async (taskId: string) => {
+    if (pendingDeleteId !== taskId) {
+      setPendingDeleteId(taskId);
+      return;
+    }
+    await tasksRepository.remove(taskId);
+    setPendingDeleteId(null);
+    toast.success("Rappel supprimé");
+  };
+
+  const tabs: Array<{
+    count: number;
+    id: ReminderView;
+    label: string;
+  }> = [
+    { count: counts.today, id: "today", label: "Aujourd'hui" },
+    { count: counts.upcoming, id: "upcoming", label: "À venir" },
+    { count: counts.completed, id: "completed", label: "Terminés" },
+  ];
+
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <MotivationalHeader section="taches" />
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Filter toggle */}
-          <ToggleGroup
-            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
-            multiple={false}
-            onValueChange={(value) => {
-              setFilter((value[0] as "all" | "mine" | undefined) ?? "mine");
-            }}
-            size="sm"
-            spacing={0}
-            value={[filter]}
-            variant="outline"
-          >
-            <ToggleGroupItem value="mine">Mes Tâches</ToggleGroupItem>
-            <ToggleGroupItem value="all">Tout l'équipe</ToggleGroupItem>
-          </ToggleGroup>
-
-          {/* View toggle */}
-          <ToggleGroup
-            className="w-fit rounded-3xl bg-muted/30 p-0.5 transition-all duration-200 ease-out"
-            multiple={false}
-            onValueChange={(value) => {
-              setViewMode(
-                (value[0] as "list" | "kanban" | undefined) ?? "kanban"
-              );
-            }}
-            size="sm"
-            spacing={0}
-            value={[viewMode]}
-            variant="outline"
-          >
-            <ToggleGroupItem title="Vue liste" value="list">
-              <HugeiconsIcon
-                className="size-4"
-                icon={ListPlusIcon}
-                strokeWidth={2}
-              />
-            </ToggleGroupItem>
-            <ToggleGroupItem title="Vue Kanban" value="kanban">
-              <HugeiconsIcon
-                className="size-4"
-                icon={LayoutGridIcon}
-                strokeWidth={2}
-              />
-            </ToggleGroupItem>
-          </ToggleGroup>
+    <div className="mx-auto w-full max-w-[1480px] space-y-6 px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="clinical-eyebrow">Suivi quotidien</p>
+          <h1 className="mt-2 font-semibold text-3xl tracking-[-0.035em] sm:text-4xl">
+            Rappels
+          </h1>
+          <p className="mt-2 max-w-2xl text-muted-foreground text-sm sm:text-base">
+            Les actions à ne pas oublier, réunies avec les rappels du planning.
+          </p>
         </div>
-      </div>
-
-      <SectionCards items={sectionCards} />
-
-      {/* Quick Add Bar / Composer */}
-      <Card
-        className={cn(
-          "card-vibrant overflow-hidden transition-all duration-300",
-          isAdding
-            ? "rounded-[24px] border border-border bg-card shadow-black/5 shadow-lg ring-1 ring-primary/20"
-            : "cursor-text rounded-[24px] border-2 border-muted-foreground/15 bg-muted/10 shadow-sm hover:border-primary/30 hover:bg-muted/20"
-        )}
-        onClick={() => {
-          if (!isAdding) {
-            setIsAdding(true);
-          }
-        }}
-        size="sm"
-      >
-        <CardContent
-          className={cn(
-            "transition-all duration-300",
-            isAdding ? "p-5" : "p-3"
-          )}
+        <NativeSelect
+          aria-label="Périmètre des rappels"
+          className="w-full md:w-44"
+          onChange={(event) => setScope(event.target.value as Scope)}
+          value={scope}
         >
-          <form className="flex flex-col gap-3" onSubmit={handleAddTask}>
-            <div className="flex items-start gap-3">
-              {isAdding ? (
-                <div className="mt-2.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-primary/50 bg-primary/10">
-                  <div className="size-2 rounded-full bg-primary" />
-                </div>
-              ) : (
-                <div className="mt-2.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/30" />
+          <NativeSelectOption value="mine">Mes rappels</NativeSelectOption>
+          <NativeSelectOption value="team">Toute l'équipe</NativeSelectOption>
+        </NativeSelect>
+      </header>
+
+      <form
+        className="clinical-feature-surface overflow-hidden"
+        onSubmit={handleCreate}
+      >
+        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:p-5">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-700 dark:text-sky-300">
+            <Bell className="size-5" />
+          </div>
+          <Input
+            aria-label="Nouveau rappel"
+            className="h-11 flex-1 border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                title: event.target.value,
+              }))
+            }
+            placeholder="Ex. Appeler le propriétaire de Milo"
+            value={draft.title}
+          />
+          <Button
+            className="justify-between sm:justify-center"
+            onClick={() => setShowDetails((current) => !current)}
+            type="button"
+            variant="ghost"
+          >
+            Détails
+            <ChevronDown
+              className={cn(
+                "size-4 transition-transform",
+                showDetails && "rotate-180"
               )}
+            />
+          </Button>
+          <Button disabled={saving || !draft.title.trim()} type="submit">
+            <Plus className="size-4" />
+            Ajouter
+          </Button>
+        </div>
 
-              <div className="flex flex-1 flex-col">
-                <Input
-                  className={cn(
-                    "border-none bg-transparent px-0 shadow-none focus-visible:ring-0",
-                    isAdding
-                      ? "font-medium text-lg placeholder:text-muted-foreground/60"
-                      : "text-sm placeholder:text-muted-foreground/80"
-                  )}
-                  onChange={(e) => {
-                    setNewTaskTitle(e.target.value);
-                    if (!isAdding && e.target.value.length > 0) {
-                      setIsAdding(true);
-                    }
-                  }}
-                  onFocus={() => setIsAdding(true)}
-                  placeholder={
-                    isAdding ? "Titre de la tâche..." : "Que devez-vous faire ?"
-                  }
-                  type="text"
-                  value={newTaskTitle}
-                />
-
-                {isAdding && (
-                  <div className="fade-in slide-in-from-top-1 mt-2 animate-in">
-                    <Textarea
-                      className="min-h-[60px] resize-none border-none bg-transparent px-0 py-1 text-muted-foreground text-sm shadow-none placeholder:text-muted-foreground/40 focus-visible:ring-0"
-                      onChange={(e) => setNewTaskDescription(e.target.value)}
-                      placeholder="Ajouter des notes, des détails ou un contexte..."
-                      value={newTaskDescription}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {!isAdding && (
-                <Button
-                  className="size-9 shrink-0 rounded-full bg-primary/10 p-0 text-primary hover:bg-primary/20"
-                  onClick={() => setIsAdding(true)}
-                  type="button"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon
-                    className="size-5"
-                    icon={Add01Icon}
-                    strokeWidth={2.5}
-                  />
-                </Button>
-              )}
+        {showDetails && (
+          <div className="grid gap-4 border-border/70 border-t bg-muted/15 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4">
+            <Field label="Patient">
+              <NativeSelect
+                className="w-full"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    patientId: event.target.value,
+                  }))
+                }
+                value={draft.patientId}
+              >
+                <NativeSelectOption value="">Aucun patient</NativeSelectOption>
+                {patients
+                  .slice()
+                  .sort((a, b) => a.name.localeCompare(b.name, "fr"))
+                  .map((patient) => (
+                    <NativeSelectOption key={patient.id} value={patient.id}>
+                      {patient.name} · {patient.species}
+                    </NativeSelectOption>
+                  ))}
+              </NativeSelect>
+            </Field>
+            <Field label="Date">
+              <Input
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    dueDate: event.target.value,
+                  }))
+                }
+                type="date"
+                value={draft.dueDate}
+              />
+            </Field>
+            <Field label="Heure">
+              <Input
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    startTime: event.target.value,
+                  }))
+                }
+                type="time"
+                value={draft.startTime}
+              />
+            </Field>
+            <Field label="Priorité">
+              <NativeSelect
+                className="w-full"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    priority: event.target.value as Task["priority"],
+                  }))
+                }
+                value={draft.priority}
+              >
+                <NativeSelectOption value="low">Faible</NativeSelectOption>
+                <NativeSelectOption value="medium">Normale</NativeSelectOption>
+                <NativeSelectOption value="high">
+                  Prioritaire
+                </NativeSelectOption>
+              </NativeSelect>
+            </Field>
+            <div className="sm:col-span-2 lg:col-span-4">
+              <label className="font-medium text-sm" htmlFor="reminder-note">
+                Note utile
+              </label>
+              <Textarea
+                className="mt-2 min-h-20"
+                id="reminder-note"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    description: event.target.value,
+                  }))
+                }
+                placeholder="Une instruction courte pour l'équipe..."
+                value={draft.description}
+              />
             </div>
+          </div>
+        )}
+      </form>
 
-            {isAdding && (
-              <div className="fade-in slide-in-from-top-2 flex animate-in flex-wrap items-center justify-between gap-3 border-border/60 border-t pt-4 pl-8">
-                <div className="flex flex-wrap items-center gap-2">
-                  {/* Date Picker */}
-                  <Popover>
-                    <PopoverTrigger
-                      render={
-                        <Button
-                          className="h-8 rounded-full bg-muted/40 px-3 font-medium text-foreground/80 text-xs hover:bg-muted/60"
-                          size="sm"
-                          variant="ghost"
-                        />
-                      }
-                    >
-                      <HugeiconsIcon
-                        className="size-3.5 text-primary"
-                        icon={Calendar01Icon}
-                        strokeWidth={2.5}
-                      />
-                      {(
-                        parseDateInput(newTaskDetails.dueDate) ?? new Date()
-                      ).toLocaleDateString(currentLocale, {
-                        day: "2-digit",
-                        month: "short",
-                      })}
-                    </PopoverTrigger>
-                    <PopoverContent
-                      align="start"
-                      className="w-auto rounded-[1.35rem] p-2.5 shadow-black/5 shadow-xl"
-                      sideOffset={8}
-                    >
-                      <Calendar
-                        className="rounded-[1.05rem] [--cell-size:--spacing(8.6)]"
-                        locale={calendarLocale}
-                        mode="single"
-                        onSelect={(date) => {
-                          if (!date) {
-                            return;
-                          }
-                          setNewTaskDetails({
-                            ...newTaskDetails,
-                            dueDate: formatDateInput(date),
-                          });
-                        }}
-                        selected={
-                          parseDateInput(newTaskDetails.dueDate) ?? new Date()
-                        }
-                      />
-                    </PopoverContent>
-                  </Popover>
+      <section className="space-y-4">
+        <div className="flex flex-col gap-3 border-border/70 border-b pb-3 lg:flex-row lg:items-center lg:justify-between">
+          <div
+            aria-label="Période"
+            className="flex gap-1 overflow-x-auto"
+            role="tablist"
+          >
+            {tabs.map((tab) => (
+              <button
+                aria-selected={activeView === tab.id}
+                className={cn(
+                  "flex h-10 shrink-0 items-center gap-2 rounded-full px-4 font-medium text-sm transition-colors",
+                  activeView === tab.id
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+                key={tab.id}
+                onClick={() => setActiveView(tab.id)}
+                role="tab"
+                type="button"
+              >
+                {tab.label}
+                <span
+                  className={cn(
+                    "min-w-5 rounded-full px-1.5 py-0.5 text-center text-[11px]",
+                    activeView === tab.id
+                      ? "bg-background/15 text-background"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="relative w-full lg:w-72">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              aria-label="Rechercher dans les rappels"
+              className="pl-9"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Rechercher..."
+              value={query}
+            />
+          </div>
+        </div>
 
-                  {/* Time Range Selector */}
-                  <div className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/60">
-                    <HugeiconsIcon
-                      className="size-3.5 text-blue-500"
-                      icon={Clock01Icon}
-                      strokeWidth={2.5}
-                    />
-                    <NativeSelect
-                      className="w-auto border-none bg-transparent p-0 font-medium text-xs focus:ring-0"
-                      onChange={handleStartTimeChange}
-                      value={newTaskDetails.startTime}
-                    >
-                      <NativeSelectOption value="">Début</NativeSelectOption>
-                      {TIME_SLOTS.map((t) => (
-                        <NativeSelectOption key={t} value={t}>
-                          {t}
-                        </NativeSelectOption>
-                      ))}
-                    </NativeSelect>
-                    <span className="text-[10px] text-muted-foreground/50">
-                      -
-                    </span>
-                    <NativeSelect
-                      className="w-auto border-none bg-transparent p-0 font-medium text-xs focus:ring-0"
-                      onChange={(e) =>
-                        setNewTaskDetails({
-                          ...newTaskDetails,
-                          endTime: e.target.value,
-                        })
-                      }
-                      value={newTaskDetails.endTime}
-                    >
-                      <NativeSelectOption value="">Fin</NativeSelectOption>
-                      {TIME_SLOTS.map((t) => (
-                        <NativeSelectOption key={`end-${t}`} value={t}>
-                          {t}
-                        </NativeSelectOption>
-                      ))}
-                    </NativeSelect>
-                  </div>
-
-                  {/* Priority Selector */}
-                  <div className="flex items-center gap-2 rounded-full bg-muted/40 px-3 py-1.5 transition-all duration-200 ease-out hover:bg-muted/60">
-                    <HugeiconsIcon
-                      className={cn(
-                        "size-3.5",
-                        newTaskDetails.priority === "high"
-                          ? "text-red-500"
-                          : newTaskDetails.priority === "medium"
-                            ? "text-amber-500"
-                            : "text-sky-500"
-                      )}
-                      icon={Flag01Icon}
-                      strokeWidth={2.5}
-                    />
-                    <NativeSelect
-                      className="w-auto border-none bg-transparent p-0 font-medium text-xs focus:ring-0"
-                      onChange={(e) =>
-                        setNewTaskDetails({
-                          ...newTaskDetails,
-                          priority: e.target.value as any,
-                        })
-                      }
-                      value={newTaskDetails.priority}
-                    >
-                      <NativeSelectOption value="low">Basse</NativeSelectOption>
-                      <NativeSelectOption value="medium">
-                        Moyenne
-                      </NativeSelectOption>
-                      <NativeSelectOption value="high">
-                        Haute
-                      </NativeSelectOption>
-                    </NativeSelect>
-                  </div>
-
-                  {/* Reminder Toggle */}
-                  <Button
-                    className={cn(
-                      "h-8 gap-1.5 rounded-full px-3 font-medium text-xs transition-colors",
-                      newTaskDetails.isReminder
-                        ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400"
-                        : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
-                    )}
-                    onClick={() =>
-                      setNewTaskDetails({
-                        ...newTaskDetails,
-                        isReminder: !newTaskDetails.isReminder,
-                      })
-                    }
-                    type="button"
-                    variant="ghost"
-                  >
-                    <HugeiconsIcon
-                      className="size-3.5"
-                      icon={Notification02Icon}
-                      strokeWidth={2.5}
-                    />
-                    Rappel
-                  </Button>
-                </div>
-
-                <div className="ms-auto flex items-center gap-2">
-                  <Button
-                    className="h-8 rounded-full px-4 text-xs"
-                    onClick={() => {
-                      setIsAdding(false);
-                      setNewTaskTitle("");
-                      setNewTaskDescription("");
-                    }}
-                    type="button"
-                    variant="ghost"
-                  >
-                    Annuler
-                  </Button>
-                  <Button
-                    className="h-8 rounded-full px-5 text-xs shadow-md shadow-primary/20"
-                    disabled={!newTaskTitle.trim()}
-                    type="submit"
-                  >
-                    Créer la tâche
-                  </Button>
-                </div>
-              </div>
+        {visibleItems.length === 0 ? (
+          <EmptyState query={query} view={activeView} />
+        ) : (
+          <div className="clinical-surface divide-y divide-border/70 overflow-hidden">
+            {visibleItems.map((item) =>
+              item.kind === "manual" ? (
+                <ManualReminderRow
+                  draft={editDraft}
+                  editing={editingTaskId === item.task.id}
+                  item={item}
+                  focused={focusedTaskId === item.task.id}
+                  key={`task-${item.task.id}`}
+                  onCancelEdit={() => setEditingTaskId(null)}
+                  onDelete={() => deleteTask(item.task.id)}
+                  onDraftChange={setEditDraft}
+                  onEdit={() => startEditing(item.task)}
+                  onPostpone={() => postponeTask(item.task)}
+                  onSave={saveEdit}
+                  onToggle={() => toggleTask(item.task)}
+                  patients={patients}
+                  pendingDelete={pendingDeleteId === item.task.id}
+                  saving={saving}
+                  view={activeView}
+                />
+              ) : (
+                <AutomaticReminderRow
+                  item={item}
+                  key={`automatic-${item.reminder.id}`}
+                  onDismiss={async () => {
+                    await remindersRepository.dismiss(item.reminder.id);
+                    toast.success("Rappel automatique ignoré");
+                  }}
+                  onSnooze={async () => {
+                    await remindersRepository.snooze(item.reminder.id, 60);
+                    toast.success("Rappel reporté d'une heure");
+                  }}
+                  view={activeView}
+                />
+              )
             )}
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+};
 
-      {/* Content based on view mode */}
-      {viewMode === "kanban" ? (
-        <div className="flex-1">
-          <KanbanBoard
-            onDelete={async (taskId) => {
-              if (window.confirm("Supprimer cette tâche ?")) {
-                await removeTask(taskId);
+function Field({
+  children,
+  label,
+}: {
+  children: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <span className="font-medium text-sm">{label}</span>
+      {children}
+    </div>
+  );
+}
+
+function ManualReminderRow({
+  draft,
+  editing,
+  focused,
+  item,
+  onCancelEdit,
+  onDelete,
+  onDraftChange,
+  onEdit,
+  onPostpone,
+  onSave,
+  onToggle,
+  patients,
+  pendingDelete,
+  saving,
+  view,
+}: {
+  draft: TaskDraft;
+  editing: boolean;
+  focused: boolean;
+  item: ManualReminderItem;
+  onCancelEdit: () => void;
+  onDelete: () => void;
+  onDraftChange: (draft: TaskDraft) => void;
+  onEdit: () => void;
+  onPostpone: () => void;
+  onSave: () => void;
+  onToggle: () => void;
+  patients: Patient[];
+  pendingDelete: boolean;
+  saving: boolean;
+  view: ReminderView;
+}) {
+  if (editing) {
+    return (
+      <div className="bg-muted/15 p-4 sm:p-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="sm:col-span-2 lg:col-span-4">
+            <Input
+              aria-label="Titre du rappel"
+              className="font-medium"
+              onChange={(event) =>
+                onDraftChange({ ...draft, title: event.target.value })
               }
-            }}
-            onStatusChange={async (taskId, newStatus) => {
-              await updateTask(taskId, { status: newStatus });
-            }}
-            tasks={filteredTasks}
+              value={draft.title}
+            />
+          </div>
+          <Field label="Patient">
+            <NativeSelect
+              className="w-full"
+              onChange={(event) =>
+                onDraftChange({ ...draft, patientId: event.target.value })
+              }
+              value={draft.patientId}
+            >
+              <NativeSelectOption value="">Aucun patient</NativeSelectOption>
+              {patients
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name, "fr"))
+                .map((patient) => (
+                  <NativeSelectOption key={patient.id} value={patient.id}>
+                    {patient.name} · {patient.species}
+                  </NativeSelectOption>
+                ))}
+            </NativeSelect>
+          </Field>
+          <Field label="Date">
+            <Input
+              onChange={(event) =>
+                onDraftChange({ ...draft, dueDate: event.target.value })
+              }
+              type="date"
+              value={draft.dueDate}
+            />
+          </Field>
+          <Field label="Heure">
+            <Input
+              onChange={(event) =>
+                onDraftChange({ ...draft, startTime: event.target.value })
+              }
+              type="time"
+              value={draft.startTime}
+            />
+          </Field>
+          <Field label="Priorité">
+            <NativeSelect
+              className="w-full"
+              onChange={(event) =>
+                onDraftChange({
+                  ...draft,
+                  priority: event.target.value as Task["priority"],
+                })
+              }
+              value={draft.priority}
+            >
+              <NativeSelectOption value="low">Faible</NativeSelectOption>
+              <NativeSelectOption value="medium">Normale</NativeSelectOption>
+              <NativeSelectOption value="high">Prioritaire</NativeSelectOption>
+            </NativeSelect>
+          </Field>
+          <Textarea
+            className="sm:col-span-2 lg:col-span-4"
+            onChange={(event) =>
+              onDraftChange({ ...draft, description: event.target.value })
+            }
+            placeholder="Instruction pour l'équipe"
+            value={draft.description}
           />
         </div>
-      ) : (
-        <div className="flex-1 space-y-4">
-          <Card
-            className="rounded-[24px] border border-border bg-card shadow-none"
-            size="sm"
+        <div className="mt-4 flex justify-end gap-2">
+          <Button onClick={onCancelEdit} type="button" variant="ghost">
+            Annuler
+          </Button>
+          <Button
+            disabled={saving || !draft.title.trim()}
+            onClick={onSave}
+            type="button"
           >
-            <CardHeader className="border-border border-b px-6 py-5">
-              <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
-                Registre des rappels
-              </CardDescription>
-              <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
-                Vue liste des tâches
-              </CardTitle>
-              <CardAction>
-                <Badge className="rounded-full px-3 py-1" variant="outline">
-                  {tableTasks.length} rappel{tableTasks.length > 1 ? "s" : ""}
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardContent className="space-y-4 px-6 py-5">
-              <div className="flex flex-wrap items-center gap-3">
-                <Input
-                  className="h-10 max-w-sm rounded-xl"
-                  onChange={(e) => setTaskSearch(e.target.value)}
-                  placeholder="Filtrer les rappels..."
-                  value={taskSearch}
-                />
-                <NativeSelect
-                  className="w-[170px]"
-                  onChange={(e) =>
-                    setStatusFilter(
-                      e.target.value as "all" | "todo" | "in_progress" | "done"
-                    )
-                  }
-                  size="sm"
-                  value={statusFilter}
-                >
-                  <NativeSelectOption value="all">Statut</NativeSelectOption>
-                  <NativeSelectOption value="todo">À faire</NativeSelectOption>
-                  <NativeSelectOption value="in_progress">
-                    En cours
-                  </NativeSelectOption>
-                  <NativeSelectOption value="done">Terminé</NativeSelectOption>
-                </NativeSelect>
-                <NativeSelect
-                  className="w-[170px]"
-                  onChange={(e) =>
-                    setPriorityFilter(
-                      e.target.value as "all" | "high" | "medium" | "low"
-                    )
-                  }
-                  size="sm"
-                  value={priorityFilter}
-                >
-                  <NativeSelectOption value="all">Priorité</NativeSelectOption>
-                  <NativeSelectOption value="high">Urgent</NativeSelectOption>
-                  <NativeSelectOption value="medium">Normal</NativeSelectOption>
-                  <NativeSelectOption value="low">Faible</NativeSelectOption>
-                </NativeSelect>
-              </div>
-
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[120px]">ID</TableHead>
-                    <TableHead>Titre</TableHead>
-                    <TableHead className="w-[140px]">Statut</TableHead>
-                    <TableHead className="w-[120px]">Priorité</TableHead>
-                    <TableHead className="w-[130px]">Horaire</TableHead>
-                    <TableHead className="w-[130px] text-right">
-                      Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {tableTasks.length === 0 ? (
-                    <TableRow>
-                      <TableCell className="h-64 text-center" colSpan={6}>
-                        <div className="flex flex-col items-center justify-center gap-3">
-                          <div className="flex size-12 items-center justify-center rounded-full bg-muted/40 text-muted-foreground/50">
-                            <HugeiconsIcon
-                              className="size-6"
-                              icon={Task01Icon}
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          <p className="font-medium text-foreground text-sm">
-                            Aucune tâche trouvée
-                          </p>
-                          <p className="mx-auto max-w-[250px] text-balance text-muted-foreground text-xs">
-                            Vous êtes à jour ! Profitez-en pour vous concentrer
-                            sur vos patients ou créez une nouvelle tâche.
-                          </p>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    tableTasks.map((task) => (
-                      <TableRow key={task.id}>
-                        <TableCell className="font-mono text-muted-foreground text-xs">
-                          TASK-{task.id.slice(-4).toUpperCase()}
-                        </TableCell>
-                        <TableCell className="max-w-[420px] truncate font-medium">
-                          <div className="flex items-center gap-2">
-                            {favoriteTaskIds.includes(task.id) ? (
-                              <span className="text-amber-500">★</span>
-                            ) : null}
-                            <span className="truncate">{task.title}</span>
-                            {(taskLabels[task.id] ?? [])
-                              .slice(0, 1)
-                              .map((label) => (
-                                <Badge
-                                  className="text-[10px]"
-                                  key={`${task.id}-${label}`}
-                                  variant="outline"
-                                >
-                                  {label}
-                                </Badge>
-                              ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={cn(
-                              task.status === "done" &&
-                                "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-                              task.status === "in_progress" &&
-                                "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-                              task.status === "todo" &&
-                                "bg-muted text-muted-foreground"
-                            )}
-                            variant="secondary"
-                          >
-                            {task.status === "done"
-                              ? "Terminé"
-                              : task.status === "in_progress"
-                                ? "En cours"
-                                : "À faire"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={cn(
-                              "rounded-full px-2.5 py-0.5 font-semibold text-[11px]",
-                              PRIORITY_TABLE_BADGES[task.priority]
-                            )}
-                            variant="outline"
-                          >
-                            {PRIORITY_META[task.priority].label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-xs">
-                          {task.startTime
-                            ? `${task.startTime}${task.endTime ? ` - ${task.endTime}` : ""}`
-                            : "--"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center justify-end gap-1">
-                            <Button
-                              className={cn(
-                                "h-8 rounded-xl px-3 font-semibold text-xs"
-                              )}
-                              onClick={() => toggleStatus(task)}
-                              size="sm"
-                              variant={
-                                task.status === "done" ? "secondary" : "default"
-                              }
-                            >
-                              {task.status === "done" ? "Réouvrir" : "Terminer"}
-                            </Button>
-                            <Button
-                              onClick={() => removeTask(task.id)}
-                              size="icon-sm"
-                              variant="ghost"
-                            >
-                              <HugeiconsIcon
-                                className="size-4"
-                                icon={Delete01Icon}
-                                strokeWidth={2}
-                              />
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger
-                                render={
-                                  <Button
-                                    aria-label="Plus d'actions"
-                                    size="icon-sm"
-                                    variant="ghost"
-                                  />
-                                }
-                              >
-                                <HugeiconsIcon
-                                  className="size-4"
-                                  icon={MoreVerticalCircle01Icon}
-                                  strokeWidth={2}
-                                />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" sideOffset={6}>
-                                <DropdownMenuItem
-                                  onClick={() => handleEditTask(task)}
-                                >
-                                  Modifier
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDuplicateTask(task)}
-                                >
-                                  Dupliquer
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => toggleFavoriteTask(task.id)}
-                                >
-                                  {favoriteTaskIds.includes(task.id)
-                                    ? "Retirer des favoris"
-                                    : "Ajouter aux favoris"}
-                                </DropdownMenuItem>
-                                <DropdownMenuSub>
-                                  <DropdownMenuSubTrigger>
-                                    Étiquettes
-                                  </DropdownMenuSubTrigger>
-                                  <DropdownMenuSubContent>
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        setTaskLabel(task.id, "Suivi")
-                                      }
-                                    >
-                                      Suivi
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        setTaskLabel(task.id, "Urgent")
-                                      }
-                                    >
-                                      Urgent
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        setTaskLabel(task.id, "Consultation")
-                                      }
-                                    >
-                                      Consultation
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        setCustomTaskLabel(task.id)
-                                      }
-                                    >
-                                      Personnalisé…
-                                    </DropdownMenuItem>
-                                  </DropdownMenuSubContent>
-                                </DropdownMenuSub>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  onClick={() => removeTask(task.id)}
-                                  variant="destructive"
-                                >
-                                  Supprimer
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+            <Check className="size-4" />
+            Enregistrer
+          </Button>
         </div>
-      )}
-    </div>
-  );
-};
-
-// Sub-component for a group of tasks
-const TaskGroup: React.FC<{
-  title: string;
-  tasks: Task[];
-  color: string;
-  onToggle: (t: Task) => void;
-  onDelete: (id: string) => void;
-  isCompletedGroup?: boolean;
-}> = ({ title, tasks, color, onToggle, onDelete, isCompletedGroup }) => {
-  if (tasks.length === 0) {
-    return null;
+      </div>
+    );
   }
 
+  const completed = item.task.status === "done";
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <h3
-          className={cn(
-            "font-semibold text-sm uppercase tracking-wider",
-            color
-          )}
-        >
-          {title}
-        </h3>
-        <Badge className="text-[10px]" variant="secondary">
-          {tasks.length}
-        </Badge>
-      </div>
-
-      <Card size="sm">
-        <CardContent className="grid gap-0.5 p-1">
-          {tasks.map((task) => (
-            <div
-              className={cn(
-                "group flex items-start gap-3 rounded-3xl px-4 py-3 transition-all duration-200 ease-out",
-                isCompletedGroup
-                  ? "bg-muted/20"
-                  : "hover:-translate-y-0.5 hover:bg-muted/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]",
-                !isCompletedGroup &&
-                  task.priority === "high" &&
-                  "priority-bar-high",
-                !isCompletedGroup &&
-                  task.priority === "medium" &&
-                  "priority-bar-medium",
-                !isCompletedGroup &&
-                  task.priority === "low" &&
-                  "priority-bar-low"
-              )}
-              key={task.id}
+    <article
+      className={cn(
+        "group flex flex-col gap-4 p-4 transition-shadow sm:flex-row sm:items-center sm:p-5",
+        focused && "relative z-10 ring-2 ring-sky-500/40 ring-inset"
+      )}
+      data-task-id={item.task.id}
+    >
+      <button
+        aria-label={completed ? "Rouvrir le rappel" : "Marquer comme terminé"}
+        className={cn(
+          "flex size-9 shrink-0 items-center justify-center rounded-full border transition-colors",
+          completed
+            ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+            : "border-border text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-600"
+        )}
+        onClick={onToggle}
+        type="button"
+      >
+        {completed ? (
+          <CheckCircle2 className="size-5" />
+        ) : (
+          <Check className="size-4" />
+        )}
+      </button>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3
+            className={cn(
+              "font-semibold text-sm",
+              completed && "text-muted-foreground line-through"
+            )}
+          >
+            {item.task.title}
+          </h3>
+          {item.task.priority === "high" && (
+            <Badge
+              className="border-rose-500/20 bg-rose-500/8 text-rose-700 dark:text-rose-300"
+              variant="outline"
             >
-              <button
-                className={cn(
-                  "mt-0.5 shrink-0 transition-colors",
-                  task.status === "done"
-                    ? "text-green-500"
-                    : "text-muted-foreground hover:text-primary"
-                )}
-                onClick={() => onToggle(task)}
-              >
-                {task.status === "done" ? (
-                  <HugeiconsIcon
-                    className="status-dot-alive size-5"
-                    icon={CheckmarkCircle02Icon}
-                    strokeWidth={2}
-                  />
-                ) : (
-                  <HugeiconsIcon
-                    className="size-5"
-                    icon={CircleIcon}
-                    strokeWidth={2}
-                  />
-                )}
-              </button>
+              Prioritaire
+            </Badge>
+          )}
+          <Badge variant="outline">Manuel</Badge>
+        </div>
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
+          <span className="inline-flex items-center gap-1.5">
+            <Clock3 className="size-3.5" />
+            {dateLabel(item.date, view)}
+          </span>
+          {item.patient && (
+            <span className="inline-flex items-center gap-1.5">
+              <UserRound className="size-3.5" />
+              {item.patient.name} · {item.patient.species}
+            </span>
+          )}
+          {item.task.priority !== "high" && (
+            <span>{priorityLabel(item.task.priority)}</span>
+          )}
+        </div>
+        {item.task.description && (
+          <p className="mt-2 line-clamp-2 text-muted-foreground text-sm">
+            {item.task.description}
+          </p>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center gap-1 sm:justify-end">
+        {!completed && (
+          <Button onClick={onPostpone} size="sm" type="button" variant="ghost">
+            <CalendarDays className="size-4" />
+            Demain
+          </Button>
+        )}
+        <Button onClick={onEdit} size="sm" type="button" variant="ghost">
+          <Pencil className="size-4" />
+          Modifier
+        </Button>
+        <Button
+          className={cn(pendingDelete && "bg-destructive/10 text-destructive")}
+          onClick={onDelete}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <Trash2 className="size-4" />
+          {pendingDelete ? "Confirmer" : "Supprimer"}
+        </Button>
+      </div>
+    </article>
+  );
+}
 
-              <div className="min-w-0 flex-1">
-                <p
-                  className={cn(
-                    "font-medium text-sm",
-                    task.status === "done"
-                      ? "text-muted-foreground line-through decoration-border"
-                      : "text-foreground"
-                  )}
-                >
-                  {task.title}
-                </p>
+function AutomaticReminderRow({
+  item,
+  onDismiss,
+  onSnooze,
+  view,
+}: {
+  item: AutomaticReminderItem;
+  onDismiss: () => void;
+  onSnooze: () => void;
+  view: ReminderView;
+}) {
+  const completed = itemIsCompleted(item);
+  return (
+    <article className="flex flex-col gap-4 bg-sky-500/[0.025] p-4 sm:flex-row sm:items-center sm:p-5">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-500/10 text-sky-700 dark:text-sky-300">
+        <Bell className="size-4" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-semibold text-sm">
+            {item.reminder.message ||
+              item.appointment?.title ||
+              "Rendez-vous à venir"}
+          </h3>
+          <Badge
+            className="border-sky-500/20 bg-sky-500/8 text-sky-700 dark:text-sky-300"
+            variant="outline"
+          >
+            Planning
+          </Badge>
+        </div>
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
+          <span className="inline-flex items-center gap-1.5">
+            <Clock3 className="size-3.5" />
+            {dateLabel(item.date, view)}
+          </span>
+          {item.patient && (
+            <span className="inline-flex items-center gap-1.5">
+              <UserRound className="size-3.5" />
+              {item.patient.name} · {item.patient.species}
+            </span>
+          )}
+          {item.appointment?.reason && <span>{item.appointment.reason}</span>}
+        </div>
+      </div>
+      {!completed && (
+        <div className="flex flex-wrap gap-1">
+          <Button onClick={onSnooze} size="sm" type="button" variant="ghost">
+            <RotateCcw className="size-4" />
+            Dans 1 h
+          </Button>
+          <Button onClick={onDismiss} size="sm" type="button" variant="ghost">
+            Ignorer
+          </Button>
+        </div>
+      )}
+    </article>
+  );
+}
 
-                <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                  {task.priority !== "medium" && !isCompletedGroup && (
-                    <Badge
-                      className={cn(
-                        "text-[10px]",
-                        PRIORITY_COLORS[task.priority]
-                      )}
-                      variant="outline"
-                    >
-                      {PRIORITY_META[task.priority].label}
-                    </Badge>
-                  )}
-
-                  {task.dueDate && !isCompletedGroup && (
-                    <span
-                      className={cn(
-                        "flex items-center gap-1 text-[10px]",
-                        new Date(task.dueDate) < new Date() &&
-                          task.dueDate !==
-                            new Date().toISOString().split("T")[0]
-                          ? "font-semibold text-red-500"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      <HugeiconsIcon
-                        className="size-2.5"
-                        icon={Calendar01Icon}
-                        strokeWidth={2}
-                      />
-                      {new Date(task.dueDate).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                    </span>
-                  )}
-
-                  {/* Time Range Display */}
-                  {task.startTime && !isCompletedGroup && (
-                    <Badge
-                      className="gap-1 text-[10px] text-muted-foreground"
-                      variant="outline"
-                    >
-                      <HugeiconsIcon
-                        className="size-2.5"
-                        icon={Clock01Icon}
-                        strokeWidth={2}
-                      />
-                      {task.startTime} {task.endTime ? `- ${task.endTime}` : ""}
-                    </Badge>
-                  )}
-
-                  {task.isReminder && (
-                    <Badge
-                      className="gap-1 border-amber-200 bg-amber-500/10 text-[10px] text-amber-700 dark:text-amber-300"
-                      variant="outline"
-                    >
-                      <HugeiconsIcon
-                        className="size-2.5"
-                        icon={Notification02Icon}
-                        strokeWidth={2}
-                      />{" "}
-                      Rappel
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              <Button
-                className="shrink-0 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 dark:hover:bg-red-500/10"
-                onClick={() => onDelete(task.id)}
-                size="icon-sm"
-                variant="ghost"
-              >
-                <HugeiconsIcon
-                  className="size-4"
-                  icon={Delete01Icon}
-                  strokeWidth={2}
-                />
-              </Button>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+function EmptyState({ query, view }: { query: string; view: ReminderView }) {
+  let copy = "Aucun rappel terminé pour le moment.";
+  if (query) {
+    copy = "Aucun rappel ne correspond à cette recherche.";
+  } else if (view === "today") {
+    copy = "Tout est à jour pour aujourd'hui.";
+  } else if (view === "upcoming") {
+    copy = "Aucun rappel à venir.";
+  }
+  return (
+    <div className="clinical-subtle-surface flex min-h-56 flex-col items-center justify-center px-6 text-center">
+      <div className="flex size-12 items-center justify-center rounded-2xl bg-background text-muted-foreground shadow-xs">
+        {view === "completed" ? (
+          <CheckCircle2 className="size-5" />
+        ) : (
+          <Clock3 className="size-5" />
+        )}
+      </div>
+      <h2 className="mt-4 font-semibold">Rien à traiter</h2>
+      <p className="mt-1 text-muted-foreground text-sm">{copy}</p>
     </div>
   );
-};
+}
 
 export default Tasks;

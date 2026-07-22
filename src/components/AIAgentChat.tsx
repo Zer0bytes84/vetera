@@ -373,7 +373,7 @@ export function AIAgentChat({
       const latestWeight = weightRepository.latestFor(patient.id);
 
       return `Historique de ${patient.name} (${patient.species}):
-Poids le plus récent: ${latestWeight ? `${latestWeight.weight} kg (${latestWeight.measuredAt.split("T")[0]})` : "Aucun"}
+Poids le plus récent: ${latestWeight ? `${latestWeight.weightKg} kg (${latestWeight.measuredAt.split("T")[0]})` : "Aucun"}
 Allergies: ${patient.allergies || "Aucune connue"}
 Notes générales: ${patient.generalNotes || "Aucune"}`;
     }

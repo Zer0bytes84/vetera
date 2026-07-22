@@ -190,11 +190,6 @@ export function PatientTimeline({
 
   return (
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
-      <div className="mb-6 flex items-center justify-between">
-        <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
-          {t("patientDetail.timeline.title")}
-        </div>
-      </div>
       <div className="flex flex-1 flex-col">
         {entries.length === 0 ? (
           <Empty>

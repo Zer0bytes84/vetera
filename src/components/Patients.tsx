@@ -27,7 +27,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -59,7 +58,6 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   APPOINTMENT_STATUS_META,
@@ -317,11 +315,47 @@ function ReadOnlyDetail({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-border/80 bg-muted/25 p-4 transition-all duration-200 ease-out hover:border-border/60 hover:bg-muted/30 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-      <p className="font-medium text-muted-foreground text-xs uppercase tracking-[0.14em]">
+    <div className="min-w-0 border-border/60 border-b py-3 last:border-b-0">
+      <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
         {label}
       </p>
-      <div className="mt-2 text-foreground text-sm leading-6">{value}</div>
+      <div className="mt-1.5 break-words text-foreground text-sm leading-5">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function ClinicalNote({
+  emptyLabel,
+  label,
+  tone = "neutral",
+  value,
+}: {
+  emptyLabel: string;
+  label: string;
+  tone?: "alert" | "neutral";
+  value?: string;
+}) {
+  return (
+    <div className="border-border/60 border-b py-4 last:border-b-0">
+      <div className="flex items-center gap-2">
+        <span
+          className={cn(
+            "size-2 rounded-full",
+            tone === "alert" && value ? "bg-rose-500" : "bg-emerald-500"
+          )}
+        />
+        <p className="font-semibold text-sm">{label}</p>
+      </div>
+      <p
+        className={cn(
+          "mt-2 pl-4 text-sm leading-6",
+          value ? "text-foreground" : "text-muted-foreground"
+        )}
+      >
+        {value || emptyLabel}
+      </p>
     </div>
   );
 }
@@ -445,6 +479,23 @@ function PatientDetailsDialog({
     [history]
   );
 
+  const handleCancelEdit = () => {
+    setPatientData({
+      name: patient.name,
+      species: patient.species,
+      breed: patient.breed || "",
+      sex: patient.sex,
+      status: patient.status,
+      dateOfBirth: patient.dateOfBirth || "",
+      allergies: patient.allergies || "",
+      chronicConditions: patient.chronicConditions || "",
+      generalNotes: patient.generalNotes || "",
+    });
+    setSelectedOwnerId(patient.ownerId);
+    setOwnerData(owner ? { ...owner } : {});
+    setIsEditing(false);
+  };
+
   const handleSaveAll = useCallback(async () => {
     if (!patientData.name.trim()) {
       toast.error("Le nom du patient est obligatoire.");
@@ -507,45 +558,62 @@ function PatientDetailsDialog({
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1100px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(1100px,calc(100%-2rem))]">
-        <DialogHeader className="shrink-0 gap-0 border-b">
-          <div className="flex flex-col gap-5 px-6 py-5">
-            <div className="flex items-start justify-between gap-4 pr-10">
-              <div className="flex items-start gap-3">
+      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-1.5rem)] max-w-[min(1180px,calc(100%-1.5rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-[28px] p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
+        <DialogHeader className="shrink-0 gap-0 border-border/70 border-b bg-background">
+          <div className="flex flex-col gap-4 px-5 py-4 sm:px-7 sm:py-5">
+            <div className="flex flex-col gap-4 pr-8 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3.5">
                 <div
                   className={cn(
-                    "flex size-12 items-center justify-center rounded-2xl text-2xl",
+                    "flex size-11 shrink-0 items-center justify-center rounded-2xl text-xl ring-1 ring-black/5",
                     getSpeciesTone(patient.species)
                   )}
                 >
                   {getSpeciesIcon(patient.species)}
                 </div>
-                <div className="space-y-1">
-                  <DialogTitle className="text-2xl tracking-[-0.05em]">
-                    {patient.name}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {formatOwnerName(currentOwner)} · Dossier #
-                    {patient.id.slice(0, 6)}
+                <div className="min-w-0 space-y-0.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <DialogTitle className="truncate text-xl tracking-[-0.04em] sm:text-2xl">
+                      {patient.name}
+                    </DialogTitle>
+                    <PatientStatusBadge status={patientData.status} />
+                  </div>
+                  <DialogDescription className="truncate text-xs sm:text-sm">
+                    {patientData.species}
+                    {patientData.breed ? ` · ${patientData.breed}` : ""} ·{" "}
+                    {formatOwnerName(currentOwner)}
                   </DialogDescription>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <PatientStatusBadge status={patientData.status} />
+              <div className="flex shrink-0 items-center gap-2">
                 {isEditing ? (
-                  <Button disabled={isSaving} onClick={handleSaveAll} size="sm">
-                    {isSaving ? (
-                      <Spinner className="size-4" />
-                    ) : (
-                      <HugeiconsIcon
-                        data-icon="inline-start"
-                        icon={SaveIcon}
-                        strokeWidth={2}
-                      />
-                    )}
-                    Enregistrer
-                  </Button>
+                  <>
+                    <Button
+                      disabled={isSaving}
+                      onClick={handleCancelEdit}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      Annuler
+                    </Button>
+                    <Button
+                      disabled={isSaving}
+                      onClick={handleSaveAll}
+                      size="sm"
+                    >
+                      {isSaving ? (
+                        <Spinner className="size-4" />
+                      ) : (
+                        <HugeiconsIcon
+                          data-icon="inline-start"
+                          icon={SaveIcon}
+                          strokeWidth={2}
+                        />
+                      )}
+                      Enregistrer
+                    </Button>
+                  </>
                 ) : (
                   <Button
                     onClick={() => setIsEditing(true)}
@@ -561,604 +629,710 @@ function PatientDetailsDialog({
                   </Button>
                 )}
                 <Button
-                  className="h-9 rounded-full border-zinc-200 px-4 font-medium text-muted-foreground text-xs hover:text-foreground dark:border-zinc-800"
+                  className="h-8 px-3 text-muted-foreground text-xs hover:text-foreground"
                   onClick={onClose}
                   size="sm"
-                  variant="outline"
+                  variant="ghost"
                 >
                   Fermer
                 </Button>
               </div>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-3">
-              <div className="rounded-3xl bg-muted p-4 transition-all duration-200 ease-out hover:bg-muted/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                <p className="font-medium text-muted-foreground text-xs uppercase tracking-[0.14em]">
-                  Dernière visite
-                </p>
-                <p className="mt-3 font-semibold text-foreground text-lg tracking-[-0.03em]">
-                  {formatPatientDate(patient.lastVisit)}
-                </p>
-                <p className="mt-1 text-muted-foreground text-sm">
-                  {
-                    history.filter((entry) => entry.status === "completed")
-                      .length
-                  }{" "}
-                  visite
-                  {history.filter((entry) => entry.status === "completed")
-                    .length > 1
-                    ? "s"
-                    : ""}{" "}
-                  clôturée
-                  {history.filter((entry) => entry.status === "completed")
-                    .length > 1
-                    ? "s"
-                    : ""}
-                </p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-sky-50 px-3.5 py-3 text-sky-950 ring-1 ring-sky-100 dark:bg-sky-950/35 dark:text-sky-50 dark:ring-sky-900/60">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20">
+                  <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-semibold text-[10px] text-sky-700 uppercase tracking-[0.12em] dark:text-sky-300">
+                    Dernière visite
+                  </p>
+                  <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
+                    {formatPatientDate(patient.lastVisit)}
+                  </p>
+                  <p className="truncate text-sky-700/75 text-xs dark:text-sky-300/75">
+                    {
+                      history.filter((entry) => entry.status === "completed")
+                        .length
+                    }{" "}
+                    visite
+                    {history.filter((entry) => entry.status === "completed")
+                      .length > 1
+                      ? "s"
+                      : ""}{" "}
+                    clôturée
+                    {history.filter((entry) => entry.status === "completed")
+                      .length > 1
+                      ? "s"
+                      : ""}
+                  </p>
+                </div>
               </div>
 
-              <div className="rounded-3xl bg-muted p-4 transition-all duration-200 ease-out hover:bg-muted/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                <p className="font-medium text-muted-foreground text-xs uppercase tracking-[0.14em]">
-                  Prochain créneau
-                </p>
-                <p className="mt-3 font-semibold text-foreground text-lg tracking-[-0.03em]">
-                  {upcomingAppointment
-                    ? formatPatientDateTime(upcomingAppointment.startTime)
-                    : "Aucun rendez-vous"}
-                </p>
-                <p className="mt-1 text-muted-foreground text-sm">
-                  {upcomingAppointment
-                    ? upcomingAppointment.type
-                    : "Aucune venue planifiée pour ce patient."}
-                </p>
+              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-amber-50 px-3.5 py-3 text-amber-950 ring-1 ring-amber-100 dark:bg-amber-950/30 dark:text-amber-50 dark:ring-amber-900/60">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm shadow-amber-500/20">
+                  <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={2} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-semibold text-[10px] text-amber-700 uppercase tracking-[0.12em] dark:text-amber-300">
+                    Prochain créneau
+                  </p>
+                  <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
+                    {upcomingAppointment
+                      ? formatPatientDateTime(upcomingAppointment.startTime)
+                      : "Aucun rendez-vous"}
+                  </p>
+                  <p className="truncate text-amber-700/75 text-xs dark:text-amber-300/75">
+                    {upcomingAppointment
+                      ? upcomingAppointment.type
+                      : "Aucune venue planifiée"}
+                  </p>
+                </div>
               </div>
 
-              <div className="rounded-3xl bg-muted p-4 transition-all duration-200 ease-out hover:bg-muted/60 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
-                <p className="font-medium text-muted-foreground text-xs uppercase tracking-[0.14em]">
-                  Repère clinique
-                </p>
-                <p className="mt-3 font-semibold text-foreground text-lg tracking-[-0.03em]">
-                  {patient.allergies
-                    ? "Allergies à surveiller"
-                    : patient.chronicConditions
-                      ? "Suivi chronique"
-                      : "Rien à signaler"}
-                </p>
-                <p className="mt-1 text-muted-foreground text-sm">
-                  {patient.allergies ||
-                    patient.chronicConditions ||
-                    "Le dossier ne contient pas de signal particulier."}
-                </p>
+              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-emerald-50 px-3.5 py-3 text-emerald-950 ring-1 ring-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-50 dark:ring-emerald-900/60">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm shadow-emerald-500/20">
+                  <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={2} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-semibold text-[10px] text-emerald-700 uppercase tracking-[0.12em] dark:text-emerald-300">
+                    Repère clinique
+                  </p>
+                  <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
+                    {patient.allergies
+                      ? "Allergies à surveiller"
+                      : patient.chronicConditions
+                        ? "Suivi chronique"
+                        : "Rien à signaler"}
+                  </p>
+                  <p className="truncate text-emerald-700/75 text-xs dark:text-emerald-300/75">
+                    {patient.allergies ||
+                      patient.chronicConditions ||
+                      "Aucune alerte clinique"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="min-h-0 overflow-y-auto px-6 py-4">
-          <Tabs
-            className="gap-5"
-            onValueChange={(value) => setActiveTab(value as DetailsTab)}
-            value={activeTab}
-          >
-            <TabsList
-              className="w-full justify-start rounded-lg border-b bg-background/50 p-1 backdrop-blur"
-              variant="line"
-            >
-              <TabsTrigger
-                className="rounded-md px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                value="info"
+        <div className="min-h-0 overflow-y-auto bg-muted/10">
+          <div className="grid min-h-full md:grid-cols-[210px_minmax(0,1fr)]">
+            <aside className="border-border/70 border-b bg-background px-4 py-3 md:sticky md:top-0 md:h-full md:border-r md:border-b-0 md:px-4 md:py-5">
+              <p className="mb-2 hidden px-3 font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.14em] md:block">
+                Dossier patient
+              </p>
+              <nav
+                aria-label="Sections du dossier patient"
+                className="flex gap-1 overflow-x-auto md:flex-col"
               >
-                <HugeiconsIcon
-                  className="mr-2 size-4"
-                  icon={BirdIcon}
-                  strokeWidth={2}
-                />
-                Informations
-              </TabsTrigger>
-              <TabsTrigger
-                className="rounded-md px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                value="medical"
-              >
-                <HugeiconsIcon
-                  className="mr-2 size-4"
-                  icon={StethoscopeIcon}
-                  strokeWidth={2}
-                />
-                Dossier médical
-              </TabsTrigger>
-              <TabsTrigger
-                className="rounded-md px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                value="history"
-              >
-                <HugeiconsIcon
-                  className="mr-2 size-4"
-                  icon={WorkHistoryIcon}
-                  strokeWidth={2}
-                />
-                Historique
-              </TabsTrigger>
-            </TabsList>
+                <button
+                  aria-current={activeTab === "info" ? "page" : undefined}
+                  className={cn(
+                    "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
+                    activeTab === "info"
+                      ? "bg-sky-50 text-sky-800 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-200 dark:ring-sky-900"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                  onClick={() => setActiveTab("info")}
+                  type="button"
+                >
+                  <HugeiconsIcon
+                    className="size-4"
+                    icon={BirdIcon}
+                    strokeWidth={1.8}
+                  />
+                  Informations
+                </button>
+                <button
+                  aria-current={activeTab === "medical" ? "page" : undefined}
+                  className={cn(
+                    "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
+                    activeTab === "medical"
+                      ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-200 dark:ring-emerald-900"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                  onClick={() => setActiveTab("medical")}
+                  type="button"
+                >
+                  <HugeiconsIcon
+                    className="size-4"
+                    icon={StethoscopeIcon}
+                    strokeWidth={1.8}
+                  />
+                  Suivi médical
+                </button>
+                <button
+                  aria-current={activeTab === "history" ? "page" : undefined}
+                  className={cn(
+                    "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
+                    activeTab === "history"
+                      ? "bg-amber-50 text-amber-800 ring-1 ring-amber-100 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-900"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                  onClick={() => setActiveTab("history")}
+                  type="button"
+                >
+                  <HugeiconsIcon
+                    className="size-4"
+                    icon={WorkHistoryIcon}
+                    strokeWidth={1.8}
+                  />
+                  Historique
+                </button>
+              </nav>
 
-            <TabsContent value="info">
-              <div className="grid gap-4 xl:grid-cols-2">
-                <Card size="sm">
-                  <CardHeader>
-                    <CardTitle>Profil animal</CardTitle>
-                    <CardDescription>
-                      Identité, espèce et statut clinique du patient.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {isEditing ? (
-                      <FieldGroup>
-                        <Field>
-                          <FieldLabel>Nom</FieldLabel>
-                          <Input
-                            onChange={(event) =>
-                              setPatientData((current) => ({
-                                ...current,
-                                name: event.target.value,
-                              }))
-                            }
-                            value={patientData.name}
-                          />
-                        </Field>
+              <div className="mt-5 hidden border-border/60 border-t px-3 pt-4 md:block">
+                <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                  Dossier
+                </p>
+                <p className="mt-1 font-mono text-foreground text-xs">
+                  #{patient.id.slice(0, 8)}
+                </p>
+                <p className="mt-3 line-clamp-2 text-muted-foreground text-xs leading-5">
+                  {currentOwner?.phone || "Téléphone non renseigné"}
+                </p>
+              </div>
+            </aside>
 
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <Field>
-                            <FieldLabel>Espèce</FieldLabel>
-                            <Input
-                              list="patient-species-options"
-                              onChange={(event) =>
-                                setPatientData((current) => ({
-                                  ...current,
-                                  species: event.target.value,
-                                }))
-                              }
-                              placeholder="Chien, Chat..."
-                              value={patientData.species}
-                            />
-                            <datalist id="patient-species-options">
-                              {COMMON_SPECIES.map((species) => (
-                                <option key={species} value={species} />
-                              ))}
-                            </datalist>
-                          </Field>
+            <section className="min-w-0 p-4 sm:p-6">
+              {activeTab === "info" ? (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900">
+                      <HugeiconsIcon icon={BirdIcon} strokeWidth={2} />
+                    </span>
+                    <h2 className="font-semibold text-xl tracking-[-0.03em]">
+                      Informations
+                    </h2>
+                  </div>
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <Card className="rounded-2xl shadow-none" size="sm">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <span className="size-2 rounded-full bg-sky-500" />
+                          Animal
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {isEditing ? (
+                          <FieldGroup>
+                            <Field>
+                              <FieldLabel>Nom</FieldLabel>
+                              <Input
+                                onChange={(event) =>
+                                  setPatientData((current) => ({
+                                    ...current,
+                                    name: event.target.value,
+                                  }))
+                                }
+                                value={patientData.name}
+                              />
+                            </Field>
 
-                          <Field>
-                            <FieldLabel>Race</FieldLabel>
-                            <Input
-                              list="patient-breed-options"
-                              onChange={(event) =>
-                                setPatientData((current) => ({
-                                  ...current,
-                                  breed: event.target.value,
-                                }))
-                              }
-                              placeholder="Race"
-                              value={patientData.breed}
-                            />
-                            <datalist id="patient-breed-options">
-                              {breedSuggestions.map((breed) => (
-                                <option key={breed} value={breed} />
-                              ))}
-                            </datalist>
-                          </Field>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                              <Field>
+                                <FieldLabel>Espèce</FieldLabel>
+                                <Input
+                                  list="patient-species-options"
+                                  onChange={(event) =>
+                                    setPatientData((current) => ({
+                                      ...current,
+                                      species: event.target.value,
+                                    }))
+                                  }
+                                  placeholder="Chien, Chat..."
+                                  value={patientData.species}
+                                />
+                                <datalist id="patient-species-options">
+                                  {COMMON_SPECIES.map((species) => (
+                                    <option key={species} value={species} />
+                                  ))}
+                                </datalist>
+                              </Field>
 
-                          <Field>
-                            <FieldLabel>Sexe</FieldLabel>
-                            <NativeSelect
-                              className="w-full"
-                              onChange={(event) =>
-                                setPatientData((current) => ({
-                                  ...current,
-                                  sex: event.target.value as Patient["sex"],
-                                }))
-                              }
-                              value={patientData.sex}
-                            >
-                              <NativeSelectOption value="M">
-                                Mâle
-                              </NativeSelectOption>
-                              <NativeSelectOption value="F">
-                                Femelle
-                              </NativeSelectOption>
-                            </NativeSelect>
-                          </Field>
+                              <Field>
+                                <FieldLabel>Race</FieldLabel>
+                                <Input
+                                  list="patient-breed-options"
+                                  onChange={(event) =>
+                                    setPatientData((current) => ({
+                                      ...current,
+                                      breed: event.target.value,
+                                    }))
+                                  }
+                                  placeholder="Race"
+                                  value={patientData.breed}
+                                />
+                                <datalist id="patient-breed-options">
+                                  {breedSuggestions.map((breed) => (
+                                    <option key={breed} value={breed} />
+                                  ))}
+                                </datalist>
+                              </Field>
 
-                          <Field>
-                            <FieldLabel>Statut</FieldLabel>
-                            <NativeSelect
-                              className="w-full"
-                              onChange={(event) =>
-                                setPatientData((current) => ({
-                                  ...current,
-                                  status: event.target
-                                    .value as Patient["status"],
-                                }))
-                              }
-                              value={patientData.status}
-                            >
-                              {Object.entries(PATIENT_STATUS_META).map(
-                                ([value, option]) => (
-                                  <NativeSelectOption key={value} value={value}>
-                                    {option.label}
+                              <Field>
+                                <FieldLabel>Sexe</FieldLabel>
+                                <NativeSelect
+                                  className="w-full"
+                                  onChange={(event) =>
+                                    setPatientData((current) => ({
+                                      ...current,
+                                      sex: event.target.value as Patient["sex"],
+                                    }))
+                                  }
+                                  value={patientData.sex}
+                                >
+                                  <NativeSelectOption value="M">
+                                    Mâle
                                   </NativeSelectOption>
-                                )
-                              )}
-                            </NativeSelect>
-                          </Field>
-                        </div>
+                                  <NativeSelectOption value="F">
+                                    Femelle
+                                  </NativeSelectOption>
+                                </NativeSelect>
+                              </Field>
 
-                        <Field>
-                          <FieldLabel>Date de naissance</FieldLabel>
-                          <Input
-                            onChange={(event) =>
-                              setPatientData((current) => ({
-                                ...current,
-                                dateOfBirth: event.target.value,
-                              }))
-                            }
-                            type="date"
-                            value={patientData.dateOfBirth}
-                          />
-                        </Field>
-                      </FieldGroup>
-                    ) : (
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <ReadOnlyDetail label="Nom" value={patientData.name} />
-                        <ReadOnlyDetail
-                          label="Espèce"
-                          value={patientData.species || "Non renseignée"}
-                        />
-                        <ReadOnlyDetail
-                          label="Race"
-                          value={patientData.breed || "Non renseignée"}
-                        />
-                        <ReadOnlyDetail
-                          label="Sexe"
-                          value={patientData.sex === "M" ? "Mâle" : "Femelle"}
-                        />
-                        <ReadOnlyDetail
-                          label="Date de naissance"
-                          value={formatPatientDate(patientData.dateOfBirth)}
-                        />
-                        <ReadOnlyDetail
-                          label="Âge"
-                          value={getAgeLabel(patientData.dateOfBirth)}
-                        />
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card size="sm">
-                  <CardHeader>
-                    <CardTitle>Propriétaire</CardTitle>
-                    <CardDescription>
-                      Coordonnées et liaison du responsable du dossier.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {isEditing ? (
-                      <FieldGroup>
-                        <Field>
-                          <FieldLabel>Propriétaire lié</FieldLabel>
-                          <NativeSelect
-                            className="w-full"
-                            onChange={(event) =>
-                              setSelectedOwnerId(event.target.value)
-                            }
-                            value={selectedOwnerId}
-                          >
-                            {allOwners.map((entry) => (
-                              <NativeSelectOption
-                                key={entry.id}
-                                value={entry.id}
-                              >
-                                {formatOwnerName(entry)} · {entry.phone}
-                              </NativeSelectOption>
-                            ))}
-                          </NativeSelect>
-                          <FieldDescription>
-                            Le patient restera rattaché au propriétaire
-                            sélectionné.
-                          </FieldDescription>
-                        </Field>
-
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <Field>
-                            <FieldLabel>Nom</FieldLabel>
-                            <Input
-                              onChange={(event) =>
-                                setOwnerData((current) => ({
-                                  ...current,
-                                  lastName: event.target.value,
-                                }))
-                              }
-                              value={ownerData.lastName || ""}
-                            />
-                          </Field>
-
-                          <Field>
-                            <FieldLabel>Prénom</FieldLabel>
-                            <Input
-                              onChange={(event) =>
-                                setOwnerData((current) => ({
-                                  ...current,
-                                  firstName: event.target.value,
-                                }))
-                              }
-                              value={ownerData.firstName || ""}
-                            />
-                          </Field>
-
-                          <Field>
-                            <FieldLabel>Téléphone</FieldLabel>
-                            <Input
-                              onChange={(event) =>
-                                setOwnerData((current) => ({
-                                  ...current,
-                                  phone: event.target.value,
-                                }))
-                              }
-                              value={ownerData.phone || ""}
-                            />
-                          </Field>
-
-                          <Field>
-                            <FieldLabel>Email</FieldLabel>
-                            <Input
-                              onChange={(event) =>
-                                setOwnerData((current) => ({
-                                  ...current,
-                                  email: event.target.value,
-                                }))
-                              }
-                              type="email"
-                              value={ownerData.email || ""}
-                            />
-                          </Field>
-                        </div>
-
-                        <Field>
-                          <FieldLabel>Adresse</FieldLabel>
-                          <Input
-                            onChange={(event) =>
-                              setOwnerData((current) => ({
-                                ...current,
-                                address: event.target.value,
-                              }))
-                            }
-                            value={ownerData.address || ""}
-                          />
-                        </Field>
-
-                        <Field>
-                          <FieldLabel>Ville</FieldLabel>
-                          <Input
-                            onChange={(event) =>
-                              setOwnerData((current) => ({
-                                ...current,
-                                city: event.target.value,
-                              }))
-                            }
-                            value={ownerData.city || ""}
-                          />
-                        </Field>
-                      </FieldGroup>
-                    ) : (
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <ReadOnlyDetail
-                          label="Nom complet"
-                          value={formatOwnerName(currentOwner)}
-                        />
-                        <ReadOnlyDetail
-                          label="Téléphone"
-                          value={currentOwner?.phone || "Non renseigné"}
-                        />
-                        <ReadOnlyDetail
-                          label="Email"
-                          value={currentOwner?.email || "Non renseigné"}
-                        />
-                        <ReadOnlyDetail
-                          label="Adresse"
-                          value={
-                            [currentOwner?.address, currentOwner?.city]
-                              .filter(Boolean)
-                              .join(", ") || "Non renseignée"
-                          }
-                        />
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="medical">
-              <div className="grid gap-4">
-                <Card size="sm">
-                  <CardHeader>
-                    <CardTitle>Alertes médicales</CardTitle>
-                    <CardDescription>
-                      Allergies, contre-indications et informations de suivi.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <FieldGroup>
-                      <Field>
-                        <FieldLabel>Allergies et contre-indications</FieldLabel>
-                        <Textarea
-                          className="min-h-[120px]"
-                          onChange={(event) =>
-                            setPatientData((current) => ({
-                              ...current,
-                              allergies: event.target.value,
-                            }))
-                          }
-                          placeholder="Aucune allergie connue"
-                          readOnly={!isEditing}
-                          value={patientData.allergies}
-                        />
-                      </Field>
-
-                      <Field>
-                        <FieldLabel>Maladies chroniques</FieldLabel>
-                        <Textarea
-                          className="min-h-[120px]"
-                          onChange={(event) =>
-                            setPatientData((current) => ({
-                              ...current,
-                              chronicConditions: event.target.value,
-                            }))
-                          }
-                          placeholder="Aucune maladie chronique"
-                          readOnly={!isEditing}
-                          value={patientData.chronicConditions}
-                        />
-                      </Field>
-
-                      <Field>
-                        <FieldLabel>Notes générales</FieldLabel>
-                        <Textarea
-                          className="min-h-[160px]"
-                          onChange={(event) =>
-                            setPatientData((current) => ({
-                              ...current,
-                              generalNotes: event.target.value,
-                            }))
-                          }
-                          placeholder="Observations, habitudes, précautions..."
-                          readOnly={!isEditing}
-                          value={patientData.generalNotes}
-                        />
-                      </Field>
-                    </FieldGroup>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="history">
-              {history.length === 0 ? (
-                <Empty className="border border-border/80 border-dashed bg-muted/20">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
-                    </EmptyMedia>
-                    <EmptyTitle>Aucun historique clinique</EmptyTitle>
-                    <EmptyDescription>
-                      Ce dossier ne contient pas encore de consultation ou de
-                      visite archivée.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              ) : (
-                <div className="grid gap-4">
-                  {history.map((appointment, index) => {
-                    const statusMeta =
-                      APPOINTMENT_STATUS_META[appointment.status];
-                    const veterinarian = usersById.get(appointment.vetId);
-
-                    return (
-                      <Card key={appointment.id} size="sm">
-                        <CardHeader>
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="space-y-1">
-                              <CardDescription>
-                                Visite {history.length - index}
-                              </CardDescription>
-                              <CardTitle className="text-xl tracking-[-0.04em]">
-                                {formatPatientLongDate(appointment.startTime)}
-                              </CardTitle>
+                              <Field>
+                                <FieldLabel>Statut</FieldLabel>
+                                <NativeSelect
+                                  className="w-full"
+                                  onChange={(event) =>
+                                    setPatientData((current) => ({
+                                      ...current,
+                                      status: event.target
+                                        .value as Patient["status"],
+                                    }))
+                                  }
+                                  value={patientData.status}
+                                >
+                                  {Object.entries(PATIENT_STATUS_META).map(
+                                    ([value, option]) => (
+                                      <NativeSelectOption
+                                        key={value}
+                                        value={value}
+                                      >
+                                        {option.label}
+                                      </NativeSelectOption>
+                                    )
+                                  )}
+                                </NativeSelect>
+                              </Field>
                             </div>
-                            <Badge
-                              className={statusMeta.className}
-                              variant="outline"
-                            >
-                              {statusMeta.label}
-                            </Badge>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="grid gap-4 md:grid-cols-2">
-                          <ReadOnlyDetail
-                            label="Créneau"
-                            value={formatVisitTimeRange(
-                              appointment.startTime,
-                              appointment.endTime
-                            )}
-                          />
-                          <ReadOnlyDetail
-                            label="Type"
-                            value={appointment.type}
-                          />
-                          <ReadOnlyDetail
-                            label="Vétérinaire"
-                            value={
-                              veterinarian?.displayName ||
-                              "Vétérinaire non assigné"
-                            }
-                          />
-                          <ReadOnlyDetail
-                            label="Motif"
-                            value={
-                              appointment.reason ||
-                              appointment.title ||
-                              "Motif non renseigné"
-                            }
-                          />
-                          <ReadOnlyDetail
-                            label="Diagnostic"
-                            value={
-                              appointment.diagnosis || "Aucun diagnostic saisi."
-                            }
-                          />
-                          <ReadOnlyDetail
-                            label="Traitement"
-                            value={
-                              appointment.treatment ||
-                              "Aucun traitement enregistré."
-                            }
-                          />
-                          <div className="md:col-span-2">
+
+                            <Field>
+                              <FieldLabel>Date de naissance</FieldLabel>
+                              <Input
+                                onChange={(event) =>
+                                  setPatientData((current) => ({
+                                    ...current,
+                                    dateOfBirth: event.target.value,
+                                  }))
+                                }
+                                type="date"
+                                value={patientData.dateOfBirth}
+                              />
+                            </Field>
+                          </FieldGroup>
+                        ) : (
+                          <div className="grid gap-3 sm:grid-cols-2">
                             <ReadOnlyDetail
-                              label="Notes"
+                              label="Nom"
+                              value={patientData.name}
+                            />
+                            <ReadOnlyDetail
+                              label="Espèce"
+                              value={patientData.species || "Non renseignée"}
+                            />
+                            <ReadOnlyDetail
+                              label="Race"
+                              value={patientData.breed || "Non renseignée"}
+                            />
+                            <ReadOnlyDetail
+                              label="Sexe"
                               value={
-                                appointment.notes ||
-                                "Aucune note complémentaire."
+                                patientData.sex === "M" ? "Mâle" : "Femelle"
+                              }
+                            />
+                            <ReadOnlyDetail
+                              label="Date de naissance"
+                              value={formatPatientDate(patientData.dateOfBirth)}
+                            />
+                            <ReadOnlyDetail
+                              label="Âge"
+                              value={getAgeLabel(patientData.dateOfBirth)}
+                            />
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    <Card className="rounded-2xl shadow-none" size="sm">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <span className="size-2 rounded-full bg-amber-500" />
+                          Propriétaire
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {isEditing ? (
+                          <FieldGroup>
+                            <Field>
+                              <FieldLabel>Propriétaire lié</FieldLabel>
+                              <NativeSelect
+                                className="w-full"
+                                onChange={(event) =>
+                                  setSelectedOwnerId(event.target.value)
+                                }
+                                value={selectedOwnerId}
+                              >
+                                {allOwners.map((entry) => (
+                                  <NativeSelectOption
+                                    key={entry.id}
+                                    value={entry.id}
+                                  >
+                                    {formatOwnerName(entry)} · {entry.phone}
+                                  </NativeSelectOption>
+                                ))}
+                              </NativeSelect>
+                              <FieldDescription>
+                                Le patient restera rattaché au propriétaire
+                                sélectionné.
+                              </FieldDescription>
+                            </Field>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                              <Field>
+                                <FieldLabel>Nom</FieldLabel>
+                                <Input
+                                  onChange={(event) =>
+                                    setOwnerData((current) => ({
+                                      ...current,
+                                      lastName: event.target.value,
+                                    }))
+                                  }
+                                  value={ownerData.lastName || ""}
+                                />
+                              </Field>
+
+                              <Field>
+                                <FieldLabel>Prénom</FieldLabel>
+                                <Input
+                                  onChange={(event) =>
+                                    setOwnerData((current) => ({
+                                      ...current,
+                                      firstName: event.target.value,
+                                    }))
+                                  }
+                                  value={ownerData.firstName || ""}
+                                />
+                              </Field>
+
+                              <Field>
+                                <FieldLabel>Téléphone</FieldLabel>
+                                <Input
+                                  onChange={(event) =>
+                                    setOwnerData((current) => ({
+                                      ...current,
+                                      phone: event.target.value,
+                                    }))
+                                  }
+                                  value={ownerData.phone || ""}
+                                />
+                              </Field>
+
+                              <Field>
+                                <FieldLabel>Email</FieldLabel>
+                                <Input
+                                  onChange={(event) =>
+                                    setOwnerData((current) => ({
+                                      ...current,
+                                      email: event.target.value,
+                                    }))
+                                  }
+                                  type="email"
+                                  value={ownerData.email || ""}
+                                />
+                              </Field>
+                            </div>
+
+                            <Field>
+                              <FieldLabel>Adresse</FieldLabel>
+                              <Input
+                                onChange={(event) =>
+                                  setOwnerData((current) => ({
+                                    ...current,
+                                    address: event.target.value,
+                                  }))
+                                }
+                                value={ownerData.address || ""}
+                              />
+                            </Field>
+
+                            <Field>
+                              <FieldLabel>Ville</FieldLabel>
+                              <Input
+                                onChange={(event) =>
+                                  setOwnerData((current) => ({
+                                    ...current,
+                                    city: event.target.value,
+                                  }))
+                                }
+                                value={ownerData.city || ""}
+                              />
+                            </Field>
+                          </FieldGroup>
+                        ) : (
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <ReadOnlyDetail
+                              label="Nom complet"
+                              value={formatOwnerName(currentOwner)}
+                            />
+                            <ReadOnlyDetail
+                              label="Téléphone"
+                              value={currentOwner?.phone || "Non renseigné"}
+                            />
+                            <ReadOnlyDetail
+                              label="Email"
+                              value={currentOwner?.email || "Non renseigné"}
+                            />
+                            <ReadOnlyDetail
+                              label="Adresse"
+                              value={
+                                [currentOwner?.address, currentOwner?.city]
+                                  .filter(Boolean)
+                                  .join(", ") || "Non renseignée"
                               }
                             />
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
+              ) : null}
 
-        {isEditing ? (
-          <DialogFooter className="shrink-0 border-t px-6 py-4">
-            <Button onClick={() => setIsEditing(false)} variant="outline">
-              Annuler
-            </Button>
-            <Button disabled={isSaving} onClick={handleSaveAll}>
-              {isSaving ? (
-                <Spinner className="size-4" />
-              ) : (
-                <HugeiconsIcon
-                  data-icon="inline-start"
-                  icon={SaveIcon}
-                  strokeWidth={2}
-                />
-              )}
-              Enregistrer
-            </Button>
-          </DialogFooter>
-        ) : null}
+              {activeTab === "medical" ? (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
+                      <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={2} />
+                    </span>
+                    <h2 className="font-semibold text-xl tracking-[-0.03em]">
+                      Suivi médical
+                    </h2>
+                  </div>
+                  <div className="grid gap-4">
+                    <Card className="rounded-2xl shadow-none" size="sm">
+                      <CardContent>
+                        {isEditing ? (
+                          <FieldGroup>
+                            <Field>
+                              <FieldLabel>
+                                Allergies et contre-indications
+                              </FieldLabel>
+                              <Textarea
+                                className="min-h-[120px]"
+                                onChange={(event) =>
+                                  setPatientData((current) => ({
+                                    ...current,
+                                    allergies: event.target.value,
+                                  }))
+                                }
+                                placeholder="Aucune allergie connue"
+                                value={patientData.allergies}
+                              />
+                            </Field>
+
+                            <Field>
+                              <FieldLabel>Maladies chroniques</FieldLabel>
+                              <Textarea
+                                className="min-h-[120px]"
+                                onChange={(event) =>
+                                  setPatientData((current) => ({
+                                    ...current,
+                                    chronicConditions: event.target.value,
+                                  }))
+                                }
+                                placeholder="Aucune maladie chronique"
+                                value={patientData.chronicConditions}
+                              />
+                            </Field>
+
+                            <Field>
+                              <FieldLabel>Notes générales</FieldLabel>
+                              <Textarea
+                                className="min-h-[160px]"
+                                onChange={(event) =>
+                                  setPatientData((current) => ({
+                                    ...current,
+                                    generalNotes: event.target.value,
+                                  }))
+                                }
+                                placeholder="Observations, habitudes, précautions..."
+                                value={patientData.generalNotes}
+                              />
+                            </Field>
+                          </FieldGroup>
+                        ) : (
+                          <div>
+                            <ClinicalNote
+                              emptyLabel="Aucune allergie ou contre-indication connue."
+                              label="Allergies et contre-indications"
+                              tone="alert"
+                              value={patientData.allergies}
+                            />
+                            <ClinicalNote
+                              emptyLabel="Aucune maladie chronique renseignée."
+                              label="Maladies chroniques"
+                              tone="alert"
+                              value={patientData.chronicConditions}
+                            />
+                            <ClinicalNote
+                              emptyLabel="Aucune consigne générale enregistrée."
+                              label="Observations et précautions"
+                              value={patientData.generalNotes}
+                            />
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              ) : null}
+
+              {activeTab === "history" ? (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900">
+                      <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={2} />
+                    </span>
+                    <div>
+                      <h2 className="font-semibold text-xl tracking-[-0.03em]">
+                        Historique des visites
+                      </h2>
+                      <p className="text-muted-foreground text-xs">
+                        {history.length} visite{history.length > 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </div>
+                  {history.length === 0 ? (
+                    <Empty className="border border-border/80 border-dashed bg-muted/20">
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <HugeiconsIcon
+                            icon={Calendar01Icon}
+                            strokeWidth={2}
+                          />
+                        </EmptyMedia>
+                        <EmptyTitle>Aucun historique clinique</EmptyTitle>
+                        <EmptyDescription>
+                          Ce dossier ne contient pas encore de consultation ou
+                          de visite archivée.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
+                  ) : (
+                    <div className="overflow-hidden rounded-2xl border border-border/80 bg-card">
+                      {history.map((appointment, index) => {
+                        const statusMeta =
+                          APPOINTMENT_STATUS_META[appointment.status];
+                        const veterinarian = usersById.get(appointment.vetId);
+
+                        return (
+                          <details
+                            className="group border-border/70 border-b last:border-b-0"
+                            key={appointment.id}
+                            open={index === 0}
+                          >
+                            <summary className="grid cursor-pointer list-none items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/40 sm:grid-cols-[42px_minmax(0,1fr)_minmax(130px,0.7fr)_auto] [&::-webkit-details-marker]:hidden">
+                              <span className="flex size-9 items-center justify-center rounded-xl bg-amber-50 font-semibold text-amber-700 text-xs dark:bg-amber-950/40 dark:text-amber-300">
+                                {history.length - index}
+                              </span>
+                              <div className="min-w-0">
+                                <p className="truncate font-semibold text-sm">
+                                  {formatPatientLongDate(appointment.startTime)}
+                                </p>
+                                <p className="truncate text-muted-foreground text-xs sm:hidden">
+                                  {appointment.type}
+                                </p>
+                              </div>
+                              <div className="hidden min-w-0 sm:block">
+                                <p className="truncate font-medium text-sm">
+                                  {appointment.type}
+                                </p>
+                                <p className="truncate text-muted-foreground text-xs">
+                                  {veterinarian?.displayName || "Non assigné"}
+                                </p>
+                              </div>
+                              <Badge
+                                className={statusMeta.className}
+                                variant="outline"
+                              >
+                                {statusMeta.label}
+                              </Badge>
+                            </summary>
+                            <div className="grid gap-x-6 border-border/60 border-t bg-muted/15 px-4 py-2 md:grid-cols-2">
+                              <ReadOnlyDetail
+                                label="Créneau"
+                                value={formatVisitTimeRange(
+                                  appointment.startTime,
+                                  appointment.endTime
+                                )}
+                              />
+                              <ReadOnlyDetail
+                                label="Type"
+                                value={appointment.type}
+                              />
+                              <ReadOnlyDetail
+                                label="Vétérinaire"
+                                value={
+                                  veterinarian?.displayName ||
+                                  "Vétérinaire non assigné"
+                                }
+                              />
+                              <ReadOnlyDetail
+                                label="Motif"
+                                value={
+                                  appointment.reason ||
+                                  appointment.title ||
+                                  "Motif non renseigné"
+                                }
+                              />
+                              <ReadOnlyDetail
+                                label="Diagnostic"
+                                value={
+                                  appointment.diagnosis ||
+                                  "Aucun diagnostic saisi."
+                                }
+                              />
+                              <ReadOnlyDetail
+                                label="Traitement"
+                                value={
+                                  appointment.treatment ||
+                                  "Aucun traitement enregistré."
+                                }
+                              />
+                              <div className="md:col-span-2">
+                                <ReadOnlyDetail
+                                  label="Notes"
+                                  value={
+                                    appointment.notes ||
+                                    "Aucune note complémentaire."
+                                  }
+                                />
+                              </div>
+                            </div>
+                          </details>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </section>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -122,8 +122,8 @@ export function AgendaListView({
                 </button>
               </div>
               <div className="mt-6 grid grid-cols-7 font-medium text-muted-foreground text-xs/6">
-                {DAY_NAMES.map((d) => (
-                  <div key={d}>{d}</div>
+                {DAY_NAMES.map((day, index) => (
+                  <div key={`${day}-${index}`}>{day}</div>
                 ))}
               </div>
               <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-xl bg-zinc-200/50 text-sm shadow-sm dark:bg-zinc-800/50">

@@ -1,7 +1,9 @@
 import {
   Alert02Icon,
+  BookOpenTextIcon,
   Camera01Icon,
   CheckmarkCircle02Icon,
+  CodeCircleIcon,
   DatabaseIcon,
   Delete01Icon,
   Download01Icon,
@@ -15,6 +17,8 @@ import {
   Shield01Icon,
   SmartPhone01Icon,
   SparklesIcon,
+  StethoscopeIcon,
+  TestTube01Icon,
   Upload01Icon,
   UserCircle02Icon,
   Wifi01Icon,
@@ -58,6 +62,7 @@ import {
   createBackup,
   deleteBackup,
   exportDatabase,
+  getAppVersion,
   getLastBackupDate,
   importDatabase,
   importDatabaseFromFile,
@@ -73,6 +78,7 @@ import {
   type ProgressReport,
   subscribeToProgress,
 } from "@/services/webLLMService";
+import type { View } from "@/types";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
@@ -869,11 +875,13 @@ const BackupSettings: React.FC = () => {
 
 interface ParametresProps {
   currentTheme?: "light" | "dark" | "system";
+  onNavigate?: (view: View) => void;
   onThemeChange?: (theme: "light" | "dark" | "system") => void;
 }
 
 const Parametres: React.FC<ParametresProps> = ({
   currentTheme = "light",
+  onNavigate,
   onThemeChange,
 }) => {
   const sanitizeAvatarValue = (value?: string | null) => {
@@ -1786,7 +1794,38 @@ const Parametres: React.FC<ParametresProps> = ({
       case "ia":
         return <IASettings />;
       case "sauvegarde":
-        return <BackupSettings />;
+        return (
+          <div className="space-y-6">
+            <BackupSettings />
+            <Card className="border-dashed" size="sm">
+              <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                    <HugeiconsIcon
+                      className="size-5"
+                      icon={BookOpenTextIcon}
+                      strokeWidth={1.8}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm">Archives de notes</h3>
+                    <p className="mt-1 max-w-xl text-muted-foreground text-sm">
+                      Les anciennes notes sont conservées, mais retirées du
+                      parcours quotidien pour alléger l'application.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  className="shrink-0"
+                  onClick={() => onNavigate?.("notes")}
+                  variant="outline"
+                >
+                  Consulter l'archive
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        );
       case "apropos":
         return (
           <div className="space-y-6">
@@ -1798,83 +1837,165 @@ const Parametres: React.FC<ParametresProps> = ({
                 Informations sur l'application
               </p>
             </div>
-            <Card size="sm">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-5">
-                  <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-muted/20 shadow-xs">
-                    <Logo collapsed flatMark size="lg" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-foreground text-lg tracking-tight">
-                      {APP_NAME}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Logiciel de gestion vétérinaire
-                    </p>
-                    <div className="mt-2 flex gap-3 text-muted-foreground text-xs">
-                      <span>Version 2.0.0</span>
-                      <span>•</span>
-                      <span>19 avril 2026</span>
+            <Card className="overflow-hidden" size="sm">
+              <CardContent className="p-0">
+                <div className="flex flex-col gap-5 border-border/70 border-b bg-muted/15 p-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-background shadow-xs">
+                      <Logo collapsed size="lg" />
                     </div>
+                    <div className="min-w-0">
+                      <h3 className="font-heading font-semibold text-foreground text-lg tracking-tight">
+                        {APP_NAME}
+                      </h3>
+                      <p className="mt-0.5 text-muted-foreground text-sm">
+                        La pratique vétérinaire, mieux organisée.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge className="rounded-full" variant="outline">
+                      Version {getAppVersion()}
+                    </Badge>
+                    <Badge className="rounded-full" variant="secondary">
+                      Données locales
+                    </Badge>
                   </div>
                 </div>
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
+
+                <div className="p-5">
+                  <div className="mb-4">
                     <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-                      Conception & Ingénierie
+                      Équipe Baitari
                     </p>
-                    <div className="mt-3 flex items-start gap-3">
-                      <Avatar
-                        name="Zohir Kherroubi"
-                        size="lg"
-                        src={sanitizeAvatarValue(
-                          userDoc?.avatarUrl ||
-                            currentUser?.avatarUrl ||
-                            avatarUrl
-                        )}
-                      />
-                      <div>
-                        <p className="font-medium text-foreground text-sm">
-                          Zohir Kherroubi
-                        </p>
-                        <p className="mt-0.5 font-medium text-primary text-xs">
-                          Créateur & Ingénieur Logiciel
-                        </p>
-                        <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed">
-                          Visionnaire et développeur principal de bAItari.
-                          Responsable de la conception technique, de
-                          l'ingénierie logicielle et de l'intégration des
-                          technologies d'Intelligence Artificielle au cœur du
-                          système.
-                        </p>
-                      </div>
-                    </div>
+                    <p className="mt-1 text-muted-foreground text-sm">
+                      Produit, expertise clinique et validation terrain réunis
+                      autour d'un même outil.
+                    </p>
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
-                    <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-                      Expertise Vétérinaire
-                    </p>
-                    <div className="mt-3 flex items-start gap-3">
-                      <Avatar
-                        name="Dr Aissa Zeghouini"
-                        size="lg"
-                        src="/dr-aissa-zeghouini.jpg"
-                      />
-                      <div>
-                        <p className="font-medium text-foreground text-sm">
-                          Dr Aissa Zeghouini
-                        </p>
-                        <p className="mt-0.5 font-medium text-primary text-xs">
-                          Co-fondateur & Conseiller Clinique
-                        </p>
-                        <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed">
-                          Pilier médical de bAItari. Apporte son expertise
-                          vétérinaire inestimable pour garantir que
-                          l'application réponde de manière optimale aux
-                          exigences et réalités de la clinique au quotidien.
-                        </p>
+
+                  <div className="grid gap-3 lg:grid-cols-3">
+                    <article className="relative overflow-hidden rounded-2xl border border-sky-200/70 bg-sky-50/55 p-4 dark:border-sky-900/50 dark:bg-sky-950/20">
+                      <div className="absolute inset-x-0 top-0 h-0.5 bg-sky-500/70" />
+                      <div className="flex items-start justify-between gap-3">
+                        <Avatar
+                          name="Zohir Kherroubi"
+                          size="lg"
+                          src={sanitizeAvatarValue(
+                            userDoc?.avatarUrl ||
+                              currentUser?.avatarUrl ||
+                              avatarUrl
+                          )}
+                        />
+                        <div className="flex size-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-700 dark:text-sky-300">
+                          <HugeiconsIcon
+                            className="size-[18px]"
+                            icon={CodeCircleIcon}
+                            strokeWidth={1.8}
+                          />
+                        </div>
                       </div>
-                    </div>
+                      <h4 className="mt-4 font-semibold text-foreground text-sm">
+                        Zohir Kherroubi
+                      </h4>
+                      <p className="mt-0.5 font-medium text-sky-700 text-xs dark:text-sky-300">
+                        Fondateur · Produit & Ingénierie
+                      </p>
+                      <p className="mt-3 text-muted-foreground text-xs leading-relaxed">
+                        Conçoit l'expérience, l'architecture et les fonctions
+                        intelligentes qui donnent vie à Baitari.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {["Produit", "Architecture", "IA"].map((skill) => (
+                          <span
+                            className="rounded-full border border-sky-200/70 bg-background/75 px-2 py-1 font-medium text-[10px] text-sky-800 dark:border-sky-900/60 dark:text-sky-200"
+                            key={skill}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </article>
+
+                    <article className="relative overflow-hidden rounded-2xl border border-emerald-200/70 bg-emerald-50/55 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+                      <div className="absolute inset-x-0 top-0 h-0.5 bg-emerald-500/70" />
+                      <div className="flex items-start justify-between gap-3">
+                        <Avatar
+                          name="Dr Aissa Zeghouini"
+                          size="lg"
+                          src="/dr-aissa-zeghouini.jpg"
+                        />
+                        <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                          <HugeiconsIcon
+                            className="size-[18px]"
+                            icon={StethoscopeIcon}
+                            strokeWidth={1.8}
+                          />
+                        </div>
+                      </div>
+                      <h4 className="mt-4 font-semibold text-foreground text-sm">
+                        Dr Aissa Zeghouini
+                      </h4>
+                      <p className="mt-0.5 font-medium text-emerald-700 text-xs dark:text-emerald-300">
+                        Co-fondateur · Référent clinique
+                      </p>
+                      <p className="mt-3 text-muted-foreground text-xs leading-relaxed">
+                        Oriente les parcours de soin et veille à leur cohérence
+                        avec les réalités quotidiennes de la clinique.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {["Parcours de soin", "Protocoles", "Priorités"].map(
+                          (skill) => (
+                            <span
+                              className="rounded-full border border-emerald-200/70 bg-background/75 px-2 py-1 font-medium text-[10px] text-emerald-800 dark:border-emerald-900/60 dark:text-emerald-200"
+                              key={skill}
+                            >
+                              {skill}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    </article>
+
+                    <article className="relative overflow-hidden rounded-2xl border border-amber-200/70 bg-amber-50/55 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
+                      <div className="absolute inset-x-0 top-0 h-0.5 bg-amber-500/70" />
+                      <div className="flex items-start justify-between gap-3">
+                        <Avatar
+                          name="Karim Abderrahmani"
+                          size="lg"
+                          src="/karim-abderrahmani.jpg"
+                        />
+                        <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300">
+                          <HugeiconsIcon
+                            className="size-[18px]"
+                            icon={TestTube01Icon}
+                            strokeWidth={1.8}
+                          />
+                        </div>
+                      </div>
+                      <h4 className="mt-4 font-semibold text-foreground text-sm">
+                        Karim Abderrahmani
+                      </h4>
+                      <p className="mt-0.5 font-medium text-amber-700 text-xs dark:text-amber-300">
+                        Validation terrain · Qualité d'usage
+                      </p>
+                      <p className="mt-3 text-muted-foreground text-xs leading-relaxed">
+                        Teste l'application, identifie les points de friction et
+                        enrichit le produit grâce à son expertise terrain.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {["Tests", "Ergonomie", "Retours métier"].map(
+                          (skill) => (
+                            <span
+                              className="rounded-full border border-amber-200/70 bg-background/75 px-2 py-1 font-medium text-[10px] text-amber-800 dark:border-amber-900/60 dark:text-amber-200"
+                              key={skill}
+                            >
+                              {skill}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    </article>
                   </div>
                 </div>
               </CardContent>

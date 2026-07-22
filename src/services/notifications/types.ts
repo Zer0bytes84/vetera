@@ -13,7 +13,12 @@ export type NotificationSource =
 export type NotificationSeverity = "critical" | "warn" | "info";
 
 export type NotificationTarget =
-  | { view: View }
+  | {
+      view: Exclude<
+        View,
+        "patient_detail" | "agenda" | "clinique" | "taches" | "stock"
+      >;
+    }
   | { view: "patient_detail"; patientId: string }
   | { view: "agenda"; appointmentId?: string }
   | { view: "clinique"; patientId?: string }
@@ -33,6 +38,8 @@ export interface NotificationItem {
   data?: Record<string, unknown>;
   description: string;
   id: string;
+  isDismissed?: boolean;
+  isRead?: boolean;
   severity: NotificationSeverity;
   source: NotificationSource;
   target: NotificationTarget;

@@ -77,7 +77,7 @@ const resources = {
           navigate: "Naviguer",
           select: "Sélectionner",
           close: "Fermer",
-          brand: "bAItari ⌘K",
+          brand: "Baitari ⌘K",
         },
       },
       language: {
@@ -1193,7 +1193,7 @@ const resources = {
           navigate: "Navigate",
           select: "Select",
           close: "Close",
-          brand: "bAItari ⌘K",
+          brand: "Baitari ⌘K",
         },
       },
       language: {

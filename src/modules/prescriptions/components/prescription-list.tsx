@@ -9,7 +9,8 @@ import {
   usePrescriptionsRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import type { Patient, User } from "@/types/db";
+import type { Patient } from "@/types/db";
+import type { PrescriptionVet } from "../types";
 
 import { formatNumber } from "../lib/dose-calculator";
 import { PrescriptionPreview, type PreviewItem } from "./prescription-preview";
@@ -22,7 +23,7 @@ export interface PrescriptionListProps {
   limit?: number;
   onNew?: () => void;
   patient: Patient;
-  vet?: User | null;
+  vet?: PrescriptionVet | null;
 }
 
 export function PrescriptionList({
@@ -139,7 +140,7 @@ function PrescriptionRow({
   patient: Patient;
   prescriptionDate: string;
   status: string;
-  vet?: User | null;
+  vet?: PrescriptionVet | null;
 }) {
   const { t } = useTranslation();
   const dateStr = new Date(prescriptionDate).toLocaleDateString("fr-FR", {
@@ -217,7 +218,7 @@ function PrintButton({
   generalInstructions: string;
   items: PreviewItem[];
   patient: Patient;
-  vet: User | null;
+  vet: PrescriptionVet | null;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);

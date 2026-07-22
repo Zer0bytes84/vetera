@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -66,16 +65,25 @@ export function VaccinationList({
 
   return (
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
-      <div className="mb-6 flex flex-row items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="truncate font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
-            {t("patientDetail.vaccinations.title")}
-          </div>
-          <div className="mt-1 truncate text-muted-foreground text-xs">
-            {entries.length}{" "}
-            {entries.length > 1
-              ? t("patientDetail.vaccinations.plural")
-              : t("patientDetail.vaccinations.singular")}
+      <div className="mb-4 flex flex-row items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <Syringe className="size-4" weight="duotone" />
+          </span>
+          <div className="min-w-0">
+            <div className="truncate font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+              {t("patientDetail.vaccinations.title")}
+            </div>
+            <div className="mt-0.5 truncate text-muted-foreground text-xs">
+              {entries.length}{" "}
+              {entries.length > 1
+                ? t("patientDetail.vaccinations.plural", {
+                    defaultValue: "vaccins",
+                  })
+                : t("patientDetail.vaccinations.singular", {
+                    defaultValue: "vaccin",
+                  })}
+            </div>
           </div>
         </div>
         {onNew ? (
@@ -92,7 +100,7 @@ export function VaccinationList({
       </div>
       <div className="flex flex-1 flex-col">
         {entries.length === 0 ? (
-          <Empty>
+          <Empty className="min-h-[120px] py-4">
             <EmptyHeader>
               <EmptyMedia>
                 <Syringe
@@ -102,20 +110,11 @@ export function VaccinationList({
               </EmptyMedia>
               <EmptyTitle>{t("patientDetail.vaccinations.empty")}</EmptyTitle>
               <EmptyDescription>
-                {t("patientDetail.vaccinations.emptyDescription")}
+                {t("patientDetail.vaccinations.emptyDescription", {
+                  defaultValue: "Ajoutez le premier vaccin de ce patient.",
+                })}
               </EmptyDescription>
             </EmptyHeader>
-            <EmptyContent>
-              <Button
-                className="rounded-lg"
-                onClick={onNew}
-                size="sm"
-                variant="outline"
-              >
-                <Plus className="mr-1.5 size-4" weight="bold" />
-                {t("patientDetail.vaccinations.newVaccine")}
-              </Button>
-            </EmptyContent>
           </Empty>
         ) : (
           <ul className="divide-y divide-border/40">

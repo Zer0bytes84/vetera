@@ -250,7 +250,7 @@ export function AsterScoreChart({
               fill="var(--color-income)"
               shape={(props: CashflowBarShapeProps) => {
                 const { x, y, width, height, payload } = props;
-                const hasExpense = payload.expense > 0;
+                const hasExpense = (payload?.expense ?? 0) > 0;
                 const radius: [number, number, number, number] = hasExpense
                   ? [0, 0, 0, 0]
                   : [4, 4, 0, 0];

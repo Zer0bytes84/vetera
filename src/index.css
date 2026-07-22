@@ -617,6 +617,65 @@ button:focus-visible,
   text-transform: uppercase;
 }
 
+/* Interactive clinical cards keep the native pointer while making intent visible. */
+.clinical-interactive {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.clinical-interactive::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    color-mix(in oklch, var(--foreground) 7%, transparent) 50%,
+    transparent 70%
+  );
+  opacity: 0;
+  transform: translateX(-45%);
+  transition:
+    opacity 180ms ease,
+    transform 420ms ease;
+}
+
+.clinical-interactive:hover {
+  z-index: 1;
+  background: color-mix(in oklch, var(--card) 92%, var(--primary));
+  box-shadow: 0 12px 30px -22px
+    color-mix(in oklch, var(--foreground) 35%, transparent);
+  transform: translateY(-2px);
+}
+
+.clinical-interactive:hover::after {
+  opacity: 1;
+  transform: translateX(45%);
+}
+
+.clinical-interactive:focus-visible {
+  z-index: 2;
+  outline: 2px solid color-mix(in oklch, var(--primary) 55%, transparent);
+  outline-offset: -2px;
+}
+
+.clinical-interactive:active {
+  transform: translateY(0) scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clinical-interactive,
+  .clinical-interactive::after {
+    transition: none;
+  }
+}
+
 /* ─── Modal Medical ─── */
 .modal-medical-shell {
   overflow: hidden;

@@ -36,8 +36,6 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   currentUserName: string;
   currentUserEmail: string;
   currentUserAvatar?: string | null;
-  onLogout: () => Promise<void>;
-  onOpenPalette?: () => void;
 };
 
 export function AppSidebar({
@@ -196,12 +194,11 @@ export function AppSidebar({
               render={
                 <button onClick={() => onNavigate("dashboard")} type="button" />
               }
-              tooltip="bAItari"
+              tooltip="Baitari"
             >
               <Logo
                 className="text-sidebar-foreground"
                 collapsed={isCollapsed}
-                flatMark={isCollapsed}
                 size="2xl"
                 textSize="md"
               />

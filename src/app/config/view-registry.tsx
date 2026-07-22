@@ -83,6 +83,7 @@ export function renderView(view: View, props: ViewRegistryProps) {
       return renderLazyView(
         <ParametresPage
           currentTheme={props.currentTheme}
+          onNavigate={props.onNavigate}
           onThemeChange={props.onThemeChange}
         />
       );

@@ -2,7 +2,8 @@ import { Pill, Stethoscope } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
-import type { Patient, User } from "@/types/db";
+import type { Patient } from "@/types/db";
+import type { PrescriptionVet } from "../types";
 
 import { formatNumber } from "../lib/dose-calculator";
 import type { PreviewItem } from "./prescription-preview";
@@ -13,7 +14,7 @@ export interface PrescriptionPrintLayoutProps {
   generalInstructions: string;
   items: PreviewItem[];
   patient: Patient;
-  vet: User | null;
+  vet: PrescriptionVet | null;
 }
 
 /**

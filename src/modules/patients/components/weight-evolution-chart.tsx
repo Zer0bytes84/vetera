@@ -1,4 +1,4 @@
-import { Plus } from "@phosphor-icons/react";
+import { Plus, Scales } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
@@ -72,9 +72,14 @@ export function WeightEvolutionChart({
       <div
         className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}
       >
-        <div className="mb-6 flex flex-row items-center justify-between gap-2">
-          <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
-            {title}
+        <div className="mb-4 flex flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300">
+              <Scales className="size-4" weight="duotone" />
+            </span>
+            <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+              {title}
+            </div>
           </div>
           {onAdd ? (
             <Button
@@ -88,7 +93,7 @@ export function WeightEvolutionChart({
             </Button>
           ) : null}
         </div>
-        <div className="flex h-[200px] flex-col items-center justify-center rounded-[16px] border border-border/60 border-dashed bg-muted/20 p-8 text-center sm:p-12">
+        <div className="flex h-[120px] flex-col items-center justify-center rounded-[16px] border border-border/60 border-dashed bg-muted/20 p-5 text-center">
           <p className="text-muted-foreground text-sm">{emptyMessage}</p>
         </div>
       </div>
@@ -97,13 +102,18 @@ export function WeightEvolutionChart({
 
   return (
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
-      <div className="mb-6 flex flex-row items-center justify-between gap-2">
-        <div>
-          <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
-            {title}
-          </div>
-          <div className="mt-1 text-muted-foreground text-xs">
-            {data.length} {data.length > 1 ? "mesures" : "mesure"}
+      <div className="mb-4 flex flex-row items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300">
+            <Scales className="size-4" weight="duotone" />
+          </span>
+          <div>
+            <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+              {title}
+            </div>
+            <div className="mt-0.5 text-muted-foreground text-xs">
+              {data.length} {data.length > 1 ? "mesures" : "mesure"}
+            </div>
           </div>
         </div>
         {onAdd ? (
@@ -180,9 +190,14 @@ export function WeightEvolutionChart({
                   ? {
                       r: 5,
                       strokeWidth: 0,
-                      onClick: (_event, payload) => {
+                      onClick: (payload) => {
+                        const point = (
+                          payload as typeof payload & {
+                            payload?: WeightChartPoint;
+                          }
+                        ).payload;
                         const matched = entries.find(
-                          (e) => e.measuredAt === payload?.measuredAt
+                          (entry) => entry.measuredAt === point?.measuredAt
                         );
                         if (matched) {
                           onEditEntry(matched);

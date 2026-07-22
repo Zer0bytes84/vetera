@@ -1,5 +1,5 @@
 /**
- * Backup service for bAItari
+ * Backup service for Baitari
  * Handles automatic and manual backup/restore of SQLite database
  *
  * Uses Tauri 2.0 plugin-fs with absolute paths for proper file operations
@@ -147,7 +147,7 @@ async function saveMetadata(metadata: BackupMetadata): Promise<void> {
  * Get current app version
  */
 export function getAppVersion(): string {
-  return import.meta.env.VITE_APP_VERSION || "1.4.0";
+  return import.meta.env.VITE_APP_VERSION || "2.1.11";
 }
 
 /**
@@ -486,7 +486,7 @@ export async function exportDatabase(passphrase?: string): Promise<boolean> {
       defaultPath: defaultName,
       filters: [
         {
-          name: encrypted ? "bAItari Encrypted Backup" : "SQLite Database",
+          name: encrypted ? "Baitari Encrypted Backup" : "SQLite Database",
           extensions: [encrypted ? "bdb" : "db"],
         },
       ],
@@ -590,7 +590,7 @@ export async function importDatabase(passphrase?: string): Promise<boolean> {
       multiple: false,
       filters: [
         {
-          name: "bAItari Backup",
+          name: "Baitari Backup",
           extensions: ["db", "sqlite", "sqlite3", "bdb"],
         },
       ],

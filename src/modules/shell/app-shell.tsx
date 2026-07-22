@@ -35,6 +35,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -124,7 +127,7 @@ function AppShellInner() {
   );
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [aiAgentOpen, setAiAgentOpen] = useState(false);
-  const sidebarScrollRef = useRef<HTMLElement>(null);
+  const sidebarScrollRef = useRef<HTMLDivElement>(null);
 
   const handleNavigate = useCallback((view: View) => {
     setCurrentView(view);
@@ -145,6 +148,7 @@ function AppShellInner() {
 
   const { currentUser, logout } = useAuth();
   const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
   const { setThemeMode, themeMode } = useThemeMode();
   const { ref: headerRef, handleMouseDown } = useTauriDrag<HTMLElement>();
   const { variant, collapsible } = useLayout();
@@ -272,7 +276,6 @@ function AppShellInner() {
     de: t("language.german"),
   };
 
-  const isDarkMode = theme === "dark";
   const { toggleTheme } = useCircularTransition();
 
   return (
@@ -295,9 +298,7 @@ function AppShellInner() {
         currentUserEmail={userEmail}
         currentUserName={userDisplayName}
         currentView={currentView}
-        onLogout={logout}
         onNavigate={handleNavigate}
-        onOpenPalette={() => setPaletteOpen(true)}
         side={isRtl ? "right" : "left"}
         variant={variant}
       />
@@ -314,7 +315,7 @@ function AppShellInner() {
         )}
       >
         <div
-          className="!border-b-0 relative flex h-full flex-1 flex-col overflow-y-auto overflow-x-hidden rounded-t-[16px] rounded-b-none bg-white shadow-2xl ring-1 ring-black/10 transition-all duration-300 dark:bg-zinc-950 dark:ring-white/10"
+          className="!border-b-0 relative flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none rounded-t-[16px] rounded-b-none bg-white shadow-2xl ring-1 ring-black/10 transition-all duration-300 [scrollbar-gutter:stable] dark:bg-zinc-950 dark:ring-white/10"
           ref={sidebarScrollRef}
         >
           <HeroPattern />
@@ -322,7 +323,7 @@ function AppShellInner() {
           {/* biome-ignore lint/a11y/noStaticElementInteractions: header needs onMouseDown for Tauri window drag */}
           <motion.header
             className={cn(
-              "sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs transition-colors duration-300 dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
+              "sticky top-0 z-50 flex h-(--header-height) w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 [backface-visibility:hidden] [transform:translateZ(0)] will-change-transform dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
               "group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
             )}
             onMouseDown={handleMouseDown}
@@ -334,6 +335,22 @@ function AppShellInner() {
               } as React.CSSProperties
             }
           >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.34)_0%,rgba(255,255,255,0.12)_58%,rgba(255,255,255,0.04)_100%)] dark:hidden"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.025)_55%,rgba(0,0,0,0.04)_100%)] dark:block"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent dark:via-white/30"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -top-8 left-[18%] h-16 w-56 rounded-full bg-sky-100/20 blur-2xl dark:bg-sky-400/5"
+            />
             {/* Hairline border (replaces border-b) — Protocol-faithful */}
             <div
               aria-hidden="true"
@@ -479,25 +496,23 @@ function AppShellInner() {
                     </DropdownMenuItem>
 
                     {/* Language submenu */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <div className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-zinc-100/80 dark:hover:bg-white/5">
-                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-500/20">
-                            <HugeiconsIcon
-                              className="size-4 text-sky-600 dark:text-sky-400"
-                              icon={TranslateIcon}
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          <span className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
-                            Langue
-                          </span>
-                          <span className="ml-auto font-semibold text-muted-foreground text-xs uppercase">
-                            {i18n.language.slice(0, 2)}
-                          </span>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-zinc-100/80 dark:hover:bg-white/5">
+                        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-500/20">
+                          <HugeiconsIcon
+                            className="size-4 text-sky-600 dark:text-sky-400"
+                            icon={TranslateIcon}
+                            strokeWidth={1.5}
+                          />
                         </div>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
+                        <span className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
+                          Langue
+                        </span>
+                        <span className="ml-auto font-semibold text-muted-foreground text-xs uppercase">
+                          {i18n.language.slice(0, 2)}
+                        </span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent
                         align="end"
                         className="min-w-44 rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
                         sideOffset={4}
@@ -527,8 +542,8 @@ function AppShellInner() {
                             </DropdownMenuItem>
                           );
                         })}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
 
                     <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
 

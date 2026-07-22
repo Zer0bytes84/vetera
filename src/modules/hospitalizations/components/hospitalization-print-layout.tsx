@@ -216,7 +216,7 @@ export function HospitalizationPrintLayout({
         <footer className="mt-8 flex items-end justify-between border-border/40 border-t pt-3 text-[10px] text-muted-foreground">
           <div>
             <p>
-              Document généré par bAItari — logiciel local, données
+              Document généré par Baitari — logiciel local, données
               confidentielles.
             </p>
             <p>

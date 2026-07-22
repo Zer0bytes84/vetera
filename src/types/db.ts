@@ -21,6 +21,7 @@ export interface Owner {
 
 export interface Patient {
   allergies?: string;
+  avatarUrl?: string;
   breed?: string;
   chronicConditions?: string; // Maladies chroniques
 

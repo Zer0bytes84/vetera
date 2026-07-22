@@ -20,10 +20,14 @@ import {
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { COMMON_VACCINES, VACCINATION_STATUS_META } from "@/config/status-meta";
+import {
+  COMMON_VACCINES,
+  VACCINATION_STATUS_META,
+  type VaccinationStatus,
+} from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useVaccinationsRepository } from "@/data/repositories";
-import type { Vaccination, VaccinationStatus } from "@/types/db";
+import type { Vaccination } from "@/types/db";
 import { getVaccinationStatus } from "../lib";
 
 interface VaccinationDialogProps {
@@ -104,14 +108,12 @@ export function VaccinationDialog({
     if (value === "") {
       return;
     }
-    const preset = COMMON_VACCINES.find((p) => p.id === value);
+    const preset = COMMON_VACCINES.find((entry) => entry.type === value);
     if (!preset) {
       return;
     }
-    setVaccineName(preset.name);
-    if (preset.type) {
-      setVaccineType(preset.type);
-    }
+    setVaccineName(preset.label);
+    setVaccineType(preset.type);
     if (preset.intervalDays && administeredAt) {
       const next = plusDays(new Date(administeredAt), preset.intervalDays);
       setNextDueAt(toDateInputValue(next.toISOString()));
@@ -120,7 +122,7 @@ export function VaccinationDialog({
 
   const handleAdministeredChange = (value: string) => {
     setAdministeredAt(value);
-    const preset = COMMON_VACCINES.find((p) => p.id === presetId);
+    const preset = COMMON_VACCINES.find((entry) => entry.type === presetId);
     if (preset?.intervalDays && value) {
       const next = plusDays(new Date(value), preset.intervalDays);
       setNextDueAt(toDateInputValue(next.toISOString()));
@@ -214,11 +216,8 @@ export function VaccinationDialog({
                   {t("patientDetail.vaccinations.presetCustom")}
                 </NativeSelectOption>
                 {COMMON_VACCINES.map((preset) => (
-                  <NativeSelectOption key={preset.id} value={preset.id}>
-                    {preset.name}
-                    {preset.species?.length
-                      ? ` — ${preset.species.join("/")}`
-                      : ""}
+                  <NativeSelectOption key={preset.type} value={preset.type}>
+                    {preset.label}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>

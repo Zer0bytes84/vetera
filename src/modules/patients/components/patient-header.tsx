@@ -51,12 +51,12 @@ export function PatientHeader({
   return (
     <div
       className={cn(
-        "clinical-feature-surface flex flex-col gap-5 p-5 md:flex-row md:items-center md:gap-8 md:p-6",
+        "clinical-feature-surface flex flex-col gap-4 border-l-4 border-l-emerald-400 p-4 md:flex-row md:items-center md:gap-6 md:p-5",
         className
       )}
     >
-      <div className="flex flex-1 items-start gap-4 sm:gap-5">
-        <Avatar className="size-16 shadow-sm ring-2 ring-background sm:size-20">
+      <div className="flex flex-1 items-center gap-4">
+        <Avatar className="size-14 shadow-sm ring-2 ring-background sm:size-16">
           {patient.avatarUrl ? (
             <AvatarImage alt={patient.name} src={patient.avatarUrl} />
           ) : null}
@@ -65,9 +65,9 @@ export function PatientHeader({
           </AvatarFallback>
         </Avatar>
 
-        <div className="min-w-0 flex-1 space-y-2.5">
+        <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="truncate font-display font-semibold text-2xl text-foreground tracking-tight">
+            <h1 className="truncate font-display font-semibold text-2xl text-foreground tracking-[-0.04em]">
               {patient.name}
             </h1>
             <Badge
@@ -108,30 +108,25 @@ export function PatientHeader({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 md:flex-col md:items-end md:gap-1.5">
-        <span className="font-bold text-[10px] text-muted-foreground/80 uppercase tracking-widest">
-          {t("patientDetail.header.quickActions")}
-        </span>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            className="h-9 gap-2 rounded-xl px-4"
-            onClick={onNewAppointment}
-            size="sm"
-            variant="default"
-          >
-            <CalendarPlus className="size-4" weight="duotone" />
-            {t("patientDetail.header.newAppointment")}
-          </Button>
-          <Button
-            className="h-9 gap-2 rounded-xl px-4"
-            onClick={onEditProfile}
-            size="sm"
-            variant="outline"
-          >
-            <PencilSimple className="size-4" weight="duotone" />
-            Modifier le dossier
-          </Button>
-        </div>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          className="h-9 gap-2 rounded-xl bg-emerald-600 px-4 text-white hover:bg-emerald-700"
+          onClick={onNewAppointment}
+          size="sm"
+          variant="default"
+        >
+          <CalendarPlus className="size-4" weight="duotone" />
+          {t("patientDetail.header.newAppointment")}
+        </Button>
+        <Button
+          className="h-9 gap-2 rounded-xl px-4"
+          onClick={onEditProfile}
+          size="sm"
+          variant="outline"
+        >
+          <PencilSimple className="size-4" weight="duotone" />
+          Modifier le dossier
+        </Button>
       </div>
     </div>
   );

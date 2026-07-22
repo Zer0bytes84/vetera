@@ -1,4 +1,5 @@
-import type { Vaccination, VaccinationStatus } from "@/config/status-meta";
+import type { VaccinationStatus } from "@/config/status-meta";
+import type { Vaccination } from "@/types/db";
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 

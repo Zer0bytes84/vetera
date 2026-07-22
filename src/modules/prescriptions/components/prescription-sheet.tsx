@@ -11,7 +11,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import type { Patient, User } from "@/types/db";
+import type { Patient } from "@/types/db";
+import type { PrescriptionVet } from "../types";
 
 import { PrescriptionBuilder } from "./prescription-builder";
 
@@ -21,7 +22,7 @@ interface PrescriptionSheetProps {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   patient: Patient;
-  vet?: User | null;
+  vet?: PrescriptionVet | null;
 }
 
 /**

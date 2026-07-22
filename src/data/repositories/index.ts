@@ -101,7 +101,7 @@ export function useAppointmentsRepository() {
 
   type AppointmentDraft = Omit<
     Appointment,
-    "id" | "ownerId" | "startTime" | "endTime" | "createdAt"
+    "id" | "ownerId" | "startTime" | "endTime" | "createdAt" | "vetId"
   > & {
     startTime: string | Date;
     endTime: string | Date;

@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -127,7 +126,7 @@ export function PatientDocumentsList({
           dataUrl,
         } as any);
         toast.success("Document ajouté avec succès !");
-      } catch (err) {
+      } catch (_err) {
         toast.error("Erreur lors de l'ajout du document.");
       } finally {
         setIsUploading(false);
@@ -152,7 +151,7 @@ export function PatientDocumentsList({
     try {
       await repo.remove(id);
       toast.success("Document supprimé avec succès.");
-    } catch (err) {
+    } catch (_err) {
       toast.error("Erreur lors de la suppression.");
     }
   };
@@ -167,13 +166,18 @@ export function PatientDocumentsList({
 
   return (
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
-      <div className="mb-6 flex flex-row items-start justify-between gap-2">
-        <div>
-          <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
-            {t("patientDetail.documents.title")}
-          </div>
-          <div className="mt-1 text-muted-foreground text-xs">
-            {t("patientDetail.documents.count", { count: docs.length })}
+      <div className="mb-4 flex flex-row items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
+            <FileText className="size-4" weight="duotone" />
+          </span>
+          <div>
+            <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+              {t("patientDetail.documents.title")}
+            </div>
+            <div className="mt-0.5 text-muted-foreground text-xs">
+              {t("patientDetail.documents.count", { count: docs.length })}
+            </div>
           </div>
         </div>
         <input
@@ -196,7 +200,7 @@ export function PatientDocumentsList({
       </div>
       <div className="flex flex-1 flex-col">
         {docs.length === 0 ? (
-          <Empty>
+          <Empty className="min-h-[120px] py-4">
             <EmptyHeader>
               <EmptyMedia>
                 <UploadSimple
@@ -209,19 +213,6 @@ export function PatientDocumentsList({
                 {t("patientDetail.documents.upload")}
               </EmptyDescription>
             </EmptyHeader>
-            <EmptyContent>
-              <Button
-                disabled={isUploading}
-                onClick={triggerUpload}
-                size="sm"
-                variant="outline"
-              >
-                <UploadSimple className="size-4" weight="duotone" />
-                {isUploading
-                  ? "Import..."
-                  : t("patientDetail.documents.upload")}
-              </Button>
-            </EmptyContent>
           </Empty>
         ) : (
           <ul className="divide-y divide-border/40">

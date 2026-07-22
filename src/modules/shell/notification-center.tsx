@@ -9,7 +9,7 @@ import {
   Task01Icon,
   Tick01Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -34,7 +34,7 @@ import type { View } from "@/types";
 const NOTIFICATION_FILTERS = ["all", "unread", "critical"] as const;
 type NotificationFilter = (typeof NOTIFICATION_FILTERS)[number];
 
-const SOURCE_ICON: Record<NotificationSource, React.FC<any>> = {
+const SOURCE_ICON: Record<NotificationSource, IconSvgElement> = {
   appointment: Calendar01Icon,
   reminder: CalendarCheckIn01Icon,
   postop: StethoscopeIcon,

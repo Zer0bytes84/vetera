@@ -8,7 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Patient, User } from "@/types/db";
+import type { Patient } from "@/types/db";
+import type { PrescriptionVet } from "../types";
 
 import { PrescriptionPrintLayout } from "./prescription-print-layout";
 
@@ -40,7 +41,7 @@ export interface PrescriptionPreviewProps {
   items: PreviewItem[];
   onClose: () => void;
   patient: Patient;
-  vet: User | null;
+  vet: PrescriptionVet | null;
 }
 
 /**

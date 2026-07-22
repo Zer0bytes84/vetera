@@ -26,7 +26,8 @@ import {
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/auditService";
-import type { Patient, PrescriptionItem, User } from "@/types/db";
+import type { Patient, PrescriptionItem } from "@/types/db";
+import type { PrescriptionVet } from "../types";
 
 import {
   computeDose,
@@ -49,7 +50,7 @@ export interface PrescriptionBuilderProps {
   /** Patient sélectionné (pour species + weight). */
   patient: Patient;
   /** Vétérinaire prescripteur (par défaut: user courant). */
-  vet?: User | null;
+  vet?: PrescriptionVet | null;
 }
 
 interface DraftItem {
@@ -147,7 +148,7 @@ export function PrescriptionBuilder({
   onPreviewChange,
 }: PrescriptionBuilderProps) {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
 
   const speciesKey = useMemo(
     () => patientSpeciesToCatalogKey(patient.species),
@@ -290,13 +291,11 @@ export function PrescriptionBuilder({
 
   const handleSave = useCallback(
     async (newStatus: "draft" | "signed") => {
-      const prescriptionId = makeId();
       const now = new Date().toISOString();
       const prescription = {
-        id: prescriptionId,
         appointmentId,
         patientId: patient.id,
-        vetId: vet?.id ?? user?.id,
+        vetId: vet?.id ?? currentUser?.id,
         prescriptionDate: now,
         weightKg,
         diagnosis: diagnosis.trim() || undefined,
@@ -307,7 +306,11 @@ export function PrescriptionBuilder({
       };
 
       // 1) Sauver la prescription
-      await prescriptionsRepo.add(prescription);
+      const createdPrescription = await prescriptionsRepo.add(prescription);
+      if (!createdPrescription) {
+        throw new Error("Impossible d'enregistrer l'ordonnance.");
+      }
+      const prescriptionId = createdPrescription.id;
 
       // 2) Purger les anciens items
       const existing = prescriptionsRepo.forAppointment(appointmentId);
@@ -323,7 +326,6 @@ export function PrescriptionBuilder({
       // 3) Insérer les nouveaux
       for (const it of items) {
         await itemsRepo.add({
-          id: it.id.startsWith("tmp_") ? makeId() : it.id,
           prescriptionId,
           medicationId: it.medicationId,
           medicationName: it.medicationName,
@@ -365,7 +367,7 @@ export function PrescriptionBuilder({
       appointmentId,
       patient.id,
       vet?.id,
-      user?.id,
+      currentUser?.id,
       weightKg,
       diagnosis,
       generalInstructions,
@@ -481,7 +483,7 @@ export function PrescriptionBuilder({
             onPreviewChange?.(false);
           }}
           patient={patient}
-          vet={vet ?? user ?? null}
+          vet={vet ?? currentUser ?? null}
         />
       ) : null}
     </div>

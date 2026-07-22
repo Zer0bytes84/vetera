@@ -1,5 +1,4 @@
 import {
-  BookOpenTextIcon,
   Calendar01Icon,
   DashboardSquare01Icon,
   Hospital01Icon,
@@ -50,7 +49,6 @@ export const navigationSections: Array<{
       { view: "patients", labelKey: "views.patients", icon: StethoscopeIcon },
       { view: "agenda", labelKey: "views.agenda", icon: Calendar01Icon },
       { view: "clinique", labelKey: "views.clinique", icon: Hospital01Icon },
-      { view: "notes", labelKey: "views.notes", icon: BookOpenTextIcon },
       { view: "taches", labelKey: "views.taches", icon: Task01Icon },
     ],
   },

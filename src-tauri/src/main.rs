@@ -30,7 +30,7 @@ fn main() {
 
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Bonjour, {}! Bienvenue sur bAItari", name)
+    format!("Bonjour, {}! Bienvenue sur Baitari", name)
 }
 
 #[tauri::command]

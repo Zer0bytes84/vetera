@@ -1,4 +1,5 @@
 import {
+  ArrowUpRight,
   CalendarBlank,
   Scales,
   Stethoscope,
@@ -13,6 +14,10 @@ interface PatientKpiStripProps {
   nextAppointment?: Appointment;
   nextVaccination?: Vaccination | null;
   now: number;
+  onAppointmentClick: () => void;
+  onTimelineClick: () => void;
+  onVaccinationClick: () => void;
+  onWeightClick: () => void;
   weightEntries: WeightEntry[];
 }
 
@@ -40,6 +45,10 @@ export function PatientKpiStrip({
   nextAppointment,
   nextVaccination,
   now,
+  onAppointmentClick,
+  onTimelineClick,
+  onVaccinationClick,
+  onWeightClick,
   weightEntries,
 }: PatientKpiStripProps) {
   const { t } = useTranslation();
@@ -66,9 +75,10 @@ export function PatientKpiStrip({
   }
 
   const lastVisitFormatted = formatDateShort(lastVisit);
-  const daysSinceLastVisit = lastVisitFormatted
-    ? -diffDays(new Date(lastVisit), currentDate)
-    : null;
+  const daysSinceLastVisit =
+    lastVisitFormatted && lastVisit
+      ? -diffDays(new Date(lastVisit), currentDate)
+      : null;
 
   const nextApptDate = nextAppointment
     ? new Date(nextAppointment.startTime)
@@ -86,6 +96,7 @@ export function PatientKpiStrip({
 
   const items = [
     {
+      accent: "sky",
       title: t("patientDetail.kpi.currentWeight"),
       value: lastWeight
         ? `${lastWeight.weightKg.toFixed(2)} kg`
@@ -98,8 +109,10 @@ export function PatientKpiStrip({
         : "Ajoutez une première mesure",
       trend: weightTrend,
       icon: Scales,
+      onClick: onWeightClick,
     },
     {
+      accent: "cyan",
       title: t("patientDetail.kpi.lastVisit"),
       value: lastVisitFormatted ?? t("patientDetail.kpi.never"),
       detail:
@@ -116,8 +129,10 @@ export function PatientKpiStrip({
             : "",
       trend: "neutral",
       icon: Stethoscope,
+      onClick: onTimelineClick,
     },
     {
+      accent: "emerald",
       title: t("patientDetail.kpi.nextVaccine"),
       value: nextVaccination?.vaccineName ?? t("patientDetail.kpi.nonePlanned"),
       detail:
@@ -154,8 +169,10 @@ export function PatientKpiStrip({
               ? "neutral"
               : "up",
       icon: Syringe,
+      onClick: onVaccinationClick,
     },
     {
+      accent: "amber",
       title: t("patientDetail.kpi.nextAppointment"),
       value: nextAppointment?.title ?? t("patientDetail.kpi.noAppointment"),
       detail:
@@ -171,51 +188,63 @@ export function PatientKpiStrip({
         : "Aucun créneau à venir",
       trend: "neutral",
       icon: CalendarBlank,
+      onClick: onAppointmentClick,
     },
   ];
 
   return (
     <section
       aria-label="Repères cliniques"
-      className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid overflow-hidden rounded-2xl border border-border/70 bg-card sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-border/70"
     >
       {items.map((item) => {
         const Icon = item.icon;
         const tone =
           item.trend === "down"
-            ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-            : item.trend === "up"
-              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-              : "bg-sky-500/10 text-sky-600 dark:text-sky-400";
+            ? "bg-rose-500 text-white"
+            : item.accent === "emerald"
+              ? "bg-emerald-500 text-white"
+              : item.accent === "amber"
+                ? "bg-amber-500 text-white"
+                : item.accent === "cyan"
+                  ? "bg-cyan-500 text-white"
+                  : "bg-sky-500 text-white";
 
         return (
-          <div className="clinical-surface min-w-0 px-4 py-4" key={item.title}>
-            <div className="flex items-center gap-2">
+          <button
+            aria-label={`Ouvrir ${item.title}`}
+            className="clinical-interactive group min-w-0 border-border/70 border-b px-4 py-3.5 text-left last:border-b-0 sm:[&:nth-child(odd)]:border-r xl:border-b-0 xl:[&:nth-child(odd)]:border-r-0"
+            key={item.title}
+            onClick={item.onClick}
+            type="button"
+          >
+            <div className="flex items-center gap-3">
               <span
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-xl",
+                  "flex size-9 shrink-0 items-center justify-center rounded-xl shadow-sm",
                   tone
                 )}
               >
                 <Icon className="size-4" weight="duotone" />
               </span>
-              <span className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.08em]">
-                {item.title}
-              </span>
+              <div className="min-w-0">
+                <span className="block font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.09em]">
+                  {item.title}
+                </span>
+                <p className="mt-0.5 truncate font-semibold text-base tracking-[-0.03em]">
+                  {item.value}
+                </p>
+              </div>
             </div>
-            <p className="mt-4 truncate font-semibold text-lg tracking-[-0.03em]">
-              {item.value}
-            </p>
-            <div className="mt-1 flex min-w-0 items-center justify-between gap-2 text-muted-foreground text-xs">
+            <div className="mt-2 flex min-w-0 items-center justify-between gap-2 pl-12 text-muted-foreground text-xs">
               <span className="truncate">{item.detail}</span>
               {"trendLabel" in item && item.trendLabel ? (
                 <span className="shrink-0">{item.trendLabel}</span>
-              ) : null}
+              ) : (
+                <ArrowUpRight className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+              )}
             </div>
-            <p className="mt-3 truncate border-border/70 border-t pt-3 text-muted-foreground text-xs">
-              {item.caption}
-            </p>
-          </div>
+          </button>
         );
       })}
     </section>
