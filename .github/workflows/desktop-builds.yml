@@ -143,6 +143,7 @@ jobs:
 
       - name: Reset nightly release
         env:
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: gh release delete nightly --yes --cleanup-tag || true
