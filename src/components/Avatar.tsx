@@ -1,4 +1,5 @@
 import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "lucide-react";
+import { useState } from "react";
 import type React from "react";
 
 import {
@@ -131,12 +132,14 @@ const getInitials = (name: string) => {
 function renderImageAvatar({
   className,
   normalizedSrc,
+  onError,
   safeName,
   size,
   sizeClass,
 }: {
   className?: string;
   normalizedSrc: string;
+  onError: () => void;
   safeName: string;
   size: AvatarSize;
   sizeClass: string;
@@ -149,6 +152,7 @@ function renderImageAvatar({
         alt={safeName}
         draggable={false}
         height={pixelSize}
+        onError={onError}
         src={normalizedSrc}
         width={pixelSize}
       />
@@ -173,11 +177,18 @@ const Avatar: React.FC<AvatarProps> = ({
   const sizeClass = SIZE_MAP[size];
   const safeName = normalizeName(name);
   const normalizedSrc = normalizeAvatarSrc(src);
+  const [failedSrc, setFailedSrc] = useState("");
+  const imageFailed = Boolean(normalizedSrc && failedSrc === normalizedSrc);
 
-  if (normalizedSrc && isRenderableAvatarSrc(normalizedSrc)) {
+  if (
+    normalizedSrc &&
+    isRenderableAvatarSrc(normalizedSrc) &&
+    !imageFailed
+  ) {
     return renderImageAvatar({
       className,
       normalizedSrc,
+      onError: () => setFailedSrc(normalizedSrc),
       safeName,
       size,
       sizeClass,

@@ -47,7 +47,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLayout } from "@/contexts/layout-provider";
 import { useUsersRepository } from "@/data/repositories";
 import { APP_NAME } from "@/lib/brand";
-import { writeCachedProfile } from "@/lib/profile-cache";
+import {
+  readCachedProfile,
+  subscribeToCachedProfile,
+  writeCachedProfile,
+} from "@/lib/profile-cache";
 import {
   ACCENT_THEMES,
   applyTheme,
@@ -908,6 +912,9 @@ const Parametres: React.FC<ParametresProps> = ({
   const [bio, setBio] = useState("");
   const [clinicName, setClinicName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [cachedAvatarUrl, setCachedAvatarUrl] = useState(() =>
+    readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
@@ -915,6 +922,23 @@ const Parametres: React.FC<ParametresProps> = ({
   } | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  useEffect(() => {
+    setCachedAvatarUrl(
+      readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
+    );
+  }, [currentUser?.email]);
+
+  useEffect(() => {
+    if (!currentUser?.email) {
+      return;
+    }
+    return subscribeToCachedProfile((event) => {
+      if (event.detail.email.toLowerCase() === currentUser.email?.toLowerCase()) {
+        setCachedAvatarUrl(event.detail.profile.avatarUrl ?? "");
+      }
+    });
+  }, [currentUser?.email]);
 
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() =>
     getThemeConfig()
@@ -1882,9 +1906,11 @@ const Parametres: React.FC<ParametresProps> = ({
                           name="Zohir Kherroubi"
                           size="lg"
                           src={sanitizeAvatarValue(
-                            userDoc?.avatarUrl ||
+                            avatarUrl ||
+                              userDoc?.avatarUrl ||
                               currentUser?.avatarUrl ||
-                              avatarUrl
+                              readCachedProfile(currentUser?.email)?.avatarUrl ||
+                              cachedAvatarUrl
                           )}
                         />
                         <div className="flex size-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-700 dark:text-sky-300">

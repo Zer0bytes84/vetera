@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
 import { AppSidebar } from "@/components/app-sidebar";
+import Avatar from "@/components/Avatar";
 import CommandPalette from "@/components/CommandPalette";
 import { HeroPattern } from "@/components/HeroPattern";
 import { useTheme } from "@/components/theme-provider";
@@ -48,6 +49,10 @@ import { useCircularTransition } from "@/hooks/use-circular-transition";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/i18n/config";
 import { cn } from "@/lib/utils";
+import {
+  readCachedProfile,
+  subscribeToCachedProfile,
+} from "@/lib/profile-cache";
 // import { useNotificationToasts } from "@/services/notifications/useNotificationToasts";
 import { NotificationCenter } from "@/modules/shell/notification-center";
 import type { View } from "@/types";
@@ -147,7 +152,26 @@ function AppShellInner() {
   const bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
 
   const { currentUser, logout } = useAuth();
+  const [cachedAvatarUrl, setCachedAvatarUrl] = useState(() =>
+    readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
+  );
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (!currentUser?.email) {
+      return;
+    }
+    return subscribeToCachedProfile((event) => {
+      if (event.detail.email.toLowerCase() === currentUser.email?.toLowerCase()) {
+        setCachedAvatarUrl(event.detail.profile.avatarUrl ?? "");
+      }
+    });
+  }, [currentUser?.email]);
+
+  const resolvedAvatarUrl =
+    currentUser?.avatarUrl ||
+    readCachedProfile(currentUser?.email)?.avatarUrl ||
+    cachedAvatarUrl;
   const isDarkMode = theme === "dark";
   const { setThemeMode, themeMode } = useThemeMode();
   const {
@@ -415,17 +439,12 @@ function AppShellInner() {
                     aria-label="Mon compte"
                     className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full ring-2 ring-transparent transition-all duration-200 hover:ring-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
                   >
-                    {currentUser?.avatarUrl ? (
-                      <img
-                        alt={userDisplayName}
-                        className="h-10 w-10 rounded-full object-cover"
-                        src={currentUser.avatarUrl}
-                      />
-                    ) : (
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 font-semibold text-base text-white shadow-sm">
-                        {userDisplayName.charAt(0).toUpperCase()}
-                      </span>
-                    )}
+                    <Avatar
+                      className="size-10 shadow-sm"
+                      name={userDisplayName}
+                      size="md"
+                      src={resolvedAvatarUrl}
+                    />
                     {/* Online indicator */}
                     <span className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
                   </DropdownMenuTrigger>
@@ -437,17 +456,12 @@ function AppShellInner() {
                   >
                     {/* User info header */}
                     <div className="mb-1 flex items-center gap-3 px-3 py-2.5">
-                      {currentUser?.avatarUrl ? (
-                        <img
-                          alt={userDisplayName}
-                          className="h-10 w-10 flex-shrink-0 rounded-full object-cover"
-                          src={currentUser.avatarUrl}
-                        />
-                      ) : (
-                        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 font-semibold text-sm text-white">
-                          {userDisplayName.charAt(0).toUpperCase()}
-                        </span>
-                      )}
+                      <Avatar
+                        className="size-10 shrink-0"
+                        name={userDisplayName}
+                        size="md"
+                        src={resolvedAvatarUrl}
+                      />
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-sm text-zinc-900 dark:text-white">
                           {userDisplayName}

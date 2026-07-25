@@ -34,13 +34,21 @@ export function writeCachedProfile(
   }
 
   try {
+    const existing = readCachedProfile(email) ?? {};
+    const nextProfile = { ...existing, ...profile };
+    if (profile.avatarUrl === undefined && existing.avatarUrl) {
+      nextProfile.avatarUrl = existing.avatarUrl;
+    }
+    if (profile.displayName === undefined && existing.displayName) {
+      nextProfile.displayName = existing.displayName;
+    }
     window.localStorage.setItem(
       getProfileCacheKey(email),
-      JSON.stringify(profile)
+      JSON.stringify(nextProfile)
     );
     window.dispatchEvent(
       new CustomEvent(PROFILE_CACHE_UPDATED_EVENT, {
-        detail: { email, profile },
+        detail: { email, profile: nextProfile },
       })
     );
   } catch (error) {
