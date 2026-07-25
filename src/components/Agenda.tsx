@@ -84,6 +84,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   APPOINTMENT_STATUS_META,
   APPOINTMENT_TYPE_META,
+  getAppointmentTypeMeta,
 } from "@/config/status-meta";
 import { useFocus } from "@/contexts/focus-provider";
 import {
@@ -356,6 +357,9 @@ const HOUR_BLOCKS = Array.from(
 );
 const CALENDAR_START_MINUTES = CALENDAR_START_HOUR * 60;
 const CALENDAR_END_MINUTES = (CALENDAR_END_HOUR + 1) * 60;
+const DAY_HOUR_HEIGHT = 76;
+const WEEK_HOUR_HEIGHT = 64;
+const APPOINTMENT_VERTICAL_GAP = 2;
 
 const TABLE_TABS = [
   { label: "Planning", value: "planning" },
@@ -515,8 +519,10 @@ function formatDuration(minutes: number) {
   return `${hours} h ${remainder}`;
 }
 
-function getTimePosition(time: Date) {
-  return (time.getHours() - CALENDAR_START_HOUR) * 60 + time.getMinutes();
+function getTimePosition(time: Date, pixelsPerHour: number) {
+  const minutesFromStart =
+    (time.getHours() - CALENDAR_START_HOUR) * 60 + time.getMinutes();
+  return (minutesFromStart / 60) * pixelsPerHour;
 }
 
 function getMinutesFromDayStart(value: Date) {
@@ -541,13 +547,17 @@ function getAppointmentFrame(
     return null;
   }
 
-  const top = ((clippedStart - CALENDAR_START_MINUTES) / 60) * pixelsPerHour;
-  const height = Math.max(
-    minHeight,
-    ((clippedEnd - clippedStart) / 60) * pixelsPerHour
-  );
+  const top =
+    ((clippedStart - CALENDAR_START_MINUTES) / 60) * pixelsPerHour +
+    APPOINTMENT_VERTICAL_GAP / 2;
+  const rawHeight = ((clippedEnd - clippedStart) / 60) * pixelsPerHour;
+  const height = Math.max(minHeight, rawHeight - APPOINTMENT_VERTICAL_GAP);
 
-  return { top, height };
+  return {
+    top,
+    height,
+    durationMinutes: clippedEnd - clippedStart,
+  };
 }
 
 function getWeekDays(date: Date) {
@@ -676,7 +686,7 @@ function AppointmentTypeBadge({
     <Badge
       className={cn(
         "border-transparent",
-        APPOINTMENT_TYPE_META[type].badgeClassName,
+        getAppointmentTypeMeta(type).badgeClassName,
         className
       )}
       variant="outline"
@@ -707,8 +717,86 @@ function AppointmentStatusBadge({
   );
 }
 
+interface AppointmentLayout {
+  column: number;
+  columnSpan: number;
+  totalColumns: number;
+}
+
+function appointmentsOverlap(left: Appointment, right: Appointment) {
+  const leftStart = new Date(left.startTime).getTime();
+  const leftEnd = new Date(left.endTime).getTime();
+  const rightStart = new Date(right.startTime).getTime();
+  const rightEnd = new Date(right.endTime).getTime();
+
+  return leftStart < rightEnd && rightStart < leftEnd;
+}
+
+function findAvailableColumn(
+  appointment: Appointment,
+  columns: Appointment[][]
+) {
+  const start = new Date(appointment.startTime).getTime();
+  return columns.findIndex((column) => {
+    const lastAppointment = column.at(-1);
+    return (
+      lastAppointment && start >= new Date(lastAppointment.endTime).getTime()
+    );
+  });
+}
+
+function getAvailableColumnSpan(
+  appointment: Appointment,
+  startColumn: number,
+  columns: Appointment[][]
+) {
+  let span = 1;
+  for (
+    let candidateColumn = startColumn + 1;
+    candidateColumn < columns.length;
+    candidateColumn += 1
+  ) {
+    const hasConflict = columns[candidateColumn].some((candidate) =>
+      appointmentsOverlap(appointment, candidate)
+    );
+    if (hasConflict) {
+      break;
+    }
+    span += 1;
+  }
+  return span;
+}
+
+function layoutAppointmentGroup(
+  group: Appointment[],
+  layout: Map<string, AppointmentLayout>
+) {
+  const columns: Appointment[][] = [];
+
+  for (const appointment of group) {
+    const availableColumn = findAvailableColumn(appointment, columns);
+    const column =
+      availableColumn >= 0 ? availableColumn : columns.push([]) - 1;
+    columns[column].push(appointment);
+    layout.set(appointment.id, {
+      column,
+      columnSpan: 1,
+      totalColumns: 0,
+    });
+  }
+
+  for (const appointment of group) {
+    const info = layout.get(appointment.id);
+    if (!info) {
+      continue;
+    }
+    info.totalColumns = columns.length;
+    info.columnSpan = getAvailableColumnSpan(appointment, info.column, columns);
+  }
+}
+
 function calculateOverlapMap(appointments: Appointment[]) {
-  const layout = new Map<string, { column: number; totalColumns: number }>();
+  const layout = new Map<string, AppointmentLayout>();
 
   const sorted = [...appointments].sort((a, b) => {
     const startA = new Date(a.startTime).getTime();
@@ -722,43 +810,12 @@ function calculateOverlapMap(appointments: Appointment[]) {
   let currentGroup: Appointment[] = [];
   let groupEnd = 0;
 
-  const layoutGroup = (group: Appointment[]) => {
-    const columns: Appointment[][] = [];
-    for (const appt of group) {
-      const start = new Date(appt.startTime).getTime();
-      let placed = false;
-
-      for (let i = 0; i < columns.length; i++) {
-        const lastAppt = columns[i][columns[i].length - 1];
-        if (start >= new Date(lastAppt.endTime).getTime()) {
-          columns[i].push(appt);
-          layout.set(appt.id, { column: i, totalColumns: 0 });
-          placed = true;
-          break;
-        }
-      }
-
-      if (!placed) {
-        columns.push([appt]);
-        layout.set(appt.id, { column: columns.length - 1, totalColumns: 0 });
-      }
-    }
-
-    const totalCols = columns.length;
-    for (const appt of group) {
-      const info = layout.get(appt.id);
-      if (info) {
-        info.totalColumns = totalCols;
-      }
-    }
-  };
-
   for (const appt of sorted) {
     const start = new Date(appt.startTime).getTime();
     const end = new Date(appt.endTime).getTime();
 
     if (currentGroup.length > 0 && start >= groupEnd) {
-      layoutGroup(currentGroup);
+      layoutAppointmentGroup(currentGroup, layout);
       currentGroup = [];
       groupEnd = 0;
     }
@@ -768,10 +825,183 @@ function calculateOverlapMap(appointments: Appointment[]) {
   }
 
   if (currentGroup.length > 0) {
-    layoutGroup(currentGroup);
+    layoutAppointmentGroup(currentGroup, layout);
   }
 
   return layout;
+}
+
+function getCalendarBlockPresentation(
+  frameHeight: number,
+  totalColumns: number,
+  variant: "day" | "week",
+  hasReason: boolean
+) {
+  const isTiny = frameHeight < 22;
+  const isDense = frameHeight < 42 || totalColumns >= 3 || variant === "week";
+  let paddingClassName = "px-2.5 py-1.5";
+  if (isDense) {
+    paddingClassName = "px-2 py-1";
+  }
+  if (isTiny) {
+    paddingClassName = "px-2 py-0";
+  }
+
+  return {
+    isDense,
+    isTiny,
+    paddingClassName,
+    showReason:
+      variant === "day" && frameHeight >= 64 && totalColumns <= 2 && hasReason,
+    showSecondaryLine: frameHeight >= 27,
+  };
+}
+
+function CalendarAppointmentContent({
+  appointment,
+  isDense,
+  isTiny,
+  patientName,
+  showReason,
+  showSecondaryLine,
+  start,
+  timeRange,
+  totalColumns,
+}: {
+  appointment: Appointment;
+  isDense: boolean;
+  isTiny: boolean;
+  patientName: string;
+  showReason: boolean;
+  showSecondaryLine: boolean;
+  start: Date;
+  timeRange: string;
+  totalColumns: number;
+}) {
+  if (isTiny) {
+    return (
+      <div className="flex min-w-0 items-center gap-1.5 pl-1 font-medium text-[10px] leading-[12px]">
+        <span className="shrink-0 tabular-nums">{formatTime(start)}</span>
+        <span className="truncate">{patientName}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-w-0 pl-1">
+      <div className="flex min-w-0 items-baseline gap-1.5">
+        <p
+          className={cn(
+            "truncate font-semibold text-foreground",
+            isDense ? "text-[11px] leading-4" : "text-xs leading-4"
+          )}
+        >
+          {patientName}
+        </p>
+        {appointment.status === "in_progress" ? (
+          <span className="size-1.5 shrink-0 rounded-full bg-blue-500 ring-2 ring-blue-500/15" />
+        ) : null}
+      </div>
+
+      {showSecondaryLine ? (
+        <p
+          className={cn(
+            "truncate text-muted-foreground tabular-nums",
+            isDense ? "text-[9px] leading-3" : "text-[10px] leading-4"
+          )}
+        >
+          {timeRange}
+          {totalColumns <= 2 ? ` · ${appointment.type}` : ""}
+        </p>
+      ) : null}
+
+      {showReason ? (
+        <p className="mt-0.5 line-clamp-2 text-[10px] text-muted-foreground leading-3.5">
+          {appointment.reason}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function CalendarAppointmentBlock({
+  appointment,
+  frameHeight,
+  frameTop,
+  getPatientName,
+  layout,
+  onSelectAppointment,
+  selected,
+  variant,
+}: {
+  appointment: Appointment;
+  frameHeight: number;
+  frameTop: number;
+  getPatientName: (patientId: string) => string;
+  layout: AppointmentLayout;
+  onSelectAppointment: (appointment: Appointment) => void;
+  selected: boolean;
+  variant: "day" | "week";
+}) {
+  const start = normalizeDate(appointment.startTime);
+  const end = normalizeDate(appointment.endTime);
+  if (!(start && end)) {
+    return null;
+  }
+
+  const patientName = getPatientName(appointment.patientId);
+  const presentation = getCalendarBlockPresentation(
+    frameHeight,
+    layout.totalColumns,
+    variant,
+    Boolean(appointment.reason)
+  );
+  const isMuted = ["cancelled", "no_show"].includes(appointment.status);
+  const widthPercent =
+    (layout.columnSpan / Math.max(1, layout.totalColumns)) * 100;
+  const leftPercent = (layout.column / Math.max(1, layout.totalColumns)) * 100;
+  const timeRange = `${formatTime(start)} – ${formatTime(end)}`;
+
+  return (
+    <button
+      aria-label={`${patientName}, ${appointment.type}, ${timeRange}`}
+      className={cn(
+        "group/event absolute overflow-hidden rounded-[10px] border text-left shadow-[0_1px_2px_rgba(15,23,42,0.05)] outline-none transition-[box-shadow,filter,transform] hover:z-30 hover:shadow-lg hover:brightness-[0.985] focus-visible:z-30 focus-visible:ring-2 focus-visible:ring-primary/55",
+        getAppointmentTypeMeta(appointment.type).surfaceClassName,
+        presentation.paddingClassName,
+        selected && "z-20 ring-2 ring-primary/55 ring-offset-1",
+        isMuted && "opacity-60 saturate-50"
+      )}
+      onClick={() => onSelectAppointment(appointment)}
+      style={{
+        top: frameTop,
+        height: frameHeight,
+        left: `calc(${leftPercent}% + 3px)`,
+        width: `calc(${widthPercent}% - 6px)`,
+      }}
+      title={`${patientName} · ${appointment.type}\n${timeRange}${appointment.room ? ` · ${appointment.room}` : ""}${appointment.reason ? `\n${appointment.reason}` : ""}`}
+      type="button"
+    >
+      <span
+        className={cn(
+          "absolute inset-y-1 left-0.5 w-[3px] rounded-full",
+          getAppointmentTypeMeta(appointment.type).dotClassName
+        )}
+      />
+
+      <CalendarAppointmentContent
+        appointment={appointment}
+        isDense={presentation.isDense}
+        isTiny={presentation.isTiny}
+        patientName={patientName}
+        showReason={presentation.showReason}
+        showSecondaryLine={presentation.showSecondaryLine}
+        start={start}
+        timeRange={timeRange}
+        totalColumns={layout.totalColumns}
+      />
+    </button>
+  );
 }
 
 function AgendaDayView({
@@ -818,7 +1048,11 @@ function AgendaDayView({
         <div className="flex">
           <div className="w-20 shrink-0 border-border/70 border-r bg-muted/20 pt-[4.5rem]">
             {HOUR_BLOCKS.map((hour) => (
-              <div className="relative h-[60px] pr-4 text-right" key={hour}>
+              <div
+                className="relative pr-4 text-right"
+                key={hour}
+                style={{ height: DAY_HOUR_HEIGHT }}
+              >
                 <span className="-translate-y-1/2 font-medium text-muted-foreground text-xs">
                   {`${hour.toString().padStart(2, "0")}:00`}
                 </span>
@@ -854,8 +1088,9 @@ function AgendaDayView({
                 <div className="relative">
                   {HOUR_BLOCKS.map((hour) => (
                     <div
-                      className="h-[60px] border-border/60 border-b last:border-b-0"
+                      className="relative border-border/60 border-b after:absolute after:inset-x-0 after:top-1/2 after:border-border/35 after:border-t after:border-dashed last:border-b-0"
                       key={hour}
+                      style={{ height: DAY_HOUR_HEIGHT }}
                     />
                   ))}
 
@@ -881,61 +1116,34 @@ function AgendaDayView({
                         return null;
                       }
 
-                      const frame = getAppointmentFrame(start, end, 60, 24);
+                      const frame = getAppointmentFrame(
+                        start,
+                        end,
+                        DAY_HOUR_HEIGHT,
+                        10
+                      );
                       if (!frame) {
                         return null;
                       }
-                      const patientName = getPatientName(appointment.patientId);
 
                       const layout = layoutMap.get(appointment.id) || {
                         column: 0,
+                        columnSpan: 1,
                         totalColumns: 1,
                       };
-                      const widthPercent =
-                        100 / Math.max(1, layout.totalColumns);
-                      const leftPercent = layout.column * widthPercent;
 
                       return (
-                        <button
-                          className={cn(
-                            "absolute overflow-hidden rounded-3xl border p-3 text-left shadow-sm transition hover:shadow-md",
-                            APPOINTMENT_TYPE_META[appointment.type]
-                              .surfaceClassName,
-                            selectedAppointmentId === appointment.id
-                              ? "z-10 ring-2 ring-primary/55 ring-offset-1"
-                              : "ring-0"
-                          )}
+                        <CalendarAppointmentBlock
+                          appointment={appointment}
+                          frameHeight={frame.height}
+                          frameTop={frame.top}
+                          getPatientName={getPatientName}
                           key={appointment.id}
-                          onClick={() => onSelectAppointment(appointment)}
-                          style={{
-                            top: frame.top,
-                            height: frame.height,
-                            left: `calc(${leftPercent}% + 4px)`,
-                            width: `calc(${widthPercent}% - 8px)`,
-                          }}
-                          type="button"
-                        >
-                          <div className="flex h-full gap-3">
-                            <span
-                              className={cn(
-                                "mt-1 size-2.5 shrink-0 rounded-full",
-                                APPOINTMENT_TYPE_META[appointment.type]
-                                  .dotClassName
-                              )}
-                            />
-                            <div className="min-w-0">
-                              <p className="truncate font-medium text-foreground">
-                                {patientName}
-                              </p>
-                              <p className="truncate text-muted-foreground text-sm">
-                                {appointment.type}
-                              </p>
-                              <p className="truncate text-muted-foreground text-xs">
-                                {formatTime(start)} - {formatTime(end)}
-                              </p>
-                            </div>
-                          </div>
-                        </button>
+                          layout={layout}
+                          onSelectAppointment={onSelectAppointment}
+                          selected={selectedAppointmentId === appointment.id}
+                          variant="day"
+                        />
                       );
                     })}
                   </div>
@@ -968,7 +1176,11 @@ function AgendaWeekView({
         <div className="flex">
           <div className="w-16 shrink-0 border-border/70 border-r bg-muted/20 pt-[4.5rem]">
             {HOUR_BLOCKS.map((hour) => (
-              <div className="relative h-[50px] pr-2 text-right" key={hour}>
+              <div
+                className="relative pr-2 text-right"
+                key={hour}
+                style={{ height: WEEK_HOUR_HEIGHT }}
+              >
                 <span className="-translate-y-1/2 font-medium text-muted-foreground text-xs">
                   {`${hour.toString().padStart(2, "0")}:00`}
                 </span>
@@ -1003,8 +1215,9 @@ function AgendaWeekView({
                 <div className="relative">
                   {HOUR_BLOCKS.map((hour) => (
                     <div
-                      className="h-[50px] border-border/60 border-b last:border-b-0"
+                      className="relative border-border/60 border-b after:absolute after:inset-x-0 after:top-1/2 after:border-border/30 after:border-t after:border-dashed last:border-b-0"
                       key={hour}
+                      style={{ height: WEEK_HOUR_HEIGHT }}
                     />
                   ))}
 
@@ -1017,46 +1230,34 @@ function AgendaWeekView({
                         return null;
                       }
 
-                      const frame = getAppointmentFrame(start, end, 50, 18);
+                      const frame = getAppointmentFrame(
+                        start,
+                        end,
+                        WEEK_HOUR_HEIGHT,
+                        10
+                      );
                       if (!frame) {
                         return null;
                       }
 
                       const layout = layoutMap.get(appointment.id) || {
                         column: 0,
+                        columnSpan: 1,
                         totalColumns: 1,
                       };
-                      const widthPercent =
-                        100 / Math.max(1, layout.totalColumns);
-                      const leftPercent = layout.column * widthPercent;
 
                       return (
-                        <button
-                          className={cn(
-                            "absolute rounded-2xl border px-2.5 py-2 text-left shadow-sm transition hover:shadow-md",
-                            APPOINTMENT_TYPE_META[appointment.type]
-                              .surfaceClassName,
-                            selectedAppointmentId === appointment.id
-                              ? "z-10 ring-2 ring-primary/55 ring-offset-1"
-                              : "ring-0"
-                          )}
+                        <CalendarAppointmentBlock
+                          appointment={appointment}
+                          frameHeight={frame.height}
+                          frameTop={frame.top}
+                          getPatientName={getPatientName}
                           key={appointment.id}
-                          onClick={() => onSelectAppointment(appointment)}
-                          style={{
-                            top: frame.top,
-                            height: frame.height,
-                            left: `calc(${leftPercent}% + 3px)`,
-                            width: `calc(${widthPercent}% - 6px)`,
-                          }}
-                          type="button"
-                        >
-                          <p className="truncate font-medium text-foreground text-xs">
-                            {getPatientName(appointment.patientId)}
-                          </p>
-                          <p className="truncate text-[11px] text-muted-foreground">
-                            {formatTime(start)} · {appointment.type}
-                          </p>
-                        </button>
+                          layout={layout}
+                          onSelectAppointment={onSelectAppointment}
+                          selected={selectedAppointmentId === appointment.id}
+                          variant="week"
+                        />
                       );
                     })}
                   </div>
@@ -1139,7 +1340,7 @@ function AgendaMonthView({
                     <div
                       className={cn(
                         "rounded-2xl border px-3 py-2 text-xs",
-                        APPOINTMENT_TYPE_META[appointment.type].surfaceClassName
+                        getAppointmentTypeMeta(appointment.type).surfaceClassName
                       )}
                       key={appointment.id}
                     >
@@ -1443,7 +1644,7 @@ const Agenda: React.FC = () => {
     if (hours < CALENDAR_START_HOUR || hours >= CALENDAR_END_HOUR + 1) {
       return null;
     }
-    return getTimePosition(currentTime);
+    return getTimePosition(currentTime, DAY_HOUR_HEIGHT);
   }, [currentTime]);
 
   const weekDays = useMemo(() => getWeekDays(selectedDate), [selectedDate]);
@@ -2357,7 +2558,7 @@ const Agenda: React.FC = () => {
                 <div
                   className={cn(
                     "rounded-2xl border p-4",
-                    APPOINTMENT_TYPE_META[selectedAppointment.type]
+                    getAppointmentTypeMeta(selectedAppointment.type)
                       .surfaceClassName
                   )}
                 >
@@ -2509,7 +2710,7 @@ const Agenda: React.FC = () => {
                           <span
                             className={cn(
                               "size-2 rounded-full",
-                              APPOINTMENT_TYPE_META[entry.type].dotClassName
+                              getAppointmentTypeMeta(entry.type).dotClassName
                             )}
                           />
                           <span className="font-medium text-foreground">

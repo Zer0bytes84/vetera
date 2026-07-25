@@ -171,8 +171,8 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
 
   return (
     <div className="flex w-full flex-col gap-1">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0 space-y-1">
           {renderTitle(heading, headerCopy.emoji)}
           {resolvedSubtitle && (
             <p className="max-w-[70ch] text-muted-foreground text-sm leading-relaxed">
@@ -183,7 +183,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
         {onNavigate && (
           <div className="flex shrink-0 items-center gap-2">
             <Button
-              className="h-10 rounded-full px-5"
+              className="h-10 w-full rounded-full px-5 sm:w-auto"
               onClick={() => onNavigate("clinique")}
             >
               <HugeiconsIcon

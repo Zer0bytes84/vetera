@@ -10,20 +10,25 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { buildDashboardMetrics } from "@/lib/metrics";
+import type { View } from "@/types";
 import { AsterConsultationsChartWidget } from "./components/aster/aster-consultations-chart-widget";
-import { AsterRanking } from "./components/aster/aster-ranking";
 import { AsterScoreChart } from "./components/aster/aster-score-chart";
 import { AsterTasksChartWidget } from "./components/aster/aster-tasks-chart-widget";
-import { AsterTopMotifsWidget } from "./components/aster/aster-top-motifs-widget";
-// Import Aster widgets
 import { AsterTopStats } from "./components/aster-top-stats";
+import { ClinicPipelineOrbit } from "./components/clinic-pipeline-orbit";
+import {
+  type DashboardLayoutBlock,
+  DashboardLayoutManager,
+} from "./components/dashboard-layout-manager";
+import { OwnerAddressBookWidget } from "./components/owner-address-book-widget";
+import { PatientPopulationWidget } from "./components/patient-population-widget";
 import {
   type WaitingRoomAppointment,
   WaitingRoomWidget,
 } from "./components/waiting-room-widget";
 
 interface DashboardOrbitPageProps {
-  onNavigate?: (view: string) => void;
+  onNavigate?: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
   onOpenAIAgent?: () => void;
   userDisplayName?: string;
@@ -46,7 +51,7 @@ function parseDashboardDate(value?: string): Date | null {
 }
 
 export function DashboardOrbitPage({
-  onNavigate: _onNavigate,
+  onNavigate,
   onNavigateToPatient,
   userDisplayName: _userDisplayName,
 }: DashboardOrbitPageProps) {
@@ -111,45 +116,97 @@ export function DashboardOrbitPage({
       });
   }, [appointments, patients, owners, metrics.referenceDate]);
 
-  return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
-      {/* Welcome Message */}
-      <MotivationalHeader section="dashboard" />
-
-      {/* Row 1: Top Stats */}
-      <AsterTopStats metrics={metrics} />
-
-      {/* Analyse financière et répartition de l'activité */}
-      <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-12">
-        <AsterScoreChart
-          className="xl:col-span-7"
-          metrics={metrics}
-          transactions={transactions}
-        />
-        <AsterRanking className="xl:col-span-5" metrics={metrics} />
-      </div>
-
-      {/* Lecture d'activité et suivi opérationnel */}
-      <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-12">
-        <AsterConsultationsChartWidget
-          className="min-h-[310px] xl:col-span-7"
-          metrics={metrics}
-        />
-        <AsterTasksChartWidget
-          className="min-h-[310px] xl:col-span-5"
-          metrics={metrics}
-        />
-      </div>
-
-      {/* Motifs de consultation et opérations en direct */}
-      <div className="grid w-full grid-cols-1 gap-5 xl:grid-cols-12">
-        <AsterTopMotifsWidget className="xl:col-span-7" metrics={metrics} />
-        <WaitingRoomWidget
-          appointments={todayAppointmentsList}
-          className="xl:col-span-5"
+  const dashboardBlocks: DashboardLayoutBlock[] = [
+    {
+      id: "clinical-overview",
+      label: "Vue clinique",
+      description: "Activité des consultations et population suivie",
+      content: (
+        <section aria-label="Analyse clinique">
+          <div className="grid w-full grid-cols-1 items-stretch gap-4 xl:grid-cols-12">
+            <AsterConsultationsChartWidget
+              className="xl:col-span-7"
+              metrics={metrics}
+            />
+            <PatientPopulationWidget
+              className="xl:col-span-5"
+              onOpenPatients={() => onNavigate?.("patients")}
+              patients={patients}
+              referenceDate={metrics.referenceDate}
+            />
+          </div>
+        </section>
+      ),
+    },
+    {
+      id: "key-metrics",
+      label: "Indicateurs clés",
+      description: "Repères essentiels du cabinet",
+      content: <AsterTopStats metrics={metrics} onNavigate={onNavigate} />,
+    },
+    {
+      id: "owner-directory",
+      label: "Carnet propriétaires",
+      description: "Contacts, patients liés et dossiers médicaux",
+      content: (
+        <OwnerAddressBookWidget
+          appointments={appointments}
           onNavigateToPatient={handlePatientClick}
+          onOpenPatients={() => onNavigate?.("patients")}
+          owners={owners}
+          patients={patients}
         />
-      </div>
+      ),
+    },
+    {
+      id: "daily-operations",
+      label: "Activité du jour",
+      description: "Salle d’attente et flux des rendez-vous",
+      content: (
+        <section aria-label="Activité du jour">
+          <div className="grid w-full grid-cols-1 items-stretch gap-4 xl:grid-cols-12">
+            <WaitingRoomWidget
+              appointments={todayAppointmentsList}
+              className="xl:col-span-7"
+              onNavigateToPatient={handlePatientClick}
+              onOpenAgenda={() => onNavigate?.("agenda")}
+            />
+            <ClinicPipelineOrbit
+              className="xl:col-span-5"
+              rows={metrics.pipelineRows}
+              title="Flux des rendez-vous"
+            />
+          </div>
+        </section>
+      ),
+    },
+    {
+      id: "business-operations",
+      label: "Pilotage du cabinet",
+      description: "Trésorerie et tâches à suivre",
+      content: (
+        <section aria-label="Pilotage du cabinet">
+          <div className="grid w-full grid-cols-1 items-stretch gap-4 xl:grid-cols-12">
+            <AsterScoreChart
+              className="xl:col-span-7"
+              metrics={metrics}
+              transactions={transactions}
+            />
+            <AsterTasksChartWidget
+              className="xl:col-span-5"
+              onOpenTasks={() => onNavigate?.("taches")}
+              referenceDate={metrics.referenceDate}
+            />
+          </div>
+        </section>
+      ),
+    },
+  ];
+
+  return (
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pt-16 pb-8 md:pt-24 lg:px-6">
+      <MotivationalHeader onNavigate={onNavigate} section="dashboard" />
+      <DashboardLayoutManager blocks={dashboardBlocks} />
     </div>
   );
 }

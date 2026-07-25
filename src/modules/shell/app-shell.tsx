@@ -150,7 +150,12 @@ function AppShellInner() {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const { setThemeMode, themeMode } = useThemeMode();
-  const { ref: headerRef, handleMouseDown } = useTauriDrag<HTMLElement>();
+  const {
+    handleDoubleClick,
+    handleMouseDown,
+    isDesktopRuntime,
+    ref: headerRef,
+  } = useTauriDrag<HTMLElement>();
   const { variant, collapsible } = useLayout();
 
   useEffect(() => {
@@ -324,8 +329,11 @@ function AppShellInner() {
           <motion.header
             className={cn(
               "sticky top-0 z-50 flex h-(--header-height) w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 [backface-visibility:hidden] [transform:translateZ(0)] will-change-transform dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
+              isDesktopRuntime && "cursor-grab active:cursor-grabbing",
               "group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
             )}
+            data-window-drag-region={isDesktopRuntime ? "true" : undefined}
+            onDoubleClick={handleDoubleClick}
             onMouseDown={handleMouseDown}
             ref={headerRef}
             style={

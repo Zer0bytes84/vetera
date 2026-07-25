@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   APPOINTMENT_STATUS_META,
-  APPOINTMENT_TYPE_META,
+  getAppointmentTypeMeta,
 } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import type { Appointment, Patient } from "@/types/db";
@@ -206,7 +206,7 @@ export function AgendaListView({
                     ? getOwnerName(appt.ownerId)
                     : "";
                   const isSelected = selectedAppointmentId === appt.id;
-                  const typeMeta = APPOINTMENT_TYPE_META[appt.type];
+                  const typeMeta = getAppointmentTypeMeta(appt.type);
 
                   return (
                     <li

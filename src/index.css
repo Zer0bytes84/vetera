@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -12,10 +11,10 @@
 
 @theme inline {
   --font-heading: "Geist", "Inter", sans-serif;
-  --font-sans: "Manrope", sans-serif;
+  --font-sans: "Geist", "Inter", sans-serif;
   --font-serif: "Geist", "Inter", sans-serif;
   --font-display: "Geist", "Inter", sans-serif;
-  --font-text: "Manrope", sans-serif;
+  --font-text: "Geist", "Inter", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -255,6 +254,21 @@
 }
 
 /* ─── Utility Classes ─── */
+
+/* Native Tauri window affordance: only the empty header surface drags. */
+[data-window-drag-region="true"] {
+  user-select: none;
+}
+
+[data-window-drag-region="true"] button,
+[data-window-drag-region="true"] a,
+[data-window-drag-region="true"] input,
+[data-window-drag-region="true"] select,
+[data-window-drag-region="true"] textarea,
+[data-window-drag-region="true"] [role="button"] {
+  cursor: pointer;
+  user-select: auto;
+}
 
 .heading-display {
   font-family: var(--font-heading);
@@ -612,9 +626,9 @@ button:focus-visible,
 .clinical-eyebrow {
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
   color: var(--muted-foreground);
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 /* Interactive clinical cards keep the native pointer while making intent visible. */
@@ -954,9 +968,6 @@ button:focus-visible,
     0 4px 12px rgba(0, 0, 0, 0.06),
     0 1px 2px rgba(0, 0, 0, 0.04) !important;
   transform: translateY(-1px);
-}
-
-.dark .dashboard-kpi-card {
 }
 
 .dark .dashboard-kpi-card::after {

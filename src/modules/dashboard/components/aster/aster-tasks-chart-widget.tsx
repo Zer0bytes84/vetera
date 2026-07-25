@@ -1,231 +1,370 @@
 "use client";
 
-import { ListTodo, Minus, TrendingDown, TrendingUp } from "lucide-react";
-import { useMemo } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  useAppointmentsRepository,
-  useTasksRepository,
-} from "@/data/repositories";
-import type { DashboardMetrics } from "@/lib/metrics";
+  AlertCircle,
+  ArrowRight,
+  BellRing,
+  CalendarClock,
+  CheckCircle2,
+  ListTodo,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTasksRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
+import type { Task } from "@/types/db";
 
-const parseDate = (value?: string) => {
+type TaskFilter = "all" | "late" | "reminders";
+
+const filterOptions: Array<{ label: string; value: TaskFilter }> = [
+  { label: "À faire", value: "all" },
+  { label: "En retard", value: "late" },
+  { label: "Rappels", value: "reminders" },
+];
+
+function parseDueDate(value?: string) {
   if (!value) {
     return null;
   }
-  const sqliteLike = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value);
-  const normalized = sqliteLike ? value.replace(" ", "T") : value;
-  const d = new Date(normalized);
-  return Number.isFinite(d.getTime()) ? d : null;
-};
+  const date = new Date(`${value.slice(0, 10)}T12:00:00`);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function startOfLocalDay(value: Date) {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function getDueLabel(task: Task, today: Date) {
+  const due = parseDueDate(task.dueDate);
+  if (!due) {
+    return "Sans échéance";
+  }
+  const dueDay = startOfLocalDay(due);
+  const diff = Math.round(
+    (dueDay.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)
+  );
+  if (diff < 0) {
+    return `${Math.abs(diff)} j de retard`;
+  }
+  if (diff === 0) {
+    return task.startTime ? `Aujourd’hui · ${task.startTime}` : "Aujourd’hui";
+  }
+  if (diff === 1) {
+    return "Demain";
+  }
+  return due.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
+function getTaskTone(task: Task) {
+  if (task.priority === "high") {
+    return "bg-rose-500/10 text-rose-600 dark:text-rose-400";
+  }
+  if (task.isReminder) {
+    return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
+  }
+  return "bg-zinc-100 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400";
+}
 
 export function AsterTasksChartWidget({
   className,
-  metrics,
+  onOpenTasks,
+  referenceDate,
 }: {
   className?: string;
-  metrics?: DashboardMetrics;
+  onOpenTasks?: () => void;
+  referenceDate?: Date;
 }) {
   const { data: allTasks } = useTasksRepository();
-  const { data: allAppointments } = useAppointmentsRepository();
+  const reduceMotion = useReducedMotion();
+  const [filter, setFilter] = useState<TaskFilter>("all");
+  const today = useMemo(
+    () => startOfLocalDay(referenceDate ?? new Date()),
+    [referenceDate]
+  );
 
-  const refDate = useMemo(() => {
-    if (metrics?.referenceDate) {
-      return new Date(metrics.referenceDate);
-    }
-    return new Date();
-  }, [metrics?.referenceDate]);
-
-  const todayAppointments = useMemo(() => {
-    const start = new Date(refDate);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(refDate);
-    end.setHours(23, 59, 59, 999);
-
-    return allAppointments.filter((item) => {
-      const date = parseDate(item.startTime);
-      const isToday = date && date >= start && date <= end;
-      const isValidStatus = !["cancelled", "no_show"].includes(item.status);
-      return isToday && isValidStatus;
+  const taskStats = useMemo(() => {
+    const open = allTasks.filter((task) => task.status !== "done");
+    const done = allTasks.filter((task) => task.status === "done");
+    const late = open.filter((task) => {
+      const due = parseDueDate(task.dueDate);
+      return due ? startOfLocalDay(due) < today : false;
     });
-  }, [allAppointments, refDate]);
-
-  const stats = useMemo(() => {
-    const normalTasks = allTasks.filter(
-      (t) => !t.isReminder && t.priority !== "high"
-    );
-    const reminders = allTasks.filter((t) => t.isReminder);
-    const urgentTasks = allTasks.filter(
-      (t) => !t.isReminder && t.priority === "high"
-    );
-
-    const normalAppts = todayAppointments.filter(
-      (a) => a.type !== "Urgence" && a.type !== "Vaccin"
-    );
-    const reminderAppts = todayAppointments.filter((a) => a.type === "Vaccin");
-    const urgentAppts = todayAppointments.filter((a) => a.type === "Urgence");
-
-    const getRates = (
-      tasksList: typeof allTasks,
-      apptsList: typeof todayAppointments
-    ) => {
-      const totalTasks = tasksList.length;
-      const doneTasks = tasksList.filter((t) => t.status === "done").length;
-
-      const totalAppts = apptsList.length;
-      const doneAppts = apptsList.filter(
-        (a) => a.status === "completed"
-      ).length;
-
-      const total = totalTasks + totalAppts;
-      const done = doneTasks + doneAppts;
-
-      if (total === 0) {
-        return { total: 0, done: 0, percentage: 0 };
+    const reminders = open.filter((task) => task.isReminder);
+    const urgent = open.filter((task) => task.priority === "high");
+    const sorted = [...open].sort((a, b) => {
+      const priorityWeight = { high: 0, medium: 1, low: 2 };
+      const priorityDiff =
+        priorityWeight[a.priority] - priorityWeight[b.priority];
+      if (priorityDiff !== 0) {
+        return priorityDiff;
       }
-      return { total, done, percentage: Math.round((done / total) * 100) };
-    };
+      const aDue =
+        parseDueDate(a.dueDate)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      const bDue =
+        parseDueDate(b.dueDate)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      return aDue - bDue;
+    });
+    const completionRate =
+      allTasks.length > 0
+        ? Math.round((done.length / allTasks.length) * 100)
+        : 0;
 
-    if (allTasks.length === 0 && todayAppointments.length === 0) {
-      return {
-        tasks: { percentage: 75 },
-        reminders: { percentage: 42 },
-        urgent: { percentage: 15 },
-      };
+    return { open, late, reminders, urgent, sorted, completionRate };
+  }, [allTasks, today]);
+
+  const visibleTasks = useMemo(() => {
+    if (filter === "late") {
+      return taskStats.sorted.filter((task) => taskStats.late.includes(task));
     }
-
-    return {
-      tasks: getRates(normalTasks, normalAppts),
-      reminders: getRates(reminders, reminderAppts),
-      urgent: getRates(urgentTasks, urgentAppts),
-    };
-  }, [allTasks, todayAppointments]);
-
-  const categories = [
-    {
-      label: "Courantes",
-      percentage: stats.tasks.percentage,
-      color: "bg-cyan-400 dark:bg-cyan-500",
-      trendColor: "text-emerald-600 dark:text-emerald-400",
-      TrendIcon: stats.tasks.percentage >= 50 ? TrendingUp : TrendingDown,
-      status:
-        stats.tasks.percentage >= 80
-          ? "Positif"
-          : stats.tasks.percentage >= 50
-            ? "Neutre"
-            : "Critique",
-    },
-    {
-      label: "Rappels",
-      percentage: stats.reminders.percentage,
-      color: "bg-fuchsia-400 dark:bg-fuchsia-500",
-      trendColor: "text-zinc-400 dark:text-zinc-500",
-      TrendIcon: Minus,
-      status:
-        stats.reminders.percentage >= 80
-          ? "Positif"
-          : stats.reminders.percentage >= 50
-            ? "Neutre"
-            : "Critique",
-    },
-    {
-      label: "Urgences",
-      percentage: stats.urgent.percentage,
-      color: "bg-rose-400 dark:bg-rose-500",
-      trendColor: "text-rose-600 dark:text-rose-400",
-      TrendIcon: stats.urgent.percentage >= 50 ? TrendingUp : TrendingDown,
-      status:
-        stats.urgent.percentage >= 80
-          ? "Positif"
-          : stats.urgent.percentage >= 50
-            ? "Neutre"
-            : "Critique",
-    },
-  ];
+    if (filter === "reminders") {
+      return taskStats.sorted.filter((task) => task.isReminder);
+    }
+    return taskStats.sorted;
+  }, [filter, taskStats]);
 
   return (
-    <div
+    <section
+      aria-labelledby="task-queue-title"
       className={cn(
-        "flex flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
+        "flex min-h-[400px] flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
         className
       )}
     >
-      {/* Outer Card Header */}
-      <div className="mb-2 flex select-none items-center justify-between px-1">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-200/60 dark:bg-zinc-800">
-            <ListTodo className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
-          </div>
-          <span className="flex items-center gap-2 font-semibold text-sm text-zinc-800 tracking-tight dark:text-zinc-200">
-            Progression des objectifs
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
+      <div className="mb-2 flex min-h-7 items-center justify-between gap-3 px-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-[6px] bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400">
+            <ListTodo className="size-3.5" />
           </span>
+          <h2
+            className="truncate font-heading font-semibold text-sm text-zinc-800 tracking-[-0.02em] dark:text-zinc-200"
+            id="task-queue-title"
+          >
+            File d’actions
+          </h2>
         </div>
-        <button className="cursor-pointer font-medium text-[11px] text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
-          Voir plus
+        <button
+          className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 font-medium text-[11px] text-zinc-500 outline-none transition-colors hover:bg-white hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          onClick={onOpenTasks}
+          type="button"
+        >
+          Tout ouvrir
+          <ArrowRight className="size-3" />
         </button>
       </div>
 
-      {/* Inner White Box — Sentiment Analysis style */}
-      <div className="flex flex-1 flex-col rounded-[12px] border border-zinc-200/60 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-950/80">
-        {/* KPI Row */}
-        <div className="grid select-none grid-cols-3 gap-3">
-          {categories.map((cat, idx) => (
-            <div
-              className={cn(
-                "flex flex-col gap-1",
-                idx === 1 &&
-                  "border-zinc-100 border-x px-4 dark:border-zinc-800/80"
-              )}
-              key={cat.label}
-            >
-              <span className="font-semibold text-2xl text-zinc-900 tabular-nums tracking-tight dark:text-zinc-50">
-                {cat.percentage}%
-              </span>
-              <span className="font-medium text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
-                {cat.label}
-              </span>
-              <span
-                className={cn(
-                  "flex items-center gap-0.5 font-semibold text-[10px]",
-                  cat.trendColor
-                )}
-              >
-                <cat.TrendIcon className="h-3 w-3" />
-                {cat.percentage}%
-              </span>
-            </div>
-          ))}
+      <div className="flex flex-1 flex-col rounded-[12px] border border-zinc-200/60 bg-white p-4 shadow-xs sm:p-5 dark:border-zinc-800 dark:bg-zinc-950/80">
+        <div className="grid grid-cols-3 divide-x divide-zinc-100 border-zinc-100 border-b pb-4 dark:divide-zinc-800 dark:border-zinc-800">
+          <TaskMetric
+            icon={CalendarClock}
+            label="Ouvertes"
+            value={taskStats.open.length}
+          />
+          <TaskMetric
+            className="px-4"
+            icon={AlertCircle}
+            label="En retard"
+            tone={
+              taskStats.late.length > 0
+                ? "text-rose-600 dark:text-rose-400"
+                : undefined
+            }
+            value={taskStats.late.length}
+          />
+          <TaskMetric
+            className="pl-4"
+            icon={BellRing}
+            label="Rappels"
+            tone="text-amber-600 dark:text-amber-400"
+            value={taskStats.reminders.length}
+          />
         </div>
 
-        {/* Progress Bars */}
-        <div className="mt-5 flex flex-col gap-3">
-          {categories.map((cat) => (
-            <div className="flex flex-col gap-1.5" key={cat.label}>
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-[10px] text-zinc-500 uppercase tracking-wider dark:text-zinc-400">
-                  {cat.label}
-                </span>
-                <span className="font-bold text-[10px] text-zinc-600 tabular-nums dark:text-zinc-300">
-                  {cat.percentage}%
-                </span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800/60">
-                <div
-                  className={cn(
-                    "h-full rounded-full transition-all duration-700 ease-out",
-                    cat.color
-                  )}
-                  style={{ width: `${Math.max(cat.percentage, 2)}%` }}
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <fieldset className="flex rounded-lg border-0 bg-zinc-100 p-1 dark:bg-zinc-900">
+            <legend className="sr-only">Filtrer les actions</legend>
+            {filterOptions.map((item) => (
+              <button
+                aria-pressed={filter === item.value}
+                className={cn(
+                  "relative min-h-8 rounded-md px-2.5 font-medium text-[10px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500/40",
+                  filter === item.value
+                    ? "text-zinc-900 dark:text-zinc-100"
+                    : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
+                )}
+                key={item.value}
+                onClick={() => setFilter(item.value)}
+                type="button"
+              >
+                {filter === item.value && (
+                  <motion.span
+                    className="absolute inset-0 rounded-md bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-800 dark:ring-white/10"
+                    layoutId="task-filter"
+                    transition={
+                      reduceMotion
+                        ? { duration: 0 }
+                        : { type: "spring", stiffness: 500, damping: 38 }
+                    }
+                  />
+                )}
+                <span className="relative z-10">{item.label}</span>
+              </button>
+            ))}
+          </fieldset>
+          <span className="hidden text-[10px] text-zinc-400 sm:inline dark:text-zinc-500">
+            {taskStats.completionRate}% terminées
+          </span>
+        </div>
+
+        {visibleTasks.length === 0 ? (
+          <div className="mt-4 flex flex-1 flex-col items-center justify-center rounded-xl border border-zinc-200 border-dashed bg-zinc-50/70 px-5 py-8 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
+            <CheckCircle2 className="mb-2 size-6 text-emerald-500" />
+            <p className="font-semibold text-sm text-zinc-700 dark:text-zinc-300">
+              Aucune action dans cette vue
+            </p>
+            <p className="mt-1 text-xs text-zinc-500">
+              La file est à jour pour le moment.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-3 flex-1 space-y-1.5">
+            <AnimatePresence initial={false} mode="popLayout">
+              {visibleTasks.slice(0, 4).map((task, index) => (
+                <TaskQueueRow
+                  index={index}
+                  isLate={taskStats.late.includes(task)}
+                  key={task.id}
+                  onOpenTasks={onOpenTasks}
+                  reduceMotion={Boolean(reduceMotion)}
+                  task={task}
+                  today={today}
                 />
-              </div>
-            </div>
-          ))}
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+
+        <div className="mt-3 border-zinc-100 border-t pt-3 dark:border-zinc-800">
+          <div className="mb-1.5 flex items-center justify-between text-[10px]">
+            <span className="text-zinc-500 dark:text-zinc-400">
+              Progression globale
+            </span>
+            <span className="font-semibold text-zinc-700 tabular-nums dark:text-zinc-300">
+              {taskStats.completionRate}%
+            </span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+            <motion.div
+              animate={{ width: `${taskStats.completionRate}%` }}
+              className="h-full rounded-full bg-emerald-500"
+              initial={reduceMotion ? false : { width: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.45 }}
+            />
+          </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+function TaskMetric({
+  className,
+  icon: Icon,
+  label,
+  tone,
+  value,
+}: {
+  className?: string;
+  icon: typeof ListTodo;
+  label: string;
+  tone?: string;
+  value: number;
+}) {
+  return (
+    <div className={cn("min-w-0 pr-4", className)}>
+      <span className="flex min-h-4 items-center gap-1.5 font-semibold text-[10px] text-zinc-400 uppercase tracking-[0.1em] dark:text-zinc-500">
+        <Icon className="size-3" />
+        {label}
+      </span>
+      <span
+        className={cn(
+          "mt-1 block font-heading font-semibold text-xl text-zinc-900 tabular-nums leading-none tracking-[-0.035em] dark:text-zinc-100",
+          tone
+        )}
+      >
+        {value}
+      </span>
     </div>
+  );
+}
+
+function TaskQueueRow({
+  index,
+  isLate,
+  onOpenTasks,
+  reduceMotion,
+  task,
+  today,
+}: {
+  index: number;
+  isLate: boolean;
+  onOpenTasks?: () => void;
+  reduceMotion: boolean;
+  task: Task;
+  today: Date;
+}) {
+  return (
+    <motion.button
+      className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-2.5 py-2.5 text-left outline-none transition-colors hover:border-zinc-200 hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:hover:border-zinc-800 dark:hover:bg-zinc-900/55"
+      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 5 }}
+      layout={!reduceMotion}
+      onClick={onOpenTasks}
+      transition={{
+        duration: 0.2,
+        delay: reduceMotion ? 0 : index * 0.025,
+      }}
+      type="button"
+      whileTap={reduceMotion ? undefined : { scale: 0.992 }}
+    >
+      <span
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-lg",
+          getTaskTone(task)
+        )}
+      >
+        {task.isReminder ? (
+          <BellRing className="size-3.5" />
+        ) : (
+          <ListTodo className="size-3.5" />
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-semibold text-xs text-zinc-800 dark:text-zinc-200">
+          {task.title}
+        </span>
+        <span
+          className={cn(
+            "mt-0.5 block text-[10px]",
+            isLate
+              ? "font-medium text-rose-600 dark:text-rose-400"
+              : "text-zinc-500 dark:text-zinc-400"
+          )}
+        >
+          {getDueLabel(task, today)}
+        </span>
+      </span>
+      <ChevronIndicator />
+    </motion.button>
+  );
+}
+
+function ChevronIndicator() {
+  return (
+    <ArrowRight className="size-3.5 shrink-0 text-zinc-300 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-500 dark:text-zinc-600" />
   );
 }

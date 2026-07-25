@@ -101,9 +101,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  APPOINTMENT_TYPE_META,
   CLINIQUE_STATUS_META,
   PATIENT_STATUS_META,
+  getAppointmentTypeMeta,
 } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
@@ -333,7 +333,7 @@ function AppointmentTypeBadge({
     <Badge
       className={cn(
         "border-transparent",
-        APPOINTMENT_TYPE_META[type].badgeClassName,
+        getAppointmentTypeMeta(type).badgeClassName,
         className
       )}
       variant="outline"
@@ -2561,7 +2561,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                                 <div
                                   className={cn(
                                     "flex size-10 items-center justify-center rounded-2xl",
-                                    APPOINTMENT_TYPE_META[appointment.type]
+                                    getAppointmentTypeMeta(appointment.type)
                                       .iconClassName
                                   )}
                                 >
@@ -2743,7 +2743,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                 <div
                   className={cn(
                     "rounded-4xl border p-5",
-                    APPOINTMENT_TYPE_META[selectedAppointment.type]
+                    getAppointmentTypeMeta(selectedAppointment.type)
                       .surfaceClassName
                   )}
                 >

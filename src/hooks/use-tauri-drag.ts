@@ -1,35 +1,47 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { type RefObject, useCallback, useRef } from "react";
+import {
+  type MouseEvent,
+  type RefObject,
+  useCallback,
+  useRef,
+} from "react";
 import { isTauriRuntime } from "@/services/browser-store";
+
+const DRAG_BLOCKING_SELECTOR =
+  "button, a, input, select, textarea, [role=button], [data-no-drag]";
 
 export function useTauriDrag<T extends HTMLElement = HTMLElement>() {
   const ref = useRef<T>(null) as RefObject<T>;
+  const isDesktopRuntime = isTauriRuntime();
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!isTauriRuntime()) {
+  const isBlockedTarget = useCallback(
+    (event: MouseEvent) =>
+      (event.target as HTMLElement).closest(DRAG_BLOCKING_SELECTOR) !== null,
+    []
+  );
+
+  const handleMouseDown = useCallback((e: MouseEvent) => {
+    if (!isDesktopRuntime || e.button !== 0 || e.detail !== 1) {
       return;
     }
-    if (e.button !== 0) {
+    if (isBlockedTarget(e)) {
       return;
     }
 
-    const target = e.target as HTMLElement;
-    if (
-      target.closest(
-        "button, a, input, select, textarea, [role=button], [data-no-drag]"
-      )
-    ) {
+    void getCurrentWindow()
+      .startDragging()
+      .catch(() => undefined);
+  }, [isBlockedTarget, isDesktopRuntime]);
+
+  const handleDoubleClick = useCallback((e: MouseEvent) => {
+    if (!isDesktopRuntime || isBlockedTarget(e)) {
       return;
     }
 
-    const appWindow = getCurrentWindow();
+    void getCurrentWindow()
+      .toggleMaximize()
+      .catch(() => undefined);
+  }, [isBlockedTarget, isDesktopRuntime]);
 
-    if (e.detail === 2) {
-      appWindow.toggleMaximize();
-    } else {
-      appWindow.startDragging();
-    }
-  }, []);
-
-  return { ref, handleMouseDown };
+  return { ref, handleDoubleClick, handleMouseDown, isDesktopRuntime };
 }

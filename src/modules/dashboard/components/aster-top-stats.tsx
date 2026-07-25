@@ -1,180 +1,188 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import {
-  Calendar,
-  ClipboardList,
-  DollarSign,
+  CalendarDays,
+  CircleDollarSign,
+  ClipboardCheck,
   TrendingDown,
   TrendingUp,
-  Users,
+  UsersRound,
 } from "lucide-react";
 import type { DashboardMetrics } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
+import type { View } from "@/types";
+import { formatDZD } from "@/utils/currency";
 
 interface AsterTopStatsProps {
   className?: string;
   metrics: DashboardMetrics;
+  onNavigate?: (view: View) => void;
 }
 
-export function AsterTopStats({ metrics, className }: AsterTopStatsProps) {
-  // Formatters
-  const formatValue = (val: number, type: "currency" | "number") => {
-    if (type === "currency") {
-      return new Intl.NumberFormat("fr-FR").format(val) + " DA";
-    }
-    return val.toString();
-  };
+function getDeltaPercent(current: number, previous: number) {
+  if (previous <= 0) {
+    return current > 0 ? 100 : 0;
+  }
+  return ((current - previous) / previous) * 100;
+}
 
-  const getDeltaPercent = (current: number, previous: number) => {
-    if (previous <= 0) {
-      return current > 0 ? 100 : 0;
-    }
-    return ((current - previous) / previous) * 100;
-  };
-
-  // Derive trends using actual metrics
-  const revenueTrend = getDeltaPercent(
-    metrics.summary.income30,
-    metrics.summary.previousIncome30
-  );
-  const apptsTrend = getDeltaPercent(
-    metrics.summary.todayAppointments,
-    metrics.summary.yesterdayAppointments
-  );
-  const returningTrend = getDeltaPercent(
-    metrics.summary.currentReturningPatients,
-    metrics.summary.previousReturningPatients
-  );
-
+export function AsterTopStats({
+  metrics,
+  className,
+  onNavigate,
+}: AsterTopStatsProps) {
+  const reduceMotion = useReducedMotion();
   const stats = [
     {
-      title: "Revenus 30j",
-      value: formatValue(metrics.summary.income30, "currency"),
-      trend: revenueTrend,
-      period: "30 J",
-      icon: DollarSign,
-      iconColor: "text-emerald-500 dark:text-emerald-400",
-      glowColor: "group-hover:bg-emerald-500/5",
+      title: "Revenus",
+      value: formatDZD(metrics.summary.income30),
+      trend: getDeltaPercent(
+        metrics.summary.income30,
+        metrics.summary.previousIncome30
+      ),
+      comparison: "vs 30 jours précédents",
+      detail: `Panier moyen ${formatDZD(metrics.summary.averageBasket)}`,
+      period: "30 jours",
+      icon: CircleDollarSign,
+      accent:
+        "text-emerald-600 bg-emerald-500/10 dark:text-emerald-400 dark:bg-emerald-400/10",
+      view: "finances" as View,
     },
     {
-      title: "RDV aujourd'hui",
+      title: "Rendez-vous",
       value: metrics.summary.todayAppointments.toString(),
-      trend: apptsTrend,
-      period: "AUJ.",
-      icon: Calendar,
-      iconColor: "text-blue-500 dark:text-blue-400",
-      glowColor: "group-hover:bg-blue-500/5",
+      trend: getDeltaPercent(
+        metrics.summary.todayAppointments,
+        metrics.summary.yesterdayAppointments
+      ),
+      comparison: "vs hier",
+      detail: `${metrics.summary.yesterdayAppointments} hier`,
+      period: "Aujourd’hui",
+      icon: CalendarDays,
+      accent: "text-sky-600 bg-sky-500/10 dark:text-sky-400 dark:bg-sky-400/10",
+      view: "agenda" as View,
     },
     {
       title: "Patients actifs",
-      value: formatValue(metrics.summary.currentActivePatients, "number"),
-      trend: returningTrend,
-      period: "90 J",
-      icon: Users,
-      iconColor: "text-orange-500 dark:text-orange-400",
-      glowColor: "group-hover:bg-orange-500/5",
+      value: metrics.summary.currentActivePatients.toString(),
+      trend: getDeltaPercent(
+        metrics.summary.currentActivePatients,
+        metrics.summary.previousActivePatients
+      ),
+      comparison: "vs période précédente",
+      detail: `${metrics.summary.currentReturningPatients} suivis réguliers`,
+      period: "90 jours",
+      icon: UsersRound,
+      accent:
+        "text-amber-600 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-400/10",
+      view: "patients" as View,
     },
     {
-      title: "Tâches dues",
+      title: "Actions dues",
       value: metrics.summary.dueTasks.toString(),
-      trend: 0,
-      period: "7 J",
-      icon: ClipboardList,
-      iconColor: "text-purple-500 dark:text-purple-400",
-      glowColor: "group-hover:bg-purple-500/5",
+      comparison: "à traiter",
+      detail: `${Math.round(metrics.summary.taskCompletionRate)}% réalisées`,
+      period: "7 jours",
+      icon: ClipboardCheck,
+      accent:
+        metrics.summary.dueTasks > 0
+          ? "text-rose-600 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-400/10"
+          : "text-zinc-600 bg-zinc-500/10 dark:text-zinc-300 dark:bg-zinc-400/10",
+      view: "taches" as View,
     },
   ];
 
   return (
-    <div className={cn("grid grid-cols-2 gap-4 lg:grid-cols-4", className)}>
-      {stats.map((stat, idx) => {
+    <div
+      className={cn(
+        "grid grid-cols-1 gap-2.5 lg:grid-cols-4 min-[400px]:grid-cols-2",
+        className
+      )}
+    >
+      {stats.map((stat, index) => {
         const Icon = stat.icon;
-        const isUp = stat.trend >= 0;
+        const hasTrend = stat.trend !== undefined;
+        const trendUp = hasTrend && stat.trend >= 0;
+
         return (
-          <div
-            className="group relative flex cursor-pointer flex-col overflow-hidden rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 p-5 shadow-xs transition-all duration-300 hover:shadow-md dark:border-zinc-800/80 dark:bg-zinc-900/30"
-            key={idx}
+          <motion.button
+            animate={{ opacity: 1, y: 0 }}
+            aria-label={`Ouvrir ${stat.title}`}
+            className="group relative min-w-0 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white p-4 text-left shadow-xs outline-none transition-[border-color,box-shadow] hover:border-zinc-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-950/70 dark:focus-visible:ring-offset-zinc-950 dark:hover:border-zinc-700"
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            key={stat.title}
+            onClick={() => onNavigate?.(stat.view)}
+            transition={{
+              duration: 0.32,
+              delay: reduceMotion ? 0 : index * 0.045,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            type="button"
+            whileHover={reduceMotion ? undefined : { y: -2 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.985 }}
           >
-            {/* Protocol-style layered hover background */}
-            <div className="pointer-events-none absolute inset-0 z-0">
-              {/* Inset ring layer */}
-              <div className="absolute inset-0 rounded-[20px] ring-1 ring-zinc-900/5 transition-all duration-300 group-hover:ring-zinc-900/10 dark:ring-white/5 dark:group-hover:ring-white/10" />
+            <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-zinc-300/80 to-transparent opacity-0 transition-opacity group-hover:opacity-100 dark:via-zinc-600/70" />
 
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(215,237,234,0.15),rgba(244,251,223,0.15))] opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.06),rgba(16,185,129,0.04))]" />
-
-              {/* Grid pattern layer */}
-              <svg
-                aria-hidden="true"
-                className="absolute inset-0 h-full w-full skew-y-[-18deg] stroke-zinc-900/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-50 dark:stroke-white/[0.02]"
-                style={{
-                  maskImage:
-                    "radial-gradient(80% 80% at 50% 50%, white, transparent)",
-                  WebkitMaskImage:
-                    "radial-gradient(80% 80% at 50% 50%, white, transparent)",
-                }}
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-semibold text-[10px] text-zinc-500 uppercase tracking-[0.1em] dark:text-zinc-400">
+                {stat.title}
+              </span>
+              <span
+                className={cn(
+                  "flex size-8 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-105",
+                  stat.accent
+                )}
               >
-                <defs>
-                  <pattern
-                    height={16}
-                    id={`grid-stat-${idx}`}
-                    patternUnits="userSpaceOnUse"
-                    width={16}
-                    x="-1"
-                    y="-1"
-                  >
-                    <path d="M.5 16V.5H16" fill="none" strokeDasharray="2 2" />
-                  </pattern>
-                </defs>
-                <rect
-                  fill={`url(#grid-stat-${idx})`}
-                  height="100%"
-                  strokeWidth={0}
-                  width="100%"
-                />
-              </svg>
+                <Icon className="size-4" strokeWidth={1.8} />
+              </span>
             </div>
 
-            {/* Content (z-10 to stay above patterns) */}
-            <div className="relative z-10 flex h-full flex-col">
-              <div className="mb-3.5 flex items-center justify-between">
-                <div className="flex items-center gap-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
-                  <Icon
-                    className={cn(
-                      "h-4 w-4 drop-shadow-sm transition-transform duration-300 group-hover:scale-110",
-                      stat.iconColor
-                    )}
-                  />
-                  {stat.title}
-                </div>
-              </div>
+            <p className="mt-2.5 truncate font-heading font-semibold text-2xl text-zinc-950 tabular-nums leading-none tracking-[-0.04em] dark:text-zinc-50">
+              {stat.value}
+            </p>
 
-              <div className="mb-2 select-all font-semibold text-3xl text-foreground tracking-tight">
-                {stat.value}
-              </div>
-
-              <div className="mt-auto flex select-none items-center justify-between pt-1 text-xs">
-                <div
+            <div className="mt-2.5 flex min-h-4 min-w-0 items-center gap-1.5">
+              {hasTrend ? (
+                <span
                   className={cn(
-                    "flex items-center gap-1 rounded-full px-2 py-0.5 font-bold text-[10px]",
-                    isUp
-                      ? "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/25 dark:text-emerald-400"
-                      : "bg-rose-500/10 text-rose-600 dark:bg-rose-500/25 dark:text-rose-400"
+                    "inline-flex shrink-0 items-center gap-1 font-semibold text-[11px] tabular-nums",
+                    trendUp
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-rose-600 dark:text-rose-400"
                   )}
                 >
-                  {isUp ? (
-                    <TrendingUp className="h-3 w-3 stroke-[3]" />
+                  {trendUp ? (
+                    <TrendingUp className="size-3" strokeWidth={2.4} />
                   ) : (
-                    <TrendingDown className="h-3 w-3 stroke-[3]" />
+                    <TrendingDown className="size-3" strokeWidth={2.4} />
                   )}
                   {Math.abs(stat.trend).toFixed(1)}%
-                </div>
-                <div className="rounded bg-zinc-200/50 px-1.5 py-0.5 font-semibold text-[10px] text-muted-foreground uppercase tracking-wider dark:bg-zinc-800/60">
-                  {stat.period}
-                </div>
-              </div>
+                </span>
+              ) : (
+                <span
+                  className={cn(
+                    "size-1.5 shrink-0 rounded-full",
+                    metrics.summary.dueTasks > 0
+                      ? "bg-rose-500"
+                      : "bg-emerald-500"
+                  )}
+                />
+              )}
+              <span className="truncate text-[11px] text-zinc-400 dark:text-zinc-500">
+                {stat.comparison}
+              </span>
             </div>
-          </div>
+
+            <div className="mt-2.5 flex items-center justify-between gap-2 border-zinc-100 border-t pt-2.5 text-[10px] dark:border-zinc-800">
+              <span className="truncate font-medium text-zinc-500 dark:text-zinc-400">
+                {stat.detail}
+              </span>
+              <span className="shrink-0 text-zinc-400 dark:text-zinc-500">
+                {stat.period}
+              </span>
+            </div>
+          </motion.button>
         );
       })}
     </div>

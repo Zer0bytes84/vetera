@@ -127,21 +127,22 @@ export function AsterScoreChart({
             <Wallet className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
           </div>
           <span className="font-semibold text-sm text-zinc-800 tracking-tight dark:text-zinc-200">
-            Flux de Trésorerie
+            Flux de trésorerie
           </span>
           <span className="hidden text-[11px] text-zinc-400 sm:inline">
             Entrées, sorties et résultat net
           </span>
         </div>
         <div className="flex items-center gap-3">
-          {/* Period Selector Tabs */}
-          <div className="flex items-center rounded-md bg-zinc-250/20 p-0.5 ring-1 ring-zinc-200/50 dark:bg-zinc-800/50 dark:ring-zinc-850">
+          <fieldset className="flex items-center rounded-lg border-0 bg-zinc-100 p-1 dark:bg-zinc-800/70">
+            <legend className="sr-only">Période du flux de trésorerie</legend>
             {(["7j", "30j", "90j"] as const).map((p) => (
               <button
+                aria-pressed={period === p}
                 className={cn(
-                  "cursor-pointer rounded px-2 py-0.5 font-semibold text-[10px] uppercase tracking-wider transition-colors",
+                  "min-h-7 cursor-pointer rounded-md px-2.5 font-semibold text-[10px] uppercase tracking-wider outline-none transition-[background-color,color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-emerald-500/40 active:scale-[0.97]",
                   period === p
-                    ? "bg-white text-zinc-800 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"
+                    ? "bg-white text-zinc-800 shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-700 dark:text-zinc-100 dark:ring-white/10"
                     : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
                 )}
                 key={p}
@@ -151,14 +152,7 @@ export function AsterScoreChart({
                 {p}
               </button>
             ))}
-          </div>
-
-          <button
-            className="cursor-pointer font-medium text-[11px] text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
-            type="button"
-          >
-            Voir plus
-          </button>
+          </fieldset>
         </div>
       </div>
 
@@ -167,19 +161,19 @@ export function AsterScoreChart({
         {/* KPI Headers */}
         <div className="mb-5 grid select-none divide-y divide-zinc-100 border-zinc-100 border-b pb-5 sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-zinc-800/80 dark:border-zinc-800/80">
           <div className="min-w-0 pb-4 sm:pr-5 sm:pb-0">
-            <div className="flex items-center gap-1.5 font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+            <div className="flex min-h-4 items-center gap-1.5 font-semibold text-[10px] text-zinc-400 uppercase tracking-[0.1em] dark:text-zinc-500">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ backgroundColor: "#93c5fd" }}
               />
               Entrées
             </div>
-            <div className="mt-1 truncate font-bold font-sans text-2xl text-zinc-900 tracking-tight dark:text-zinc-100">
+            <div className="mt-1 truncate font-heading font-semibold text-xl text-zinc-900 tabular-nums leading-none tracking-[-0.035em] dark:text-zinc-100">
               {formatDZD(totalIncome)}
             </div>
           </div>
           <div className="min-w-0 py-4 sm:px-5 sm:py-0">
-            <div className="flex items-center gap-1.5 font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+            <div className="flex min-h-4 items-center gap-1.5 font-semibold text-[10px] text-zinc-400 uppercase tracking-[0.1em] dark:text-zinc-500">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ backgroundColor: "#10b981" }}
@@ -188,7 +182,7 @@ export function AsterScoreChart({
             </div>
             <div
               className={cn(
-                "mt-1 truncate font-bold font-sans text-2xl tracking-tight",
+                "mt-1 truncate font-heading font-semibold text-xl tabular-nums leading-none tracking-[-0.035em]",
                 netCashflow >= 0
                   ? "text-emerald-600 dark:text-emerald-400"
                   : "text-rose-600 dark:text-rose-400"
@@ -199,14 +193,14 @@ export function AsterScoreChart({
             </div>
           </div>
           <div className="min-w-0 pt-4 sm:pt-0 sm:pl-5">
-            <div className="flex items-center gap-1.5 font-bold text-[10px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+            <div className="flex min-h-4 items-center gap-1.5 font-semibold text-[10px] text-zinc-400 uppercase tracking-[0.1em] dark:text-zinc-500">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ backgroundColor: "#2563eb" }}
               />
               Sorties
             </div>
-            <div className="mt-1 truncate font-bold font-sans text-2xl text-zinc-900 tracking-tight dark:text-zinc-100">
+            <div className="mt-1 truncate font-heading font-semibold text-xl text-zinc-900 tabular-nums leading-none tracking-[-0.035em] dark:text-zinc-100">
               {formatDZD(totalExpense)}
             </div>
           </div>
@@ -223,7 +217,7 @@ export function AsterScoreChart({
                 style={{ width: `${expenseShare}%` }}
               />
             </div>
-            <span className="w-9 text-right font-mono font-semibold text-[11px] text-zinc-600 dark:text-zinc-300">
+            <span className="w-9 text-right font-semibold text-[11px] text-zinc-600 tabular-nums dark:text-zinc-300">
               {expenseShare.toFixed(0)}%
             </span>
           </div>
@@ -285,11 +279,7 @@ export function AsterScoreChart({
               }}
               stackId="a"
             />
-            <ChartTooltip
-              content={<ChartTooltipContent />}
-              cursor={false}
-              defaultIndex={1}
-            />
+            <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
           </BarChart>
         </ChartContainer>
       </div>

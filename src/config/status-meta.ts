@@ -53,6 +53,13 @@ export const APPOINTMENT_TYPE_META: Record<
   },
 };
 
+export function getAppointmentTypeMeta(type: string) {
+  return (
+    APPOINTMENT_TYPE_META[type as Appointment["type"]] ??
+    APPOINTMENT_TYPE_META.Consultation
+  );
+}
+
 export const APPOINTMENT_STATUS_META: Record<
   Appointment["status"],
   StatusColor
