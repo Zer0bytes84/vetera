@@ -47,11 +47,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLayout } from "@/contexts/layout-provider";
 import { useUsersRepository } from "@/data/repositories";
 import { APP_NAME } from "@/lib/brand";
-import {
-  readCachedProfile,
-  subscribeToCachedProfile,
-  writeCachedProfile,
-} from "@/lib/profile-cache";
+import { writeCachedProfile } from "@/lib/profile-cache";
 import {
   ACCENT_THEMES,
   applyTheme,
@@ -912,9 +908,6 @@ const Parametres: React.FC<ParametresProps> = ({
   const [bio, setBio] = useState("");
   const [clinicName, setClinicName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [cachedAvatarUrl, setCachedAvatarUrl] = useState(() =>
-    readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
-  );
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
@@ -922,23 +915,6 @@ const Parametres: React.FC<ParametresProps> = ({
   } | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  useEffect(() => {
-    setCachedAvatarUrl(
-      readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
-    );
-  }, [currentUser?.email]);
-
-  useEffect(() => {
-    if (!currentUser?.email) {
-      return;
-    }
-    return subscribeToCachedProfile((event) => {
-      if (event.detail.email.toLowerCase() === currentUser.email?.toLowerCase()) {
-        setCachedAvatarUrl(event.detail.profile.avatarUrl ?? "");
-      }
-    });
-  }, [currentUser?.email]);
 
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() =>
     getThemeConfig()
@@ -1903,15 +1879,9 @@ const Parametres: React.FC<ParametresProps> = ({
                       <div className="absolute inset-x-0 top-0 h-0.5 bg-sky-500/70" />
                       <div className="flex items-start justify-between gap-3">
                         <Avatar
-                          name="Zohir Kherroubi"
+                          name="Zouhir Kherroubi"
                           size="lg"
-                          src={sanitizeAvatarValue(
-                            avatarUrl ||
-                              userDoc?.avatarUrl ||
-                              currentUser?.avatarUrl ||
-                              readCachedProfile(currentUser?.email)?.avatarUrl ||
-                              cachedAvatarUrl
-                          )}
+                          src="/zouhir-kherroubi.jpg"
                         />
                         <div className="flex size-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-700 dark:text-sky-300">
                           <HugeiconsIcon
@@ -1922,7 +1892,7 @@ const Parametres: React.FC<ParametresProps> = ({
                         </div>
                       </div>
                       <h4 className="mt-4 font-semibold text-foreground text-sm">
-                        Zohir Kherroubi
+                        Zouhir Kherroubi
                       </h4>
                       <p className="mt-0.5 font-medium text-sky-700 text-xs dark:text-sky-300">
                         Fondateur · Produit & Ingénierie
