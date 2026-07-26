@@ -23,6 +23,7 @@
     "fs:allow-exists",
     "fs:allow-read",
     "fs:allow-write",
+    "fs:allow-write-file",
     "fs:allow-copy-file",
     "fs:allow-remove",
     "fs:allow-mkdir",
@@ -30,6 +31,8 @@
     "fs:allow-read-text-file",
     "fs:allow-write-text-file",
     "fs:scope-appdata-recursive",
+    "fs:allow-appdata-read-recursive",
+    "fs:allow-appdata-write-recursive",
     {
       "identifier": "fs:scope",
       "allow": [

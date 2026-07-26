@@ -34,22 +34,55 @@ let sqliteOperationQueue: Promise<unknown> = Promise.resolve();
 const sleep = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  return JSON.stringify(error);
+};
+
 const isDatabaseLockedError = (error: unknown): boolean => {
   if (!error) {
     return false;
   }
-  const message =
-    error instanceof Error
-      ? error.message
-      : typeof error === "string"
-        ? error
-        : JSON.stringify(error);
+  const message = getErrorMessage(error);
   const lower = message.toLowerCase();
   return (
     lower.includes("database is locked") ||
     lower.includes("code: 5") ||
     lower.includes("(code 5)") ||
     lower.includes("database table is locked")
+  );
+};
+
+const isRecoverableConnectionError = (error: unknown): boolean => {
+  if (!error) {
+    return false;
+  }
+
+  const message = getErrorMessage(error);
+  const lower = message.toLowerCase();
+
+  // Retrying malformed SQL or a schema mismatch only repeats the same error.
+  if (
+    lower.includes("no such column") ||
+    lower.includes("no such table") ||
+    lower.includes("syntax error") ||
+    lower.includes("constraint failed") ||
+    lower.includes("datatype mismatch")
+  ) {
+    return false;
+  }
+
+  return (
+    lower.includes("connection is closed") ||
+    lower.includes("database is closed") ||
+    lower.includes("not connected") ||
+    lower.includes("connection pool") ||
+    lower.includes("failed to load database")
   );
 };
 
@@ -84,6 +117,10 @@ export function runDbOperation<T>(
     try {
       return await withLockRetry(() => operation(database));
     } catch (error) {
+      if (!isRecoverableConnectionError(error)) {
+        throw error;
+      }
+
       // Si on a une erreur fatale (ex: connexion perdue après la mise en veille du Mac),
       // on force la réinitialisation de la connexion pour les prochaines requêtes.
       console.warn(

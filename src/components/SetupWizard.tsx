@@ -20,7 +20,6 @@ import {
   formatLicenseKey,
   validateLicenseKey,
 } from "@/services/licenseService";
-import { GradientBackground } from "./Auth";
 import Logo from "./Logo";
 
 interface SetupWizardProps {
@@ -31,6 +30,9 @@ interface SetupWizardProps {
     licenseKey: string;
   }) => Promise<void>;
 }
+
+const fieldClassName =
+  "block h-12 w-full rounded-xl border border-zinc-200 bg-white pr-4 pl-11 text-[15px] text-zinc-950 shadow-[0_1px_2px_rgba(24,24,27,0.04)] outline-none transition duration-200 placeholder:text-zinc-400 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
 
 const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   const [step, setStep] = useState<1 | 2>(1);
@@ -43,8 +45,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleKeyChange = (value: string) => {
-    const formatted = formatLicenseKey(value);
-    setLicenseKey(formatted);
+    setLicenseKey(formatLicenseKey(value));
     setError("");
   };
 
@@ -78,156 +79,183 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
       setError("Les mots de passe ne correspondent pas");
       return;
     }
+
     setIsLoading(true);
     setError("");
     try {
       await onComplete({ name, email, password, licenseKey });
     } catch (err) {
-      setError("Erreur lors de la création du compte: " + String(err));
+      setError(`Erreur lors de la création du compte: ${String(err)}`);
       setIsLoading(false);
     }
   };
 
+  const submitStep = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (step === 1) {
+      handleValidateLicense();
+      return;
+    }
+    handleCreateAccount();
+  };
+
   return (
-    <div className="relative flex min-h-screen w-full overflow-hidden bg-[#FCFCFC] lg:grid lg:grid-cols-2 dark:bg-zinc-950">
-      {/* Left Panel - Hero Visuals */}
-      <div className="relative hidden w-full flex-col justify-between overflow-hidden border-border border-r bg-white p-10 text-foreground lg:flex dark:bg-zinc-900/60">
-        <div className="flex items-center justify-between">
-          <Logo className="shrink-0" size="xl" />
-          <span className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 font-medium text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
-            Activation privée
-          </span>
-        </div>
-
-        <div className="max-w-[29rem]">
-          <h1 className="font-heading font-semibold text-5xl text-zinc-950 leading-[1.04] tracking-tight dark:text-white">
-            Rejoignez la nouvelle ère de votre clinique.
-          </h1>
-          <p className="mt-6 max-w-md text-base text-zinc-500 leading-7 dark:text-zinc-400">
-            Activez votre espace pour retrouver une gestion clinique précise,
-            calme et prête pour le quotidien.
-          </p>
-        </div>
-
-        <div className="w-full max-w-md rounded-xl border border-zinc-200/50 bg-white p-4 shadow-sm ring-1 ring-black/5 dark:border-white/[0.04] dark:bg-zinc-900 dark:ring-white/5">
-          <div className="flex items-center gap-4">
-            <div className="flex -space-x-2">
-              {["DR", "AS", "KM", "LV"].map((initials) => (
-                <div
-                  className="flex size-11 items-center justify-center rounded-full border-2 border-white bg-zinc-100 font-semibold text-xs text-zinc-950 dark:border-zinc-900 dark:bg-zinc-800 dark:text-white"
-                  key={initials}
-                >
-                  {initials}
-                </div>
-              ))}
-            </div>
-            <div className="min-w-0">
-              <p className="font-semibold text-sm text-zinc-950 dark:text-white">
-                Déjà activé par
-              </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                +2,000 cliniques leaders
-              </p>
-            </div>
-          </div>
-        </div>
+    <main
+      className="relative min-h-dvh overflow-auto bg-[#f4f5f1] text-zinc-950"
+      style={{ colorScheme: "light" }}
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 overflow-hidden"
+      >
+        <div className="absolute -top-32 left-[38%] size-[34rem] rounded-full bg-[#d7eee5]/70 blur-3xl" />
+        <div className="absolute -right-32 bottom-[-14rem] size-[38rem] rounded-full bg-[#f4dfc3]/70 blur-3xl" />
+        <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] [background-size:32px_32px]" />
       </div>
 
-      {/* Right Panel - Setup Wizard Form */}
-      <div className="relative z-10 flex w-full flex-col items-center justify-center p-6 lg:p-12">
-        <GradientBackground />
+      <div className="relative mx-auto grid min-h-dvh w-full max-w-[1600px] lg:grid-cols-[minmax(340px,0.82fr)_minmax(560px,1.18fr)]">
+        <section className="relative hidden flex-col justify-between overflow-hidden border-zinc-900/10 border-r bg-[#17231f] px-10 py-9 text-white lg:flex xl:px-14 xl:py-12">
+          <div className="absolute inset-0 opacity-30 [background:radial-gradient(circle_at_20%_10%,#4a806d_0,transparent_38%),radial-gradient(circle_at_90%_80%,#715f47_0,transparent_34%)]" />
+          <div className="absolute top-0 right-0 h-full w-px bg-gradient-to-b from-transparent via-white/25 to-transparent" />
 
-        {/* Only show logo here on small screens */}
-        <div className="mb-10 flex flex-col items-center text-center lg:hidden">
-          <Logo className="mb-6 drop-shadow-md" size="xl" />
-        </div>
+          <div className="relative flex items-center justify-between gap-4">
+            <Logo className="brightness-0 invert" size="xl" />
+            <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-medium text-[11px] text-white/75 uppercase tracking-[0.12em]">
+              Configuration locale
+            </span>
+          </div>
 
-        <div className="relative z-10 w-full max-w-md flex-col items-center">
-          <div className="mb-8 flex flex-col items-center text-center">
-            <h1 className="font-heading font-semibold text-3xl text-zinc-950 tracking-tight sm:text-4xl dark:text-white">
-              {step === 1 ? `Activation de ${APP_NAME}` : "Bienvenue, Docteur."}
+          <div className="relative my-10 max-w-[31rem]">
+            <p className="mb-5 font-semibold text-emerald-300 text-xs uppercase tracking-[0.18em]">
+              Votre clinique, prête à travailler
+            </p>
+            <h1 className="max-w-[28rem] font-heading font-semibold text-[clamp(2.5rem,4vw,4.6rem)] leading-[0.98] tracking-[-0.055em]">
+              Un démarrage calme. Un suivi précis.
             </h1>
-            <p className="mt-3 text-sm text-zinc-500 sm:text-base dark:text-zinc-400">
-              {step === 1
-                ? "Préparez-vous à transformer votre pratique."
-                : "Configuration de votre espace de travail."}
+            <p className="mt-6 max-w-md text-[15px] text-white/62 leading-7">
+              Deux étapes suffisent pour sécuriser votre espace et commencer à
+              gérer les patients de la clinique.
             </p>
           </div>
 
-          <div className="relative w-full overflow-hidden rounded-xl border border-zinc-200/50 bg-white p-8 shadow-md ring-1 ring-black/5 backdrop-blur-md sm:p-10 dark:border-white/[0.04] dark:bg-zinc-900/90 dark:ring-white/5">
-            {/* Steps indicator */}
-            <div className="mb-8 flex items-center justify-center gap-3">
+          <div className="relative grid gap-2.5">
+            {[
+              [
+                Shield01Icon,
+                "Données locales",
+                "Les dossiers restent sur cet appareil.",
+              ],
+              [
+                SparklesIcon,
+                "Prêt au quotidien",
+                "Patients, agenda et suivi réunis.",
+              ],
+              [
+                UserCircle02Icon,
+                "Accès personnel",
+                "Un compte administrateur sécurisé.",
+              ],
+            ].map(([icon, title, description]) => (
               <div
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full font-semibold text-xs transition-all duration-500",
-                  step >= 1
-                    ? "bg-zinc-950 text-white shadow-md dark:bg-white dark:text-zinc-950"
-                    : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800"
-                )}
+                className="flex items-center gap-3.5 rounded-2xl border border-white/10 bg-white/[0.055] p-3.5 backdrop-blur-sm"
+                key={String(title)}
               >
-                {step > 1 ? (
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-emerald-200">
                   <HugeiconsIcon
-                    className="size-4"
-                    icon={CheckmarkCircle02Icon}
-                    strokeWidth={2.5}
+                    className="size-5"
+                    icon={icon}
+                    strokeWidth={1.8}
                   />
-                ) : (
-                  "1"
-                )}
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-semibold text-sm">{title}</span>
+                  <span className="mt-0.5 block text-white/50 text-xs">
+                    {description}
+                  </span>
+                </span>
               </div>
-              <div
-                className={cn(
-                  "h-[2px] w-12 rounded-full transition-colors duration-500",
-                  step >= 2
-                    ? "bg-zinc-950 dark:bg-white"
-                    : "bg-zinc-200 dark:bg-zinc-800"
-                )}
-              />
-              <div
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full font-semibold text-xs transition-all duration-500",
-                  step >= 2
-                    ? "bg-zinc-950 text-white shadow-md dark:bg-white dark:text-zinc-950"
-                    : "border-2 border-zinc-200 bg-transparent text-zinc-400 dark:border-zinc-800"
-                )}
-              >
-                2
-              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="flex min-h-dvh items-center justify-center px-5 py-8 sm:px-8 lg:px-12 lg:py-10">
+          <div className="w-full max-w-[540px]">
+            <div className="mb-8 flex items-center justify-between gap-5 lg:mb-10">
+              <Logo className="lg:hidden" size="lg" />
+              <fieldset className="ml-auto flex items-center gap-2">
+                <legend className="sr-only">Étape {step} sur 2</legend>
+                {[1, 2].map((item) => (
+                  <div className="flex items-center gap-2" key={item}>
+                    {item > 1 && (
+                      <span className="h-px w-6 bg-zinc-300 sm:w-9" />
+                    )}
+                    <span
+                      className={cn(
+                        "flex size-8 items-center justify-center rounded-full border font-semibold text-xs transition-all duration-300",
+                        step >= item
+                          ? "border-[#17231f] bg-[#17231f] text-white"
+                          : "border-zinc-300 bg-white/60 text-zinc-400"
+                      )}
+                    >
+                      {step > item ? (
+                        <HugeiconsIcon
+                          className="size-4"
+                          icon={CheckmarkCircle02Icon}
+                          strokeWidth={2.4}
+                        />
+                      ) : (
+                        item
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </fieldset>
             </div>
 
-            {/* Error Banner */}
-            {error && (
-              <div className="fade-in slide-in-from-top-2 mb-6 flex animate-in items-center gap-3 overflow-hidden rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-destructive text-xs leading-snug">
-                <HugeiconsIcon
-                  className="size-4 shrink-0"
-                  icon={Alert02Icon}
-                  strokeWidth={2}
-                />
-                <span className="font-medium">{error}</span>
-              </div>
-            )}
+            <div className="mb-7">
+              <p className="font-semibold text-emerald-700 text-xs uppercase tracking-[0.16em]">
+                {step === 1
+                  ? "Étape 1 · Activation"
+                  : "Étape 2 · Profil clinique"}
+              </p>
+              <h2 className="mt-3 font-heading font-semibold text-3xl leading-tight tracking-[-0.035em] sm:text-[2.5rem]">
+                {step === 1 ? `Activez ${APP_NAME}` : "Créez votre accès"}
+              </h2>
+              <p className="mt-2.5 max-w-md text-[15px] text-zinc-600 leading-6">
+                {step === 1
+                  ? "Associez votre licence à l’adresse email utilisée lors de l’achat."
+                  : "Définissez le compte administrateur de cette clinique."}
+              </p>
+            </div>
 
-            {/* Step 1: License Form */}
-            {step === 1 && (
-              <div className="fade-in zoom-in-95 animate-in space-y-6 duration-300">
-                <div className="space-y-2">
-                  <label
-                    className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
-                    htmlFor="setup-email"
+            <form
+              className="rounded-[1.75rem] border border-white/80 bg-white/88 p-5 shadow-[0_24px_80px_rgba(24,35,31,0.10),0_2px_10px_rgba(24,35,31,0.04)] ring-1 ring-zinc-950/5 backdrop-blur-xl sm:p-7"
+              onSubmit={submitStep}
+            >
+              {error && (
+                <div className="fade-in slide-in-from-top-2 mb-5 flex animate-in items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5 text-red-700 text-sm">
+                  <HugeiconsIcon
+                    className="mt-0.5 size-4 shrink-0"
+                    icon={Alert02Icon}
+                    strokeWidth={2}
+                  />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {step === 1 ? (
+                <div className="fade-in animate-in space-y-5 duration-300">
+                  <SetupField
+                    icon={MailIcon}
+                    id="setup-email"
+                    label="Adresse email"
                   >
-                    Adresse email
-                  </label>
-                  <div className="group relative">
-                    <HugeiconsIcon
-                      className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-zinc-950 dark:text-zinc-500 dark:group-focus-within:text-white"
-                      icon={MailIcon}
-                      strokeWidth={2}
-                    />
                     <input
-                      className="block w-full rounded-lg border border-transparent bg-white py-2.5 pr-3.5 pl-11 text-base text-zinc-950 shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
+                      autoComplete="email"
+                      className={fieldClassName}
                       id="setup-email"
-                      onChange={(e) => {
-                        setEmail(e.target.value);
+                      onChange={(event) => {
+                        setEmail(event.target.value);
                         setError("");
                       }}
                       placeholder="docteur@clinique.com"
@@ -235,200 +263,188 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                       type="email"
                       value={email}
                     />
-                  </div>
-                </div>
+                  </SetupField>
 
-                <div className="space-y-2">
-                  <label
-                    className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
-                    htmlFor="setup-license"
+                  <SetupField
+                    icon={Key01Icon}
+                    id="setup-license"
+                    label="Clé de licence"
                   >
-                    Clé de licence
-                  </label>
-                  <div className="group relative">
-                    <HugeiconsIcon
-                      className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-zinc-950 dark:text-zinc-500 dark:group-focus-within:text-white"
-                      icon={Key01Icon}
-                      strokeWidth={2}
-                    />
                     <input
-                      className="block w-full rounded-lg border border-transparent bg-white py-2.5 pr-3.5 pl-11 font-mono text-base text-zinc-950 uppercase shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
+                      autoComplete="off"
+                      className={`${fieldClassName} font-mono uppercase tracking-[0.08em]`}
                       id="setup-license"
                       maxLength={19}
-                      onChange={(e) => handleKeyChange(e.target.value)}
+                      onChange={(event) => handleKeyChange(event.target.value)}
                       placeholder="XXXX-XXXX-XXXX-XXXX"
                       required
                       type="text"
                       value={licenseKey}
                     />
-                  </div>
-                </div>
+                  </SetupField>
 
-                <button
-                  className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-transparent bg-zinc-950 px-4 py-2.5 font-semibold text-sm text-white shadow-md transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40 sm:text-base dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100"
-                  onClick={handleValidateLicense}
-                >
-                  Vérifier l'accès
-                  <HugeiconsIcon
-                    className="size-4"
-                    icon={ArrowRight01Icon}
-                    strokeWidth={2.5}
-                  />
-                </button>
-              </div>
-            )}
-
-            {/* Step 2: Account Form */}
-            {step === 2 && (
-              <div className="slide-in-from-right-4 fade-in animate-in space-y-6 duration-500">
-                <div className="flex items-center justify-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3.5 font-medium text-emerald-600 text-xs leading-snug dark:text-emerald-400">
-                  <HugeiconsIcon
-                    className="size-4 shrink-0"
-                    icon={Shield01Icon}
-                    strokeWidth={2.5}
-                  />
-                  <span>Licence authentifiée</span>
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
-                    htmlFor="setup-name"
+                  <button
+                    className="group mt-1 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold text-[15px] text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] focus-visible:outline-2 focus-visible:outline-emerald-700 focus-visible:outline-offset-2"
+                    type="submit"
                   >
-                    Nom complet
-                  </label>
-                  <div className="group relative">
+                    Vérifier et continuer
                     <HugeiconsIcon
-                      className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-zinc-950 dark:text-zinc-500 dark:group-focus-within:text-white"
-                      icon={UserCircle02Icon}
-                      strokeWidth={2}
+                      className="size-4 transition-transform group-hover:translate-x-0.5"
+                      icon={ArrowRight01Icon}
+                      strokeWidth={2.4}
                     />
+                  </button>
+                </div>
+              ) : (
+                <div className="fade-in slide-in-from-right-3 animate-in space-y-4 duration-300">
+                  <div className="mb-5 flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 font-medium text-emerald-800 text-sm">
+                    <HugeiconsIcon
+                      className="size-4.5 shrink-0"
+                      icon={CheckmarkCircle02Icon}
+                      strokeWidth={2.2}
+                    />
+                    Licence vérifiée pour {email}
+                  </div>
+
+                  <SetupField
+                    icon={UserCircle02Icon}
+                    id="setup-name"
+                    label="Nom complet"
+                  >
                     <input
-                      className="block w-full rounded-lg border border-transparent bg-white py-2.5 pr-3.5 pl-11 text-base text-zinc-950 shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
+                      autoComplete="name"
+                      className={fieldClassName}
                       id="setup-name"
-                      onChange={(e) => {
-                        setName(e.target.value);
+                      onChange={(event) => {
+                        setName(event.target.value);
                         setError("");
                       }}
-                      placeholder="Dr. Prénom Nom"
+                      placeholder="Dr Prénom Nom"
                       required
                       type="text"
                       value={name}
                     />
-                  </div>
-                </div>
+                  </SetupField>
 
-                <div className="space-y-2">
-                  <label
-                    className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
-                    htmlFor="setup-password"
-                  >
-                    Mot de passe secret
-                  </label>
-                  <div className="group relative">
-                    <HugeiconsIcon
-                      className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-zinc-950 dark:text-zinc-500 dark:group-focus-within:text-white"
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <SetupField
                       icon={LockIcon}
-                      strokeWidth={2}
-                    />
-                    <input
-                      className="block w-full rounded-lg border border-transparent bg-white py-2.5 pr-3.5 pl-11 text-base text-zinc-950 shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
                       id="setup-password"
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                        setError("");
-                      }}
-                      placeholder="••••••••"
-                      required
-                      type="password"
-                      value={password}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    className="font-medium text-sm text-zinc-950 dark:text-zinc-200"
-                    htmlFor="setup-confirm"
-                  >
-                    Confirmer le mot de passe
-                  </label>
-                  <div className="group relative">
-                    <HugeiconsIcon
-                      className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-zinc-950 dark:text-zinc-500 dark:group-focus-within:text-white"
+                      label="Mot de passe"
+                    >
+                      <input
+                        autoComplete="new-password"
+                        className={fieldClassName}
+                        id="setup-password"
+                        minLength={6}
+                        onChange={(event) => {
+                          setPassword(event.target.value);
+                          setError("");
+                        }}
+                        placeholder="6 caractères minimum"
+                        required
+                        type="password"
+                        value={password}
+                      />
+                    </SetupField>
+                    <SetupField
                       icon={LockIcon}
-                      strokeWidth={2}
-                    />
-                    <input
-                      className="block w-full rounded-lg border border-transparent bg-white py-2.5 pr-3.5 pl-11 text-base text-zinc-950 shadow-xs ring-1 ring-black/10 transition-all placeholder:text-zinc-400/50 focus:outline focus:outline-2 focus:outline-black focus:-outline-offset-1 sm:text-sm/6 dark:bg-zinc-800/40 dark:text-white dark:ring-white/10 dark:focus:outline-white"
                       id="setup-confirm"
-                      onChange={(e) => {
-                        setConfirmPassword(e.target.value);
-                        setError("");
-                      }}
-                      placeholder="••••••••"
-                      required
-                      type="password"
-                      value={confirmPassword}
-                    />
+                      label="Confirmation"
+                    >
+                      <input
+                        autoComplete="new-password"
+                        className={fieldClassName}
+                        id="setup-confirm"
+                        minLength={6}
+                        onChange={(event) => {
+                          setConfirmPassword(event.target.value);
+                          setError("");
+                        }}
+                        placeholder="Répétez le mot de passe"
+                        required
+                        type="password"
+                        value={confirmPassword}
+                      />
+                    </SetupField>
                   </div>
-                </div>
 
-                <div className="pt-2">
                   <button
-                    className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-transparent bg-zinc-950 px-4 py-2.5 font-semibold text-sm text-white shadow-md transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40 sm:text-base dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100"
+                    className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold text-[15px] text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={isLoading}
-                    onClick={handleCreateAccount}
+                    type="submit"
                   >
                     {isLoading ? (
-                      <Spinner className="size-5 text-white dark:text-zinc-950" />
+                      <Spinner className="size-5 text-white" />
                     ) : (
                       <>
-                        Terminer l'installation{" "}
+                        Ouvrir mon espace
                         <HugeiconsIcon
                           className="size-4"
                           icon={SparklesIcon}
-                          strokeWidth={2.5}
+                          strokeWidth={2.2}
                         />
                       </>
                     )}
                   </button>
-                </div>
 
-                <div className="flex justify-center pt-2">
                   <button
-                    className="mx-auto flex cursor-pointer items-center justify-center gap-1.5 font-medium text-sm text-zinc-950 transition-colors hover:text-zinc-600 dark:text-zinc-200 dark:hover:text-zinc-400"
-                    onClick={() => setStep(1)}
+                    className="mx-auto flex cursor-pointer items-center gap-1.5 pt-1 font-medium text-sm text-zinc-600 transition hover:text-zinc-950"
+                    onClick={() => {
+                      setError("");
+                      setStep(1);
+                    }}
+                    type="button"
                   >
                     <HugeiconsIcon
-                      className="size-3.5"
+                      className="size-4"
                       icon={ArrowLeft01Icon}
                       strokeWidth={2}
-                    />{" "}
-                    Retour
+                    />
+                    Modifier la licence
                   </button>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </form>
 
-          {/* Floating Footer */}
-          <div className="mt-10 flex items-center justify-center gap-6 font-medium text-sm text-zinc-400 dark:text-zinc-500">
-            <span className="flex items-center gap-1.5 transition-colors hover:text-zinc-600 dark:hover:text-zinc-400">
+            <div className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-zinc-500">
               <HugeiconsIcon
-                className="size-4"
+                className="size-4 text-emerald-700"
                 icon={Shield01Icon}
                 strokeWidth={2}
-              />{" "}
-              Crypté & Sécurisé
-            </span>
-            <span className="h-1 w-1 rounded-full bg-zinc-200 dark:bg-zinc-800" />
-            <span className="transition-colors hover:text-zinc-600 dark:hover:text-zinc-400">{`Support ${APP_NAME}`}</span>
+              />
+              Activation sécurisée · Vos données restent sur cet appareil
+            </div>
           </div>
-        </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+interface SetupFieldProps {
+  children: React.ReactNode;
+  icon: Parameters<typeof HugeiconsIcon>[0]["icon"];
+  id: string;
+  label: string;
+}
+
+function SetupField({ children, icon, id, label }: SetupFieldProps) {
+  return (
+    <div className="space-y-2">
+      <label className="font-semibold text-[13px] text-zinc-800" htmlFor={id}>
+        {label}
+      </label>
+      <div className="group relative">
+        <HugeiconsIcon
+          className="pointer-events-none absolute top-1/2 left-3.5 z-10 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-emerald-700"
+          icon={icon}
+          strokeWidth={1.9}
+        />
+        {children}
       </div>
     </div>
   );
-};
+}
 
 export default SetupWizard;

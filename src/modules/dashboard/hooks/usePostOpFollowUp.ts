@@ -49,7 +49,10 @@ export function usePostOpFollowUp() {
             p.id AS patientId,
             p.name AS patientName,
             p.species AS species,
-            o.full_name AS ownerName,
+            NULLIF(
+              TRIM(COALESCE(o.first_name, '') || ' ' || COALESCE(o.last_name, '')),
+              ''
+            ) AS ownerName,
             a.procedure AS procedure,
             a.ended_at AS endedAt,
             a.id AS anesthesiaId,
