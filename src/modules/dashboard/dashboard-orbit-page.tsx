@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import {
   useAppointmentsRepository,
@@ -60,6 +60,7 @@ export function DashboardOrbitPage({
   const { data: patients } = usePatientsRepository();
   const { data: tasks } = useTasksRepository();
   const { data: transactions } = useTransactionsRepository();
+  const [isCustomizing, setIsCustomizing] = useState(false);
 
   const handlePatientClick = useCallback(
     (patientId: string) => {
@@ -205,8 +206,17 @@ export function DashboardOrbitPage({
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pt-16 pb-8 md:pt-24 lg:px-6">
-      <MotivationalHeader onNavigate={onNavigate} section="dashboard" />
-      <DashboardLayoutManager blocks={dashboardBlocks} />
+      <MotivationalHeader
+        isCustomizing={isCustomizing}
+        onCustomize={() => setIsCustomizing(true)}
+        onNavigate={onNavigate}
+        section="dashboard"
+      />
+      <DashboardLayoutManager
+        blocks={dashboardBlocks}
+        isEditing={isCustomizing}
+        onEditingChange={setIsCustomizing}
+      />
     </div>
   );
 }

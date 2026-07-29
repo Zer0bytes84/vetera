@@ -1,4 +1,7 @@
-import { StethoscopeIcon } from "@hugeicons/core-free-icons";
+import {
+  DashboardSquareEditIcon,
+  StethoscopeIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -6,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface MotivationalHeaderProps {
+  isCustomizing?: boolean;
+  onCustomize?: () => void;
   onNavigate?: (view: string) => void;
   section:
     | "dashboard"
@@ -26,6 +31,8 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   section,
   title,
   subtitle,
+  isCustomizing = false,
+  onCustomize,
   onNavigate,
 }) => {
   const { t, i18n } = useTranslation();
@@ -182,6 +189,22 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
         </div>
         {onNavigate && (
           <div className="flex shrink-0 items-center gap-2">
+            {onCustomize ? (
+              <Button
+                aria-pressed={isCustomizing}
+                className="h-10 rounded-full bg-background/65 px-4 shadow-sm backdrop-blur-md"
+                disabled={isCustomizing}
+                onClick={onCustomize}
+                variant="outline"
+              >
+                <HugeiconsIcon
+                  data-icon="inline-start"
+                  icon={DashboardSquareEditIcon}
+                  strokeWidth={1.6}
+                />
+                Personnaliser
+              </Button>
+            ) : null}
             <Button
               className="h-10 w-full rounded-full px-5 sm:w-auto"
               onClick={() => onNavigate("clinique")}

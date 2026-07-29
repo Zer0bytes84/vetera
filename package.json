@@ -91,7 +91,7 @@
     "fix": "ultracite fix src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts"
   },
   "type": "module",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "private": true,
   "overrides": {
     "@tauri-apps/api": "^2.10.1"

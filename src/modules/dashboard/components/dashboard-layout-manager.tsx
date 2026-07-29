@@ -43,6 +43,8 @@ export interface DashboardLayoutBlock {
 
 interface DashboardLayoutManagerProps {
   blocks: DashboardLayoutBlock[];
+  isEditing: boolean;
+  onEditingChange: (isEditing: boolean) => void;
 }
 
 type SaveStatus = "idle" | "saving" | "saved";
@@ -162,6 +164,8 @@ function DragPreview({ block }: { block: DashboardLayoutBlock }) {
 
 export function DashboardLayoutManager({
   blocks,
+  isEditing,
+  onEditingChange,
 }: DashboardLayoutManagerProps) {
   const { currentUser } = useAuth();
   const availableIdsKey = blocks.map((block) => block.id).join("|");
@@ -176,8 +180,6 @@ export function DashboardLayoutManager({
   const storageKey = `${STORAGE_KEY_PREFIX}:${currentUser?.id ?? "local"}`;
   const [order, setOrder] = useState<string[]>(availableIds);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
   const saveVersionRef = useRef(0);
@@ -199,7 +201,6 @@ export function DashboardLayoutManager({
 
         if (!savedValue) {
           setOrder(availableIds);
-          setIsLoaded(true);
           return;
         }
 
@@ -208,12 +209,10 @@ export function DashboardLayoutManager({
         } catch {
           setOrder(availableIds);
         }
-        setIsLoaded(true);
       })
       .catch(() => {
         if (isCurrent) {
           setOrder(availableIds);
-          setIsLoaded(true);
         }
       })
       .catch(() => undefined);
@@ -222,6 +221,12 @@ export function DashboardLayoutManager({
       isCurrent = false;
     };
   }, [availableIds, storageKey]);
+
+  useEffect(() => {
+    if (isEditing) {
+      setSaveStatus("idle");
+    }
+  }, [isEditing]);
 
   const persistOrder = useCallback(
     (nextOrder: string[]) => {
@@ -307,68 +312,52 @@ export function DashboardLayoutManager({
 
   return (
     <>
-      <div className="flex min-h-9 justify-end">
-        {isEditing ? (
-          <div className="flex w-full flex-wrap items-center gap-2 rounded-2xl border border-sky-500/15 bg-sky-500/[0.045] p-2 pl-3 dark:bg-sky-300/[0.04]">
-            <div className="mr-auto flex min-w-0 items-center gap-2">
-              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-300">
-                <HugeiconsIcon
-                  className="size-3.5"
-                  icon={DashboardSquareEditIcon}
-                  strokeWidth={1.8}
-                />
-              </span>
-              <div className="min-w-0">
-                <p className="font-semibold text-xs">Disposition du tableau</p>
-                <p className="hidden text-[11px] text-muted-foreground sm:block">
-                  Saisissez une poignée puis déplacez le bloc.
-                </p>
-              </div>
-              <span
-                aria-live="polite"
-                className="hidden font-medium text-[11px] text-muted-foreground lg:inline"
-              >
-                {saveStatus === "saving" ? "Enregistrement…" : null}
-                {saveStatus === "saved" ? "Enregistré" : null}
-              </span>
+      {isEditing ? (
+        <div className="flex w-full flex-wrap items-center gap-2 rounded-2xl border border-sky-500/15 bg-sky-500/[0.045] p-2 pl-3 dark:bg-sky-300/[0.04]">
+          <div className="mr-auto flex min-w-0 items-center gap-2">
+            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-300">
+              <HugeiconsIcon
+                className="size-3.5"
+                icon={DashboardSquareEditIcon}
+                strokeWidth={1.8}
+              />
+            </span>
+            <div className="min-w-0">
+              <p className="font-semibold text-xs">Disposition du tableau</p>
+              <p className="hidden text-[11px] text-muted-foreground sm:block">
+                Saisissez une poignée puis déplacez le bloc.
+              </p>
             </div>
-            <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
-              <Button
-                className="bg-background/80 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
-                onClick={handleReset}
-                size="sm"
-                type="button"
-                variant="outline"
-              >
-                <HugeiconsIcon icon={ResetPasswordIcon} strokeWidth={1.8} />
-                Réinitialiser
-              </Button>
-              <Button
-                onClick={() => setIsEditing(false)}
-                size="sm"
-                type="button"
-              >
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.8} />
-                Terminer
-              </Button>
-            </div>
+            <span
+              aria-live="polite"
+              className="hidden font-medium text-[11px] text-muted-foreground lg:inline"
+            >
+              {saveStatus === "saving" ? "Enregistrement…" : null}
+              {saveStatus === "saved" ? "Enregistré" : null}
+            </span>
           </div>
-        ) : (
-          <Button
-            disabled={!isLoaded}
-            onClick={() => {
-              setSaveStatus("idle");
-              setIsEditing(true);
-            }}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            <HugeiconsIcon icon={DashboardSquareEditIcon} strokeWidth={1.8} />
-            Personnaliser
-          </Button>
-        )}
-      </div>
+          <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+            <Button
+              className="bg-background/80 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+              onClick={handleReset}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <HugeiconsIcon icon={ResetPasswordIcon} strokeWidth={1.8} />
+              Réinitialiser
+            </Button>
+            <Button
+              onClick={() => onEditingChange(false)}
+              size="sm"
+              type="button"
+            >
+              <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.8} />
+              Terminer
+            </Button>
+          </div>
+        </div>
+      ) : null}
 
       <DndContext
         accessibility={{
