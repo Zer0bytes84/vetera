@@ -8,7 +8,7 @@ import {
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Avatar from "@/components/Avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-type NavUserProps = {
+interface NavUserProps {
   user: {
     name: string;
     email: string;
@@ -35,7 +35,7 @@ type NavUserProps = {
   onFinances?: () => void;
   onNotifications?: () => void;
   onSettings?: () => void;
-};
+}
 
 export function NavUser({
   user,
@@ -51,34 +51,29 @@ export function NavUser({
     !["undefined", "null", "nan"].includes(user.avatar.trim().toLowerCase())
       ? user.avatar.trim()
       : undefined;
-  const fallback = user.name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("")
-    .slice(0, 2);
-
   return (
     <SidebarMenu>
-      <SidebarMenuItem className="flex w-full flex-row items-center justify-between gap-0.5">
+      <SidebarMenuItem className="flex w-full min-w-0 flex-row items-center justify-between gap-0">
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
-                className="group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 h-10 flex-1 rounded-lg px-1.5 transition-all hover:bg-zinc-950/[0.03] aria-expanded:bg-sidebar-accent dark:hover:bg-white/[0.04] [@media(max-height:820px)]:h-9"
+                className="h-10 min-w-0 flex-1 !gap-1 rounded-lg px-1 transition-all hover:bg-zinc-950/[0.03] aria-expanded:bg-sidebar-accent group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 dark:hover:bg-white/[0.04] [@media(max-height:820px)]:h-9"
                 size="lg"
               />
             }
           >
-            <Avatar className="size-8 rounded-full border border-border/50 shadow-sm transition-all group-data-[collapsible=icon]:size-8">
-              <AvatarImage alt={user.name} src={normalizedAvatar} />
-              <AvatarFallback className="rounded-full bg-primary/10 font-medium text-[11px] text-primary">
-                {fallback}
-              </AvatarFallback>
-            </Avatar>
-            <div className="ms-1.5 grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
-              <span className="truncate font-medium text-[13px] text-foreground tracking-tight antialiased">
+            <Avatar
+              className="size-7.5 rounded-full shadow-sm transition-all group-data-[collapsible=icon]:size-8"
+              name={user.name}
+              size="sm"
+              src={normalizedAvatar}
+            />
+            <div className="ms-1 grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
+              <span
+                className="sidebar-user-name truncate font-medium text-[12.5px] text-foreground tracking-tight antialiased"
+                title={user.name}
+              >
                 {user.name}
               </span>
               <span className="mt-0.5 truncate text-[10px] text-muted-foreground/70">
@@ -86,7 +81,7 @@ export function NavUser({
               </span>
             </div>
             <HugeiconsIcon
-              className="ms-auto size-3.5 text-muted-foreground/45 transition-colors group-hover:text-foreground group-data-[collapsible=icon]:hidden"
+              className="sidebar-user-more ms-0.5 size-3 text-muted-foreground/45 transition-colors group-hover:text-foreground group-data-[collapsible=icon]:hidden"
               icon={MoreVerticalIcon}
               strokeWidth={1.5}
             />
@@ -100,12 +95,12 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-3 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="size-10 rounded-full border border-border/50 shadow-sm">
-                    <AvatarImage alt={user.name} src={normalizedAvatar} />
-                    <AvatarFallback className="rounded-full bg-primary/10 font-medium text-primary text-sm">
-                      {fallback}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar
+                    className="size-10 rounded-full shadow-sm"
+                    name={user.name}
+                    size="md"
+                    src={normalizedAvatar}
+                  />
                   <div className="grid flex-1 text-start text-sm leading-tight">
                     <span className="truncate font-medium text-[15px] tracking-tight antialiased">
                       {user.name}

@@ -25,8 +25,8 @@ import { useTranslation } from "react-i18next";
 
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
-import { AppSidebar } from "@/components/app-sidebar";
 import Avatar from "@/components/Avatar";
+import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
 import { HeroPattern } from "@/components/HeroPattern";
 import { useTheme } from "@/components/theme-provider";
@@ -48,11 +48,11 @@ import { LayoutProvider, useLayout } from "@/contexts/layout-provider";
 import { useCircularTransition } from "@/hooks/use-circular-transition";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/i18n/config";
-import { cn } from "@/lib/utils";
 import {
   readCachedProfile,
   subscribeToCachedProfile,
 } from "@/lib/profile-cache";
+import { cn } from "@/lib/utils";
 // import { useNotificationToasts } from "@/services/notifications/useNotificationToasts";
 import { NotificationCenter } from "@/modules/shell/notification-center";
 import type { View } from "@/types";
@@ -316,8 +316,11 @@ function AppShellInner() {
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "56px",
+          "--header-height": "60px",
+          "--titlebar-clearance":
+            isDesktopRuntime && variant === "sidebar" && !isRtl
+              ? "24px"
+              : "0px",
         } as React.CSSProperties
       }
     >
@@ -334,27 +337,49 @@ function AppShellInner() {
 
       <SidebarInset
         className={cn(
-          "!bg-white/40 dark:!bg-zinc-950/40 !pb-2 p-2 backdrop-blur-xl",
-          "!border-none !rounded-t-[24px] !rounded-b-none md:peer-data-[variant=inset]:!border-transparent shadow-sm ring-1 ring-black/5 dark:ring-white/5",
-          "transition-all duration-300",
+          "!border-none backdrop-blur-xl",
+          variant === "sidebar" &&
+            "!m-0 !rounded-none !bg-white/40 p-0 shadow-none ring-0 dark:!bg-zinc-950/40",
+          variant === "inset" &&
+            "!rounded-t-[24px] !rounded-b-none !border-transparent !bg-transparent p-2 pb-2 shadow-none ring-0",
+          variant === "floating" &&
+            "!rounded-[24px] !bg-transparent p-0 shadow-sm ring-1 ring-black/5 dark:ring-white/8",
+          "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "md:peer-data-[variant=inset]:max-h-dvh",
           "md:peer-data-[variant=floating]:max-h-dvh",
           "max-h-dvh",
-          "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0 md:peer-data-[variant=inset]:mt-2 md:peer-data-[variant=inset]:mr-2 md:peer-data-[variant=inset]:mb-2!"
+          "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0"
         )}
       >
+        {variant === "inset" ? (
+          <>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-0 rounded-t-[24px] rounded-b-none bg-white/35 shadow-[inset_0_0_2px_1px_rgba(255,255,255,0.5),0_1px_2px_rgba(15,23,42,0.05)] backdrop-blur-xl dark:bg-zinc-900/30 dark:shadow-[inset_0_0_2px_1px_rgba(255,255,255,0.1),0_1px_2px_rgba(0,0,0,0.34)]"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-20 rounded-t-[24px] rounded-b-none border border-zinc-950/[0.065] shadow-[inset_0_1px_0_rgba(255,255,255,0.56)] dark:border-white/10 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+            />
+          </>
+        ) : null}
         <div
-          className="!border-b-0 relative flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none rounded-t-[16px] rounded-b-none bg-white shadow-2xl ring-1 ring-black/10 transition-all duration-300 [scrollbar-gutter:stable] dark:bg-zinc-950 dark:ring-white/10"
+          className={cn(
+            "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-white transition-all duration-300 [scrollbar-gutter:stable] dark:bg-zinc-950",
+            variant === "sidebar" && "rounded-none shadow-none ring-0",
+            variant === "inset" &&
+              "rounded-t-[16px] rounded-b-none shadow-2xl ring-1 ring-black/10 dark:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.78)] dark:ring-white/10",
+            variant === "floating" &&
+              "rounded-[22px] shadow-2xl ring-1 ring-black/10 dark:ring-white/14"
+          )}
           ref={sidebarScrollRef}
         >
           <HeroPattern />
 
-          {/* biome-ignore lint/a11y/noStaticElementInteractions: header needs onMouseDown for Tauri window drag */}
           <motion.header
             className={cn(
-              "sticky top-0 z-50 flex h-(--header-height) w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 [backface-visibility:hidden] [transform:translateZ(0)] will-change-transform dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
-              isDesktopRuntime && "cursor-grab active:cursor-grabbing",
-              "group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)"
+              "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 [backface-visibility:hidden] [transform:translateZ(0)] will-change-transform dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
+              isDesktopRuntime && "cursor-grab active:cursor-grabbing"
             )}
             data-window-drag-region={isDesktopRuntime ? "true" : undefined}
             onDoubleClick={handleDoubleClick}
@@ -364,6 +389,8 @@ function AppShellInner() {
               {
                 "--bg-opacity-light": bgOpacityLight,
                 "--bg-opacity-dark": bgOpacityDark,
+                height:
+                  "calc(var(--header-height) + var(--titlebar-clearance))",
               } as React.CSSProperties
             }
           >
@@ -386,9 +413,13 @@ function AppShellInner() {
             {/* Hairline border (replaces border-b) — Protocol-faithful */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-full h-px translate-y-px bg-zinc-900/7.5 dark:bg-white/7.5"
+              className="pointer-events-none absolute inset-x-0 top-full h-px bg-zinc-900/7.5 dark:bg-white/12"
+              data-slot="app-header-separator"
             />
-            <div className="relative flex w-full items-center gap-2 px-4 lg:px-6">
+            <div
+              className="relative flex w-full items-center gap-2 px-4 lg:px-6"
+              style={{ paddingTop: "var(--titlebar-clearance)" }}
+            >
               {/* Search trigger - Premium Dribbble Style */}
               <button
                 className="group relative flex h-10 w-[300px] items-center gap-3 rounded-full border border-black/5 bg-white/40 px-4 text-left text-muted-foreground text-sm shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md transition-all duration-300 hover:border-black/10 hover:bg-white/60 hover:text-foreground hover:shadow-[0_4px_14px_rgba(0,0,0,0.04)] sm:w-[340px] dark:border-white/10 dark:bg-zinc-900/40 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:hover:border-white/20 dark:hover:bg-zinc-900/60"
@@ -433,20 +464,63 @@ function AppShellInner() {
                   onNavigateToPatient={handleNavigateToPatient}
                 />
 
-                {/* ── Avatar + Dropdown ───────────────────────────────── */}
+                {/* ── Theme switch ────────────────────────────────────── */}
+                <button
+                  aria-checked={isDarkMode}
+                  aria-label={
+                    isDarkMode
+                      ? "Activer le mode clair"
+                      : "Activer le mode sombre"
+                  }
+                  className="group relative flex h-9 w-[66px] cursor-pointer items-center rounded-full border border-black/8 bg-white/40 p-1 shadow-none backdrop-blur-md transition-colors hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                  onClick={toggleTheme}
+                  role="switch"
+                  type="button"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "absolute top-1 size-7 rounded-full bg-white shadow-sm ring-1 ring-black/5 transition-transform duration-300 ease-out dark:bg-zinc-700 dark:ring-white/10",
+                      isDarkMode ? "translate-x-[30px]" : "translate-x-0"
+                    )}
+                  />
+                  <span className="relative z-10 flex size-7 items-center justify-center">
+                    <HugeiconsIcon
+                      className={cn(
+                        "size-3.5 transition-colors",
+                        isDarkMode
+                          ? "text-muted-foreground/55"
+                          : "text-amber-600"
+                      )}
+                      icon={Sun01Icon}
+                      strokeWidth={1.7}
+                    />
+                  </span>
+                  <span className="relative z-10 flex size-7 items-center justify-center">
+                    <HugeiconsIcon
+                      className={cn(
+                        "size-3.5 transition-colors",
+                        isDarkMode
+                          ? "text-sky-300"
+                          : "text-muted-foreground/55"
+                      )}
+                      icon={Moon01Icon}
+                      strokeWidth={1.7}
+                    />
+                  </span>
+                </button>
+
+                {/* ── Settings + account dropdown ─────────────────────── */}
                 <DropdownMenu>
                   <DropdownMenuTrigger
-                    aria-label="Mon compte"
-                    className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full ring-2 ring-transparent transition-all duration-200 hover:ring-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
+                    aria-label="Paramètres et compte"
+                    className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-all duration-200 hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
                   >
-                    <Avatar
-                      className="size-10 shadow-sm"
-                      name={userDisplayName}
-                      size="md"
-                      src={resolvedAvatarUrl}
+                    <HugeiconsIcon
+                      className="size-[17px]"
+                      icon={Settings01Icon}
+                      strokeWidth={1.6}
                     />
-                    {/* Online indicator */}
-                    <span className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent
@@ -490,31 +564,6 @@ function AppShellInner() {
                       <kbd className="ml-auto h-5 rounded border border-zinc-200 bg-zinc-100 px-1.5 font-mono text-[10px] text-muted-foreground dark:border-white/10 dark:bg-white/5">
                         ⌘J
                       </kbd>
-                    </DropdownMenuItem>
-
-                    {/* Theme toggle */}
-                    <DropdownMenuItem
-                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                      onClick={toggleTheme}
-                    >
-                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-500/20">
-                        {isDarkMode ? (
-                          <HugeiconsIcon
-                            className="size-4 text-amber-600 dark:text-amber-400"
-                            icon={Moon01Icon}
-                            strokeWidth={1.5}
-                          />
-                        ) : (
-                          <HugeiconsIcon
-                            className="size-4 text-amber-600 dark:text-amber-400"
-                            icon={Sun01Icon}
-                            strokeWidth={1.5}
-                          />
-                        )}
-                      </div>
-                      <span className="font-medium text-sm">
-                        {isDarkMode ? "Mode sombre" : "Mode clair"}
-                      </span>
                     </DropdownMenuItem>
 
                     {/* Language submenu */}

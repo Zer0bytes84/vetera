@@ -304,6 +304,23 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
     "important"
   );
   root.style.setProperty("--ring", mode.ring, "important");
+  root.style.setProperty("--sidebar-primary", mode.primary, "important");
+  root.style.setProperty(
+    "--sidebar-primary-foreground",
+    mode.primaryForeground,
+    "important"
+  );
+  root.style.setProperty("--sidebar-ring", mode.ring, "important");
+  root.style.setProperty(
+    "--sidebar-accent",
+    `color-mix(in oklch, ${mode.primary} ${isDark ? "14%" : "10%"}, transparent)`,
+    "important"
+  );
+  root.style.setProperty(
+    "--sidebar-accent-foreground",
+    mode.primary,
+    "important"
+  );
 
   // Keep dark surfaces globally coherent with dashboard visuals.
   // In dark mode, avoid runtime accent overrides that create mismatched pages.
@@ -362,8 +379,13 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   }
 
   const font = config.font || "geist";
+  root.style.setProperty("--app-font-sans", FONT_MAP[font].css);
+  root.style.setProperty("--app-font-heading", FONT_MAP[font].css);
   root.style.setProperty("--font-sans", FONT_MAP[font].css);
   root.style.setProperty("--font-heading", FONT_MAP[font].css);
+  root.dataset.font = font;
+  root.dataset.radius = config.radius;
+  root.dataset.density = config.density;
 
   const density = DENSITY_MAP[config.density];
   root.style.setProperty("--density-padding", density.padding);
@@ -375,7 +397,7 @@ export function getThemeConfig(): ThemeConfig {
     const stored = localStorage.getItem("theme-config");
     if (stored) {
       const parsed = JSON.parse(stored) as ThemeConfig;
-      return { ...DEFAULT_THEME, ...parsed, accent: "noir", font: "inter" };
+      return { ...DEFAULT_THEME, ...parsed };
     }
   } catch {}
   return { ...DEFAULT_THEME };

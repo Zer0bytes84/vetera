@@ -34,14 +34,21 @@ function BaitariMark({ sizePx }: { sizePx: number }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M12.5 6.5V24.8C12.5 31.1 17.4 35.5 23.5 35.5C29.7 35.5 34.5 30.8 34.5 24.7C34.5 18.7 29.8 14 23.7 14C18.5 14 14.2 17.6 13 22.5C13.5 27 16.8 30.2 21.1 30.2C25.5 30.2 28.9 26.8 28.9 22.6"
+        d="M11.25 4.75V23.25C11.25 30.1 16.35 35.25 23.15 35.25C29.9 35.25 35 30.05 35 23.25C35 16.45 29.85 11.25 23.1 11.25C17.1 11.25 12.25 15.3 11.35 21.15"
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="3.15"
+        strokeWidth="4.6"
       />
-      <circle cx="31.4" cy="8.9" fill="#38B990" r="2.45" />
+      <path
+        d="M5.75 23.2H13.45L16.65 17.6L20.45 28.35L24.05 21.15L26.3 23.2H35.15"
+        fill="none"
+        stroke="#20B486"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.8"
+      />
     </svg>
   );
 }

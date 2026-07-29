@@ -1,6 +1,5 @@
 "use client";
 
-import { LayoutLeftIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -44,10 +43,11 @@ export function AppSidebar({
   currentUserName,
   currentUserEmail,
   currentUserAvatar,
+  variant = "sidebar",
   ...props
 }: AppSidebarProps) {
   const { t } = useTranslation();
-  const { state, toggleSidebar } = useSidebar();
+  const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const { data: users } = useUsersRepository();
   const [cachedProfile, setCachedProfile] = React.useState(() =>
@@ -87,6 +87,16 @@ export function AppSidebar({
     cachedProfile?.avatarUrl;
 
   const isDesktopRuntime = isTauriRuntime();
+  let sidebarSeparatorWidth = "-left-4 w-[calc(100%+32px)]";
+  if (variant === "sidebar") {
+    sidebarSeparatorWidth = "inset-x-0";
+  }
+  let sidebarHeaderPadding = "px-4";
+  if (isCollapsed) {
+    sidebarHeaderPadding = "justify-center px-0";
+  } else if (variant === "sidebar") {
+    sidebarHeaderPadding = "px-6";
+  }
 
   const overviewSection = navigationSections[0];
   const patientSection = navigationSections[1];
@@ -138,42 +148,35 @@ export function AppSidebar({
     onClick: () => onNavigate(item.view),
   }));
 
-  if (isCollapsed) {
-    secondaryItems.unshift({
-      title: "Développer",
-      icon: (
-        <HugeiconsIcon
-          className="size-[19.5px] rotate-180 transition-all duration-200 ease-out"
-          icon={LayoutLeftIcon}
-          strokeWidth={1.5}
-        />
-      ),
-      isActive: false,
-      onClick: toggleSidebar,
-    });
-  }
-
   return (
-    <Sidebar {...props} className={cn("border-none", props.className)}>
+    <Sidebar
+      {...props}
+      className={cn(
+        "app-sidebar",
+        variant !== "sidebar" && "border-none",
+        props.className
+      )}
+      variant={variant}
+    >
       <div className="apple-sidebar-glow" />
 
       <SidebarHeader
         className={cn(
           "relative z-10 flex shrink-0 flex-row items-center",
-          "h-[64px] transition-all duration-300",
-          isCollapsed ? "justify-center px-0" : "px-4",
+          "h-[calc(var(--header-height)+var(--titlebar-clearance))] transition-all duration-300",
+          sidebarHeaderPadding,
           "w-full bg-transparent"
         )}
+        style={{ paddingTop: "var(--titlebar-clearance)" }}
       >
         {/* Hairline separator */}
         <div
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-full z-50 h-px -translate-y-[6px] bg-zinc-900/7.5 dark:bg-white/7.5",
-            isCollapsed
-              ? "left-0 w-[var(--sidebar-width-icon)]"
-              : "-left-4 w-[calc(var(--sidebar-width)+1px)]"
+            "pointer-events-none absolute top-full z-50 h-px bg-zinc-900/7.5 transition-[left,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-white/12",
+            sidebarSeparatorWidth
           )}
+          data-slot="sidebar-header-separator"
         />
 
         {/* Invisible drag area to fill remaining space */}
@@ -183,11 +186,13 @@ export function AppSidebar({
             data-tauri-drag-region="true"
           />
         )}
-        <SidebarMenu className="relative z-10 w-full">
+        <SidebarMenu
+          className="relative z-10 w-full transition-opacity duration-200"
+        >
           <SidebarMenuItem className="flex w-full flex-row items-center justify-between">
             <SidebarMenuButton
               className={cn(
-                "h-13 flex-1 px-1 hover:bg-transparent active:bg-transparent",
+                "h-12 flex-1 px-1 hover:bg-transparent active:bg-transparent",
                 "transition-all duration-300 ease-out",
                 isCollapsed && "ms-0 justify-center px-0"
               )}
@@ -197,9 +202,16 @@ export function AppSidebar({
               tooltip="Baitari"
             >
               <Logo
-                className="text-sidebar-foreground"
+                className={cn(
+                  "text-sidebar-foreground",
+                  isCollapsed
+                    ? "translate-y-0"
+                    : isDesktopRuntime
+                      ? "translate-y-1.5"
+                      : "translate-y-0.5"
+                )}
                 collapsed={isCollapsed}
-                size="2xl"
+                size={variant === "sidebar" ? "xl" : "2xl"}
                 textSize="md"
               />
             </SidebarMenuButton>
@@ -251,7 +263,7 @@ export function AppSidebar({
           "relative z-10 shrink-0 transition-all duration-300",
           isCollapsed
             ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-0.5 px-0 pt-2 pb-2"
-            : "mx-0 mt-auto mb-0 bg-transparent px-4 pt-1 pb-4"
+            : "mx-0 mt-auto mb-0 bg-transparent px-3 pt-1 pb-4"
         )}
       >
         {isCollapsed ? (
@@ -261,7 +273,7 @@ export function AppSidebar({
           className={cn(
             "transition-all duration-300",
             !isCollapsed &&
-              "rounded-2xl border border-zinc-200/50 bg-zinc-50/30 p-2 dark:border-white/[0.04] dark:bg-zinc-900/20"
+              "sidebar-user-card w-full rounded-2xl border border-zinc-200/50 bg-zinc-50/30 p-1.5 dark:border-white/[0.09] dark:bg-zinc-900/24"
           )}
         >
           <NavUser

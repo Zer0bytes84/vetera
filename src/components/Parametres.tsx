@@ -26,9 +26,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { relaunch } from "@tauri-apps/plugin-process";
 import React, { useEffect, useRef, useState } from "react";
-import MotivationalHeader from "@/components/MotivationalHeader";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -51,7 +50,9 @@ import { writeCachedProfile } from "@/lib/profile-cache";
 import {
   ACCENT_THEMES,
   applyTheme,
+  FONT_MAP,
   getThemeConfig,
+  RADIUS_MAP,
   saveThemeConfig,
   type ThemeConfig,
 } from "@/lib/theme-store";
@@ -79,7 +80,7 @@ import {
   subscribeToProgress,
 } from "@/services/webLLMService";
 import type { View } from "@/types";
-import Avatar from "./Avatar";
+import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
 
@@ -966,7 +967,7 @@ const Parametres: React.FC<ParametresProps> = ({
     const isDark = document.documentElement.classList.contains("dark");
     applyTheme(themeConfig, isDark);
     saveThemeConfig(themeConfig);
-  }, [themeConfig]);
+  }, [currentTheme, themeConfig]);
 
   const handleThemeConfigChange = (newConfig: ThemeConfig) => {
     setThemeConfig(newConfig);
@@ -978,12 +979,16 @@ const Parametres: React.FC<ParametresProps> = ({
     icon: typeof UserCircle02Icon;
   }[] = [
     { id: "profil", label: "Profil", icon: UserCircle02Icon },
+    { id: "apparence", label: "Apparence", icon: LaptopIcon },
     { id: "notifications", label: "Notifications", icon: Notification02Icon },
     { id: "securite", label: "Sécurité", icon: Shield01Icon },
     { id: "ia", label: "IA Locale", icon: SparklesIcon },
     { id: "sauvegarde", label: "Sauvegarde", icon: DatabaseIcon },
     { id: "apropos", label: "À propos", icon: InformationSquareIcon },
   ];
+
+  const activeNavItem =
+    navItems.find((item) => item.id === activeTab) ?? navItems[0];
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -1132,50 +1137,7 @@ const Parametres: React.FC<ParametresProps> = ({
     switch (activeTab) {
       case "profil":
         return (
-          <div className="space-y-6">
-            {/* Profile Header */}
-            <Card className="overflow-hidden" size="sm">
-              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-                <div className="relative shrink-0 self-start">
-                  <Avatar name={displayName} size="xl" src={avatarUrl} />
-                  <label
-                    className="absolute right-0 bottom-0 inline-flex cursor-pointer items-center justify-center rounded-full border-2 border-background bg-primary p-2 text-primary-foreground shadow-md transition-transform hover:scale-105"
-                    htmlFor="profile-photo-upload"
-                    title="Changer la photo de profil"
-                  >
-                    <HugeiconsIcon
-                      className="size-3.5"
-                      icon={Camera01Icon}
-                      strokeWidth={2}
-                    />
-                  </label>
-                  <input
-                    accept="image/*"
-                    className="hidden"
-                    id="profile-photo-upload"
-                    onChange={handleImageUpload}
-                    type="file"
-                  />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <h2 className="truncate font-semibold text-foreground text-xl">
-                    {displayName || "Votre profil"}
-                  </h2>
-                  <p className="truncate text-muted-foreground text-sm">
-                    {currentUser?.email}
-                  </p>
-                  <p className="mt-1 truncate text-muted-foreground text-sm">
-                    {clinicName ? `Cabinet ${clinicName}` : "Cabinet à définir"}
-                  </p>
-
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Badge variant="outline">{getRoleDisplay()}</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
+          <div className="space-y-4">
             {message && (
               <Card
                 className={cn(
@@ -1185,7 +1147,7 @@ const Parametres: React.FC<ParametresProps> = ({
                 )}
                 size="sm"
               >
-                <CardContent className="flex items-center gap-3">
+                <CardContent className="flex items-center gap-3 p-4">
                   {message.type === "success" ? (
                     <HugeiconsIcon
                       className="size-4.5 text-green-700"
@@ -1213,15 +1175,104 @@ const Parametres: React.FC<ParametresProps> = ({
               </Card>
             )}
 
-            {/* Form Fields */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Informations du praticien 🩺</CardTitle>
-                <CardDescription>
-                  Modifiez votre identité et celle du cabinet
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <Card className="overflow-hidden" size="sm">
+              <CardContent className="grid p-0 lg:grid-cols-[300px_minmax(0,1fr)]">
+                <aside className="border-border/70 border-b bg-muted/20 p-5 lg:border-r lg:border-b-0 dark:border-white/10 dark:bg-white/[0.025]">
+                  <div className="flex items-center gap-4 lg:flex-col lg:items-start">
+                    <Avatar
+                      className="ring-4 ring-background"
+                      name={displayName}
+                      size="xl"
+                      src={avatarUrl}
+                    />
+                    <div className="min-w-0">
+                      <h2 className="truncate font-semibold text-xl tracking-tight">
+                        {displayName || "Votre profil"}
+                      </h2>
+                      <p className="mt-1 truncate text-muted-foreground text-sm">
+                        {currentUser?.email}
+                      </p>
+                      <Badge className="mt-3 rounded-full" variant="outline">
+                        {roleLabel}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 border-border/70 border-t pt-5 dark:border-white/10">
+                    <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.15em]">
+                      Choisir un avatar
+                    </p>
+                    <div className="mt-3 grid grid-cols-5 gap-2">
+                      {PROFILE_AVATAR_EMOJIS.map((emoji) => {
+                        const value = `emoji:${emoji}`;
+                        const selected = avatarUrl === value;
+                        return (
+                          <button
+                            aria-label={`Choisir l’avatar ${emoji}`}
+                            aria-pressed={selected}
+                            className={cn(
+                              "flex aspect-square items-center justify-center rounded-xl border text-xl transition-all hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                              selected
+                                ? "border-primary bg-primary/8 ring-2 ring-primary/15"
+                                : "border-border/70 bg-background/70 dark:border-white/10 dark:bg-white/[0.025]"
+                            )}
+                            key={emoji}
+                            onClick={() => setAvatarUrl(value)}
+                            type="button"
+                          >
+                            {emoji}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <Button
+                        className="justify-center"
+                        onClick={() => setAvatarUrl("")}
+                        size="sm"
+                        type="button"
+                        variant="outline"
+                      >
+                        Automatique
+                      </Button>
+                      <label
+                        className={cn(
+                          buttonVariants({ size: "sm", variant: "outline" }),
+                          "justify-center gap-2"
+                        )}
+                        htmlFor="profile-photo-upload"
+                      >
+                        <HugeiconsIcon
+                          className="size-4"
+                          icon={Camera01Icon}
+                          strokeWidth={1.8}
+                        />
+                        Photo
+                      </label>
+                      <input
+                        accept="image/*"
+                        className="hidden"
+                        id="profile-photo-upload"
+                        onChange={handleImageUpload}
+                        type="file"
+                      />
+                    </div>
+                    <p className="mt-3 text-muted-foreground text-xs leading-relaxed">
+                      Votre choix apparaît partout dans l’application après
+                      l’enregistrement.
+                    </p>
+                  </div>
+                </aside>
+
+                <div className="p-5 lg:p-6">
+                  <div className="mb-5">
+                    <h3 className="font-semibold text-lg tracking-tight">
+                      Identité professionnelle
+                    </h3>
+                    <p className="mt-1 text-muted-foreground text-sm">
+                      Les informations utiles au cabinet et aux documents.
+                    </p>
+                  </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <Field>
                     <FieldLabel>Nom de la clinique / cabinet</FieldLabel>
@@ -1265,7 +1316,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   </Field>
                   <Field>
                     <FieldLabel>Rôle</FieldLabel>
-                    <Input disabled type="text" value={getRoleDisplay()} />
+                    <Input disabled type="text" value={roleLabel} />
                   </Field>
                 </div>
                 <Field>
@@ -1276,7 +1327,7 @@ const Parametres: React.FC<ParametresProps> = ({
                     value={bio}
                   />
                 </Field>
-                <div className="flex justify-end pt-2">
+                <div className="mt-5 flex justify-end border-border/70 border-t pt-5 dark:border-white/10">
                   <Button
                     className="flex items-center gap-2"
                     disabled={isSaving}
@@ -1291,8 +1342,9 @@ const Parametres: React.FC<ParametresProps> = ({
                         strokeWidth={2}
                       />
                     )}
-                    Enregistrer
+                    Enregistrer les modifications
                   </Button>
+                </div>
                 </div>
               </CardContent>
             </Card>
@@ -1300,17 +1352,8 @@ const Parametres: React.FC<ParametresProps> = ({
         );
       case "apparence":
         return (
-          <div className="space-y-6">
-            {/* Appearance Header */}
-            <div>
-              <h2 className="font-semibold text-foreground text-xl">
-                Apparence
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                Personnalisez le look de votre application
-              </p>
-            </div>
-
+          <div className="grid gap-4 xl:grid-cols-2">
+            <AppearancePreview config={themeConfig} />
             {/* Theme Mode */}
             <Card size="sm">
               <CardHeader>
@@ -1378,9 +1421,9 @@ const Parametres: React.FC<ParametresProps> = ({
                           {theme.label}
                         </span>
                         {isActive && (
-                          <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                          <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                             <HugeiconsIcon
-                              className="size-2.5"
+                              className="size-3"
                               icon={CheckmarkCircle02Icon}
                               strokeWidth={2}
                             />
@@ -1405,27 +1448,7 @@ const Parametres: React.FC<ParametresProps> = ({
                 <div className="grid grid-cols-3 gap-2">
                   {(["geist", "inter", "system"] as const).map((font) => {
                     const isActive = themeConfig.font === font;
-                    const fontMap: Record<
-                      string,
-                      { label: string; css: string; description: string }
-                    > = {
-                      geist: {
-                        label: "Geist",
-                        css: "'Geist Variable', sans-serif",
-                        description: "Moderne et géométrique",
-                      },
-                      inter: {
-                        label: "Inter",
-                        css: "'Inter Variable', sans-serif",
-                        description: "Lisible et polyvalent",
-                      },
-                      system: {
-                        label: "Système",
-                        css: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                        description: "Natif et rapide",
-                      },
-                    };
-                    const f = fontMap[font];
+                    const f = FONT_MAP[font];
                     return (
                       <button
                         className={cn(
@@ -1454,9 +1477,9 @@ const Parametres: React.FC<ParametresProps> = ({
                           </div>
                         </div>
                         {isActive && (
-                          <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                          <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                             <HugeiconsIcon
-                              className="size-2.5"
+                              className="size-3"
                               icon={CheckmarkCircle02Icon}
                               strokeWidth={2}
                             />
@@ -1480,13 +1503,6 @@ const Parametres: React.FC<ParametresProps> = ({
               <CardContent>
                 <div className="flex gap-2">
                   {(["sm", "md", "lg", "xl", "full"] as const).map((radius) => {
-                    const radiusValues: Record<string, string> = {
-                      sm: "0.375rem",
-                      md: "0.5rem",
-                      lg: "0.75rem",
-                      xl: "1rem",
-                      full: "9999px",
-                    };
                     const isActive = themeConfig.radius === radius;
                     return (
                       <button
@@ -1504,7 +1520,7 @@ const Parametres: React.FC<ParametresProps> = ({
                         <div
                           className="h-8 w-12 border-2 transition-all"
                           style={{
-                            borderRadius: radiusValues[radius],
+                            borderRadius: RADIUS_MAP[radius],
                             borderColor: isActive
                               ? "var(--primary)"
                               : "var(--border)",
@@ -1590,17 +1606,15 @@ const Parametres: React.FC<ParametresProps> = ({
         );
       case "notifications":
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="font-semibold text-foreground text-xl">
-                Notifications
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                Gérez vos préférences de notification
-              </p>
-            </div>
+          <div className="space-y-4">
             <Card size="sm">
-              <CardContent className="space-y-1 pt-4">
+              <CardHeader>
+                <CardTitle>Alertes du cabinet</CardTitle>
+                <CardDescription>
+                  Choisissez les informations qui méritent votre attention.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-2 md:grid-cols-2">
                 {[
                   {
                     title: "Rendez-vous",
@@ -1629,7 +1643,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   },
                 ].map((item, i) => (
                   <div
-                    className="flex items-center justify-between rounded-xl p-4 transition-colors hover:bg-muted/30"
+                    className="flex items-center justify-between gap-4 rounded-xl border border-border/70 bg-muted/15 p-4 transition-colors hover:bg-muted/35 dark:border-white/10 dark:bg-white/[0.025]"
                     key={i}
                   >
                     <div>
@@ -1649,26 +1663,18 @@ const Parametres: React.FC<ParametresProps> = ({
         );
       case "securite":
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="font-semibold text-foreground text-xl">
-                Sécurité
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                Gérez votre mot de passe et vos sessions
-              </p>
-            </div>
-
+          <div className="grid gap-4 xl:grid-cols-2">
             {message && (
               <Card
                 className={cn(
+                  "xl:col-span-2",
                   message.type === "success"
                     ? "border-green-200 bg-green-500/5"
                     : "border-red-200 bg-red-500/5"
                 )}
                 size="sm"
               >
-                <CardContent className="flex items-center gap-3">
+                <CardContent className="flex items-center gap-3 p-4">
                   {message.type === "success" ? (
                     <HugeiconsIcon
                       className="size-4.5 text-green-700"
@@ -1828,15 +1834,7 @@ const Parametres: React.FC<ParametresProps> = ({
         );
       case "apropos":
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="font-semibold text-foreground text-xl">
-                À propos
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                Informations sur l'application
-              </p>
-            </div>
+          <div className="space-y-4">
             <Card className="overflow-hidden" size="sm">
               <CardContent className="p-0">
                 <div className="flex flex-col gap-5 border-border/70 border-b bg-muted/15 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -2004,30 +2002,37 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <MotivationalHeader section="parametres" />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Badge
-            className="h-10 rounded-full px-5 font-normal text-sm"
-            variant="outline"
-          >
-            {roleLabel}
-          </Badge>
+    <div className="settings-workspace dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pt-16 pb-8 md:pt-24 lg:px-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="font-semibold text-[11px] text-primary uppercase tracking-[0.18em]">
+            Espace de configuration
+          </p>
+          <h1 className="mt-1 font-heading font-semibold text-2xl tracking-[-0.035em] sm:text-3xl">
+            Paramètres
+          </h1>
+          <p className="mt-1 max-w-xl text-muted-foreground text-sm">
+            Adaptez Baitari à votre identité, votre équipe et votre façon de travailler.
+          </p>
         </div>
+        <Badge className="w-fit rounded-full px-3 py-1.5" variant="outline">
+          {roleLabel}
+        </Badge>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="scrollbar-hide flex overflow-x-auto rounded-[24px] border border-border bg-card p-2 shadow-none">
+      <nav
+        aria-label="Sections des paramètres"
+        className="scrollbar-hide flex overflow-x-auto rounded-2xl border border-zinc-200/80 bg-white/75 p-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.03)] backdrop-blur-xl dark:border-white/12 dark:bg-white/[0.035]"
+      >
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           return (
             <button
               className={cn(
-                "relative flex items-center gap-2 whitespace-nowrap rounded-2xl px-4 py-3 font-medium text-sm transition-all",
+                "relative flex min-h-10 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 font-medium text-sm transition-all duration-200",
                 isActive
-                  ? "bg-[var(--color-surface-soft)] text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-black/[0.035] hover:text-foreground dark:hover:bg-white/[0.06]"
               )}
               key={item.id}
               onClick={() => setActiveTab(item.id)}
@@ -2037,17 +2042,148 @@ const Parametres: React.FC<ParametresProps> = ({
                 icon={item.icon}
                 strokeWidth={isActive ? 2 : 1.5}
               />
-              <span className="hidden sm:inline">{item.label}</span>
+              <span>{item.label}</span>
             </button>
           );
         })}
-      </div>
+      </nav>
 
-      {/* Content */}
-      <div className="min-h-[400px]">{renderContent()}</div>
+      <section aria-labelledby="settings-section-title" className="min-h-[400px]">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-xl border border-border/70 bg-muted/40 text-foreground dark:border-white/10 dark:bg-white/[0.05]">
+            <HugeiconsIcon
+              className="size-[18px]"
+              icon={activeNavItem.icon}
+              strokeWidth={1.7}
+            />
+          </div>
+          <h2 className="font-semibold text-base" id="settings-section-title">
+            {activeNavItem.label}
+          </h2>
+        </div>
+        <div className="settings-content">{renderContent()}</div>
+      </section>
     </div>
   );
 };
+
+function AppearancePreview({ config }: { config: ThemeConfig }) {
+  const { collapsible, variant } = useLayout();
+  const densityLabel = {
+    compact: "Compacte",
+    comfortable: "Confortable",
+    spacious: "Aérée",
+  }[config.density];
+  const layoutLabel = {
+    floating: "Flottante",
+    inset: "Encadrée",
+    sidebar: "Classique",
+  }[variant];
+  const collapseLabel = {
+    icon: "Icônes",
+    none: "Désactivée",
+    offcanvas: "Masquée",
+  }[collapsible];
+
+  return (
+    <Card className="xl:col-span-2" size="sm">
+      <CardHeader>
+        <CardTitle>Aperçu de votre espace</CardTitle>
+        <CardDescription>
+          Les changements sont appliqués instantanément et conservés sur cet
+          appareil.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+          <div className="overflow-hidden rounded-2xl border border-border/80 bg-muted/20 p-2 dark:border-white/12 dark:bg-black/20">
+            <div className="flex h-44 overflow-hidden rounded-xl border border-border/70 bg-background shadow-sm dark:border-white/10">
+              <div
+                className={cn(
+                  "flex shrink-0 flex-col border-border/70 border-r bg-muted/25 p-2 transition-all dark:border-white/10 dark:bg-white/[0.025]",
+                  collapsible === "icon" ? "w-11" : "w-28",
+                  collapsible === "offcanvas" && "w-1 p-0"
+                )}
+              >
+                {collapsible !== "offcanvas" && (
+                  <>
+                    <div className="mb-4 flex items-center gap-2">
+                      <div className="size-5 rounded-md bg-primary" />
+                      {collapsible !== "icon" && (
+                        <span className="font-semibold text-[9px]">Baitari</span>
+                      )}
+                    </div>
+                    {[0, 1, 2, 3].map((item) => (
+                      <div
+                        className={cn(
+                          "mb-1.5 flex h-6 items-center gap-2 rounded-md px-1.5",
+                          item === 0 ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                        )}
+                        key={item}
+                      >
+                        <div className="size-2.5 shrink-0 rounded-sm border border-current/50" />
+                        {collapsible !== "icon" && (
+                          <span className="h-1 w-12 rounded-full bg-current opacity-55" />
+                        )}
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+              <div className="min-w-0 flex-1 p-3">
+                <div className="flex items-center justify-between border-border/60 border-b pb-2 dark:border-white/10">
+                  <div className="h-2 w-24 rounded-full bg-foreground/70" />
+                  <div className="size-5 rounded-full border border-border bg-muted dark:border-white/10" />
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {[0, 1, 2].map((item) => (
+                    <div
+                      className="rounded-lg border border-border/70 bg-card p-2 dark:border-white/10"
+                      key={item}
+                    >
+                      <div className="size-3 rounded bg-primary/15" />
+                      <div className="mt-3 h-2 w-8 rounded-full bg-foreground/75" />
+                      <div className="mt-1.5 h-1 w-full rounded-full bg-muted-foreground/20" />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 h-14 rounded-lg border border-border/70 bg-card p-2 dark:border-white/10">
+                  <div className="h-1.5 w-20 rounded-full bg-foreground/65" />
+                  <div className="mt-3 flex items-end gap-1">
+                    {[35, 58, 42, 72, 54, 82, 64].map((height, index) => (
+                      <div
+                        className="flex-1 rounded-t-sm bg-primary/70"
+                        key={`${height}-${index}`}
+                        style={{ height: `${height / 4}px` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid content-start gap-2">
+            {[
+              ["Police", FONT_MAP[config.font].label],
+              ["Densité", densityLabel],
+              ["Navigation", layoutLabel],
+              ["Réduction", collapseLabel],
+            ].map(([label, value]) => (
+              <div
+                className="flex items-center justify-between rounded-xl border border-border/70 bg-muted/15 px-3 py-2.5 dark:border-white/10 dark:bg-white/[0.025]"
+                key={label}
+              >
+                <span className="text-muted-foreground text-xs">{label}</span>
+                <span className="font-medium text-xs">{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 function SidebarLayoutSettings() {
   const { variant, setVariant, collapsible, setCollapsible, resetLayout } =
@@ -2056,33 +2192,37 @@ function SidebarLayoutSettings() {
   const variants = [
     {
       value: "inset" as const,
-      label: "Inset",
-      description: "Intégré dans la page",
+      label: "Encadrée",
+      description: "Contenu détaché et vitré",
     },
     {
       value: "sidebar" as const,
-      label: "Sidebar",
-      description: "Barre latérale classique",
+      label: "Classique",
+      description: "Pleine hauteur",
     },
     {
       value: "floating" as const,
-      label: "Floating",
-      description: "Flottant avec bordure",
+      label: "Flottante",
+      description: "Marge extérieure",
     },
   ];
 
   const collapsibles = [
     {
       value: "icon" as const,
-      label: "Icônes",
-      description: "Réduit en icônes",
+      label: "Compacte",
+      description: "Réduction en icônes",
     },
     {
       value: "offcanvas" as const,
-      label: "Offcanvas",
-      description: "Se masque complètement",
+      label: "Masquée",
+      description: "Libère tout l’espace",
     },
-    { value: "none" as const, label: "Fixe", description: "Toujours visible" },
+    {
+      value: "none" as const,
+      label: "Toujours ouverte",
+      description: "Navigation permanente",
+    },
   ];
 
   return (
@@ -2104,9 +2244,9 @@ function SidebarLayoutSettings() {
               return (
                 <button
                   className={cn(
-                    "flex flex-col items-center gap-2 rounded-xl border-2 p-3 transition-all",
+                    "relative flex flex-col items-center gap-2 rounded-xl border p-3 transition-all",
                     isActive
-                      ? "border-primary bg-primary/5"
+                      ? "border-primary bg-primary/8 ring-2 ring-primary/10"
                       : "border-border bg-card hover:border-primary/30"
                   )}
                   key={v.value}
@@ -2144,13 +2284,16 @@ function SidebarLayoutSettings() {
                       </>
                     )}
                   </div>
-                  <span className="font-medium text-[10px] text-muted-foreground">
+                  <span className="font-medium text-xs text-foreground">
                     {v.label}
                   </span>
+                  <span className="text-center text-[9px] text-muted-foreground">
+                    {v.description}
+                  </span>
                   {isActive && (
-                    <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                       <HugeiconsIcon
-                        className="size-2.5"
+                        className="size-3"
                         icon={CheckmarkCircle02Icon}
                         strokeWidth={2}
                       />
@@ -2174,9 +2317,9 @@ function SidebarLayoutSettings() {
               return (
                 <button
                   className={cn(
-                    "flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all",
+                    "relative flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border p-3 text-center transition-all",
                     isActive
-                      ? "border-primary bg-primary/5"
+                      ? "border-primary bg-primary/8 ring-2 ring-primary/10"
                       : "border-border bg-card hover:border-primary/30"
                   )}
                   key={c.value}

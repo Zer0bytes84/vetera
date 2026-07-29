@@ -1,6 +1,6 @@
 import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "lucide-react";
-import { useState } from "react";
 import type React from "react";
+import { useState } from "react";
 
 import {
   AvatarFallback,
@@ -67,13 +67,26 @@ const SIZE_MAP: Record<AvatarSize, string> = {
   "2xl": "size-32",
 };
 
-const TEXT_SIZE_MAP: Record<AvatarSize, string> = {
-  sm: "text-xs",
-  md: "text-sm",
-  lg: "text-base",
-  xl: "text-2xl",
-  "2xl": "text-4xl",
+const EMOJI_SIZE_MAP: Record<AvatarSize, string> = {
+  sm: "text-base",
+  md: "text-xl",
+  lg: "text-2xl",
+  xl: "text-4xl",
+  "2xl": "text-6xl",
 };
+
+export const PROFILE_AVATAR_EMOJIS = [
+  "🩺",
+  "🐾",
+  "🐶",
+  "🐱",
+  "🦊",
+  "🐰",
+  "🦉",
+  "🐢",
+  "🌿",
+  "✨",
+] as const;
 
 const PIXEL_SIZE_MAP: Record<AvatarSize, number> = {
   sm: 32,
@@ -129,6 +142,47 @@ const getInitials = (name: string) => {
   return name.slice(0, 2).toUpperCase();
 };
 
+export const getDefaultAvatarEmoji = (name: string) => {
+  const safeName = normalizeName(name);
+  const hash = Array.from(safeName).reduce(
+    (total, character) =>
+      (total * 31 + character.charCodeAt(0)) % 2_147_483_647,
+    0
+  );
+  return PROFILE_AVATAR_EMOJIS[hash % PROFILE_AVATAR_EMOJIS.length];
+};
+
+function EmojiAvatar({
+  className,
+  emoji,
+  name,
+  size,
+  sizeClass,
+}: {
+  className?: string;
+  emoji: string;
+  name: string;
+  size: AvatarSize;
+  sizeClass: string;
+}) {
+  return (
+    <div
+      aria-label={`Avatar de ${name}`}
+      className={cn(
+        "flex shrink-0 select-none items-center justify-center rounded-full border border-emerald-950/5 bg-[linear-gradient(145deg,rgba(236,253,245,0.98),rgba(239,246,255,0.92))] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] dark:border-white/12 dark:bg-[linear-gradient(145deg,rgba(16,185,129,0.16),rgba(14,165,233,0.10))] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]",
+        EMOJI_SIZE_MAP[size],
+        sizeClass,
+        className
+      )}
+      role="img"
+    >
+      <span aria-hidden="true" className="leading-none">
+        {emoji}
+      </span>
+    </div>
+  );
+}
+
 function renderImageAvatar({
   className,
   normalizedSrc,
@@ -158,11 +212,11 @@ function renderImageAvatar({
       />
       <AvatarFallback
         className={cn(
-          "size-full rounded-full bg-muted font-semibold text-muted-foreground",
-          TEXT_SIZE_MAP[size]
+          "size-full rounded-full border border-emerald-950/5 bg-emerald-50 dark:border-white/12 dark:bg-emerald-500/10",
+          EMOJI_SIZE_MAP[size]
         )}
       >
-        {getInitials(safeName)}
+        {getDefaultAvatarEmoji(safeName)}
       </AvatarFallback>
     </ShadAvatar>
   );
@@ -180,11 +234,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const [failedSrc, setFailedSrc] = useState("");
   const imageFailed = Boolean(normalizedSrc && failedSrc === normalizedSrc);
 
-  if (
-    normalizedSrc &&
-    isRenderableAvatarSrc(normalizedSrc) &&
-    !imageFailed
-  ) {
+  if (normalizedSrc && isRenderableAvatarSrc(normalizedSrc) && !imageFailed) {
     return renderImageAvatar({
       className,
       normalizedSrc,
@@ -233,12 +283,27 @@ const Avatar: React.FC<AvatarProps> = ({
     );
   }
 
+  if (normalizedSrc?.startsWith("emoji:")) {
+    const emoji = normalizedSrc.slice("emoji:".length).trim();
+    return (
+      <EmojiAvatar
+        className={className}
+        emoji={emoji || getDefaultAvatarEmoji(safeName)}
+        name={safeName}
+        size={size}
+        sizeClass={sizeClass}
+      />
+    );
+  }
+
   return (
-    <ShadAvatar className={cn(sizeClass, className)}>
-      <AvatarFallback className={cn("font-semibold", TEXT_SIZE_MAP[size])}>
-        {getInitials(safeName)}
-      </AvatarFallback>
-    </ShadAvatar>
+    <EmojiAvatar
+      className={className}
+      emoji={getDefaultAvatarEmoji(safeName)}
+      name={safeName}
+      size={size}
+      sizeClass={sizeClass}
+    />
   );
 };
 
