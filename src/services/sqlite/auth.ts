@@ -7,7 +7,7 @@ import {
   isTauriRuntime,
   updateBrowserRow,
 } from "../browser-store";
-import { generateId, runDbOperation } from "./database";
+import { generateId, runDbOperation, runDbRead } from "./database";
 
 export interface LoginCredentials {
   email: string;
@@ -38,20 +38,13 @@ interface DbUserRecord {
   status?: string;
 }
 
-interface DbSessionRecord {
-  expires_at: string;
-  id: string;
-  token: string;
-  user_id: string;
-}
-
 async function getRegistrationRole(): Promise<string> {
   if (!isTauriRuntime()) {
     const existingUsers = getBrowserTable<BrowserUserRecord>("users");
     return existingUsers.length === 0 ? "admin" : "stagiaire";
   }
 
-  const result = await runDbOperation((db) =>
+  const result = await runDbRead((db) =>
     db.select<{ count: number }[]>("SELECT COUNT(*) as count FROM users")
   );
 
@@ -235,7 +228,7 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
     };
   }
 
-  const users = await runDbOperation((db) =>
+  const users = await runDbRead((db) =>
     db.select<DbUserRecord[]>(
       "SELECT * FROM users WHERE email = ? AND status = ?",
       [credentials.email, "active"]
@@ -312,7 +305,7 @@ export async function register(data: RegisterData): Promise<AuthUser> {
   }
 
   // Vérifier si l'email existe déjà
-  const existing = await runDbOperation((db) =>
+  const existing = await runDbRead((db) =>
     db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [
       data.email,
     ])
@@ -405,29 +398,19 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     };
   }
 
-  // Vérifier la session
-  const sessions = await runDbOperation((db) =>
-    db.select<DbSessionRecord[]>(
-      "SELECT * FROM sessions WHERE token = ? AND expires_at > ?",
+  const users = await runDbRead((db) =>
+    db.select<DbUserRecord[]>(
+      `SELECT u.*
+       FROM sessions s
+       JOIN users u ON u.id = s.user_id
+       WHERE s.token = ? AND s.expires_at > ?
+       LIMIT 1`,
       [token, new Date().toISOString()]
     )
   );
 
-  if (sessions.length === 0) {
-    localStorage.removeItem("auth_token");
-    return null;
-  }
-
-  const session = sessions[0];
-
-  // Récupérer l'utilisateur
-  const users = await runDbOperation((db) =>
-    db.select<DbUserRecord[]>("SELECT * FROM users WHERE id = ?", [
-      session.user_id,
-    ])
-  );
-
   if (users.length === 0) {
+    localStorage.removeItem("auth_token");
     return null;
   }
 
@@ -497,7 +480,7 @@ export async function createInitialAdmin(
     };
   }
 
-  const existing = await runDbOperation((db) =>
+  const existing = await runDbRead((db) =>
     db.select<{ id: string }[]>("SELECT id FROM users WHERE email = ?", [
       data.email,
     ])

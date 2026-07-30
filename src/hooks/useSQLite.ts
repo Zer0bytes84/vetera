@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -14,6 +14,7 @@ import {
   generateId,
   getDatabase,
   runDbOperation,
+  runDbRead,
   toSQLiteTimestamp,
 } from "../services/sqlite/database";
 
@@ -63,13 +64,82 @@ const BOOLEAN_FIELDS_BY_TABLE: Record<string, string[]> = {
 };
 
 const DATA_CHANGED_EVENT = "sqlite-data-changed";
+const TABLE_CACHE_TTL_MS = 2000;
 const tableColumnsCache = new Map<string, Set<string>>();
+const tableRowsCache = new Map<
+  string,
+  { expiresAt: number; generation: number; rows: Record<string, unknown>[] }
+>();
+const pendingTableReads = new Map<
+  string,
+  { generation: number; promise: Promise<Record<string, unknown>[]> }
+>();
+const tableCacheGenerations = new Map<string, number>();
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const emitSQLiteDataChanged = (tableName: string) => {
+const getTableCacheGeneration = (tableName: string) =>
+  tableCacheGenerations.get(tableName) ?? 0;
+
+const invalidateTableRows = (tableName: string) => {
+  tableCacheGenerations.set(tableName, getTableCacheGeneration(tableName) + 1);
+  tableRowsCache.delete(tableName);
+};
+
+const readTauriTable = async (tableName: string, force = false) => {
+  const generation = getTableCacheGeneration(tableName);
+  const cached = tableRowsCache.get(tableName);
+
+  if (
+    !force &&
+    cached?.generation === generation &&
+    cached.expiresAt > Date.now()
+  ) {
+    return cached.rows;
+  }
+
+  const pending = pendingTableReads.get(tableName);
+  if (pending?.generation === generation) {
+    return pending.promise;
+  }
+
+  const promise = runDbRead((db) =>
+    db.select<Record<string, unknown>[]>(`SELECT * FROM ${tableName}`)
+  )
+    .then((rows) => {
+      const normalizedRows = rows ?? [];
+      if (getTableCacheGeneration(tableName) === generation) {
+        tableRowsCache.set(tableName, {
+          expiresAt: Date.now() + TABLE_CACHE_TTL_MS,
+          generation,
+          rows: normalizedRows,
+        });
+      }
+      return normalizedRows;
+    })
+    .finally(() => {
+      const current = pendingTableReads.get(tableName);
+      if (current?.generation === generation) {
+        pendingTableReads.delete(tableName);
+      }
+    });
+
+  pendingTableReads.set(tableName, { generation, promise });
+  return promise;
+};
+
+export const emitSQLiteDataChanged = (
+  tableName: string,
+  cacheFresh = false,
+  sourceId?: string
+) => {
+  if (!cacheFresh) {
+    invalidateTableRows(tableName);
+  }
   window.dispatchEvent(
-    new CustomEvent(DATA_CHANGED_EVENT, { detail: { tableName } })
+    new CustomEvent(DATA_CHANGED_EVENT, {
+      detail: { cacheFresh, sourceId, tableName },
+    })
   );
 };
 
@@ -114,21 +184,15 @@ const stripUndefinedEntries = (obj: Record<string, unknown>) =>
     Object.entries(obj).filter(([, value]) => value !== undefined)
   );
 
-const getTableColumns = async (
-  tableName: string,
-  runSerializedTauriOp: <R>(operation: () => Promise<R>) => Promise<R>
-) => {
+const getTableColumns = async (tableName: string) => {
   const cached = tableColumnsCache.get(tableName);
   if (cached) {
     return cached;
   }
 
-  const columns = await runSerializedTauriOp(async () => {
-    const db = await getDatabase();
-    return db.select<Array<{ name: string }>>(
-      `PRAGMA table_info(${tableName})`
-    );
-  });
+  const columns = await runDbRead((db) =>
+    db.select<Array<{ name: string }>>(`PRAGMA table_info(${tableName})`)
+  );
 
   const normalized = new Set(
     (columns ?? []).map((column) => String(column.name))
@@ -189,6 +253,7 @@ export function useSQLite<T extends { id: string }>(
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const sourceId = useId();
 
   const safeTableName = ALLOWED_TABLES.has(tableName) ? tableName : null;
 
@@ -198,7 +263,7 @@ export function useSQLite<T extends { id: string }>(
     []
   );
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (force = false) => {
     try {
       if (!safeTableName) {
         throw new Error(`Table non autorisée: ${tableName}`);
@@ -215,12 +280,7 @@ export function useSQLite<T extends { id: string }>(
         return;
       }
 
-      const results = await runSerializedTauriOp(async () => {
-        const db = await getDatabase();
-        return db.select<Record<string, unknown>[]>(
-          `SELECT * FROM ${safeTableName}`
-        );
-      });
+      const results = await readTauriTable(safeTableName, force);
       const mapped = (results ?? []).map((row) => {
         const camel = mapKeys(row, toCamelCase);
         return normalizeBooleanFields(safeTableName, camel);
@@ -235,7 +295,7 @@ export function useSQLite<T extends { id: string }>(
     } finally {
       setLoading(false);
     }
-  }, [runSerializedTauriOp, safeTableName, tableName]);
+  }, [safeTableName, tableName]);
 
   useEffect(() => {
     loadData();
@@ -243,8 +303,15 @@ export function useSQLite<T extends { id: string }>(
 
   useEffect(() => {
     const handleDataChanged = (event: Event) => {
-      const customEvent = event as CustomEvent<{ tableName: string }>;
-      if (customEvent.detail?.tableName === tableName) {
+      const customEvent = event as CustomEvent<{
+        cacheFresh?: boolean;
+        sourceId?: string;
+        tableName: string;
+      }>;
+      if (
+        customEvent.detail?.tableName === tableName &&
+        customEvent.detail.sourceId !== sourceId
+      ) {
         loadData();
       }
     };
@@ -252,25 +319,16 @@ export function useSQLite<T extends { id: string }>(
     window.addEventListener(DATA_CHANGED_EVENT, handleDataChanged);
     return () =>
       window.removeEventListener(DATA_CHANGED_EVENT, handleDataChanged);
-  }, [tableName, loadData]);
+  }, [tableName, loadData, sourceId]);
 
   const syncTableAfterMutation = useCallback(
-    async (stabilize = false) => {
-      await loadData();
-      emitSQLiteDataChanged(safeTableName ?? tableName);
-
-      if (!(stabilize && isTauriRuntime())) {
-        return;
-      }
-
-      // Tauri's SQLite bridge can expose the mutation before dependent views
-      // have observed the committed row. A second delayed refresh keeps linked
-      // entities such as owners/patients in sync right after creation.
-      await sleep(140);
-      await loadData();
-      emitSQLiteDataChanged(safeTableName ?? tableName);
+    async (_stabilize = false) => {
+      const targetTable = safeTableName ?? tableName;
+      invalidateTableRows(targetTable);
+      await loadData(true);
+      emitSQLiteDataChanged(targetTable, true, sourceId);
     },
-    [loadData, safeTableName, tableName]
+    [loadData, safeTableName, sourceId, tableName]
   );
 
   const add = useCallback(
@@ -288,7 +346,7 @@ export function useSQLite<T extends { id: string }>(
         });
 
         await loadData();
-        emitSQLiteDataChanged(safeTableName);
+        emitSQLiteDataChanged(safeTableName, true, sourceId);
         return created as T;
       }
 
@@ -296,10 +354,7 @@ export function useSQLite<T extends { id: string }>(
       const dbItemRaw = stripUndefinedEntries(
         mapKeys(item as Record<string, unknown>, toSnakeCase)
       );
-      const availableColumns = await getTableColumns(
-        safeTableName,
-        runSerializedTauriOp
-      );
+      const availableColumns = await getTableColumns(safeTableName);
       const dbItem = normalizeDbPayloadToExistingColumns(
         dbItemRaw,
         availableColumns
@@ -357,6 +412,7 @@ export function useSQLite<T extends { id: string }>(
       loadData,
       runSerializedTauriOp,
       safeTableName,
+      sourceId,
       syncTableAfterMutation,
       tableName,
     ]
@@ -380,17 +436,14 @@ export function useSQLite<T extends { id: string }>(
             updates as Partial<Record<string, unknown>>
           );
           await loadData();
-          emitSQLiteDataChanged(safeTableName);
+          emitSQLiteDataChanged(safeTableName, true, sourceId);
           return updated;
         }
 
         const dbUpdatesRaw = stripUndefinedEntries(
           mapKeys(updates as Record<string, unknown>, toSnakeCase)
         );
-        const availableColumns = await getTableColumns(
-          safeTableName,
-          runSerializedTauriOp
-        );
+        const availableColumns = await getTableColumns(safeTableName);
         const dbUpdates = normalizeDbPayloadToExistingColumns(
           dbUpdatesRaw,
           availableColumns
@@ -420,6 +473,7 @@ export function useSQLite<T extends { id: string }>(
       loadData,
       runSerializedTauriOp,
       safeTableName,
+      sourceId,
       syncTableAfterMutation,
       tableName,
     ]
@@ -441,7 +495,7 @@ export function useSQLite<T extends { id: string }>(
             throw new Error(`Élément non trouvé: ${id}`);
           }
           await loadData();
-          emitSQLiteDataChanged(safeTableName);
+          emitSQLiteDataChanged(safeTableName, true, sourceId);
           return true;
         }
 
@@ -465,6 +519,7 @@ export function useSQLite<T extends { id: string }>(
     [
       runSerializedTauriOp,
       safeTableName,
+      sourceId,
       syncTableAfterMutation,
       tableName,
       loadData,
@@ -487,13 +542,12 @@ export function useSQLite<T extends { id: string }>(
         return;
       }
 
-      const existing = await runSerializedTauriOp(async () => {
-        const db = await getDatabase();
-        return db.select<{ id: string }[]>(
+      const existing = await runDbRead((db) =>
+        db.select<{ id: string }[]>(
           `SELECT id FROM ${safeTableName} WHERE id = ?`,
           [id]
-        );
-      });
+        )
+      );
 
       if (existing.length > 0) {
         await update(id, item);
@@ -503,10 +557,7 @@ export function useSQLite<T extends { id: string }>(
       const dbItemRaw = stripUndefinedEntries(
         mapKeys(item as Record<string, unknown>, toSnakeCase)
       );
-      const availableColumns = await getTableColumns(
-        safeTableName,
-        runSerializedTauriOp
-      );
+      const availableColumns = await getTableColumns(safeTableName);
       const dbItem = normalizeDbPayloadToExistingColumns(
         dbItemRaw,
         availableColumns
@@ -537,8 +588,11 @@ export function useSQLite<T extends { id: string }>(
   );
 
   const refresh = useCallback(async () => {
-    await loadData();
-  }, [loadData]);
+    if (safeTableName) {
+      invalidateTableRows(safeTableName);
+    }
+    await loadData(true);
+  }, [loadData, safeTableName]);
 
   return {
     data,

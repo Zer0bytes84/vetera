@@ -1169,6 +1169,7 @@ function ConsultationSessionDialog({
                       />
                       <Button
                         className="h-9 w-full cursor-pointer gap-1.5"
+                        disabled={isUploadingDocument}
                         onClick={triggerDocumentPicker}
                         type="button"
                         variant="outline"
@@ -1178,7 +1179,9 @@ function ConsultationSessionDialog({
                           size={14}
                           strokeWidth={2}
                         />
-                        Sélectionner et attacher un fichier
+                        {isUploadingDocument
+                          ? "Ajout du document…"
+                          : "Sélectionner et attacher un fichier"}
                       </Button>
                       {documents.length > 0 ? (
                         <div className="grid gap-2 border-zinc-100 border-t pt-3 dark:border-zinc-800/80">

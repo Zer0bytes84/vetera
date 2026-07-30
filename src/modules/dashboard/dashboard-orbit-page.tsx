@@ -117,7 +117,7 @@ export function DashboardOrbitPage({
       });
   }, [appointments, patients, owners, metrics.referenceDate]);
 
-  const dashboardBlocks: DashboardLayoutBlock[] = [
+  const dashboardBlocks = useMemo<DashboardLayoutBlock[]>(() => [
     {
       id: "clinical-overview",
       label: "Vue clinique",
@@ -202,7 +202,16 @@ export function DashboardOrbitPage({
         </section>
       ),
     },
-  ];
+  ], [
+    appointments,
+    handlePatientClick,
+    metrics,
+    onNavigate,
+    owners,
+    patients,
+    todayAppointmentsList,
+    transactions,
+  ]);
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pt-16 pb-8 md:pt-24 lg:px-6">

@@ -18,15 +18,11 @@ let db: Database | null = null;
 let dbInitPromise: Promise<Database> | null = null;
 
 // ====================================================================================
-// Serialized SQLite operation queue + retry helper
+// Serialized SQLite write queue + retry helper
 // ------------------------------------------------------------------------------------
-// All SQLite access in the application must go through `runDbOperation` (or
-// `runDbTransaction`). Tauri's SQL plugin opens a single connection to the
-// database and SQLite uses file-level write locks; if two writes are issued
-// concurrently the second one fails immediately with `code: 5 - database is
-// locked`. Serializing them in a global FIFO queue guarantees that no two
-// statements ever overlap, while the retry logic absorbs the rare lock that
-// can still happen because of background WAL checkpoints.
+// Writes and transactions go through `runDbOperation` (or `runDbTransaction`).
+// Read-only work goes through `runDbRead`, allowing independent widgets to
+// load concurrently while WAL keeps writes safe.
 // ====================================================================================
 
 let sqliteOperationQueue: Promise<unknown> = Promise.resolve();
@@ -107,7 +103,7 @@ async function withLockRetry<T>(operation: () => Promise<T>): Promise<T> {
 
 /**
  * Exécute une opération SQLite de manière sérialisée et tolérante aux verrous.
- * Toutes les écritures et lectures concurrentes doivent passer par cette fonction.
+ * Réservé aux écritures et aux séquences qui doivent rester ordonnées.
  */
 export function runDbOperation<T>(
   operation: (database: Database) => Promise<T>
@@ -139,6 +135,26 @@ export function runDbOperation<T>(
   sqliteOperationQueue = job.catch(() => undefined);
 
   return job;
+}
+
+/**
+ * Executes a read without blocking the write queue. On a lost connection, the
+ * operation falls back to the serialized path so only one reconnect occurs.
+ */
+export async function runDbRead<T>(
+  operation: (database: Database) => Promise<T>
+): Promise<T> {
+  const database = await getDatabase();
+
+  try {
+    return await withLockRetry(() => operation(database));
+  } catch (error) {
+    if (!isRecoverableConnectionError(error)) {
+      throw error;
+    }
+
+    return runDbOperation(operation);
+  }
 }
 
 /**
@@ -491,66 +507,57 @@ async function applyDatabaseSafetyPragmas(database: Database): Promise<void> {
   }
 }
 
-async function countRows(database: Database, query: string): Promise<number> {
-  const result = await database.select<{ count: number }[]>(query);
-  return Number(result?.[0]?.count ?? 0);
-}
-
 async function repairRelationalIntegrity(database: Database): Promise<void> {
   try {
-    const orphanCounters = {
-      orphanPatients: await countRows(
-        database,
-        `SELECT COUNT(*) as count FROM patients p
-                 LEFT JOIN owners o ON o.id = p.owner_id
-                 WHERE o.id IS NULL`
-      ),
-      orphanAppointments: await countRows(
-        database,
-        `SELECT COUNT(*) as count FROM appointments a
-                 LEFT JOIN patients p ON p.id = a.patient_id
-                 LEFT JOIN owners o ON o.id = a.owner_id
-                 LEFT JOIN users u ON u.id = a.vet_id
-                 WHERE p.id IS NULL OR o.id IS NULL OR u.id IS NULL`
-      ),
-      orphanSessions: await countRows(
-        database,
-        `SELECT COUNT(*) as count FROM sessions s
-                 LEFT JOIN users u ON u.id = s.user_id
-                 WHERE u.id IS NULL`
-      ),
-      orphanNotes: await countRows(
-        database,
-        `SELECT COUNT(*) as count FROM notes n
-                 LEFT JOIN users u ON u.id = n.user_id
-                 WHERE u.id IS NULL`
-      ),
-      orphanTasksAssigned: await countRows(
-        database,
-        `SELECT COUNT(*) as count FROM tasks t
-                 LEFT JOIN users u ON u.id = t.assigned_to
-                 WHERE t.assigned_to IS NOT NULL AND u.id IS NULL`
-      ),
-      orphanTasksPatient: await countRows(
-        database,
-        `SELECT COUNT(*) as count FROM tasks t
-                 LEFT JOIN patients p ON p.id = t.patient_id
-                 WHERE t.patient_id IS NOT NULL AND p.id IS NULL`
-      ),
-      orphanConsultationDocuments: await countRows(
-        database,
-        `SELECT COUNT(*) as count FROM consultation_documents d
-                 LEFT JOIN appointments a ON a.id = d.appointment_id
-                 LEFT JOIN patients p ON p.id = d.patient_id
-                 WHERE a.id IS NULL OR p.id IS NULL`
-      ),
-      mismatchedAppointmentOwner: await countRows(
-        database,
-        `SELECT COUNT(*) as count
-                 FROM appointments a
-                 JOIN patients p ON p.id = a.patient_id
-                 WHERE a.owner_id != p.owner_id`
-      ),
+    const [counters] = await database.select<
+      Array<{
+        mismatchedAppointmentOwner: number;
+        orphanAppointments: number;
+        orphanConsultationDocuments: number;
+        orphanNotes: number;
+        orphanPatients: number;
+        orphanSessions: number;
+        orphanTasksAssigned: number;
+        orphanTasksPatient: number;
+      }>
+    >(`SELECT
+      (SELECT COUNT(*) FROM patients p
+       LEFT JOIN owners o ON o.id = p.owner_id
+       WHERE o.id IS NULL) AS orphanPatients,
+      (SELECT COUNT(*) FROM appointments a
+       LEFT JOIN patients p ON p.id = a.patient_id
+       LEFT JOIN owners o ON o.id = a.owner_id
+       LEFT JOIN users u ON u.id = a.vet_id
+       WHERE p.id IS NULL OR o.id IS NULL OR u.id IS NULL) AS orphanAppointments,
+      (SELECT COUNT(*) FROM sessions s
+       LEFT JOIN users u ON u.id = s.user_id
+       WHERE u.id IS NULL) AS orphanSessions,
+      (SELECT COUNT(*) FROM notes n
+       LEFT JOIN users u ON u.id = n.user_id
+       WHERE u.id IS NULL) AS orphanNotes,
+      (SELECT COUNT(*) FROM tasks t
+       LEFT JOIN users u ON u.id = t.assigned_to
+       WHERE t.assigned_to IS NOT NULL AND u.id IS NULL) AS orphanTasksAssigned,
+      (SELECT COUNT(*) FROM tasks t
+       LEFT JOIN patients p ON p.id = t.patient_id
+       WHERE t.patient_id IS NOT NULL AND p.id IS NULL) AS orphanTasksPatient,
+      (SELECT COUNT(*) FROM consultation_documents d
+       LEFT JOIN appointments a ON a.id = d.appointment_id
+       LEFT JOIN patients p ON p.id = d.patient_id
+       WHERE a.id IS NULL OR p.id IS NULL) AS orphanConsultationDocuments,
+      (SELECT COUNT(*) FROM appointments a
+       JOIN patients p ON p.id = a.patient_id
+       WHERE a.owner_id != p.owner_id) AS mismatchedAppointmentOwner`);
+
+    const orphanCounters = counters ?? {
+      orphanPatients: 0,
+      orphanAppointments: 0,
+      orphanSessions: 0,
+      orphanNotes: 0,
+      orphanTasksAssigned: 0,
+      orphanTasksPatient: 0,
+      orphanConsultationDocuments: 0,
+      mismatchedAppointmentOwner: 0,
     };
 
     if (Object.values(orphanCounters).every((value) => value === 0)) {

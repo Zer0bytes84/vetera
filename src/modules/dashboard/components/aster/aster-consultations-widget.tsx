@@ -30,7 +30,7 @@ export function AsterConsultationsWidget({
       try {
         const date = parseISO(a.startTime);
         return isToday(date);
-      } catch (e) {
+      } catch {
         return false;
       }
     });

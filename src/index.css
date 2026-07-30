@@ -4,9 +4,6 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist";
 
-/* BlockNote shadcn integration — required for Tailwind to generate BlockNote's utility classes */
-@source "../node_modules/@blocknote/shadcn";
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -220,9 +217,6 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
-  }
-  .bn-shadcn * {
     @apply border-border outline-ring/50;
   }
   html,

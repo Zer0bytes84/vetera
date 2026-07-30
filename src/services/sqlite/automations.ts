@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type Database from "@tauri-apps/plugin-sql";
 import type { AutomationItem } from "@/modules/dashboard/hooks/useAutomations";
-import { runDbOperation } from "./database";
+import { runDbOperation, runDbRead } from "./database";
 
 export interface PatientAutomation {
   automation_id: string;
@@ -49,7 +49,7 @@ function diffPercent(
 }
 
 export async function getGlobalAutomations(): Promise<AutomationItem[]> {
-  return runDbOperation(async (db) => {
+  return runDbRead(async (db) => {
     const results = await db.select<any[]>(`
       SELECT
         id, title, description, icon_name as iconName, icon_color as iconColor,
@@ -139,7 +139,7 @@ export async function getAutomationMetrics(
   automationId: string,
   referenceDate: Date = new Date()
 ): Promise<AutomationMetrics> {
-  return runDbOperation(async (db) => {
+  return runDbRead(async (db) => {
     if (automationId === "auto-001") {
       return vaccinationMetrics(db, referenceDate);
     }
@@ -168,31 +168,31 @@ async function vaccinationMetrics(
   const in60Iso = new Date(ref.getTime() + 60 * 86_400_000).toISOString();
   const start8w = new Date(ref.getTime() - 56 * 86_400_000).toISOString();
 
-  const current = await db.select<any[]>(
-    `SELECT COUNT(DISTINCT patient_id) as cnt
-     FROM vaccinations
-     WHERE next_due_at IS NOT NULL
-       AND next_due_at >= ? AND next_due_at <= ?`,
-    [nowIso, in30Iso]
-  );
-  const prev = await db.select<any[]>(
-    `SELECT COUNT(DISTINCT patient_id) as cnt
-     FROM vaccinations
-     WHERE next_due_at IS NOT NULL
-       AND next_due_at > ? AND next_due_at <= ?`,
-    [in30Iso, in60Iso]
-  );
-
-  // Série glissante 8 semaines (1 point par semaine)
-  const series = await db.select<any[]>(
-    `SELECT strftime('%Y-%W', next_due_at) as bucket,
-            COUNT(DISTINCT patient_id) as cnt
-     FROM vaccinations
-     WHERE next_due_at IS NOT NULL AND next_due_at >= ?
-     GROUP BY bucket
-     ORDER BY bucket ASC`,
-    [start8w]
-  );
+  const [current, prev, series] = await Promise.all([
+    db.select<any[]>(
+      `SELECT COUNT(DISTINCT patient_id) as cnt
+       FROM vaccinations
+       WHERE next_due_at IS NOT NULL
+         AND next_due_at >= ? AND next_due_at <= ?`,
+      [nowIso, in30Iso]
+    ),
+    db.select<any[]>(
+      `SELECT COUNT(DISTINCT patient_id) as cnt
+       FROM vaccinations
+       WHERE next_due_at IS NOT NULL
+         AND next_due_at > ? AND next_due_at <= ?`,
+      [in30Iso, in60Iso]
+    ),
+    db.select<any[]>(
+      `SELECT strftime('%Y-%W', next_due_at) as bucket,
+              COUNT(DISTINCT patient_id) as cnt
+       FROM vaccinations
+       WHERE next_due_at IS NOT NULL AND next_due_at >= ?
+       GROUP BY bucket
+       ORDER BY bucket ASC`,
+      [start8w]
+    ),
+  ]);
   const chartData = bucketizeWeekly(series, 8, ref);
 
   const count = Number(current[0]?.cnt ?? 0);
@@ -209,25 +209,26 @@ async function soapMetrics(
   const in14Iso = new Date(ref.getTime() - 14 * 86_400_000).toISOString();
   const start8d = new Date(ref.getTime() - 8 * 86_400_000).toISOString();
 
-  const current = await db.select<any[]>(
-    `SELECT COUNT(*) as cnt FROM consultation_soaps
-     WHERE created_at >= ? AND created_at < ?`,
-    [in7Iso, nowIso]
-  );
-  const prev = await db.select<any[]>(
-    `SELECT COUNT(*) as cnt FROM consultation_soaps
-     WHERE created_at >= ? AND created_at < ?`,
-    [in14Iso, in7Iso]
-  );
-
-  const series = await db.select<any[]>(
-    `SELECT date(created_at) as day, COUNT(*) as cnt
-     FROM consultation_soaps
-     WHERE created_at >= ?
-     GROUP BY day
-     ORDER BY day ASC`,
-    [start8d]
-  );
+  const [current, prev, series] = await Promise.all([
+    db.select<any[]>(
+      `SELECT COUNT(*) as cnt FROM consultation_soaps
+       WHERE created_at >= ? AND created_at < ?`,
+      [in7Iso, nowIso]
+    ),
+    db.select<any[]>(
+      `SELECT COUNT(*) as cnt FROM consultation_soaps
+       WHERE created_at >= ? AND created_at < ?`,
+      [in14Iso, in7Iso]
+    ),
+    db.select<any[]>(
+      `SELECT date(created_at) as day, COUNT(*) as cnt
+       FROM consultation_soaps
+       WHERE created_at >= ?
+       GROUP BY day
+       ORDER BY day ASC`,
+      [start8d]
+    ),
+  ]);
   const chartData = bucketizeDaily(series, 8, ref);
 
   const count = Number(current[0]?.cnt ?? 0);
@@ -244,29 +245,29 @@ async function postOpMetrics(
   const in28Iso = new Date(ref.getTime() - 28 * 86_400_000).toISOString();
   const start56d = new Date(ref.getTime() - 56 * 86_400_000).toISOString();
 
-  const current = await db.select<any[]>(
-    `SELECT COUNT(*) as cnt FROM anesthesia_sheets
-     WHERE status = 'completed' AND ended_at IS NOT NULL
-       AND ended_at >= ? AND ended_at < ?`,
-    [in14Iso, nowIso]
-  );
-  const prev = await db.select<any[]>(
-    `SELECT COUNT(*) as cnt FROM anesthesia_sheets
-     WHERE status = 'completed' AND ended_at IS NOT NULL
-       AND ended_at >= ? AND ended_at < ?`,
-    [in28Iso, in14Iso]
-  );
-
-  // 1 point / 2 jours sur 16 jours
-  const series = await db.select<any[]>(
-    `SELECT date(ended_at) as day, COUNT(*) as cnt
-     FROM anesthesia_sheets
-     WHERE status = 'completed' AND ended_at IS NOT NULL
-       AND ended_at >= ?
-     GROUP BY day
-     ORDER BY day ASC`,
-    [start56d]
-  );
+  const [current, prev, series] = await Promise.all([
+    db.select<any[]>(
+      `SELECT COUNT(*) as cnt FROM anesthesia_sheets
+       WHERE status = 'completed' AND ended_at IS NOT NULL
+         AND ended_at >= ? AND ended_at < ?`,
+      [in14Iso, nowIso]
+    ),
+    db.select<any[]>(
+      `SELECT COUNT(*) as cnt FROM anesthesia_sheets
+       WHERE status = 'completed' AND ended_at IS NOT NULL
+         AND ended_at >= ? AND ended_at < ?`,
+      [in28Iso, in14Iso]
+    ),
+    db.select<any[]>(
+      `SELECT date(ended_at) as day, COUNT(*) as cnt
+       FROM anesthesia_sheets
+       WHERE status = 'completed' AND ended_at IS NOT NULL
+         AND ended_at >= ?
+       GROUP BY day
+       ORDER BY day ASC`,
+      [start56d]
+    ),
+  ]);
   const chartData = bucketizeDaily(series, 8, ref);
 
   const count = Number(current[0]?.cnt ?? 0);
@@ -323,7 +324,7 @@ export async function getAutomationDrilldown(
   automationId: string,
   referenceDate: Date = new Date()
 ): Promise<AutomationDrilldownRow[]> {
-  return runDbOperation(async (db) => {
+  return runDbRead(async (db) => {
     if (automationId === "auto-001") {
       return vaccinationDrilldown(db, referenceDate);
     }
@@ -466,7 +467,7 @@ async function postOpDrilldown(
 export async function getPatientsForAutomation(
   automationId: string
 ): Promise<PatientAutomation[]> {
-  return runDbOperation(async (db) => {
+  return runDbRead(async (db) => {
     const results = await db.select<any[]>(
       `
       SELECT

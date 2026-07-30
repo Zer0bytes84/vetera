@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
-import Auth from "@/components/Auth";
 import Logo from "@/components/Logo";
-import SetupWizard from "@/components/SetupWizard";
 import { useTheme } from "@/components/theme-provider";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { appSettingsRepository } from "@/data/repositories";
 import i18n, { isRtlLanguage } from "@/i18n/config";
 import { applyTheme, getThemeConfig } from "@/lib/theme-store";
-import { AppShell } from "@/modules/shell/app-shell";
 import { saveLicenseInfo } from "@/services/appSettingsService";
 import { checkAutoBackup } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
@@ -19,6 +16,13 @@ import {
 } from "@/services/demo-data";
 import { createInitialAdmin } from "@/services/sqlite/auth";
 import { startAppUpdateCheck } from "@/services/updateService";
+
+const AppShell = lazy(async () => {
+  const module = await import("@/modules/shell/app-shell");
+  return { default: module.AppShell };
+});
+const Auth = lazy(() => import("@/components/Auth"));
+const SetupWizard = lazy(() => import("@/components/SetupWizard"));
 
 interface SetupPayload {
   email: string;
@@ -145,32 +149,48 @@ export function App() {
   };
 
   if (!hasBootstrapped && (isCheckingSetup || loading)) {
-    return (
-      <div
-        className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#f4f5f1] text-zinc-950"
-        style={{ colorScheme: "light" }}
-      >
-        <div className="absolute -top-40 left-1/2 size-[32rem] -translate-x-1/2 rounded-full bg-[#d7eee5]/75 blur-3xl" />
-        <div className="relative flex flex-col items-center gap-5">
-          <Logo size="xl" />
-          <div className="flex items-center gap-2.5 rounded-full border border-white/80 bg-white/75 px-4 py-2 text-zinc-600 text-sm shadow-sm backdrop-blur-xl">
-            <Spinner className="size-4 text-emerald-700" />
-            Préparation de votre espace
-          </div>
-        </div>
-      </div>
-    );
+    return <AppLoadingState />;
   }
 
   if (needsSetup) {
-    return <SetupWizard onComplete={handleSetupComplete} />;
+    return (
+      <Suspense fallback={<AppLoadingState />}>
+        <SetupWizard onComplete={handleSetupComplete} />
+      </Suspense>
+    );
   }
 
   if (!currentUser) {
-    return <Auth />;
+    return (
+      <Suspense fallback={<AppLoadingState />}>
+        <Auth />
+      </Suspense>
+    );
   }
 
-  return <AppShell />;
+  return (
+    <Suspense fallback={<AppLoadingState />}>
+      <AppShell />
+    </Suspense>
+  );
+}
+
+function AppLoadingState() {
+  return (
+    <div
+      className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#f4f5f1] text-zinc-950"
+      style={{ colorScheme: "light" }}
+    >
+      <div className="absolute -top-40 left-1/2 size-[32rem] -translate-x-1/2 rounded-full bg-[#d7eee5]/75 blur-3xl" />
+      <div className="relative flex flex-col items-center gap-5">
+        <Logo size="xl" />
+        <div className="flex items-center gap-2.5 rounded-full border border-white/80 bg-white/75 px-4 py-2 text-sm text-zinc-600 shadow-sm backdrop-blur-xl">
+          <Spinner className="size-4 text-emerald-700" />
+          Préparation de votre espace
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default App;

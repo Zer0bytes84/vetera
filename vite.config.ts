@@ -22,12 +22,31 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "./src"),
-    },
+    alias: [
+      {
+        find: /^@hugeicons\/core-free-icons$/,
+        replacement: path.resolve(
+          import.meta.dirname,
+          "./src/lib/hugeicons.ts"
+        ),
+      },
+      {
+        find: "@",
+        replacement: path.resolve(import.meta.dirname, "./src"),
+      },
+    ],
   },
   build: {
     rollupOptions: {
+      onwarn(warning, warn) {
+        if (
+          warning.code === "INVALID_ANNOTATION" &&
+          warning.id?.includes("@hugeicons/core-free-icons")
+        ) {
+          return;
+        }
+        warn(warning);
+      },
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) {

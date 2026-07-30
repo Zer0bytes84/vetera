@@ -32,7 +32,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { ChartConfig } from "@/components/evilcharts/ui/chart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -285,13 +284,6 @@ const PERIOD_LABELS: Record<RevenuePeriod, string> = {
   "30d": "30j",
   "90d": "90j",
 };
-
-const revenueChartConfig = {
-  value: {
-    label: "Revenu",
-    colors: { light: ["#f97316"], dark: ["#fb923c"] },
-  },
-} satisfies ChartConfig;
 
 export function ProspeoRevenueChart({
   data,
@@ -1987,13 +1979,6 @@ function BreakdownRow({
 // ─────────────────────────────────────────────────────────────────────────────
 export type RevenueReportRow = { label: string; amount: number; delta: number };
 
-const revenueReportChartConfig = {
-  value: {
-    label: "Revenu",
-    colors: { light: ["#f97316"], dark: ["#fb923c"] },
-  },
-} satisfies ChartConfig;
-
 export function ProspeoRevenueReport({
   total,
   delta,
@@ -2132,17 +2117,6 @@ export type RetentionTrendPoint = {
   nouveaux: number;
   retour: number;
 };
-
-const retentionChartConfig = {
-  nouveaux: {
-    label: "Nouveaux",
-    colors: { light: ["#3b82f6"], dark: ["#60a5fa"] },
-  },
-  retour: {
-    label: "Retour",
-    colors: { light: ["#6b7280"], dark: ["#9ca3af"] },
-  },
-} satisfies ChartConfig;
 
 export function ProspeoRetentionReport({
   rate,

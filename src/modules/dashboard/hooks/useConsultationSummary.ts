@@ -1,6 +1,6 @@
 import type Database from "@tauri-apps/plugin-sql";
 import { useCallback, useEffect, useState } from "react";
-import { runDbOperation } from "@/services/sqlite/database";
+import { runDbRead } from "@/services/sqlite/database";
 
 export interface ConsultationSummary {
   /** SOAPs générés par IA (ai_draft non null) sur 7j */
@@ -61,7 +61,7 @@ export function useConsultationSummary(referenceDate: Date = new Date()) {
 
   const fetchSummary = useCallback(async () => {
     try {
-      const data = await runDbOperation(async (db) =>
+      const data = await runDbRead(async (db) =>
         computeSummary(db, referenceDate)
       );
       setSummary(data);
@@ -76,7 +76,7 @@ export function useConsultationSummary(referenceDate: Date = new Date()) {
 
   const fetchBacklog = useCallback(async () => {
     try {
-      const rows = await runDbOperation(async (db) =>
+      const rows = await runDbRead(async (db) =>
         computeBacklog(db, referenceDate)
       );
       setBacklogRows(rows);
@@ -125,7 +125,6 @@ async function computeSummary(
   db: Database,
   ref: Date
 ): Promise<ConsultationSummary> {
-  const nowIso = ref.toISOString();
   const in7Iso = new Date(ref.getTime() - 7 * 86_400_000).toISOString();
   const in14Iso = new Date(ref.getTime() - 14 * 86_400_000).toISOString();
   const in8dIso = new Date(ref.getTime() - 8 * 86_400_000).toISOString();
@@ -141,9 +140,25 @@ async function computeSummary(
                 AND subjective != '' AND objective != ''
                 AND assessment != '' AND plan != '' THEN 1 ELSE 0 END) as completed_count,
        SUM(CASE WHEN created_at >= ? AND ai_draft IS NOT NULL THEN 1 ELSE 0 END) as ai_count,
-       AVG(CASE WHEN created_at >= ? AND ai_confidence IS NOT NULL THEN ai_confidence END) as avg_ai_conf
+       AVG(CASE WHEN created_at >= ? AND ai_confidence IS NOT NULL THEN ai_confidence END) as avg_ai_conf,
+       SUM(CASE WHEN updated_at < ?
+                AND (subjective = '' OR objective = '' OR assessment = '' OR plan = '')
+                THEN 1 ELSE 0 END) as backlog_count,
+       AVG(CASE WHEN created_at >= ?
+                AND subjective != '' AND objective != ''
+                AND assessment != '' AND plan != ''
+                THEN (julianday(updated_at) - julianday(created_at)) * 24.0 END) as avg_hours
      FROM consultation_soaps`,
-    [in7Iso, in14Iso, in7Iso, in7Iso, in7Iso, in7Iso]
+    [
+      in7Iso,
+      in14Iso,
+      in7Iso,
+      in7Iso,
+      in7Iso,
+      in7Iso,
+      backlogIso,
+      in7Iso,
+    ]
   );
   const row = counts[0] ?? {};
   const total7d = Number(row.current_count ?? 0);
@@ -151,55 +166,37 @@ async function computeSummary(
   const completed7d = Number(row.completed_count ?? 0);
   const aiGenerated = Number(row.ai_count ?? 0);
   const avgAiConfidence = Number(row.avg_ai_conf ?? 0);
+  const backlog = Number(row.backlog_count ?? 0);
+  const avgCompletionHours = Math.max(0, Number(row.avg_hours ?? 0));
 
-  const backlogCount = await db.select<any[]>(
-    `SELECT COUNT(*) as cnt FROM consultation_soaps
-     WHERE updated_at < ?
-       AND (subjective = '' OR objective = '' OR assessment = '' OR plan = '')`,
-    [backlogIso]
-  );
-  const backlog = Number(backlogCount[0]?.cnt ?? 0);
-
-  const avgRow = await db.select<any[]>(
-    `SELECT AVG(
-       (julianday(updated_at) - julianday(created_at)) * 24.0
-     ) as avg_hours
-     FROM consultation_soaps
-     WHERE created_at >= ?
-       AND subjective != '' AND objective != ''
-       AND assessment != '' AND plan != ''`,
-    [in7Iso]
-  );
-  const avgCompletionHours = Math.max(0, Number(avgRow[0]?.avg_hours ?? 0));
-
-  const dailySeries = await db.select<any[]>(
-    `SELECT date(created_at) as day, COUNT(*) as cnt
-     FROM consultation_soaps
-     WHERE created_at >= ?
-     GROUP BY day
-     ORDER BY day ASC`,
-    [in8dIso]
-  );
-
-  const topDiag = await db.select<any[]>(
-    `SELECT assessment, COUNT(*) as cnt
-     FROM consultation_soaps
-     WHERE created_at >= ? AND length(trim(assessment)) > 0
-     GROUP BY lower(trim(assessment))
-     ORDER BY cnt DESC
-     LIMIT 5`,
-    [in7Iso]
-  );
-
-  const types = await db.select<any[]>(
-    `SELECT a.type as type, COUNT(*) as cnt
-     FROM consultation_soaps s
-     JOIN appointments a ON a.id = s.appointment_id
-     WHERE s.created_at >= ?
-     GROUP BY a.type
-     ORDER BY cnt DESC`,
-    [in7Iso]
-  );
+  const [dailySeries, topDiag, types] = await Promise.all([
+    db.select<any[]>(
+      `SELECT date(created_at) as day, COUNT(*) as cnt
+       FROM consultation_soaps
+       WHERE created_at >= ?
+       GROUP BY day
+       ORDER BY day ASC`,
+      [in8dIso]
+    ),
+    db.select<any[]>(
+      `SELECT assessment, COUNT(*) as cnt
+       FROM consultation_soaps
+       WHERE created_at >= ? AND length(trim(assessment)) > 0
+       GROUP BY lower(trim(assessment))
+       ORDER BY cnt DESC
+       LIMIT 5`,
+      [in7Iso]
+    ),
+    db.select<any[]>(
+      `SELECT a.type as type, COUNT(*) as cnt
+       FROM consultation_soaps s
+       JOIN appointments a ON a.id = s.appointment_id
+       WHERE s.created_at >= ?
+       GROUP BY a.type
+       ORDER BY cnt DESC`,
+      [in7Iso]
+    ),
+  ]);
 
   return {
     total7d,

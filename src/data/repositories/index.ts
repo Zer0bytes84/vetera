@@ -4,7 +4,7 @@ import { isTauriRuntime } from "@/services/browser-store";
 import * as AuthService from "@/services/sqlite/auth";
 import {
   generateId,
-  runDbOperation,
+  runDbRead,
   runDbTransaction,
   toSQLiteTimestamp,
 } from "@/services/sqlite/database";
@@ -237,7 +237,7 @@ export function usePatientsRepository() {
 
   const waitForOwner = async (ownerId: string) => {
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      const rows = await runDbOperation((db) =>
+      const rows = await runDbRead((db) =>
         db.select<Record<string, unknown>[]>(
           "SELECT * FROM owners WHERE id = ?",
           [ownerId]
@@ -254,7 +254,7 @@ export function usePatientsRepository() {
 
   const waitForPatient = async (patientId: string) => {
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      const rows = await runDbOperation((db) =>
+      const rows = await runDbRead((db) =>
         db.select<Record<string, unknown>[]>(
           "SELECT * FROM patients WHERE id = ?",
           [patientId]

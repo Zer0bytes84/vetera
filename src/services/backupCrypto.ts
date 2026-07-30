@@ -101,7 +101,7 @@ export async function decryptPayload(
       key,
       container.ciphertext as BufferSource
     );
-  } catch (e) {
+  } catch {
     throw new Error("Mot de passe invalide ou sauvegarde chiffrée corrompue.");
   }
   const expectedHash = new Uint8Array(

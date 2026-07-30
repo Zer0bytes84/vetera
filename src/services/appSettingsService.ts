@@ -10,26 +10,36 @@ import {
   isTauriRuntime,
   setBrowserSetting,
 } from "./browser-store";
-import { runDbOperation } from "./sqlite/database";
+import { runDbOperation, runDbRead } from "./sqlite/database";
 
 // Ensure app_settings table exists (run on first access)
 let tableCreated = false;
+let tableCreationPromise: Promise<void> | null = null;
 
 async function ensureTable(): Promise<void> {
   if (tableCreated) {
     return;
   }
 
-  await runDbOperation((db) =>
-    db.execute(`
-        CREATE TABLE IF NOT EXISTS app_settings (
-            key TEXT PRIMARY KEY,
-            value TEXT,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `)
-  );
-  tableCreated = true;
+  if (!tableCreationPromise) {
+    tableCreationPromise = runDbOperation((db) =>
+      db.execute(`
+          CREATE TABLE IF NOT EXISTS app_settings (
+              key TEXT PRIMARY KEY,
+              value TEXT,
+              updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+      `)
+    )
+      .then(() => {
+        tableCreated = true;
+      })
+      .finally(() => {
+        tableCreationPromise = null;
+      });
+  }
+
+  await tableCreationPromise;
 }
 
 /**
@@ -41,7 +51,7 @@ export async function getSetting(key: string): Promise<string | null> {
   }
 
   await ensureTable();
-  const result = await runDbOperation((db) =>
+  const result = await runDbRead((db) =>
     db.select<{ value: string }[]>(
       "SELECT value FROM app_settings WHERE key = ?",
       [key]
@@ -95,7 +105,7 @@ export async function isSetupComplete(): Promise<boolean> {
       return false;
     }
 
-    const users = await runDbOperation((db) =>
+    const users = await runDbRead((db) =>
       db.select<{ count: number }[]>("SELECT COUNT(*) as count FROM users")
     );
     if (users.length > 0 && users[0].count > 0) {
@@ -125,9 +135,11 @@ export async function getLicenseInfo(): Promise<{
   email: string;
   activatedAt: string;
 } | null> {
-  const key = await getSetting("license_key");
-  const email = await getSetting("license_email");
-  const activatedAt = await getSetting("license_activated_at");
+  const [key, email, activatedAt] = await Promise.all([
+    getSetting("license_key"),
+    getSetting("license_email"),
+    getSetting("license_activated_at"),
+  ]);
 
   if (!(key && email)) {
     return null;

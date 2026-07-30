@@ -83,7 +83,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   APPOINTMENT_STATUS_META,
-  APPOINTMENT_TYPE_META,
   getAppointmentTypeMeta,
 } from "@/config/status-meta";
 import { useFocus } from "@/contexts/focus-provider";

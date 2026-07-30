@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -21,7 +20,6 @@ export function NavMain({
     onClick?: () => void;
   }[];
 }) {
-  const { t } = useTranslation();
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:p-0">
       <SidebarGroupContent>

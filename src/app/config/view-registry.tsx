@@ -3,8 +3,6 @@ import { lazy, type ReactNode, Suspense } from "react";
 import type { ThemeMode } from "@/app/hooks/use-theme-mode";
 import { Spinner } from "@/components/ui/spinner";
 import { DashboardOrbitPage } from "@/modules/dashboard/dashboard-orbit-page";
-import { FinancialAnalyticsV2Page } from "@/modules/finances/financial-analytics-page";
-import { PatientDetailPage } from "@/modules/patients/patient-detail-page";
 import type { View } from "@/types";
 
 const AgendaPage = lazy(() => import("@/components/Agenda"));
@@ -17,6 +15,14 @@ const PatientsPage = lazy(() => import("@/components/Patients"));
 const StockPage = lazy(() => import("@/components/Stock"));
 const TasksPage = lazy(() => import("@/components/Tasks"));
 const TeamPage = lazy(() => import("@/components/Team"));
+const FinancialAnalyticsPage = lazy(async () => {
+  const module = await import("@/modules/finances/financial-analytics-page");
+  return { default: module.FinancialAnalyticsV2Page };
+});
+const PatientDetailPage = lazy(async () => {
+  const module = await import("@/modules/patients/patient-detail-page");
+  return { default: module.PatientDetailPage };
+});
 
 interface ViewRegistryProps {
   currentTheme: ThemeMode;
@@ -63,7 +69,7 @@ export function renderView(view: View, props: ViewRegistryProps) {
         <PatientsPage onNavigateToPatient={props.onNavigateToPatient} />
       );
     case "patient_detail":
-      return (
+      return renderLazyView(
         <PatientDetailPage
           onNavigate={props.onNavigate}
           patientId={props.patientId ?? ""}
@@ -76,7 +82,9 @@ export function renderView(view: View, props: ViewRegistryProps) {
     case "finances":
       return renderLazyView(<FinancesPage onNavigate={props.onNavigate} />);
     case "finances_analytics":
-      return <FinancialAnalyticsV2Page onNavigate={props.onNavigate} />;
+      return renderLazyView(
+        <FinancialAnalyticsPage onNavigate={props.onNavigate} />
+      );
     case "equipe":
       return renderLazyView(<TeamPage />);
     case "parametres":

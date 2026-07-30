@@ -19,12 +19,6 @@ function addDays(date: Date, amount: number) {
   return next;
 }
 
-function addMonths(date: Date, amount: number) {
-  const next = new Date(date);
-  next.setMonth(next.getMonth() + amount);
-  return next;
-}
-
 function isSameDay(a: Date, b: Date) {
   return startOfDay(a).getTime() === startOfDay(b).getTime();
 }
@@ -77,15 +71,6 @@ export function formatCompactInteger(value: number, locale?: string) {
 
 export function formatPercent(value: number) {
   return `${value.toFixed(1)}%`;
-}
-
-function findLastIndexBy<T>(items: T[], predicate: (item: T) => boolean) {
-  for (let index = items.length - 1; index >= 0; index -= 1) {
-    if (predicate(items[index])) {
-      return index;
-    }
-  }
-  return -1;
 }
 
 export type DashboardMetrics = ReturnType<typeof buildDashboardMetrics>;

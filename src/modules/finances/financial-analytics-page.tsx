@@ -19,7 +19,6 @@ import {
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAuth } from "@/contexts/AuthContext";
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -43,7 +42,6 @@ import { formatDZD } from "@/utils/currency";
 // METRICS STRIP
 // ============================================================================
 function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
-  const { t } = useTranslation();
   const incomeDelta = percentageDelta(
     metrics.summary.income30,
     metrics.summary.previousIncome30
@@ -107,7 +105,6 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
 // FINANCIAL CHARTS CENTER (Protocol Aesthetic)
 // ============================================================================
 function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
-  const { t } = useTranslation();
   const [activeTab, setActiveTab] = React.useState<"revenue" | "cashflow">(
     "revenue"
   );
@@ -518,8 +515,7 @@ export function FinancialAnalyticsV2Page({
 }: {
   onNavigate: (view: View) => void;
 }) {
-  const { t, i18n } = useTranslation();
-  const { currentUser } = useAuth();
+  const { i18n } = useTranslation();
 
   const { data: appointments } = useAppointmentsRepository();
   const { data: owners } = useOwnersRepository();

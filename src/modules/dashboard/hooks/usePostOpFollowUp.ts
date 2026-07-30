@@ -4,7 +4,7 @@ import {
   evaluateVitals,
   type Species,
 } from "@/lib/clinical-alerts";
-import { runDbOperation } from "@/services/sqlite/database";
+import { runDbRead } from "@/services/sqlite/database";
 
 export interface PostOpPatient {
   alerts: ClinicalAlert[];
@@ -43,7 +43,7 @@ export function usePostOpFollowUp() {
   const loadPatients = async () => {
     try {
       setIsLoading(true);
-      const data = await runDbOperation(async (db) => {
+      const data = await runDbRead(async (db) => {
         const rows = await db.select<PostOpPatientRaw[]>(
           `SELECT
             p.id AS patientId,
