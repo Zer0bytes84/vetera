@@ -4,7 +4,6 @@ export { AreaChartOrbit } from "./area-chart-orbit";
 export { BarChartOrbit } from "./bar-chart-orbit";
 export { CashflowChartOrbit } from "./cashflow-chart-orbit";
 export { ClinicActivityOrbit } from "./clinic-activity-orbit";
-export { ClinicPipelineOrbit } from "./clinic-pipeline-orbit";
 export { ComposedChartOrbit } from "./composed-chart-orbit";
 export { DashboardHeroOrbit } from "./dashboard-hero-orbit";
 export {

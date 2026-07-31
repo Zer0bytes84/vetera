@@ -1,13 +1,15 @@
-import { Calendar01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  CaretLeft,
-  CaretRight,
+  CalendarDays,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  MapPin,
+  PawPrint,
   Stethoscope,
-  User,
-} from "@phosphor-icons/react";
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+  UserRound,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   APPOINTMENT_STATUS_META,
@@ -31,7 +33,46 @@ interface AgendaListViewProps {
 }
 
 const DAY_NAMES = ["L", "M", "M", "J", "V", "S", "D"];
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 7;
+
+function shiftMonth(value: Date, amount: number) {
+  const next = new Date(value);
+  next.setDate(1);
+  next.setMonth(next.getMonth() + amount);
+  return next;
+}
+
+function getDurationLabel(appointment: Appointment) {
+  const start = new Date(appointment.startTime).getTime();
+  const end = new Date(appointment.endTime).getTime();
+  const minutes = Math.max(0, Math.round((end - start) / 60_000));
+  if (!Number.isFinite(minutes) || minutes === 0) {
+    return null;
+  }
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const remaining = minutes % 60;
+    return remaining ? `${hours} h ${remaining}` : `${hours} h`;
+  }
+  return `${minutes} min`;
+}
+
+function getSpeciesEmoji(species?: string) {
+  const normalized = species?.toLocaleLowerCase("fr") ?? "";
+  if (normalized.includes("chien")) {
+    return "🐶";
+  }
+  if (normalized.includes("chat")) {
+    return "🐱";
+  }
+  if (normalized.includes("lapin")) {
+    return "🐰";
+  }
+  if (normalized.includes("oiseau")) {
+    return "🐦";
+  }
+  return "🐾";
+}
 
 export function AgendaListView({
   selectedDate,
@@ -46,321 +87,393 @@ export function AgendaListView({
   formatTime,
   isSameDay,
 }: AgendaListViewProps) {
-  const { t } = useTranslation();
-  const selectedAppointments = getAppointmentsForDate(selectedDate);
+  const selectedDateKey = selectedDate.toDateString();
+  const [pagination, setPagination] = useState({
+    dateKey: selectedDateKey,
+    page: 1,
+  });
   const today = new Date();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(selectedAppointments.length / ITEMS_PER_PAGE);
+  const selectedAppointments = useMemo(
+    () =>
+      [...getAppointmentsForDate(selectedDate)].sort(
+        (left, right) =>
+          new Date(left.startTime).getTime() -
+          new Date(right.startTime).getTime()
+      ),
+    [getAppointmentsForDate, selectedDate]
+  );
+  const totalPages = Math.max(
+    1,
+    Math.ceil(selectedAppointments.length / ITEMS_PER_PAGE)
+  );
+  const currentPage =
+    pagination.dateKey === selectedDateKey
+      ? Math.min(pagination.page, totalPages)
+      : 1;
   const paginatedAppointments = selectedAppointments.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+  const completedCount = selectedAppointments.filter(
+    (appointment) => appointment.status === "completed"
+  ).length;
+  const activeCount = selectedAppointments.filter((appointment) =>
+    ["scheduled", "in_progress"].includes(appointment.status)
+  ).length;
+  const urgentCount = selectedAppointments.filter(
+    (appointment) => appointment.type === "Urgence"
+  ).length;
 
-  // Reset page when date changes
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedDate]);
+  const handleDateClick = (date: Date) => {
+    setPagination({ dateKey: date.toDateString(), page: 1 });
+    onDateClick(date);
+  };
 
-  const handleStartConsultation = (e: React.MouseEvent, appt: Appointment) => {
-    e.stopPropagation();
-    onSelectAppointment(appt);
-    if (typeof window !== "undefined") {
-      window.sessionStorage.setItem(
-        "vetera:pending-consultation-start",
-        appt.id
-      );
-    }
+  const handlePageChange = (page: number) => {
+    setPagination({
+      dateKey: selectedDateKey,
+      page: Math.max(1, Math.min(totalPages, page)),
+    });
+  };
+
+  const handleStartConsultation = (
+    event: React.MouseEvent,
+    appointment: Appointment
+  ) => {
+    event.stopPropagation();
+    onSelectAppointment(appointment);
+    window.sessionStorage.setItem(
+      "vetera:pending-consultation-start",
+      appointment.id
+    );
     window.location.assign("#/clinique");
   };
 
   return (
-    <div className="bg-transparent text-card-foreground">
-      <div className="mx-auto max-w-lg px-6 py-8 lg:max-w-4xl xl:max-w-6xl">
-        <div>
-          <h2 className="flex items-center gap-2 font-semibold text-base text-foreground">
-            <HugeiconsIcon
-              className="size-5 text-primary"
-              icon={Calendar01Icon}
-            />
-            {t("agenda.upcomingMeetings", {
-              defaultValue: "Rendez-vous prévus",
+    <div className="grid min-h-[650px] grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)]">
+      <aside className="border-border/70 border-b bg-muted/15 p-5 xl:border-r xl:border-b-0">
+        <div className="xl:sticky xl:top-4">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              aria-label="Mois précédent"
+              className="grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+              onClick={() => handleDateClick(shiftMonth(selectedDate, -1))}
+              type="button"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <p className="font-semibold text-sm capitalize tracking-[-0.01em]">
+              {selectedDate.toLocaleDateString("fr-FR", {
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
+            <button
+              aria-label="Mois suivant"
+              className="grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+              onClick={() => handleDateClick(shiftMonth(selectedDate, 1))}
+              type="button"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
+
+          <div className="mt-5 grid grid-cols-7 text-center font-medium text-[10px] text-muted-foreground">
+            {DAY_NAMES.map((day, index) => (
+              <span key={`${day}-${index}`}>{day}</span>
+            ))}
+          </div>
+          <div className="mt-2 grid grid-cols-7 gap-y-1">
+            {monthDays.map((day, index) => {
+              if (!day) {
+                return <span className="h-9" key={`empty-${index}`} />;
+              }
+
+              const appointmentsCount = getAppointmentsForDate(day).length;
+              const isSelected = isSameDay(day, selectedDate);
+              const isToday = isSameDay(day, today);
+
+              return (
+                <button
+                  aria-label={day.toLocaleDateString("fr-FR")}
+                  className={cn(
+                    "group relative mx-auto grid size-9 place-items-center rounded-xl text-xs outline-none transition-[background-color,color,transform] hover:bg-background focus-visible:ring-2 focus-visible:ring-primary/30",
+                    isSelected
+                      ? "bg-foreground font-semibold text-background shadow-sm hover:bg-foreground"
+                      : "text-foreground",
+                    isToday && !isSelected && "font-semibold text-primary"
+                  )}
+                  key={day.toISOString()}
+                  onClick={() => handleDateClick(day)}
+                  type="button"
+                >
+                  {day.getDate()}
+                  {appointmentsCount > 0 ? (
+                    <span
+                      className={cn(
+                        "absolute bottom-1 size-1 rounded-full bg-primary",
+                        isSelected && "bg-background"
+                      )}
+                    />
+                  ) : null}
+                </button>
+              );
             })}
-          </h2>
-          <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
-            <div className="mt-10 rounded-3xl border border-border/50 bg-white p-6 text-center shadow-sm lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9 dark:bg-zinc-900/50">
-              <div className="flex items-center text-foreground">
-                <button
-                  className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-                  onClick={() => {
-                    const prevMonth = new Date(selectedDate);
-                    prevMonth.setMonth(prevMonth.getMonth() - 1);
-                    onDateClick(prevMonth);
-                  }}
-                  type="button"
-                >
-                  <span className="sr-only">Mois précédent</span>
-                  <CaretLeft className="size-5" weight="bold" />
-                </button>
-                <div className="flex-auto font-semibold text-sm capitalize">
-                  {selectedDate.toLocaleDateString("fr-FR", {
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </div>
-                <button
-                  className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-                  onClick={() => {
-                    const nextMonth = new Date(selectedDate);
-                    nextMonth.setMonth(nextMonth.getMonth() + 1);
-                    onDateClick(nextMonth);
-                  }}
-                  type="button"
-                >
-                  <span className="sr-only">Mois suivant</span>
-                  <CaretRight className="size-5" weight="bold" />
-                </button>
-              </div>
-              <div className="mt-6 grid grid-cols-7 font-medium text-muted-foreground text-xs/6">
-                {DAY_NAMES.map((day, index) => (
-                  <div key={`${day}-${index}`}>{day}</div>
-                ))}
-              </div>
-              <div className="isolate mt-2 grid grid-cols-7 gap-px overflow-hidden rounded-xl bg-zinc-200/50 text-sm shadow-sm dark:bg-zinc-800/50">
-                {monthDays.map((day, i) => {
-                  if (!day) {
-                    return (
-                      <div
-                        className="bg-card/30 py-1.5 text-muted-foreground"
-                        key={`empty-${i}`}
-                      />
-                    );
-                  }
+          </div>
 
-                  const isSelected = isSameDay(day, selectedDate);
-                  const isToday = isSameDay(day, today);
-                  const hasAppts = getAppointmentsForDate(day).length > 0;
-
-                  return (
-                    <button
-                      className={cn(
-                        "py-1.5 transition-colors hover:bg-muted/80 focus:z-10",
-                        "bg-card/70 backdrop-blur-sm",
-                        isSelected || isToday ? "font-semibold" : "",
-                        isSelected
-                          ? "text-primary-foreground"
-                          : isToday
-                            ? "text-primary"
-                            : "text-foreground"
-                      )}
-                      key={day.toISOString()}
-                      onClick={() => onDateClick(day)}
-                      type="button"
-                    >
-                      <time
-                        className={cn(
-                          "mx-auto flex size-7 items-center justify-center rounded-full transition-transform",
-                          isSelected && isToday
-                            ? "scale-110 bg-primary shadow-md"
-                            : "",
-                          isSelected && !isToday
-                            ? "scale-110 bg-foreground text-background shadow-md"
-                            : "",
-                          hasAppts && !isSelected
-                            ? "ring-2 ring-primary/30"
-                            : "",
-                          !(isSelected || isToday) && "hover:scale-110"
-                        )}
-                        dateTime={day.toISOString()}
-                      >
-                        {day.getDate()}
-                      </time>
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="mt-6 rounded-2xl border border-border/60 bg-background/80 p-4 shadow-xs">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <CalendarDays className="size-4" />
+              <span className="font-semibold text-[10px] uppercase tracking-[0.08em]">
+                Journée sélectionnée
+              </span>
             </div>
-
-            <div className="mt-4 flex min-h-[400px] flex-col lg:col-span-7 xl:col-span-8">
-              <ol className="mt-2 flex-1 space-y-3">
-                {selectedAppointments.length === 0 ? (
-                  <li className="flex h-full flex-col items-center justify-center py-10 text-center text-muted-foreground">
-                    <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-muted/50">
-                      <HugeiconsIcon
-                        className="size-8 text-muted-foreground/50"
-                        icon={Calendar01Icon}
-                      />
-                    </div>
-                    <p className="font-medium text-lg">
-                      Aucun rendez-vous prévu
-                    </p>
-                    <p className="text-sm">
-                      Sélectionnez une autre date pour voir le planning.
-                    </p>
-                  </li>
-                ) : null}
-                {paginatedAppointments.map((appt) => {
-                  const patientName = getPatientName(appt.patientId);
-                  const patient = getPatient(appt.patientId);
-                  const ownerName = appt.ownerId
-                    ? getOwnerName(appt.ownerId)
-                    : "";
-                  const isSelected = selectedAppointmentId === appt.id;
-                  const typeMeta = getAppointmentTypeMeta(appt.type);
-
-                  return (
-                    <li
-                      className={cn(
-                        "group flex cursor-pointer flex-col rounded-xl border p-4 shadow-sm transition-all duration-200 sm:flex-row sm:items-center sm:justify-between",
-                        isSelected
-                          ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20 dark:bg-primary/10"
-                          : "border-border/50 bg-card hover:border-border hover:bg-muted/30"
-                      )}
-                      key={appt.id}
-                      onClick={() => onSelectAppointment(appt)}
-                    >
-                      <div className="flex items-center gap-4">
-                        {/* Time Box */}
-                        <div className="flex flex-col items-center justify-center rounded-lg border border-border/30 bg-muted/50 px-3 py-2 dark:bg-zinc-900">
-                          <span className="font-bold font-mono text-[13px] text-foreground">
-                            {formatTime(appt.startTime)}
-                          </span>
-                        </div>
-
-                        {/* Info */}
-                        <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-foreground text-sm">
-                              {patientName}
-                            </span>
-                            {(patient?.species || patient?.breed) && (
-                              <span className="rounded-md border border-border/50 bg-muted px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground">
-                                {patient?.species || patient?.breed}
-                              </span>
-                            )}
-                          </div>
-                          <div className="mt-0.5 flex items-center gap-1.5 text-muted-foreground text-xs">
-                            <User className="h-3.5 w-3.5 opacity-70" />
-                            <span>{ownerName || "Sans propriétaire"}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 flex items-center justify-between gap-3 border-border/50 border-t pt-3 sm:mt-0 sm:justify-end sm:border-0 sm:pt-0">
-                        {/* Type & Status */}
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={cn(
-                              "rounded-full border px-2 py-0.5 font-medium text-[11px]",
-                              typeMeta.badgeClassName,
-                              typeMeta.surfaceClassName
-                            )}
-                          >
-                            {appt.type}
-                          </span>
-                          <span
-                            className={cn(
-                              "rounded-lg border px-2.5 py-0.5 font-semibold text-[11px]",
-                              APPOINTMENT_STATUS_META[appt.status]?.className
-                            )}
-                          >
-                            {APPOINTMENT_STATUS_META[appt.status]?.label ||
-                              appt.status}
-                          </span>
-                        </div>
-
-                        {/* Action Button */}
-                        {appt.status === "scheduled" ||
-                        appt.status === "in_progress" ? (
-                          <Button
-                            className="ml-1 h-8 rounded-lg bg-primary/10 px-3 text-primary text-xs shadow-none transition-colors hover:bg-primary hover:text-white"
-                            onClick={(e) => handleStartConsultation(e, appt)}
-                            size="sm"
-                            variant="secondary"
-                          >
-                            <Stethoscope
-                              className="mr-1.5 size-3.5"
-                              weight="fill"
-                            />
-                            {appt.status === "in_progress"
-                              ? "Reprendre"
-                              : "Démarrer"}
-                          </Button>
-                        ) : (
-                          <div className="hidden w-[90px] sm:block" /> /* Spacer to keep layout stable when no button */
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-
-              {/* Pagination controls */}
-              {totalPages > 1 && (
-                <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="font-medium text-muted-foreground text-sm">
-                    {t("agenda.showing", { defaultValue: "Affichage" })}{" "}
-                    <span className="text-foreground">
-                      {(currentPage - 1) * ITEMS_PER_PAGE + 1}
-                    </span>{" "}
-                    -{" "}
-                    <span className="text-foreground">
-                      {Math.min(
-                        currentPage * ITEMS_PER_PAGE,
-                        selectedAppointments.length
-                      )}
-                    </span>{" "}
-                    sur{" "}
-                    <span className="text-foreground">
-                      {selectedAppointments.length}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-1">
-                    <Button
-                      className="h-8 rounded-lg px-3 font-medium text-xs shadow-none hover:bg-background"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      size="sm"
-                      variant="ghost"
-                    >
-                      <CaretLeft className="mr-1 size-3.5" />
-                      Précédent
-                    </Button>
-                    <div className="flex items-center gap-1 border-border/50 border-x px-2">
-                      {Array.from({ length: totalPages }).map((_, i) => (
-                        <button
-                          className={cn(
-                            "size-7 rounded-md font-bold text-xs transition-colors",
-                            currentPage === i + 1
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "text-muted-foreground hover:bg-background"
-                          )}
-                          key={i}
-                          onClick={() => setCurrentPage(i + 1)}
-                        >
-                          {i + 1}
-                        </button>
-                      ))}
-                    </div>
-                    <Button
-                      className="h-8 rounded-lg px-3 font-medium text-xs shadow-none hover:bg-background"
-                      disabled={currentPage === totalPages}
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      size="sm"
-                      variant="ghost"
-                    >
-                      Suivant
-                      <CaretRight className="ml-1 size-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+            <p className="mt-3 font-semibold text-lg capitalize tracking-[-0.025em]">
+              {selectedDate.toLocaleDateString("fr-FR", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              })}
+            </p>
+            <div className="mt-4 grid grid-cols-3 divide-x divide-border/60 border-border/60 border-t pt-4 text-center">
+              <DayMetric label="Prévus" value={selectedAppointments.length} />
+              <DayMetric label="Actifs" value={activeCount} />
+              <DayMetric label="Urgents" value={urgentCount} />
             </div>
           </div>
         </div>
-      </div>
+      </aside>
+
+      <section className="min-w-0 p-5 sm:p-6">
+        <div className="flex flex-col gap-3 border-border/60 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.1em]">
+              Planning du jour
+            </p>
+            <h3 className="mt-1 font-semibold text-xl tracking-[-0.03em]">
+              {selectedAppointments.length > 0
+                ? `${selectedAppointments.length} rendez-vous à coordonner`
+                : "Journée disponible"}
+            </h3>
+            <p className="mt-1 text-muted-foreground text-sm">
+              {completedCount} terminé{completedCount > 1 ? "s" : ""} ·{" "}
+              {activeCount} à suivre
+            </p>
+          </div>
+          {selectedAppointments.length > 0 ? (
+            <div className="flex items-center gap-2 rounded-full border border-border/60 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+              <Clock3 className="size-3.5" />
+              Tri chronologique
+            </div>
+          ) : null}
+        </div>
+
+        {selectedAppointments.length === 0 ? (
+          <div className="flex min-h-[440px] flex-col items-center justify-center text-center">
+            <div className="grid size-14 place-items-center rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-300">
+              <CheckCircle2 className="size-6" />
+            </div>
+            <p className="mt-4 font-semibold text-lg">Aucun rendez-vous</p>
+            <p className="mt-1 max-w-sm text-muted-foreground text-sm">
+              Cette journée est libre. Sélectionnez une autre date ou ajoutez un
+              nouveau rendez-vous.
+            </p>
+          </div>
+        ) : (
+          <ol className="mt-2 divide-y divide-border/60">
+            {paginatedAppointments.map((appointment) => (
+              <AppointmentListItem
+                appointment={appointment}
+                formatTime={formatTime}
+                getOwnerName={getOwnerName}
+                getPatient={getPatient}
+                getPatientName={getPatientName}
+                isSelected={selectedAppointmentId === appointment.id}
+                key={appointment.id}
+                onSelectAppointment={onSelectAppointment}
+                onStartConsultation={handleStartConsultation}
+              />
+            ))}
+          </ol>
+        )}
+
+        {totalPages > 1 ? (
+          <div className="mt-5 flex items-center justify-between border-border/60 border-t pt-4">
+            <p className="text-muted-foreground text-xs tabular-nums">
+              {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
+              {Math.min(
+                currentPage * ITEMS_PER_PAGE,
+                selectedAppointments.length
+              )}{" "}
+              sur {selectedAppointments.length}
+            </p>
+            <div className="flex items-center gap-1">
+              <button
+                aria-label="Page précédente"
+                className="grid size-8 place-items-center rounded-lg border border-border/60 text-muted-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-35"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                type="button"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+              <span className="min-w-16 text-center font-medium text-xs tabular-nums">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                aria-label="Page suivante"
+                className="grid size-8 place-items-center rounded-lg border border-border/60 text-muted-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-35"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                type="button"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </section>
     </div>
+  );
+}
+
+function DayMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <p className="font-semibold text-base tabular-nums">{value}</p>
+      <p className="mt-0.5 text-[9px] text-muted-foreground uppercase tracking-wide">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+function AppointmentListItem({
+  appointment,
+  formatTime,
+  getOwnerName,
+  getPatient,
+  getPatientName,
+  isSelected,
+  onSelectAppointment,
+  onStartConsultation,
+}: {
+  appointment: Appointment;
+  formatTime: (date?: string | Date | null) => string;
+  getOwnerName: (ownerId?: string) => string;
+  getPatient: (patientId: string) => Patient | undefined;
+  getPatientName: (patientId: string) => string;
+  isSelected: boolean;
+  onSelectAppointment: (appointment: Appointment) => void;
+  onStartConsultation: (
+    event: React.MouseEvent,
+    appointment: Appointment
+  ) => void;
+}) {
+  const patient = getPatient(appointment.patientId);
+  const patientName = getPatientName(appointment.patientId);
+  const ownerName = getOwnerName(appointment.ownerId) || "Sans propriétaire";
+  const typeMeta = getAppointmentTypeMeta(appointment.type);
+  const statusMeta = APPOINTMENT_STATUS_META[appointment.status];
+  const duration = getDurationLabel(appointment);
+  const canStart = ["scheduled", "in_progress"].includes(appointment.status);
+
+  return (
+    <li>
+      <button
+        aria-pressed={isSelected}
+        className={cn(
+          "group grid w-full min-w-0 grid-cols-[68px_minmax(0,1fr)] gap-4 px-2 py-4 text-left outline-none transition-colors sm:grid-cols-[78px_48px_minmax(0,1fr)_auto] sm:items-center sm:px-3",
+          isSelected
+            ? "bg-primary/[0.055]"
+            : "hover:bg-muted/35 focus-visible:bg-muted/35"
+        )}
+        onClick={() => onSelectAppointment(appointment)}
+        type="button"
+      >
+        <div className="self-start pt-0.5 sm:self-center sm:pt-0">
+          <p className="font-semibold text-sm tabular-nums">
+            {formatTime(appointment.startTime)}
+          </p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground tabular-nums">
+            {formatTime(appointment.endTime)}
+          </p>
+          {duration ? (
+            <p className="mt-1 text-[9px] text-muted-foreground">{duration}</p>
+          ) : null}
+        </div>
+
+        <span
+          className={cn(
+            "hidden size-11 place-items-center rounded-xl text-xl ring-1 ring-inset sm:grid",
+            typeMeta.surfaceClassName
+          )}
+        >
+          {getSpeciesEmoji(patient?.species)}
+        </span>
+
+        <div className="min-w-0">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <p className="truncate font-semibold text-sm tracking-[-0.01em]">
+              {patientName}
+            </p>
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 font-medium text-[10px]",
+                typeMeta.badgeClassName
+              )}
+            >
+              {appointment.type}
+            </span>
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 font-medium text-[10px]",
+                statusMeta?.className
+              )}
+            >
+              {statusMeta?.label ?? appointment.status}
+            </span>
+          </div>
+          <p className="mt-1 truncate text-muted-foreground text-xs">
+            {appointment.reason || appointment.title || "Consultation"}
+          </p>
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
+            <span className="inline-flex min-w-0 items-center gap-1.5">
+              <UserRound className="size-3" />
+              <span className="truncate">{ownerName}</span>
+            </span>
+            {patient?.species ? (
+              <span className="inline-flex items-center gap-1.5">
+                <PawPrint className="size-3" />
+                {patient.species}
+                {patient.breed ? ` · ${patient.breed}` : ""}
+              </span>
+            ) : null}
+            {appointment.room ? (
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="size-3" />
+                {appointment.room}
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="col-start-2 mt-1 flex items-center justify-end sm:col-start-auto sm:mt-0">
+          {canStart ? (
+            <Button
+              className="h-8 rounded-lg px-3 text-xs shadow-none"
+              onClick={(event) => onStartConsultation(event, appointment)}
+              size="sm"
+              variant={appointment.status === "in_progress" ? "default" : "outline"}
+            >
+              <Stethoscope className="size-3.5" />
+              {appointment.status === "in_progress" ? "Reprendre" : "Démarrer"}
+            </Button>
+          ) : (
+            <ChevronRight className="size-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
+          )}
+        </div>
+      </button>
+    </li>
   );
 }

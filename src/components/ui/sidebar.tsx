@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH_STORAGE_KEY = "baitari_sidebar_width_v1";
-const SIDEBAR_DEFAULT_WIDTH = 256;
+const SIDEBAR_DEFAULT_WIDTH = 248;
 const SIDEBAR_MIN_WIDTH = 224;
 const SIDEBAR_MAX_WIDTH = 360;
 const SIDEBAR_COLLAPSE_THRESHOLD = 208;
@@ -193,7 +193,7 @@ function SidebarProvider({
     <SidebarContext.Provider value={contextValue}>
       <div
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
+          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar has-data-[variant=minimal]:bg-background",
           className
         )}
         data-resizing={isResizing ? "true" : "false"}
@@ -223,7 +223,7 @@ function Sidebar({
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right";
-  variant?: "sidebar" | "floating" | "inset";
+  variant?: "sidebar" | "floating" | "inset" | "minimal";
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
@@ -271,17 +271,22 @@ function Sidebar({
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
             ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(6)))]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
+          variant === "minimal" &&
+            "w-[calc(var(--sidebar-width)+(--spacing(2)))] group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(7)))]"
         )}
         data-slot="sidebar-gap"
       />
       <div
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[resizing=true]/sidebar-wrapper:duration-0 data-[side=right]:right-0 data-[side=left]:left-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] md:flex",
-          // Adjust the padding for floating and inset variants.
-          variant === "floating" || variant === "inset"
-            ? "p-4 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(6)))]"
-            : "border-sidebar-border group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=right]:border-s group-data-[side=left]:border-e dark:border-white/14",
+          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[side=right]:right-0 data-[side=left]:left-0 group-data-[resizing=true]/sidebar-wrapper:duration-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] md:flex",
+          // Keep the borderless minimal variant isolated from the classic
+          // sidebar border so the main panel owns the rounded divider.
+          variant === "minimal"
+            ? "w-[calc(var(--sidebar-width)+(--spacing(2)))] border-0 p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(7)))]"
+            : variant === "floating" || variant === "inset"
+              ? "p-4 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(6)))]"
+              : "border-sidebar-border group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=right]:border-s group-data-[side=left]:border-e dark:border-white/14",
           className
         )}
         data-side={side}
@@ -295,7 +300,7 @@ function Sidebar({
         >
           {children}
         </div>
-        {collapsible !== "none" ? <SidebarRail /> : null}
+        {collapsible === "none" ? null : <SidebarRail />}
       </div>
     </div>
   );
@@ -359,7 +364,8 @@ function SidebarRail({
     () => () => {
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
-    }, []
+    },
+    []
   );
 
   const handlePointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
@@ -429,8 +435,8 @@ function SidebarRail({
       dragged: false,
       pointerId: event.pointerId,
       side:
-        event.currentTarget.closest<HTMLElement>('[data-side]')?.dataset.side ===
-        "right"
+        event.currentTarget.closest<HTMLElement>("[data-side]")?.dataset
+          .side === "right"
           ? "right"
           : "left",
       startX: event.clientX,
@@ -480,9 +486,10 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       className={cn(
-        "relative flex w-full flex-1 flex-col md:peer-data-[variant=floating]:bg-card md:peer-data-[variant=inset]:bg-background",
+        "relative flex w-full flex-1 flex-col md:peer-data-[variant=floating]:bg-card md:peer-data-[variant=inset]:bg-background md:peer-data-[variant=minimal]:bg-background",
         "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ms-2 md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ms-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm",
         "md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-sidebar-border dark:md:peer-data-[variant=inset]:border-white/15",
+        "md:peer-data-[variant=minimal]:peer-data-[state=collapsed]:ms-2 md:peer-data-[variant=minimal]:m-2 md:peer-data-[variant=minimal]:ms-0 md:peer-data-[variant=minimal]:rounded-xl",
         "md:peer-data-[variant=floating]:peer-data-[state=collapsed]:ms-4 md:peer-data-[variant=floating]:my-4 md:peer-data-[variant=floating]:ms-0 md:peer-data-[variant=floating]:me-4 md:peer-data-[variant=floating]:rounded-[24px] md:peer-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:md:peer-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.2)]",
         "md:peer-data-[variant=floating]:border md:peer-data-[variant=floating]:border-sidebar-border dark:md:peer-data-[variant=floating]:border-white/10",
         className

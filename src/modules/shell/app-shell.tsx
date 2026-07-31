@@ -152,8 +152,8 @@ function AppShellInner() {
   const bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
 
   const { currentUser, logout } = useAuth();
-  const [cachedAvatarUrl, setCachedAvatarUrl] = useState(() =>
-    readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
+  const [cachedAvatarUrl, setCachedAvatarUrl] = useState(
+    () => readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
   );
   const { theme } = useTheme();
 
@@ -162,7 +162,9 @@ function AppShellInner() {
       return;
     }
     return subscribeToCachedProfile((event) => {
-      if (event.detail.email.toLowerCase() === currentUser.email?.toLowerCase()) {
+      if (
+        event.detail.email.toLowerCase() === currentUser.email?.toLowerCase()
+      ) {
         setCachedAvatarUrl(event.detail.profile.avatarUrl ?? "");
       }
     });
@@ -310,16 +312,20 @@ function AppShellInner() {
   return (
     <SidebarProvider
       className={cn(
-        "relative isolate bg-white dark:bg-zinc-950",
+        "relative isolate bg-background",
         isRtl && "rtl-shell"
       )}
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
-          "--header-height": "60px",
+          "--header-height": variant === "minimal" ? "64px" : "60px",
           "--titlebar-clearance":
-            isDesktopRuntime && variant === "sidebar" && !isRtl
-              ? "24px"
+            isDesktopRuntime && !isRtl
+              ? variant === "sidebar"
+                ? "24px"
+                : variant === "minimal"
+                  ? "10px"
+                  : "0px"
               : "0px",
         } as React.CSSProperties
       }
@@ -339,16 +345,20 @@ function AppShellInner() {
         className={cn(
           "!border-none backdrop-blur-xl",
           variant === "sidebar" &&
-            "!m-0 !rounded-none !bg-white/40 p-0 shadow-none ring-0 dark:!bg-zinc-950/40",
+            "!m-0 !rounded-none !bg-white/40 dark:!bg-zinc-950/40 p-0 shadow-none ring-0",
           variant === "inset" &&
             "!rounded-t-[24px] !rounded-b-none !border-transparent !bg-transparent p-2 pb-2 shadow-none ring-0",
+          variant === "minimal" &&
+            "!mb-0 !rounded-t-[18px] !rounded-b-none !border-none !bg-background p-0 shadow-sm ring-0 dark:!bg-zinc-950",
           variant === "floating" &&
             "!rounded-[24px] !bg-transparent p-0 shadow-sm ring-1 ring-black/5 dark:ring-white/8",
           "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "md:peer-data-[variant=inset]:max-h-dvh",
+          "md:peer-data-[variant=minimal]:max-h-[calc(100dvh-8px)]",
           "md:peer-data-[variant=floating]:max-h-dvh",
           "max-h-dvh",
-          "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0"
+          "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0",
+          "md:peer-data-[variant=minimal]:peer-data-[state=collapsed]:!ms-0"
         )}
       >
         {variant === "inset" ? (
@@ -363,12 +373,20 @@ function AppShellInner() {
             />
           </>
         ) : null}
+        {variant === "minimal" ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-20 rounded-t-[18px] rounded-b-none border-s border-t border-zinc-950/[0.075] dark:border-white/12"
+          />
+        ) : null}
         <div
           className={cn(
-            "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-white transition-all duration-300 [scrollbar-gutter:stable] dark:bg-zinc-950",
+            "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-background transition-all duration-300 [scrollbar-gutter:stable]",
             variant === "sidebar" && "rounded-none shadow-none ring-0",
             variant === "inset" &&
               "rounded-t-[16px] rounded-b-none shadow-2xl ring-1 ring-black/10 dark:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.78)] dark:ring-white/10",
+            variant === "minimal" &&
+              "rounded-t-[18px] rounded-b-none shadow-none ring-0",
             variant === "floating" &&
               "rounded-[22px] shadow-2xl ring-1 ring-black/10 dark:ring-white/14"
           )}
@@ -378,7 +396,8 @@ function AppShellInner() {
 
           <motion.header
             className={cn(
-              "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 [backface-visibility:hidden] [transform:translateZ(0)] will-change-transform dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
+              "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
+              variant === "minimal" && "rounded-t-[18px]",
               isDesktopRuntime && "cursor-grab active:cursor-grabbing"
             )}
             data-window-drag-region={isDesktopRuntime ? "true" : undefined}
@@ -500,9 +519,7 @@ function AppShellInner() {
                     <HugeiconsIcon
                       className={cn(
                         "size-3.5 transition-colors",
-                        isDarkMode
-                          ? "text-sky-300"
-                          : "text-muted-foreground/55"
+                        isDarkMode ? "text-sky-300" : "text-muted-foreground/55"
                       )}
                       icon={Moon01Icon}
                       strokeWidth={1.7}

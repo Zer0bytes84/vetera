@@ -45,6 +45,7 @@ interface DashboardLayoutManagerProps {
   blocks: DashboardLayoutBlock[];
   isEditing: boolean;
   onEditingChange: (isEditing: boolean) => void;
+  storageKeyPrefix?: string;
 }
 
 type SaveStatus = "idle" | "saving" | "saved";
@@ -168,6 +169,7 @@ export function DashboardLayoutManager({
   blocks,
   isEditing,
   onEditingChange,
+  storageKeyPrefix = STORAGE_KEY_PREFIX,
 }: DashboardLayoutManagerProps) {
   const { currentUser } = useAuth();
   const availableIdsKey = blocks.map((block) => block.id).join("|");
@@ -179,7 +181,7 @@ export function DashboardLayoutManager({
     () => new Map(blocks.map((block) => [block.id, block])),
     [blocks]
   );
-  const storageKey = `${STORAGE_KEY_PREFIX}:${currentUser?.id ?? "local"}`;
+  const storageKey = `${storageKeyPrefix}:${currentUser?.id ?? "local"}`;
   const [order, setOrder] = useState<string[]>(availableIds);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
@@ -223,12 +225,6 @@ export function DashboardLayoutManager({
       isCurrent = false;
     };
   }, [availableIds, storageKey]);
-
-  useEffect(() => {
-    if (isEditing) {
-      setSaveStatus("idle");
-    }
-  }, [isEditing]);
 
   const persistOrder = useCallback(
     (nextOrder: string[]) => {

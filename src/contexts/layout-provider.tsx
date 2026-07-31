@@ -1,12 +1,12 @@
 import { createContext, useContext, useState } from "react";
 
 export type Collapsible = "offcanvas" | "icon" | "none";
-type Variant = "inset" | "sidebar" | "floating";
+export type LayoutVariant = "inset" | "minimal" | "sidebar" | "floating";
 
 const LAYOUT_COLLAPSIBLE_KEY = "layout_collapsible_v7";
 const LAYOUT_VARIANT_KEY = "layout_variant_v6";
 
-const DEFAULT_VARIANT: Variant = "inset";
+const DEFAULT_VARIANT: LayoutVariant = "minimal";
 const DEFAULT_COLLAPSIBLE: Collapsible = "icon";
 
 type LayoutContextType = {
@@ -14,9 +14,9 @@ type LayoutContextType = {
   defaultCollapsible: Collapsible;
   collapsible: Collapsible;
   setCollapsible: (collapsible: Collapsible) => void;
-  defaultVariant: Variant;
-  variant: Variant;
-  setVariant: (variant: Variant) => void;
+  defaultVariant: LayoutVariant;
+  variant: LayoutVariant;
+  setVariant: (variant: LayoutVariant) => void;
 };
 
 const LayoutContext = createContext<LayoutContextType | null>(null);
@@ -31,10 +31,10 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
     }
   });
 
-  const [variant, _setVariant] = useState<Variant>(() => {
+  const [variant, _setVariant] = useState<LayoutVariant>(() => {
     try {
       const saved = localStorage.getItem(LAYOUT_VARIANT_KEY);
-      return (saved as Variant) || DEFAULT_VARIANT;
+      return (saved as LayoutVariant) || DEFAULT_VARIANT;
     } catch {
       return DEFAULT_VARIANT;
     }
@@ -47,7 +47,7 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   };
 
-  const setVariant = (value: Variant) => {
+  const setVariant = (value: LayoutVariant) => {
     _setVariant(value);
     try {
       localStorage.setItem(LAYOUT_VARIANT_KEY, value);

@@ -192,9 +192,11 @@ export function AppSidebar({
           <SidebarMenuItem className="flex w-full flex-row items-center justify-between">
             <SidebarMenuButton
               className={cn(
-                "h-12 flex-1 px-1 hover:bg-transparent active:bg-transparent",
+                "h-12 flex-1 overflow-visible px-1 hover:bg-transparent active:bg-transparent",
+                variant === "minimal" && "h-14",
                 "transition-all duration-300 ease-out",
-                isCollapsed && "ms-0 justify-center px-0"
+                isCollapsed &&
+                  "ms-0 justify-center px-0 group-data-[collapsible=icon]:size-10!"
               )}
               render={
                 <button onClick={() => onNavigate("dashboard")} type="button" />
@@ -208,7 +210,15 @@ export function AppSidebar({
                     ? "translate-y-0"
                     : isDesktopRuntime
                       ? "translate-y-1.5"
-                      : "translate-y-0.5"
+                      : "translate-y-0.5",
+                  variant === "minimal" &&
+                    (isCollapsed
+                      ? isDesktopRuntime
+                        ? "translate-y-2"
+                        : "translate-y-0.5"
+                      : isDesktopRuntime
+                        ? "translate-y-1"
+                        : "translate-y-1")
                 )}
                 collapsed={isCollapsed}
                 size={variant === "sidebar" ? "xl" : "2xl"}
@@ -216,7 +226,14 @@ export function AppSidebar({
               />
             </SidebarMenuButton>
             {!isCollapsed && (
-              <SidebarTrigger className="-mr-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground" />
+              <SidebarTrigger
+                className={cn(
+                  "-mr-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                  variant === "minimal" &&
+                    isDesktopRuntime &&
+                    "translate-y-1"
+                )}
+              />
             )}
           </SidebarMenuItem>
         </SidebarMenu>
@@ -266,6 +283,13 @@ export function AppSidebar({
             : "mx-0 mt-auto mb-0 bg-transparent px-3 pt-1 pb-4"
         )}
       >
+        {isCollapsed && variant === "minimal" ? (
+          <SidebarTrigger
+            aria-label="Déployer la barre latérale"
+            className="mb-1 size-9 rounded-xl border border-zinc-900/[0.06] bg-zinc-950/[0.025] text-sidebar-foreground/65 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:bg-zinc-950/[0.055] hover:text-sidebar-foreground dark:border-white/[0.09] dark:bg-white/[0.035] dark:hover:bg-white/[0.07]"
+            title="Déployer la barre latérale"
+          />
+        ) : null}
         {isCollapsed ? (
           <div className="mb-2 h-px w-8 rounded-full bg-zinc-900/8 dark:bg-white/8" />
         ) : null}

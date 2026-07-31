@@ -13,9 +13,6 @@ export default defineConfig([
     ".playwright-cli",
     ".playwright-mcp",
     ".next",
-    "docs/archives/**",
-    "dashboard-backup.tsx",
-    "tmp-dashboard.tsx",
     "node_modules",
   ]),
   {

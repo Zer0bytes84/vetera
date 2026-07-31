@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface MotivationalHeaderProps {
+  dashboardViewControl?: React.ReactNode;
   isCustomizing?: boolean;
   onCustomize?: () => void;
   onNavigate?: (view: string) => void;
@@ -32,6 +33,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   title,
   subtitle,
   isCustomizing = false,
+  dashboardViewControl,
   onCustomize,
   onNavigate,
 }) => {
@@ -189,20 +191,22 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
         </div>
         {onNavigate && (
           <div className="flex shrink-0 items-center gap-2">
+            {dashboardViewControl}
             {onCustomize ? (
               <Button
+                aria-label="Personnaliser le tableau de bord"
                 aria-pressed={isCustomizing}
-                className="h-10 rounded-full bg-background/65 px-4 shadow-sm backdrop-blur-md"
+                className="size-10 rounded-full bg-background/65 p-0 shadow-sm backdrop-blur-md"
                 disabled={isCustomizing}
                 onClick={onCustomize}
+                title="Personnaliser le tableau de bord"
                 variant="outline"
               >
                 <HugeiconsIcon
-                  data-icon="inline-start"
+                  className="size-[18px]"
                   icon={DashboardSquareEditIcon}
                   strokeWidth={1.6}
                 />
-                Personnaliser
               </Button>
             ) : null}
             <Button

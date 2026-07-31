@@ -133,34 +133,34 @@
 }
 
 .dark {
-  --background: #111111;
+  --background: #0d0d0f;
   --foreground: oklch(0.967 0.001 286); /* zinc-100 */
-  --card: #242424;
+  --card: #151517;
   --card-foreground: oklch(0.967 0.001 286);
-  --popover: oklch(0.181 0.008 286);
+  --popover: #1a1a1d;
   --popover-foreground: oklch(0.967 0.001 286);
   --primary: oklch(0.765 0.177 163); /* emerald-400 */
   --primary-foreground: oklch(0.141 0.005 286);
-  --secondary: oklch(0.274 0.006 286); /* zinc-800 */
+  --secondary: #202024;
   --secondary-foreground: oklch(0.967 0.001 286);
-  --muted: oklch(0.274 0.006 286); /* zinc-800 */
-  --muted-foreground: #9ca3af;
-  --accent: oklch(0.274 0.006 286); /* zinc-800 */
+  --muted: #1d1d21;
+  --muted-foreground: #a1a1aa;
+  --accent: #232327;
   --accent-foreground: oklch(0.967 0.001 286);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #333333;
-  --input: #333333;
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.12);
   --ring: oklch(0.765 0.177 163); /* emerald-400 */
   --chart-1: oklch(0.765 0.177 163); /* emerald-400 */
   --chart-2: oklch(0.7 0.15 230); /* sky */
   --chart-3: oklch(0.8 0.15 72); /* amber */
   --chart-4: oklch(0.705 0.015 286); /* zinc-400 */
   --chart-5: oklch(0.6 0.14 163); /* emerald-500 */
-  --sidebar: oklch(0.16 0.005 286); /* match card */
+  --sidebar: #111113;
   --sidebar-foreground: oklch(0.967 0.001 286);
   --sidebar-primary: oklch(0.765 0.177 163);
   --sidebar-primary-foreground: oklch(0.141 0.005 286);
-  --sidebar-accent: oklch(0.274 0.006 286);
+  --sidebar-accent: #202024;
   --sidebar-accent-foreground: oklch(0.967 0.001 286);
   --sidebar-border: rgba(
     255,
@@ -169,8 +169,8 @@
     0.08
   ); /* translucent Protocol 8% white sidebar border */
   --sidebar-ring: oklch(0.765 0.177 163);
-  --bg-app: #111111; /* Aster dark background */
-  --bg-panel: oklch(0.181 0.008 286);
+  --bg-app: #0d0d0f;
+  --bg-panel: #151517;
   --text-primary: oklch(0.967 0.001 286);
   --text-secondary: oklch(0.705 0.015 286);
   --text-muted: oklch(0.552 0.016 286);
@@ -200,15 +200,15 @@
   --task-low: rgba(248, 113, 113, 0.7);
   --task-low-glow: rgba(248, 113, 113, 0.3);
   --dashboard-ink: oklch(0.967 0.001 286);
-  --dashboard-surface: oklch(0.141 0.005 286);
-  --dashboard-panel: oklch(0.181 0.008 286 / 0.94);
+  --dashboard-surface: #151517;
+  --dashboard-panel: rgba(21, 21, 23, 0.94);
   --dashboard-border-soft: rgba(
     255,
     255,
     255,
     0.08
   ); /* translucent 8% white card/panel border */
-  --surface-subtle: #1b1b1b;
+  --surface-subtle: #1d1d21;
   --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
   --shadow-feature:
     0 1px 0 rgba(255, 255, 255, 0.05) inset,
@@ -1219,6 +1219,45 @@ button:focus-visible,
       var(--sidebar) 42%,
       color-mix(in oklab, var(--sidebar) 98%, var(--primary) 2%) 100%
     );
+}
+
+/* Minimal inset keeps the spatial rhythm while removing visible framing. */
+[data-variant="minimal"] [data-slot="sidebar-gap"],
+[data-variant="minimal"] [data-slot="sidebar-container"] {
+  background: var(--background);
+  border-inline-end: 0;
+}
+
+[data-variant="minimal"] [data-slot="sidebar-container"]::before {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--header-height) + var(--titlebar-clearance) + 0.5rem);
+  z-index: 40;
+  height: 1px;
+  pointer-events: none;
+  content: "";
+  background: color-mix(in oklab, var(--foreground) 7.5%, transparent);
+}
+
+[data-variant="minimal"] [data-slot="sidebar-header-separator"] {
+  opacity: 0;
+}
+
+[data-variant="minimal"] [data-slot="sidebar-inner"] {
+  background: var(--background);
+}
+
+[data-variant="minimal"] .apple-sidebar-glow {
+  display: none;
+}
+
+.dark [data-variant="minimal"] [data-slot="sidebar-gap"],
+.dark [data-variant="minimal"] [data-slot="sidebar-container"] {
+  background: var(--background);
+}
+
+.dark [data-variant="minimal"] [data-slot="sidebar-container"]::before {
+  background: color-mix(in oklab, white 12%, transparent);
 }
 
 .dark [data-variant="inset"] [data-slot="sidebar-gap"],

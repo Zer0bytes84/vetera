@@ -1273,78 +1273,78 @@ const Parametres: React.FC<ParametresProps> = ({
                       Les informations utiles au cabinet et aux documents.
                     </p>
                   </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field>
-                    <FieldLabel>Nom de la clinique / cabinet</FieldLabel>
-                    <Input
-                      onChange={(e) => setClinicName(e.target.value)}
-                      placeholder="Ex: Clinique vétérinaire du Centre"
-                      type="text"
-                      value={clinicName}
-                    />
-                    <FieldDescription>
-                      Ce nom apparaîtra dans l'en-tête des factures.
-                    </FieldDescription>
-                  </Field>
-                  <Field>
-                    <FieldLabel>Nom complet</FieldLabel>
-                    <Input
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      type="text"
-                      value={displayName}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel>Email</FieldLabel>
-                    <Input
-                      disabled
-                      type="email"
-                      value={currentUser?.email || ""}
-                    />
-                    <FieldDescription>
-                      L'email ne peut pas être modifié
-                    </FieldDescription>
-                  </Field>
-                  <Field>
-                    <FieldLabel>Téléphone</FieldLabel>
-                    <Input
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+213..."
-                      type="tel"
-                      value={phone}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel>Rôle</FieldLabel>
-                    <Input disabled type="text" value={roleLabel} />
-                  </Field>
-                </div>
-                <Field>
-                  <FieldLabel>Bio</FieldLabel>
-                  <Textarea
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Quelques mots sur vous, votre spécialité ou le ton du cabinet..."
-                    value={bio}
-                  />
-                </Field>
-                <div className="mt-5 flex justify-end border-border/70 border-t pt-5 dark:border-white/10">
-                  <Button
-                    className="flex items-center gap-2"
-                    disabled={isSaving}
-                    onClick={handleSaveProfile}
-                  >
-                    {isSaving ? (
-                      <Spinner className="size-4" />
-                    ) : (
-                      <HugeiconsIcon
-                        className="size-4"
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <Field>
+                      <FieldLabel>Nom de la clinique / cabinet</FieldLabel>
+                      <Input
+                        onChange={(e) => setClinicName(e.target.value)}
+                        placeholder="Ex: Clinique vétérinaire du Centre"
+                        type="text"
+                        value={clinicName}
                       />
-                    )}
-                    Enregistrer les modifications
-                  </Button>
-                </div>
+                      <FieldDescription>
+                        Ce nom apparaîtra dans l'en-tête des factures.
+                      </FieldDescription>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Nom complet</FieldLabel>
+                      <Input
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        type="text"
+                        value={displayName}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Email</FieldLabel>
+                      <Input
+                        disabled
+                        type="email"
+                        value={currentUser?.email || ""}
+                      />
+                      <FieldDescription>
+                        L'email ne peut pas être modifié
+                      </FieldDescription>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Téléphone</FieldLabel>
+                      <Input
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+213..."
+                        type="tel"
+                        value={phone}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Rôle</FieldLabel>
+                      <Input disabled type="text" value={roleLabel} />
+                    </Field>
+                  </div>
+                  <Field>
+                    <FieldLabel>Bio</FieldLabel>
+                    <Textarea
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Quelques mots sur vous, votre spécialité ou le ton du cabinet..."
+                      value={bio}
+                    />
+                  </Field>
+                  <div className="mt-5 flex justify-end border-border/70 border-t pt-5 dark:border-white/10">
+                    <Button
+                      className="flex items-center gap-2"
+                      disabled={isSaving}
+                      onClick={handleSaveProfile}
+                    >
+                      {isSaving ? (
+                        <Spinner className="size-4" />
+                      ) : (
+                        <HugeiconsIcon
+                          className="size-4"
+                          icon={CheckmarkCircle02Icon}
+                          strokeWidth={2}
+                        />
+                      )}
+                      Enregistrer les modifications
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -2012,7 +2012,8 @@ const Parametres: React.FC<ParametresProps> = ({
             Paramètres
           </h1>
           <p className="mt-1 max-w-xl text-muted-foreground text-sm">
-            Adaptez Baitari à votre identité, votre équipe et votre façon de travailler.
+            Adaptez Baitari à votre identité, votre équipe et votre façon de
+            travailler.
           </p>
         </div>
         <Badge className="w-fit rounded-full px-3 py-1.5" variant="outline">
@@ -2048,7 +2049,10 @@ const Parametres: React.FC<ParametresProps> = ({
         })}
       </nav>
 
-      <section aria-labelledby="settings-section-title" className="min-h-[400px]">
+      <section
+        aria-labelledby="settings-section-title"
+        className="min-h-[400px]"
+      >
         <div className="mb-4 flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl border border-border/70 bg-muted/40 text-foreground dark:border-white/10 dark:bg-white/[0.05]">
             <HugeiconsIcon
@@ -2077,6 +2081,7 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
   const layoutLabel = {
     floating: "Flottante",
     inset: "Encadrée",
+    minimal: "Épurée",
     sidebar: "Classique",
   }[variant];
   const collapseLabel = {
@@ -2096,11 +2101,27 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
-          <div className="overflow-hidden rounded-2xl border border-border/80 bg-muted/20 p-2 dark:border-white/12 dark:bg-black/20">
-            <div className="flex h-44 overflow-hidden rounded-xl border border-border/70 bg-background shadow-sm dark:border-white/10">
+          <div
+            className={cn(
+              "overflow-hidden rounded-2xl p-2",
+              variant === "minimal"
+                ? "bg-transparent"
+                : "border border-border/80 bg-muted/20 dark:border-white/12 dark:bg-black/20"
+            )}
+          >
+            <div
+              className={cn(
+                "flex h-44 overflow-hidden rounded-xl bg-background",
+                variant === "minimal"
+                  ? "shadow-[0_16px_40px_-34px_rgba(15,23,42,0.3)]"
+                  : "border border-border/70 shadow-sm dark:border-white/10"
+              )}
+            >
               <div
                 className={cn(
-                  "flex shrink-0 flex-col border-border/70 border-r bg-muted/25 p-2 transition-all dark:border-white/10 dark:bg-white/[0.025]",
+                  "flex shrink-0 flex-col bg-muted/25 p-2 transition-all dark:bg-white/[0.025]",
+                  variant !== "minimal" &&
+                    "border-border/70 border-r dark:border-white/10",
                   collapsible === "icon" ? "w-11" : "w-28",
                   collapsible === "offcanvas" && "w-1 p-0"
                 )}
@@ -2110,14 +2131,18 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
                     <div className="mb-4 flex items-center gap-2">
                       <div className="size-5 rounded-md bg-primary" />
                       {collapsible !== "icon" && (
-                        <span className="font-semibold text-[9px]">Baitari</span>
+                        <span className="font-semibold text-[9px]">
+                          Baitari
+                        </span>
                       )}
                     </div>
                     {[0, 1, 2, 3].map((item) => (
                       <div
                         className={cn(
                           "mb-1.5 flex h-6 items-center gap-2 rounded-md px-1.5",
-                          item === 0 ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                          item === 0
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground"
                         )}
                         key={item}
                       >
@@ -2196,6 +2221,11 @@ function SidebarLayoutSettings() {
       description: "Contenu détaché et vitré",
     },
     {
+      value: "minimal" as const,
+      label: "Épurée",
+      description: "Inset sans bordure",
+    },
+    {
       value: "sidebar" as const,
       label: "Classique",
       description: "Pleine hauteur",
@@ -2238,9 +2268,15 @@ function SidebarLayoutSettings() {
           <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
             Variante
           </Label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
             {variants.map((v) => {
               const isActive = variant === v.value;
+              const sidebarPreviewClass = {
+                floating: "m-0.5 rounded-sm bg-muted-foreground/20",
+                inset: "bg-muted-foreground/15",
+                minimal: "m-0.5 rounded-sm bg-muted-foreground/8",
+                sidebar: "bg-muted-foreground/20",
+              }[v.value];
               return (
                 <button
                   className={cn(
@@ -2273,18 +2309,14 @@ function SidebarLayoutSettings() {
                         <div
                           className={cn(
                             "w-3.5 shrink-0",
-                            v.value === "floating"
-                              ? "m-0.5 rounded-sm bg-muted-foreground/20"
-                              : v.value === "inset"
-                                ? "bg-muted-foreground/15"
-                                : "bg-muted-foreground/20"
+                            sidebarPreviewClass
                           )}
                         />
                         <div className="flex-1 bg-muted-foreground/5" />
                       </>
                     )}
                   </div>
-                  <span className="font-medium text-xs text-foreground">
+                  <span className="font-medium text-foreground text-xs">
                     {v.label}
                   </span>
                   <span className="text-center text-[9px] text-muted-foreground">

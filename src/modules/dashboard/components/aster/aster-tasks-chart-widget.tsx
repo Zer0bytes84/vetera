@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { useTasksRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/types/db";
+import { WidgetShell } from "../../v2/widget-shell";
 
 type TaskFilter = "all" | "late" | "reminders";
 
@@ -128,37 +129,25 @@ export function AsterTasksChartWidget({
   }, [filter, taskStats]);
 
   return (
-    <section
-      aria-labelledby="task-queue-title"
-      className={cn(
-        "flex min-h-[400px] flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
-        className
-      )}
-    >
-      <div className="mb-2 flex min-h-7 items-center justify-between gap-3 px-1">
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-[6px] bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400">
-            <ListTodo className="size-3.5" />
-          </span>
-          <h2
-            className="truncate font-heading font-semibold text-sm text-zinc-800 tracking-[-0.02em] dark:text-zinc-200"
-            id="task-queue-title"
-          >
-            File d’actions
-          </h2>
-        </div>
+    <WidgetShell
+      action={
         <button
-          className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 font-medium text-[11px] text-zinc-500 outline-none transition-colors hover:bg-white hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          className="inline-flex h-8 items-center gap-1 rounded-lg px-2 font-medium text-[11px] text-muted-foreground outline-none transition-colors hover:bg-zinc-100 hover:text-foreground focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:hover:bg-white/7"
           onClick={onOpenTasks}
           type="button"
         >
           Tout ouvrir
           <ArrowRight className="size-3" />
         </button>
-      </div>
-
-      <div className="flex flex-1 flex-col rounded-[12px] border border-zinc-200/60 bg-white p-4 shadow-xs sm:p-5 dark:border-zinc-800 dark:bg-zinc-950/80">
-        <div className="grid grid-cols-3 divide-x divide-zinc-100 border-zinc-100 border-b pb-4 dark:divide-zinc-800 dark:border-zinc-800">
+      }
+      className={cn("min-h-[400px]", className)}
+      contentClassName="flex flex-col p-4 sm:p-5"
+      description="Priorités, rappels et échéances"
+      icon={ListTodo}
+      iconClassName="bg-amber-50 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300"
+      title="File d’actions"
+    >
+        <div className="grid grid-cols-3 divide-x divide-border/75 border-border/75 border-b pb-4">
           <TaskMetric
             icon={CalendarClock}
             label="Ouvertes"
@@ -185,7 +174,7 @@ export function AsterTasksChartWidget({
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
-          <fieldset className="flex rounded-lg border-0 bg-zinc-100 p-1 dark:bg-zinc-900">
+          <fieldset className="flex rounded-lg border-0 bg-muted/70 p-1">
             <legend className="sr-only">Filtrer les actions</legend>
             {filterOptions.map((item) => (
               <button
@@ -202,7 +191,7 @@ export function AsterTasksChartWidget({
               >
                 {filter === item.value && (
                   <motion.span
-                    className="absolute inset-0 rounded-md bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-800 dark:ring-white/10"
+                    className="absolute inset-0 rounded-md bg-background shadow-xs ring-1 ring-border"
                     layoutId="task-filter"
                     transition={
                       reduceMotion
@@ -221,7 +210,7 @@ export function AsterTasksChartWidget({
         </div>
 
         {visibleTasks.length === 0 ? (
-          <div className="mt-4 flex flex-1 flex-col items-center justify-center rounded-xl border border-zinc-200 border-dashed bg-zinc-50/70 px-5 py-8 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
+          <div className="mt-4 flex flex-1 flex-col items-center justify-center rounded-xl border border-border border-dashed bg-muted/35 px-5 py-8 text-center">
             <CheckCircle2 className="mb-2 size-6 text-emerald-500" />
             <p className="font-semibold text-sm text-zinc-700 dark:text-zinc-300">
               Aucune action dans cette vue
@@ -248,7 +237,7 @@ export function AsterTasksChartWidget({
           </div>
         )}
 
-        <div className="mt-3 border-zinc-100 border-t pt-3 dark:border-zinc-800">
+        <div className="mt-3 border-border/75 border-t pt-3">
           <div className="mb-1.5 flex items-center justify-between text-[10px]">
             <span className="text-zinc-500 dark:text-zinc-400">
               Progression globale
@@ -257,7 +246,7 @@ export function AsterTasksChartWidget({
               {taskStats.completionRate}%
             </span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
             <motion.div
               animate={{ width: `${taskStats.completionRate}%` }}
               className="h-full rounded-full bg-emerald-500"
@@ -266,8 +255,7 @@ export function AsterTasksChartWidget({
             />
           </div>
         </div>
-      </div>
-    </section>
+    </WidgetShell>
   );
 }
 
@@ -319,7 +307,7 @@ function TaskQueueRow({
 }) {
   return (
     <motion.button
-      className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-2.5 py-2.5 text-left outline-none transition-colors hover:border-zinc-200 hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:hover:border-zinc-800 dark:hover:bg-zinc-900/55"
+      className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-2.5 py-2.5 text-left outline-none transition-colors hover:border-border hover:bg-muted/45 focus-visible:ring-2 focus-visible:ring-emerald-500/40"
       exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 5 }}
       layout={!reduceMotion}

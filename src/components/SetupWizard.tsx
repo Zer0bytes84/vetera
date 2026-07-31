@@ -10,7 +10,7 @@ import {
   SparklesIcon,
   UserCircle02Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import type React from "react";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
@@ -33,6 +33,28 @@ interface SetupWizardProps {
 
 const fieldClassName =
   "block h-12 w-full rounded-xl border border-zinc-200 bg-white pr-4 pl-11 text-[15px] text-zinc-950 shadow-[0_1px_2px_rgba(24,24,27,0.04)] outline-none transition duration-200 placeholder:text-zinc-400 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
+
+const setupBenefits: Array<{
+  description: string;
+  icon: IconSvgElement;
+  title: string;
+}> = [
+  {
+    description: "Les dossiers restent sur cet appareil.",
+    icon: Shield01Icon,
+    title: "Données locales",
+  },
+  {
+    description: "Patients, agenda et suivi réunis.",
+    icon: SparklesIcon,
+    title: "Prêt au quotidien",
+  },
+  {
+    description: "Un compte administrateur sécurisé.",
+    icon: UserCircle02Icon,
+    title: "Accès personnel",
+  },
+];
 
 const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   const [step, setStep] = useState<1 | 2>(1);
@@ -139,23 +161,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
           </div>
 
           <div className="relative grid gap-2.5">
-            {[
-              [
-                Shield01Icon,
-                "Données locales",
-                "Les dossiers restent sur cet appareil.",
-              ],
-              [
-                SparklesIcon,
-                "Prêt au quotidien",
-                "Patients, agenda et suivi réunis.",
-              ],
-              [
-                UserCircle02Icon,
-                "Accès personnel",
-                "Un compte administrateur sécurisé.",
-              ],
-            ].map(([icon, title, description]) => (
+            {setupBenefits.map(({ description, icon, title }) => (
               <div
                 className="flex items-center gap-3.5 rounded-2xl border border-white/10 bg-white/[0.055] p-3.5 backdrop-blur-sm"
                 key={String(title)}

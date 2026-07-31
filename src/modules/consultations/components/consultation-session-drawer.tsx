@@ -39,7 +39,7 @@ export function ConsultationSessionDrawer({
       {trigger ? <div className="inline-flex">{trigger}</div> : null}
       <SheetContent
         className={cn(
-          "flex w-full flex-col rounded-l-3xl border-white/20 border-l bg-white/70 p-0 shadow-2xl backdrop-blur-3xl sm:max-w-5xl dark:border-white/10 dark:bg-zinc-950/70",
+          "flex w-full flex-col rounded-l-3xl border-border/80 border-l bg-popover/82 p-0 shadow-2xl backdrop-blur-3xl sm:max-w-5xl",
           className
         )}
         showCloseButton={false}
@@ -70,7 +70,7 @@ export function ConsultationSessionDrawer({
             <SheetClose
               render={
                 <Button
-                  className="rounded-full bg-zinc-100/50 hover:bg-zinc-200 dark:bg-zinc-800/50 dark:hover:bg-zinc-700"
+                  className="rounded-full bg-muted/60 hover:bg-accent"
                   size="icon"
                   type="button"
                   variant="ghost"

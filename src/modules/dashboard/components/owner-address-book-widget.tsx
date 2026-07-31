@@ -21,6 +21,7 @@ import {
 import { createElement, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Appointment, Owner, Patient } from "@/types/db";
+import { WidgetShell } from "../v2/widget-shell";
 
 interface OwnerAddressBookWidgetProps {
   appointments: Appointment[];
@@ -191,40 +192,26 @@ export function OwnerAddressBookWidget({
   );
 
   return (
-    <section
-      aria-labelledby="owner-directory-title"
-      className={cn(
-        "flex min-h-[430px] flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
-        className
-      )}
-    >
-      <div className="mb-2 flex min-h-7 items-center justify-between gap-3 px-1">
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-[7px] bg-teal-500/10 text-teal-700 dark:bg-teal-400/10 dark:text-teal-400">
-            <ContactRound className="size-3.5" />
-          </span>
-          <h2
-            className="truncate font-heading font-semibold text-sm text-zinc-800 tracking-[-0.02em] dark:text-zinc-200"
-            id="owner-directory-title"
-          >
-            Carnet des propriétaires
-          </h2>
-          <span className="rounded-full bg-zinc-200/70 px-2 py-0.5 font-semibold text-[10px] text-zinc-500 tabular-nums dark:bg-zinc-800 dark:text-zinc-400">
-            {summary.owners}
-          </span>
-        </div>
+    <WidgetShell
+      action={
         <button
-          className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 font-medium text-[11px] text-zinc-500 outline-none transition-colors hover:bg-white hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          className="inline-flex h-8 items-center gap-1 rounded-lg px-2 font-medium text-[11px] text-muted-foreground outline-none transition-colors hover:bg-zinc-100 hover:text-foreground focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:hover:bg-white/7"
           onClick={onOpenPatients}
           type="button"
         >
           Tous les patients
           <ArrowRight className="size-3.5" />
         </button>
-      </div>
-
-      <div className="flex flex-1 flex-col overflow-hidden rounded-[12px] border border-zinc-200/60 bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-950/80">
-        <div className="grid grid-cols-2 divide-x divide-y divide-zinc-100 border-zinc-100 border-b sm:grid-cols-4 sm:divide-y-0 dark:divide-zinc-800 dark:border-zinc-800">
+      }
+      className={cn("min-h-[430px]", className)}
+      contentClassName="flex flex-col overflow-hidden p-0"
+      description={`${summary.owners} propriétaires · ${summary.patients} dossiers liés`}
+      icon={ContactRound}
+      iconClassName="bg-teal-50 text-teal-700 dark:bg-teal-400/10 dark:text-teal-300"
+      title="Carnet des propriétaires"
+    >
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="grid grid-cols-2 divide-x divide-y divide-border/75 border-border/75 border-b sm:grid-cols-4 sm:divide-y-0">
           <DirectoryMetric
             icon={ContactRound}
             label="Propriétaires"
@@ -247,12 +234,12 @@ export function OwnerAddressBookWidget({
           />
         </div>
 
-        <div className="flex flex-col gap-3 border-zinc-100 border-b p-4 lg:flex-row lg:items-center lg:justify-between dark:border-zinc-800">
+        <div className="flex flex-col gap-3 border-border/75 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
           <label className="relative block min-w-0 flex-1 lg:max-w-md">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <span className="sr-only">Rechercher un propriétaire</span>
             <input
-              className="h-10 w-full rounded-xl border border-zinc-200 bg-zinc-50 pr-3 pl-9 text-sm outline-none transition-[border-color,box-shadow,background-color] placeholder:text-zinc-400 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:focus:border-emerald-700 dark:focus:bg-zinc-950"
+              className="h-10 w-full rounded-xl border border-input bg-muted/45 pr-3 pl-9 text-sm outline-none transition-[border-color,box-shadow,background-color] placeholder:text-muted-foreground/70 focus:border-emerald-400 focus:bg-background focus:ring-4 focus:ring-emerald-500/10 dark:focus:border-emerald-700"
               onChange={(event) => {
                 setQuery(event.target.value);
                 setPage(0);
@@ -263,7 +250,7 @@ export function OwnerAddressBookWidget({
             />
           </label>
 
-          <fieldset className="flex w-fit rounded-lg border-0 bg-zinc-100 p-1 dark:bg-zinc-900">
+          <fieldset className="flex w-fit rounded-lg border-0 bg-muted/70 p-1">
             <legend className="sr-only">Filtrer les propriétaires</legend>
             {filterOptions.map((option) => (
               <button
@@ -283,7 +270,7 @@ export function OwnerAddressBookWidget({
               >
                 {filter === option.value && (
                   <motion.span
-                    className="absolute inset-0 rounded-md bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-800 dark:ring-white/10"
+                    className="absolute inset-0 rounded-md bg-background shadow-xs ring-1 ring-border"
                     layoutId="owner-directory-filter"
                     transition={
                       reduceMotion
@@ -298,7 +285,7 @@ export function OwnerAddressBookWidget({
           </fieldset>
         </div>
 
-        <div className="hidden grid-cols-[minmax(150px,1fr)_minmax(170px,1.1fr)_minmax(210px,1.35fr)_110px] gap-4 border-zinc-100 border-b bg-zinc-50/60 px-4 py-2.5 font-semibold text-[9px] text-zinc-400 uppercase tracking-[0.1em] md:grid dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-500">
+        <div className="hidden grid-cols-[minmax(150px,1fr)_minmax(170px,1.1fr)_minmax(210px,1.35fr)_110px] gap-4 border-border/75 border-b bg-muted/35 px-4 py-2.5 font-semibold text-[9px] text-muted-foreground uppercase tracking-[0.1em] md:grid">
           <span>Propriétaire</span>
           <span>Coordonnées</span>
           <span>Patients liés</span>
@@ -316,7 +303,7 @@ export function OwnerAddressBookWidget({
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+          <div className="divide-y divide-border/75">
             {paginatedEntries.map((entry, index) => (
               <OwnerRow
                 entry={entry}
@@ -329,7 +316,7 @@ export function OwnerAddressBookWidget({
           </div>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-3 border-zinc-100 border-t px-4 py-3 text-[10px] dark:border-zinc-800">
+        <div className="mt-auto flex items-center justify-between gap-3 border-border/75 border-t px-4 py-3 text-[10px]">
           <span className="text-zinc-500 dark:text-zinc-400">
             {visibleEntries.length} résultat
             {visibleEntries.length > 1 ? "s" : ""}
@@ -339,7 +326,7 @@ export function OwnerAddressBookWidget({
               <span className="font-medium text-zinc-500 tabular-nums dark:text-zinc-400">
                 {currentPage + 1} / {pageCount}
               </span>
-              <div className="flex items-center rounded-lg border border-zinc-200 bg-white p-0.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="flex items-center rounded-lg border border-border bg-muted/45 p-0.5 shadow-xs">
                 <button
                   aria-label="Page précédente"
                   className="flex size-7 items-center justify-center rounded-md text-zinc-500 outline-none transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:cursor-not-allowed disabled:opacity-35 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
@@ -374,7 +361,7 @@ export function OwnerAddressBookWidget({
           )}
         </div>
       </div>
-    </section>
+    </WidgetShell>
   );
 }
 

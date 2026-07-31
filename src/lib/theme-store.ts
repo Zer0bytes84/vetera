@@ -19,7 +19,7 @@ export interface ThemeConfig {
   density: "compact" | "comfortable" | "spacious";
   font: FontFamily;
   radius: RadiusSize;
-  sidebarStyle: "inset" | "floating" | "classic";
+  sidebarStyle: "inset" | "minimal" | "floating" | "classic";
 }
 
 export const ACCENT_THEMES: Record<

@@ -10,6 +10,15 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { Patient } from "@/types/db";
 
@@ -120,6 +129,12 @@ export function PatientPopulationWidget({
       activePatients,
       currentNew,
       groups,
+      hospitalized: activePatients.filter(
+        (patient) => patient.status === "hospitalise"
+      ).length,
+      inCare: activePatients.filter((patient) =>
+        ["traitement", "hospitalise"].includes(patient.status)
+      ).length,
       trend,
     };
   }, [patients, referenceDate]);
@@ -133,42 +148,46 @@ export function PatientPopulationWidget({
   const TrendIcon = trendIsNegative ? TrendingDown : TrendingUp;
 
   return (
-    <section
+    <Card
       aria-labelledby="patient-population-title"
       className={cn(
-        "flex min-h-[390px] flex-col rounded-[20px] border border-zinc-200/80 bg-zinc-50/50 px-1.5 pt-3 pb-1.5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/30",
+        "dashboard-v2-widget h-full min-h-[390px] border-border/80 bg-card shadow-[0_1px_2px_rgba(15,23,42,0.02),0_12px_32px_-26px_rgba(15,23,42,0.35)]",
         className
       )}
+      role="region"
     >
-      <div className="mb-2 flex min-h-7 items-center justify-between gap-3 px-1">
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-[7px] bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">
-            <UsersRound className="size-3.5" />
+      <CardHeader className="min-h-16 border-border/75 border-b px-5 py-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-950/5 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-300/10">
+            <UsersRound className="size-4.5" strokeWidth={1.8} />
           </span>
-          <h2
-            className="truncate font-heading font-semibold text-sm text-zinc-800 tracking-[-0.02em] dark:text-zinc-200"
-            id="patient-population-title"
-          >
-            Patients
-          </h2>
+          <div className="min-w-0">
+            <CardTitle
+              className="truncate font-semibold text-[15px] tracking-[-0.015em]"
+              id="patient-population-title"
+            >
+              Patients
+            </CardTitle>
+            <CardDescription className="mt-0.5 truncate text-xs">
+              Population et suivi clinique
+            </CardDescription>
+          </div>
         </div>
-        <button
-          className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 font-medium text-[11px] text-zinc-500 outline-none transition-colors hover:bg-white hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-emerald-500/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-          onClick={onOpenPatients}
-          type="button"
-        >
-          Répertoire
-          <ArrowUpRight className="size-3.5" />
-        </button>
-      </div>
+        <CardAction className="self-center">
+          <Button onClick={onOpenPatients} size="sm" variant="ghost">
+            Répertoire
+            <ArrowUpRight data-icon="inline-end" />
+          </Button>
+        </CardAction>
+      </CardHeader>
 
-      <div className="flex flex-1 flex-col rounded-[12px] border border-zinc-200/60 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-950/80">
-        <div className="flex items-end justify-between gap-4 border-zinc-100 border-b pb-4 dark:border-zinc-800">
+      <CardContent className="flex flex-1 flex-col p-0">
+        <div className="flex items-end justify-between gap-4 border-zinc-200/70 border-b px-5 py-4 dark:border-white/8">
           <div>
-            <p className="font-semibold text-[10px] text-zinc-400 uppercase tracking-[0.1em] dark:text-zinc-500">
+            <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.1em]">
               Patients suivis
             </p>
-            <p className="mt-1.5 font-heading font-semibold text-4xl text-zinc-950 tabular-nums leading-none tracking-[-0.055em] dark:text-zinc-50">
+            <p className="mt-1.5 font-heading font-semibold text-4xl tabular-nums leading-none tracking-[-0.055em]">
               {summary.activePatients.length}
             </p>
           </div>
@@ -181,7 +200,7 @@ export function PatientPopulationWidget({
                 hasNewPatients &&
                 "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
               !(trendIsNegative || hasNewPatients) &&
-                "bg-zinc-100 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400"
+                "bg-muted text-muted-foreground"
             )}
           >
             <TrendIcon className="size-3" />
@@ -189,7 +208,7 @@ export function PatientPopulationWidget({
           </span>
         </div>
 
-        <div className="mt-4">
+        <div className="px-5 pt-4">
           <div className="flex items-center gap-5">
             {summary.groups.map((group) => (
               <div className="flex items-center gap-1.5" key={group.label}>
@@ -217,22 +236,49 @@ export function PatientPopulationWidget({
               return (
                 <span
                   className={cn(
-                    "min-w-0 flex-1 rounded-full opacity-80",
+                    "min-w-0 flex-1 rounded-full opacity-80 transition-[transform,opacity] duration-200 hover:-translate-y-1 hover:opacity-100",
                     summary.activePatients.length > 0
                       ? summary.groups[groupIndex].color
-                      : "bg-zinc-200 dark:bg-zinc-800"
+                      : "bg-muted"
                   )}
                   key={segment.id}
                 />
               );
             })}
           </div>
+
+          <div className="mt-3 grid grid-cols-3 divide-x divide-border/75 rounded-xl bg-muted/35 px-1 py-2.5 ring-1 ring-border/80">
+            <div className="px-2">
+              <p className="font-semibold text-xs text-zinc-900 tabular-nums dark:text-zinc-100">
+                {summary.currentNew}
+              </p>
+              <p className="mt-0.5 truncate text-[9px] text-zinc-400">
+                Nouveaux · 30 j
+              </p>
+            </div>
+            <div className="px-2">
+              <p className="font-semibold text-xs text-zinc-900 tabular-nums dark:text-zinc-100">
+                {summary.inCare}
+              </p>
+              <p className="mt-0.5 truncate text-[9px] text-zinc-400">
+                En suivi
+              </p>
+            </div>
+            <div className="px-2">
+              <p className="font-semibold text-xs text-zinc-900 tabular-nums dark:text-zinc-100">
+                {summary.hospitalized}
+              </p>
+              <p className="mt-0.5 truncate text-[9px] text-zinc-400">
+                Hospitalisés
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-4 divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div className="mt-3 divide-y divide-zinc-200/70 px-5 dark:divide-white/8">
           {summary.groups.map((group) => (
             <button
-              className="group flex w-full items-center gap-3 py-3 text-left outline-none first:pt-0 last:pb-0 focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+              className="group flex w-full items-center gap-3 py-3 text-left outline-none transition-colors hover:bg-muted/35 focus-visible:ring-2 focus-visible:ring-emerald-500/40"
               key={group.label}
               onClick={onOpenPatients}
               type="button"
@@ -259,14 +305,14 @@ export function PatientPopulationWidget({
           ))}
         </div>
 
-        <div className="mt-auto flex items-center justify-between border-zinc-100 border-t pt-3 text-[10px] dark:border-zinc-800">
-          <span className="inline-flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+        <div className="mt-auto flex items-center justify-between border-zinc-200/70 border-t px-5 py-3 text-[10px] dark:border-white/8">
+          <span className="inline-flex items-center gap-1.5 text-muted-foreground">
             <PawPrint className="size-3.5" />
             Population clinique active
           </span>
-          <span className="text-zinc-400 dark:text-zinc-500">30 jours</span>
+          <span className="text-muted-foreground">30 jours</span>
         </div>
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }
