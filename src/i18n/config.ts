@@ -29,6 +29,7 @@ const resources = {
         empty: {
           title: "Aucun résultat trouvé",
           hint: "Essayez avec un nom de patient, un titre de rendez-vous ou une section.",
+          loading: "Recherche dans vos données…",
         },
         group: {
           recents: "Récents",
@@ -1152,6 +1153,7 @@ const resources = {
         empty: {
           title: "No results found",
           hint: "Try a patient name, an appointment title or a section.",
+          loading: "Searching your data…",
         },
         group: {
           recents: "Recent",

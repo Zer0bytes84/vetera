@@ -34,12 +34,14 @@ function CommandDialog({
   description = "Search for a command to run...",
   children,
   className,
+  overlayClassName,
   showCloseButton = false,
   ...props
 }: Omit<React.ComponentProps<typeof Dialog>, "children"> & {
   title?: string;
   description?: string;
   className?: string;
+  overlayClassName?: string;
   showCloseButton?: boolean;
   children: React.ReactNode;
 }) {
@@ -51,9 +53,10 @@ function CommandDialog({
       </DialogHeader>
       <DialogContent
         className={cn(
-          "top-1/3 translate-y-0 overflow-hidden rounded-[24px]! border-border/80 bg-popover/88 p-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] backdrop-blur-3xl dark:shadow-[0_24px_70px_-24px_rgba(0,0,0,0.75)]",
+          "top-1/2 -translate-y-1/2 overflow-hidden rounded-[24px]! border-border/80 bg-popover/88 p-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] backdrop-blur-3xl dark:shadow-[0_24px_70px_-24px_rgba(0,0,0,0.75)]",
           className
         )}
+        overlayClassName={overlayClassName}
         showCloseButton={showCloseButton}
       >
         {children}
@@ -68,7 +71,7 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div className="relative p-2 pb-1" data-slot="command-input-wrapper">
-      <InputGroup className="h-14 rounded-xl border border-transparent bg-muted/60 shadow-none transition-all duration-300 focus-within:border-border focus-within:bg-muted *:data-[slot=input-group-addon]:ps-4!">
+      <InputGroup className="h-14 rounded-xl border border-transparent bg-muted/60 shadow-none transition-[border-color,background-color] duration-200 ease-out focus-within:border-border focus-within:bg-muted *:data-[slot=input-group-addon]:ps-4!">
         <CommandPrimitive.Input
           className={cn(
             "w-full font-medium text-base outline-hidden placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
@@ -151,7 +154,7 @@ function CommandItem({
   return (
     <CommandPrimitive.Item
       className={cn(
-        "group/command-item relative my-0.5 flex cursor-pointer select-none items-center in-data-[slot=dialog-content]:rounded-xl! rounded-xl px-3 py-2.5 text-sm outline-hidden transition-all duration-200 data-[disabled=true]:pointer-events-none data-selected:bg-accent data-selected:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 data-selected:*:[svg]:text-foreground",
+        "group/command-item relative my-0.5 flex cursor-pointer select-none items-center in-data-[slot=dialog-content]:rounded-xl! rounded-xl px-3 py-2.5 text-sm outline-hidden transition-[background-color,color,box-shadow] duration-160 ease-out data-[disabled=true]:pointer-events-none data-selected:bg-accent data-selected:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 data-selected:*:[svg]:text-foreground",
         className
       )}
       data-slot="command-item"

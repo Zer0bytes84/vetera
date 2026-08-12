@@ -24,11 +24,21 @@
 }
 
 ::view-transition-new(root) {
-  animation: reveal 0.4s ease-in-out forwards;
+  animation: reveal 240ms var(--ease-out) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-new(root) {
-    animation: none;
+    animation: reveal-reduced 140ms var(--ease-out) forwards;
+  }
+}
+
+@keyframes reveal-reduced {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }

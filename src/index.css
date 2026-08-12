@@ -55,6 +55,9 @@
 /* ─── Neutral / Emerald Theme ─── */
 /* Clean, minimalist design system based on Inter and Neutral grays */
 :root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --app-font-sans: "Inter Variable", "Inter", sans-serif;
   --app-font-heading: "Inter Variable", "Inter", sans-serif;
   --background: #fcfcfc;
@@ -437,7 +440,7 @@
 
 /* ─── Page Transitions ─── */
 .page-enter {
-  animation: pageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: pageEnter 180ms var(--ease-out) both;
 }
 
 @keyframes pageEnter {
@@ -448,6 +451,62 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ─── View choreography ─── */
+/* Occasional page changes get a small spatial cue; the data itself stays still. */
+.app-view-enter {
+  min-width: 0;
+  animation: appViewEnter 180ms var(--ease-out) both;
+}
+
+@keyframes appViewEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-view-enter {
+    animation: appViewEnterReduced 140ms var(--ease-out) both;
+  }
+}
+
+@keyframes appViewEnterReduced {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ─── Clinical card lift ─── */
+.section-card-motion {
+  transition: transform 200ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .section-card-motion:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-card-motion {
+    transition: none;
+  }
+
+  .section-card-motion:hover {
+    transform: none;
   }
 }
 
@@ -647,9 +706,9 @@ button:focus-visible,
   overflow: hidden;
   cursor: pointer;
   transition:
-    transform 180ms ease,
+    transform 180ms var(--ease-out),
     background-color 180ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms var(--ease-out);
 }
 
 .clinical-interactive::after {

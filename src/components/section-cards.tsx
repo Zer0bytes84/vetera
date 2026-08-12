@@ -161,7 +161,7 @@ export function SectionCards({
         return (
           <li
             className={cn(
-              "group relative rounded-[16px] border border-border/80 bg-card transition-colors duration-200",
+              "section-card-motion group relative rounded-[16px] border border-border/80 bg-card",
               "hover:border-foreground/15 hover:bg-muted/10 dark:hover:border-white/15 dark:hover:bg-white/[0.025]",
               compact ? "min-h-[148px] p-4" : "min-h-[164px] p-5"
             )}
