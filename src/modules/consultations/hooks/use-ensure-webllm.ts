@@ -7,6 +7,7 @@ import {
   resetWebLLM,
   subscribeToProgress,
 } from "@/services/webLLMService";
+import { resolveModelId } from "@/lib/ai-models";
 
 export type WebLLMState = {
   activeModelId: string | null;
@@ -15,7 +16,7 @@ export type WebLLMState = {
   isReady: boolean;
   progress: number; // 0..1
   progressText: string;
-  ensure: () => Promise<void>;
+  ensure: (modelId?: string) => Promise<void>;
   reset: () => void;
 };
 
@@ -49,8 +50,9 @@ export function useEnsureWebLLM(): WebLLMState {
     return unsubscribe;
   }, []);
 
-  const ensure = async () => {
-    if (isWebLLMReady()) {
+  const ensure = async (requestedModelId?: string) => {
+    const targetModelId = resolveModelId(requestedModelId);
+    if (isWebLLMReady() && getActiveModelId() === targetModelId) {
       setState((previous) => ({
         ...previous,
         isReady: true,
@@ -64,7 +66,7 @@ export function useEnsureWebLLM(): WebLLMState {
       isLoading: true,
     }));
     try {
-      await initializeWebLLM(undefined, (report) => {
+      await initializeWebLLM(targetModelId, (report) => {
         setState((previous) => ({
           ...previous,
           progress: report.progress,
@@ -85,6 +87,7 @@ export function useEnsureWebLLM(): WebLLMState {
         error: message,
         isLoading: false,
       }));
+      throw err;
     }
   };
 

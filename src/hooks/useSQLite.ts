@@ -251,7 +251,7 @@ export function useSQLite<T extends { id: string }>(
   tableName: string
 ): UseSQLiteResult<T> {
   const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const sourceId = useId();
 
@@ -455,13 +455,16 @@ export function useSQLite<T extends { id: string }>(
         const setClause = fields.map((field) => `${field} = ?`).join(", ");
         const params = [...Object.values(dbUpdates).map(sanitizeParam), id];
 
-        await runSerializedTauriOp(async () => {
+        const result = await runSerializedTauriOp(async () => {
           const db = await getDatabase();
-          await db.execute(
+          return db.execute(
             `UPDATE ${safeTableName} SET ${setClause} WHERE id = ?`,
             params
           );
         });
+        if (result.rowsAffected === 0) {
+          return false;
+        }
         await syncTableAfterMutation();
         return true;
       } catch (err) {

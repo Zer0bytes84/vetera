@@ -15,8 +15,9 @@ import {
   APPOINTMENT_STATUS_META,
   getAppointmentTypeMeta,
 } from "@/config/status-meta";
+import { PRE_CONSULTATION_STATUSES } from "@/domain/clinical/scheduling";
 import { cn } from "@/lib/utils";
-import type { Appointment, Patient } from "@/types/db";
+import type { Appointment, AppointmentStatus, Patient } from "@/types/db";
 
 interface AgendaListViewProps {
   formatTime: (date?: string | Date | null) => string;
@@ -28,6 +29,10 @@ interface AgendaListViewProps {
   monthDays: Array<Date | null>;
   onDateClick: (date: Date) => void;
   onSelectAppointment: (appointment: Appointment) => void;
+  onTransitionStatus: (
+    appointment: Appointment,
+    nextStatus: AppointmentStatus
+  ) => Promise<void>;
   selectedAppointmentId: string | null;
   selectedDate: Date;
 }
@@ -80,6 +85,7 @@ export function AgendaListView({
   getAppointmentsForDate,
   selectedAppointmentId,
   onSelectAppointment,
+  onTransitionStatus,
   onDateClick,
   getPatientName,
   getPatient,
@@ -118,7 +124,8 @@ export function AgendaListView({
     (appointment) => appointment.status === "completed"
   ).length;
   const activeCount = selectedAppointments.filter((appointment) =>
-    ["scheduled", "in_progress"].includes(appointment.status)
+    PRE_CONSULTATION_STATUSES.includes(appointment.status) ||
+    appointment.status === "in_progress"
   ).length;
   const urgentCount = selectedAppointments.filter(
     (appointment) => appointment.type === "Urgence"
@@ -292,6 +299,7 @@ export function AgendaListView({
                 key={appointment.id}
                 onSelectAppointment={onSelectAppointment}
                 onStartConsultation={handleStartConsultation}
+                onTransitionStatus={onTransitionStatus}
               />
             ))}
           </ol>
@@ -357,6 +365,7 @@ function AppointmentListItem({
   isSelected,
   onSelectAppointment,
   onStartConsultation,
+  onTransitionStatus,
 }: {
   appointment: Appointment;
   formatTime: (date?: string | Date | null) => string;
@@ -369,6 +378,10 @@ function AppointmentListItem({
     event: React.MouseEvent,
     appointment: Appointment
   ) => void;
+  onTransitionStatus: (
+    appointment: Appointment,
+    nextStatus: AppointmentStatus
+  ) => Promise<void>;
 }) {
   const patient = getPatient(appointment.patientId);
   const patientName = getPatientName(appointment.patientId);
@@ -376,7 +389,7 @@ function AppointmentListItem({
   const typeMeta = getAppointmentTypeMeta(appointment.type);
   const statusMeta = APPOINTMENT_STATUS_META[appointment.status];
   const duration = getDurationLabel(appointment);
-  const canStart = ["scheduled", "in_progress"].includes(appointment.status);
+  const nextAction = getNextAppointmentAction(appointment.status);
 
   return (
     <li>
@@ -459,15 +472,24 @@ function AppointmentListItem({
         </div>
 
         <div className="col-start-2 mt-1 flex items-center justify-end sm:col-start-auto sm:mt-0">
-          {canStart ? (
+          {nextAction ? (
             <Button
               className="h-8 rounded-lg px-3 text-xs shadow-none"
-              onClick={(event) => onStartConsultation(event, appointment)}
+              onClick={(event) => {
+                if (nextAction.status === "in_progress") {
+                  onStartConsultation(event, appointment);
+                  return;
+                }
+                event.stopPropagation();
+                void onTransitionStatus(appointment, nextAction.status);
+              }}
               size="sm"
-              variant={appointment.status === "in_progress" ? "default" : "outline"}
+              variant={nextAction.primary ? "default" : "outline"}
             >
-              <Stethoscope className="size-3.5" />
-              {appointment.status === "in_progress" ? "Reprendre" : "Démarrer"}
+              {nextAction.status === "in_progress" ? (
+                <Stethoscope className="size-3.5" />
+              ) : null}
+              {nextAction.label}
             </Button>
           ) : (
             <ChevronRight className="size-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
@@ -476,4 +498,25 @@ function AppointmentListItem({
       </button>
     </li>
   );
+}
+
+function getNextAppointmentAction(status: AppointmentStatus): {
+  label: string;
+  primary: boolean;
+  status: AppointmentStatus;
+} | null {
+  switch (status) {
+    case "scheduled":
+      return { label: "Confirmer", primary: false, status: "confirmed" };
+    case "confirmed":
+      return { label: "Patient arrivé", primary: false, status: "arrived" };
+    case "arrived":
+      return { label: "Mettre en attente", primary: false, status: "waiting" };
+    case "waiting":
+      return { label: "Démarrer", primary: true, status: "in_progress" };
+    case "in_progress":
+      return { label: "Reprendre", primary: true, status: "in_progress" };
+    default:
+      return null;
+  }
 }

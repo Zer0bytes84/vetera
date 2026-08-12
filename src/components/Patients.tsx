@@ -68,11 +68,13 @@ import {
   useAppointmentsRepository,
   useOwnersRepository,
   usePatientsRepository,
+  useTransactionsRepository,
   useUsersRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/auditService";
 import type { Appointment, Owner, Patient } from "@/types/db";
+import { formatDZD } from "@/utils/currency";
 
 const COMMON_SPECIES = [
   "Chien",
@@ -126,6 +128,15 @@ const CAT_BREEDS = [
 ];
 
 type DetailsTab = "info" | "medical" | "history";
+
+const OWNER_CONTACT_LABELS: Record<
+  NonNullable<Owner["preferredContact"]>,
+  string
+> = {
+  phone: "Appel téléphonique",
+  sms: "SMS",
+  email: "Email",
+};
 
 type PatientRecord = {
   patient: Patient;
@@ -385,6 +396,7 @@ function PatientDetailsDialog({
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { data: users } = useUsersRepository();
+  const { data: transactions } = useTransactionsRepository();
 
   const [patientData, setPatientData] = useState({
     name: patient.name,
@@ -448,6 +460,30 @@ function PatientDetailsDialog({
     () => allOwners.find((entry) => entry.id === selectedOwnerId),
     [allOwners, selectedOwnerId]
   );
+
+  const ownerFinancialHistory = useMemo(() => {
+    const appointmentIds = new Set(
+      appointments
+        .filter((appointment) => appointment.ownerId === selectedOwnerId)
+        .map((appointment) => appointment.id)
+    );
+    const linkedIncome = transactions.filter(
+      (transaction) =>
+        transaction.type === "income" &&
+        !!transaction.referenceId &&
+        appointmentIds.has(transaction.referenceId)
+    );
+
+    return {
+      count: linkedIncome.length,
+      paid: linkedIncome
+        .filter((transaction) => transaction.status === "paid")
+        .reduce((sum, transaction) => sum + transaction.amount, 0),
+      pending: linkedIncome
+        .filter((transaction) => transaction.status === "pending")
+        .reduce((sum, transaction) => sum + transaction.amount, 0),
+    };
+  }, [appointments, selectedOwnerId, transactions]);
 
   const usersById = useMemo(
     () => new Map(users.map((entry) => [entry.id, entry])),
@@ -531,6 +567,10 @@ function PatientDetailsDialog({
         email: ownerData.email || undefined,
         address: ownerData.address || undefined,
         city: ownerData.city || undefined,
+        preferredContact: ownerData.preferredContact,
+        secondaryContactName: ownerData.secondaryContactName || undefined,
+        secondaryContactPhone: ownerData.secondaryContactPhone || undefined,
+        communicationNotes: ownerData.communicationNotes || undefined,
       });
 
       if (!ownerUpdated) {
@@ -1081,6 +1121,76 @@ function PatientDetailsDialog({
                                 value={ownerData.city || ""}
                               />
                             </Field>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                              <Field>
+                                <FieldLabel>Contact privilégié</FieldLabel>
+                                <NativeSelect
+                                  className="w-full"
+                                  onChange={(event) =>
+                                    setOwnerData((current) => ({
+                                      ...current,
+                                      preferredContact: event.target
+                                        .value as Owner["preferredContact"],
+                                    }))
+                                  }
+                                  value={ownerData.preferredContact || "phone"}
+                                >
+                                  <NativeSelectOption value="phone">
+                                    Appel téléphonique
+                                  </NativeSelectOption>
+                                  <NativeSelectOption value="sms">
+                                    SMS
+                                  </NativeSelectOption>
+                                  <NativeSelectOption value="email">
+                                    Email
+                                  </NativeSelectOption>
+                                </NativeSelect>
+                              </Field>
+
+                              <Field>
+                                <FieldLabel>Contact secondaire</FieldLabel>
+                                <Input
+                                  onChange={(event) =>
+                                    setOwnerData((current) => ({
+                                      ...current,
+                                      secondaryContactName: event.target.value,
+                                    }))
+                                  }
+                                  placeholder="Nom complet"
+                                  value={ownerData.secondaryContactName || ""}
+                                />
+                              </Field>
+                            </div>
+
+                            <Field>
+                              <FieldLabel>Téléphone secondaire</FieldLabel>
+                              <Input
+                                onChange={(event) =>
+                                  setOwnerData((current) => ({
+                                    ...current,
+                                    secondaryContactPhone: event.target.value,
+                                  }))
+                                }
+                                placeholder="Numéro en cas d'indisponibilité"
+                                value={ownerData.secondaryContactPhone || ""}
+                              />
+                            </Field>
+
+                            <Field>
+                              <FieldLabel>Consigne de communication</FieldLabel>
+                              <Textarea
+                                className="min-h-20"
+                                onChange={(event) =>
+                                  setOwnerData((current) => ({
+                                    ...current,
+                                    communicationNotes: event.target.value,
+                                  }))
+                                }
+                                placeholder="Ex. appeler après 17 h"
+                                value={ownerData.communicationNotes || ""}
+                              />
+                            </Field>
                           </FieldGroup>
                         ) : (
                           <div className="grid gap-3 sm:grid-cols-2">
@@ -1104,6 +1214,33 @@ function PatientDetailsDialog({
                                   .join(", ") || "Non renseignée"
                               }
                             />
+                            <ReadOnlyDetail
+                              label="Contact privilégié"
+                              value={
+                                currentOwner?.preferredContact
+                                  ? OWNER_CONTACT_LABELS[
+                                      currentOwner.preferredContact
+                                    ]
+                                  : "Non renseigné"
+                              }
+                            />
+                            <ReadOnlyDetail
+                              label="Contact secondaire"
+                              value={
+                                [
+                                  currentOwner?.secondaryContactName,
+                                  currentOwner?.secondaryContactPhone,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ") || "Non renseigné"
+                              }
+                            />
+                            {currentOwner?.communicationNotes ? (
+                              <ReadOnlyDetail
+                                label="Consigne de communication"
+                                value={currentOwner.communicationNotes}
+                              />
+                            ) : null}
                           </div>
                         )}
                       </CardContent>
@@ -1216,6 +1353,34 @@ function PatientDetailsDialog({
                       </p>
                     </div>
                   </div>
+                  <Card className="rounded-2xl shadow-none" size="sm">
+                    <CardContent className="grid gap-0 p-0 sm:grid-cols-3">
+                      <div className="px-4 py-3.5 sm:border-border/70 sm:border-r">
+                        <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                          Réglé par le foyer
+                        </p>
+                        <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
+                          {formatDZD(ownerFinancialHistory.paid)}
+                        </p>
+                      </div>
+                      <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0 sm:border-r">
+                        <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                          En attente
+                        </p>
+                        <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
+                          {formatDZD(ownerFinancialHistory.pending)}
+                        </p>
+                      </div>
+                      <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0">
+                        <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                          Écritures liées
+                        </p>
+                        <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
+                          {ownerFinancialHistory.count}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
                   {history.length === 0 ? (
                     <Empty className="border border-border/80 border-dashed bg-muted/20">
                       <EmptyHeader>
@@ -2024,7 +2189,7 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
       {
         title: "Patients actifs",
         value: String(activePatients),
-        badge: `${owners.length} foyers`,
+        badge: `${hydratedOwners.length} foyers`,
         trend: "neutral",
         footerTitle: "Patients suivis",
         footerDescription: "Patients actifs enregistrés",
@@ -2220,11 +2385,11 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
         throw new Error(message);
       }
     },
-    [createWithOwner, ownersMap]
+    [audit, createWithOwner, ownersMap]
   );
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="patients" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -2401,7 +2566,8 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
 
                         return (
                           <tr
-                            className="group cursor-pointer transition-colors duration-150 hover:bg-zinc-50/70 dark:hover:bg-white/[0.02]"
+                            aria-label={`Ouvrir le dossier de ${entry.patient.name}`}
+                            className="group cursor-pointer transition-colors duration-150 hover:bg-zinc-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring dark:hover:bg-white/[0.02]"
                             key={entry.patient.id}
                             onClick={() => {
                               if (onNavigateToPatient) {
@@ -2410,6 +2576,20 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                                 openPatientDetails(entry.patient, "info");
                               }
                             }}
+                            onKeyDown={(event) => {
+                              if (event.target !== event.currentTarget) {
+                                return;
+                              }
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                if (onNavigateToPatient) {
+                                  onNavigateToPatient(entry.patient.id);
+                                } else {
+                                  openPatientDetails(entry.patient, "info");
+                                }
+                              }
+                            }}
+                            tabIndex={0}
                           >
                             {/* Col 1: Patient Details */}
                             <td

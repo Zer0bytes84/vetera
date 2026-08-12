@@ -5,50 +5,28 @@ import {
   useAppointmentsRepository,
   useRemindersRepository,
 } from "@/data/repositories";
+import {
+  DEFAULT_APPOINTMENT_REMINDER_OFFSETS,
+  getFutureReminderSchedules,
+  isAppointmentReminderEligible,
+} from "@/domain/clinical/reminders";
 import { generateId } from "@/services/sqlite/database";
-import type { Appointment, Reminder } from "@/types/db";
+import type { Reminder } from "@/types/db";
 
-const DEFAULT_OFFSETS_MIN = [15, 30, 60, 1440] as const;
 const POLL_INTERVAL_MS = 60_000;
 const TOAST_DEDUPE_WINDOW_MS = 90_000;
 
-type AppointmentLike = Pick<
-  Appointment,
-  "id" | "startTime" | "status" | "patientId"
->;
-
-function isUpcomingAppointment(
-  appointment: AppointmentLike,
-  now: Date
-): boolean {
-  if (
-    appointment.status === "cancelled" ||
-    appointment.status === "no_show" ||
-    appointment.status === "completed"
-  ) {
-    return false;
-  }
-  const start = new Date(appointment.startTime);
-  if (!Number.isFinite(start.getTime())) {
-    return false;
-  }
-  return start.getTime() > now.getTime();
-}
-
 function buildReminderPayload(
   appointmentId: string,
-  appointmentStart: Date,
+  scheduledFor: string,
   minutesBefore: number
 ): Omit<Reminder, "createdAt" | "updatedAt"> {
-  const scheduledFor = new Date(
-    appointmentStart.getTime() - minutesBefore * 60_000
-  );
   return {
     id: generateId(),
     appointmentId,
     channel: "in_app",
     status: "pending",
-    scheduledFor: scheduledFor.toISOString(),
+    scheduledFor,
     minutesBefore,
   };
 }
@@ -61,32 +39,71 @@ function buildReminderPayload(
 export function useAppointmentReminderSync() {
   const { data: appointments, loading } = useAppointmentsRepository();
   const remindersStore = useRemindersRepository();
-  const seededAppointmentIds = useRef<Set<string>>(new Set());
+  const syncedAppointmentVersions = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (loading) {
       return;
     }
     const now = new Date();
+    for (const appointment of appointments) {
+      if (
+        isAppointmentReminderEligible(
+          appointment.status,
+          appointment.startTime,
+          now
+        )
+      ) {
+        continue;
+      }
+      for (const reminder of remindersStore.forAppointment(appointment.id)) {
+        if (reminder.status === "pending" || reminder.status === "snoozed") {
+          void remindersStore.dismiss(reminder.id);
+        }
+      }
+    }
+
     const upcoming = appointments.filter((appointment) =>
-      isUpcomingAppointment(appointment, now)
+      isAppointmentReminderEligible(
+        appointment.status,
+        appointment.startTime,
+        now
+      )
     );
 
     for (const appointment of upcoming) {
-      if (seededAppointmentIds.current.has(appointment.id)) {
+      const versionKey = `${appointment.id}:${appointment.startTime}`;
+      if (syncedAppointmentVersions.current.has(versionKey)) {
         continue;
       }
-      seededAppointmentIds.current.add(appointment.id);
-      const start = new Date(appointment.startTime);
+      syncedAppointmentVersions.current.add(versionKey);
       const existing = remindersStore.forAppointment(appointment.id);
-      const existingOffsets = new Set(
-        existing.map((reminder) => reminder.minutesBefore ?? -1)
+      const schedules = getFutureReminderSchedules(
+        appointment.startTime,
+        now,
+        DEFAULT_APPOINTMENT_REMINDER_OFFSETS
       );
-      for (const offset of DEFAULT_OFFSETS_MIN) {
-        if (existingOffsets.has(offset)) {
+
+      for (const schedule of schedules) {
+        const current = existing.find(
+          (reminder) => reminder.minutesBefore === schedule.minutesBefore
+        );
+        if (current) {
+          if (
+            current.status === "pending" &&
+            current.scheduledFor !== schedule.scheduledFor
+          ) {
+            void remindersStore.update(current.id, {
+              scheduledFor: schedule.scheduledFor,
+            });
+          }
           continue;
         }
-        const payload = buildReminderPayload(appointment.id, start, offset);
+        const payload = buildReminderPayload(
+          appointment.id,
+          schedule.scheduledFor,
+          schedule.minutesBefore
+        );
         void remindersStore.add(payload);
       }
     }

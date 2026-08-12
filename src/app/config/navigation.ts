@@ -27,6 +27,7 @@ export const viewTitleKeys: Record<View, string> = {
   taches: "views.taches",
   aide: "views.aide",
   patient_detail: "views.patient_detail",
+  assistant: "Assistant IA",
 };
 
 export const navigationSections: Array<{

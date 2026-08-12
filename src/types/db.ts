@@ -11,12 +11,16 @@ export type UserRole =
 export interface Owner {
   address?: string;
   city?: string;
+  communicationNotes?: string;
   createdAt: string; // ISO string
   email?: string;
   firstName: string;
   id: string;
   lastName: string;
   phone: string;
+  preferredContact?: "phone" | "sms" | "email";
+  secondaryContactName?: string;
+  secondaryContactPhone?: string;
 }
 
 export interface Patient {
@@ -66,6 +70,16 @@ export interface Product {
   unit: string;
 }
 
+export type AppointmentStatus =
+  | "scheduled"
+  | "confirmed"
+  | "arrived"
+  | "waiting"
+  | "in_progress"
+  | "completed"
+  | "cancelled"
+  | "no_show";
+
 export interface Appointment {
   createdAt: string;
   diagnosis?: string;
@@ -77,7 +91,7 @@ export interface Appointment {
   reason?: string;
   room?: string;
   startTime: string; // ISO string
-  status: "scheduled" | "in_progress" | "completed" | "cancelled" | "no_show";
+  status: AppointmentStatus;
   title: string;
   treatment?: string;
   type: "Consultation" | "Vaccin" | "Chirurgie" | "Urgence" | "Contrôle";
@@ -165,10 +179,198 @@ export interface Transaction {
   date: string; // ISO string
   description: string;
   id: string;
-  method: "cash" | "card";
-  referenceId?: string;
+  /**
+   * The expanded cash-journal methods introduced with billing migration 015.
+   * Existing finance UI currently presents cash/card; callers should preserve
+   * the extra values when rendering or exporting a locked journal projection.
+   */
+  method: TransactionPaymentMethod;
+  /** Billing projections are append-only at the database layer. */
+  isLocked?: boolean | 0 | 1;
+  referenceId?: string | null;
+  sourceId?: string | null;
+  sourceType?: TransactionSourceType | null;
   status: "paid" | "pending";
   type: "income" | "expense";
+}
+
+// =====================================================================================
+// Billing & accounting foundation (Migration 015)
+// =====================================================================================
+
+export type TransactionPaymentMethod =
+  | "cash"
+  | "card"
+  | "bank_transfer"
+  | "check"
+  | "other";
+
+export type TransactionSourceType =
+  | "billing_payment"
+  | "billing_refund"
+  | "billing_payment_void"
+  | "billing_refund_void";
+
+export type BillingDocumentStatus = "draft" | "issued" | "void";
+export type InvoiceSettlementStatus =
+  | "open"
+  | "partial"
+  | "paid"
+  | "overdue"
+  | "credited";
+export type BillingPaymentStatus = "completed" | "void";
+
+/** Immutable owner identity captured when an invoice or credit note is issued. */
+export interface BillingOwnerSnapshot {
+  address?: string | null;
+  city?: string | null;
+  email?: string | null;
+  firstName: string;
+  id: string;
+  lastName: string;
+  phone: string;
+}
+
+/**
+ * There is no clinic master table yet. The billing service accepts this
+ * explicit snapshot at issue time so issued documents remain self-contained.
+ */
+export interface BillingClinicSnapshot {
+  address?: string | null;
+  email?: string | null;
+  id?: string | null;
+  legalName?: string | null;
+  name: string;
+  phone?: string | null;
+  registrationNumber?: string | null;
+}
+
+export interface BillingLineInput {
+  description: string;
+  discountBps?: number;
+  productId?: string | null;
+  quantityMilli: number;
+  taxBps?: number;
+  unitAmount: number;
+}
+
+export interface BillingLineAmounts {
+  baseAmount: number;
+  discountAmount: number;
+  grossAmount: number;
+  taxAmount: number;
+}
+
+export interface InvoiceLine extends BillingLineInput, BillingLineAmounts {
+  createdAt: string;
+  id: string;
+  invoiceId: string;
+  sortOrder: number;
+  updatedAt: string;
+}
+
+export interface CreditNoteLine extends BillingLineAmounts {
+  createdAt: string;
+  creditNoteId: string;
+  description: string;
+  discountBps: number;
+  id: string;
+  invoiceLineId?: string | null;
+  quantityMilli: number;
+  sortOrder: number;
+  taxBps: number;
+  unitAmount: number;
+  updatedAt: string;
+}
+
+export interface Invoice {
+  appointmentId?: string | null;
+  balanceAmount: number;
+  clinicSnapshot: BillingClinicSnapshot | null;
+  completedPaymentAmount: number;
+  completedRefundAmount: number;
+  createdAt: string;
+  creditAmount: number;
+  currency: string;
+  discountAmount: number;
+  documentStatus: BillingDocumentStatus;
+  dueAt?: string | null;
+  grossAmount: number;
+  id: string;
+  issuedAt?: string | null;
+  legacySourceTransactionId?: string | null;
+  notes?: string | null;
+  number?: string | null;
+  ownerId: string;
+  ownerSnapshot: BillingOwnerSnapshot | null;
+  patientId?: string | null;
+  settlementStatus: InvoiceSettlementStatus | null;
+  subtotalAmount: number;
+  taxAmount: number;
+  updatedAt: string;
+  voidReason?: string | null;
+  voidedAt?: string | null;
+}
+
+export interface CreditNote {
+  clinicSnapshot: BillingClinicSnapshot | null;
+  createdAt: string;
+  discountAmount: number;
+  documentStatus: BillingDocumentStatus;
+  grossAmount: number;
+  id: string;
+  invoiceId: string;
+  issuedAt?: string | null;
+  lines?: CreditNoteLine[];
+  number?: string | null;
+  ownerSnapshot: BillingOwnerSnapshot | null;
+  reason?: string | null;
+  subtotalAmount: number;
+  taxAmount: number;
+  updatedAt: string;
+  voidReason?: string | null;
+  voidedAt?: string | null;
+}
+
+export interface InvoicePayment {
+  amount: number;
+  createdAt: string;
+  id: string;
+  idempotencyKey?: string | null;
+  invoiceId: string;
+  journalTransactionId: string;
+  method: TransactionPaymentMethod;
+  paidAt: string;
+  reference?: string | null;
+  status: BillingPaymentStatus;
+  updatedAt: string;
+  voidReason?: string | null;
+  voidedAt?: string | null;
+}
+
+export type Payment = InvoicePayment;
+
+export interface Refund {
+  amount: number;
+  createdAt: string;
+  id: string;
+  idempotencyKey?: string | null;
+  journalTransactionId: string;
+  method: TransactionPaymentMethod;
+  paymentId: string;
+  reason?: string | null;
+  refundedAt: string;
+  status: BillingPaymentStatus;
+  updatedAt: string;
+  voidReason?: string | null;
+  voidedAt?: string | null;
+}
+
+export interface InvoiceDetail extends Invoice {
+  creditNotes: CreditNote[];
+  lines: InvoiceLine[];
+  payments: InvoicePayment[];
+  refunds: Refund[];
 }
 
 export interface Note {

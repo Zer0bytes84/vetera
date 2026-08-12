@@ -2,6 +2,7 @@ import {
   Alert02Icon,
   BookOpenTextIcon,
   Camera01Icon,
+  Cancel01Icon,
   CheckmarkCircle02Icon,
   CodeCircleIcon,
   DatabaseIcon,
@@ -14,6 +15,7 @@ import {
   Package02Icon,
   Refresh01Icon,
   SaveIcon,
+  SearchIcon,
   Shield01Icon,
   SmartPhone01Icon,
   SparklesIcon,
@@ -36,12 +38,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { HeaderPatternPreview } from "@/components/HeroPattern";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLayout } from "@/contexts/layout-provider";
 import { useUsersRepository } from "@/data/repositories";
@@ -52,7 +57,7 @@ import {
   applyTheme,
   FONT_MAP,
   getThemeConfig,
-  RADIUS_MAP,
+  HEADER_PATTERNS,
   saveThemeConfig,
   type ThemeConfig,
 } from "@/lib/theme-store";
@@ -79,6 +84,7 @@ import {
   type ProgressReport,
   subscribeToProgress,
 } from "@/services/webLLMService";
+import { getModelPreferences } from "@/lib/ai-models";
 import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
@@ -92,6 +98,93 @@ type SettingsTab =
   | "ia"
   | "sauvegarde"
   | "apropos";
+
+type SettingsNavItem = {
+  id: SettingsTab;
+  label: string;
+  description: string;
+  icon: typeof UserCircle02Icon;
+  keywords?: string[];
+};
+
+type SettingsNavGroup = {
+  label: string;
+  items: SettingsNavItem[];
+};
+
+const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
+  {
+    label: "Personnel",
+    items: [
+      {
+        id: "profil",
+        label: "Profil",
+        description: "Identité, avatar et coordonnées",
+        icon: UserCircle02Icon,
+        keywords: ["nom", "email", "téléphone", "cabinet", "photo", "avatar", "bio"],
+      },
+      {
+        id: "securite",
+        label: "Sécurité",
+        description: "Mot de passe et accès",
+        icon: Shield01Icon,
+        keywords: ["mot de passe", "password", "connexion", "session"],
+      },
+    ],
+  },
+  {
+    label: "Espace de travail",
+    items: [
+      {
+        id: "apparence",
+        label: "Apparence",
+        description: "Thème, densité et navigation",
+        icon: LaptopIcon,
+        keywords: ["clair", "sombre", "dark", "couleur", "accent", "police", "font", "arrondi", "sidebar", "barre latérale"],
+      },
+      {
+        id: "notifications",
+        label: "Notifications",
+        description: "Alertes utiles au quotidien",
+        icon: Notification02Icon,
+        keywords: ["alerte", "rappel", "badge", "son", "bureau"],
+      },
+      {
+        id: "ia",
+        label: "IA Locale",
+        description: "Assistant privé sur cet appareil",
+        icon: SparklesIcon,
+        keywords: ["assistant", "modèle", "modèle local", "intelligence artificielle", "webllm"],
+      },
+    ],
+  },
+  {
+    label: "Données & système",
+    items: [
+      {
+        id: "sauvegarde",
+        label: "Sauvegarde",
+        description: "Protéger et restaurer les données",
+        icon: DatabaseIcon,
+        keywords: ["backup", "export", "import", "restaurer", "base de données"],
+      },
+      {
+        id: "apropos",
+        label: "À propos",
+        description: "Version, équipe et informations",
+        icon: InformationSquareIcon,
+        keywords: ["version", "équipe", "crédits", "support", "aide"],
+      },
+    ],
+  },
+];
+
+const normalizeSettingsSearch = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("fr-FR");
+
 // IA Settings Component
 const IASettings: React.FC = () => {
   const [modelStatus, setModelStatus] = useState<
@@ -129,8 +222,9 @@ const IASettings: React.FC = () => {
     setIsInitializing(true);
     setModelStatus("downloading");
 
-    try {
-      await initializeWebLLM((report) => {
+  try {
+      const preferences = getModelPreferences();
+      await initializeWebLLM(preferences.defaultModelId, (report) => {
         setProgress(report);
       });
       setModelStatus("ready");
@@ -144,38 +238,27 @@ const IASettings: React.FC = () => {
 
   return (
     <div className="fade-in animate-in space-y-6 duration-300">
-      <div>
-        <h2 className="mb-1 font-medium text-foreground text-xl">
-          Assistant intelligent
-        </h2>
-        <p className="text-muted-foreground text-sm">
-          Assistant IA intégré, fonctionne 100% en local et hors ligne
-        </p>
-      </div>
-
       <Card size="sm">
-        <CardContent className="flex items-start gap-4">
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400">
+        <CardContent className="flex items-start gap-4 p-5">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <HugeiconsIcon
-              className="size-6"
+              className="size-5"
               icon={SparklesIcon}
               strokeWidth={2}
             />
           </div>
           <div className="flex-1">
-            <h3 className="mb-1 font-medium text-foreground text-lg">
-              Assistant IA
+            <h3 className="mb-1 font-semibold text-foreground text-base">
+              Assistant local
             </h3>
             <p className="mb-3 text-muted-foreground text-sm">
-              Correction, reformulation et résumé de textes en français.
-              Fonctionne directement sur votre appareil.
+              Correction, reformulation et résumé de textes en français,
+              directement sur cet appareil.
             </p>
-            <div className="flex flex-wrap gap-2">
-              {["100% Local", "Hors ligne", "Privé"].map((tag) => (
-                <Badge key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
+            <div className="mt-3 grid gap-2 text-muted-foreground text-xs sm:grid-cols-3">
+              <span><strong className="text-foreground">Privé</strong> · aucune donnée envoyée</span>
+              <span><strong className="text-foreground">Hors ligne</strong> · après installation</span>
+              <span><strong className="text-foreground">Local</strong> · modèle conservé ici</span>
             </div>
           </div>
         </CardContent>
@@ -183,11 +266,11 @@ const IASettings: React.FC = () => {
 
       {modelStatus === "not_downloaded" && (
         <Card
-          className="border-amber-200 bg-amber-500/5 dark:border-amber-500/20"
+          className="border-border/70 bg-muted/20 dark:border-white/10 dark:bg-white/[0.025]"
           size="sm"
         >
           <CardContent className="flex items-start gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <HugeiconsIcon
                 className="size-4"
                 icon={Download01Icon}
@@ -195,15 +278,14 @@ const IASettings: React.FC = () => {
               />
             </div>
             <div className="flex-1">
-              <h3 className="mb-1 font-semibold text-amber-800 text-sm dark:text-amber-400">
+              <h3 className="mb-1 font-semibold text-foreground text-sm">
                 Assistant non installé
               </h3>
-              <p className="mb-3 text-amber-700 text-xs dark:text-amber-500">
+              <p className="mb-3 text-muted-foreground text-xs">
                 Installez l'assistant pour utiliser les fonctions IA hors ligne.
                 Les données restent sur votre appareil.
               </p>
               <Button
-                className="rounded-[0.95rem] bg-[linear-gradient(135deg,#ea580c,#f97316)]"
                 disabled={isInitializing}
                 onClick={handleDownloadModel}
               >
@@ -225,22 +307,22 @@ const IASettings: React.FC = () => {
 
       {modelStatus === "downloading" && (
         <Card
-          className="border-blue-200 bg-blue-500/5 dark:border-blue-500/20"
+          className="border-border/70 bg-muted/20 dark:border-white/10 dark:bg-white/[0.025]"
           size="sm"
         >
           <CardContent className="flex items-start gap-3">
-            <Spinner className="mt-0.5 size-5 text-blue-600 dark:text-blue-400" />
+            <Spinner className="mt-0.5 size-5 text-primary" />
             <div className="flex-1">
-              <h3 className="mb-2 font-semibold text-blue-800 text-sm dark:text-blue-400">
+              <h3 className="mb-2 font-semibold text-foreground text-sm">
                 Téléchargement en cours...
               </h3>
-              <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-blue-200 dark:bg-blue-900/30">
+              <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-primary/15">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
+                  className="h-full rounded-full bg-primary transition-all duration-300"
                   style={{ width: `${progress.progress * 100}%` }}
                 />
               </div>
-              <p className="text-blue-700 text-xs dark:text-blue-500">
+              <p className="text-muted-foreground text-xs">
                 {progress.text} - {(progress.progress * 100).toFixed(0)}%
               </p>
             </div>
@@ -250,11 +332,11 @@ const IASettings: React.FC = () => {
 
       {modelStatus === "ready" && (
         <Card
-          className="border-green-200 bg-green-500/5 dark:border-green-500/20"
+          className="border-border/70 bg-muted/20 dark:border-white/10 dark:bg-white/[0.025]"
           size="sm"
         >
           <CardContent className="flex items-center gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <HugeiconsIcon
                 className="size-4"
                 icon={CheckmarkCircle02Icon}
@@ -262,10 +344,10 @@ const IASettings: React.FC = () => {
               />
             </div>
             <div>
-              <h3 className="font-semibold text-green-800 text-sm dark:text-green-400">
+              <h3 className="font-semibold text-foreground text-sm">
                 Assistant prêt
               </h3>
-              <p className="text-green-700 text-xs dark:text-green-500">
+              <p className="text-muted-foreground text-xs">
                 L'assistant est actif et prêt à l'emploi. Fonctionne même hors
                 ligne !
               </p>
@@ -276,11 +358,11 @@ const IASettings: React.FC = () => {
 
       {modelStatus === "error" && (
         <Card
-          className="border-red-200 bg-red-500/5 dark:border-red-500/20"
+          className="border-destructive/25 bg-destructive/5"
           size="sm"
         >
           <CardContent className="flex items-start gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
               <HugeiconsIcon
                 className="size-4"
                 icon={Alert02Icon}
@@ -288,10 +370,10 @@ const IASettings: React.FC = () => {
               />
             </div>
             <div className="flex-1">
-              <h3 className="mb-1 font-semibold text-red-800 text-sm dark:text-red-400">
+              <h3 className="mb-1 font-semibold text-foreground text-sm">
                 Erreur de téléchargement
               </h3>
-              <p className="mb-3 text-red-700 text-xs dark:text-red-500">
+              <p className="mb-3 text-muted-foreground text-xs">
                 Le modèle n'a pas pu être téléchargé. Vérifiez votre connexion
                 internet et réessayez.
               </p>
@@ -900,6 +982,7 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   const [activeTab, setActiveTab] = useState<SettingsTab>("profil");
+  const [searchQuery, setSearchQuery] = useState("");
   const { currentUser, refreshCurrentUser } = useAuth();
   const { data: users, update: updateUserDoc } = useUsersRepository();
   const userDoc = users.find((u) => u.email === currentUser?.email);
@@ -969,26 +1052,51 @@ const Parametres: React.FC<ParametresProps> = ({
     saveThemeConfig(themeConfig);
   }, [currentTheme, themeConfig]);
 
+  const closeSettings = () => {
+    onNavigate?.("dashboard");
+  };
+
   const handleThemeConfigChange = (newConfig: ThemeConfig) => {
     setThemeConfig(newConfig);
   };
 
-  const navItems: {
-    id: SettingsTab;
-    label: string;
-    icon: typeof UserCircle02Icon;
-  }[] = [
-    { id: "profil", label: "Profil", icon: UserCircle02Icon },
-    { id: "apparence", label: "Apparence", icon: LaptopIcon },
-    { id: "notifications", label: "Notifications", icon: Notification02Icon },
-    { id: "securite", label: "Sécurité", icon: Shield01Icon },
-    { id: "ia", label: "IA Locale", icon: SparklesIcon },
-    { id: "sauvegarde", label: "Sauvegarde", icon: DatabaseIcon },
-    { id: "apropos", label: "À propos", icon: InformationSquareIcon },
-  ];
-
+  const navItems = SETTINGS_NAV_GROUPS.flatMap((group) => group.items);
   const activeNavItem =
     navItems.find((item) => item.id === activeTab) ?? navItems[0];
+  const normalizedSearchQuery = normalizeSettingsSearch(searchQuery.trim());
+  const matchingNavGroups = SETTINGS_NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => {
+      if (!normalizedSearchQuery) {
+        return true;
+      }
+
+      return [group.label, item.label, item.description, ...(item.keywords ?? [])].some((value) =>
+        normalizeSettingsSearch(value).includes(normalizedSearchQuery)
+      );
+    }),
+  })).filter((group) => group.items.length > 0);
+  const filteredNavGroups = normalizedSearchQuery && matchingNavGroups.length > 0
+    ? SETTINGS_NAV_GROUPS.map((group) => {
+        const matchingGroup = matchingNavGroups.find(
+          (candidate) => candidate.label === group.label
+        );
+        const items = matchingGroup?.items ?? [];
+        const activeItem = group.items.find((item) => item.id === activeTab);
+
+        return {
+          ...group,
+          items:
+            activeItem && !items.some((item) => item.id === activeTab)
+              ? [...items, activeItem]
+              : items,
+        };
+      }).filter((group) => group.items.length > 0)
+    : matchingNavGroups;
+  const filteredNavItemCount = filteredNavGroups.reduce(
+    (count, group) => count + group.items.length,
+    0
+  );
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -1352,36 +1460,30 @@ const Parametres: React.FC<ParametresProps> = ({
         );
       case "apparence":
         return (
-          <div className="grid gap-4 xl:grid-cols-2">
+          <div className="space-y-4">
             <AppearancePreview config={themeConfig} />
-            {/* Theme Mode */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Mode d'affichage</CardTitle>
-                <CardDescription>
-                  Choisissez entre le mode clair, sombre ou automatique
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ThemeModeToggle
-                  mode={currentTheme}
-                  onChange={(nextMode) =>
-                    onThemeChange && onThemeChange(nextMode)
-                  }
-                />
-              </CardContent>
-            </Card>
-
-            {/* Accent Color */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Couleur d'accent</CardTitle>
-                <CardDescription>
-                  La couleur principale utilisée dans toute l'interface
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            <div className="grid gap-4 xl:grid-cols-2">
+              <Card size="sm">
+                <CardHeader>
+                  <CardTitle>Thème et couleur</CardTitle>
+                  <CardDescription>
+                    Harmonisez l'interface avec votre environnement de travail.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-5">
+                  <div className="space-y-2.5">
+                    <Label className="text-xs text-muted-foreground">Mode d'affichage</Label>
+                    <ThemeModeToggle
+                      mode={currentTheme}
+                      onChange={(nextMode) =>
+                        onThemeChange && onThemeChange(nextMode)
+                      }
+                    />
+                  </div>
+                  <Separator />
+                  <div className="space-y-3">
+                    <Label className="text-xs text-muted-foreground">Couleur d'accent</Label>
+                    <div className="flex flex-wrap gap-2">
                   {(
                     Object.entries(ACCENT_THEMES) as [
                       keyof typeof ACCENT_THEMES,
@@ -1391,11 +1493,12 @@ const Parametres: React.FC<ParametresProps> = ({
                     const isActive = themeConfig.accent === key;
                     return (
                       <button
+                        aria-label={`Utiliser la couleur ${theme.label}`}
                         className={cn(
-                          "group relative flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all hover:scale-[1.02]",
+                          "group relative grid size-10 place-items-center rounded-full border transition-all hover:-translate-y-0.5",
                           isActive
-                            ? "border-primary bg-primary/5"
-                            : "border-border bg-card hover:border-primary/30"
+                            ? "border-foreground/25 bg-muted ring-2 ring-primary/30 ring-offset-2 ring-offset-background"
+                            : "border-border/70 bg-background hover:border-foreground/25"
                         )}
                         key={key}
                         onClick={() =>
@@ -1406,24 +1509,21 @@ const Parametres: React.FC<ParametresProps> = ({
                         }
                       >
                         {key === "noir" ? (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-current border-dashed font-semibold text-[10px] transition-transform group-hover:scale-110">
+                          <div className="flex size-6 items-center justify-center rounded-full bg-foreground font-semibold text-[9px] text-background">
                             Aa
                           </div>
                         ) : (
                           <div
                             className={cn(
-                              "h-8 w-8 rounded-full bg-gradient-to-br shadow-sm transition-transform group-hover:scale-110",
+                              "size-6 rounded-full bg-gradient-to-br shadow-sm",
                               theme.previewGradient
                             )}
                           />
                         )}
-                        <span className="font-medium text-[10px] text-muted-foreground">
-                          {theme.label}
-                        </span>
                         {isActive && (
-                          <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                          <div className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-foreground text-background">
                             <HugeiconsIcon
-                              className="size-3"
+                              className="size-2.5"
                               icon={CheckmarkCircle02Icon}
                               strokeWidth={2}
                             />
@@ -1432,175 +1532,161 @@ const Parametres: React.FC<ParametresProps> = ({
                       </button>
                     );
                   })}
+                    </div>
                 </div>
               </CardContent>
-            </Card>
+              </Card>
 
-            {/* Font Family */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Police de caractères</CardTitle>
-                <CardDescription>
-                  Choisissez la typographie de l'interface
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-2">
+              <Card size="sm">
+                <CardHeader>
+                  <CardTitle>Confort de lecture</CardTitle>
+                  <CardDescription>
+                    Ajustez la typographie, l'espace et la douceur des formes.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-5">
+                  <div className="space-y-2.5">
+                    <Label className="text-xs text-muted-foreground">Police</Label>
+                    <div className="grid grid-cols-3 rounded-xl bg-muted/55 p-1">
                   {(["geist", "inter", "system"] as const).map((font) => {
                     const isActive = themeConfig.font === font;
                     const f = FONT_MAP[font];
                     return (
                       <button
                         className={cn(
-                          "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
+                          "rounded-lg px-2 py-2 text-xs transition-colors",
                           isActive
-                            ? "border-primary bg-primary/5"
-                            : "border-border bg-card hover:border-primary/30"
+                            ? "bg-background font-medium text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
                         )}
                         key={font}
                         onClick={() =>
                           handleThemeConfigChange({ ...themeConfig, font })
                         }
                       >
-                        <span
-                          className="font-semibold text-foreground text-lg"
-                          style={{ fontFamily: f.css }}
-                        >
-                          Aa
-                        </span>
-                        <div className="text-center">
-                          <div className="font-medium text-[10px] text-foreground">
-                            {f.label}
-                          </div>
-                          <div className="text-[9px] text-muted-foreground">
-                            {f.description}
+                        <span style={{ fontFamily: f.css }}>{f.label}</span>
+                      </button>
+                    );
+                  })}
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2.5">
+                      <Label className="text-xs text-muted-foreground">Densité</Label>
+                      <div className="grid grid-cols-3 rounded-xl bg-muted/55 p-1">
+                        {(["compact", "comfortable", "spacious"] as const).map((density) => {
+                          const isActive = themeConfig.density === density;
+                          const label = density === "compact" ? "Compacte" : density === "comfortable" ? "Confort" : "Aérée";
+                          return (
+                            <button
+                              className={cn("rounded-lg px-1.5 py-2 text-[11px] transition-colors", isActive ? "bg-background font-medium shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                              key={density}
+                              onClick={() => handleThemeConfigChange({ ...themeConfig, density })}
+                            >
+                              {label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="space-y-2.5">
+                      <Label className="text-xs text-muted-foreground">Arrondi</Label>
+                      <div className="grid grid-cols-5 rounded-xl bg-muted/55 p-1">
+                        {(["sm", "md", "lg", "xl", "full"] as const).map((radius) => {
+                          const isActive = themeConfig.radius === radius;
+                          return (
+                            <button
+                              className={cn("rounded-lg px-1 py-2 text-[10px] uppercase transition-colors", isActive ? "bg-background font-medium shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                              key={radius}
+                              onClick={() => handleThemeConfigChange({ ...themeConfig, radius })}
+                            >
+                              {radius}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                </div>
+              </CardContent>
+              </Card>
+            </div>
+
+            <Card size="sm">
+              <CardHeader>
+                <CardTitle>Signature du header</CardTitle>
+                <CardDescription>
+                  Choisissez la matière lumineuse qui traverse le verre. Le
+                  motif s'adapte automatiquement aux modes clair et sombre.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+                  {(
+                    Object.entries(HEADER_PATTERNS) as [
+                      keyof typeof HEADER_PATTERNS,
+                      (typeof HEADER_PATTERNS)[keyof typeof HEADER_PATTERNS],
+                    ][]
+                  ).map(([pattern, option]) => {
+                    const isActive = themeConfig.headerPattern === pattern;
+
+                    return (
+                      <button
+                        aria-label={`Utiliser le motif ${option.label}`}
+                        aria-pressed={isActive}
+                        className={cn(
+                          "group relative overflow-hidden rounded-2xl border bg-background p-1.5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                          isActive
+                            ? "border-primary/35 ring-2 ring-primary/15"
+                            : "border-border/75 hover:border-foreground/20 dark:border-white/10 dark:hover:border-white/20"
+                        )}
+                        key={pattern}
+                        onClick={() =>
+                          handleThemeConfigChange({
+                            ...themeConfig,
+                            headerPattern: pattern,
+                          })
+                        }
+                        type="button"
+                      >
+                        <div className="relative overflow-hidden rounded-[11px] border border-black/[0.045] dark:border-white/[0.07]">
+                          <HeaderPatternPreview pattern={pattern} />
+                          <div className="pointer-events-none absolute inset-x-3 top-1/2 flex -translate-y-1/2 items-center justify-between">
+                            <span className="h-1.5 w-12 rounded-full bg-zinc-900/28 shadow-[0_1px_0_rgba(255,255,255,0.35)] dark:bg-white/30" />
+                            <span className="size-4 rounded-full border border-white/55 bg-white/35 shadow-sm backdrop-blur-md dark:border-white/15 dark:bg-white/10" />
                           </div>
                         </div>
-                        {isActive && (
-                          <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                        <div className="flex items-start justify-between gap-3 px-2 pt-2 pb-1.5">
+                          <div>
+                            <p className="font-medium text-foreground text-xs">
+                              {option.label}
+                            </p>
+                            <p className="mt-0.5 text-[10px] text-muted-foreground leading-snug">
+                              {option.description}
+                            </p>
+                          </div>
+                          <span
+                            className={cn(
+                              "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full transition-all",
+                              isActive
+                                ? "bg-primary text-primary-foreground"
+                                : "border border-border/80 text-transparent dark:border-white/12"
+                            )}
+                          >
                             <HugeiconsIcon
                               className="size-3"
                               icon={CheckmarkCircle02Icon}
                               strokeWidth={2}
                             />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Border Radius */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Arrondi des coins</CardTitle>
-                <CardDescription>
-                  Ajustez le rayon des bordures pour tous les composants
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  {(["sm", "md", "lg", "xl", "full"] as const).map((radius) => {
-                    const isActive = themeConfig.radius === radius;
-                    return (
-                      <button
-                        className={cn(
-                          "flex flex-1 flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
-                          isActive
-                            ? "border-primary bg-primary/5"
-                            : "border-border bg-card hover:border-primary/30"
-                        )}
-                        key={radius}
-                        onClick={() =>
-                          handleThemeConfigChange({ ...themeConfig, radius })
-                        }
-                      >
-                        <div
-                          className="h-8 w-12 border-2 transition-all"
-                          style={{
-                            borderRadius: RADIUS_MAP[radius],
-                            borderColor: isActive
-                              ? "var(--primary)"
-                              : "var(--border)",
-                          }}
-                        />
-                        <span className="font-medium text-[10px] text-muted-foreground uppercase">
-                          {radius}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Density */}
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Densité</CardTitle>
-                <CardDescription>
-                  Contrôlez l'espacement global de l'interface
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["compact", "comfortable", "spacious"] as const).map(
-                    (density) => {
-                      const isActive = themeConfig.density === density;
-                      return (
-                        <button
-                          className={cn(
-                            "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
-                            isActive
-                              ? "border-primary bg-primary/5"
-                              : "border-border bg-card hover:border-primary/30"
-                          )}
-                          key={density}
-                          onClick={() =>
-                            handleThemeConfigChange({ ...themeConfig, density })
-                          }
-                        >
-                          <div className="flex w-full flex-col gap-1">
-                            {density === "compact" && (
-                              <>
-                                <div className="h-1 w-full rounded-full bg-muted-foreground/20" />
-                                <div className="h-1 w-3/4 rounded-full bg-muted-foreground/20" />
-                                <div className="h-1 w-1/2 rounded-full bg-muted-foreground/20" />
-                              </>
-                            )}
-                            {density === "comfortable" && (
-                              <>
-                                <div className="h-1.5 w-full rounded-full bg-muted-foreground/20" />
-                                <div className="h-1.5 w-3/4 rounded-full bg-muted-foreground/20" />
-                                <div className="h-1.5 w-1/2 rounded-full bg-muted-foreground/20" />
-                              </>
-                            )}
-                            {density === "spacious" && (
-                              <>
-                                <div className="h-2 w-full rounded-full bg-muted-foreground/20" />
-                                <div className="h-2 w-3/4 rounded-full bg-muted-foreground/20" />
-                                <div className="h-2 w-1/2 rounded-full bg-muted-foreground/20" />
-                              </>
-                            )}
-                          </div>
-                          <span className="font-medium text-[10px] text-muted-foreground capitalize">
-                            {density === "compact"
-                              ? "Compact"
-                              : density === "comfortable"
-                                ? "Confortable"
-                                : "Spacieux"}
                           </span>
-                        </button>
-                      );
-                    }
-                  )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Sidebar Layout */}
             <SidebarLayoutSettings />
           </div>
         );
@@ -1614,7 +1700,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   Choisissez les informations qui méritent votre attention.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-2 md:grid-cols-2">
+              <CardContent className="space-y-1">
                 {[
                   {
                     title: "Rendez-vous",
@@ -1643,7 +1729,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   },
                 ].map((item, i) => (
                   <div
-                    className="flex items-center justify-between gap-4 rounded-xl border border-border/70 bg-muted/15 p-4 transition-colors hover:bg-muted/35 dark:border-white/10 dark:bg-white/[0.025]"
+                    className="flex items-center justify-between gap-4 border-border/70 border-b px-1 py-3.5 transition-colors last:border-b-0 hover:bg-muted/25 dark:border-white/10"
                     key={i}
                   >
                     <div>
@@ -2002,77 +2088,214 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   return (
-    <div className="settings-workspace dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pt-16 pb-8 md:pt-24 lg:px-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="font-semibold text-[11px] text-primary uppercase tracking-[0.18em]">
-            Espace de configuration
-          </p>
-          <h1 className="mt-1 font-heading font-semibold text-2xl tracking-[-0.035em] sm:text-3xl">
-            Paramètres
-          </h1>
-          <p className="mt-1 max-w-xl text-muted-foreground text-sm">
-            Adaptez Baitari à votre identité, votre équipe et votre façon de
-            travailler.
-          </p>
-        </div>
-        <Badge className="w-fit rounded-full px-3 py-1.5" variant="outline">
-          {roleLabel}
-        </Badge>
-      </div>
-
-      <nav
-        aria-label="Sections des paramètres"
-        className="scrollbar-hide flex overflow-x-auto rounded-2xl border border-zinc-200/80 bg-white/75 p-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.03)] backdrop-blur-xl dark:border-white/12 dark:bg-white/[0.035]"
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) {
+          closeSettings();
+        }
+      }}
+    >
+      <DialogContent
+        aria-labelledby="settings-modal-title"
+        className="flex h-[calc(100dvh-1.5rem)] max-w-none flex-col overflow-hidden rounded-[22px] border border-border/70 bg-background p-0 shadow-[0_30px_80px_-28px_rgba(15,23,42,0.42)] transition-[width] duration-300 ease-out dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_30px_80px_-28px_rgba(0,0,0,0.8)] sm:h-[calc(100dvh-2.5rem)] sm:max-w-none"
+        overlayClassName="bg-[#eef0f4]/72 backdrop-blur-md dark:bg-zinc-950/72"
+        showCloseButton={false}
+        style={{
+          maxWidth: "none",
+          width:
+            activeTab === "apparence"
+              ? "min(1180px, calc(100vw - 32px))"
+              : "min(980px, calc(100vw - 24px))",
+        }}
       >
-        {navItems.map((item) => {
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              className={cn(
-                "relative flex min-h-10 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 font-medium text-sm transition-all duration-200",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-black/[0.035] hover:text-foreground dark:hover:bg-white/[0.06]"
-              )}
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
+        <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] lg:grid-cols-[260px_minmax(0,1fr)] lg:grid-rows-1">
+          <aside
+            aria-label="Navigation des paramètres"
+            className="flex min-h-0 max-h-[46dvh] flex-col overflow-y-auto border-border/70 border-b bg-muted/20 dark:border-white/10 dark:bg-zinc-900/45 lg:max-h-none lg:border-r lg:border-b-0"
+          >
+            <div className="shrink-0 border-border/70 border-b p-3.5 dark:border-white/10 lg:p-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  aria-label="Fermer les paramètres"
+                  className="size-8 rounded-md text-muted-foreground hover:bg-background/80 hover:text-foreground dark:hover:bg-white/[0.06]"
+                  onClick={closeSettings}
+                  size="icon"
+                  title="Fermer les paramètres"
+                  type="button"
+                  variant="ghost"
+                >
+                  <HugeiconsIcon
+                    className="size-4"
+                    icon={Cancel01Icon}
+                    strokeWidth={1.8}
+                  />
+                </Button>
+                <p className="font-semibold text-sm tracking-[-0.015em]">Settings</p>
+              </div>
+
+              <div className="mt-3">
+                  <label
+                    className="sr-only"
+                    htmlFor="settings-search"
+                  >
+                    Rechercher un réglage
+                  </label>
+                  <div className="relative">
+                    <HugeiconsIcon
+                      aria-hidden="true"
+                      className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                      icon={SearchIcon}
+                      strokeWidth={1.8}
+                    />
+                    <Input
+                      aria-describedby="settings-search-status"
+                      className="h-9 border-border/70 bg-background/75 pl-9 pr-16 text-sm shadow-none dark:border-white/10 dark:bg-black/15"
+                      id="settings-search"
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                      placeholder="Rechercher…"
+                      type="search"
+                      value={searchQuery}
+                    />
+                    {searchQuery && (
+                      <button
+                        aria-label="Effacer la recherche"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 font-medium text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        onClick={() => setSearchQuery("")}
+                        type="button"
+                      >
+                        Effacer
+                      </button>
+                    )}
+                  </div>
+                  <p className="sr-only" id="settings-search-status" role="status">
+                    {normalizedSearchQuery
+                      ? filteredNavItemCount > 0
+                        ? `${filteredNavItemCount} réglage${filteredNavItemCount > 1 ? "s" : ""} trouvé${filteredNavItemCount > 1 ? "s" : ""}.`
+                        : "Aucun réglage trouvé."
+                      : `${navItems.length} réglages disponibles.`}
+                  </p>
+                </div>
+
+                <nav aria-label="Sections des paramètres" className="mt-3">
+                  {filteredNavGroups.length > 0 ? (
+                    <div className="space-y-3">
+                      {filteredNavGroups.map((group) => (
+                        <div key={group.label}>
+                          <p className="px-2.5 font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.16em]">
+                            {group.label}
+                          </p>
+                          <div className="mt-1.5 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
+                      {group.items.map((item) => {
+                        const isActive = activeTab === item.id;
+                        return (
+                          <button
+                            aria-current={isActive ? "page" : undefined}
+                            className={cn(
+                                    "group relative flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/40",
+                                    isActive
+                                      ? "bg-muted text-foreground"
+                                      : "text-muted-foreground hover:bg-background/75 hover:text-foreground dark:hover:bg-white/[0.045]"
+                                  )}
+                                  key={item.id}
+                                  onClick={() => setActiveTab(item.id)}
+                                  type="button"
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    className={cn(
+                                      "flex size-7 shrink-0 items-center justify-center rounded-md transition-colors",
+                                      isActive
+                                        ? "text-foreground"
+                                        : "text-muted-foreground group-hover:text-foreground"
+                                    )}
+                                  >
+                                    <HugeiconsIcon
+                                      className="size-4"
+                                      icon={item.icon}
+                                      strokeWidth={isActive ? 2 : 1.7}
+                                    />
+                                  </span>
+                                  <span className="min-w-0">
+                                    <span className="block truncate font-medium text-xs leading-4 lg:text-sm">
+                                      {item.label}
+                                    </span>
+                                    <span className="mt-0.5 hidden truncate text-[11px] text-muted-foreground lg:block">
+                                      {item.description}
+                                    </span>
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      className="border border-dashed border-border/70 bg-background/40 px-3 py-6 text-center dark:border-white/10 dark:bg-black/10"
+                      role="status"
+                    >
+                      <p className="font-medium text-foreground text-sm">
+                        Aucun réglage trouvé
+                      </p>
+                      <p className="mt-1 text-muted-foreground text-xs leading-5">
+                        Essayez un autre mot-clé.
+                      </p>
+                      <button
+                        className="mt-3 font-medium text-primary text-xs underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        onClick={() => setSearchQuery("")}
+                        type="button"
+                      >
+                        Effacer la recherche
+                      </button>
+                    </div>
+                  )}
+                </nav>
+              </div>
+
+              <div className="mt-auto hidden shrink-0 border-border/70 border-t px-4 py-3 dark:border-white/10 lg:block">
+                <p className="font-medium text-foreground text-xs">
+                  Données sur cet appareil
+                </p>
+                <p className="mt-1 text-muted-foreground text-[11px] leading-4">
+                  Vos préférences restent privées et sont enregistrées
+                  localement.
+                </p>
+              </div>
+            </aside>
+
+            <main
+              aria-labelledby="settings-modal-title"
+              className="flex min-h-0 min-w-0 flex-col"
             >
-              <HugeiconsIcon
-                className="size-4"
-                icon={item.icon}
-                strokeWidth={isActive ? 2 : 1.5}
-              />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </nav>
+              <header className="flex shrink-0 flex-col gap-1 border-border/70 border-b bg-background px-5 py-4 dark:border-white/10 sm:px-6 sm:py-5">
+                <h2
+                  className="font-heading font-semibold text-lg tracking-[-0.025em] sm:text-xl"
+                  id="settings-modal-title"
+                >
+                  {activeNavItem.label}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {activeNavItem.description}
+                </p>
+              </header>
 
-      <section
-        aria-labelledby="settings-section-title"
-        className="min-h-[400px]"
-      >
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl border border-border/70 bg-muted/40 text-foreground dark:border-white/10 dark:bg-white/[0.05]">
-            <HugeiconsIcon
-              className="size-[18px]"
-              icon={activeNavItem.icon}
-              strokeWidth={1.7}
-            />
+              <div
+                className="settings-content animate-in fade-in slide-in-from-right-1 min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background p-4 duration-200 sm:p-6 lg:p-7"
+                key={activeTab}
+              >
+                {renderContent()}
+              </div>
+            </main>
           </div>
-          <h2 className="font-semibold text-base" id="settings-section-title">
-            {activeNavItem.label}
-          </h2>
-        </div>
-        <div className="settings-content">{renderContent()}</div>
-      </section>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
 function AppearancePreview({ config }: { config: ThemeConfig }) {
-  const { collapsible, variant } = useLayout();
+  const { collapsible, glassContrast, variant } = useLayout();
   const densityLabel = {
     compact: "Compacte",
     comfortable: "Confortable",
@@ -2083,6 +2306,7 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
     inset: "Encadrée",
     minimal: "Épurée",
     sidebar: "Classique",
+    glass: "Verre liquide",
   }[variant];
   const collapseLabel = {
     icon: "Icônes",
@@ -2091,7 +2315,7 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
   }[collapsible];
 
   return (
-    <Card className="xl:col-span-2" size="sm">
+    <Card className="lg:col-span-2" size="sm">
       <CardHeader>
         <CardTitle>Aperçu de votre espace</CardTitle>
         <CardDescription>
@@ -2106,7 +2330,9 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
               "overflow-hidden rounded-2xl p-2",
               variant === "minimal"
                 ? "bg-transparent"
-                : "border border-border/80 bg-muted/20 dark:border-white/12 dark:bg-black/20"
+                : variant === "glass"
+                  ? "border border-white/65 bg-[radial-gradient(circle_at_10%_0%,color-mix(in_oklab,var(--primary)_16%,transparent),transparent_38%),linear-gradient(145deg,rgba(255,255,255,0.52),rgba(255,255,255,0.18))] shadow-[0_16px_40px_-26px_rgba(15,23,42,0.4)] backdrop-blur-xl dark:border-white/14 dark:bg-[radial-gradient(circle_at_10%_0%,color-mix(in_oklab,var(--primary)_16%,transparent),transparent_38%),linear-gradient(145deg,rgba(39,39,42,0.5),rgba(9,9,11,0.28))]"
+                  : "border border-border/80 bg-muted/20 dark:border-white/12 dark:bg-black/20"
             )}
           >
             <div
@@ -2192,7 +2418,11 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
             {[
               ["Police", FONT_MAP[config.font].label],
               ["Densité", densityLabel],
+              ["Header", HEADER_PATTERNS[config.headerPattern].label],
               ["Navigation", layoutLabel],
+              ...(variant === "glass"
+                ? [["Contraste du verre", `${glassContrast}%`]]
+                : []),
               ["Réduction", collapseLabel],
             ].map(([label, value]) => (
               <div
@@ -2211,8 +2441,15 @@ function AppearancePreview({ config }: { config: ThemeConfig }) {
 }
 
 function SidebarLayoutSettings() {
-  const { variant, setVariant, collapsible, setCollapsible, resetLayout } =
-    useLayout();
+  const {
+    variant,
+    setVariant,
+    collapsible,
+    setCollapsible,
+    glassContrast,
+    setGlassContrast,
+    resetLayout,
+  } = useLayout();
 
   const variants = [
     {
@@ -2234,6 +2471,11 @@ function SidebarLayoutSettings() {
       value: "floating" as const,
       label: "Flottante",
       description: "Marge extérieure",
+    },
+    {
+      value: "glass" as const,
+      label: "Verre liquide",
+      description: "Translucide et lumineux",
     },
   ];
 
@@ -2268,7 +2510,7 @@ function SidebarLayoutSettings() {
           <Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
             Variante
           </Label>
-          <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-5">
             {variants.map((v) => {
               const isActive = variant === v.value;
               const sidebarPreviewClass = {
@@ -2276,6 +2518,8 @@ function SidebarLayoutSettings() {
                 inset: "bg-muted-foreground/15",
                 minimal: "m-0.5 rounded-sm bg-muted-foreground/8",
                 sidebar: "bg-muted-foreground/20",
+                glass:
+                  "m-0.5 rounded-sm border border-white/80 bg-gradient-to-b from-white/70 to-primary/10 shadow-sm dark:border-white/25 dark:from-white/15",
               }[v.value];
               return (
                 <button
@@ -2334,6 +2578,72 @@ function SidebarLayoutSettings() {
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "relative overflow-hidden rounded-2xl border p-4 transition-colors",
+            variant === "glass"
+              ? "border-primary/20 bg-primary/[0.035] dark:border-primary/25 dark:bg-primary/[0.045]"
+              : "border-border/70 bg-muted/10 dark:border-white/10 dark:bg-white/[0.02]"
+          )}
+        >
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <Label
+                className="font-medium text-foreground text-sm"
+                htmlFor="sidebar-glass-contrast"
+              >
+                Contraste du verre
+              </Label>
+              <p className="mt-1 text-muted-foreground text-xs">
+                {variant === "glass"
+                  ? "Ajuste la densité, les reflets et la séparation du verre."
+                  : "Déplacez le curseur pour activer la sidebar en verre liquide."}
+              </p>
+            </div>
+            <span className="min-w-12 rounded-full border border-border/70 bg-background/70 px-2 py-1 text-center font-medium text-xs tabular-nums backdrop-blur-md dark:border-white/10 dark:bg-black/20">
+              {glassContrast}%
+            </span>
+          </div>
+          <Slider
+            aria-label="Contraste du verre de la barre latérale"
+            className="relative mt-4"
+            id="sidebar-glass-contrast"
+            max={100}
+            min={0}
+            onValueChange={(value) => {
+              if (variant !== "glass") {
+                setVariant("glass");
+              }
+              setGlassContrast(Array.isArray(value) ? (value[0] ?? 0) : value);
+            }}
+            value={[glassContrast]}
+          />
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {[
+              [28, "Diaphane"],
+              [62, "Équilibré"],
+              [86, "Renforcé"],
+            ].map(([value, label]) => (
+              <button
+                className={cn(
+                  "rounded-lg border px-2 py-1.5 text-[10px] transition-colors",
+                  glassContrast === value
+                    ? "border-foreground/20 bg-background font-medium text-foreground shadow-sm"
+                    : "border-transparent text-muted-foreground hover:bg-background/70 hover:text-foreground"
+                )}
+                key={value}
+                onClick={() => {
+                  setVariant("glass");
+                  setGlassContrast(Number(value));
+                }}
+                type="button"
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 

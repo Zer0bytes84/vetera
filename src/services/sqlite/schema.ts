@@ -270,18 +270,8 @@ BEGIN
     UPDATE tasks SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;
 
--- ============================================
--- Données initiales: Admin par défaut
--- ============================================
-INSERT OR IGNORE INTO users (id, email, password_hash, display_name, role, status)
-VALUES (
-    'admin-default-001',
-    'zohir.kh@gmail.com',
-    '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9',
-    'Zouhir Kherroubi',
-    'admin',
-    'active'
-)`;
+-- Le premier administrateur est créé par l'assistant de premier lancement.
+`;
 
 export const MIGRATION_002_SQL = `-- Migration 002: Documents de consultation
 CREATE TABLE IF NOT EXISTS consultation_documents (
@@ -843,10 +833,8 @@ CREATE INDEX IF NOT EXISTS idx_notification_state_dismissed
 `;
 
 export const MIGRATION_012_SQL = `
--- Migration 012: Correct notification_state primary key to use 'id' column for useSQLite compliance
-DROP TABLE IF EXISTS notification_state;
-
-CREATE TABLE notification_state (
+-- Migration 012: Correct notification_state primary key without losing UX state
+CREATE TABLE IF NOT EXISTS notification_state_v2 (
   id TEXT PRIMARY KEY,
   notification_id TEXT UNIQUE NOT NULL,
   read_at DATETIME,
@@ -854,6 +842,1072 @@ CREATE TABLE notification_state (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT OR IGNORE INTO notification_state_v2 (
+  id,
+  notification_id,
+  read_at,
+  dismissed_at,
+  created_at
+)
+SELECT
+  notification_id,
+  notification_id,
+  read_at,
+  dismissed_at,
+  created_at
+FROM notification_state;
+
+DROP TABLE notification_state;
+
+ALTER TABLE notification_state_v2 RENAME TO notification_state;
+
 CREATE INDEX IF NOT EXISTS idx_notification_state_dismissed
   ON notification_state(dismissed_at);
+`;
+
+export const MIGRATION_013_SQL = `
+-- Migration 013: cycle clinique complet des rendez-vous.
+-- La reconstruction est nécessaire pour étendre le CHECK SQLite. Le runner
+-- suspend temporairement les FK et exécute foreign_key_check avant le commit.
+
+DROP TRIGGER IF EXISTS update_appointments_timestamp;
+
+CREATE TABLE appointments_v2 (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    owner_id TEXT NOT NULL,
+    vet_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    status TEXT NOT NULL DEFAULT 'scheduled' CHECK(status IN (
+      'scheduled', 'confirmed', 'arrived', 'waiting',
+      'in_progress', 'completed', 'cancelled', 'no_show'
+    )),
+    type TEXT NOT NULL CHECK(type IN ('Consultation', 'Vaccin', 'Chirurgie', 'Urgence', 'Contrôle')),
+    reason TEXT,
+    diagnosis TEXT,
+    treatment TEXT,
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    room TEXT DEFAULT 'consult-1',
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE CASCADE,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+INSERT INTO appointments_v2 (
+  id, patient_id, owner_id, vet_id, title, start_time, end_time, status,
+  type, reason, diagnosis, treatment, notes, created_at, updated_at, room
+)
+SELECT
+  id, patient_id, owner_id, vet_id, title, start_time, end_time, status,
+  type, reason, diagnosis, treatment, notes, created_at, updated_at, room
+FROM appointments;
+
+DROP TABLE appointments;
+ALTER TABLE appointments_v2 RENAME TO appointments;
+
+CREATE INDEX idx_appointments_patient_id ON appointments(patient_id);
+CREATE INDEX idx_appointments_vet_id ON appointments(vet_id);
+CREATE INDEX idx_appointments_start_time ON appointments(start_time);
+CREATE INDEX idx_appointments_status ON appointments(status);
+CREATE INDEX idx_appointments_room ON appointments(room);
+CREATE INDEX idx_appointments_room_time ON appointments(room, start_time, end_time);
+
+CREATE TRIGGER update_appointments_timestamp AFTER UPDATE ON appointments
+BEGIN
+    UPDATE appointments SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+`;
+
+export const MIGRATION_014_SQL = `
+-- Migration 014: préférences de contact et personne secondaire du propriétaire.
+ALTER TABLE owners ADD COLUMN preferred_contact TEXT
+  CHECK(preferred_contact IN ('phone', 'sms', 'email'));
+ALTER TABLE owners ADD COLUMN secondary_contact_name TEXT;
+ALTER TABLE owners ADD COLUMN secondary_contact_phone TEXT;
+ALTER TABLE owners ADD COLUMN communication_notes TEXT;
+`;
+
+export const MIGRATION_015_SQL = `
+-- Migration 015: fondation de facturation locale et journal de trésorerie.
+-- Les montants sont toujours en centimes entiers et les quantités en millièmes.
+-- Les tables de facturation ne suppriment jamais l'historique comptable.
+
+-- La table transactions doit être reconstruite pour étendre le CHECK de moyen
+-- de paiement tout en conservant les écritures historiques et leurs index.
+DROP TRIGGER IF EXISTS update_transactions_timestamp;
+
+CREATE TABLE transactions_v2 (
+    id TEXT PRIMARY KEY,
+    date DATETIME NOT NULL,
+    amount INTEGER NOT NULL CHECK(typeof(amount) = 'integer' AND amount >= 0),
+    type TEXT NOT NULL CHECK(type IN ('income', 'expense')),
+    category TEXT NOT NULL,
+    description TEXT NOT NULL,
+    reference_id TEXT,
+    method TEXT NOT NULL CHECK(method IN ('cash', 'card', 'bank_transfer', 'check', 'other')),
+    status TEXT NOT NULL DEFAULT 'paid' CHECK(status IN ('paid', 'pending')),
+    source_type TEXT,
+    source_id TEXT,
+    is_locked INTEGER NOT NULL DEFAULT 0 CHECK(typeof(is_locked) = 'integer' AND is_locked IN (0, 1)),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CHECK(
+      (source_type IS NULL AND source_id IS NULL)
+      OR (source_type IS NOT NULL AND source_id IS NOT NULL)
+    ),
+    CHECK(is_locked = 0 OR (source_type IS NOT NULL AND source_id IS NOT NULL))
+);
+
+INSERT INTO transactions_v2 (
+  id, date, amount, type, category, description, reference_id, method, status,
+  created_at, updated_at
+)
+SELECT
+  id, date, amount, type, category, description, reference_id, method, status,
+  created_at, updated_at
+FROM transactions;
+
+DROP TABLE transactions;
+ALTER TABLE transactions_v2 RENAME TO transactions;
+
+CREATE INDEX idx_transactions_date ON transactions(date);
+CREATE INDEX idx_transactions_type ON transactions(type);
+CREATE INDEX idx_transactions_category ON transactions(category);
+CREATE INDEX idx_transactions_source ON transactions(source_type, source_id);
+CREATE UNIQUE INDEX idx_transactions_source_identity
+  ON transactions(source_type, source_id)
+  WHERE source_type IS NOT NULL AND source_id IS NOT NULL;
+
+CREATE TRIGGER update_transactions_timestamp AFTER UPDATE ON transactions
+BEGIN
+    UPDATE transactions SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+CREATE TABLE billing_sequences (
+  kind TEXT NOT NULL CHECK(kind IN ('invoice', 'credit_note')),
+  sequence_year INTEGER NOT NULL CHECK(typeof(sequence_year) = 'integer' AND sequence_year BETWEEN 2000 AND 9999),
+  next_value INTEGER NOT NULL CHECK(typeof(next_value) = 'integer' AND next_value > 0),
+  PRIMARY KEY (kind, sequence_year)
+);
+
+CREATE TABLE invoices (
+  id TEXT PRIMARY KEY,
+  owner_id TEXT NOT NULL,
+  patient_id TEXT,
+  appointment_id TEXT,
+  document_status TEXT NOT NULL DEFAULT 'draft' CHECK(document_status IN ('draft', 'issued', 'void')),
+  number TEXT UNIQUE,
+  currency TEXT NOT NULL DEFAULT 'DZD' CHECK(length(trim(currency)) > 0),
+  due_at DATETIME,
+  issued_at DATETIME,
+  voided_at DATETIME,
+  void_reason TEXT,
+  owner_snapshot TEXT,
+  clinic_snapshot TEXT,
+  notes TEXT,
+  subtotal_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(subtotal_amount) = 'integer' AND subtotal_amount >= 0),
+  discount_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(discount_amount) = 'integer' AND discount_amount >= 0),
+  tax_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(tax_amount) = 'integer' AND tax_amount >= 0),
+  gross_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(gross_amount) = 'integer' AND gross_amount >= 0),
+  issue_idempotency_key TEXT UNIQUE,
+  legacy_source_transaction_id TEXT UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK(
+    document_status != 'issued'
+    OR (
+      number IS NOT NULL
+      AND issued_at IS NOT NULL
+      AND owner_snapshot IS NOT NULL
+      AND clinic_snapshot IS NOT NULL
+      AND gross_amount > 0
+      AND issue_idempotency_key IS NOT NULL
+    )
+  ),
+  CHECK(document_status != 'void' OR voided_at IS NOT NULL),
+  CHECK(document_status != 'draft' OR number IS NULL),
+  FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE RESTRICT,
+  FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE SET NULL,
+  FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL,
+  FOREIGN KEY (legacy_source_transaction_id) REFERENCES transactions(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE invoice_lines (
+  id TEXT PRIMARY KEY,
+  invoice_id TEXT NOT NULL,
+  product_id TEXT,
+  description TEXT NOT NULL CHECK(length(trim(description)) > 0),
+  quantity_milli INTEGER NOT NULL CHECK(typeof(quantity_milli) = 'integer' AND quantity_milli > 0),
+  unit_amount INTEGER NOT NULL CHECK(typeof(unit_amount) = 'integer' AND unit_amount >= 0),
+  discount_bps INTEGER NOT NULL DEFAULT 0 CHECK(typeof(discount_bps) = 'integer' AND discount_bps BETWEEN 0 AND 10000),
+  tax_bps INTEGER NOT NULL DEFAULT 0 CHECK(typeof(tax_bps) = 'integer' AND tax_bps >= 0),
+  base_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(base_amount) = 'integer' AND base_amount >= 0),
+  discount_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(discount_amount) = 'integer' AND discount_amount >= 0),
+  tax_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(tax_amount) = 'integer' AND tax_amount >= 0),
+  gross_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(gross_amount) = 'integer' AND gross_amount >= 0),
+  sort_order INTEGER NOT NULL DEFAULT 0 CHECK(typeof(sort_order) = 'integer' AND sort_order >= 0),
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE RESTRICT,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+);
+
+CREATE TABLE credit_notes (
+  id TEXT PRIMARY KEY,
+  invoice_id TEXT NOT NULL,
+  document_status TEXT NOT NULL DEFAULT 'draft' CHECK(document_status IN ('draft', 'issued', 'void')),
+  number TEXT UNIQUE,
+  issued_at DATETIME,
+  voided_at DATETIME,
+  void_reason TEXT,
+  owner_snapshot TEXT,
+  clinic_snapshot TEXT,
+  reason TEXT,
+  subtotal_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(subtotal_amount) = 'integer' AND subtotal_amount >= 0),
+  discount_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(discount_amount) = 'integer' AND discount_amount >= 0),
+  tax_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(tax_amount) = 'integer' AND tax_amount >= 0),
+  gross_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(gross_amount) = 'integer' AND gross_amount >= 0),
+  idempotency_key TEXT UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK(
+    document_status != 'issued'
+    OR (
+      number IS NOT NULL
+      AND issued_at IS NOT NULL
+      AND owner_snapshot IS NOT NULL
+      AND clinic_snapshot IS NOT NULL
+      AND gross_amount > 0
+      AND idempotency_key IS NOT NULL
+    )
+  ),
+  CHECK(document_status != 'void' OR voided_at IS NOT NULL),
+  CHECK(document_status != 'draft' OR number IS NULL),
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE credit_note_lines (
+  id TEXT PRIMARY KEY,
+  credit_note_id TEXT NOT NULL,
+  invoice_line_id TEXT,
+  description TEXT NOT NULL CHECK(length(trim(description)) > 0),
+  quantity_milli INTEGER NOT NULL CHECK(typeof(quantity_milli) = 'integer' AND quantity_milli > 0),
+  unit_amount INTEGER NOT NULL CHECK(typeof(unit_amount) = 'integer' AND unit_amount >= 0),
+  discount_bps INTEGER NOT NULL DEFAULT 0 CHECK(typeof(discount_bps) = 'integer' AND discount_bps BETWEEN 0 AND 10000),
+  tax_bps INTEGER NOT NULL DEFAULT 0 CHECK(typeof(tax_bps) = 'integer' AND tax_bps >= 0),
+  base_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(base_amount) = 'integer' AND base_amount >= 0),
+  discount_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(discount_amount) = 'integer' AND discount_amount >= 0),
+  tax_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(tax_amount) = 'integer' AND tax_amount >= 0),
+  gross_amount INTEGER NOT NULL DEFAULT 0 CHECK(typeof(gross_amount) = 'integer' AND gross_amount >= 0),
+  sort_order INTEGER NOT NULL DEFAULT 0 CHECK(typeof(sort_order) = 'integer' AND sort_order >= 0),
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (credit_note_id) REFERENCES credit_notes(id) ON DELETE RESTRICT,
+  FOREIGN KEY (invoice_line_id) REFERENCES invoice_lines(id) ON DELETE SET NULL
+);
+
+CREATE TABLE payments (
+  id TEXT PRIMARY KEY,
+  invoice_id TEXT NOT NULL,
+  amount INTEGER NOT NULL CHECK(typeof(amount) = 'integer' AND amount > 0),
+  method TEXT NOT NULL CHECK(method IN ('cash', 'card', 'bank_transfer', 'check', 'other')),
+  status TEXT NOT NULL DEFAULT 'completed' CHECK(status IN ('completed', 'void')),
+  paid_at DATETIME NOT NULL,
+  voided_at DATETIME,
+  void_reason TEXT,
+  reference TEXT,
+  journal_transaction_id TEXT NOT NULL UNIQUE,
+  idempotency_key TEXT NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK(status != 'void' OR voided_at IS NOT NULL),
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE RESTRICT,
+  FOREIGN KEY (journal_transaction_id) REFERENCES transactions(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE refunds (
+  id TEXT PRIMARY KEY,
+  payment_id TEXT NOT NULL,
+  amount INTEGER NOT NULL CHECK(typeof(amount) = 'integer' AND amount > 0),
+  method TEXT NOT NULL CHECK(method IN ('cash', 'card', 'bank_transfer', 'check', 'other')),
+  status TEXT NOT NULL DEFAULT 'completed' CHECK(status IN ('completed', 'void')),
+  refunded_at DATETIME NOT NULL,
+  voided_at DATETIME,
+  void_reason TEXT,
+  reason TEXT,
+  journal_transaction_id TEXT NOT NULL UNIQUE,
+  idempotency_key TEXT NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK(status != 'void' OR voided_at IS NOT NULL),
+  FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE RESTRICT,
+  FOREIGN KEY (journal_transaction_id) REFERENCES transactions(id) ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_invoices_owner ON invoices(owner_id);
+CREATE INDEX idx_invoices_appointment ON invoices(appointment_id);
+CREATE INDEX idx_invoices_status ON invoices(document_status, issued_at);
+CREATE INDEX idx_invoice_lines_invoice ON invoice_lines(invoice_id, sort_order);
+CREATE INDEX idx_credit_notes_invoice ON credit_notes(invoice_id, document_status);
+CREATE INDEX idx_credit_note_lines_credit ON credit_note_lines(credit_note_id, sort_order);
+CREATE INDEX idx_payments_invoice ON payments(invoice_id, status, paid_at);
+CREATE INDEX idx_refunds_payment ON refunds(payment_id, status, refunded_at);
+
+-- Backfill des transactions historiques. Une transaction positive de revenu
+-- payée n'est importée que si sa reference_id pointe exactement sur un RDV.
+-- Les identifiants et numéros LEGACY-* sont déterministes afin de rendre une
+-- éventuelle réexécution sans effet et sans consommer les séquences officielles.
+INSERT OR IGNORE INTO invoices (
+  id, owner_id, patient_id, appointment_id, document_status, number, currency,
+  due_at, issued_at, owner_snapshot, clinic_snapshot, notes,
+  subtotal_amount, discount_amount, tax_amount, gross_amount,
+  issue_idempotency_key, legacy_source_transaction_id, created_at, updated_at
+)
+SELECT
+  'legacy-invoice-' || t.id,
+  a.owner_id,
+  a.patient_id,
+  a.id,
+  'issued',
+  'LEGACY-' || t.id,
+  'DZD',
+  t.date,
+  t.date,
+  json_object(
+    'id', o.id,
+    'firstName', o.first_name,
+    'lastName', o.last_name,
+    'phone', o.phone,
+    'email', o.email,
+    'address', o.address,
+    'city', o.city
+  ),
+  json_object('name', 'Baitari', 'source', 'legacy-backfill'),
+  'Imported legacy paid income transaction',
+  t.amount,
+  0,
+  0,
+  t.amount,
+  'legacy-issue-' || t.id,
+  t.id,
+  t.created_at,
+  t.updated_at
+FROM transactions t
+JOIN appointments a ON a.id = t.reference_id
+JOIN owners o ON o.id = a.owner_id
+WHERE t.type = 'income'
+  AND t.status = 'paid'
+  AND t.amount > 0
+  AND t.reference_id IS NOT NULL;
+
+INSERT OR IGNORE INTO invoice_lines (
+  id, invoice_id, description, quantity_milli, unit_amount, discount_bps,
+  tax_bps, base_amount, discount_amount, tax_amount, gross_amount, sort_order,
+  created_at, updated_at
+)
+SELECT
+  'legacy-invoice-line-' || t.id,
+  i.id,
+  t.description,
+  1000,
+  t.amount,
+  0,
+  0,
+  t.amount,
+  0,
+  0,
+  t.amount,
+  0,
+  t.created_at,
+  t.updated_at
+FROM transactions t
+JOIN invoices i ON i.legacy_source_transaction_id = t.id
+WHERE t.type = 'income'
+  AND t.status = 'paid'
+  AND t.amount > 0;
+
+INSERT OR IGNORE INTO payments (
+  id, invoice_id, amount, method, status, paid_at, reference,
+  journal_transaction_id, idempotency_key, created_at, updated_at
+)
+SELECT
+  'legacy-payment-' || t.id,
+  i.id,
+  t.amount,
+  t.method,
+  'completed',
+  t.date,
+  t.description,
+  t.id,
+  'legacy-payment-' || t.id,
+  t.created_at,
+  t.updated_at
+FROM transactions t
+JOIN invoices i ON i.legacy_source_transaction_id = t.id
+WHERE t.type = 'income'
+  AND t.status = 'paid'
+  AND t.amount > 0;
+
+UPDATE transactions
+SET
+  source_type = 'billing_payment',
+  source_id = 'legacy-payment-' || id,
+  is_locked = 1
+WHERE id IN (
+  SELECT t.id
+  FROM transactions t
+  JOIN invoices i ON i.legacy_source_transaction_id = t.id
+  JOIN payments p ON p.journal_transaction_id = t.id
+  WHERE t.type = 'income'
+    AND t.status = 'paid'
+    AND t.amount > 0
+)
+AND (
+  source_type IS NULL
+  OR (source_type = 'billing_payment' AND source_id = 'legacy-payment-' || id)
+);
+
+-- Les projections de journal sont append-only depuis les opérations billing.
+-- updated_at seul reste autorisé car l'ancien trigger de compatibilité le met
+-- à jour après chaque écriture métier.
+CREATE TRIGGER transactions_locked_no_update BEFORE UPDATE ON transactions
+WHEN OLD.is_locked = 1
+  AND (
+    NEW.id IS NOT OLD.id
+    OR NEW.date IS NOT OLD.date
+    OR NEW.amount IS NOT OLD.amount
+    OR NEW.type IS NOT OLD.type
+    OR NEW.category IS NOT OLD.category
+    OR NEW.description IS NOT OLD.description
+    OR NEW.reference_id IS NOT OLD.reference_id
+    OR NEW.method IS NOT OLD.method
+    OR NEW.status IS NOT OLD.status
+    OR NEW.source_type IS NOT OLD.source_type
+    OR NEW.source_id IS NOT OLD.source_id
+    OR NEW.is_locked IS NOT OLD.is_locked
+    OR NEW.created_at IS NOT OLD.created_at
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Locked billing journal transactions are immutable');
+END;
+
+CREATE TRIGGER transactions_locked_no_delete BEFORE DELETE ON transactions
+WHEN OLD.is_locked = 1
+BEGIN
+  SELECT RAISE(ABORT, 'Locked billing journal transactions cannot be deleted');
+END;
+
+CREATE TRIGGER invoices_must_start_draft BEFORE INSERT ON invoices
+WHEN NEW.document_status != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Invoices must be issued through the billing service');
+END;
+
+CREATE TRIGGER invoices_issued_immutable BEFORE UPDATE ON invoices
+WHEN (
+  OLD.document_status = 'issued'
+  AND NOT (
+    (
+      NEW.document_status = 'void'
+      AND NEW.id IS OLD.id
+      AND NEW.owner_id IS OLD.owner_id
+      AND NEW.patient_id IS OLD.patient_id
+      AND NEW.appointment_id IS OLD.appointment_id
+      AND NEW.number IS OLD.number
+      AND NEW.currency IS OLD.currency
+      AND NEW.due_at IS OLD.due_at
+      AND NEW.issued_at IS OLD.issued_at
+      AND NEW.owner_snapshot IS OLD.owner_snapshot
+      AND NEW.clinic_snapshot IS OLD.clinic_snapshot
+      AND NEW.notes IS OLD.notes
+      AND NEW.subtotal_amount IS OLD.subtotal_amount
+      AND NEW.discount_amount IS OLD.discount_amount
+      AND NEW.tax_amount IS OLD.tax_amount
+      AND NEW.gross_amount IS OLD.gross_amount
+      AND NEW.issue_idempotency_key IS OLD.issue_idempotency_key
+      AND NEW.legacy_source_transaction_id IS OLD.legacy_source_transaction_id
+      AND NEW.created_at IS OLD.created_at
+      AND NEW.voided_at IS NOT NULL
+    )
+    OR (
+      NEW.document_status IS OLD.document_status
+      AND NEW.id IS OLD.id
+      AND NEW.owner_id IS OLD.owner_id
+      AND (NEW.patient_id IS OLD.patient_id OR (OLD.patient_id IS NOT NULL AND NEW.patient_id IS NULL))
+      AND (NEW.appointment_id IS OLD.appointment_id OR (OLD.appointment_id IS NOT NULL AND NEW.appointment_id IS NULL))
+      AND NEW.number IS OLD.number
+      AND NEW.currency IS OLD.currency
+      AND NEW.due_at IS OLD.due_at
+      AND NEW.issued_at IS OLD.issued_at
+      AND NEW.voided_at IS OLD.voided_at
+      AND NEW.void_reason IS OLD.void_reason
+      AND NEW.owner_snapshot IS OLD.owner_snapshot
+      AND NEW.clinic_snapshot IS OLD.clinic_snapshot
+      AND NEW.notes IS OLD.notes
+      AND NEW.subtotal_amount IS OLD.subtotal_amount
+      AND NEW.discount_amount IS OLD.discount_amount
+      AND NEW.tax_amount IS OLD.tax_amount
+      AND NEW.gross_amount IS OLD.gross_amount
+      AND NEW.issue_idempotency_key IS OLD.issue_idempotency_key
+      AND NEW.legacy_source_transaction_id IS OLD.legacy_source_transaction_id
+      AND NEW.created_at IS OLD.created_at
+      AND NEW.updated_at IS OLD.updated_at
+    )
+  )
+)
+OR (
+  OLD.document_status = 'void'
+  AND NOT (
+    NEW.document_status IS OLD.document_status
+    AND NEW.id IS OLD.id
+    AND NEW.owner_id IS OLD.owner_id
+    AND (NEW.patient_id IS OLD.patient_id OR (OLD.patient_id IS NOT NULL AND NEW.patient_id IS NULL))
+    AND (NEW.appointment_id IS OLD.appointment_id OR (OLD.appointment_id IS NOT NULL AND NEW.appointment_id IS NULL))
+    AND NEW.number IS OLD.number
+    AND NEW.currency IS OLD.currency
+    AND NEW.due_at IS OLD.due_at
+    AND NEW.issued_at IS OLD.issued_at
+    AND NEW.voided_at IS OLD.voided_at
+    AND NEW.void_reason IS OLD.void_reason
+    AND NEW.owner_snapshot IS OLD.owner_snapshot
+    AND NEW.clinic_snapshot IS OLD.clinic_snapshot
+    AND NEW.notes IS OLD.notes
+    AND NEW.subtotal_amount IS OLD.subtotal_amount
+    AND NEW.discount_amount IS OLD.discount_amount
+    AND NEW.tax_amount IS OLD.tax_amount
+    AND NEW.gross_amount IS OLD.gross_amount
+    AND NEW.issue_idempotency_key IS OLD.issue_idempotency_key
+    AND NEW.legacy_source_transaction_id IS OLD.legacy_source_transaction_id
+    AND NEW.created_at IS OLD.created_at
+    AND NEW.updated_at IS OLD.updated_at
+  )
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Issued and void invoices are immutable');
+END;
+
+CREATE TRIGGER invoices_issued_no_delete BEFORE DELETE ON invoices
+WHEN OLD.document_status != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Issued and void invoices cannot be deleted');
+END;
+
+CREATE TRIGGER invoice_lines_draft_insert_only BEFORE INSERT ON invoice_lines
+WHEN (SELECT document_status FROM invoices WHERE id = NEW.invoice_id) != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Issued invoice lines are immutable');
+END;
+
+CREATE TRIGGER invoice_lines_draft_update_only BEFORE UPDATE ON invoice_lines
+WHEN (SELECT document_status FROM invoices WHERE id = OLD.invoice_id) != 'draft'
+  AND NOT (
+    NEW.id IS OLD.id
+    AND NEW.invoice_id IS OLD.invoice_id
+    AND OLD.product_id IS NOT NULL
+    AND NEW.product_id IS NULL
+    AND NEW.description IS OLD.description
+    AND NEW.quantity_milli IS OLD.quantity_milli
+    AND NEW.unit_amount IS OLD.unit_amount
+    AND NEW.discount_bps IS OLD.discount_bps
+    AND NEW.tax_bps IS OLD.tax_bps
+    AND NEW.base_amount IS OLD.base_amount
+    AND NEW.discount_amount IS OLD.discount_amount
+    AND NEW.tax_amount IS OLD.tax_amount
+    AND NEW.gross_amount IS OLD.gross_amount
+    AND NEW.sort_order IS OLD.sort_order
+    AND NEW.created_at IS OLD.created_at
+    AND NEW.updated_at IS OLD.updated_at
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Issued invoice lines are immutable');
+END;
+
+CREATE TRIGGER invoice_lines_draft_delete_only BEFORE DELETE ON invoice_lines
+WHEN (SELECT document_status FROM invoices WHERE id = OLD.invoice_id) != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Issued invoice lines cannot be deleted');
+END;
+
+CREATE TRIGGER invoice_lines_amounts_valid_insert BEFORE INSERT ON invoice_lines
+BEGIN
+  WITH
+    base AS (
+      SELECT CAST((NEW.quantity_milli * NEW.unit_amount + 500) / 1000 AS INTEGER) AS base_amount
+    ),
+    discounted AS (
+      SELECT
+        base_amount,
+        CAST((base_amount * NEW.discount_bps + 5000) / 10000 AS INTEGER) AS discount_amount
+      FROM base
+    ),
+    calculated AS (
+      SELECT
+        base_amount,
+        discount_amount,
+        CAST(((base_amount - discount_amount) * NEW.tax_bps + 5000) / 10000 AS INTEGER) AS tax_amount
+      FROM discounted
+    )
+  SELECT CASE WHEN EXISTS (
+    SELECT 1 FROM calculated
+    WHERE base_amount != NEW.base_amount
+      OR discount_amount != NEW.discount_amount
+      OR tax_amount != NEW.tax_amount
+      OR base_amount - discount_amount + tax_amount != NEW.gross_amount
+  ) THEN RAISE(ABORT, 'Invoice line amounts do not match deterministic rounding') END;
+END;
+
+CREATE TRIGGER invoice_lines_amounts_valid_update BEFORE UPDATE ON invoice_lines
+BEGIN
+  WITH
+    base AS (
+      SELECT CAST((NEW.quantity_milli * NEW.unit_amount + 500) / 1000 AS INTEGER) AS base_amount
+    ),
+    discounted AS (
+      SELECT
+        base_amount,
+        CAST((base_amount * NEW.discount_bps + 5000) / 10000 AS INTEGER) AS discount_amount
+      FROM base
+    ),
+    calculated AS (
+      SELECT
+        base_amount,
+        discount_amount,
+        CAST(((base_amount - discount_amount) * NEW.tax_bps + 5000) / 10000 AS INTEGER) AS tax_amount
+      FROM discounted
+    )
+  SELECT CASE WHEN EXISTS (
+    SELECT 1 FROM calculated
+    WHERE base_amount != NEW.base_amount
+      OR discount_amount != NEW.discount_amount
+      OR tax_amount != NEW.tax_amount
+      OR base_amount - discount_amount + tax_amount != NEW.gross_amount
+  ) THEN RAISE(ABORT, 'Invoice line amounts do not match deterministic rounding') END;
+END;
+
+CREATE TRIGGER invoices_issue_totals BEFORE UPDATE OF document_status ON invoices
+WHEN OLD.document_status = 'draft'
+  AND NEW.document_status = 'issued'
+  AND (
+    NEW.subtotal_amount != COALESCE((SELECT SUM(base_amount) FROM invoice_lines WHERE invoice_id = NEW.id), 0)
+    OR NEW.discount_amount != COALESCE((SELECT SUM(discount_amount) FROM invoice_lines WHERE invoice_id = NEW.id), 0)
+    OR NEW.tax_amount != COALESCE((SELECT SUM(tax_amount) FROM invoice_lines WHERE invoice_id = NEW.id), 0)
+    OR NEW.gross_amount != COALESCE((SELECT SUM(gross_amount) FROM invoice_lines WHERE invoice_id = NEW.id), 0)
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Invoice totals must equal immutable line totals');
+END;
+
+CREATE TRIGGER invoices_void_only_when_unsettled BEFORE UPDATE OF document_status ON invoices
+WHEN NEW.document_status = 'void'
+  AND (
+    EXISTS (SELECT 1 FROM payments WHERE invoice_id = NEW.id AND status = 'completed')
+    OR EXISTS (
+      SELECT 1
+      FROM refunds r
+      JOIN payments p ON p.id = r.payment_id
+      WHERE p.invoice_id = NEW.id AND r.status = 'completed'
+    )
+    OR EXISTS (SELECT 1 FROM credit_notes WHERE invoice_id = NEW.id AND document_status = 'issued')
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Invoice must have no completed payments, refunds, or issued credits before voiding');
+END;
+
+CREATE TRIGGER credit_notes_must_start_draft BEFORE INSERT ON credit_notes
+WHEN NEW.document_status != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Credit notes must be issued through the billing service');
+END;
+
+CREATE TRIGGER credit_notes_issued_immutable BEFORE UPDATE ON credit_notes
+WHEN OLD.document_status IN ('issued', 'void')
+BEGIN
+  SELECT RAISE(ABORT, 'Issued and void credit notes are immutable');
+END;
+
+CREATE TRIGGER credit_notes_issued_no_delete BEFORE DELETE ON credit_notes
+WHEN OLD.document_status != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Issued and void credit notes cannot be deleted');
+END;
+
+CREATE TRIGGER credit_note_lines_draft_insert_only BEFORE INSERT ON credit_note_lines
+WHEN (SELECT document_status FROM credit_notes WHERE id = NEW.credit_note_id) != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Issued credit note lines are immutable');
+END;
+
+CREATE TRIGGER credit_note_lines_draft_update_only BEFORE UPDATE ON credit_note_lines
+WHEN (SELECT document_status FROM credit_notes WHERE id = OLD.credit_note_id) != 'draft'
+  AND NOT (
+    NEW.id IS OLD.id
+    AND NEW.credit_note_id IS OLD.credit_note_id
+    AND OLD.invoice_line_id IS NOT NULL
+    AND NEW.invoice_line_id IS NULL
+    AND NEW.description IS OLD.description
+    AND NEW.quantity_milli IS OLD.quantity_milli
+    AND NEW.unit_amount IS OLD.unit_amount
+    AND NEW.discount_bps IS OLD.discount_bps
+    AND NEW.tax_bps IS OLD.tax_bps
+    AND NEW.base_amount IS OLD.base_amount
+    AND NEW.discount_amount IS OLD.discount_amount
+    AND NEW.tax_amount IS OLD.tax_amount
+    AND NEW.gross_amount IS OLD.gross_amount
+    AND NEW.sort_order IS OLD.sort_order
+    AND NEW.created_at IS OLD.created_at
+    AND NEW.updated_at IS OLD.updated_at
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Issued credit note lines are immutable');
+END;
+
+CREATE TRIGGER credit_note_lines_draft_delete_only BEFORE DELETE ON credit_note_lines
+WHEN (SELECT document_status FROM credit_notes WHERE id = OLD.credit_note_id) != 'draft'
+BEGIN
+  SELECT RAISE(ABORT, 'Issued credit note lines cannot be deleted');
+END;
+
+CREATE TRIGGER credit_note_lines_amounts_valid_insert BEFORE INSERT ON credit_note_lines
+BEGIN
+  WITH
+    base AS (
+      SELECT CAST((NEW.quantity_milli * NEW.unit_amount + 500) / 1000 AS INTEGER) AS base_amount
+    ),
+    discounted AS (
+      SELECT
+        base_amount,
+        CAST((base_amount * NEW.discount_bps + 5000) / 10000 AS INTEGER) AS discount_amount
+      FROM base
+    ),
+    calculated AS (
+      SELECT
+        base_amount,
+        discount_amount,
+        CAST(((base_amount - discount_amount) * NEW.tax_bps + 5000) / 10000 AS INTEGER) AS tax_amount
+      FROM discounted
+    )
+  SELECT CASE WHEN EXISTS (
+    SELECT 1 FROM calculated
+    WHERE base_amount != NEW.base_amount
+      OR discount_amount != NEW.discount_amount
+      OR tax_amount != NEW.tax_amount
+      OR base_amount - discount_amount + tax_amount != NEW.gross_amount
+  ) THEN RAISE(ABORT, 'Credit note line amounts do not match deterministic rounding') END;
+END;
+
+CREATE TRIGGER credit_note_lines_amounts_valid_update BEFORE UPDATE ON credit_note_lines
+BEGIN
+  WITH
+    base AS (
+      SELECT CAST((NEW.quantity_milli * NEW.unit_amount + 500) / 1000 AS INTEGER) AS base_amount
+    ),
+    discounted AS (
+      SELECT
+        base_amount,
+        CAST((base_amount * NEW.discount_bps + 5000) / 10000 AS INTEGER) AS discount_amount
+      FROM base
+    ),
+    calculated AS (
+      SELECT
+        base_amount,
+        discount_amount,
+        CAST(((base_amount - discount_amount) * NEW.tax_bps + 5000) / 10000 AS INTEGER) AS tax_amount
+      FROM discounted
+    )
+  SELECT CASE WHEN EXISTS (
+    SELECT 1 FROM calculated
+    WHERE base_amount != NEW.base_amount
+      OR discount_amount != NEW.discount_amount
+      OR tax_amount != NEW.tax_amount
+      OR base_amount - discount_amount + tax_amount != NEW.gross_amount
+  ) THEN RAISE(ABORT, 'Credit note line amounts do not match deterministic rounding') END;
+END;
+
+CREATE TRIGGER credit_notes_issue_requires_invoice BEFORE UPDATE OF document_status ON credit_notes
+WHEN OLD.document_status = 'draft'
+  AND NEW.document_status = 'issued'
+  AND (SELECT document_status FROM invoices WHERE id = NEW.invoice_id) != 'issued'
+BEGIN
+  SELECT RAISE(ABORT, 'Credits require an issued invoice');
+END;
+
+CREATE TRIGGER credit_notes_issue_totals BEFORE UPDATE OF document_status ON credit_notes
+WHEN OLD.document_status = 'draft'
+  AND NEW.document_status = 'issued'
+  AND (
+    NEW.subtotal_amount != COALESCE((SELECT SUM(base_amount) FROM credit_note_lines WHERE credit_note_id = NEW.id), 0)
+    OR NEW.discount_amount != COALESCE((SELECT SUM(discount_amount) FROM credit_note_lines WHERE credit_note_id = NEW.id), 0)
+    OR NEW.tax_amount != COALESCE((SELECT SUM(tax_amount) FROM credit_note_lines WHERE credit_note_id = NEW.id), 0)
+    OR NEW.gross_amount != COALESCE((SELECT SUM(gross_amount) FROM credit_note_lines WHERE credit_note_id = NEW.id), 0)
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Credit note totals must equal immutable line totals');
+END;
+
+CREATE TRIGGER credit_notes_issue_within_invoice BEFORE UPDATE OF document_status ON credit_notes
+WHEN OLD.document_status = 'draft'
+  AND NEW.document_status = 'issued'
+  AND NEW.gross_amount > (
+    (SELECT gross_amount FROM invoices WHERE id = NEW.invoice_id)
+    - COALESCE((
+      SELECT SUM(gross_amount)
+      FROM credit_notes
+      WHERE invoice_id = NEW.invoice_id
+        AND document_status = 'issued'
+        AND id != NEW.id
+    ), 0)
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Credit amount exceeds remaining creditable invoice total');
+END;
+
+CREATE TRIGGER payments_require_issued_invoice BEFORE INSERT ON payments
+WHEN (SELECT document_status FROM invoices WHERE id = NEW.invoice_id) != 'issued'
+BEGIN
+  SELECT RAISE(ABORT, 'Payments require an issued invoice');
+END;
+
+CREATE TRIGGER payments_require_locked_journal_projection BEFORE INSERT ON payments
+WHEN NOT EXISTS (
+  SELECT 1
+  FROM transactions t
+  WHERE t.id = NEW.journal_transaction_id
+    AND t.source_type = 'billing_payment'
+    AND t.source_id = NEW.id
+    AND t.is_locked = 1
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Payments require a locked matching billing journal projection');
+END;
+
+CREATE TRIGGER payments_amount_within_balance BEFORE INSERT ON payments
+WHEN NEW.amount > (
+  (SELECT gross_amount FROM invoices WHERE id = NEW.invoice_id)
+  - COALESCE((
+    SELECT SUM(gross_amount)
+    FROM credit_notes
+    WHERE invoice_id = NEW.invoice_id AND document_status = 'issued'
+  ), 0)
+  - COALESCE((
+    SELECT SUM(amount)
+    FROM payments
+    WHERE invoice_id = NEW.invoice_id AND status = 'completed'
+  ), 0)
+  + COALESCE((
+    SELECT SUM(r.amount)
+    FROM refunds r
+    JOIN payments p ON p.id = r.payment_id
+    WHERE p.invoice_id = NEW.invoice_id AND r.status = 'completed'
+  ), 0)
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Payment amount exceeds current invoice balance');
+END;
+
+CREATE TRIGGER payments_completed_immutable BEFORE UPDATE ON payments
+WHEN OLD.status = 'void'
+  OR (
+    OLD.status = 'completed'
+    AND NOT (
+      NEW.status = 'void'
+      AND NEW.id IS OLD.id
+      AND NEW.invoice_id IS OLD.invoice_id
+      AND NEW.amount IS OLD.amount
+      AND NEW.method IS OLD.method
+      AND NEW.paid_at IS OLD.paid_at
+      AND NEW.reference IS OLD.reference
+      AND NEW.journal_transaction_id IS OLD.journal_transaction_id
+      AND NEW.idempotency_key IS OLD.idempotency_key
+      AND NEW.created_at IS OLD.created_at
+      AND NEW.voided_at IS NOT NULL
+    )
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Completed and void payments are immutable');
+END;
+
+CREATE TRIGGER payments_no_delete BEFORE DELETE ON payments
+BEGIN
+  SELECT RAISE(ABORT, 'Payments cannot be deleted');
+END;
+
+CREATE TRIGGER payments_no_void_with_completed_refunds BEFORE UPDATE OF status ON payments
+WHEN OLD.status = 'completed'
+  AND NEW.status = 'void'
+  AND EXISTS (SELECT 1 FROM refunds WHERE payment_id = OLD.id AND status = 'completed')
+BEGIN
+  SELECT RAISE(ABORT, 'Completed refunds must be voided before their payment');
+END;
+
+CREATE TRIGGER refunds_require_completed_payment BEFORE INSERT ON refunds
+WHEN (SELECT status FROM payments WHERE id = NEW.payment_id) != 'completed'
+BEGIN
+  SELECT RAISE(ABORT, 'Refunds require a completed payment');
+END;
+
+CREATE TRIGGER refunds_require_locked_journal_projection BEFORE INSERT ON refunds
+WHEN NOT EXISTS (
+  SELECT 1
+  FROM transactions t
+  WHERE t.id = NEW.journal_transaction_id
+    AND t.source_type = 'billing_refund'
+    AND t.source_id = NEW.id
+    AND t.is_locked = 1
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Refunds require a locked matching billing journal projection');
+END;
+
+CREATE TRIGGER refunds_amount_within_payment BEFORE INSERT ON refunds
+WHEN NEW.amount > (
+  (SELECT amount FROM payments WHERE id = NEW.payment_id)
+  - COALESCE((
+    SELECT SUM(amount)
+    FROM refunds
+    WHERE payment_id = NEW.payment_id AND status = 'completed'
+  ), 0)
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Refund amount exceeds refundable payment amount');
+END;
+
+CREATE TRIGGER refunds_completed_immutable BEFORE UPDATE ON refunds
+WHEN OLD.status = 'void'
+  OR (
+    OLD.status = 'completed'
+    AND NOT (
+      NEW.status = 'void'
+      AND NEW.id IS OLD.id
+      AND NEW.payment_id IS OLD.payment_id
+      AND NEW.amount IS OLD.amount
+      AND NEW.method IS OLD.method
+      AND NEW.refunded_at IS OLD.refunded_at
+      AND NEW.reason IS OLD.reason
+      AND NEW.journal_transaction_id IS OLD.journal_transaction_id
+      AND NEW.idempotency_key IS OLD.idempotency_key
+      AND NEW.created_at IS OLD.created_at
+      AND NEW.voided_at IS NOT NULL
+    )
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Completed and void refunds are immutable');
+END;
+
+CREATE TRIGGER refunds_no_delete BEFORE DELETE ON refunds
+BEGIN
+  SELECT RAISE(ABORT, 'Refunds cannot be deleted');
+END;
+`;
+
+export const MIGRATION_016_SQL = `
+-- Migration 016: durcissement des commandes idempotentes et des avoirs.
+-- Les documents émis restent immuables, à l'exception de la transition
+-- explicitement auditée issued -> void d'un avoir, avec motif obligatoire.
+
+-- Les avoirs v15 ne conservaient pas le produit demandé, ce qui empêchait de
+-- distinguer une répétition exacte d'une commande différente.
+ALTER TABLE credit_note_lines ADD COLUMN product_id TEXT;
+
+-- v15 ne vérifiait pas que la ligne de facture liée appartenait à la facture
+-- de l'avoir. Supprimer seulement la provenance invalide conserve les montants
+-- et les autres instantanés financiers immuables avant l'installation des
+-- déclencheurs de contrôle ci-dessous.
+UPDATE credit_note_lines
+SET invoice_line_id = NULL
+WHERE invoice_line_id IS NOT NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM credit_notes c
+    JOIN invoice_lines i ON i.id = credit_note_lines.invoice_line_id
+    WHERE c.id = credit_note_lines.credit_note_id
+      AND i.invoice_id = c.invoice_id
+  );
+
+DROP TRIGGER IF EXISTS credit_notes_issued_immutable;
+DROP TRIGGER IF EXISTS credit_note_lines_draft_update_only;
+
+CREATE TRIGGER credit_note_lines_draft_update_only BEFORE UPDATE ON credit_note_lines
+WHEN (SELECT document_status FROM credit_notes WHERE id = OLD.credit_note_id) != 'draft'
+  AND NOT (
+    NEW.id IS OLD.id
+    AND NEW.credit_note_id IS OLD.credit_note_id
+    AND OLD.invoice_line_id IS NOT NULL
+    AND NEW.invoice_line_id IS NULL
+    AND NEW.product_id IS OLD.product_id
+    AND NEW.description IS OLD.description
+    AND NEW.quantity_milli IS OLD.quantity_milli
+    AND NEW.unit_amount IS OLD.unit_amount
+    AND NEW.discount_bps IS OLD.discount_bps
+    AND NEW.tax_bps IS OLD.tax_bps
+    AND NEW.base_amount IS OLD.base_amount
+    AND NEW.discount_amount IS OLD.discount_amount
+    AND NEW.tax_amount IS OLD.tax_amount
+    AND NEW.gross_amount IS OLD.gross_amount
+    AND NEW.sort_order IS OLD.sort_order
+    AND NEW.created_at IS OLD.created_at
+    AND NEW.updated_at IS OLD.updated_at
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Issued credit note lines are immutable');
+END;
+
+CREATE TRIGGER credit_notes_issued_immutable BEFORE UPDATE ON credit_notes
+WHEN OLD.document_status = 'void'
+  OR (
+    OLD.document_status = 'issued'
+    AND NOT (
+      NEW.document_status = 'void'
+      AND NEW.id IS OLD.id
+      AND NEW.invoice_id IS OLD.invoice_id
+      AND NEW.number IS OLD.number
+      AND NEW.issued_at IS OLD.issued_at
+      AND NEW.owner_snapshot IS OLD.owner_snapshot
+      AND NEW.clinic_snapshot IS OLD.clinic_snapshot
+      AND NEW.reason IS OLD.reason
+      AND NEW.subtotal_amount IS OLD.subtotal_amount
+      AND NEW.discount_amount IS OLD.discount_amount
+      AND NEW.tax_amount IS OLD.tax_amount
+      AND NEW.gross_amount IS OLD.gross_amount
+      AND NEW.idempotency_key IS OLD.idempotency_key
+      AND NEW.created_at IS OLD.created_at
+      AND NEW.voided_at IS NOT NULL
+      AND NEW.void_reason IS NOT NULL
+      AND length(trim(NEW.void_reason)) > 0
+    )
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Issued and void credit notes are immutable');
+END;
+
+CREATE TRIGGER credit_note_lines_invoice_line_matches_credit_invoice_insert
+BEFORE INSERT ON credit_note_lines
+WHEN NEW.invoice_line_id IS NOT NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM credit_notes c
+    JOIN invoice_lines i ON i.id = NEW.invoice_line_id
+    WHERE c.id = NEW.credit_note_id
+      AND i.invoice_id = c.invoice_id
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Credit note invoice lines must belong to the credited invoice');
+END;
+
+CREATE TRIGGER credit_note_lines_invoice_line_matches_credit_invoice_update
+BEFORE UPDATE ON credit_note_lines
+WHEN NEW.invoice_line_id IS NOT NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM credit_notes c
+    JOIN invoice_lines i ON i.id = NEW.invoice_line_id
+    WHERE c.id = NEW.credit_note_id
+      AND i.invoice_id = c.invoice_id
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'Credit note invoice lines must belong to the credited invoice');
+END;
 `;

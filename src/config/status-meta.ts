@@ -68,6 +68,18 @@ export const APPOINTMENT_STATUS_META: Record<
     label: "Planifié",
     className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
   },
+  confirmed: {
+    label: "Confirmé",
+    className: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+  },
+  arrived: {
+    label: "Arrivé",
+    className: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
+  },
+  waiting: {
+    label: "En attente",
+    className: "bg-amber-500/12 text-amber-700 dark:text-amber-300",
+  },
   in_progress: {
     label: "En cours",
     className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
@@ -92,6 +104,18 @@ export const CLINIQUE_STATUS_META: Record<Appointment["status"], StatusColor> =
     ...APPOINTMENT_STATUS_META,
     scheduled: {
       label: "À lancer",
+      className: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    },
+    confirmed: {
+      label: "Confirmé",
+      className: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+    },
+    arrived: {
+      label: "À accueillir",
+      className: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
+    },
+    waiting: {
+      label: "En salle d'attente",
       className: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
     },
     no_show: {

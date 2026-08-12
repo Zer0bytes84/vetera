@@ -1,5 +1,10 @@
-/* eslint-disable react-refresh/only-export-components */
-import { lazy, type ReactNode, Suspense } from "react";
+import {
+  Component,
+  lazy,
+  type ErrorInfo,
+  type ReactNode,
+  Suspense,
+} from "react";
 import type { ThemeMode } from "@/app/hooks/use-theme-mode";
 import { Spinner } from "@/components/ui/spinner";
 import { DashboardOrbitPage } from "@/modules/dashboard/dashboard-orbit-page";
@@ -23,14 +28,20 @@ const PatientDetailPage = lazy(async () => {
   const module = await import("@/modules/patients/patient-detail-page");
   return { default: module.PatientDetailPage };
 });
+const AIAgentChat = lazy(async () => {
+  const module = await import("@/components/AIAgentChat");
+  return { default: module.AIAgentChat };
+});
 
 interface ViewRegistryProps {
   currentTheme: ThemeMode;
   onNavigate: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
   onOpenAIAgent?: () => void;
+  onCloseAIAgent?: () => void;
   onThemeChange: (mode: ThemeMode) => void;
   patientId?: string | null;
+  userAvatarUrl?: string | null;
   userDisplayName?: string;
 }
 
@@ -45,8 +56,54 @@ function ViewLoadingState() {
   );
 }
 
+type ViewErrorBoundaryProps = { children: ReactNode };
+type ViewErrorBoundaryState = { error: Error | null };
+
+class ViewErrorBoundary extends Component<
+  ViewErrorBoundaryProps,
+  ViewErrorBoundaryState
+> {
+  state: ViewErrorBoundaryState = { error: null };
+
+  static getDerivedStateFromError(error: Error): ViewErrorBoundaryState {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("[View] Module render failed:", error, errorInfo);
+  }
+
+  render() {
+    if (!this.state.error) {
+      return this.props.children;
+    }
+
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center p-8">
+        <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
+          <p className="font-semibold text-base">Cette vue n’a pas pu être chargée.</p>
+          <p className="mt-2 text-muted-foreground text-sm">
+            L’application reste disponible. Rechargez uniquement cette vue pour reprendre.
+          </p>
+          <button
+            className="mt-5 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm"
+            onClick={() => window.location.reload()}
+            type="button"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+
 function renderLazyView(node: ReactNode) {
-  return <Suspense fallback={<ViewLoadingState />}>{node}</Suspense>;
+  return (
+    <ViewErrorBoundary>
+      <Suspense fallback={<ViewLoadingState />}>{node}</Suspense>
+    </ViewErrorBoundary>
+  );
 }
 
 export function renderView(view: View, props: ViewRegistryProps) {
@@ -99,6 +156,16 @@ export function renderView(view: View, props: ViewRegistryProps) {
       return renderLazyView(<TasksPage />);
     case "aide":
       return renderLazyView(<HelpPage />);
+    case "assistant":
+      return renderLazyView(
+        <AIAgentChat
+          currentView={view}
+          onClose={props.onCloseAIAgent}
+          patientId={props.patientId}
+          userAvatarUrl={props.userAvatarUrl}
+          userDisplayName={props.userDisplayName}
+        />
+      );
     default:
       return <DashboardOrbitPage />;
   }

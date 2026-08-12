@@ -6,6 +6,7 @@ import {
   Cancel01Icon,
   CheckmarkCircle02Icon,
   Delete01Icon,
+  Edit01Icon,
   GivePillIcon,
   KitchenUtensilsIcon,
   Package02Icon,
@@ -19,9 +20,20 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Ban, Package, TriangleAlert, Wallet } from "lucide-react";
 import type React from "react";
 import { useDeferredValue, useMemo, useState } from "react";
+import { toast } from "sonner";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { StockStatusBadge } from "@/components/shared/StatusBadge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -247,6 +259,8 @@ const Stock: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [productPendingDelete, setProductPendingDelete] =
+    useState<Product | null>(null);
 
   const {
     data: products,
@@ -379,22 +393,31 @@ const Stock: React.FC = () => {
     setIsRestockModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) {
-      await removeProduct(id);
+  const handleDelete = async () => {
+    if (!productPendingDelete) {
+      return;
+    }
+
+    try {
+      await removeProduct(productPendingDelete.id);
+      toast.success(`${productPendingDelete.name} a été supprimé.`);
+      setProductPendingDelete(null);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("Impossible de supprimer ce produit. Réessayez.");
     }
   };
 
   const handleSaveProduct = async () => {
     if (!(formData.name && formData.name.trim())) {
-      alert("Veuillez entrer un nom de produit.");
+      toast.error("Veuillez entrer un nom de produit.");
       return;
     }
     if (
       (formData.purchasePriceAmount ?? 0) < 0 ||
       (formData.salePriceAmount ?? 0) < 0
     ) {
-      alert("Les prix doivent être positifs.");
+      toast.error("Les prix doivent être positifs.");
       return;
     }
 
@@ -446,11 +469,17 @@ const Stock: React.FC = () => {
             } as any);
           } catch (txError) {
             console.error("Failed to add initial stock transaction:", txError);
+            toast.warning(
+              "Produit enregistré, mais la dépense initiale n’a pas été créée. Ajoutez-la depuis Finances."
+            );
           }
         }
       }
 
       setIsProductModalOpen(false);
+      toast.success(
+        selectedProduct ? "Produit mis à jour." : "Produit ajouté au catalogue."
+      );
       setSelectedProduct(null);
       setFormData({
         category: "Médicaments",
@@ -462,7 +491,7 @@ const Stock: React.FC = () => {
       });
     } catch (e) {
       console.error("Error saving product:", e);
-      alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
+      toast.error("Erreur lors de l'enregistrement. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }
@@ -483,8 +512,10 @@ const Stock: React.FC = () => {
       });
 
       setIsRestockModalOpen(false);
+      toast.success(`Stock de ${selectedProduct.name} mis à jour.`);
     } catch (e) {
       console.error(e);
+      toast.error("La mise à jour du stock a échoué. Réessayez.");
     } finally {
       setIsSubmitting(false);
     }
@@ -504,7 +535,7 @@ const Stock: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <MotivationalHeader section="stock" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -671,9 +702,9 @@ const Stock: React.FC = () => {
                   );
 
                   return (
-                    <div
+                    <article
                       className={cn(
-                        "clinical-interactive group rounded-2xl border bg-card p-4 text-left",
+                        "group rounded-2xl border bg-card p-4 text-left transition-colors hover:bg-muted/15",
                         isOut
                           ? "border-red-200 dark:border-red-500/30"
                           : isLow
@@ -681,7 +712,6 @@ const Stock: React.FC = () => {
                             : "border-border/60"
                       )}
                       key={product.id}
-                      onClick={() => handleOpenEdit(product)}
                     >
                       <div className="mb-3 flex items-start gap-3">
                         <div
@@ -780,8 +810,22 @@ const Stock: React.FC = () => {
                           )}
                         </div>
 
-                        <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                        <div className="flex items-center gap-0.5 opacity-100 transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100">
                           <Button
+                            aria-label={`Modifier ${product.name}`}
+                            className="text-muted-foreground"
+                            onClick={() => handleOpenEdit(product)}
+                            size="icon-xs"
+                            variant="ghost"
+                          >
+                            <HugeiconsIcon
+                              className="size-3.5"
+                              icon={Edit01Icon}
+                              strokeWidth={2}
+                            />
+                          </Button>
+                          <Button
+                            aria-label={`Réapprovisionner ${product.name}`}
                             className="text-primary"
                             onClick={(e) => {
                               e.stopPropagation();
@@ -797,10 +841,11 @@ const Stock: React.FC = () => {
                             />
                           </Button>
                           <Button
+                            aria-label={`Supprimer ${product.name}`}
                             className="text-muted-foreground hover:text-destructive"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDelete(product.id);
+                              setProductPendingDelete(product);
                             }}
                             size="icon-xs"
                             variant="ghost"
@@ -813,7 +858,7 @@ const Stock: React.FC = () => {
                           </Button>
                         </div>
                       </div>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -821,6 +866,34 @@ const Stock: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setProductPendingDelete(null);
+          }
+        }}
+        open={Boolean(productPendingDelete)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce produit ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {productPendingDelete?.name} sera retiré du catalogue. Cette
+              action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* --- ADD/EDIT PRODUCT DIALOG --- */}
       <Dialog onOpenChange={setIsProductModalOpen} open={isProductModalOpen}>

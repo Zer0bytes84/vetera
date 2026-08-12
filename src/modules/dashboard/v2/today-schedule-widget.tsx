@@ -23,6 +23,24 @@ const STATUS_COPY: Record<
       "border-sky-200/60 bg-sky-50 text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-300",
     dot: "bg-sky-500",
   },
+  confirmed: {
+    label: "Confirmé",
+    className:
+      "border-indigo-200/60 bg-indigo-50 text-indigo-700 dark:border-indigo-400/20 dark:bg-indigo-400/10 dark:text-indigo-300",
+    dot: "bg-indigo-500",
+  },
+  arrived: {
+    label: "Arrivé",
+    className:
+      "border-cyan-200/60 bg-cyan-50 text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-300",
+    dot: "bg-cyan-500",
+  },
+  waiting: {
+    label: "En attente",
+    className:
+      "border-amber-200/60 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300",
+    dot: "bg-amber-500",
+  },
   in_progress: {
     label: "En consultation",
     className:

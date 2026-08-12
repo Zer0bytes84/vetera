@@ -33,6 +33,7 @@ import React, {
   useCallback,
   useDeferredValue,
   useEffect,
+  useEffectEvent,
   useMemo,
   useRef,
   useState,
@@ -114,6 +115,7 @@ import {
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
+import { PRE_CONSULTATION_STATUSES } from "@/domain/clinical/scheduling";
 import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { AnesthesiaSheet } from "@/modules/anesthesia";
@@ -751,6 +753,8 @@ function ConsultationSessionDialog({
     consultationNotes,
   ].join("\u001f");
 
+  const getAutosavePayload = useEffectEvent(() => buildPayload());
+
   useEffect(() => {
     if (!autosaveReadyRef.current) {
       autosaveReadyRef.current = true;
@@ -764,7 +768,7 @@ function ConsultationSessionDialog({
     const timer = window.setTimeout(async () => {
       try {
         setAutosaveStatus("saving");
-        await saveDraftRef.current(buildPayload(), { silent: true });
+        await saveDraftRef.current(getAutosavePayload(), { silent: true });
         setLastAutoSavedAt(new Date());
         setAutosaveStatus("saved");
       } catch (error) {
@@ -1673,6 +1677,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     data: appointments,
     loading: loadingAppointments,
     update: updateAppointment,
+    transitionStatus: transitionAppointmentStatus,
     completeWithBilling,
   } = useAppointmentsRepository();
   const { data: patients, update: updatePatient } = usePatientsRepository();
@@ -1840,11 +1845,11 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     flushSync(() => {
       setSelectedAppointmentId(target.id);
     });
-    if (target.status === "scheduled") {
-      updateAppointment(target.id, { status: "in_progress" })
-        .then(() => {
+    if (PRE_CONSULTATION_STATUSES.includes(target.status)) {
+      transitionAppointmentStatus(target.id, "in_progress")
+        .then((updatedAppointment) => {
           flushSync(() => {
-            setActiveConsultation({ ...target, status: "in_progress" });
+            setActiveConsultation(updatedAppointment);
             setListTab("in_progress");
           });
         })
@@ -1856,7 +1861,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         setActiveConsultation(target);
       });
     }
-  }, [appointments, updateAppointment]);
+  }, [appointments, loadingAppointments, transitionAppointmentStatus]);
 
   // Palette-driven quick actions (⌘K): listen for medical action events
   // dispatched by the CommandPalette. If a consultation is already active
@@ -1969,7 +1974,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
         (appointment) => appointment.status === "in_progress"
       ).length,
       pending: todaysAppointments.filter(
-        (appointment) => appointment.status === "scheduled"
+        (appointment) => PRE_CONSULTATION_STATUSES.includes(appointment.status)
       ).length,
     }),
     [todaysAppointments]
@@ -2030,12 +2035,11 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
 
   const handleStatusAction = async (appointment: Appointment) => {
     try {
-      if (appointment.status === "scheduled") {
-        await updateAppointment(appointment.id, { status: "in_progress" });
-        const openedAppointment = {
-          ...appointment,
-          status: "in_progress" as const,
-        };
+      if (PRE_CONSULTATION_STATUSES.includes(appointment.status)) {
+        const openedAppointment = await transitionAppointmentStatus(
+          appointment.id,
+          "in_progress"
+        );
         setActiveConsultation(openedAppointment);
         moveSelectionToStatusTab("in_progress", appointment.id);
         toast.success(
@@ -2097,7 +2101,6 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     try {
       const finalAppointmentPatch: Partial<Appointment> = {
         ...payload.appointmentPatch,
-        status: "completed",
       };
       const patientPatch: Partial<Patient> = {
         ...payload.patientPatch,
@@ -2105,6 +2108,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       };
 
       await updateAppointment(activeConsultation.id, finalAppointmentPatch);
+      await transitionAppointmentStatus(activeConsultation.id, "completed");
       await updatePatient(activeConsultation.patientId, patientPatch);
 
       await audit.log({
@@ -2127,6 +2131,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       const updatedAppointment: Appointment = {
         ...activeConsultation,
         ...finalAppointmentPatch,
+        status: "completed",
       };
 
       moveSelectionToStatusTab("completed", activeConsultation.id);
@@ -2293,7 +2298,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
   const effectiveAppointmentId = activeConsultation?.id ?? "";
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="clinique" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -2314,7 +2319,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
               disabled={selectedAppointment.status === "completed"}
               onClick={() => handleStatusAction(selectedAppointment)}
             >
-              {selectedAppointment.status === "scheduled" ? (
+              {PRE_CONSULTATION_STATUSES.includes(selectedAppointment.status) ? (
                 <>
                   <HugeiconsIcon
                     data-icon="inline-start"
@@ -2542,8 +2547,12 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
 
                         return (
                           <TableRow
+                            aria-label={`Sélectionner la consultation de ${patient?.name || "ce patient"}`}
+                            aria-selected={
+                              selectedAppointmentId === appointment.id
+                            }
                             className={cn(
-                              "cursor-pointer",
+                              "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
                               selectedAppointmentId === appointment.id
                                 ? "!bg-primary/5 hover:!bg-primary/6"
                                 : ""
@@ -2558,6 +2567,17 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                               setSelectedAppointmentId(appointment.id);
                               setDetailTab("overview");
                             }}
+                            onKeyDown={(event) => {
+                              if (event.target !== event.currentTarget) {
+                                return;
+                              }
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                setSelectedAppointmentId(appointment.id);
+                                setDetailTab("overview");
+                              }
+                            }}
+                            tabIndex={0}
                           >
                             <TableCell className="whitespace-normal pl-10">
                               <div className="flex items-center gap-3">
@@ -2625,7 +2645,9 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
                               onClick={(event) => event.stopPropagation()}
                             >
                               <div className="flex flex-wrap items-center gap-1.5">
-                                {appointment.status === "scheduled" ? (
+                                {PRE_CONSULTATION_STATUSES.includes(
+                                  appointment.status
+                                ) ? (
                                   <Button
                                     className="min-w-[118px] rounded-3xl"
                                     onClick={() =>

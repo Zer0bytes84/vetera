@@ -13,7 +13,7 @@ interface CircularTransitionHook {
 }
 
 export function useCircularTransition(): CircularTransitionHook {
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
   const isTransitioningRef = useRef(false);
 
   const startTransition = useCallback(
@@ -62,10 +62,12 @@ export function useCircularTransition(): CircularTransitionHook {
       };
 
       startTransition(coords, () => {
-        setTheme(theme === "dark" ? "light" : "dark");
+        const isCurrentlyDark =
+          document.documentElement.classList.contains("dark");
+        setTheme(isCurrentlyDark ? "light" : "dark");
       });
     },
-    [theme, setTheme, startTransition]
+    [setTheme, startTransition]
   );
 
   const isTransitioning = useCallback(() => isTransitioningRef.current, []);

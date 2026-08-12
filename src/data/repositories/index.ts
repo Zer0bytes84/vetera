@@ -1,5 +1,15 @@
 import { useSQLite } from "@/hooks/useSQLite";
+import {
+  normalizeOwnerDraft,
+  normalizePatientDraft,
+} from "@/domain/clinical/owner-patient";
+import {
+  assertAppointmentStatusTransition,
+  assertNoAppointmentConflict,
+  normalizeAppointmentInterval,
+} from "@/domain/clinical/scheduling";
 import * as AppSettingsService from "@/services/appSettingsService";
+import { billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
 import * as AuthService from "@/services/sqlite/auth";
 import {
@@ -44,6 +54,18 @@ const rowToOwner = (row: Record<string, unknown>): Owner => ({
   email: row.email ? String(row.email) : undefined,
   address: row.address ? String(row.address) : undefined,
   city: row.city ? String(row.city) : undefined,
+  preferredContact: row.preferred_contact
+    ? (String(row.preferred_contact) as Owner["preferredContact"])
+    : undefined,
+  secondaryContactName: row.secondary_contact_name
+    ? String(row.secondary_contact_name)
+    : undefined,
+  secondaryContactPhone: row.secondary_contact_phone
+    ? String(row.secondary_contact_phone)
+    : undefined,
+  communicationNotes: row.communication_notes
+    ? String(row.communication_notes)
+    : undefined,
   createdAt: String(row.created_at ?? new Date().toISOString()),
 });
 
@@ -90,7 +112,26 @@ export function useUsersRepository() {
 }
 
 export function useOwnersRepository() {
-  return useSQLite<Owner>("owners");
+  const store = useSQLite<Owner>("owners");
+
+  const update = async (id: string, patch: Partial<Owner>) => {
+    const current = store.data.find((owner) => owner.id === id);
+    if (!current) {
+      throw new Error("Propriétaire introuvable.");
+    }
+
+    const {
+      createdAt: _createdAt,
+      id: _id,
+      ...draft
+    } = {
+      ...current,
+      ...patch,
+    };
+    return store.update(id, normalizeOwnerDraft(draft));
+  };
+
+  return { ...store, update };
 }
 
 export function useAppointmentsRepository() {
@@ -101,7 +142,13 @@ export function useAppointmentsRepository() {
 
   type AppointmentDraft = Omit<
     Appointment,
-    "id" | "ownerId" | "startTime" | "endTime" | "createdAt" | "vetId"
+    | "id"
+    | "ownerId"
+    | "startTime"
+    | "endTime"
+    | "createdAt"
+    | "vetId"
+    | "status"
   > & {
     startTime: string | Date;
     endTime: string | Date;
@@ -110,9 +157,6 @@ export function useAppointmentsRepository() {
     vetId?: string;
     status?: Appointment["status"];
   };
-
-  const toIso = (value: string | Date) =>
-    value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 
   const saveAppointment = async (input: AppointmentDraft) => {
     const patient = patientsStore.data.find(
@@ -133,13 +177,47 @@ export function useAppointmentsRepository() {
       throw new Error("Aucun vétérinaire actif n'est disponible.");
     }
 
+    const selectedVet = usersStore.data.find((user) => user.id === finalVetId);
+    if (!selectedVet || selectedVet.status !== "active") {
+      throw new Error("Le vétérinaire sélectionné n'est pas disponible.");
+    }
+
+    const title = input.title?.trim();
+    if (!title) {
+      throw new Error("Le motif ou le titre du rendez-vous est obligatoire.");
+    }
+
+    const interval = normalizeAppointmentInterval(
+      input.startTime,
+      input.endTime
+    );
+    const existingAppointment = input.id
+      ? appointmentsStore.data.find((entry) => entry.id === input.id)
+      : undefined;
+    const status = input.status ?? existingAppointment?.status ?? "scheduled";
+
+    if (existingAppointment && existingAppointment.status !== status) {
+      assertAppointmentStatusTransition(existingAppointment.status, status);
+    }
+
+    const appointmentId = input.id ?? "new-appointment";
+    assertNoAppointmentConflict(
+      {
+        id: appointmentId,
+        vetId: finalVetId,
+        room: input.room,
+        ...interval,
+      },
+      appointmentsStore.data
+    );
+
     const payload = {
       ...input,
       ownerId: patient.ownerId,
       vetId: finalVetId,
-      status: input.status ?? "scheduled",
-      startTime: toIso(input.startTime),
-      endTime: toIso(input.endTime),
+      title,
+      status,
+      ...interval,
     } as Partial<Appointment>;
 
     if (input.id) {
@@ -155,6 +233,27 @@ export function useAppointmentsRepository() {
     return appointmentsStore.add(
       payload as Omit<Appointment, "id" | "createdAt" | "updatedAt">
     );
+  };
+
+  const transitionStatus = async (
+    appointmentId: string,
+    nextStatus: Appointment["status"]
+  ) => {
+    const appointment = appointmentsStore.data.find(
+      (entry) => entry.id === appointmentId
+    );
+    if (!appointment) {
+      throw new Error("Rendez-vous introuvable.");
+    }
+
+    assertAppointmentStatusTransition(appointment.status, nextStatus);
+    const updated = await appointmentsStore.update(appointmentId, {
+      status: nextStatus,
+    });
+    if (!updated) {
+      throw new Error("Impossible de mettre à jour le statut du rendez-vous.");
+    }
+    return { ...appointment, status: nextStatus };
   };
 
   const completeWithBilling = async ({
@@ -181,8 +280,61 @@ export function useAppointmentsRepository() {
     );
     const totalAmount = toCentimes(totalAmountDa);
 
-    // Ordre: RDV d'abord (essentiel), puis patient, puis transaction (peut être refaite)
-    // Si la transaction échoue, on peut la recréer manuellement plus tard
+    assertAppointmentStatusTransition(appointment.status, "completed");
+
+    if (totalAmount > 0 && isTauriRuntime()) {
+      const invoiceId = `appointment-invoice-${appointment.id}`;
+      const now = new Date().toISOString();
+      let invoice = await billingService.getInvoice(invoiceId);
+
+      if (!invoice) {
+        invoice = await billingService.createInvoiceDraft({
+          id: invoiceId,
+          appointmentId: appointment.id,
+          ownerId: appointment.ownerId,
+          patientId: appointment.patientId,
+          dueAt: now,
+          notes: category ?? "Consultation",
+          lines: items
+            .filter((item) => Number(item.amount) > 0)
+            .map((item) => ({
+              description: item.desc.trim() || appointment.title,
+              quantityMilli: 1000,
+              unitAmount: toCentimes(Number(item.amount)),
+            })),
+        });
+      }
+
+      if (invoice.documentStatus === "draft") {
+        const clinicName =
+          (await AppSettingsService.getSetting("clinic_name")) ||
+          (await AppSettingsService.getSetting("cabinet_name")) ||
+          (await AppSettingsService.getSetting("practice_name")) ||
+          "Baitari";
+
+        invoice = await billingService.issueInvoice({
+          invoiceId: invoice.id,
+          idempotencyKey: `appointment:${appointment.id}:issue`,
+          issuedAt: now,
+          dueAt: now,
+          clinicSnapshot: { name: clinicName },
+        });
+      }
+
+      if (invoice.documentStatus === "issued" && invoice.balanceAmount > 0) {
+        const invoiceDetail = await billingService.getInvoice(invoice.id);
+        const paymentSequence = invoiceDetail?.payments.length ?? 0;
+        await billingService.recordPayment({
+          invoiceId: invoice.id,
+          amount: invoice.balanceAmount,
+          method: method ?? "cash",
+          paidAt: now,
+          reference: appointment.id,
+          idempotencyKey: `appointment:${appointment.id}:payment:${paymentSequence}`,
+        });
+      }
+    }
+
     const appointmentUpdated = await appointmentsStore.update(appointment.id, {
       status: "completed",
     });
@@ -199,7 +351,7 @@ export function useAppointmentsRepository() {
       );
     }
 
-    if (totalAmount > 0) {
+    if (totalAmount > 0 && !isTauriRuntime()) {
       try {
         await transactionsStore.add({
           amount: totalAmount,
@@ -227,6 +379,7 @@ export function useAppointmentsRepository() {
   return {
     ...appointmentsStore,
     saveAppointment,
+    transitionStatus,
     completeWithBilling,
   };
 }
@@ -278,16 +431,8 @@ export function usePatientsRepository() {
     owner: Omit<Owner, "id" | "createdAt" | "updatedAt">;
     patient: Omit<Patient, "id" | "ownerId" | "createdAt" | "updatedAt">;
   }) => {
-    const patientName = patient.name?.trim();
-    const patientSpecies = patient.species?.trim();
-
-    if (!patientName) {
-      throw new Error("Le nom du patient est obligatoire.");
-    }
-
-    if (!patientSpecies) {
-      throw new Error("L'espèce du patient est obligatoire.");
-    }
+    const normalizedPatient = normalizePatientDraft(patient);
+    const normalizedOwner = ownerId ? null : normalizeOwnerDraft(owner);
 
     if (!isTauriRuntime()) {
       let finalOwnerId = ownerId ?? null;
@@ -300,12 +445,7 @@ export function usePatientsRepository() {
         finalOwnerId = finalOwnerId.trim();
       } else {
         const createdOwner = await ownersStore.add({
-          firstName: owner.firstName?.trim() || "",
-          lastName: owner.lastName?.trim() || "",
-          phone: owner.phone?.trim() || "",
-          email: owner.email?.trim() || "",
-          address: owner.address?.trim() || "",
-          city: owner.city?.trim() || "",
+          ...normalizedOwner,
         } as Omit<Owner, "id" | "createdAt" | "updatedAt">);
         finalOwnerId = createdOwner?.id ?? null;
         finalOwner = createdOwner ?? null;
@@ -316,10 +456,7 @@ export function usePatientsRepository() {
       }
 
       const createdPatient = await patientsStore.add({
-        ...patient,
-        name: patientName,
-        species: patientSpecies,
-        breed: patient.breed?.trim() || "",
+        ...normalizedPatient,
         ownerId: finalOwnerId,
       } as Omit<Patient, "id" | "createdAt" | "updatedAt">);
 
@@ -355,16 +492,22 @@ export function usePatientsRepository() {
       if (!finalOwnerId) {
         await db.execute(
           `INSERT INTO owners (
-            id, first_name, last_name, phone, email, address, city, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            id, first_name, last_name, phone, email, address, city,
+            preferred_contact, secondary_contact_name, secondary_contact_phone,
+            communication_notes, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             createdOwnerId,
-            owner.firstName?.trim() || "",
-            owner.lastName?.trim() || "",
-            owner.phone?.trim() || "",
-            owner.email?.trim() || "",
-            owner.address?.trim() || "",
-            owner.city?.trim() || "",
+            normalizedOwner?.firstName ?? "",
+            normalizedOwner?.lastName ?? "",
+            normalizedOwner?.phone ?? "",
+            normalizedOwner?.email ?? null,
+            normalizedOwner?.address ?? null,
+            normalizedOwner?.city ?? null,
+            normalizedOwner?.preferredContact ?? null,
+            normalizedOwner?.secondaryContactName ?? null,
+            normalizedOwner?.secondaryContactPhone ?? null,
+            normalizedOwner?.communicationNotes ?? null,
             now,
             now,
           ]
@@ -379,15 +522,15 @@ export function usePatientsRepository() {
         [
           createdPatientId,
           createdOwnerId,
-          patientName,
-          patientSpecies,
-          patient.breed?.trim() || "",
-          patient.sex || "M",
-          patient.dateOfBirth || null,
-          patient.status || "sante",
-          patient.allergies || null,
-          patient.chronicConditions || null,
-          patient.generalNotes || null,
+          normalizedPatient.name,
+          normalizedPatient.species,
+          normalizedPatient.breed ?? null,
+          normalizedPatient.sex || "M",
+          normalizedPatient.dateOfBirth ?? null,
+          normalizedPatient.status || "sante",
+          normalizedPatient.allergies ?? null,
+          normalizedPatient.chronicConditions ?? null,
+          normalizedPatient.generalNotes ?? null,
           now,
           now,
         ]
@@ -417,10 +560,29 @@ export function usePatientsRepository() {
     };
   };
 
+  const update = async (id: string, patch: Partial<Patient>) => {
+    const current = patientsStore.data.find((patient) => patient.id === id);
+    if (!current) {
+      throw new Error("Patient introuvable.");
+    }
+
+    const {
+      createdAt: _createdAt,
+      id: _id,
+      ownerId,
+      ...draft
+    } = { ...current, ...patch };
+    return patientsStore.update(id, {
+      ...normalizePatientDraft(draft),
+      ownerId,
+    });
+  };
+
   return {
     ...patientsStore,
     owners: ownersStore.data,
     createWithOwner,
+    update,
   };
 }
 

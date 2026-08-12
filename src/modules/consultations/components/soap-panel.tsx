@@ -1,8 +1,11 @@
 import {
+  CheckCircle,
   CircleNotch,
+  FloppyDisk,
   Microphone,
   Sparkle,
   Trash,
+  WarningCircle,
   XCircle,
 } from "@phosphor-icons/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -10,16 +13,28 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConsultationSoapsRepository } from "@/data/repositories";
+import { getModelPreferences } from "@/lib/ai-models";
 import { cn } from "@/lib/utils";
 import { useEnsureWebLLM } from "../hooks/use-ensure-webllm";
 import { useSpeechToText } from "../hooks/use-speech-to-text";
 import {
   type SoapDraft,
+  normalizeSoapDraft,
   structureDictationIntoSoap,
 } from "../lib/voice-to-soap";
 import { MicrophoneButton } from "./microphone-button";
@@ -36,6 +51,7 @@ const SECTIONS: Array<{
 ];
 
 const AUTOSAVE_DEBOUNCE_MS = 800;
+const LIGHT_SOAP_MODEL_ID = "Qwen2.5-3B-Instruct-q4f16_1-MLC";
 
 interface SoapPanelProps {
   appointmentId: string;
@@ -52,6 +68,12 @@ type SoapFormState = {
   plan: string;
 };
 
+type SoapPersistedState = SoapFormState & {
+  aiConfidence: number | null;
+  aiDraft: string | null;
+  transcript: string | null;
+};
+
 const EMPTY_FORM: SoapFormState = {
   subjective: "",
   objective: "",
@@ -66,6 +88,48 @@ function areFormsEqual(a: SoapFormState, b: SoapFormState) {
     a.assessment === b.assessment &&
     a.plan === b.plan
   );
+}
+
+function parseDraft(value: string | null | undefined): SoapDraft | null {
+  if (!value) {
+    return null;
+  }
+  try {
+    return JSON.parse(value) as SoapDraft;
+  } catch {
+    return null;
+  }
+}
+
+function arePersistedStatesEqual(
+  a: SoapPersistedState | null,
+  b: SoapPersistedState
+) {
+  return Boolean(
+    a &&
+      areFormsEqual(a, b) &&
+      a.transcript === b.transcript &&
+      a.aiDraft === b.aiDraft &&
+      a.aiConfidence === b.aiConfidence
+  );
+}
+
+function hasSoapContent(state: SoapPersistedState) {
+  return Boolean(
+    state.subjective.trim() ||
+      state.objective.trim() ||
+      state.assessment.trim() ||
+      state.plan.trim() ||
+      state.transcript?.trim() ||
+      state.aiDraft
+  );
+}
+
+function getSoapModelId() {
+  const selectedModelId = getModelPreferences().defaultModelId;
+  return selectedModelId === "Qwen3-0.6B-q4f16_1-MLC"
+    ? LIGHT_SOAP_MODEL_ID
+    : selectedModelId;
 }
 
 export function SoapPanel({
@@ -85,6 +149,7 @@ export function SoapPanel({
   const [liveTranscript, setLiveTranscript] = useState<string>("");
   const [draft, setDraft] = useState<SoapDraft | null>(null);
   const [isStructuring, setIsStructuring] = useState<boolean>(false);
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(
     existing ? "saved" : "idle"
   );
@@ -98,21 +163,36 @@ export function SoapPanel({
     lang: i18n.language?.startsWith("fr") ? "fr-FR" : "en-US",
   });
 
-  // Hydrate from existing record once
+  // Hydrate only after the repository has completed its first read.
   useEffect(() => {
-    if (initialised) {
+    if (initialised || repo.loading) {
       return;
     }
-    if (existing) {
-      setForm({
-        subjective: existing.subjective ?? "",
-        objective: existing.objective ?? "",
-        assessment: existing.assessment ?? "",
-        plan: existing.plan ?? "",
-      });
-    }
+    const hydratedForm = existing
+      ? {
+          subjective: existing.subjective ?? "",
+          objective: existing.objective ?? "",
+          assessment: existing.assessment ?? "",
+          plan: existing.plan ?? "",
+        }
+      : EMPTY_FORM;
+    const hydratedTranscript = existing?.transcript ?? "";
+    const parsedDraft = parseDraft(existing?.aiDraft);
+    const hydratedDraft = parsedDraft
+      ? normalizeSoapDraft(parsedDraft, hydratedTranscript)
+      : null;
+    setForm(hydratedForm);
+    setLiveTranscript(hydratedTranscript);
+    setDraft(hydratedDraft);
+    lastSavedRef.current = {
+      ...hydratedForm,
+      transcript: hydratedTranscript || null,
+      aiDraft: existing?.aiDraft ?? null,
+      aiConfidence: existing?.aiConfidence ?? null,
+    };
+    setSaveStatus(existing ? "saved" : "idle");
     setInitialised(true);
-  }, [existing, initialised]);
+  }, [existing, initialised, repo.loading]);
 
   // Sync interim transcript into the live transcript field while dictating
   useEffect(() => {
@@ -140,57 +220,86 @@ export function SoapPanel({
 
   // ── Debounced auto-save ──────────────────────────────────────────────────
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSavedRef = useRef<SoapFormState | null>(
-    existing
-      ? {
-          subjective: existing.subjective ?? "",
-          objective: existing.objective ?? "",
-          assessment: existing.assessment ?? "",
-          plan: existing.plan ?? "",
-        }
-      : null
-  );
-  const isFirstRender = useRef<boolean>(true);
+  const saveInFlightRef = useRef<Promise<void> | null>(null);
+  const lastSavedRef = useRef<SoapPersistedState | null>(null);
+  const latestPayloadRef = useRef<SoapPersistedState>({
+    ...EMPTY_FORM,
+    aiConfidence: null,
+    aiDraft: null,
+    transcript: null,
+  });
+  const initialisedRef = useRef(false);
 
   const persist = useCallback(
-    async (snapshot: SoapFormState) => {
-      setSaveStatus("saving");
+    async (snapshot: SoapPersistedState) => {
+      const previousSave = saveInFlightRef.current;
+      const operation = (async () => {
+        await previousSave?.catch(() => undefined);
+        setSaveStatus("saving");
+        try {
+          const saved = await repo.upsertForAppointment(
+            appointmentId,
+            patientId,
+            {
+              subjective: snapshot.subjective,
+              objective: snapshot.objective,
+              assessment: snapshot.assessment,
+              plan: snapshot.plan,
+              transcript: snapshot.transcript,
+              aiDraft: snapshot.aiDraft,
+              aiConfidence: snapshot.aiConfidence,
+              templateVersion: "1.0",
+            },
+            currentUser?.id
+          );
+          if (!saved) {
+            throw new Error("La base locale n'a pas confirmé l'enregistrement.");
+          }
+          lastSavedRef.current = snapshot;
+          setSaveStatus("saved");
+        } catch (err) {
+          console.error("[SoapPanel] persist error", err);
+          setSaveStatus("error");
+          toast.error(t("consultations.soap.meta.saveError"));
+        }
+      })();
+      saveInFlightRef.current = operation;
       try {
-        await repo.upsertForAppointment(
-          appointmentId,
-          patientId,
-          {
-            subjective: snapshot.subjective,
-            objective: snapshot.objective,
-            assessment: snapshot.assessment,
-            plan: snapshot.plan,
-            transcript: liveTranscript || null,
-            aiDraft: draft ? JSON.stringify(draft) : null,
-            aiConfidence: draft?.confidence ?? null,
-            templateVersion: "1.0",
-          },
-          currentUser?.id
-        );
-        lastSavedRef.current = snapshot;
-        setSaveStatus("saved");
-      } catch (err) {
-        console.error("[SoapPanel] persist error", err);
-        setSaveStatus("error");
-        toast.error(t("consultations.soap.meta.upserting"));
+        await operation;
+      } finally {
+        if (saveInFlightRef.current === operation) {
+          saveInFlightRef.current = null;
+        }
       }
     },
-    [appointmentId, draft, currentUser?.id, liveTranscript, patientId, repo, t]
+    [appointmentId, currentUser?.id, patientId, repo, t]
+  );
+
+  const persistedState = useMemo<SoapPersistedState>(
+    () => ({
+      ...form,
+      transcript: liveTranscript.trim() || null,
+      aiDraft: draft ? JSON.stringify(draft) : null,
+      aiConfidence: draft?.confidence ?? null,
+    }),
+    [draft, form, liveTranscript]
   );
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    latestPayloadRef.current = persistedState;
+    initialisedRef.current = initialised;
+  }, [initialised, persistedState]);
+
+  useEffect(() => {
     if (!initialised) {
       return;
     }
-    if (lastSavedRef.current && areFormsEqual(lastSavedRef.current, form)) {
+    // Do not create an empty SOAP row just by opening a consultation. An
+    // existing note may still be deliberately cleared and saved as empty.
+    if (!hasSoapContent(persistedState) && !lastSavedRef.current) {
+      return;
+    }
+    if (arePersistedStatesEqual(lastSavedRef.current, persistedState)) {
       return;
     }
     setSaveStatus("pending");
@@ -198,14 +307,35 @@ export function SoapPanel({
       clearTimeout(saveTimerRef.current);
     }
     saveTimerRef.current = setTimeout(() => {
-      void persist(form);
+      void persist(persistedState);
     }, AUTOSAVE_DEBOUNCE_MS);
     return () => {
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [form, initialised, persist]);
+  }, [initialised, persist, persistedState]);
+
+  const persistRef = useRef(persist);
+  useEffect(() => {
+    persistRef.current = persist;
+  }, [persist]);
+
+  useEffect(
+    () => () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+      const latest = latestPayloadRef.current;
+      if (
+        initialisedRef.current &&
+        !arePersistedStatesEqual(lastSavedRef.current, latest)
+      ) {
+        void persistRef.current(latest);
+      }
+    },
+    []
+  );
 
   // ── Handlers ────────────────────────────────────────────────────────────
   const updateSection = (key: keyof SoapFormState, value: string) => {
@@ -235,12 +365,23 @@ export function SoapPanel({
     setIsStructuring(true);
     try {
       if (!engine.isReady) {
-        await engine.ensure();
+        await engine.ensure(getSoapModelId());
+      } else if (engine.activeModelId !== getSoapModelId()) {
+        await engine.ensure(getSoapModelId());
       }
       const result = await structureDictationIntoSoap(transcript, {
+        modelId: getSoapModelId(),
         withConfidence: true,
       });
-      if (!result) {
+      if (
+        !result ||
+        !(
+          result.subjective ||
+          result.objective ||
+          result.assessment ||
+          result.plan
+        )
+      ) {
         toast.error(t("consultations.soap.ai.parseError"));
         return;
       }
@@ -248,7 +389,14 @@ export function SoapPanel({
       toast.success(t("consultations.soap.ai.draftAvailable"));
     } catch (err) {
       console.error("[SoapPanel] structureWithAi error", err);
-      toast.error(t("consultations.soap.ai.parseError"));
+      toast.error(
+        err instanceof Error &&
+          /WebGPU|moteur|modèle|model|memory|mémoire|chargement|fetch/i.test(
+            err.message
+          )
+          ? t("consultations.soap.ai.modelUnavailable")
+          : t("consultations.soap.ai.parseError")
+      );
     } finally {
       setIsStructuring(false);
     }
@@ -272,6 +420,9 @@ export function SoapPanel({
   };
 
   const clearAll = () => {
+    if (speech.isListening) {
+      speech.stop();
+    }
     setForm(EMPTY_FORM);
     setLiveTranscript("");
     setDraft(null);
@@ -282,17 +433,76 @@ export function SoapPanel({
     () => Boolean(liveTranscript.trim() || form.subjective.trim()),
     [form.subjective, liveTranscript]
   );
+  const canClear = useMemo(
+    () =>
+      Boolean(
+        form.subjective ||
+          form.objective ||
+          form.assessment ||
+          form.plan ||
+          liveTranscript.trim() ||
+          draft
+      ),
+    [draft, form, liveTranscript]
+  );
+  const canSave = useMemo(
+    () =>
+      initialised &&
+      !isStructuring &&
+      saveStatus !== "saving" &&
+      (hasSoapContent(persistedState) || Boolean(lastSavedRef.current)) &&
+      !arePersistedStatesEqual(lastSavedRef.current, persistedState),
+    [initialised, isStructuring, persistedState, saveStatus]
+  );
+
+  const saveNow = async () => {
+    if (!canSave) {
+      return;
+    }
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    await persist(persistedState);
+  };
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-5", className)}>
       {/* Header action row */}
-      <div className="flex items-center justify-between gap-2 border-border/10 border-b pb-2.5">
-        <div className="flex items-center gap-2">
-          <SaveStatusPill status={saveStatus} />
+      <div className="flex flex-col gap-3 border-border border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-semibold text-base tracking-[-0.02em]">
+              Note clinique structurée
+            </h3>
+            <span aria-live="polite">
+              <SaveStatusPill status={saveStatus} />
+            </span>
+          </div>
+          <p className="mt-1 text-muted-foreground text-xs leading-5">
+            SOAP organise la consultation en quatre repères : ce que rapporte le
+            propriétaire, ce que vous observez, votre analyse et le plan de soins.
+            Chaque modification est enregistrée automatiquement.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button
-            className="h-8 gap-1.5 rounded-full px-4 font-semibold text-xs shadow-sm transition-all duration-300 hover:shadow-md"
+            className="h-10 gap-1.5 rounded-xl px-4 font-semibold text-xs"
+            disabled={!canSave}
+            onClick={() => void saveNow()}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            {saveStatus === "saving" ? (
+              <CircleNotch className="size-3.5 animate-spin" weight="duotone" />
+            ) : (
+              <FloppyDisk className="size-3.5" weight="duotone" />
+            )}
+            {t("consultations.soap.meta.save")}
+          </Button>
+          <Button
+            className="h-10 gap-1.5 rounded-xl px-4 font-semibold text-xs"
             disabled={!canStructure || isStructuring}
             onClick={() => void handleStructureWithAi()}
             size="sm"
@@ -310,16 +520,9 @@ export function SoapPanel({
           </Button>
           <Button
             aria-label={t("consultations.soap.ai.clear")}
-            className="h-8 w-8 rounded-full transition-colors hover:bg-destructive/10 hover:text-destructive"
-            disabled={
-              !(
-                form.subjective ||
-                form.objective ||
-                form.assessment ||
-                form.plan
-              )
-            }
-            onClick={clearAll}
+            className="size-10 rounded-xl transition-colors hover:bg-destructive/10 hover:text-destructive"
+            disabled={!canClear}
+            onClick={() => setClearDialogOpen(true)}
             size="icon"
             type="button"
             variant="ghost"
@@ -337,13 +540,28 @@ export function SoapPanel({
         />
       ) : null}
       {engine.error ? (
-        <p className="rounded-md border border-destructive/30 bg-destructive/5 px-2 py-1 text-destructive text-xs">
-          {engine.error}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-destructive text-xs">
+          <p className="min-w-0 flex-1">
+            {t("consultations.soap.ai.modelUnavailable")}
+            <span className="mt-0.5 block text-destructive/75">{engine.error}</span>
+          </p>
+          <Button
+            className="h-8 rounded-lg px-3 text-xs"
+            disabled={engine.isLoading}
+            onClick={() =>
+              void engine.ensure(getSoapModelId()).catch(() => undefined)
+            }
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            {t("consultations.soap.ai.retryModel")}
+          </Button>
+        </div>
       ) : null}
 
       {/* 4 SOAP sections */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 lg:grid-cols-2">
         {SECTIONS.map(({ key, i18n: i18nKey }) => (
           <SoapSectionEditor
             disabled={isStructuring}
@@ -361,25 +579,21 @@ export function SoapPanel({
 
       {/* Live dictation + AI draft panel */}
       <div className="grid gap-3 xl:grid-cols-2">
-        <div className="group/dictation relative overflow-hidden rounded-xl border border-zinc-200/50 bg-white/40 p-4 shadow-sm backdrop-blur-xl dark:border-zinc-800/50 dark:bg-zinc-950/40">
-          <div className="pointer-events-none absolute inset-0 z-0 opacity-0 mix-blend-overlay transition-opacity duration-500 group-hover/dictation:opacity-100">
-            <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-transparent" />
-          </div>
-
-          <div className="relative z-10 mb-3 flex flex-wrap items-center justify-between gap-2">
+        <section className="rounded-2xl border border-border bg-card p-4" aria-labelledby="dictation-title">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+              <div className="flex size-8 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <Microphone className="size-4" weight="duotone" />
               </div>
-              <h4 className="font-semibold text-sm tracking-tight">
-                {t("consultations.soap.ai.transcriptPlaceholder")}
+              <h4 className="font-semibold text-sm tracking-[-0.01em]" id="dictation-title">
+                Dictée clinique
               </h4>
               {speech.isListening ? (
                 <Badge
-                  className="animate-pulse bg-rose-500 text-white shadow-[0_0_10px_rgba(244,63,94,0.4)]"
+                  className="bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
                   variant="default"
                 >
-                  ● {t("consultations.soap.ai.stopDictation")}
+                  En écoute
                 </Badge>
               ) : null}
               {speechMicError ? (
@@ -401,7 +615,7 @@ export function SoapPanel({
                 size="sm"
               />
               <Button
-                className="h-8 rounded-full px-3.5 font-semibold text-xs shadow-xs"
+                className="h-10 rounded-xl px-3.5 font-semibold text-xs"
                 disabled={!liveTranscript.trim() || isStructuring}
                 onClick={handleAppendTranscriptToSection}
                 size="sm"
@@ -413,18 +627,19 @@ export function SoapPanel({
             </div>
           </div>
           <Textarea
-            className="relative z-10 min-h-[88px] resize-y rounded-lg border-0 bg-zinc-100/50 text-sm shadow-none transition-colors placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-rose-500/30 dark:bg-zinc-900/50"
+            aria-labelledby="dictation-title"
+            className="min-h-[112px] resize-y rounded-xl border-border/80 bg-muted/20 text-sm leading-6 shadow-none placeholder:text-muted-foreground"
             onChange={(event) => setLiveTranscript(event.target.value)}
             placeholder={t("consultations.soap.ai.transcriptPlaceholder")}
             value={liveTranscript}
           />
-          <p className="relative z-10 mt-2 flex items-center gap-1.5 font-medium text-[10px] text-muted-foreground/60">
-            <Sparkle className="size-3 text-rose-400" weight="fill" />
+          <p className="mt-2 flex items-center gap-1.5 text-muted-foreground text-xs">
+            <Sparkle className="size-3.5" weight="duotone" />
             {speech.isListening
               ? t("consultations.soap.ai.stopDictation")
               : t("consultations.soap.ai.startDictation")}
           </p>
-        </div>
+        </section>
 
         <DraftZone
           draft={draft}
@@ -433,6 +648,26 @@ export function SoapPanel({
           onDiscard={discardDraft}
         />
       </div>
+
+      <AlertDialog onOpenChange={setClearDialogOpen} open={clearDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Effacer toute la note SOAP ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Les quatre sections, la dictée et le brouillon généré seront vidés. Cette modification sera ensuite enregistrée automatiquement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Conserver la note</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={clearAll}
+            >
+              Effacer la note
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -450,7 +685,7 @@ function SaveStatusPill({ status }: { status: SaveStatus }) {
   if (status === "pending") {
     return (
       <Badge className="text-[10px]" variant="outline">
-        {t("consultations.soap.meta.autoSaved")}
+        {t("consultations.soap.meta.pendingSave")}
       </Badge>
     );
   }
@@ -467,8 +702,9 @@ function SaveStatusPill({ status }: { status: SaveStatus }) {
   }
   if (status === "saved") {
     return (
-      <Badge className="text-[10px]" variant="outline">
-        ✓ {t("consultations.soap.meta.lastSaved")}
+      <Badge className="gap-1 text-[10px]" variant="outline">
+        <CheckCircle className="size-3" weight="fill" />
+        {t("consultations.soap.meta.lastSaved")}
       </Badge>
     );
   }
@@ -514,7 +750,7 @@ function DraftZone({
   const { t } = useTranslation();
   if (isStructuring) {
     return (
-      <div className="flex h-full min-h-[140px] items-center justify-center rounded-lg border border-border/50 border-dashed bg-background/30 p-3 text-muted-foreground text-sm">
+      <div className="flex h-full min-h-[180px] items-center justify-center rounded-2xl border border-border bg-muted/15 p-4 text-muted-foreground text-sm">
         <CircleNotch className="mr-2 size-4 animate-spin" weight="duotone" />
         {t("consultations.soap.ai.structuring")}
       </div>
@@ -522,17 +758,19 @@ function DraftZone({
   }
   if (!draft) {
     return (
-      <div className="flex h-full min-h-[140px] flex-col items-center justify-center rounded-lg border border-border/50 border-dashed bg-background/30 p-3 text-center text-muted-foreground text-xs">
-        <Sparkle className="mb-1 size-4 opacity-60" weight="duotone" />
-        {t("consultations.soap.ai.description")}
+      <div className="flex h-full min-h-[180px] flex-col items-center justify-center rounded-2xl border border-border bg-muted/15 p-5 text-center text-muted-foreground text-xs">
+        <span className="mb-3 flex size-9 items-center justify-center rounded-xl bg-background text-muted-foreground ring-1 ring-border">
+          <Sparkle className="size-4" weight="duotone" />
+        </span>
+        <span className="max-w-[34ch] leading-5">{t("consultations.soap.ai.description")}</span>
       </div>
     );
   }
   return (
-    <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+    <div className="rounded-2xl border border-border bg-card p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Badge className="text-[10px]" variant="default">
+          <Badge className="text-[10px]" variant="secondary">
             {t("consultations.soap.ai.draftAvailable")}
           </Badge>
           {draft.confidence == null ? null : (
@@ -541,10 +779,19 @@ function DraftZone({
               {Math.round(draft.confidence * 100)}%
             </Badge>
           )}
+          {draft.groundingScore != null && draft.groundingScore < 0.6 ? (
+            <Badge
+              className="gap-1 border-amber-500/30 bg-amber-500/10 text-[10px] text-amber-700 dark:text-amber-300"
+              variant="outline"
+            >
+              <WarningCircle className="size-3" weight="duotone" />
+              {t("consultations.soap.ai.reviewRequired")}
+            </Badge>
+          ) : null}
         </div>
         <div className="flex items-center gap-1.5">
           <Button
-            className="h-7.5 rounded-full px-3.5 font-semibold text-xs"
+            className="h-9 rounded-xl px-3.5 font-semibold text-xs"
             onClick={onApply}
             size="sm"
             type="button"
@@ -553,7 +800,7 @@ function DraftZone({
             {t("consultations.soap.ai.applyDraft")}
           </Button>
           <Button
-            className="h-7.5 rounded-full px-3 font-semibold text-xs"
+            className="h-9 rounded-xl px-3 font-semibold text-xs"
             onClick={onDiscard}
             size="sm"
             type="button"
@@ -563,15 +810,15 @@ function DraftZone({
           </Button>
         </div>
       </div>
-      <ul className="space-y-1 text-xs">
+      <ul className="mt-3 divide-y divide-border/60 text-xs">
         {(["subjective", "objective", "assessment", "plan"] as const).map(
           (key) =>
             draft[key] ? (
-              <li className="flex gap-2" key={key}>
-                <span className="w-16 shrink-0 text-muted-foreground">
+              <li className="grid gap-1 py-2 first:pt-0 last:pb-0 sm:grid-cols-[90px_minmax(0,1fr)]" key={key}>
+                <span className="font-medium text-muted-foreground">
                   {t(`consultations.soap.sections.${key}`)}
                 </span>
-                <span className="line-clamp-2 flex-1">{draft[key]}</span>
+                <span className="line-clamp-3 leading-5">{draft[key]}</span>
               </li>
             ) : null
         )}

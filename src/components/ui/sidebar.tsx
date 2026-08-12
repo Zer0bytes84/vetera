@@ -223,7 +223,7 @@ function Sidebar({
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right";
-  variant?: "sidebar" | "floating" | "inset" | "minimal";
+  variant?: "sidebar" | "floating" | "inset" | "minimal" | "glass";
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
@@ -254,6 +254,19 @@ function Sidebar({
     );
   }
 
+  let desktopContainerVariantClass =
+    "border-sidebar-border group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=right]:border-s group-data-[side=left]:border-e dark:border-white/14";
+  if (variant === "minimal") {
+    desktopContainerVariantClass =
+      "w-[calc(var(--sidebar-width)+(--spacing(2)))] border-0 p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(7)))]";
+  } else if (variant === "floating" || variant === "inset") {
+    desktopContainerVariantClass =
+      "p-4 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(6)))]";
+  } else if (variant === "glass") {
+    desktopContainerVariantClass =
+      "p-3 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(6)))]";
+  }
+
   return (
     <div
       className="group peer hidden text-sidebar-foreground md:block"
@@ -269,7 +282,7 @@ function Sidebar({
           "relative w-(--sidebar-width) bg-transparent transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[resizing=true]/sidebar-wrapper:duration-0",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
-          variant === "floating" || variant === "inset"
+          variant === "floating" || variant === "inset" || variant === "glass"
             ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(6)))]"
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
           variant === "minimal" &&
@@ -282,11 +295,7 @@ function Sidebar({
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[side=right]:right-0 data-[side=left]:left-0 group-data-[resizing=true]/sidebar-wrapper:duration-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] md:flex",
           // Keep the borderless minimal variant isolated from the classic
           // sidebar border so the main panel owns the rounded divider.
-          variant === "minimal"
-            ? "w-[calc(var(--sidebar-width)+(--spacing(2)))] border-0 p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(7)))]"
-            : variant === "floating" || variant === "inset"
-              ? "p-4 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(6)))]"
-              : "border-sidebar-border group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=right]:border-s group-data-[side=left]:border-e dark:border-white/14",
+          desktopContainerVariantClass,
           className
         )}
         data-side={side}
@@ -294,7 +303,7 @@ function Sidebar({
         {...props}
       >
         <div
-          className="relative flex size-full flex-col overflow-hidden bg-sidebar group-data-[variant=floating]:rounded-[20px] group-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border dark:group-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+          className="relative flex size-full flex-col overflow-hidden bg-sidebar group-data-[variant=floating]:rounded-[20px] group-data-[variant=glass]:rounded-[22px] group-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border dark:group-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
         >
@@ -486,12 +495,13 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       className={cn(
-        "relative flex w-full flex-1 flex-col md:peer-data-[variant=floating]:bg-card md:peer-data-[variant=inset]:bg-background md:peer-data-[variant=minimal]:bg-background",
+        "relative flex w-full flex-1 flex-col md:peer-data-[variant=floating]:bg-card md:peer-data-[variant=glass]:bg-background md:peer-data-[variant=inset]:bg-background md:peer-data-[variant=minimal]:bg-background",
         "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ms-2 md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ms-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm",
         "md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-sidebar-border dark:md:peer-data-[variant=inset]:border-white/15",
         "md:peer-data-[variant=minimal]:peer-data-[state=collapsed]:ms-2 md:peer-data-[variant=minimal]:m-2 md:peer-data-[variant=minimal]:ms-0 md:peer-data-[variant=minimal]:rounded-xl",
         "md:peer-data-[variant=floating]:peer-data-[state=collapsed]:ms-4 md:peer-data-[variant=floating]:my-4 md:peer-data-[variant=floating]:ms-0 md:peer-data-[variant=floating]:me-4 md:peer-data-[variant=floating]:rounded-[24px] md:peer-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:md:peer-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.2)]",
         "md:peer-data-[variant=floating]:border md:peer-data-[variant=floating]:border-sidebar-border dark:md:peer-data-[variant=floating]:border-white/10",
+        "md:peer-data-[variant=glass]:peer-data-[state=collapsed]:ms-3 md:peer-data-[variant=glass]:my-3 md:peer-data-[variant=glass]:ms-0 md:peer-data-[variant=glass]:me-3 md:peer-data-[variant=glass]:rounded-[22px]",
         className
       )}
       data-slot="sidebar-inset"

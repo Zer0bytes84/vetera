@@ -58,6 +58,7 @@ export { default as Edit01Icon } from "@hugeicons/core-free-icons/Edit01Icon";
 export { default as EditIcon } from "@hugeicons/core-free-icons/Edit01Icon";
 export { default as EyeIcon } from "@hugeicons/core-free-icons/EyeIcon";
 export { default as File01Icon } from "@hugeicons/core-free-icons/File01Icon";
+export { default as FilterIcon } from "@hugeicons/core-free-icons/FilterIcon";
 export { default as Folder01Icon } from "@hugeicons/core-free-icons/Folder01Icon";
 export { default as GivePillIcon } from "@hugeicons/core-free-icons/GivePillIcon";
 export { default as GraduationScrollIcon } from "@hugeicons/core-free-icons/GraduationScrollIcon";

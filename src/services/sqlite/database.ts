@@ -1,18 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
-import {
-  MIGRATION_001_SQL,
-  MIGRATION_002_SQL,
-  MIGRATION_003_SQL,
-  MIGRATION_004_SQL,
-  MIGRATION_005_SQL,
-  MIGRATION_006_SQL,
-  MIGRATION_007_SQL,
-  MIGRATION_008_SQL,
-  MIGRATION_009_SQL,
-  MIGRATION_010_SQL,
-  MIGRATION_011_SQL,
-  MIGRATION_012_SQL,
-} from "./schema";
+import { runSqliteMigrations } from "./migration-runner";
+import { SQLITE_MIGRATIONS } from "./migrations";
 
 let db: Database | null = null;
 let dbInitPromise: Promise<Database> | null = null;
@@ -195,10 +183,22 @@ export async function getDatabase(): Promise<Database> {
       console.log("[DB] Loading database...");
 
       const loadedDb = await Database.load("sqlite:baitari.db");
-      await runMigrations(loadedDb);
+      const appliedMigrations = await runSqliteMigrations(
+        loadedDb,
+        SQLITE_MIGRATIONS
+      );
+      if (appliedMigrations.length > 0) {
+        console.log("[DB] Applied migrations:", appliedMigrations.join(", "));
+      }
       await applyDatabaseSafetyPragmas(loadedDb);
-      await repairRelationalIntegrity(loadedDb);
       db = loadedDb;
+
+      // Integrity repair is defensive maintenance, not a prerequisite for
+      // rendering the first screen. Running it after exposing the connection
+      // prevents an old/large database from holding the whole WebView on a
+      // blank bootstrap screen, especially on slower Windows machines.
+      void repairRelationalIntegrity(loadedDb);
+
       return loadedDb;
     })().finally(() => {
       dbInitPromise = null;
@@ -227,273 +227,6 @@ export async function closeDatabaseConnection(): Promise<boolean> {
     db = null;
     return false;
   }
-}
-
-/**
- * Exécute les migrations SQL au démarrage
- */
-async function runMigrations(database: Database): Promise<void> {
-  try {
-    console.log("[DB] Starting migrations...");
-    // Créer table de migrations si n'existe pas
-    await database.execute(`
-      CREATE TABLE IF NOT EXISTS migrations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        version TEXT UNIQUE NOT NULL,
-        applied_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Vérifier quelle migration a été appliquée
-    const applied = await database.select<{ version: string }[]>(
-      "SELECT version FROM migrations ORDER BY version DESC LIMIT 1"
-    );
-
-    const lastVersion = applied.length > 0 ? applied[0].version : "000";
-    console.log("[DB] Last applied migration:", lastVersion);
-
-    // Migration 001: Schéma initial
-    if (lastVersion < "001") {
-      console.log("[DB] Applying migration 001...");
-
-      const statements = parseSqlStatements(MIGRATION_001_SQL);
-
-      console.log("[DB] Executing", statements.length, "SQL statements...");
-
-      let successCount = 0;
-      for (const statement of statements) {
-        if (statement.length > 0) {
-          try {
-            await database.execute(statement);
-            successCount++;
-          } catch (err: unknown) {
-            console.error(
-              "[DB] Error executing statement:",
-              statement.substring(0, 150)
-            );
-            console.error("[DB] Error details:", err);
-            const errMsg = err instanceof Error ? err.message : String(err);
-            throw new Error(
-              `Migration failed at statement ${successCount + 1}: ${errMsg}`
-            );
-          }
-        }
-      }
-
-      console.log("[DB] Successfully executed", successCount, "statements");
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "001",
-      ]);
-
-      console.log("[DB] Migration 001 applied successfully");
-    } else {
-      console.log("[DB] Database up to date");
-    }
-
-    if (lastVersion < "002") {
-      console.log("[DB] Applying migration 002...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_002_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "002",
-      ]);
-      console.log("[DB] Migration 002 applied successfully");
-    }
-    if (lastVersion < "003") {
-      console.log("[DB] Applying migration 003...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_003_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "003",
-      ]);
-      console.log("[DB] Migration 003 applied successfully");
-    }
-
-    if (lastVersion < "004") {
-      console.log("[DB] Applying migration 004...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_004_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "004",
-      ]);
-      console.log("[DB] Migration 004 applied successfully");
-    }
-
-    if (lastVersion < "005") {
-      console.log("[DB] Applying migration 005...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_005_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "005",
-      ]);
-      console.log("[DB] Migration 005 applied successfully");
-    }
-
-    if (lastVersion < "006") {
-      console.log("[DB] Applying migration 006...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_006_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "006",
-      ]);
-      console.log("[DB] Migration 006 applied successfully");
-    }
-
-    if (lastVersion < "007") {
-      console.log("[DB] Applying migration 007...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_007_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "007",
-      ]);
-      console.log("[DB] Migration 007 applied successfully");
-    }
-
-    if (lastVersion < "008") {
-      console.log("[DB] Applying migration 008...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_008_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "008",
-      ]);
-      console.log("[DB] Migration 008 applied successfully");
-    }
-
-    if (lastVersion < "009") {
-      console.log("[DB] Applying migration 009...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_009_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "009",
-      ]);
-      console.log("[DB] Migration 009 applied successfully");
-    }
-
-    if (lastVersion < "010") {
-      console.log("[DB] Applying migration 010...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_010_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "010",
-      ]);
-      console.log("[DB] Migration 010 applied successfully");
-    }
-
-    if (lastVersion < "011") {
-      console.log("[DB] Applying migration 011...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_011_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "011",
-      ]);
-      console.log("[DB] Migration 011 applied successfully");
-    }
-
-    if (lastVersion < "012") {
-      console.log("[DB] Applying migration 012...");
-
-      const migrationStatements = parseSqlStatements(MIGRATION_012_SQL);
-
-      for (const statement of migrationStatements) {
-        await database.execute(statement);
-      }
-
-      await database.execute("INSERT INTO migrations (version) VALUES (?)", [
-        "012",
-      ]);
-      console.log("[DB] Migration 012 applied successfully");
-    }
-  } catch (error) {
-    console.error("[DB] Migration error:", error);
-    throw error;
-  }
-}
-
-function parseSqlStatements(sql: string): string[] {
-  const lines = sql.split("\n");
-  let currentStatement = "";
-  const statements: string[] = [];
-  let inTrigger = false;
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    if (trimmed.startsWith("--") || trimmed.length === 0) {
-      continue;
-    }
-
-    if (trimmed.toUpperCase().startsWith("CREATE TRIGGER")) {
-      inTrigger = true;
-    }
-
-    currentStatement += line + "\n";
-
-    if (trimmed.endsWith(";")) {
-      if (inTrigger) {
-        if (trimmed.toUpperCase() === "END;") {
-          statements.push(currentStatement.trim());
-          currentStatement = "";
-          inTrigger = false;
-        }
-      } else {
-        statements.push(currentStatement.trim());
-        currentStatement = "";
-      }
-    }
-  }
-
-  return statements;
 }
 
 async function applyDatabaseSafetyPragmas(database: Database): Promise<void> {

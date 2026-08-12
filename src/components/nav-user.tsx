@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  MoreVerticalIcon,
+  ArrowRight01Icon,
   Notification01Icon,
   Settings01Icon,
   UserCircleIcon,
@@ -26,15 +26,15 @@ import {
 } from "@/components/ui/sidebar";
 
 interface NavUserProps {
+  onFinances?: () => void;
+  onNotifications?: () => void;
+  onProfile?: () => void;
+  onSettings?: () => void;
   user: {
     name: string;
     email: string;
     avatar?: string | null;
   };
-  onProfile?: () => void;
-  onFinances?: () => void;
-  onNotifications?: () => void;
-  onSettings?: () => void;
 }
 
 export function NavUser({
@@ -58,45 +58,48 @@ export function NavUser({
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
-                className="h-10 min-w-0 flex-1 !gap-1 rounded-lg px-1 transition-all hover:bg-zinc-950/[0.03] aria-expanded:bg-sidebar-accent group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 dark:hover:bg-white/[0.04] [@media(max-height:820px)]:h-9"
+                aria-label={`Ouvrir le menu du compte de ${user.name}`}
+                className="!gap-2 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-12 min-w-0 flex-1 rounded-[14px] px-2 transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-11"
                 size="lg"
+                tooltip={`Menu du compte de ${user.name}`}
               />
             }
           >
             <Avatar
-              className="size-7.5 rounded-full shadow-sm transition-all group-data-[collapsible=icon]:size-8"
+              className="size-8 rounded-full ring-1 ring-sidebar-border/70 transition-all group-data-[collapsible=icon]:size-8"
               name={user.name}
               size="sm"
               src={normalizedAvatar}
             />
-            <div className="ms-1 grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
+            <div className="grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
               <span
-                className="sidebar-user-name truncate font-medium text-[12.5px] text-foreground tracking-tight antialiased"
+                className="sidebar-user-name truncate font-medium text-[13px] text-sidebar-foreground tracking-[-0.015em] antialiased"
                 title={user.name}
               >
                 {user.name}
               </span>
-              <span className="mt-0.5 truncate text-[10px] text-muted-foreground/70">
+              <span className="mt-0.5 truncate text-[10.5px] text-sidebar-foreground/55">
                 {user.email}
               </span>
             </div>
             <HugeiconsIcon
-              className="sidebar-user-more ms-0.5 size-3 text-muted-foreground/45 transition-colors group-hover:text-foreground group-data-[collapsible=icon]:hidden"
-              icon={MoreVerticalIcon}
+              aria-hidden="true"
+              className="sidebar-user-more ms-1 size-4 shrink-0 text-sidebar-foreground/55 transition-colors group-hover:text-sidebar-foreground group-data-[collapsible=icon]:hidden"
+              icon={ArrowRight01Icon}
               strokeWidth={1.5}
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="min-w-56 rounded-lg"
+            className="w-64 rounded-[16px] border-border/80 p-1.5 shadow-[0_18px_48px_-24px_rgba(15,23,42,0.32)] dark:shadow-[0_22px_52px_-26px_rgba(0,0,0,0.7)]"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-3 px-1 py-1.5 text-left text-sm">
+                <div className="flex items-center gap-3 px-2 py-2 text-left text-sm">
                   <Avatar
-                    className="size-10 rounded-full shadow-sm"
+                    className="size-10 rounded-full ring-1 ring-border/70"
                     name={user.name}
                     size="md"
                     src={normalizedAvatar}
@@ -114,7 +117,10 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={onProfile}>
+              <DropdownMenuItem
+                className="h-9 rounded-[10px]"
+                onClick={onProfile}
+              >
                 <HugeiconsIcon
                   className="size-5"
                   icon={UserCircleIcon}
@@ -122,7 +128,10 @@ export function NavUser({
                 />
                 Mon profil
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={onFinances}>
+              <DropdownMenuItem
+                className="h-9 rounded-[10px]"
+                onClick={onFinances}
+              >
                 <HugeiconsIcon
                   className="size-5"
                   icon={Wallet01Icon}
@@ -130,7 +139,10 @@ export function NavUser({
                 />
                 Finances
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={onNotifications}>
+              <DropdownMenuItem
+                className="h-9 rounded-[10px]"
+                onClick={onNotifications}
+              >
                 <HugeiconsIcon
                   className="size-5"
                   icon={Notification01Icon}
@@ -138,7 +150,10 @@ export function NavUser({
                 />
                 Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={onSettings}>
+              <DropdownMenuItem
+                className="h-9 rounded-[10px]"
+                onClick={onSettings}
+              >
                 <HugeiconsIcon
                   className="size-5"
                   icon={Settings01Icon}

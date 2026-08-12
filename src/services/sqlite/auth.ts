@@ -359,34 +359,61 @@ export async function logout(): Promise<void> {
 }
 
 /**
- * Obtenir l'utilisateur courant depuis la session
+ * Obtenir l'utilisateur courant depuis la session (avec auto-connexion au démarrage)
  */
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const token = localStorage.getItem("auth_token");
 
-  if (!token) {
-    return null;
-  }
-
   if (!isTauriRuntime()) {
-    const session = findBrowserRow<BrowserSessionRecord>(
-      "sessions",
-      (entry) =>
-        entry.token === token &&
-        new Date(entry.expiresAt).getTime() > Date.now()
-    );
+    const session = token
+      ? findBrowserRow<BrowserSessionRecord>(
+          "sessions",
+          (entry) =>
+            entry.token === token &&
+            new Date(entry.expiresAt).getTime() > Date.now()
+        )
+      : null;
 
-    if (!session) {
-      localStorage.removeItem("auth_token");
-      return null;
+    let user: BrowserUserRecord | undefined;
+
+    if (session) {
+      user = findBrowserRow<BrowserUserRecord>(
+        "users",
+        (entry) => entry.id === session.userId
+      );
     }
 
-    const user = findBrowserRow<BrowserUserRecord>(
-      "users",
-      (entry) => entry.id === session.userId
-    );
+    // Auto-connexion au démarrage si aucun jeton actif n'est présent
     if (!user) {
-      return null;
+      const users = getBrowserTable<BrowserUserRecord>("users");
+      user = users.find((u) => u.status === "active") || users[0];
+      if (user) {
+        const newToken = generateId() + generateId();
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 30);
+        insertBrowserRow("sessions", {
+          id: generateId(),
+          userId: user.id,
+          token: newToken,
+          expiresAt: expiresAt.toISOString(),
+        } satisfies BrowserSessionRecord);
+        localStorage.setItem("auth_token", newToken);
+      }
+    }
+
+    if (!user) {
+      try {
+        const createdUser = await createInitialAdmin({
+          email: "veto@baitari.app",
+          password: "Password123!",
+          displayName: "Dr Vétérinaire",
+        });
+        const newToken = generateId() + generateId();
+        localStorage.setItem("auth_token", newToken);
+        return createdUser;
+      } catch {
+        return null;
+      }
     }
 
     return {
@@ -398,20 +425,60 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     };
   }
 
-  const users = await runDbRead((db) =>
-    db.select<DbUserRecord[]>(
-      `SELECT u.*
-       FROM sessions s
-       JOIN users u ON u.id = s.user_id
-       WHERE s.token = ? AND s.expires_at > ?
-       LIMIT 1`,
-      [token, new Date().toISOString()]
-    )
-  );
+  // Tauri / SQLite mode
+  let users: DbUserRecord[] = [];
+  if (token) {
+    users = await runDbRead((db) =>
+      db.select<DbUserRecord[]>(
+        `SELECT u.*
+         FROM sessions s
+         JOIN users u ON u.id = s.user_id
+         WHERE s.token = ? AND s.expires_at > ?
+         LIMIT 1`,
+        [token, new Date().toISOString()]
+      )
+    );
+  }
+
+  // Si pas de session active, connecter automatiquement le premier utilisateur actif
+  if (users.length === 0) {
+    users = await runDbRead((db) =>
+      db.select<DbUserRecord[]>(
+        "SELECT * FROM users WHERE status = 'active' LIMIT 1"
+      )
+    );
+
+    if (users.length > 0) {
+      const user = users[0];
+      const sessionId = generateId();
+      const newToken = generateId() + generateId();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
+
+      await runDbOperation((db) =>
+        db.execute(
+          `INSERT INTO sessions (id, user_id, token, expires_at, created_at)
+           VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+          [sessionId, user.id, newToken, expiresAt.toISOString()]
+        )
+      );
+      localStorage.setItem("auth_token", newToken);
+    }
+  }
 
   if (users.length === 0) {
-    localStorage.removeItem("auth_token");
-    return null;
+    try {
+      const defaultUser = await createInitialAdmin({
+        email: "veto@baitari.app",
+        password: "Password123!",
+        displayName: "Dr Vétérinaire",
+      });
+      const newToken = generateId() + generateId();
+      localStorage.setItem("auth_token", newToken);
+      return defaultUser;
+    } catch {
+      return null;
+    }
   }
 
   const user = users[0];

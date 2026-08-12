@@ -18,6 +18,16 @@ import { toast } from "sonner";
 import { AgendaListView } from "@/components/AgendaListView";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -1376,6 +1386,8 @@ const Agenda: React.FC = () => {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
+  const [appointmentPendingDelete, setAppointmentPendingDelete] =
+    useState<Appointment | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const [editingAppointmentId, setEditingAppointmentId] = useState<
@@ -1417,8 +1429,26 @@ const Agenda: React.FC = () => {
     data: appointments,
     loading: loadingAppointments,
     saveAppointment,
+    transitionStatus,
     remove,
   } = useAppointmentsRepository();
+
+  const handleAppointmentStatusTransition = async (
+    appointment: Appointment,
+    nextStatus: Appointment["status"]
+  ) => {
+    try {
+      await transitionStatus(appointment.id, nextStatus);
+      toast.success(APPOINTMENT_STATUS_META[nextStatus].label);
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible de mettre à jour le rendez-vous."
+      );
+    }
+  };
 
   useEffect(() => {
     if (focus) {
@@ -2023,15 +2053,7 @@ const Agenda: React.FC = () => {
     }
   };
 
-  const deleteAppointment = async (appointment: Appointment) => {
-    const confirmed = window.confirm(
-      "Supprimer ce rendez-vous du planning ? Cette action est immédiate."
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
+  const performAppointmentDelete = async (appointment: Appointment) => {
     try {
       const removed = await remove(appointment.id);
       if (!removed) {
@@ -2056,10 +2078,15 @@ const Agenda: React.FC = () => {
       if (editingAppointmentId === appointment.id) {
         closeDialog();
       }
+      setAppointmentPendingDelete(null);
     } catch (error) {
       console.error(error);
       toast.error("Impossible de supprimer ce rendez-vous.");
     }
+  };
+
+  const deleteAppointment = (appointment: Appointment) => {
+    setAppointmentPendingDelete(appointment);
   };
 
   const handleSave = async () => {
@@ -2101,85 +2128,6 @@ const Agenda: React.FC = () => {
     const end = new Date(start.getTime() + duration * 60_000);
     const patient = patientsById.get(selectedPatientId);
 
-    const hasVetConflict = appointments.some((appointment) => {
-      if (appointment.id === editingAppointmentId) {
-        return false;
-      }
-      if (appointment.vetId !== effectiveVetId) {
-        return false;
-      }
-      if (
-        appointment.status === "cancelled" ||
-        appointment.status === "no_show"
-      ) {
-        return false;
-      }
-
-      const appointmentStart = normalizeDate(appointment.startTime);
-      const appointmentEnd = normalizeDate(appointment.endTime);
-      if (!(appointmentStart && appointmentEnd)) {
-        return false;
-      }
-
-      return start < appointmentEnd && end > appointmentStart;
-    });
-
-    if (hasVetConflict) {
-      const message =
-        "Ce créneau est déjà occupé pour le vétérinaire sélectionné. Choisissez un autre horaire ou un autre vétérinaire.";
-      setFormError(message);
-      toast.error(message);
-      return;
-    }
-
-    const roomConflict = appointments.find((appointment) => {
-      if (appointment.id === editingAppointmentId) {
-        return;
-      }
-      if ((appointment.room ?? "consult-1") !== formRoom) {
-        return;
-      }
-      if (
-        appointment.status === "cancelled" ||
-        appointment.status === "no_show"
-      ) {
-        return;
-      }
-      const appointmentStart = normalizeDate(appointment.startTime);
-      const appointmentEnd = normalizeDate(appointment.endTime);
-      if (!(appointmentStart && appointmentEnd)) {
-        return;
-      }
-      return start < appointmentEnd && end > appointmentStart
-        ? appointment
-        : undefined;
-    });
-
-    if (roomConflict) {
-      const roomLabel =
-        APPOINTMENT_ROOMS.find((r) => r.value === formRoom)?.i18nKey ??
-        "scheduling.room";
-      const conflictPatient = patientsById.get(roomConflict.patientId);
-      const conflictPatientName = conflictPatient?.name ?? "Patient local";
-      const message = t("scheduling.conflict.message", {
-        room: t(roomLabel),
-        start: new Date(roomConflict.startTime).toLocaleTimeString("fr-FR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        end: new Date(roomConflict.endTime).toLocaleTimeString("fr-FR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        patient: conflictPatientName,
-        defaultValue:
-          "La salle « {{room}} » est déjà réservée entre {{start}} et {{end}} pour {{patient}}.",
-      });
-      setFormError(message);
-      toast.error(message);
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -2192,7 +2140,11 @@ const Agenda: React.FC = () => {
         type: selectedType,
         startTime: start,
         endTime: end,
-        status: "scheduled",
+        status:
+          (editingAppointmentId
+            ? appointments.find((entry) => entry.id === editingAppointmentId)
+                ?.status
+            : undefined) ?? "scheduled",
         reason,
         room: formRoom,
       });
@@ -2366,7 +2318,7 @@ const Agenda: React.FC = () => {
   const visibleRowsCount = tableRowsByTab[tableTab].length;
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="agenda" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -2490,6 +2442,7 @@ const Agenda: React.FC = () => {
                       monthDays={monthDays}
                       onDateClick={(date) => setSelectedDate(date)}
                       onSelectAppointment={selectAppointment}
+                      onTransitionStatus={handleAppointmentStatusTransition}
                       selectedAppointmentId={selectedAppointmentId}
                       selectedDate={selectedDate}
                     />
@@ -3638,6 +3591,38 @@ const Agenda: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setAppointmentPendingDelete(null);
+          }
+        }}
+        open={Boolean(appointmentPendingDelete)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce rendez-vous ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Le rendez-vous sera retiré du planning immédiatement. Cette
+              action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (appointmentPendingDelete) {
+                  void performAppointmentDelete(appointmentPendingDelete);
+                }
+              }}
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

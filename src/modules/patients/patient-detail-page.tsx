@@ -177,13 +177,23 @@ export function PatientDetailPage({
         ),
     [appointmentsRepo.data, patientId]
   );
-  const lastAppointment = appointments[0] ?? null;
+  const lastAppointment = useMemo(
+    () =>
+      appointments.find(
+        (apt) =>
+          apt.status === "completed" &&
+          new Date(apt.startTime).getTime() <= now
+      ) ?? null,
+    [appointments, now]
+  );
   const nextAppointment = useMemo(
     () =>
       appointments
         .filter(
           (apt) =>
-            (apt.status === "scheduled" || apt.status === "in_progress") &&
+            ["scheduled", "confirmed", "arrived", "waiting", "in_progress"].includes(
+              apt.status
+            ) &&
             new Date(apt.startTime).getTime() > now
         )
         .sort(
@@ -191,6 +201,15 @@ export function PatientDetailPage({
             new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
         )[0] ?? null,
     [appointments, now]
+  );
+  const clinicalNoteAppointment = useMemo(
+    () =>
+      appointments.find(
+        (appointment) =>
+          appointment.status !== "cancelled" &&
+          appointment.status !== "no_show"
+      ) ?? null,
+    [appointments]
   );
 
   const handleTabChange = (val: PatientRecordSection) => {
@@ -287,7 +306,7 @@ export function PatientDetailPage({
   };
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-24 lg:px-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
       <div className="mx-auto w-full max-w-7xl space-y-5">
         <Button
           className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
@@ -302,35 +321,27 @@ export function PatientDetailPage({
         <PatientHeader
           onEditProfile={openProfileEditor}
           onNewAppointment={() => onNavigate("agenda")}
+          onOpenClinicalNote={
+            clinicalNoteAppointment
+              ? () => openSoapForAppointment(clinicalNoteAppointment.id)
+              : undefined
+          }
           owner={owner}
           patient={patient}
-        />
-
-        {patient.allergies || patient.chronicConditions ? (
-          <section
-            aria-label="Vigilance clinique"
-            className="clinical-subtle-surface grid gap-3 px-4 py-3 sm:grid-cols-2"
-          >
-            {patient.allergies ? (
-              <div className="min-w-0">
-                <p className="clinical-eyebrow text-rose-600 dark:text-rose-400">
-                  Allergies
-                </p>
-                <p className="mt-1 truncate font-medium text-sm">
-                  {patient.allergies}
-                </p>
-              </div>
-            ) : null}
-            {patient.chronicConditions ? (
-              <div className="min-w-0">
-                <p className="clinical-eyebrow">Antécédents</p>
-                <p className="mt-1 truncate font-medium text-sm">
-                  {patient.chronicConditions}
-                </p>
-              </div>
-            ) : null}
-          </section>
-        ) : null}
+        >
+          <PatientKpiStrip
+            className="rounded-none border-x-0 border-b-0 bg-card/60"
+            lastVisit={lastAppointment?.startTime ?? patient.lastVisit}
+            nextAppointment={nextAppointment ?? undefined}
+            nextVaccination={getNextDueVaccination(vaccinations)}
+            now={now}
+            onAppointmentClick={() => onNavigate("agenda")}
+            onTimelineClick={() => handleTabChange("timeline")}
+            onVaccinationClick={openNewVaccination}
+            onWeightClick={openNewWeight}
+            weightEntries={weightEntries}
+          />
+        </PatientHeader>
 
         {isProfileEditorOpen && profileDraft ? (
           <section className="clinical-feature-surface p-5 sm:p-6">
@@ -518,60 +529,37 @@ export function PatientDetailPage({
           </section>
         ) : null}
 
-        <PatientKpiStrip
-          lastVisit={lastAppointment?.startTime}
-          nextAppointment={nextAppointment ?? undefined}
-          nextVaccination={getNextDueVaccination(vaccinations)}
-          now={now}
-          onAppointmentClick={() => onNavigate("agenda")}
-          onTimelineClick={() => handleTabChange("timeline")}
-          onVaccinationClick={openNewVaccination}
-          onWeightClick={openNewWeight}
-          weightEntries={weightEntries}
-        />
-
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
-          <section
-            className="clinical-surface min-w-0 overflow-hidden"
-            aria-labelledby="medical-record-title"
-          >
-            <div className="flex items-center justify-between gap-4 border-border/70 border-b px-5 py-4">
+        <div className="space-y-4">
+          <section className="clinical-surface min-w-0 overflow-hidden" aria-labelledby="medical-record-title">
+            <div className="flex flex-col gap-4 border-border/70 border-b px-5 py-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex items-center gap-3">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <FirstAid className="size-4" weight="duotone" />
                 </span>
-                <h2
-                  className="font-semibold text-foreground text-lg tracking-[-0.03em]"
-                  id="medical-record-title"
-                >
-                  Dossier médical
-                </h2>
+                <div>
+                  <h2 className="font-semibold text-foreground text-lg tracking-[-0.02em]" id="medical-record-title">
+                    Dossier médical
+                  </h2>
+                  <p className="mt-0.5 text-muted-foreground text-xs">
+                    Historique, traitements et protocoles regroupés dans un seul registre.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="grid lg:min-h-[440px] lg:grid-cols-[190px_minmax(0,1fr)]">
               <nav
                 aria-label="Sections du dossier médical"
-                className="flex gap-1 overflow-x-auto border-border/70 border-b bg-muted/15 p-3 lg:flex-col lg:border-r lg:border-b-0 lg:p-4"
+                className="flex w-full max-w-full gap-1 overflow-x-auto rounded-xl bg-muted/60 p-1 xl:w-auto"
               >
                 {PATIENT_RECORD_SECTIONS.map((section) => {
                   const Icon = section.icon;
                   const isActive = activeTab === section.value;
-                  const activeTone =
-                    section.value === "timeline"
-                      ? "bg-sky-50 text-sky-800 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-200 dark:ring-sky-900"
-                      : section.value === "prescriptions"
-                        ? "bg-emerald-50 text-emerald-800 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-200 dark:ring-emerald-900"
-                        : section.value === "hospitalizations"
-                          ? "bg-amber-50 text-amber-800 ring-amber-100 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-900"
-                          : "bg-rose-50 text-rose-800 ring-rose-100 dark:bg-rose-950/40 dark:text-rose-200 dark:ring-rose-900";
                   return (
                     <button
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
-                        "flex h-10 shrink-0 cursor-pointer items-center gap-2.5 rounded-xl px-3 font-semibold text-xs transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:w-full lg:hover:translate-x-0.5",
+                        "flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-lg px-3 font-medium text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                         isActive
-                          ? cn("ring-1", activeTone)
-                          : "text-muted-foreground hover:bg-card hover:text-foreground"
+                          ? "bg-card text-foreground shadow-sm ring-1 ring-border/80"
+                          : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
                       )}
                       key={section.value}
                       onClick={() => handleTabChange(section.value)}
@@ -583,11 +571,13 @@ export function PatientDetailPage({
                   );
                 })}
               </nav>
+            </div>
 
-              <div className="min-w-0 space-y-4 p-3 sm:p-4">
+            <div className="min-w-0 p-4 sm:p-5">
                 {activeTab === "timeline" ? (
                   <PatientTimeline
                     className="border-0 shadow-none"
+                    onEditWeight={openEditWeight}
                     onJumpToAppointment={openSoapForAppointment}
                     patientId={patientId}
                   />
@@ -684,12 +674,12 @@ export function PatientDetailPage({
                     />
                   )
                 ) : null}
-              </div>
             </div>
           </section>
 
-          <aside className="space-y-5 xl:sticky xl:top-5">
+          <section aria-label="Suivi du dossier" className="grid items-stretch gap-4 lg:grid-cols-2">
             <PatientRecordHealth
+              className="h-full"
               onCompleteProfile={openProfileEditor}
               owner={owner}
               patient={patient}
@@ -697,7 +687,7 @@ export function PatientDetailPage({
               weightEntries={weightEntries}
             />
             <WeightEvolutionChart
-              className="@container/card"
+              className="@container/card h-full"
               emptyMessage={t("patientDetail.overview.weightEmpty")}
               entries={weightEntries}
               onAdd={openNewWeight}
@@ -705,13 +695,13 @@ export function PatientDetailPage({
               title={t("patientDetail.weight.title")}
             />
             <VaccinationList
-              className="@container/card"
+              className="@container/card h-full"
               onEdit={openEditVaccination}
               onNew={openNewVaccination}
               patientId={patientId}
             />
-            <PatientDocumentsList patientId={patientId} />
-          </aside>
+            <PatientDocumentsList className="h-full" patientId={patientId} />
+          </section>
         </div>
       </div>
 

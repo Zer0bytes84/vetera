@@ -14,10 +14,49 @@ export type RadiusSize = "sm" | "md" | "lg" | "xl" | "full";
 
 export type FontFamily = "geist" | "inter" | "system";
 
+export type HeaderPattern =
+  | "opaline"
+  | "aurora"
+  | "tide"
+  | "spectrum"
+  | "topography"
+  | "quiet";
+
+export const HEADER_PATTERNS: Record<
+  HeaderPattern,
+  { label: string; description: string }
+> = {
+  opaline: {
+    label: "Original",
+    description: "Le dégradé Baitari d'origine",
+  },
+  aurora: {
+    label: "Aurora",
+    description: "Mesh boréal aux lignes fluides",
+  },
+  tide: {
+    label: "Marée",
+    description: "Ondes turquoise et sauge",
+  },
+  spectrum: {
+    label: "Spectre",
+    description: "Mesh pêche, lilas et azur",
+  },
+  topography: {
+    label: "Floraison",
+    description: "Pastel poudré et motif botanique",
+  },
+  quiet: {
+    label: "Calme",
+    description: "Voile minéral presque neutre",
+  },
+};
+
 export interface ThemeConfig {
   accent: AccentColor;
   density: "compact" | "comfortable" | "spacious";
   font: FontFamily;
+  headerPattern: HeaderPattern;
   radius: RadiusSize;
   sidebarStyle: "inset" | "minimal" | "floating" | "classic";
 }
@@ -279,8 +318,11 @@ export const DEFAULT_THEME: ThemeConfig = {
   radius: "md",
   density: "comfortable",
   font: "inter",
+  headerPattern: "opaline",
   sidebarStyle: "classic",
 };
+
+const ORIGINAL_HEADER_RESTORE_KEY = "baitari_original_header_restored_v2";
 
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const root = document.documentElement;
@@ -384,6 +426,7 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.style.setProperty("--font-sans", FONT_MAP[font].css);
   root.style.setProperty("--font-heading", FONT_MAP[font].css);
   root.dataset.font = font;
+  root.dataset.headerPattern = config.headerPattern || "opaline";
   root.dataset.radius = config.radius;
   root.dataset.density = config.density;
 
@@ -397,7 +440,13 @@ export function getThemeConfig(): ThemeConfig {
     const stored = localStorage.getItem("theme-config");
     if (stored) {
       const parsed = JSON.parse(stored) as ThemeConfig;
-      return { ...DEFAULT_THEME, ...parsed };
+      const config = { ...DEFAULT_THEME, ...parsed };
+      if (localStorage.getItem(ORIGINAL_HEADER_RESTORE_KEY) !== "true") {
+        config.headerPattern = DEFAULT_THEME.headerPattern;
+        localStorage.setItem("theme-config", JSON.stringify(config));
+        localStorage.setItem(ORIGINAL_HEADER_RESTORE_KEY, "true");
+      }
+      return config;
     }
   } catch {}
   return { ...DEFAULT_THEME };

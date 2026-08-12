@@ -826,8 +826,8 @@ const resources = {
       },
       consultations: {
         soap: {
-          title: "Note SOAP",
-          subtitle: "S · O · A · P",
+          title: "Note clinique SOAP",
+          subtitle: "Observations · Examen · Analyse · Plan de soins",
           sections: {
             subjective: "Subjectif",
             objective: "Objectif",
@@ -862,6 +862,10 @@ const resources = {
             transcriptPlaceholder: "Dictée en direct…",
             parseError:
               "Impossible de parser la réponse IA. Réessayez ou ajustez la dictée.",
+            modelUnavailable:
+              "Le moteur IA local n'est pas disponible. Vérifiez WebGPU ou réessayez.",
+            retryModel: "Réessayer le moteur",
+            reviewRequired: "À vérifier avant application",
             clear: "Effacer toute la note",
           },
           meta: {
@@ -870,6 +874,9 @@ const resources = {
             autoSaved: "Sauvegarde automatique",
             templateVersion: "Version",
             upserting: "Enregistrement…",
+            save: "Enregistrer",
+            saveError: "Échec de l'enregistrement. Réessayez.",
+            pendingSave: "À enregistrer",
             confidenceLabel: "Confiance IA",
             aiAssisted: "Assisté par IA",
           },
@@ -1939,8 +1946,8 @@ const resources = {
       },
       consultations: {
         soap: {
-          title: "SOAP note",
-          subtitle: "Subjective · Objective · Assessment · Plan",
+          title: "SOAP clinical note",
+          subtitle: "History · Examination · Assessment · Care plan",
           sections: {
             subjective: "Subjective",
             objective: "Objective",
@@ -1972,6 +1979,10 @@ const resources = {
             transcriptPlaceholder: "Live dictation…",
             parseError:
               "Could not parse the AI response. Retry or adjust the dictation.",
+            modelUnavailable:
+              "The local AI engine is unavailable. Check WebGPU or try again.",
+            retryModel: "Retry engine",
+            reviewRequired: "Review before applying",
             clear: "Clear entire note",
           },
           meta: {
@@ -1980,6 +1991,9 @@ const resources = {
             autoSaved: "Auto-saved",
             templateVersion: "Version",
             upserting: "Saving…",
+            save: "Save",
+            saveError: "Save failed. Try again.",
+            pendingSave: "Changes not saved",
             confidenceLabel: "AI confidence",
             aiAssisted: "AI-assisted",
           },

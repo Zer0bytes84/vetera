@@ -143,10 +143,19 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
       compact: false,
     };
   }, [currentLocale, section, t, userName]);
-  const heading = title || headerCopy.text;
+  const isDashboard = section === "dashboard";
+  const heading = title || (isDashboard ? headerCopy.text : headerCopy.eyebrow);
   const resolvedSubtitle = subtitle || headerCopy.subtitle;
 
   const renderTitle = (titleText: string, emoji: string) => {
+    if (!isDashboard) {
+      return (
+        <h1 className="font-semibold text-2xl text-foreground tracking-[-0.025em] md:text-[28px]">
+          {titleText}
+        </h1>
+      );
+    }
+
     if (!(userName && titleText.includes(userName))) {
       return (
         <h1 className="flex items-center gap-2 font-semibold text-2xl text-foreground tracking-tight md:text-3xl">
@@ -184,7 +193,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
         <div className="min-w-0 space-y-1">
           {renderTitle(heading, headerCopy.emoji)}
           {resolvedSubtitle && (
-            <p className="max-w-[70ch] text-muted-foreground text-sm leading-relaxed">
+            <p className="max-w-[70ch] text-muted-foreground text-sm leading-5">
               {resolvedSubtitle}
             </p>
           )}

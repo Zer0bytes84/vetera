@@ -147,7 +147,7 @@ async function saveMetadata(metadata: BackupMetadata): Promise<void> {
  * Get current app version
  */
 export function getAppVersion(): string {
-  return import.meta.env.VITE_APP_VERSION || "2.1.11";
+  return import.meta.env.VITE_APP_VERSION || "3.3.0";
 }
 
 /**

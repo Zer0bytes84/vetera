@@ -2,10 +2,10 @@ import {
   CheckmarkCircle01Icon,
   HelpCircleIcon,
   Logout01Icon,
+  StethoscopeIcon,
   Moon01Icon,
   Search01Icon,
   Settings01Icon,
-  SparklesIcon,
   Sun01Icon,
   TranslateIcon,
   User02Icon,
@@ -13,8 +13,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
-  lazy,
-  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -71,13 +69,10 @@ const ALL_VIEWS: View[] = [
   "taches",
   "aide",
   "patient_detail",
+  "assistant",
 ];
 
 const DEFAULT_VIEW: View = "dashboard";
-const AIAgentChat = lazy(async () => {
-  const module = await import("@/components/AIAgentChat");
-  return { default: module.AIAgentChat };
-});
 
 const HASH_PREFIX_REGEX = /^#\/?/;
 const PATIENT_DETAIL_PREFIX = /^patient\/([A-Za-z0-9_-]+)$/;
@@ -120,7 +115,16 @@ function AppShellInner() {
     if (typeof window === "undefined") {
       return DEFAULT_VIEW;
     }
-    return parseRouteFromHash(window.location.hash).currentView;
+    const initialView = parseRouteFromHash(window.location.hash).currentView;
+    return initialView === "parametres" || initialView === "assistant"
+      ? DEFAULT_VIEW
+      : initialView;
+  });
+  const [settingsOpen, setSettingsOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return parseRouteFromHash(window.location.hash).currentView === "parametres";
   });
   const [currentPatientId, setCurrentPatientId] = useState<string | null>(
     () => {
@@ -131,18 +135,47 @@ function AppShellInner() {
     }
   );
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [aiAgentOpen, setAiAgentOpen] = useState(false);
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return parseRouteFromHash(window.location.hash).currentView === "assistant";
+  });
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
 
   const handleNavigate = useCallback((view: View) => {
+    if (view === "assistant") {
+      setSettingsOpen(false);
+      setAiAssistantOpen(true);
+      return;
+    }
+    if (view === "parametres") {
+      setSettingsOpen(true);
+      return;
+    }
+    if (settingsOpen && view === "dashboard") {
+      setSettingsOpen(false);
+      return;
+    }
+    setSettingsOpen(false);
     setCurrentView(view);
     setCurrentPatientId(null);
-  }, []);
+  }, [settingsOpen]);
 
   const handleNavigateToPatient = useCallback((patientId: string) => {
+    setSettingsOpen(false);
     setCurrentView("patient_detail");
     setCurrentPatientId(patientId);
   }, []);
+
+  const handleCloseAIAgent = useCallback(() => {
+    setAiAssistantOpen(false);
+    const hash =
+      currentView === "patient_detail" && currentPatientId
+        ? `#/patient/${currentPatientId}`
+        : `#/${currentView}`;
+    window.history.replaceState(null, "", hash);
+  }, [currentPatientId, currentView]);
 
   // useNotificationToasts(handleNavigate, handleNavigateToPatient);
 
@@ -174,7 +207,6 @@ function AppShellInner() {
     currentUser?.avatarUrl ||
     readCachedProfile(currentUser?.email)?.avatarUrl ||
     cachedAvatarUrl;
-  const isDarkMode = theme === "dark";
   const { setThemeMode, themeMode } = useThemeMode();
   const {
     handleDoubleClick,
@@ -185,6 +217,9 @@ function AppShellInner() {
   const { variant, collapsible } = useLayout();
 
   useEffect(() => {
+    if (settingsOpen) {
+      return;
+    }
     let hash = `#/${currentView}`;
     if (currentView === "patient_detail" && currentPatientId) {
       hash = `#/patient/${currentPatientId}`;
@@ -192,11 +227,26 @@ function AppShellInner() {
     if (window.location.hash !== hash) {
       window.history.replaceState(null, "", hash);
     }
-  }, [currentView, currentPatientId]);
+  }, [currentView, currentPatientId, settingsOpen]);
 
   useEffect(() => {
     const handleHashChange = () => {
       const next = parseRouteFromHash(window.location.hash);
+      if (next.currentView === "assistant") {
+        setAiAssistantOpen(true);
+        setCurrentView(DEFAULT_VIEW);
+        setCurrentPatientId(null);
+        return;
+      }
+      if (next.currentView === "parametres") {
+        setSettingsOpen(true);
+        setCurrentView((previousView) =>
+          previousView === "parametres" ? DEFAULT_VIEW : previousView
+        );
+        setCurrentPatientId(null);
+        return;
+      }
+      setSettingsOpen(false);
       setCurrentView((previousView) =>
         previousView === next.currentView ? previousView : next.currentView
       );
@@ -218,9 +268,6 @@ function AppShellInner() {
         target.tagName === "TEXTAREA" ||
         target.isContentEditable
       ) {
-        if (event.key === "Escape" && aiAgentOpen) {
-          setAiAgentOpen(false);
-        }
         return;
       }
 
@@ -231,7 +278,7 @@ function AppShellInner() {
       }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "j") {
         event.preventDefault();
-        setAiAgentOpen((current) => !current);
+        handleNavigate("assistant");
         return;
       }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "n") {
@@ -261,14 +308,11 @@ function AppShellInner() {
         setPaletteOpen(true);
         return;
       }
-      if (event.key === "Escape" && aiAgentOpen) {
-        setAiAgentOpen(false);
-      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentView, handleNavigate, aiAgentOpen]);
+  }, [currentView, handleNavigate]);
 
   const content = useMemo(
     () =>
@@ -278,7 +322,8 @@ function AppShellInner() {
         patientId: currentPatientId,
         currentTheme: themeMode,
         onThemeChange: setThemeMode,
-        onOpenAIAgent: () => setAiAgentOpen(true),
+        onOpenAIAgent: () => handleNavigate("assistant"),
+        userAvatarUrl: resolvedAvatarUrl,
         userDisplayName:
           currentUser?.displayName || currentUser?.email || "Utilisateur",
       }),
@@ -291,8 +336,19 @@ function AppShellInner() {
       themeMode,
       currentUser?.displayName,
       currentUser?.email,
+      resolvedAvatarUrl,
     ]
   );
+
+  const settingsModal = settingsOpen
+    ? renderView("parametres", {
+        currentTheme: themeMode,
+        onNavigate: handleNavigate,
+        onThemeChange: setThemeMode,
+        userDisplayName:
+          currentUser?.displayName || currentUser?.email || "Utilisateur",
+      })
+    : null;
 
   const userDisplayName =
     currentUser?.displayName || currentUser?.email || "Utilisateur";
@@ -309,12 +365,21 @@ function AppShellInner() {
 
   const { toggleTheme } = useCircularTransition();
 
+  const assistantModal = aiAssistantOpen
+    ? renderView("assistant", {
+        currentTheme: themeMode,
+        onNavigate: handleNavigate,
+        onThemeChange: setThemeMode,
+        onCloseAIAgent: handleCloseAIAgent,
+        patientId: currentPatientId,
+        userAvatarUrl: resolvedAvatarUrl,
+        userDisplayName,
+      })
+    : null;
+
   return (
     <SidebarProvider
-      className={cn(
-        "relative isolate bg-background",
-        isRtl && "rtl-shell"
-      )}
+      className={cn("relative isolate bg-background", isRtl && "rtl-shell")}
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
@@ -352,10 +417,13 @@ function AppShellInner() {
             "!mb-0 !rounded-t-[18px] !rounded-b-none !border-none !bg-background p-0 shadow-sm ring-0 dark:!bg-zinc-950",
           variant === "floating" &&
             "!rounded-[24px] !bg-transparent p-0 shadow-sm ring-1 ring-black/5 dark:ring-white/8",
+          variant === "glass" &&
+            "!rounded-[22px] !bg-transparent p-0 shadow-none ring-0",
           "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "md:peer-data-[variant=inset]:max-h-dvh",
           "md:peer-data-[variant=minimal]:max-h-[calc(100dvh-8px)]",
           "md:peer-data-[variant=floating]:max-h-dvh",
+          "md:peer-data-[variant=glass]:max-h-[calc(100dvh-24px)]",
           "max-h-dvh",
           "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0",
           "md:peer-data-[variant=minimal]:peer-data-[state=collapsed]:!ms-0"
@@ -388,7 +456,9 @@ function AppShellInner() {
             variant === "minimal" &&
               "rounded-t-[18px] rounded-b-none shadow-none ring-0",
             variant === "floating" &&
-              "rounded-[22px] shadow-2xl ring-1 ring-black/10 dark:ring-white/14"
+              "rounded-[22px] shadow-2xl ring-1 ring-black/10 dark:ring-white/14",
+            variant === "glass" &&
+              "rounded-[22px] shadow-[0_18px_55px_-32px_rgba(15,23,42,0.32)] ring-1 ring-black/[0.06] dark:shadow-[0_24px_64px_-34px_rgba(0,0,0,0.8)] dark:ring-white/10"
           )}
           ref={sidebarScrollRef}
         >
@@ -398,6 +468,7 @@ function AppShellInner() {
             className={cn(
               "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
               variant === "minimal" && "rounded-t-[18px]",
+              variant === "glass" && "rounded-t-[22px]",
               isDesktopRuntime && "cursor-grab active:cursor-grabbing"
             )}
             data-window-drag-region={isDesktopRuntime ? "true" : undefined}
@@ -483,44 +554,50 @@ function AppShellInner() {
                   onNavigateToPatient={handleNavigateToPatient}
                 />
 
-                {/* ── Theme switch ────────────────────────────────────── */}
+                {/* ── Assistant clinique ─────────────────────────────────── */}
+                <Button
+                  aria-label="Ouvrir l’assistant IA"
+                  className={cn(
+                    "size-9 rounded-full border border-black/8 bg-white/40 p-0 shadow-none backdrop-blur-md transition-all hover:bg-white/70 focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10",
+                    aiAssistantOpen &&
+                      "bg-primary/10 text-primary ring-2 ring-primary/20 dark:bg-primary/15"
+                  )}
+                  onClick={() => handleNavigate("assistant")}
+                  size="icon"
+                  title="Assistant IA · ⌘J"
+                  variant="ghost"
+                >
+                  <HugeiconsIcon
+                    className="size-[17px]"
+                    icon={StethoscopeIcon}
+                    strokeWidth={1.6}
+                  />
+                </Button>
+
+                {/* ── Theme button ────────────────────────────────────── */}
                 <button
-                  aria-checked={isDarkMode}
-                  aria-label={
-                    isDarkMode
-                      ? "Activer le mode clair"
-                      : "Activer le mode sombre"
-                  }
-                  className="group relative flex h-9 w-[66px] cursor-pointer items-center rounded-full border border-black/8 bg-white/40 p-1 shadow-none backdrop-blur-md transition-colors hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                  aria-label="Changer le thème"
+                  className="group relative grid size-9 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-all duration-200 hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
                   onClick={toggleTheme}
-                  role="switch"
+                  title="Changer le thème · D"
                   type="button"
                 >
                   <span
                     aria-hidden="true"
-                    className={cn(
-                      "absolute top-1 size-7 rounded-full bg-white shadow-sm ring-1 ring-black/5 transition-transform duration-300 ease-out dark:bg-zinc-700 dark:ring-white/10",
-                      isDarkMode ? "translate-x-[30px]" : "translate-x-0"
-                    )}
-                  />
-                  <span className="relative z-10 flex size-7 items-center justify-center">
+                    className="absolute inset-0 grid place-items-center transition-all duration-300 ease-out dark:-rotate-90 dark:scale-75 dark:opacity-0"
+                  >
                     <HugeiconsIcon
-                      className={cn(
-                        "size-3.5 transition-colors",
-                        isDarkMode
-                          ? "text-muted-foreground/55"
-                          : "text-amber-600"
-                      )}
+                      className="size-[17px] text-amber-600"
                       icon={Sun01Icon}
                       strokeWidth={1.7}
                     />
                   </span>
-                  <span className="relative z-10 flex size-7 items-center justify-center">
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 grid rotate-90 scale-75 place-items-center opacity-0 transition-all duration-300 ease-out dark:rotate-0 dark:scale-100 dark:opacity-100"
+                  >
                     <HugeiconsIcon
-                      className={cn(
-                        "size-3.5 transition-colors",
-                        isDarkMode ? "text-sky-300" : "text-muted-foreground/55"
-                      )}
+                      className="size-[17px] text-sky-300"
                       icon={Moon01Icon}
                       strokeWidth={1.7}
                     />
@@ -564,24 +641,6 @@ function AppShellInner() {
                     </div>
 
                     <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                    {/* AI Assistant */}
-                    <DropdownMenuItem
-                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                      onClick={() => setAiAgentOpen(true)}
-                    >
-                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-500/20">
-                        <HugeiconsIcon
-                          className="size-4 text-violet-600 dark:text-violet-400"
-                          icon={SparklesIcon}
-                          strokeWidth={1.5}
-                        />
-                      </div>
-                      <span className="font-medium text-sm">Assistant IA</span>
-                      <kbd className="ml-auto h-5 rounded border border-zinc-200 bg-zinc-100 px-1.5 font-mono text-[10px] text-muted-foreground dark:border-white/10 dark:bg-white/5">
-                        ⌘J
-                      </kbd>
-                    </DropdownMenuItem>
 
                     {/* Language submenu */}
                     <DropdownMenuSub>
@@ -703,16 +762,22 @@ function AppShellInner() {
         onNavigate={handleNavigate}
         onNavigateToPatient={handleNavigateToPatient}
       />
-
-      {aiAgentOpen ? (
-        <Suspense fallback={null}>
-          <AIAgentChat
-            currentView={currentView}
-            isOpen={aiAgentOpen}
-            onClose={() => setAiAgentOpen(false)}
-          />
-        </Suspense>
-      ) : null}
+      {settingsModal}
+      {aiAssistantOpen && (
+        <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/40 backdrop-blur-sm">
+          <motion.div
+            aria-label="Coworker Studio IA"
+            className="pointer-events-auto relative h-[min(880px,calc(100dvh-24px))] w-[min(1140px,calc(100vw-24px))] overflow-hidden rounded-[28px] border border-white/20 dark:border-white/10 bg-background/96 text-foreground shadow-2xl shadow-black/40 backdrop-blur-3xl ring-1 ring-black/10 dark:ring-white/15"
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            role="region"
+          >
+            {assistantModal}
+          </motion.div>
+        </div>
+      )}
     </SidebarProvider>
   );
 }

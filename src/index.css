@@ -408,6 +408,20 @@
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted-foreground) 20%,
+    var(--foreground) 50%,
+    var(--muted-foreground) 80%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
 /* ─── Glass Surface ─── */
 .glass-surface {
   background: rgba(255, 255, 255, 0.7);
@@ -1166,6 +1180,698 @@ button:focus-visible,
   box-shadow: 0 20px 42px -22px oklch(0.596 0.145 163 / 0.5);
 }
 
+/* Header signatures: art direction behind the Protocol-style glass layer. */
+.header-pattern-field {
+  isolation: isolate;
+}
+
+.header-pattern-group {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+}
+
+html:not([data-header-pattern])
+  .header-pattern-live
+  .header-pattern-group[data-pattern="opaline"],
+html[data-header-pattern="opaline"]
+  .header-pattern-live
+  .header-pattern-group[data-pattern="opaline"],
+html[data-header-pattern="aurora"]
+  .header-pattern-live
+  .header-pattern-group[data-pattern="aurora"],
+html[data-header-pattern="tide"]
+  .header-pattern-live
+  .header-pattern-group[data-pattern="tide"],
+html[data-header-pattern="spectrum"]
+  .header-pattern-live
+  .header-pattern-group[data-pattern="spectrum"],
+html[data-header-pattern="topography"]
+  .header-pattern-live
+  .header-pattern-group[data-pattern="topography"],
+html[data-header-pattern="quiet"]
+  .header-pattern-live
+  .header-pattern-group[data-pattern="quiet"],
+.header-pattern-preview[data-preview-pattern="opaline"]
+  .header-pattern-group[data-pattern="opaline"],
+.header-pattern-preview[data-preview-pattern="aurora"]
+  .header-pattern-group[data-pattern="aurora"],
+.header-pattern-preview[data-preview-pattern="tide"]
+  .header-pattern-group[data-pattern="tide"],
+.header-pattern-preview[data-preview-pattern="spectrum"]
+  .header-pattern-group[data-pattern="spectrum"],
+.header-pattern-preview[data-preview-pattern="topography"]
+  .header-pattern-group[data-pattern="topography"],
+.header-pattern-preview[data-preview-pattern="quiet"]
+  .header-pattern-group[data-pattern="quiet"] {
+  display: block;
+}
+
+.header-pattern-shape {
+  position: absolute;
+  display: block;
+  transform: translateZ(0);
+}
+
+.pattern-opaline-one {
+  top: -11rem;
+  right: 12%;
+  width: 34rem;
+  height: 14rem;
+  background: linear-gradient(
+    112deg,
+    #fff2bd 18%,
+    #f4acbb 43%,
+    #df81ce 68%,
+    #a866ff 94%
+  );
+  border-radius: 48% 52% 58% 42%;
+  opacity: 0.82;
+  filter: blur(48px);
+  transform: rotate(-9deg) translateZ(0);
+}
+
+.pattern-opaline-two {
+  top: -3.8rem;
+  right: 31%;
+  width: 15rem;
+  height: 3.5rem;
+  background: rgb(255 255 255 / 0.62);
+  border-radius: 999px;
+  opacity: 0.72;
+  filter: blur(26px);
+  transform: rotate(-13deg) translateZ(0);
+}
+
+.pattern-aurora-one {
+  top: -8.5rem;
+  right: 8%;
+  width: 44rem;
+  height: 13rem;
+  background: linear-gradient(
+    102deg,
+    transparent 2%,
+    #a7f3d0 21%,
+    #5eead4 43%,
+    #7dd3fc 64%,
+    #a5b4fc 81%,
+    transparent 98%
+  );
+  border-radius: 42% 58% 52% 48%;
+  opacity: 0.76;
+  filter: blur(42px);
+  transform: skewY(-7deg) rotate(-4deg) translateZ(0);
+}
+
+.pattern-aurora-two {
+  top: -2rem;
+  right: 27%;
+  width: 28rem;
+  height: 1.4rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(153 246 228 / 0.74),
+    rgb(186 230 253 / 0.64),
+    transparent
+  );
+  border-radius: 999px;
+  filter: blur(10px);
+  transform: rotate(-7deg) translateZ(0);
+}
+
+.pattern-aurora-three {
+  top: -5rem;
+  right: 48%;
+  width: 6rem;
+  height: 10rem;
+  background: rgb(255 255 255 / 0.52);
+  border-radius: 50%;
+  filter: blur(24px);
+}
+
+.pattern-tide-one,
+.pattern-tide-two,
+.pattern-tide-three {
+  border: 1.75rem solid transparent;
+  border-radius: 50%;
+  filter: blur(13px);
+}
+
+.pattern-tide-one {
+  top: -12rem;
+  right: 5%;
+  width: 42rem;
+  height: 19rem;
+  border-bottom-color: rgb(45 212 191 / 0.54);
+  transform: rotate(-8deg) translateZ(0);
+}
+
+.pattern-tide-two {
+  top: -10.5rem;
+  right: 21%;
+  width: 35rem;
+  height: 17rem;
+  border-bottom-color: rgb(125 211 252 / 0.5);
+  transform: rotate(-4deg) translateZ(0);
+}
+
+.pattern-tide-three {
+  top: -8.2rem;
+  right: 40%;
+  width: 25rem;
+  height: 13rem;
+  border-bottom-color: rgb(255 255 255 / 0.62);
+  filter: blur(17px);
+  transform: rotate(1deg) translateZ(0);
+}
+
+.pattern-spectrum-one {
+  top: -9rem;
+  right: 11%;
+  width: 42rem;
+  height: 13rem;
+  background: conic-gradient(
+    from 257deg at 48% 54%,
+    transparent 0deg,
+    rgb(253 230 138 / 0.62) 18deg,
+    rgb(251 113 133 / 0.6) 34deg,
+    rgb(196 181 253 / 0.68) 52deg,
+    rgb(125 211 252 / 0.62) 68deg,
+    transparent 91deg
+  );
+  border-radius: 50%;
+  filter: blur(31px);
+  transform: rotate(-6deg) translateZ(0);
+}
+
+.pattern-spectrum-two {
+  top: -1.1rem;
+  right: 28%;
+  width: 24rem;
+  height: 0.42rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(251 191 36 / 0.72),
+    rgb(244 114 182 / 0.72),
+    rgb(129 140 248 / 0.72),
+    transparent
+  );
+  border-radius: 999px;
+  filter: blur(4px);
+  transform: rotate(-9deg) translateZ(0);
+}
+
+.pattern-topography-glow {
+  top: -9rem;
+  right: 8%;
+  width: 42rem;
+  height: 15rem;
+  background: color-mix(in oklab, var(--primary) 25%, transparent);
+  border-radius: 50%;
+  opacity: 0.5;
+  filter: blur(50px);
+  transform: rotate(-5deg) translateZ(0);
+}
+
+.pattern-topography-lines {
+  position: absolute;
+  top: -6.75rem;
+  right: 5%;
+  width: min(52rem, 74vw);
+  height: 13rem;
+  opacity: 0.26;
+  transform: rotate(-5deg) translateZ(0);
+}
+
+.pattern-topography-lines path {
+  stroke: color-mix(in oklab, var(--primary) 68%, #64748b 32%);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.pattern-quiet-glow {
+  top: -7rem;
+  right: 18%;
+  width: 28rem;
+  height: 10rem;
+  background: color-mix(in oklab, var(--primary) 9%, transparent);
+  border-radius: 50%;
+  opacity: 0.36;
+  filter: blur(54px);
+}
+
+.dark .header-pattern-live .header-pattern-group {
+  opacity: 0.56;
+  mix-blend-mode: screen;
+}
+
+.dark .header-pattern-live .pattern-topography-lines {
+  opacity: 0.34;
+}
+
+.header-pattern-preview {
+  height: 4.75rem;
+  background: #f6f7f7;
+}
+
+.dark .header-pattern-preview {
+  background: #18181b;
+}
+
+.header-pattern-preview .header-pattern-group {
+  opacity: 0.92;
+}
+
+.header-pattern-preview .header-pattern-shape,
+.header-pattern-preview .pattern-topography-lines {
+  transform: scale(0.34) translateZ(0);
+  transform-origin: top right;
+}
+
+.header-pattern-preview .pattern-opaline-one,
+.header-pattern-preview .pattern-aurora-one,
+.header-pattern-preview .pattern-spectrum-one {
+  top: -1.3rem;
+  right: -4.5rem;
+}
+
+.header-pattern-preview .pattern-opaline-two,
+.header-pattern-preview .pattern-aurora-two,
+.header-pattern-preview .pattern-spectrum-two {
+  top: 1.4rem;
+  right: -1rem;
+}
+
+.header-pattern-preview .pattern-aurora-three {
+  top: -0.5rem;
+  right: 4rem;
+}
+
+.header-pattern-preview .pattern-tide-one {
+  top: -1.8rem;
+  right: -8rem;
+}
+
+.header-pattern-preview .pattern-tide-two {
+  top: -0.7rem;
+  right: -2rem;
+}
+
+.header-pattern-preview .pattern-tide-three {
+  top: 0.5rem;
+  right: 3rem;
+}
+
+.header-pattern-preview .pattern-topography-glow,
+.header-pattern-preview .pattern-quiet-glow {
+  top: -0.6rem;
+  right: -4rem;
+}
+
+.header-pattern-preview .pattern-topography-lines {
+  top: 0.25rem;
+  right: -7rem;
+  width: 38rem;
+  height: 9rem;
+  opacity: 0.5;
+}
+
+.header-pattern-preview-glass {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.34),
+    rgb(255 255 255 / 0.08)
+  );
+  border-top: 1px solid rgb(255 255 255 / 0.74);
+  backdrop-filter: blur(5px) saturate(1.08);
+  -webkit-backdrop-filter: blur(5px) saturate(1.08);
+}
+
+.dark .header-pattern-preview-glass {
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.07),
+    rgb(0 0 0 / 0.08)
+  );
+  border-top-color: rgb(255 255 255 / 0.18);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header-pattern-live .header-pattern-group[data-pattern="aurora"] {
+    animation: header-aurora-drift 18s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes header-aurora-drift {
+  from {
+    transform: translate3d(-1.5%, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(1.5%, 0.25rem, 0) scale(1.025);
+  }
+}
+
+/* Mesh edition: compact watercolor fields with restrained flourish linework. */
+.header-pattern-live {
+  display: none;
+}
+
+html:not([data-header-pattern]) .header-pattern-original-live,
+html[data-header-pattern="opaline"] .header-pattern-original-live {
+  display: block;
+}
+
+html[data-header-pattern="aurora"] .header-pattern-live,
+html[data-header-pattern="tide"] .header-pattern-live,
+html[data-header-pattern="spectrum"] .header-pattern-live,
+html[data-header-pattern="topography"] .header-pattern-live,
+html[data-header-pattern="quiet"] .header-pattern-live {
+  display: block;
+}
+
+.header-pattern-live .header-pattern-group {
+  inset: auto;
+  top: -11rem;
+  right: 10rem;
+  width: 33rem;
+  height: 14rem;
+  overflow: visible;
+  border-radius: 999px;
+  transform: rotate(-10deg) translateZ(0);
+  transform-origin: center;
+}
+
+@media (min-width: 48rem) {
+  .header-pattern-live .header-pattern-group {
+    right: 12rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .header-pattern-live .header-pattern-group {
+    right: 14rem;
+  }
+}
+
+.header-pattern-live .header-pattern-mesh {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  opacity: 0.82;
+  filter: blur(15px) saturate(1.04);
+  transform: translateZ(0);
+}
+
+.header-pattern-live .header-pattern-ornament {
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(10deg) translateZ(0);
+}
+
+.header-pattern-live::after {
+  display: none;
+}
+
+.header-pattern-live .header-pattern-group::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  border-radius: inherit;
+  opacity: 0.055;
+  mix-blend-mode: soft-light;
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    black 38%,
+    transparent 82%
+  );
+  mask-image: radial-gradient(ellipse at center, black 38%, transparent 82%);
+}
+
+.header-pattern-field::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.055;
+  mix-blend-mode: soft-light;
+}
+
+.header-pattern-mesh {
+  position: absolute;
+  top: -72%;
+  right: clamp(4rem, 12vw, 13rem);
+  z-index: 0;
+  display: block;
+  width: min(34rem, 46vw);
+  height: 235%;
+  opacity: 0.82;
+  filter: blur(15px) saturate(1.04);
+  transform: translateZ(0) scale(1.025);
+  border-radius: 48% 52% 55% 45%;
+}
+
+.pattern-opaline-mesh {
+  background:
+    radial-gradient(ellipse at 19% 26%, rgb(254 215 226 / 0.7), transparent 31%),
+    radial-gradient(ellipse at 73% 4%, rgb(233 213 255 / 0.76), transparent 32%),
+    radial-gradient(ellipse at 51% 91%, rgb(254 240 196 / 0.72), transparent 34%),
+    radial-gradient(ellipse at 96% 72%, rgb(191 219 254 / 0.56), transparent 29%),
+    linear-gradient(108deg, #fffaf5 8%, #faf7ff 52%, #f8fbff 94%);
+}
+
+.pattern-aurora-mesh {
+  background:
+    radial-gradient(ellipse at 12% 76%, rgb(167 243 208 / 0.72), transparent 32%),
+    radial-gradient(ellipse at 43% 6%, rgb(153 246 228 / 0.66), transparent 34%),
+    radial-gradient(ellipse at 75% 90%, rgb(186 230 253 / 0.72), transparent 35%),
+    radial-gradient(ellipse at 98% 12%, rgb(199 210 254 / 0.72), transparent 30%),
+    linear-gradient(112deg, #f5fff9, #f5fbff 58%, #faf7ff);
+}
+
+.pattern-tide-mesh {
+  background:
+    radial-gradient(ellipse at 8% 20%, rgb(209 250 229 / 0.82), transparent 30%),
+    radial-gradient(ellipse at 41% 94%, rgb(153 246 228 / 0.64), transparent 36%),
+    radial-gradient(ellipse at 76% 7%, rgb(207 250 254 / 0.78), transparent 34%),
+    radial-gradient(ellipse at 100% 82%, rgb(186 230 253 / 0.58), transparent 29%),
+    linear-gradient(103deg, #fbfff9, #f4fffd 50%, #f7fbff);
+}
+
+.pattern-spectrum-mesh {
+  background:
+    radial-gradient(ellipse at 6% 78%, rgb(254 215 170 / 0.65), transparent 31%),
+    radial-gradient(ellipse at 35% 2%, rgb(254 205 211 / 0.65), transparent 34%),
+    radial-gradient(ellipse at 67% 92%, rgb(221 214 254 / 0.72), transparent 35%),
+    radial-gradient(ellipse at 98% 11%, rgb(186 230 253 / 0.66), transparent 31%),
+    linear-gradient(110deg, #fffbf5, #fff7fa 37%, #f8f6ff 70%, #f5fbff);
+}
+
+.pattern-floraison-mesh {
+  background:
+    radial-gradient(ellipse at 8% 86%, rgb(199 210 254 / 0.5), transparent 34%),
+    radial-gradient(ellipse at 29% 18%, rgb(254 226 226 / 0.6), transparent 35%),
+    radial-gradient(ellipse at 68% 102%, rgb(254 240 214 / 0.7), transparent 36%),
+    radial-gradient(ellipse at 96% 8%, rgb(245 208 254 / 0.58), transparent 31%),
+    linear-gradient(105deg, #fffdfa, #fbf8ff 56%, #fff9fb);
+}
+
+.pattern-quiet-mesh {
+  background:
+    radial-gradient(ellipse at 24% 25%, color-mix(in oklab, var(--primary) 8%, transparent), transparent 34%),
+    radial-gradient(ellipse at 82% 80%, rgb(226 232 240 / 0.44), transparent 32%),
+    linear-gradient(110deg, #fdfdfc, #f8faf9 52%, #fbfbfc);
+  opacity: 0.62;
+}
+
+.header-pattern-ornament {
+  position: absolute;
+  top: 0;
+  right: clamp(4rem, 11vw, 12rem);
+  z-index: 1;
+  width: min(36rem, 48vw);
+  height: 100%;
+  overflow: visible;
+  color: color-mix(in oklab, var(--primary) 44%, #64748b 56%);
+  opacity: 0.2;
+  transform: translateZ(0);
+}
+
+.header-pattern-ornament path,
+.header-pattern-ornament circle {
+  stroke: currentColor;
+  stroke-width: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.pattern-opaline-flourish {
+  color: #9d5d83;
+  transform: rotate(-1.5deg) translateZ(0);
+}
+
+.pattern-aurora-flourish {
+  color: #0f8f87;
+  opacity: 0.17;
+}
+
+.pattern-tide-flourish {
+  color: #178f92;
+  opacity: 0.19;
+}
+
+.pattern-spectrum-flourish {
+  color: #8666a4;
+  opacity: 0.18;
+}
+
+.pattern-floraison-flourish {
+  color: #9b6685;
+  opacity: 0.24;
+}
+
+.pattern-opaline-flourish path:last-child,
+.pattern-floraison-flourish path:nth-child(2),
+.pattern-floraison-flourish path:nth-child(3) {
+  fill: currentColor;
+  fill-opacity: 0.07;
+}
+
+.dark .header-pattern-live .header-pattern-group {
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+
+.dark .header-pattern-live .header-pattern-mesh {
+  opacity: 0.58;
+  filter: blur(17px) saturate(0.92);
+}
+
+.dark .header-pattern-live .header-pattern-ornament {
+  color: rgb(255 255 255 / 0.7);
+  opacity: 0.16;
+}
+
+.header-pattern-preview {
+  height: 5.25rem;
+  background: #fbfbfa;
+}
+
+.header-pattern-preview .header-pattern-mesh {
+  inset: -38% -12%;
+  width: auto;
+  height: auto;
+  opacity: 0.88;
+  filter: blur(9px) saturate(1.02);
+}
+
+.header-pattern-preview .header-pattern-ornament {
+  top: 0;
+  right: -17%;
+  width: 132%;
+  height: 100%;
+  opacity: 0.28;
+  transform: none;
+}
+
+.header-pattern-live::after {
+  top: 0;
+  right: clamp(4rem, 10vw, 12rem);
+  bottom: auto;
+  left: auto;
+  width: min(38rem, 50vw);
+  height: 100%;
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    black 35%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
+}
+
+.header-pattern-preview .header-pattern-original-anchor {
+  top: 0;
+}
+
+.header-pattern-preview .header-pattern-original {
+  top: -5.6rem;
+  right: -3rem;
+  width: 20rem;
+  height: 9rem;
+  opacity: 0.9;
+  filter: blur(26px);
+  transform: rotate(-10deg) translateZ(0);
+}
+
+.header-pattern-preview::after {
+  opacity: 0.07;
+}
+
+.header-pattern-preview-glass {
+  z-index: 3;
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.2),
+    rgb(255 255 255 / 0.035)
+  );
+  backdrop-filter: blur(1.5px) saturate(1.02);
+  -webkit-backdrop-filter: blur(1.5px) saturate(1.02);
+}
+
+.dark .header-pattern-preview {
+  background: #171719;
+}
+
+.dark .header-pattern-preview .header-pattern-group {
+  opacity: 0.62;
+  mix-blend-mode: screen;
+}
+
+.dark .header-pattern-preview .header-pattern-ornament {
+  color: rgb(255 255 255 / 0.7);
+  opacity: 0.2;
+}
+
+.dark .header-pattern-preview-glass {
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.055),
+    rgb(0 0 0 / 0.06)
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header-pattern-live .header-pattern-group[data-pattern="aurora"] {
+    animation: header-mesh-breathe 22s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes header-mesh-breathe {
+  from {
+    transform: translate3d(-0.75%, 0, 0) rotate(-10deg) scale(1);
+  }
+
+  to {
+    transform: translate3d(0.75%, 0, 0) rotate(-10deg) scale(1.015);
+  }
+}
+
 /* ─── Dashboard Table Frame ─── */
 .dashboard-table-frame {
   background: oklch(0.985 0 0 / 0.7);
@@ -1192,14 +1898,145 @@ button:focus-visible,
   box-shadow: 1px 0 0 color-mix(in oklab, black 42%, transparent);
 }
 
-[data-variant="sidebar"] [data-slot="sidebar-inner"] {
+/* Liquid glass sidebar: a translucent material with accent-tinted caustics. */
+[data-variant="glass"] [data-slot="sidebar-gap"],
+[data-variant="glass"] [data-slot="sidebar-container"] {
+  background:
+    radial-gradient(
+      circle at 5% 2%,
+      color-mix(in oklab, var(--primary) 13%, transparent) 0,
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 108% 78%,
+      color-mix(in oklab, var(--primary) 7%, transparent) 0,
+      transparent 28%
+    );
+}
+
+[data-variant="glass"] [data-slot="sidebar-inner"] {
+  isolation: isolate;
   background:
     linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--sidebar) 97%, white 3%) 0%,
-      var(--sidebar) 34%,
-      color-mix(in oklab, var(--sidebar) 97%, var(--primary) 3%) 100%
-    );
+      118deg,
+      rgb(255 255 255 / var(--sidebar-glass-highlight, 0.42)) 0%,
+      transparent 26%,
+      rgb(255 255 255 / 0.08) 52%,
+      transparent 78%
+    ),
+    rgb(255 255 255 / var(--sidebar-glass-fill-light, 0.62));
+  border: 1px solid
+    rgb(255 255 255 / var(--sidebar-glass-line, 0.18));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.72),
+    inset 1px 0 0 rgb(255 255 255 / 0.22),
+    0 18px 45px -28px
+    rgb(15 23 42 / var(--sidebar-glass-shadow, 0.15));
+  backdrop-filter: blur(var(--sidebar-glass-blur, 26px)) saturate(1.18);
+  -webkit-backdrop-filter: blur(var(--sidebar-glass-blur, 26px)) saturate(1.18);
+}
+
+[data-variant="glass"] [data-slot="sidebar-inner"]::before,
+[data-variant="glass"] [data-slot="sidebar-inner"]::after {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+}
+
+[data-variant="glass"] [data-slot="sidebar-inner"]::before {
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px rgb(9 9 11 / 0.035),
+    inset 0 -1px 0 rgb(255 255 255 / 0.22);
+}
+
+[data-variant="glass"] [data-slot="sidebar-inner"]::after {
+  top: -4rem;
+  right: -5rem;
+  width: 15rem;
+  height: 15rem;
+  background: conic-gradient(
+    from 205deg,
+    transparent 0deg,
+    color-mix(in oklab, var(--primary) 18%, transparent) 42deg,
+    rgb(255 255 255 / 0.32) 76deg,
+    transparent 122deg
+  );
+  border-radius: 48% 52% 62% 38%;
+  opacity: var(--sidebar-glass-highlight, 0.58);
+  filter: blur(18px);
+  transform: rotate(-12deg);
+}
+
+.dark [data-variant="glass"] [data-slot="sidebar-inner"] {
+  background:
+    linear-gradient(
+      118deg,
+      rgb(255 255 255 / 0.075) 0%,
+      transparent 30%,
+      rgb(255 255 255 / 0.025) 58%,
+      transparent 82%
+    ),
+    rgb(24 24 27 / var(--sidebar-glass-fill-dark, 0.54));
+  border-color: rgb(
+    255 255 255 / var(--sidebar-glass-line, 0.18)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    inset 1px 0 0 rgb(255 255 255 / 0.055),
+    0 24px 54px -28px rgb(0 0 0 / 0.62);
+}
+
+.dark [data-variant="glass"] [data-slot="sidebar-inner"]::before {
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.035),
+    inset 0 -1px 0 rgb(0 0 0 / 0.36);
+}
+
+[data-variant="glass"] .apple-sidebar-glow {
+  top: -4.5rem;
+  left: -8%;
+  width: 116%;
+  height: 15rem;
+  background: color-mix(in oklab, var(--primary) 16%, transparent);
+  opacity: 0.52;
+  filter: blur(56px);
+}
+
+[data-variant="glass"] .sidebar-user-card {
+  background: rgb(255 255 255 / 0.2);
+  border-color: rgb(255 255 255 / 0.5);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.34);
+  backdrop-filter: blur(18px);
+}
+
+.dark [data-variant="glass"] .sidebar-user-card {
+  background: rgb(255 255 255 / 0.035);
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.055);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [data-variant="glass"] [data-slot="sidebar-inner"] {
+    background: rgb(255 255 255 / 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .dark [data-variant="glass"] [data-slot="sidebar-inner"] {
+    background: rgb(24 24 27 / 0.94);
+  }
+}
+
+[data-variant="sidebar"] [data-slot="sidebar-inner"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--sidebar) 97%, white 3%) 0%,
+    var(--sidebar) 34%,
+    color-mix(in oklab, var(--sidebar) 97%, var(--primary) 3%) 100%
+  );
 }
 
 /* Inset keeps a clean white gutter instead of exposing a gray wrapper layer. */
@@ -1212,13 +2049,12 @@ button:focus-visible,
 }
 
 [data-variant="inset"] [data-slot="sidebar-inner"] {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--sidebar) 98%, white 2%) 0%,
-      var(--sidebar) 42%,
-      color-mix(in oklab, var(--sidebar) 98%, var(--primary) 2%) 100%
-    );
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--sidebar) 98%, white 2%) 0%,
+    var(--sidebar) 42%,
+    color-mix(in oklab, var(--sidebar) 98%, var(--primary) 2%) 100%
+  );
 }
 
 /* Minimal inset keeps the spatial rhythm while removing visible framing. */
@@ -1305,9 +2141,21 @@ button:focus-visible,
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(circle at 14% 18%, rgba(218, 239, 228, 0.78), transparent 31%),
-    radial-gradient(circle at 76% 12%, rgba(255, 226, 200, 0.7), transparent 34%),
-    radial-gradient(circle at 84% 78%, rgba(204, 224, 255, 0.68), transparent 38%),
+    radial-gradient(
+      circle at 14% 18%,
+      rgba(218, 239, 228, 0.78),
+      transparent 31%
+    ),
+    radial-gradient(
+      circle at 76% 12%,
+      rgba(255, 226, 200, 0.7),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 84% 78%,
+      rgba(204, 224, 255, 0.68),
+      transparent 38%
+    ),
     linear-gradient(135deg, #f8faf7 0%, #f4f1ec 48%, #f5f8fb 100%);
 }
 
@@ -1332,7 +2180,11 @@ button:focus-visible,
   left: 24%;
   width: 44vw;
   height: 44vw;
-  background: linear-gradient(135deg, rgba(120, 221, 180, 0.5), rgba(255, 228, 155, 0.28));
+  background: linear-gradient(
+    135deg,
+    rgba(120, 221, 180, 0.5),
+    rgba(255, 228, 155, 0.28)
+  );
   animation: auth-orbit-one 18s ease-in-out infinite alternate;
 }
 
@@ -1341,7 +2193,11 @@ button:focus-visible,
   right: -16%;
   width: 42vw;
   height: 42vw;
-  background: linear-gradient(145deg, rgba(244, 151, 199, 0.34), rgba(129, 175, 255, 0.4));
+  background: linear-gradient(
+    145deg,
+    rgba(244, 151, 199, 0.34),
+    rgba(129, 175, 255, 0.4)
+  );
   animation: auth-orbit-two 22s ease-in-out infinite alternate;
 }
 

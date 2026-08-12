@@ -186,9 +186,7 @@ export function AppSidebar({
             data-tauri-drag-region="true"
           />
         )}
-        <SidebarMenu
-          className="relative z-10 w-full transition-opacity duration-200"
-        >
+        <SidebarMenu className="relative z-10 w-full transition-opacity duration-200">
           <SidebarMenuItem className="flex w-full flex-row items-center justify-between">
             <SidebarMenuButton
               className={cn(
@@ -229,9 +227,7 @@ export function AppSidebar({
               <SidebarTrigger
                 className={cn(
                   "-mr-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
-                  variant === "minimal" &&
-                    isDesktopRuntime &&
-                    "translate-y-1"
+                  variant === "minimal" && isDesktopRuntime && "translate-y-1"
                 )}
               />
             )}
@@ -277,10 +273,10 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter
         className={cn(
-          "relative z-10 shrink-0 transition-all duration-300",
+          "relative z-10 shrink-0 border-sidebar-border/80 border-t transition-all duration-300 dark:border-white/10",
           isCollapsed
-            ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-0.5 px-0 pt-2 pb-2"
-            : "mx-0 mt-auto mb-0 bg-transparent px-3 pt-1 pb-4"
+            ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-1 px-0 py-3"
+            : "mx-0 mt-auto mb-0 bg-transparent px-4 py-3"
         )}
       >
         {isCollapsed && variant === "minimal" ? (
@@ -290,14 +286,10 @@ export function AppSidebar({
             title="Déployer la barre latérale"
           />
         ) : null}
-        {isCollapsed ? (
-          <div className="mb-2 h-px w-8 rounded-full bg-zinc-900/8 dark:bg-white/8" />
-        ) : null}
         <div
           className={cn(
             "transition-all duration-300",
-            !isCollapsed &&
-              "sidebar-user-card w-full rounded-2xl border border-zinc-200/50 bg-zinc-50/30 p-1.5 dark:border-white/[0.09] dark:bg-zinc-900/24"
+            !isCollapsed && "w-full"
           )}
         >
           <NavUser

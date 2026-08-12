@@ -538,7 +538,7 @@ export function FinancialAnalyticsV2Page({
   );
 
   return (
-    <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-8 px-2 py-6 sm:px-4 md:px-8">
+    <div className="relative z-10 flex w-full flex-1 flex-col gap-8 px-4 py-6 lg:px-6">
       {/* Protocol Aesthetic Header */}
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">

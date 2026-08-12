@@ -28,8 +28,8 @@ export function MicrophoneButton({
   size = "sm",
 }: MicrophoneButtonProps) {
   const { t } = useTranslation();
-  const dim = size === "sm" ? "h-7 w-7" : "h-9 w-9";
-  const iconDim = size === "sm" ? "size-3.5" : "size-4";
+  const dim = size === "sm" ? "size-10" : "size-11";
+  const iconDim = size === "sm" ? "size-4" : "size-[18px]";
 
   return (
     <TooltipProvider>
@@ -44,10 +44,10 @@ export function MicrophoneButton({
               }
               className={cn(
                 dim,
-                "relative rounded-full transition-all duration-300",
+                "relative rounded-xl transition-colors duration-200",
                 isListening
-                  ? "bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.5)] hover:bg-rose-600 hover:shadow-[0_0_20px_rgba(244,63,94,0.6)]"
-                  : "bg-background/80 shadow-sm backdrop-blur-sm hover:bg-muted/80",
+                  ? "bg-rose-600 text-white hover:bg-rose-700"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground",
                 className
               )}
               disabled={disabled || !isSupported}
@@ -56,9 +56,6 @@ export function MicrophoneButton({
               type="button"
               variant={isListening ? "default" : "ghost"}
             >
-              {isListening && (
-                <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-rose-400 opacity-75" />
-              )}
               {isListening ? (
                 <Stop className={iconDim} weight="fill" />
               ) : (

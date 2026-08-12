@@ -108,6 +108,11 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Validate frontend and database migrations
+        run: |
+          npm run typecheck
+          npm test
+
       - name: Build Tauri app
         if: runner.os != 'Windows'
         run: npm run tauri:build

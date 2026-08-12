@@ -36,7 +36,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const SQLITE_DATA_CHANGED_EVENT = "sqlite-data-changed";
-const INITIAL_AUTH_TIMEOUT_MS = 2500;
+// SQLite migrations and WebView2 startup can take several seconds on older
+// Windows machines. A short timeout incorrectly looked like a logout.
+const INITIAL_AUTH_TIMEOUT_MS = 10_000;
 
 function withTimeout<T>(
   promise: Promise<T>,
@@ -82,63 +84,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<string | null>(null);
   const hasInitializedRef = useRef(false);
   const currentUserRef = useRef<AuthUser | null>(null);
+  const refreshPromiseRef = useRef<Promise<void> | null>(null);
+  const refreshTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     currentUserRef.current = currentUser;
   }, [currentUser]);
 
   const refreshCurrentUser = useCallback(async () => {
+    if (refreshPromiseRef.current) {
+      return refreshPromiseRef.current;
+    }
+
     const isInitialLoad = !hasInitializedRef.current;
-    try {
-      // Only show the global loading skeleton on the very first load.
-      // Background refreshes (e.g. on sqlite-data-changed) must not blank out
-      // the whole app on Windows when WebView2 fires focus/visibility changes.
-      if (isInitialLoad) {
-        setLoading(true);
-      }
-      const user = isInitialLoad
-        ? await withTimeout(
-            AuthService.getCurrentUser(),
-            INITIAL_AUTH_TIMEOUT_MS,
-            "Auth initialization timed out"
-          )
-        : await AuthService.getCurrentUser();
-      if (user) {
-        setCurrentUser({
-          id: user.id,
-          uid: user.id,
-          email: user.email,
-          displayName: user.displayName,
-          role: user.role,
-          avatarUrl: user.avatarUrl ?? null,
-        });
-        writeCachedProfile(user.email, {
-          displayName: user.displayName || undefined,
-          avatarUrl: user.avatarUrl ?? undefined,
-        });
-      } else if (isInitialLoad) {
-        // Only clear the user on the initial load. After bootstrap,
-        // a transient null result (StrictMode double-invoke, race condition,
-        // momentary DB unavailability) must NOT bump the user back to the
-        // login screen — they should remain logged in until they explicitly
-        // logout or their token is missing.
-        setCurrentUser(null);
-      } else if (!localStorage.getItem("auth_token")) {
-        // No token at all → really logged out.
-        setCurrentUser(null);
-      }
-      setError(null);
-    } catch (error: any) {
-      if (isTransientDbError(error)) {
+    const refreshPromise = (async () => {
+      try {
+        // Only show the global loading skeleton on the very first load.
+        // Background refreshes must not blank out the app on WebView2.
+        if (isInitialLoad) {
+          setLoading(true);
+        }
+        const user = isInitialLoad
+          ? await withTimeout(
+              AuthService.getCurrentUser(),
+              INITIAL_AUTH_TIMEOUT_MS,
+              "Auth initialization timed out"
+            )
+          : await AuthService.getCurrentUser();
+        if (user) {
+          setCurrentUser({
+            id: user.id,
+            uid: user.id,
+            email: user.email,
+            displayName: user.displayName,
+            role: user.role,
+            avatarUrl: user.avatarUrl ?? null,
+          });
+          writeCachedProfile(user.email, {
+            displayName: user.displayName || undefined,
+            avatarUrl: user.avatarUrl ?? undefined,
+          });
+        } else if (isInitialLoad) {
+          setCurrentUser(null);
+        } else if (!localStorage.getItem("auth_token")) {
+          setCurrentUser(null);
+        }
         setError(null);
-      } else {
-        console.error("Error refreshing user:", error);
-        setError(error.message || "Failed to refresh user");
+      } catch (error: any) {
+        if (isTransientDbError(error)) {
+          setError(null);
+        } else {
+          console.error("Error refreshing user:", error);
+          setError(error.message || "Failed to refresh user");
+        }
+        // Never null out the user on a transient error after bootstrap.
+      } finally {
+        hasInitializedRef.current = true;
+        setLoading(false);
       }
-      // Never null out the user on a transient error after bootstrap.
+    })();
+
+    refreshPromiseRef.current = refreshPromise;
+    try {
+      await refreshPromise;
     } finally {
-      hasInitializedRef.current = true;
-      setLoading(false);
+      if (refreshPromiseRef.current === refreshPromise) {
+        refreshPromiseRef.current = null;
+      }
     }
   }, []);
 
@@ -173,15 +185,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         customEvent.detail?.tableName === "users" &&
         localStorage.getItem("auth_token")
       ) {
-        refreshCurrentUser().catch((error) => {
-          console.error("Error syncing current user:", error);
-        });
+        if (refreshTimerRef.current !== null) {
+          window.clearTimeout(refreshTimerRef.current);
+        }
+        refreshTimerRef.current = window.setTimeout(() => {
+          refreshCurrentUser().catch((error) => {
+            console.error("Error syncing current user:", error);
+          });
+          refreshTimerRef.current = null;
+        }, 150);
       }
     };
 
     window.addEventListener(SQLITE_DATA_CHANGED_EVENT, handleDataChanged);
-    return () =>
+    return () => {
       window.removeEventListener(SQLITE_DATA_CHANGED_EVENT, handleDataChanged);
+      if (refreshTimerRef.current !== null) {
+        window.clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
+    };
   }, [refreshCurrentUser]);
 
   const login = async (email: string, password: string) => {

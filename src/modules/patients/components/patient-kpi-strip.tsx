@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
 
 interface PatientKpiStripProps {
+  className?: string;
   lastVisit?: string;
   nextAppointment?: Appointment;
   nextVaccination?: Vaccination | null;
@@ -41,6 +42,7 @@ function diffDays(target: Date, now: Date) {
 }
 
 export function PatientKpiStrip({
+  className,
   lastVisit,
   nextAppointment,
   nextVaccination,
@@ -96,7 +98,6 @@ export function PatientKpiStrip({
 
   const items = [
     {
-      accent: "sky",
       title: t("patientDetail.kpi.currentWeight"),
       value: lastWeight
         ? `${lastWeight.weightKg.toFixed(2)} kg`
@@ -112,7 +113,6 @@ export function PatientKpiStrip({
       onClick: onWeightClick,
     },
     {
-      accent: "cyan",
       title: t("patientDetail.kpi.lastVisit"),
       value: lastVisitFormatted ?? t("patientDetail.kpi.never"),
       detail:
@@ -132,7 +132,6 @@ export function PatientKpiStrip({
       onClick: onTimelineClick,
     },
     {
-      accent: "emerald",
       title: t("patientDetail.kpi.nextVaccine"),
       value: nextVaccination?.vaccineName ?? t("patientDetail.kpi.nonePlanned"),
       detail:
@@ -172,7 +171,6 @@ export function PatientKpiStrip({
       onClick: onVaccinationClick,
     },
     {
-      accent: "amber",
       title: t("patientDetail.kpi.nextAppointment"),
       value: nextAppointment?.title ?? t("patientDetail.kpi.noAppointment"),
       detail:
@@ -195,53 +193,54 @@ export function PatientKpiStrip({
   return (
     <section
       aria-label="Repères cliniques"
-      className="grid overflow-hidden rounded-2xl border border-border/70 bg-card sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-border/70"
+      className={cn(
+        "grid overflow-hidden rounded-2xl border border-border/70 bg-card sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-border/70",
+        className
+      )}
     >
       {items.map((item) => {
         const Icon = item.icon;
-        const tone =
-          item.trend === "down"
-            ? "bg-rose-500 text-white"
-            : item.accent === "emerald"
-              ? "bg-emerald-500 text-white"
-              : item.accent === "amber"
-                ? "bg-amber-500 text-white"
-                : item.accent === "cyan"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-sky-500 text-white";
+        const requiresAttention = item.trend === "down";
 
         return (
           <button
             aria-label={`Ouvrir ${item.title}`}
-            className="clinical-interactive group min-w-0 border-border/70 border-b px-4 py-3.5 text-left last:border-b-0 sm:[&:nth-child(odd)]:border-r xl:border-b-0 xl:[&:nth-child(odd)]:border-r-0"
+            className="clinical-interactive group min-h-[132px] min-w-0 border-border/70 border-b px-4 py-4 text-left last:border-b-0 sm:[&:nth-child(odd)]:border-r xl:border-b-0 xl:[&:nth-child(odd)]:border-r-0"
             key={item.title}
             onClick={item.onClick}
             type="button"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <span
                 className={cn(
-                  "flex size-9 shrink-0 items-center justify-center rounded-xl shadow-sm",
-                  tone
+                  "flex size-9 shrink-0 items-center justify-center rounded-xl",
+                  requiresAttention
+                    ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300"
+                    : "bg-muted text-muted-foreground"
                 )}
               >
                 <Icon className="size-4" weight="duotone" />
               </span>
               <div className="min-w-0">
-                <span className="block font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.09em]">
+                <span className="block font-semibold text-muted-foreground text-xs">
                   {item.title}
                 </span>
-                <p className="mt-0.5 truncate font-semibold text-base tracking-[-0.03em]">
+                <p className="mt-1 line-clamp-2 break-words font-semibold text-base leading-5 tracking-[-0.02em]">
                   {item.value}
                 </p>
               </div>
             </div>
-            <div className="mt-2 flex min-w-0 items-center justify-between gap-2 pl-12 text-muted-foreground text-xs">
-              <span className="truncate">{item.detail}</span>
+            <div className="mt-3 flex min-w-0 items-end justify-between gap-3 pl-12 text-muted-foreground text-xs">
+              <span className="min-w-0 leading-4">
+                <span className="block font-medium text-foreground/75">{item.detail}</span>
+                <span className="mt-0.5 block line-clamp-2">{item.caption}</span>
+              </span>
               {"trendLabel" in item && item.trendLabel ? (
-                <span className="shrink-0">{item.trendLabel}</span>
+                <span className={cn("shrink-0 font-medium", requiresAttention && "text-rose-600 dark:text-rose-300")}>
+                  {item.trendLabel}
+                </span>
               ) : (
-                <ArrowUpRight className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                <ArrowUpRight className="size-3.5 shrink-0 opacity-40 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
               )}
             </div>
           </button>

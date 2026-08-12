@@ -16,8 +16,19 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +64,7 @@ import { TEAM_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUsersRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import { updatePassword } from "@/services/sqlite/auth";
+import { hashPassword, updatePassword } from "@/services/sqlite/auth";
 import type { User, UserRole } from "@/types/db";
 import Avatar from "./Avatar";
 
@@ -93,11 +104,31 @@ const ROLE_CONFIG: Record<
   },
 };
 
+function createTemporaryPassword() {
+  const alphabet =
+    "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  const randomValues = crypto.getRandomValues(new Uint32Array(7));
+  const randomPart = Array.from(
+    randomValues,
+    (value) => alphabet[value % alphabet.length]
+  ).join("");
+  return `Vet${randomPart}!`;
+}
+
 const Team: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [memberPendingDelete, setMemberPendingDelete] = useState<User | null>(
+    null
+  );
+  const [passwordResetTarget, setPasswordResetTarget] = useState<User | null>(
+    null
+  );
+  const [temporaryPassword, setTemporaryPassword] = useState<string | null>(
+    null
+  );
 
   // State for password reset feedback
   const [resetStatus, setResetStatus] = useState<{
@@ -188,7 +219,7 @@ const Team: React.FC = () => {
     );
 
     if (duplicateUser) {
-      alert("Un membre avec cet email existe déjà.");
+      toast.error("Un membre avec cet email existe déjà.");
       return;
     }
 
@@ -205,6 +236,7 @@ const Team: React.FC = () => {
           specialty: formData.specialty || "",
         });
       } else {
+        const initialPassword = createTemporaryPassword();
         await addUser({
           displayName: formData.displayName.trim(),
           email: normalizedEmail,
@@ -212,11 +244,14 @@ const Team: React.FC = () => {
           role: (formData.role as UserRole) || "stagiaire",
           status: "active",
           specialty: formData.specialty || "",
-          passwordHash:
-            "5b12f2e8a325d9dbe26572b3f218abf000e49f27b794c15a3f2d0f0bd87f65b1",
+          passwordHash: await hashPassword(initialPassword),
         } as any);
+        setTemporaryPassword(initialPassword);
       }
       setIsModalOpen(false);
+      if (editingId) {
+        toast.success("Membre mis à jour.");
+      }
     } catch (error) {
       console.error("[TEAM] Error saving:", error);
       const message = getErrorMessage(error);
@@ -224,25 +259,29 @@ const Team: React.FC = () => {
         message.toLowerCase().includes("unique") ||
         message.toLowerCase().includes("email")
       ) {
-        alert("Impossible d'ajouter ce membre: cet email est déjà utilisé.");
+        toast.error(
+          "Impossible d'ajouter ce membre : cet email est déjà utilisé."
+        );
       } else {
-        alert(`Erreur lors de la sauvegarde: ${message}`);
+        toast.error(`Erreur lors de la sauvegarde : ${message}`);
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!id) {
+  const handleDelete = async () => {
+    if (!memberPendingDelete?.id) {
       return;
     }
-    if (
-      window.confirm(
-        "Êtes-vous sûr de vouloir supprimer ce membre de l'équipe ? Cette action est irréversible."
-      )
-    ) {
-      await removeUser(id);
+
+    try {
+      await removeUser(memberPendingDelete.id);
+      toast.success(`${memberPendingDelete.displayName} a été supprimé.`);
+      setMemberPendingDelete(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Impossible de supprimer ce membre. Réessayez.");
     }
   };
 
@@ -254,25 +293,17 @@ const Team: React.FC = () => {
     if (!(email && userId)) {
       return;
     }
-    const confirmMsg = `Réinitialiser le mot de passe de ${name} (${email}) ?`;
-    if (!window.confirm(confirmMsg)) {
-      return;
-    }
-
-    const temporaryPassword = `Vet${Math.random().toString(36).slice(-6)}!`
-      .replace(/[^a-zA-Z0-9!]/g, "A")
-      .slice(0, 10);
+    const temporaryPassword = createTemporaryPassword();
 
     setResetStatus({ loading: true, userId });
     try {
       await updatePassword(userId, temporaryPassword);
-      alert(
-        `Mot de passe temporaire généré:\n${temporaryPassword}\n\nPartagez-le de façon sécurisée puis demandez le changement immédiat.`
-      );
+      setTemporaryPassword(temporaryPassword);
+      setPasswordResetTarget(null);
     } catch (error: any) {
       console.error(error);
-      alert(
-        `Erreur lors de la réinitialisation: ${error?.message || "Erreur inconnue"}`
+      toast.error(
+        `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`
       );
     } finally {
       setResetStatus({ loading: false, userId: null });
@@ -340,7 +371,7 @@ const Team: React.FC = () => {
   }, [users]);
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pt-16 pb-8 md:pt-28 lg:px-6">
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="equipe" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -466,13 +497,8 @@ const Team: React.FC = () => {
                           <Button
                             className="text-muted-foreground hover:bg-amber-50 hover:text-amber-500 dark:hover:bg-amber-900/20"
                             disabled={isResetting}
-                            onClick={() =>
-                              handleResetPassword(
-                                user.email,
-                                user.displayName,
-                                user.id
-                              )
-                            }
+                            aria-label={`Réinitialiser le mot de passe de ${user.displayName}`}
+                            onClick={() => setPasswordResetTarget(user)}
                             size="icon-sm"
                             title="Réinitialiser le mot de passe"
                             variant="ghost"
@@ -488,6 +514,7 @@ const Team: React.FC = () => {
                             )}
                           </Button>
                           <Button
+                            aria-label={`Modifier ${user.displayName}`}
                             className="text-muted-foreground hover:bg-blue-50 hover:text-primary dark:hover:bg-blue-900/20"
                             onClick={() => handleOpenModal(user)}
                             size="icon-sm"
@@ -502,8 +529,9 @@ const Team: React.FC = () => {
                           </Button>
                           {user.email !== "zohir.kh@gmail.com" && (
                             <Button
+                              aria-label={`Supprimer ${user.displayName}`}
                               className="text-muted-foreground hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
-                              onClick={() => handleDelete(user.id)}
+                              onClick={() => setMemberPendingDelete(user)}
                               size="icon-sm"
                               title="Supprimer définitivement"
                               variant="ghost"
@@ -592,6 +620,112 @@ const Team: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setMemberPendingDelete(null);
+          }
+        }}
+        open={Boolean(memberPendingDelete)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce membre ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Le compte de {memberPendingDelete?.displayName} sera supprimé de
+              l’équipe. Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setPasswordResetTarget(null);
+          }
+        }}
+        open={Boolean(passwordResetTarget)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Réinitialiser le mot de passe ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Un mot de passe temporaire sera généré pour
+              {` ${passwordResetTarget?.displayName}`}. L’accès actuel ne sera
+              plus valide.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (passwordResetTarget) {
+                  void handleResetPassword(
+                    passwordResetTarget.email,
+                    passwordResetTarget.displayName,
+                    passwordResetTarget.id
+                  );
+                }
+              }}
+            >
+              Générer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog
+        onOpenChange={(open) => {
+          if (!open) {
+            setTemporaryPassword(null);
+          }
+        }}
+        open={Boolean(temporaryPassword)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Mot de passe temporaire</DialogTitle>
+            <DialogDescription>
+              Copiez-le maintenant et transmettez-le par un canal sécurisé. Il
+              ne sera plus affiché après fermeture.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-xl border bg-muted/40 p-4 font-mono text-lg tracking-[0.12em]">
+            {temporaryPassword}
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={async () => {
+                if (!temporaryPassword) {
+                  return;
+                }
+                try {
+                  await navigator.clipboard.writeText(temporaryPassword);
+                  toast.success("Mot de passe copié.");
+                } catch (error) {
+                  console.error(error);
+                  toast.error("La copie a échoué. Sélectionnez le code manuellement.");
+                }
+              }}
+              variant="outline"
+            >
+              Copier
+            </Button>
+            <Button onClick={() => setTemporaryPassword(null)}>Terminé</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Add/Edit Member Dialog */}
       <Dialog onOpenChange={setIsModalOpen} open={isModalOpen}>

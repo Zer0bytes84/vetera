@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { assistWithNote } from "@/services/geminiService";
 import {
-  initializeWebLLM,
   isWebLLMLoading,
   isWebLLMReady,
   subscribeToProgress,
@@ -129,21 +128,6 @@ const Editor: React.FC<EditorProps> = ({
         setAiInitializing(false);
       }
     });
-
-    const init = async () => {
-      if (!(isWebLLMReady() || isWebLLMLoading())) {
-        setAiInitializing(true);
-        try {
-          await initializeWebLLM();
-          setAiReady(true);
-        } catch (error) {
-          console.error("[Editor] AI initialization failed:", error);
-        } finally {
-          setAiInitializing(false);
-        }
-      }
-    };
-    init();
 
     return unsubscribe;
   }, []);

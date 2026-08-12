@@ -3,6 +3,7 @@ import {
   CpuIcon,
   EyeIcon,
   ZapIcon,
+  SparklesIcon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 
@@ -13,96 +14,104 @@ export type ModelTier = "fast" | "smart" | "vision";
 export interface AIModel {
   contextWindow: number;
   description: string;
+  displayName: string;
   downloadSizeMB: number;
   icon: IconSvgElement;
   id: string;
+  modeLabel: string;
   name: string;
   recommended?: boolean;
   shortName: string;
   systemPrompt: string;
   tier: ModelTier;
   vramMB: number;
+  provider?: "google" | "qwen" | "phi" | "meta";
 }
 
 export const AI_MODELS: AIModel[] = [
   {
-    id: "Qwen3-1.7B-q4f16_1-MLC",
-    name: "Qwen3 1.7B",
-    shortName: "Qwen3 1.7B",
-    description: "Ultra-rapide, idéal pour réponses instantanées",
+    id: "gemma-2-2b-it-q4f16_1-MLC",
+    displayName: "Vega",
+    modeLabel: "Réactif",
+    name: "Vega",
+    shortName: "Vega",
+    description: "Le compagnon clinique rapide pour les demandes quotidiennes.",
     tier: "fast",
-    vramMB: 2037,
-    downloadSizeMB: 950,
+    vramMB: 1800,
+    downloadSizeMB: 1350,
+    contextWindow: 8192,
+    provider: "qwen",
+    systemPrompt: `Tu es le copilote clinique vétérinaire d'élite de ${APP_NAME}, exécuté localement sur l'appareil.
+Tu rédiges des synthèses parfaites, prépares les rendez-vous, rédiges les notes de consultation SOAP et assistes le vétérinaire avec une précision médicale remarquable.
+Réponds toujours en français professionnel, concis et structuré.`,
+    icon: SparklesIcon,
+  },
+  {
+    id: "Qwen3-0.6B-q4f16_1-MLC",
+    displayName: "Vénus",
+    modeLabel: "Léger",
+    name: "Vénus",
+    shortName: "Vénus",
+    description: "Une présence légère et efficace pour les appareils modestes.",
+    tier: "fast",
+    vramMB: 1500,
+    downloadSizeMB: 1100,
     contextWindow: 4096,
-    systemPrompt: `Tu es l'assistant clinique de ${APP_NAME}. Tu aides une clinique vétérinaire locale à mieux travailler.
-Tu es rapide et concis. Réponds en francais.
-Si question médicale: structure en "Evaluation", "Hypotheses", "Actions".
-Si une info est incertaine, signale-le simplement.`,
-    icon: ZapIcon,
+    provider: "google",
+    recommended: true,
+    systemPrompt: `Tu es le copilote clinique vétérinaire de ${APP_NAME}, exécuté localement sur l'appareil.
+Tu assistes le praticien dans sa gestion quotidienne. Réponds en français avec concision et précision.`,
+    icon: SparklesIcon,
   },
   {
     id: "Qwen2.5-3B-Instruct-q4f16_1-MLC",
-    name: "Qwen2.5 3B",
-    shortName: "Qwen2.5 3B",
+    displayName: "Nova",
+    modeLabel: "Équilibré",
+    name: "Nova",
+    shortName: "Nova",
     description: "Équilibré — bon compromis vitesse/qualité",
     tier: "fast",
     vramMB: 2505,
     downloadSizeMB: 1400,
     contextWindow: 4096,
+    provider: "qwen",
     systemPrompt: `Tu es l'assistant clinique de ${APP_NAME}. Tu aides une clinique vétérinaire locale à mieux travailler.
 
-Regles:
-- Reponds en francais.
+Règles:
+- Réponds en français.
 - Sois clair, concis et actionnable.
-- Si question medicale: structure en "Evaluation", "Hypotheses", "Actions".
-- Si une info est incertaine, signale-le simplement.
-- Ne fournis jamais de conseils dangereux.`,
+- Si question médicale: structure en "Évaluation", "Hypothèses", "Actions".`,
     icon: CpuIcon,
-    recommended: true,
   },
   {
     id: "Qwen3-4B-q4f16_1-MLC",
-    name: "Qwen3 4B",
-    shortName: "Qwen3 4B",
-    description: "Plus intelligent — meilleur raisonnement médical",
+    displayName: "Orion",
+    modeLabel: "Approfondi",
+    name: "Orion",
+    shortName: "Orion",
+    description: "Raisonnement médical approfondi",
     tier: "smart",
     vramMB: 3432,
     downloadSizeMB: 2100,
     contextWindow: 4096,
+    provider: "qwen",
     systemPrompt: `Tu es l'assistant clinique senior de ${APP_NAME}. Tu as une expertise approfondie en médecine vétérinaire.
-
-Regles:
-- Reponds en francais avec un ton professionnel.
-- Sois detaille, structure et actionnable.
-- Pour les questions medicales: "Evaluation clinique", "Diagnostic differentiel", "Examens complementaires", "Protocole therapeutique", "Suivi".
-- Cite les references si possible.
-- Si une info est incertaine, signale-le clairement.
-- Ne fournis jamais de conseils dangereux.
-- Adapte tes recommandations au contexte d'une clinique veterinaire locale en Algerie.`,
+Structure: Évaluation clinique, Diagnostic différentiel, Examens complémentaires, Protocole thérapeutique, Suivi.`,
     icon: Brain02Icon,
   },
   {
     id: "Phi-3.5-vision-instruct-q4f16_1-MLC",
-    name: "Phi-3.5 Vision",
-    shortName: "Vision IA",
+    displayName: "Aster",
+    modeLabel: "Vision",
+    name: "Aster",
+    shortName: "Aster",
     description: "Analyse d'images — radiographies, photos, documents",
     tier: "vision",
     vramMB: 3952,
     downloadSizeMB: 2200,
     contextWindow: 4096,
-    systemPrompt: `Tu es l'assistant visuel de ${APP_NAME}. Tu peux analyser des images veterinaires.
-
-Capacites:
-- Analyser des radiographies, photos de lesions, documents
-- Decrire ce que tu vois de maniere structuree
-- Identifier des anomalies potentielles
-- Recommander des examens complementaires
-
-Regles:
-- Reponds en francais.
-- Sois prudent: tu n'es pas un diagnostic medical.
-- Structure: "Observations", "Anomalies potentielles", "Recommandations".
-- Signale toujours tes limites.`,
+    provider: "phi",
+    systemPrompt: `Tu es l'assistant visuel de ${APP_NAME}. Tu peux analyser des images vétérinaires et radiographies.`,
     icon: EyeIcon,
   },
 ];
@@ -116,7 +125,7 @@ export const MODEL_CATEGORIES: {
 }[] = [
   {
     key: "fast",
-    label: "Rapide",
+    label: "Rapide & agile",
     description: "Réponses instantanées",
     icon: ZapIcon,
     color: "text-emerald-500",
@@ -137,10 +146,20 @@ export const MODEL_CATEGORIES: {
   },
 ];
 
-export const DEFAULT_MODEL_ID = "Phi-3.5-vision-instruct-q4f16_1-MLC";
+// Favor the lighter local mode for faster first launch on modest machines.
+// Heavier modes remain available from the model picker.
+export const DEFAULT_MODEL_ID = "Qwen3-0.6B-q4f16_1-MLC";
 
-export function getModelById(id: string): AIModel | undefined {
-  return AI_MODELS.find((m) => m.id === id);
+export function isSupportedModelId(id: string): boolean {
+  return AI_MODELS.some((model) => model.id === id);
+}
+
+export function resolveModelId(id?: string | null): string {
+  return id && isSupportedModelId(id) ? id : DEFAULT_MODEL_ID;
+}
+
+export function getModelById(id: string): AIModel {
+  return AI_MODELS.find((model) => model.id === id) ?? AI_MODELS[0];
 }
 
 export function getModelsByTier(tier: ModelTier): AIModel[] {
@@ -178,14 +197,35 @@ export interface ModelPreferences {
 
 export function getModelPreferences(): ModelPreferences {
   try {
-    const stored = localStorage.getItem(CACHE_KEY);
+    if (typeof window === "undefined") {
+      return { defaultModelId: DEFAULT_MODEL_ID, autoLoadOnStartup: false };
+    }
+
+    const stored = window.localStorage.getItem(CACHE_KEY);
     if (stored) {
-      return JSON.parse(stored) as ModelPreferences;
+      const parsed = JSON.parse(stored) as Partial<ModelPreferences>;
+
+      return {
+        defaultModelId: resolveModelId(parsed.defaultModelId),
+        autoLoadOnStartup: parsed.autoLoadOnStartup ?? false,
+      };
     }
   } catch {}
   return { defaultModelId: DEFAULT_MODEL_ID, autoLoadOnStartup: false };
 }
 
 export function saveModelPreferences(prefs: ModelPreferences) {
-  localStorage.setItem(CACHE_KEY, JSON.stringify(prefs));
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          ...prefs,
+          defaultModelId: resolveModelId(prefs.defaultModelId),
+        })
+      );
+    }
+  } catch {
+    // Storage can be unavailable in a restricted WebView; preferences are optional.
+  }
 }
