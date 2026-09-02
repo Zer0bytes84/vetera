@@ -4,14 +4,13 @@ import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -118,25 +117,18 @@ export function AnesthesiaMonitoringEntryDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-rose-500/10">
-              <Heartbeat className="size-5 text-rose-600" weight="duotone" />
-            </div>
-            <div>
-              <DialogTitle>
-                {t(
-                  "modules.anesthesia.monitoring.addEntry",
-                  "Ajouter un point monitoring"
-                )}
-              </DialogTitle>
-              <DialogDescription>{sheet.procedureName}</DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
+      <FormDialogContent size="md">
+        <FormDialogHeader
+          description={`${sheet.procedureName} — ajoutez une lecture horodatée au suivi anesthésique.`}
+          icon={<Heartbeat weight="duotone" />}
+          title={t(
+            "modules.anesthesia.monitoring.addEntry",
+            "Ajouter un point monitoring"
+          )}
+          tone="rose"
+        />
 
-        <div className="grid gap-3">
+        <FormDialogBody className="grid gap-3">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Field
               id="mon-fc"
@@ -225,15 +217,15 @@ export function AnesthesiaMonitoringEntryDialog({
               />
             </div>
           </div>
-        </div>
+        </FormDialogBody>
 
-        <DialogFooter>
+        <FormDialogFooter>
           <Button onClick={handleCancel} variant="outline">
             Annuler
           </Button>
           <Button onClick={() => void handleSubmit()}>Enregistrer</Button>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

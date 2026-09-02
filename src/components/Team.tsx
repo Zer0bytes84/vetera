@@ -39,14 +39,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Empty,
   EmptyDescription,
@@ -54,6 +47,12 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -693,18 +692,19 @@ const Team: React.FC = () => {
         }}
         open={Boolean(temporaryPassword)}
       >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Mot de passe temporaire</DialogTitle>
-            <DialogDescription>
-              Copiez-le maintenant et transmettez-le par un canal sécurisé. Il
-              ne sera plus affiché après fermeture.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="rounded-xl border bg-muted/40 p-4 font-mono text-lg tracking-[0.12em]">
-            {temporaryPassword}
-          </div>
-          <DialogFooter>
+        <FormDialogContent size="sm">
+          <FormDialogHeader
+            description="Copiez-le maintenant et transmettez-le par un canal sécurisé. Il disparaîtra à la fermeture."
+            icon={<HugeiconsIcon icon={Key01Icon} strokeWidth={1.9} />}
+            title="Mot de passe temporaire"
+            tone="violet"
+          />
+          <FormDialogBody>
+            <div className="rounded-xl border bg-muted/40 p-4 font-mono text-lg tracking-[0.12em]">
+              {temporaryPassword}
+            </div>
+          </FormDialogBody>
+          <FormDialogFooter>
             <Button
               onClick={async () => {
                 if (!temporaryPassword) {
@@ -723,25 +723,26 @@ const Team: React.FC = () => {
               Copier
             </Button>
             <Button onClick={() => setTemporaryPassword(null)}>Terminé</Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
 
       {/* Add/Edit Member Dialog */}
       <Dialog onOpenChange={setIsModalOpen} open={isModalOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>
-              {editingId ? "Modifier le membre" : "Ajouter un membre"}
-            </DialogTitle>
-            <DialogDescription>
-              {editingId
+        <FormDialogContent size="sm">
+          <FormDialogHeader
+            description={
+              editingId
                 ? "Modifiez les informations du membre de l'équipe."
-                : "Remplissez les informations du nouveau membre."}
-            </DialogDescription>
-          </DialogHeader>
+                : "Créez un accès et définissez clairement le rôle du nouveau membre."
+            }
+            icon={<HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.9} />}
+            title={editingId ? "Modifier le membre" : "Ajouter un membre"}
+            tone="rose"
+          />
 
-          <FieldGroup>
+          <FormDialogBody>
+            <FieldGroup>
             <Field>
               <FieldLabel>Nom complet</FieldLabel>
               <Input
@@ -839,9 +840,10 @@ const Team: React.FC = () => {
                 value={formData.specialty || ""}
               />
             </Field>
-          </FieldGroup>
+            </FieldGroup>
+          </FormDialogBody>
 
-          <DialogFooter>
+          <FormDialogFooter>
             <Button
               className="cursor-pointer"
               onClick={() => setIsModalOpen(false)}
@@ -857,8 +859,8 @@ const Team: React.FC = () => {
               {isSubmitting && <Spinner className="size-4" />}
               {editingId ? "Mettre à jour" : "Ajouter"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
     </div>
   );

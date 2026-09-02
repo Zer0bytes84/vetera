@@ -27,7 +27,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Backdrop
       className={cn(
-        "data-open:fade-in-0 data-closed:fade-out-0 fixed inset-0 isolate z-50 bg-black/40 duration-300 data-closed:animate-out data-open:animate-in supports-backdrop-filter:backdrop-blur-sm dark:bg-black/60",
+        "data-open:fade-in-0 data-closed:fade-out-0 fixed inset-0 isolate z-50 bg-black/40 duration-[180ms] ease-[var(--ease-out)] data-closed:animate-out data-open:animate-in supports-backdrop-filter:backdrop-blur-sm dark:bg-black/60",
         className
       )}
       data-slot="dialog-overlay"
@@ -51,7 +51,7 @@ function DialogContent({
       <DialogOverlay className={overlayClassName} />
       <DialogPrimitive.Popup
         className={cn(
-          "data-open:fade-in-0 data-open:zoom-in-95 data-closed:fade-out-0 data-closed:zoom-out-95 fixed start-1/2 top-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-popover-foreground text-sm outline-none ring-1 ring-foreground/10 duration-100 data-closed:animate-out data-open:animate-in sm:max-w-sm rtl:translate-x-1/2",
+        "data-open:fade-in-0 data-open:zoom-in-95 data-closed:fade-out-0 data-closed:zoom-out-95 fixed start-1/2 top-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl border border-foreground/10 bg-popover p-4 text-popover-foreground text-sm outline-none shadow-[0_24px_80px_-32px_rgba(0,0,0,0.45)] duration-[220ms] ease-[var(--ease-out)] data-closed:animate-out data-open:animate-in sm:max-w-sm rtl:translate-x-1/2 dark:border-white/10 dark:shadow-[0_28px_90px_-36px_rgba(0,0,0,0.75)]",
           className
         )}
         data-slot="dialog-content"
@@ -99,7 +99,7 @@ function DialogFooter({
   return (
     <div
       className={cn(
-        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end",
+        "-mx-4 -mb-4 flex flex-col-reverse gap-3 rounded-b-2xl border-t border-foreground/8 bg-popover/94 p-4 shadow-[0_-10px_24px_-24px_rgba(0,0,0,0.28)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-end dark:border-white/8 dark:bg-zinc-950/70",
         className
       )}
       data-slot="dialog-footer"

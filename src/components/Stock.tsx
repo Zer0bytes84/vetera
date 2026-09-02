@@ -44,14 +44,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Empty,
   EmptyContent,
@@ -61,6 +54,12 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -897,19 +896,20 @@ const Stock: React.FC = () => {
 
       {/* --- ADD/EDIT PRODUCT DIALOG --- */}
       <Dialog onOpenChange={setIsProductModalOpen} open={isProductModalOpen}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedProduct ? "Modifier le produit" : "Nouveau produit"}
-            </DialogTitle>
-            <DialogDescription>
-              {selectedProduct
+        <FormDialogContent size="md">
+          <FormDialogHeader
+            description={
+              selectedProduct
                 ? "Modifiez les informations du produit ci-dessous."
-                : "Remplissez les informations pour ajouter un nouveau produit à l'inventaire."}
-            </DialogDescription>
-          </DialogHeader>
+                : "Ajoutez la référence, le niveau de stock et les informations d’achat dans un même flux."
+            }
+            icon={<HugeiconsIcon icon={Package02Icon} strokeWidth={1.9} />}
+            title={selectedProduct ? "Modifier le produit" : "Nouveau produit"}
+            tone="amber"
+          />
 
-          <FieldGroup>
+          <FormDialogBody>
+            <FieldGroup>
             {/* Auto-fill section */}
             {!selectedProduct && (
               <div className="rounded-xl border border-zinc-200 border-dashed bg-zinc-50/20 p-4 dark:border-zinc-800">
@@ -1209,9 +1209,10 @@ const Stock: React.FC = () => {
                 </div>
               </label>
             )}
-          </FieldGroup>
+            </FieldGroup>
+          </FormDialogBody>
 
-          <DialogFooter>
+          <FormDialogFooter>
             <Button
               className="cursor-pointer"
               onClick={() => setIsProductModalOpen(false)}
@@ -1235,8 +1236,8 @@ const Stock: React.FC = () => {
               )}
               Enregistrer
             </Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
 
       {/* --- RESTOCK DIALOG --- */}
@@ -1244,14 +1245,17 @@ const Stock: React.FC = () => {
         onOpenChange={setIsRestockModalOpen}
         open={isRestockModalOpen && !!selectedProduct}
       >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Réapprovisionner</DialogTitle>
-            <DialogDescription>{selectedProduct?.name}</DialogDescription>
-          </DialogHeader>
+        <FormDialogContent size="sm">
+          <FormDialogHeader
+            description={selectedProduct?.name || "Produit sélectionné"}
+            icon={<HugeiconsIcon icon={Refresh01Icon} strokeWidth={1.9} />}
+            title="Réapprovisionner"
+            tone="teal"
+          />
 
-          <FieldGroup>
-            <div className="grid grid-cols-2 gap-4">
+          <FormDialogBody>
+            <FieldGroup>
+              <div className="grid grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Quantité (+)</FieldLabel>
                 <Input
@@ -1268,7 +1272,7 @@ const Stock: React.FC = () => {
                   value={restockCost}
                 />
               </Field>
-            </div>
+              </div>
 
             <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-150 bg-zinc-50/30 p-4 transition-colors hover:bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/10 dark:hover:bg-zinc-900/20">
               <Checkbox
@@ -1287,9 +1291,10 @@ const Stock: React.FC = () => {
                 </p>
               </div>
             </label>
-          </FieldGroup>
+            </FieldGroup>
+          </FormDialogBody>
 
-          <DialogFooter>
+          <FormDialogFooter>
             <Button
               className="cursor-pointer"
               onClick={() => setIsRestockModalOpen(false)}
@@ -1313,8 +1318,8 @@ const Stock: React.FC = () => {
               )}
               Valider Stock
             </Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
     </div>
   );

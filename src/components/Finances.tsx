@@ -53,6 +53,12 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -1957,14 +1963,15 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       </Tabs>
 
       <Dialog onOpenChange={setIsInvoiceDialogOpen} open={isInvoiceDialogOpen}>
-        <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Nouvelle facture</DialogTitle>
-            <DialogDescription>
-              Préparez les prestations, puis enregistrez ou émettez le document.
-            </DialogDescription>
-          </DialogHeader>
-          <FieldGroup className="gap-5">
+        <FormDialogContent size="md">
+          <FormDialogHeader
+            description="Reliez le document au bon dossier, détaillez les prestations puis choisissez entre brouillon et émission."
+            icon={<HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.9} />}
+            title="Nouvelle facture"
+            tone="violet"
+          />
+          <FormDialogBody>
+            <FieldGroup className="gap-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field>
                 <FieldLabel htmlFor="invoice-owner">Propriétaire</FieldLabel>
@@ -2137,8 +2144,9 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                 Une facture émise est figée. Utilisez un avoir pour la corriger.
               </FieldDescription>
             </Field>
-          </FieldGroup>
-          <DialogFooter>
+            </FieldGroup>
+          </FormDialogBody>
+          <FormDialogFooter>
             <Button
               onClick={() => setIsInvoiceDialogOpen(false)}
               variant="outline"
@@ -2159,8 +2167,8 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
               {isSubmitting ? <Spinner className="size-4" /> : null}
               Émettre la facture
             </Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
 
       <Dialog
@@ -2360,18 +2368,21 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         onOpenChange={(open) => !open && setPaymentInvoice(null)}
         open={Boolean(paymentInvoice)}
       >
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Enregistrer un règlement</DialogTitle>
-            <DialogDescription>
-              {paymentInvoice
+        <FormDialogContent size="sm">
+          <FormDialogHeader
+            description={
+              paymentInvoice
                 ? `${getInvoiceDisplayName(paymentInvoice)} · solde ${formatDZD(
                     paymentInvoice.balanceAmount
                   )}`
-                : null}
-            </DialogDescription>
-          </DialogHeader>
-          <FieldGroup>
+                : "Facture sélectionnée"
+            }
+            icon={<HugeiconsIcon icon={CreditCardIcon} strokeWidth={1.9} />}
+            title="Enregistrer un règlement"
+            tone="teal"
+          />
+          <FormDialogBody>
+            <FieldGroup>
             <Field>
               <FieldLabel htmlFor="payment-amount">Montant (DA)</FieldLabel>
               <Input
@@ -2423,8 +2434,9 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                 value={paymentDraft.reference}
               />
             </Field>
-          </FieldGroup>
-          <DialogFooter>
+            </FieldGroup>
+          </FormDialogBody>
+          <FormDialogFooter>
             <Button onClick={() => setPaymentInvoice(null)} variant="outline">
               Annuler
             </Button>
@@ -2435,25 +2447,23 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
               {isSubmitting ? <Spinner className="size-4" /> : null}
               Confirmer
             </Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
 
       <Dialog
         onOpenChange={(open) => !open && setIsTransactionDialogOpen(false)}
         open={isTransactionDialogOpen}
       >
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>
-              {editingTransaction ? "Modifier l’écriture" : "Nouvelle écriture"}
-            </DialogTitle>
-            <DialogDescription>
-              Les mouvements manuels restent modifiables. Les règlements générés
-              sont protégés.
-            </DialogDescription>
-          </DialogHeader>
-          <FieldGroup>
+        <FormDialogContent size="sm">
+          <FormDialogHeader
+            description="Les mouvements manuels restent modifiables. Les règlements générés restent protégés."
+            icon={<HugeiconsIcon icon={Wallet01Icon} strokeWidth={1.9} />}
+            title={editingTransaction ? "Modifier l’écriture" : "Nouvelle écriture"}
+            tone="amber"
+          />
+          <FormDialogBody>
+            <FieldGroup>
             <Field>
               <FieldLabel>Type</FieldLabel>
               <ToggleGroup
@@ -2574,8 +2584,9 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                 </NativeSelectOption>
               </NativeSelect>
             </Field>
-          </FieldGroup>
-          <DialogFooter>
+            </FieldGroup>
+          </FormDialogBody>
+          <FormDialogFooter>
             <Button
               onClick={() => setIsTransactionDialogOpen(false)}
               variant="outline"
@@ -2589,8 +2600,8 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
               {isSubmitting ? <Spinner className="size-4" /> : null}
               Enregistrer
             </Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
     </div>
   );

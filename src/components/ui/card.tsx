@@ -10,7 +10,7 @@ function Card({
   return (
     <div
       className={cn(
-        "group/card flex flex-col overflow-hidden rounded-[16px] border border-border/80 bg-card text-card-foreground text-sm shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.025),0_12px_32px_-24px_rgba(0,0,0,0.65)]",
+        "group/card flex flex-col overflow-hidden rounded-[16px] border border-border/80 bg-card text-card-foreground text-sm shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] transition-[background-color,border-color,box-shadow,opacity,transform] duration-200 ease-[var(--ease-out)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.025),0_12px_32px_-24px_rgba(0,0,0,0.65)]",
         className
       )}
       data-size={size}

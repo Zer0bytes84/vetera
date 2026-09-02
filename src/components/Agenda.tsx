@@ -41,13 +41,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,6 +63,12 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -3086,20 +3086,19 @@ const Agenda: React.FC = () => {
         }}
         open={isDialogOpen}
       >
-        <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(940px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(940px,calc(100%-2rem))]">
-          <DialogHeader className="modal-medical-header border-b px-6 py-5">
-            <DialogTitle className="text-xl tracking-[-0.04em]">
-              {editingAppointmentId
+        <FormDialogContent size="lg">
+          <FormDialogHeader
+            description="Reliez le bon patient, choisissez le créneau et préparez le contexte clinique avant son arrivée."
+            icon={<HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.9} />}
+            title={
+              editingAppointmentId
                 ? "Modifier le rendez-vous"
-                : "Nouveau rendez-vous"}
-            </DialogTitle>
-            <DialogDescription>
-              Réservez un créneau propre au planning Luma, sans quitter la
-              logique clinique locale.
-            </DialogDescription>
-          </DialogHeader>
+                : "Nouveau rendez-vous"
+            }
+            tone="sky"
+          />
 
-          <div className="modal-medical-body min-h-0 overflow-y-auto p-6">
+          <FormDialogBody>
             <FieldGroup className="grid gap-6">
               <div className="grid gap-5 lg:grid-cols-2">
                 <Field className="lg:col-span-2">
@@ -3535,9 +3534,9 @@ const Agenda: React.FC = () => {
                 </div>
               </div>
             </FieldGroup>
-          </div>
+          </FormDialogBody>
 
-          <div className="modal-medical-footer flex shrink-0 flex-col gap-3 border-t px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <FormDialogFooter className="flex-col sm:flex-row sm:justify-between">
             <div className="flex min-h-11 items-center">
               {editingAppointmentId ? (
                 <Button
@@ -3588,8 +3587,8 @@ const Agenda: React.FC = () => {
                 </Button>
               </div>
             </div>
-          </div>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
 
       <AlertDialog

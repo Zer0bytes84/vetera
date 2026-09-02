@@ -4,14 +4,13 @@ import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -123,27 +122,18 @@ export function AnesthesiaSheetDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10">
-              <Syringe className="size-5 text-violet-600" weight="duotone" />
-            </div>
-            <div>
-              <DialogTitle>
-                {t(
-                  "modules.anesthesia.newSheet",
-                  "Nouvelle feuille d'anesthésie"
-                )}
-              </DialogTitle>
-              <DialogDescription>
-                {patient.name} · {patient.species}
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
+      <FormDialogContent size="md">
+        <FormDialogHeader
+          description={`${patient.name} · ${patient.species} — préparez le protocole et le plan de surveillance.`}
+          icon={<Syringe weight="duotone" />}
+          title={t(
+            "modules.anesthesia.newSheet",
+            "Nouvelle feuille d'anesthésie"
+          )}
+          tone="violet"
+        />
 
-        <div className="grid gap-4">
+        <FormDialogBody className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="anes-procedure">
               {t("modules.anesthesia.fields.procedureName", "Procédure")} *
@@ -287,9 +277,9 @@ export function AnesthesiaSheetDialog({
               value={complications}
             />
           </div>
-        </div>
+        </FormDialogBody>
 
-        <DialogFooter>
+        <FormDialogFooter>
           <Button onClick={handleCancel} variant="outline">
             Annuler
           </Button>
@@ -299,8 +289,8 @@ export function AnesthesiaSheetDialog({
           >
             Créer la feuille
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

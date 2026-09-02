@@ -419,7 +419,7 @@ function AppShellInner() {
             "!rounded-[24px] !bg-transparent p-0 shadow-sm ring-1 ring-black/5 dark:ring-white/8",
           variant === "glass" &&
             "!rounded-[22px] !bg-transparent p-0 shadow-none ring-0",
-          "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "transition-[background-color,border-color,border-radius,box-shadow,opacity] duration-[240ms] ease-[var(--ease-out)]",
           "md:peer-data-[variant=inset]:max-h-dvh",
           "md:peer-data-[variant=minimal]:max-h-[calc(100dvh-8px)]",
           "md:peer-data-[variant=floating]:max-h-dvh",
@@ -449,7 +449,7 @@ function AppShellInner() {
         ) : null}
         <div
           className={cn(
-            "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-background transition-all duration-300 [scrollbar-gutter:stable]",
+            "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-background transition-[background-color,border-radius,box-shadow,opacity] duration-[240ms] ease-[var(--ease-out)] [scrollbar-gutter:stable]",
             variant === "sidebar" && "rounded-none shadow-none ring-0",
             variant === "inset" &&
               "rounded-t-[16px] rounded-b-none shadow-2xl ring-1 ring-black/10 dark:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.78)] dark:ring-white/10",
@@ -466,11 +466,12 @@ function AppShellInner() {
 
           <motion.header
             className={cn(
-              "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-md backdrop-saturate-125 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-md dark:backdrop-saturate-125",
+              "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
               variant === "minimal" && "rounded-t-[18px]",
               variant === "glass" && "rounded-t-[22px]",
               isDesktopRuntime && "cursor-grab active:cursor-grabbing"
             )}
+            data-slot="app-header"
             data-window-drag-region={isDesktopRuntime ? "true" : undefined}
             onDoubleClick={handleDoubleClick}
             onMouseDown={handleMouseDown}
@@ -484,22 +485,6 @@ function AppShellInner() {
               } as React.CSSProperties
             }
           >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.34)_0%,rgba(255,255,255,0.12)_58%,rgba(255,255,255,0.04)_100%)] dark:hidden"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.025)_55%,rgba(0,0,0,0.04)_100%)] dark:block"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent dark:via-white/30"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -top-8 left-[18%] h-16 w-56 rounded-full bg-sky-100/20 blur-2xl dark:bg-sky-400/5"
-            />
             {/* Hairline border (replaces border-b) — Protocol-faithful */}
             <div
               aria-hidden="true"
@@ -512,12 +497,12 @@ function AppShellInner() {
             >
               {/* Search trigger - Premium Dribbble Style */}
               <button
-                className="group relative flex h-10 w-[300px] items-center gap-3 rounded-full border border-black/5 bg-white/40 px-4 text-left text-muted-foreground text-sm shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md transition-all duration-300 hover:border-black/10 hover:bg-white/60 hover:text-foreground hover:shadow-[0_4px_14px_rgba(0,0,0,0.04)] sm:w-[340px] dark:border-white/10 dark:bg-zinc-900/40 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:hover:border-white/20 dark:hover:bg-zinc-900/60"
+                className="group relative flex h-10 w-[300px] items-center gap-3 rounded-full border border-black/5 bg-white/40 px-4 text-left text-muted-foreground text-sm shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md transition-[background-color,border-color,color,box-shadow,transform] duration-[180ms] ease-[var(--ease-out)] hover:border-black/10 hover:bg-white/60 hover:text-foreground hover:shadow-[0_4px_14px_rgba(0,0,0,0.04)] active:scale-[0.985] sm:w-[340px] dark:border-white/10 dark:bg-zinc-900/40 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:hover:border-white/20 dark:hover:bg-zinc-900/60"
                 onClick={() => setPaletteOpen(true)}
                 type="button"
               >
                 <HugeiconsIcon
-                  className="size-4 shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary"
+                  className="size-4 shrink-0 transition-colors duration-[160ms] ease-[var(--ease-out)] group-hover:text-primary"
                   icon={Search01Icon}
                   strokeWidth={1.5}
                 />
@@ -558,7 +543,7 @@ function AppShellInner() {
                 <Button
                   aria-label="Ouvrir l’assistant IA"
                   className={cn(
-                    "size-9 rounded-full border border-black/8 bg-white/40 p-0 shadow-none backdrop-blur-md transition-all hover:bg-white/70 focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10",
+                    "size-9 rounded-full border border-black/8 bg-white/40 p-0 shadow-none backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-[160ms] ease-[var(--ease-out)] hover:bg-white/70 focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.97] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10",
                     aiAssistantOpen &&
                       "bg-primary/10 text-primary ring-2 ring-primary/20 dark:bg-primary/15"
                   )}
@@ -577,7 +562,7 @@ function AppShellInner() {
                 {/* ── Theme button ────────────────────────────────────── */}
                 <button
                   aria-label="Changer le thème"
-                  className="group relative grid size-9 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-all duration-200 hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                  className="group relative grid size-9 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-[160ms] ease-[var(--ease-out)] hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.97] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
                   onClick={toggleTheme}
                   title="Changer le thème · D"
                   type="button"
@@ -608,7 +593,7 @@ function AppShellInner() {
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     aria-label="Paramètres et compte"
-                    className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-all duration-200 hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                    className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-[160ms] ease-[var(--ease-out)] hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.97] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
                   >
                     <HugeiconsIcon
                       className="size-[17px]"

@@ -4,15 +4,14 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -188,19 +187,20 @@ export function VaccinationDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {isEditing
+      <FormDialogContent size="sm">
+        <FormDialogHeader
+          description="Documentez le vaccin, le lot et la prochaine échéance dans le dossier médical."
+          icon={<Syringe weight="duotone" />}
+          title={
+            isEditing
               ? t("patientDetail.vaccinations.editTitle")
-              : t("patientDetail.vaccinations.dialogTitle")}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            {t("patientDetail.vaccinations.dialogTitle")}
-          </DialogDescription>
-        </DialogHeader>
+              : t("patientDetail.vaccinations.dialogTitle")
+          }
+          tone="sky"
+        />
 
-        <FieldGroup>
+        <FormDialogBody>
+          <FieldGroup>
           {isEditing ? null : (
             <Field>
               <label className="font-medium text-sm" htmlFor="vaccine-preset">
@@ -337,9 +337,10 @@ export function VaccinationDialog({
               {error}
             </p>
           ) : null}
-        </FieldGroup>
+          </FieldGroup>
+        </FormDialogBody>
 
-        <DialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
+        <FormDialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
           <span className="inline-flex items-center gap-1 text-muted-foreground text-xs">
             <Syringe className="size-3.5" weight="duotone" />
             {t("patientDetail.vaccinations.subtitle")}
@@ -369,8 +370,8 @@ export function VaccinationDialog({
               {t("patientDetail.vaccinations.save")}
             </Button>
           </div>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

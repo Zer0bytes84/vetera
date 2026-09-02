@@ -474,8 +474,60 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  [data-slot="sheet-content"],
+  [data-slot="dialog-content"],
+  [data-slot="alert-dialog-content"],
+  [data-slot="sheet-overlay"],
+  [data-slot="dialog-overlay"],
+  [data-slot="alert-dialog-overlay"] {
+    animation-duration: 140ms !important;
+    transition-duration: 140ms !important;
+  }
+
+  [data-slot="sheet-content"][data-starting-style],
+  [data-slot="sheet-content"][data-ending-style] {
+    transform: none !important;
+  }
+
+  [data-slot="dialog-content"][data-starting-style],
+  [data-slot="dialog-content"][data-ending-style],
+  [data-slot="alert-dialog-content"][data-starting-style],
+  [data-slot="alert-dialog-content"][data-ending-style] {
+    transform: translate(-50%, -50%) !important;
+  }
+
+  [data-slot="button"]:active,
+  [data-slot="toggle"]:active,
+  [data-slot="switch"]:active {
+    transform: none !important;
+  }
+
   .app-view-enter {
     animation: appViewEnterReduced 140ms var(--ease-out) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="sheet-content"],
+  [data-slot="dialog-content"],
+  [data-slot="alert-dialog-content"],
+  [data-slot="sheet-overlay"],
+  [data-slot="dialog-overlay"],
+  [data-slot="alert-dialog-overlay"] {
+    animation-duration: 140ms !important;
+    transition-duration: 140ms !important;
+  }
+
+  [data-slot="sheet-content"][data-starting-style],
+  [data-slot="sheet-content"][data-ending-style] {
+    transform: none !important;
+  }
+
+  [data-slot="dialog-content"][data-starting-style],
+  [data-slot="dialog-content"][data-ending-style],
+  [data-slot="alert-dialog-content"][data-starting-style],
+  [data-slot="alert-dialog-content"][data-ending-style] {
+    transform: translate(-50%, -50%) !important;
   }
 }
 
@@ -726,20 +778,22 @@ button:focus-visible,
   transform: translateX(-45%);
   transition:
     opacity 180ms ease,
-    transform 420ms ease;
+    transform 240ms var(--ease-out);
 }
 
-.clinical-interactive:hover {
-  z-index: 1;
-  background: color-mix(in oklch, var(--card) 92%, var(--primary));
-  box-shadow: 0 12px 30px -22px
-    color-mix(in oklch, var(--foreground) 35%, transparent);
-  transform: translateY(-2px);
-}
+@media (hover: hover) and (pointer: fine) {
+  .clinical-interactive:hover {
+    z-index: 1;
+    background: color-mix(in oklch, var(--card) 92%, var(--primary));
+    box-shadow: 0 12px 30px -22px
+      color-mix(in oklch, var(--foreground) 35%, transparent);
+    transform: translateY(-2px);
+  }
 
-.clinical-interactive:hover::after {
-  opacity: 1;
-  transform: translateX(45%);
+  .clinical-interactive:hover::after {
+    opacity: 1;
+    transform: translateX(45%);
+  }
 }
 
 .clinical-interactive:focus-visible {
@@ -764,21 +818,27 @@ button:focus-visible,
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 20px;
+  background: var(--card);
+  color: var(--foreground);
+  isolation: isolate;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.4) inset,
-    0 12px 40px -20px rgba(0, 0, 0, 0.12);
+    0 1px 0 rgba(255, 255, 255, 0.68) inset,
+    0 28px 80px -38px rgba(15, 23, 42, 0.34);
 }
 .modal-medical-header {
-  background: rgba(255, 255, 255, 0.75);
+  background:
+    radial-gradient(circle at 18% -40%, rgb(251 191 36 / 0.12), transparent 38%),
+    radial-gradient(circle at 84% -48%, rgb(56 189 248 / 0.14), transparent 40%),
+    var(--card);
   border-bottom: 1px solid var(--border);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 .modal-medical-body {
-  background: #ffffff;
+  background: var(--card);
 }
 .modal-medical-footer {
-  background: rgba(255, 255, 255, 0.75);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
   border-top: 1px solid var(--border);
   box-shadow: 0 -10px 24px -24px rgba(0, 0, 0, 0.28);
   -webkit-backdrop-filter: blur(12px);
@@ -790,6 +850,32 @@ button:focus-visible,
   gap: 12px;
   justify-content: flex-end;
 }
+.modal-medical-footer-meta {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.modal-medical-footer-meta > * {
+  max-width: 100%;
+}
+.modal-footer-status-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #0f766e;
+  background: linear-gradient(135deg, #d8f7eb, #e0efff 58%, #f2e4ff);
+  border: 1px solid color-mix(in oklch, #5eead4 34%, var(--border));
+  border-radius: 8px;
+}
+.dark .modal-footer-status-icon {
+  color: #99f6e4;
+  background: linear-gradient(135deg, rgb(20 184 166 / 0.24), rgb(59 130 246 / 0.22) 58%, rgb(168 85 247 / 0.22));
+  border-color: rgb(94 234 212 / 0.24);
+}
 
 .dark .modal-medical-shell {
   border-color: rgba(255, 255, 255, 0.08);
@@ -798,15 +884,334 @@ button:focus-visible,
     0 20px 50px -30px rgba(0, 0, 0, 0.5);
 }
 .dark .modal-medical-header {
-  background: rgba(25, 25, 25, 0.75);
+  background:
+    linear-gradient(135deg, color-mix(in oklch, var(--primary) 10%, var(--card)), var(--card));
   border-bottom-color: rgba(255, 255, 255, 0.06);
 }
 .dark .modal-medical-body {
-  background: #151515;
+  background: color-mix(in oklch, var(--background) 88%, var(--card));
 }
+
+.modal-medical-title-icon,
+.modal-section-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: #0f766e;
+  background: linear-gradient(135deg, #d8f7eb 0%, #e0efff 52%, #f2e4ff 100%);
+  border: 1px solid color-mix(in oklch, #5eead4 34%, var(--border));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.78), 0 8px 18px -14px rgb(15 118 110 / 0.55);
+}
+
+.modal-medical-title-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+}
+
+.modal-section-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+}
+
+.modal-section-icon-patient {
+  color: #0369a1;
+  background: linear-gradient(135deg, #dff7ff 0%, #e5edff 52%, #f1e6ff 100%);
+  border-color: color-mix(in oklch, #38bdf8 34%, var(--border));
+}
+
+.modal-section-icon-owner {
+  color: #9a3412;
+  background: linear-gradient(135deg, #fff0d8 0%, #ffe4e8 52%, #eee5ff 100%);
+  border-color: color-mix(in oklch, #fb923c 30%, var(--border));
+}
+
+.dark .modal-medical-title-icon,
+.dark .modal-section-icon {
+  color: #99f6e4;
+  background: linear-gradient(135deg, rgb(20 184 166 / 0.24), rgb(59 130 246 / 0.22) 52%, rgb(168 85 247 / 0.22));
+  border-color: rgb(94 234 212 / 0.24);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 10px 24px -18px rgb(45 212 191 / 0.45);
+}
+
+.dark .modal-section-icon-owner {
+  color: #fdba74;
+  background: linear-gradient(135deg, rgb(251 146 60 / 0.2), rgb(244 114 182 / 0.18) 52%, rgb(139 92 246 / 0.2));
+  border-color: rgb(251 146 60 / 0.24);
+}
+
+.dark .modal-section-icon-patient {
+  color: #7dd3fc;
+  background: linear-gradient(135deg, rgb(56 189 248 / 0.2), rgb(99 102 241 / 0.2) 52%, rgb(168 85 247 / 0.2));
+  border-color: rgb(56 189 248 / 0.24);
+}
+
 .dark .modal-medical-footer {
   background: rgba(25, 25, 25, 0.75);
   border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.modal-record-link {
+  align-items: center;
+  min-height: 48px;
+  padding: 7px 12px 7px 8px;
+  background: color-mix(in oklch, var(--card) 90%, var(--muted));
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.72);
+}
+
+.modal-record-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+
+.modal-record-link-owner {
+  color: #9a3412;
+  background: linear-gradient(135deg, #fff0d8, #ffe4e8 58%, #eee5ff);
+}
+
+.modal-record-link-patient {
+  color: #0369a1;
+  background: linear-gradient(135deg, #dff7ff, #e5edff 58%, #f1e6ff);
+}
+
+.modal-record-link-bridge {
+  position: relative;
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, #fb923c, #a78bfa, #38bdf8);
+}
+
+.modal-record-link-bridge::before,
+.modal-record-link-bridge::after {
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  content: "";
+  background: currentColor;
+  border-radius: 999px;
+  transform: translateY(-50%);
+}
+
+.modal-record-link-bridge::before { left: -1px; color: #fb923c; }
+.modal-record-link-bridge::after { right: -1px; color: #38bdf8; }
+
+.modal-record-link > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-left: 10px;
+  line-height: 1.15;
+}
+
+.modal-record-link > div > span {
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.modal-record-link > div > small {
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+
+.modal-patient-grid {
+  display: grid;
+  min-height: 100%;
+}
+
+.modal-patient-panel {
+  min-width: 0;
+  padding: 24px;
+}
+
+.modal-patient-panel-owner {
+  background:
+    radial-gradient(circle at 0 0, rgb(251 146 60 / 0.09), transparent 38%),
+    var(--card);
+}
+
+.modal-patient-panel-animal {
+  background:
+    radial-gradient(circle at 100% 0, rgb(56 189 248 / 0.1), transparent 38%),
+    var(--card);
+  border-top: 1px solid var(--border);
+}
+
+.modal-patient-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 78%, transparent);
+}
+
+.modal-required {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 6px;
+  color: #be123c;
+  background: rgb(244 63 94 / 0.08);
+  border-radius: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.modal-section-state {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.modal-section-state-owner {
+  color: #9a3412;
+  background: rgb(251 146 60 / 0.1);
+}
+
+.modal-section-state-patient {
+  color: #0369a1;
+  background: rgb(56 189 248 / 0.1);
+}
+
+.modal-form-fields [data-slot="field"] {
+  gap: 7px;
+}
+
+.modal-form-fields [data-slot="field-label"] {
+  align-items: center;
+  justify-content: space-between;
+  color: color-mix(in oklch, var(--foreground) 88%, var(--muted-foreground));
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.modal-form-fields [data-slot="input"],
+.modal-form-fields [data-slot="native-select"] {
+  height: 42px;
+  border-color: color-mix(in oklch, var(--border) 88%, var(--foreground));
+  border-radius: 11px;
+  background: color-mix(in oklch, var(--card) 92%, var(--background));
+  padding-inline: 13px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.66);
+}
+
+.modal-form-fields [data-slot="input"]::placeholder {
+  color: color-mix(in oklch, var(--muted-foreground) 82%, transparent);
+}
+
+.modal-form-fields [data-slot="input"]:focus-visible,
+.modal-form-fields [data-slot="native-select"]:focus-visible {
+  background: var(--card);
+}
+
+.modal-primary-choice {
+  padding: 12px;
+  background: color-mix(in oklch, #fff7ed 52%, var(--card));
+  border: 1px solid color-mix(in oklch, #fdba74 30%, var(--border));
+  border-radius: 13px;
+}
+
+.modal-primary-choice [data-slot="native-select"] {
+  background: var(--card);
+}
+
+.modal-patient-name-field {
+  padding-bottom: 2px;
+}
+
+.modal-patient-name-input {
+  height: 48px !important;
+  font-size: 15px !important;
+  font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+  .modal-patient-grid {
+    grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  }
+
+  .modal-patient-panel {
+    padding: 28px 32px 30px;
+  }
+
+  .modal-patient-panel-animal {
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+}
+
+.dark .modal-record-link {
+  background: color-mix(in oklch, var(--card) 84%, var(--muted));
+  border-color: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05);
+}
+
+.dark .modal-patient-panel-owner {
+  background:
+    radial-gradient(circle at 0 0, rgb(251 146 60 / 0.07), transparent 34%),
+    var(--card);
+}
+
+.dark .modal-patient-panel-animal {
+  background:
+    radial-gradient(circle at 100% 0, rgb(56 189 248 / 0.08), transparent 34%),
+    var(--card);
+}
+
+.dark .modal-required {
+  color: #fda4af;
+  background: rgb(244 63 94 / 0.14);
+}
+
+.dark .modal-section-state-owner {
+  color: #fdba74;
+  background: rgb(251 146 60 / 0.14);
+}
+
+.dark .modal-section-state-patient {
+  color: #7dd3fc;
+  background: rgb(56 189 248 / 0.14);
+}
+
+.dark .modal-form-fields [data-slot="input"],
+.dark .modal-form-fields [data-slot="native-select"] {
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.035);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+
+.dark .modal-primary-choice {
+  background: rgb(251 146 60 / 0.055);
+  border-color: rgb(251 146 60 / 0.16);
+}
+
+@media (max-width: 639px) {
+  .modal-patient-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .modal-section-state {
+    margin-left: 50px;
+  }
 }
 
 /* ─── Modal Hero ─── */
@@ -2078,6 +2483,16 @@ html[data-header-pattern="quiet"] .header-pattern-live {
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  [data-slot="app-header"] {
+    background: rgb(255 255 255 / 0.96) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .dark [data-slot="app-header"] {
+    background: rgb(24 24 27 / 0.96) !important;
+  }
+
   [data-variant="glass"] [data-slot="sidebar-inner"] {
     background: rgb(255 255 255 / 0.94);
     backdrop-filter: none;
@@ -2086,6 +2501,29 @@ html[data-header-pattern="quiet"] .header-pattern-live {
 
   .dark [data-variant="glass"] [data-slot="sidebar-inner"] {
     background: rgb(24 24 27 / 0.94);
+  }
+}
+
+/* High-contrast users need the same hierarchy without relying on blur or
+ * translucent edges. Keep the glass treatment available, but make every
+ * structural surface and separator explicit. */
+@media (prefers-contrast: more) {
+  [data-slot="app-header"] {
+    background: var(--background) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: 1px solid var(--border);
+  }
+
+  [data-slot="app-header-separator"] {
+    background: var(--border) !important;
+  }
+
+  [data-variant="glass"] [data-slot="sidebar-inner"],
+  [data-variant="glass"] .sidebar-user-card {
+    background: var(--sidebar) !important;
+    border-color: var(--border) !important;
+    box-shadow: none !important;
   }
 }
 

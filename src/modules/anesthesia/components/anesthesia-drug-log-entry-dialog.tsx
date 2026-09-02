@@ -4,14 +4,13 @@ import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -106,25 +105,18 @@ export function AnesthesiaDrugLogEntryDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-xl">
-        <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10">
-              <Pill className="size-5 text-violet-600" weight="duotone" />
-            </div>
-            <div>
-              <DialogTitle>
-                {t(
-                  "modules.anesthesia.drugLog.addEntry",
-                  "Ajouter un médicament"
-                )}
-              </DialogTitle>
-              <DialogDescription>{sheet.procedureName}</DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
+      <FormDialogContent size="sm">
+        <FormDialogHeader
+          description={`${sheet.procedureName} — consignez la dose, la voie et la phase d’administration.`}
+          icon={<Pill weight="duotone" />}
+          title={t(
+            "modules.anesthesia.drugLog.addEntry",
+            "Ajouter un médicament"
+          )}
+          tone="violet"
+        />
 
-        <div className="grid gap-3">
+        <FormDialogBody className="grid gap-3">
           <div className="grid gap-2">
             <Label htmlFor="drug-name">
               {t("modules.anesthesia.drugLog.drug", "Médicament")} *
@@ -193,9 +185,9 @@ export function AnesthesiaDrugLogEntryDialog({
               value={notes}
             />
           </div>
-        </div>
+        </FormDialogBody>
 
-        <DialogFooter>
+        <FormDialogFooter>
           <Button onClick={handleCancel} variant="outline">
             Annuler
           </Button>
@@ -205,8 +197,8 @@ export function AnesthesiaDrugLogEntryDialog({
           >
             Enregistrer
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

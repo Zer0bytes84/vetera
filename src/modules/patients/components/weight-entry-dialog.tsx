@@ -1,23 +1,22 @@
-import { Plus, Trash } from "@phosphor-icons/react";
+import { Plus, Scales, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -162,19 +161,20 @@ export function WeightEntryDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {isEditing
+      <FormDialogContent size="sm">
+        <FormDialogHeader
+          description="Consignez une mesure datée et son contexte clinique pour enrichir la courbe de suivi."
+          icon={<Scales weight="duotone" />}
+          title={
+            isEditing
               ? t("patientDetail.weight.editTitle")
-              : t("patientDetail.weight.dialogTitle")}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            {t("patientDetail.weight.dialogTitle")}
-          </DialogDescription>
-        </DialogHeader>
+              : t("patientDetail.weight.dialogTitle")
+          }
+          tone="teal"
+        />
 
-        <FieldGroup>
+        <FormDialogBody>
+          <FieldGroup>
           <Field>
             <FieldLabel htmlFor="weight-kg">
               {t("patientDetail.weight.weightLabel")}
@@ -247,9 +247,10 @@ export function WeightEntryDialog({
               {error}
             </p>
           ) : null}
-        </FieldGroup>
+          </FieldGroup>
+        </FormDialogBody>
 
-        <DialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
+        <FormDialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
           {isEditing ? (
             <Button
               className="cursor-pointer text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
@@ -293,8 +294,8 @@ export function WeightEntryDialog({
               {t("patientDetail.weight.save")}
             </Button>
           </div>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

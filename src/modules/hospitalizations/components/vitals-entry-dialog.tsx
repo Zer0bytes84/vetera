@@ -4,14 +4,13 @@ import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -148,25 +147,18 @@ export function VitalsEntryDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-rose-500/10">
-              <Heartbeat className="size-5 text-rose-600" weight="duotone" />
-            </div>
-            <div>
-              <DialogTitle>
-                {t(
-                  "modules.hospitalizations.vitals.addEntry",
-                  "Ajouter des constantes"
-                )}
-              </DialogTitle>
-              <DialogDescription>{hospitalization.reason}</DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
+      <FormDialogContent size="md">
+        <FormDialogHeader
+          description={`${hospitalization.reason} — consignez les constantes et observations du contrôle.`}
+          icon={<Heartbeat weight="duotone" />}
+          title={t(
+            "modules.hospitalizations.vitals.addEntry",
+            "Ajouter des constantes"
+          )}
+          tone="rose"
+        />
 
-        <div className="grid gap-3">
+        <FormDialogBody className="grid gap-3">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Field
               id="v-temp"
@@ -320,17 +312,17 @@ export function VitalsEntryDialog({
               value={notes}
             />
           </div>
-        </div>
+        </FormDialogBody>
 
-        <DialogFooter>
+        <FormDialogFooter>
           <Button onClick={handleCancel} variant="outline">
             Annuler
           </Button>
           <Button onClick={() => void handleSubmit()}>
             {t("modules.hospitalizations.vitals.save", "Enregistrer")}
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

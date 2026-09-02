@@ -12,6 +12,7 @@ import {
   WorkHistoryIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "lucide-react";
 import React, {
   useCallback,
   useDeferredValue,
@@ -295,6 +296,16 @@ function getSpeciesIcon(species?: string): string {
   }
 
   return "🐾"; // Icône par défaut
+}
+
+function getSpeciesComponent(species?: string) {
+  const normalized = species?.toLowerCase() ?? "";
+
+  if (normalized.includes("chien")) return Dog;
+  if (normalized.includes("chat")) return Cat;
+  if (normalized.includes("lapin")) return Rabbit;
+  if (normalized.includes("oiseau")) return Bird;
+  return PawPrint;
 }
 
 function getBreedSuggestions(species?: string) {
@@ -1637,35 +1648,90 @@ function PatientCreateDialog({
     [owners]
   );
 
+  const SpeciesIcon = getSpeciesComponent(newPatient.species);
+  const selectedOwner =
+    selectedOwnerId === "new"
+      ? null
+      : owners.find((owner) => owner.id === selectedOwnerId) ?? null;
+
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(940px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(940px,calc(100%-2rem))]">
-        <DialogHeader className="modal-medical-header shrink-0 border-b px-6 py-5">
-          <DialogTitle className="text-2xl tracking-[-0.05em]">
-            Nouveau patient
-          </DialogTitle>
-          <DialogDescription>
-            Créez un nouveau dossier patient en le rattachant à un propriétaire
-            existant ou à un nouveau contact.
-          </DialogDescription>
+      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1040px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-3rem)] sm:max-w-[min(1040px,calc(100%-2rem))]">
+        <DialogHeader className="modal-medical-header shrink-0 border-b px-6 py-5 sm:px-8">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex min-w-0 items-start gap-4">
+              <div className="modal-medical-title-icon" aria-hidden="true">
+                <HugeiconsIcon icon={Folder01Icon} size={24} strokeWidth={1.8} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-2xl tracking-[-0.03em]">
+                  Nouveau patient
+                </DialogTitle>
+                <DialogDescription className="mt-1 max-w-xl">
+                  Créez le dossier de l’animal et reliez-le à la bonne personne,
+                  sans perdre le fil entre les informations essentielles.
+                </DialogDescription>
+              </div>
+            </div>
+            <div
+              aria-label="Le propriétaire et le patient seront liés"
+              className="modal-record-link hidden shrink-0 sm:flex"
+            >
+              <span
+                aria-hidden="true"
+                className="modal-record-link-icon modal-record-link-owner"
+              >
+                <UserRound className="size-4" strokeWidth={1.9} />
+              </span>
+              <span aria-hidden="true" className="modal-record-link-bridge" />
+              <span
+                aria-hidden="true"
+                className="modal-record-link-icon modal-record-link-patient"
+              >
+                <SpeciesIcon className="size-4" strokeWidth={1.9} />
+              </span>
+              <div>
+                <span>Dossier relié</span>
+                <small>Propriétaire + animal</small>
+              </div>
+            </div>
+          </div>
         </DialogHeader>
 
-        <div className="modal-medical-body min-h-0 overflow-y-auto px-6 py-6">
-          <div className="grid gap-8 xl:grid-cols-2">
+        <div className="modal-medical-body min-h-0 overflow-y-auto">
+          <div className="modal-patient-grid">
             {/* Section: Propriétaire */}
-            <div className="flex flex-col gap-5">
-              <div className="border-zinc-100 border-b pb-3 dark:border-zinc-800/80">
-                <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
-                  Propriétaire
-                </h3>
-                <p className="mt-1 text-muted-foreground text-xs">
-                  Associez un contact existant ou créez un nouveau propriétaire.
-                </p>
+            <section className="modal-patient-panel modal-patient-panel-owner flex flex-col gap-5">
+              <div className="modal-patient-section-heading">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="modal-section-icon modal-section-icon-owner"
+                  >
+                    <UserRound className="size-[18px]" strokeWidth={1.9} />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold text-[15px] text-foreground">
+                      Propriétaire
+                    </h3>
+                    <p className="mt-0.5 text-muted-foreground text-xs">
+                      Coordonnées et rattachement du contact.
+                    </p>
+                  </div>
+                </div>
+                <span className="modal-section-state modal-section-state-owner">
+                  <HugeiconsIcon
+                    icon={selectedOwner ? CheckmarkCircle02Icon : Add01Icon}
+                    size={13}
+                    strokeWidth={2}
+                  />
+                  {selectedOwner ? "Contact existant" : "Nouveau contact"}
+                </span>
               </div>
 
-              <FieldGroup>
-                <Field>
-                  <FieldLabel>Propriétaire existant</FieldLabel>
+              <FieldGroup className="modal-form-fields">
+                <Field className="modal-primary-choice">
+                  <FieldLabel>Mode de rattachement</FieldLabel>
                   <NativeSelect
                     className="w-full cursor-pointer"
                     onChange={(event) => setSelectedOwnerId(event.target.value)}
@@ -1680,17 +1746,24 @@ function PatientCreateDialog({
                       </NativeSelectOption>
                     ))}
                   </NativeSelect>
-                  <FieldDescription>
+                  <FieldDescription className="text-xs">
                     {selectedOwnerId === "new"
-                      ? "Un nouveau propriétaire sera créé avec ce dossier."
-                      : "Le patient sera rattaché à ce propriétaire (sans modifier sa fiche)."}
+                      ? "Saisissez les coordonnées du nouveau propriétaire ci-dessous."
+                      : "La fiche du contact restera inchangée."}
                   </FieldDescription>
                 </Field>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field>
-                    <FieldLabel>Nom</FieldLabel>
+                    <FieldLabel>
+                      Nom <span className="modal-required">Obligatoire</span>
+                    </FieldLabel>
                     <Input
+                      aria-invalid={Boolean(
+                        formError &&
+                          selectedOwnerId === "new" &&
+                          !newOwner.lastName?.trim()
+                      )}
                       disabled={selectedOwnerId !== "new"}
                       onChange={(event) =>
                         setNewOwner((current) => ({
@@ -1698,6 +1771,7 @@ function PatientCreateDialog({
                           lastName: event.target.value,
                         }))
                       }
+                      placeholder="Benali"
                       value={newOwner.lastName || ""}
                     />
                   </Field>
@@ -1705,6 +1779,11 @@ function PatientCreateDialog({
                   <Field>
                     <FieldLabel>Prénom</FieldLabel>
                     <Input
+                      aria-invalid={Boolean(
+                        formError &&
+                          selectedOwnerId === "new" &&
+                          !newOwner.phone?.trim()
+                      )}
                       disabled={selectedOwnerId !== "new"}
                       onChange={(event) =>
                         setNewOwner((current) => ({
@@ -1712,12 +1791,16 @@ function PatientCreateDialog({
                           firstName: event.target.value,
                         }))
                       }
+                      placeholder="Nadia"
                       value={newOwner.firstName || ""}
                     />
                   </Field>
 
                   <Field>
-                    <FieldLabel>Téléphone</FieldLabel>
+                    <FieldLabel>
+                      Téléphone
+                      <span className="modal-required">Obligatoire</span>
+                    </FieldLabel>
                     <Input
                       disabled={selectedOwnerId !== "new"}
                       onChange={(event) =>
@@ -1726,6 +1809,7 @@ function PatientCreateDialog({
                           phone: event.target.value,
                         }))
                       }
+                      placeholder="0550 00 00 00"
                       value={newOwner.phone || ""}
                     />
                   </Field>
@@ -1740,6 +1824,7 @@ function PatientCreateDialog({
                           email: event.target.value,
                         }))
                       }
+                      placeholder="nom@exemple.com"
                       type="email"
                       value={newOwner.email || ""}
                     />
@@ -1756,6 +1841,7 @@ function PatientCreateDialog({
                         address: event.target.value,
                       }))
                     }
+                    placeholder="Rue, numéro…"
                     value={newOwner.address || ""}
                   />
                 </Field>
@@ -1774,37 +1860,64 @@ function PatientCreateDialog({
                   />
                 </Field>
               </FieldGroup>
-            </div>
+            </section>
 
             {/* Section: Patient */}
-            <div className="flex flex-col gap-5">
-              <div className="border-zinc-100 border-b pb-3 dark:border-zinc-800/80">
-                <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
-                  Patient
-                </h3>
-                <p className="mt-1 text-muted-foreground text-xs">
-                  Identité, espèce, race et statut initial de l'animal.
-                </p>
+            <section className="modal-patient-panel modal-patient-panel-animal flex flex-col gap-5">
+              <div className="modal-patient-section-heading">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="modal-section-icon modal-section-icon-patient"
+                  >
+                    <SpeciesIcon className="size-[18px]" strokeWidth={1.9} />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold text-[15px] text-foreground">
+                      Patient
+                    </h3>
+                    <p className="mt-0.5 text-muted-foreground text-xs">
+                      Identité et état clinique initial de l’animal.
+                    </p>
+                  </div>
+                </div>
+                <span className="modal-section-state modal-section-state-patient">
+                  <SpeciesIcon className="size-3.5" strokeWidth={2} />
+                  {newPatient.species?.trim() || "Animal à identifier"}
+                </span>
               </div>
 
-              <FieldGroup>
-                <Field>
-                  <FieldLabel>Nom du patient</FieldLabel>
+              <FieldGroup className="modal-form-fields">
+                <Field className="modal-patient-name-field">
+                  <FieldLabel>
+                    Nom du patient
+                    <span className="modal-required">Obligatoire</span>
+                  </FieldLabel>
                   <Input
+                    aria-invalid={Boolean(
+                      formError && !newPatient.name?.trim()
+                    )}
+                    className="modal-patient-name-input"
                     onChange={(event) =>
                       setNewPatient((current) => ({
                         ...current,
                         name: event.target.value,
                       }))
                     }
+                    placeholder="Simba"
                     value={newPatient.name || ""}
                   />
                 </Field>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field>
-                    <FieldLabel>Espèce</FieldLabel>
+                    <FieldLabel>
+                      Espèce <span className="modal-required">Obligatoire</span>
+                    </FieldLabel>
                     <Input
+                      aria-invalid={Boolean(
+                        formError && !newPatient.species?.trim()
+                      )}
                       list="new-patient-species-options"
                       onChange={(event) =>
                         setNewPatient((current) => ({
@@ -1832,6 +1945,7 @@ function PatientCreateDialog({
                           breed: event.target.value,
                         }))
                       }
+                      placeholder="Européen, Malinois…"
                       value={newPatient.breed || ""}
                     />
                     <datalist id="new-patient-breed-options">
@@ -1881,16 +1995,27 @@ function PatientCreateDialog({
                   </Field>
                 </div>
               </FieldGroup>
-            </div>
+            </section>
           </div>
         </div>
 
         <DialogFooter className="modal-medical-footer !mx-0 !mb-0 !flex-col sm:!flex-row shrink-0 gap-3 px-6 py-5 sm:items-center sm:justify-end">
-          {formError ? (
-            <div className="w-full rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm sm:mr-auto sm:w-auto">
-              {formError}
-            </div>
-          ) : null}
+          <div className="modal-medical-footer-meta">
+            {formError ? (
+              <div className="w-full rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm">
+                {formError}
+              </div>
+            ) : (
+              <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="modal-footer-status-icon" aria-hidden="true">
+                  <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} strokeWidth={1.8} />
+                </span>
+                {selectedOwner
+                  ? `Le patient sera relié à ${formatOwnerName(selectedOwner)}.`
+                  : "Le propriétaire et le patient seront créés dans un même dossier."}
+              </span>
+            )}
+          </div>
           <div className="modal-medical-actions w-full flex-col-reverse sm:ml-auto sm:w-auto sm:flex-row">
             <Button
               className="h-11 min-w-[132px] justify-center"
