@@ -3088,7 +3088,8 @@ const Agenda: React.FC = () => {
       >
         <FormDialogContent size="lg">
           <FormDialogHeader
-            description="Reliez le bon patient, choisissez le créneau et préparez le contexte clinique avant son arrivée."
+            artwork="appointment"
+            description="Patient, créneau et motif de consultation."
             icon={<HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.9} />}
             title={
               editingAppointmentId

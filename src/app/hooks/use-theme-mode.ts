@@ -1,59 +1,23 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
+import { useTheme } from "@/components/theme-provider";
 
 export type ThemeMode = "light" | "dark" | "system";
 
-function getInitialMode(): ThemeMode {
-  if (localStorage.theme === "dark") {
-    return "dark";
-  }
-  if (localStorage.theme === "light") {
-    return "light";
-  }
-  return "system";
-}
-
+// The shell, settings, keyboard shortcut and theme button share one state.
 export function useThemeMode() {
-  const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialMode);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const applyTheme = (
-      mode: ThemeMode,
-      systemPrefersDark = mediaQuery.matches
-    ) => {
-      const isDark = mode === "system" ? systemPrefersDark : mode === "dark";
-      setIsDarkMode(isDark);
-      document.documentElement.classList.toggle("dark", isDark);
-
-      if (mode === "system") {
-        localStorage.removeItem("theme");
-      } else {
-        localStorage.theme = mode;
-      }
-    };
-
-    applyTheme(themeMode);
-
-    const handleChange = (event: MediaQueryListEvent) => {
-      if (themeMode === "system") {
-        applyTheme("system", event.matches);
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [themeMode]);
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const toggleTheme = useCallback(
+    () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
+    [resolvedTheme, setTheme]
+  );
 
   return useMemo(
     () => ({
-      themeMode,
-      isDarkMode,
-      setThemeMode,
-      toggleTheme: () =>
-        setThemeMode((current) => (current === "dark" ? "light" : "dark")),
+      themeMode: theme,
+      isDarkMode: resolvedTheme === "dark",
+      setThemeMode: setTheme,
+      toggleTheme,
     }),
-    [isDarkMode, themeMode]
+    [theme, resolvedTheme, setTheme, toggleTheme]
   );
 }

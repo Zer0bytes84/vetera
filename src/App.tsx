@@ -1,12 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import Logo from "@/components/Logo";
-import { useTheme } from "@/components/theme-provider";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { appSettingsRepository } from "@/data/repositories";
 import i18n, { isRtlLanguage } from "@/i18n/config";
-import { applyTheme, getThemeConfig } from "@/lib/theme-store";
 import { saveLicenseInfo } from "@/services/appSettingsService";
 import { checkAutoBackup } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
@@ -66,7 +64,6 @@ export function App() {
   const [startupError, setStartupError] = useState<Error | null>(null);
   const [hasBootstrapped, setHasBootstrapped] = useState(false);
   const { currentUser, loading, login } = useAuth();
-  const { theme } = useTheme();
 
   // Once the auth context has finished its initial load AND the setup check
   // has finished, we consider the app "bootstrapped". From then on, even if
@@ -148,16 +145,6 @@ export function App() {
       console.error("[App] Demo seed failed:", error);
     });
   }, [currentUser]);
-
-  useEffect(() => {
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    const isDark =
-      theme === "dark" || (theme === "system" && systemPrefersDark);
-
-    applyTheme(getThemeConfig(), isDark);
-  }, [theme]);
 
   useEffect(() => {
     const applyLanguageDirection = (language: string) => {

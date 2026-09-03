@@ -374,7 +374,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
         )
       : null;
 
-    let user: BrowserUserRecord | undefined;
+    let user: BrowserUserRecord | null | undefined;
 
     if (session) {
       user = findBrowserRow<BrowserUserRecord>(

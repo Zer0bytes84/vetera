@@ -163,7 +163,8 @@ export function WeightEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
-          description="Consignez une mesure datée et son contexte clinique pour enrichir la courbe de suivi."
+            artwork="weight"
+          description="Une nouvelle mesure pour le suivi du patient."
           icon={<Scales weight="duotone" />}
           title={
             isEditing

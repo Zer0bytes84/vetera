@@ -1,17 +1,17 @@
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { PenLine } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { assistWithNote } from "@/services/geminiService";
@@ -191,22 +191,25 @@ const Editor: React.FC<EditorProps> = ({
       />
 
       <Dialog onOpenChange={setWriteModalOpen} open={writeModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Que voulez-vous écrire ?</DialogTitle>
-            <DialogDescription>
-              Décrivez le sujet et l'assistant rédigera le contenu pour vous.
-            </DialogDescription>
-          </DialogHeader>
-          <Input
-            autoFocus
-            onChange={(e) => setWriteTopicInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleWriteSubmit()}
-            placeholder="Ex: note médicale sur la vaccination"
-            type="text"
-            value={writeTopicInput}
+        <FormDialogContent size="sm">
+          <FormDialogHeader
+            compact
+            artwork="assistant"
+            title="Que voulez-vous écrire ?"
+            description="Décrivez le sujet et l'assistant rédigera le contenu pour vous."
+            icon={<PenLine strokeWidth={1.8} />}
           />
-          <DialogFooter>
+          <FormDialogBody>
+            <Input
+              autoFocus
+              onChange={(e) => setWriteTopicInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleWriteSubmit()}
+              placeholder="Ex: note médicale sur la vaccination"
+              type="text"
+              value={writeTopicInput}
+            />
+          </FormDialogBody>
+          <FormDialogFooter>
             <Button
               onClick={() => {
                 setWriteModalOpen(false);
@@ -223,8 +226,8 @@ const Editor: React.FC<EditorProps> = ({
               <Spinner className="size-4" data-icon="inline-start" />
               Générer
             </Button>
-          </DialogFooter>
-        </DialogContent>
+          </FormDialogFooter>
+        </FormDialogContent>
       </Dialog>
     </div>
   );

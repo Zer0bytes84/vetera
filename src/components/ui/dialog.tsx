@@ -27,7 +27,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Backdrop
       className={cn(
-        "data-open:fade-in-0 data-closed:fade-out-0 fixed inset-0 isolate z-50 bg-black/40 duration-[180ms] ease-[var(--ease-out)] data-closed:animate-out data-open:animate-in supports-backdrop-filter:backdrop-blur-sm dark:bg-black/60",
+        "modal-backdrop data-open:fade-in-0 data-closed:fade-out-0 fixed inset-0 isolate z-50 duration-[180ms] ease-[var(--ease-out)] data-closed:animate-out data-open:animate-in",
         className
       )}
       data-slot="dialog-overlay"

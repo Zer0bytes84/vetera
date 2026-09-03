@@ -1,3 +1,5 @@
+import { FileText } from "lucide-react";
+import { ModalBanner } from "@/components/ui/modal-banner";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -63,39 +65,36 @@ export function PrescriptionPreview({
   const { t } = useTranslation();
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="max-h-[90dvh] w-full max-w-3xl gap-0 overflow-hidden p-0 sm:rounded-xl">
-        <DialogHeader className="border-border/60 border-b bg-muted/30 px-5 py-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <DialogTitle className="text-base">
-                {t("prescriptions.builder.preview")}
-              </DialogTitle>
-              <DialogDescription>
-                {patient.name} · {patient.species}
-              </DialogDescription>
+      <DialogContent className="modal-medical-shell max-h-[90dvh] w-full max-w-3xl grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:max-w-3xl">
+        <DialogHeader className="modal-medical-header gap-0">
+          <ModalBanner
+            artwork="prescription"
+            className="modal-banner-compact modal-banner-record"
+            icon={<FileText strokeWidth={1.8} />}
+          >
+            <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
+              <div>
+                <DialogTitle className="text-base">
+                  {t("prescriptions.builder.preview")}
+                </DialogTitle>
+                <DialogDescription>
+                  {patient.name} · {patient.species}
+                </DialogDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  className="h-8"
+                  onClick={() => window.print()}
+                  size="sm"
+                  type="button"
+                >
+                  {t("prescriptions.builder.print")}
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                className="h-8"
-                onClick={() => window.print()}
-                size="sm"
-                type="button"
-              >
-                {t("prescriptions.builder.print")}
-              </Button>
-              <Button
-                className="h-8"
-                onClick={onClose}
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                {t("common.close")}
-              </Button>
-            </div>
-          </div>
+          </ModalBanner>
         </DialogHeader>
-        <div className="max-h-[calc(90dvh-64px)] overflow-y-auto bg-muted/20 px-5 py-5">
+        <div className="min-h-0 overflow-y-auto bg-muted/20 px-5 py-5">
           <PrescriptionPrintLayout
             className="prescription-print mx-auto max-w-[210mm] rounded-md border border-border/60 bg-white px-10 py-8 text-foreground shadow-sm"
             diagnosis={diagnosis}

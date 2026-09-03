@@ -2336,6 +2336,336 @@ html[data-header-pattern="quiet"] .header-pattern-live {
   }
 }
 
+/* Twin-inspired modal headers: the light field and glass marks sit above an
+ * opaque reading surface. These styles are independent of the app header. */
+.modal-backdrop {
+  background: rgb(244 241 248 / 0.46);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+
+.dark .modal-backdrop {
+  background: rgb(9 7 16 / 0.5);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .modal-backdrop { background: rgb(244 241 248 / 0.86); }
+  .dark .modal-backdrop { background: rgb(9 7 16 / 0.76); }
+}
+
+.modal-medical-shell,
+.dark .modal-medical-shell {
+  border-radius: 24px;
+  background: var(--card);
+  letter-spacing: normal;
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-synthesis: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.modal-medical-header,
+.dark .modal-medical-header {
+  position: relative;
+  isolation: isolate;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.modal-banner {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 184px;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 22px 48px 24px;
+  overflow: hidden;
+  background: #ffda3b;
+  color: #302735;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.48);
+}
+
+.modal-banner-art {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background-color: #ecc9db;
+  background-size: cover;
+  background-repeat: no-repeat;
+  filter: var(--modal-art-filter, none);
+}
+
+.modal-banner-art::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.5) 46%, rgb(255 255 255 / 0.92));
+}
+
+.modal-banner-marks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.modal-banner-glass {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  border: 1px solid rgb(255 255 255 / 0.88);
+  border-right-color: rgb(255 255 255 / 0.4);
+  border-radius: 19px;
+  background: linear-gradient(145deg, rgb(255 255 255 / 0.56), rgb(255 255 255 / 0.34));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.68),
+    inset 0 -1px 0 rgb(255 255 255 / 0.22),
+    0 8px 20px -12px rgb(57 24 76 / 0.32);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.modal-banner-glass > svg {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.8;
+}
+
+.modal-banner-feature {
+  color: #322834;
+}
+
+.modal-banner[data-tone="teal"] .modal-banner-feature { color: #173e32; }
+.modal-banner[data-tone="sky"] .modal-banner-feature { color: #19374b; }
+.modal-banner[data-tone="violet"] .modal-banner-feature { color: #3f254e; }
+.modal-banner[data-tone="rose"] .modal-banner-feature { color: #542a32; }
+
+.modal-banner-connection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modal-banner-connection > span {
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgb(255 255 255 / 0.85);
+  border-bottom-color: rgb(255 255 255 / 0.35);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.18);
+}
+
+.modal-banner-close {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.62);
+  color: #3b3041;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.modal-banner-close:hover {
+  background: rgb(255 255 255 / 0.3);
+}
+
+.modal-banner-close:focus-visible {
+  background: rgb(255 255 255 / 0.42);
+  outline: 2px solid #3b3041;
+  outline-offset: 2px;
+}
+
+.modal-form-heading {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.modal-form-heading-aside {
+  max-width: 100%;
+  margin-top: 2px;
+}
+
+.modal-banner [data-slot="dialog-title"] {
+  color: inherit;
+  font-family: var(--app-font-heading);
+  font-size: 28px;
+  font-weight: 560;
+  line-height: 1.2;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.modal-banner [data-slot="dialog-description"] {
+  max-width: 52ch;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+
+.modal-banner [data-slot="dialog-description"],
+.modal-banner .modal-form-heading-aside {
+  color: #57495b;
+}
+
+.modal-banner-compact {
+  min-height: 164px;
+  gap: 12px;
+  padding: 20px 28px;
+}
+
+.modal-banner-compact .modal-banner-glass {
+  width: 54px;
+  height: 54px;
+  border-radius: 17px;
+}
+
+.modal-banner-compact .modal-banner-glass > svg {
+  width: 29px;
+  height: 29px;
+}
+
+.modal-banner-compact [data-slot="dialog-title"] {
+  font-size: 25px;
+}
+
+.modal-banner-record {
+  min-height: 128px;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 24px;
+  padding: 24px 56px 24px 28px;
+}
+
+.modal-medical-body,
+.dark .modal-medical-body {
+  min-height: 0;
+  background: var(--card);
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dark .modal-banner {
+  background: #211b28;
+  color: #fcf5ff;
+  box-shadow: inset 0 1px 0 rgb(255 239 255 / 0.12);
+}
+
+.dark .modal-banner-art {
+  opacity: 0.48;
+}
+
+.dark .modal-banner-art::after {
+  background: linear-gradient(180deg, rgb(18 10 27 / 0.18), rgb(18 10 27 / 0.54) 46%, rgb(18 10 27 / 0.96));
+}
+
+.dark .modal-banner [data-slot="dialog-description"],
+.dark .modal-banner .modal-form-heading-aside {
+  color: #e3d4e9;
+}
+
+.dark .modal-banner .modal-banner-feature,
+.dark .modal-banner-close {
+  color: #fff6ff;
+}
+
+.dark .modal-banner-close {
+  background: rgb(35 29 35 / 0.7);
+}
+
+.dark .modal-banner-glass {
+  border-color: rgb(255 235 255 / 0.48);
+  border-right-color: rgb(255 235 255 / 0.2);
+  background: linear-gradient(145deg, rgb(255 235 255 / 0.18), rgb(255 235 255 / 0.08));
+  box-shadow: inset 0 1px 0 rgb(255 246 255 / 0.28), 0 8px 20px -12px rgb(0 0 0 / 0.5);
+}
+
+.dark .modal-banner-connection > span {
+  border-color: rgb(255 240 204 / 0.55);
+  background: rgb(255 240 204 / 0.08);
+}
+
+.dark .modal-banner-close:hover,
+.dark .modal-banner-close:focus-visible {
+  background: rgb(255 240 204 / 0.12);
+  outline-color: #fff2d6;
+}
+
+@media (max-width: 639px), (max-height: 700px) {
+  .modal-banner { min-height: 164px; gap: 12px; padding: 18px 28px 20px; }
+  .modal-banner-glass { width: 54px; height: 54px; border-radius: 17px; }
+  .modal-banner-glass > svg { width: 29px; height: 29px; }
+  .modal-form-heading { gap: 6px; }
+  .modal-banner [data-slot="dialog-title"] { font-size: 25px; }
+  .modal-banner-compact { min-height: 156px; padding: 18px 28px; }
+  .modal-banner-compact .modal-banner-glass { width: 50px; height: 50px; border-radius: 16px; }
+  .modal-banner-record { min-height: 120px; }
+}
+
+@media (max-width: 639px) {
+  .modal-banner-record { flex-direction: column; align-items: stretch; }
+}
+
+@media (pointer: coarse) {
+  .modal-banner-close { width: 44px; height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-banner-close { transition: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .modal-backdrop {
+    background: rgb(244 241 248 / 0.94);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .dark .modal-backdrop { background: rgb(9 7 16 / 0.9); }
+
+  .modal-banner-glass {
+    background: #fbf0fb;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .dark .modal-banner-glass { background: #423447; }
+
+  .modal-medical-footer,
+  .dark .modal-medical-footer {
+    background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 /* ─── Dashboard Table Frame ─── */
 .dashboard-table-frame {
   background: oklch(0.985 0 0 / 0.7);

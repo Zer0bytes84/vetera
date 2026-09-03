@@ -124,6 +124,9 @@ async function createIssuedInvoice(invoiceId: string, amount = 10_000) {
 }
 
 beforeEach(async () => {
+  // These fixtures exercise settlement before their August 31 due date.
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-08-01T17:00:00.000Z"));
   database = new TestDatabase();
   billingHarness.database = database;
   billingHarness.nextId = 0;
@@ -138,6 +141,7 @@ beforeEach(async () => {
 afterEach(() => {
   billingHarness.database = null;
   database.close();
+  vi.useRealTimers();
 });
 
 describe("billing service idempotency", () => {

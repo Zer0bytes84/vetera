@@ -1,5 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
+import {
+  applyTheme as applyAppearance,
+  getThemeConfig,
+} from "@/lib/theme-store";
 
 type Theme = "dark" | "light" | "system";
 type ResolvedTheme = "dark" | "light";
@@ -13,6 +17,7 @@ type ThemeProviderProps = {
 
 type ThemeProviderState = {
   theme: Theme;
+  resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
 };
 
@@ -92,6 +97,8 @@ export function ThemeProvider({
 
     return defaultTheme;
   });
+  const [systemTheme, setSystemTheme] = React.useState(getSystemTheme);
+  const resolvedTheme = theme === "system" ? systemTheme : theme;
 
   const setTheme = React.useCallback(
     (nextTheme: Theme) => {
@@ -102,16 +109,16 @@ export function ThemeProvider({
   );
 
   const applyTheme = React.useCallback(
-    (nextTheme: Theme) => {
+    (nextTheme: ResolvedTheme) => {
       const root = document.documentElement;
-      const resolvedTheme =
-        nextTheme === "system" ? getSystemTheme() : nextTheme;
       const restoreTransitions = disableTransitionOnChange
         ? disableTransitionsTemporarily()
         : null;
 
       root.classList.remove("light", "dark");
-      root.classList.add(resolvedTheme);
+      root.classList.add(nextTheme);
+      root.style.colorScheme = nextTheme;
+      applyAppearance(getThemeConfig(), nextTheme === "dark");
 
       if (restoreTransitions) {
         restoreTransitions();
@@ -120,24 +127,23 @@ export function ThemeProvider({
     [disableTransitionOnChange]
   );
 
+  React.useLayoutEffect(() => {
+    applyTheme(resolvedTheme);
+  }, [resolvedTheme, applyTheme]);
+
   React.useEffect(() => {
-    applyTheme(theme);
-
-    if (theme !== "system") {
-      return;
-    }
-
     const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY);
     const handleChange = () => {
-      applyTheme("system");
+      setSystemTheme(mediaQuery.matches ? "dark" : "light");
     };
 
+    handleChange();
     mediaQuery.addEventListener("change", handleChange);
 
     return () => {
       mediaQuery.removeEventListener("change", handleChange);
     };
-  }, [theme, applyTheme]);
+  }, []);
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -207,9 +213,10 @@ export function ThemeProvider({
   const value = React.useMemo(
     () => ({
       theme,
+      resolvedTheme,
       setTheme,
     }),
-    [theme, setTheme]
+    [theme, resolvedTheme, setTheme]
   );
 
   return (

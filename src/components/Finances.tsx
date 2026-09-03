@@ -32,14 +32,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Empty,
   EmptyDescription,
@@ -1965,7 +1958,8 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       <Dialog onOpenChange={setIsInvoiceDialogOpen} open={isInvoiceDialogOpen}>
         <FormDialogContent size="md">
           <FormDialogHeader
-            description="Reliez le document au bon dossier, détaillez les prestations puis choisissez entre brouillon et émission."
+            artwork="invoice"
+            description="Patient, prestations et règlement."
             icon={<HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.9} />}
             title="Nouvelle facture"
             tone="violet"
@@ -2175,170 +2169,172 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
         onOpenChange={(open) => !open && setSelectedInvoice(null)}
         open={Boolean(selectedInvoice)}
       >
-        <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-3xl overflow-y-auto">
+        <FormDialogContent size="md">
           {selectedInvoice ? (
             <>
-              <DialogHeader>
-                <div className="flex flex-wrap items-center gap-2">
-                  <DialogTitle>
-                    {getInvoiceDisplayName(selectedInvoice)}
-                  </DialogTitle>
-                  {documentBadge(selectedInvoice.documentStatus)}
-                  {settlementBadge(selectedInvoice.settlementStatus)}
+              <FormDialogHeader
+                compact
+                artwork="invoice-detail"
+                title={getInvoiceDisplayName(selectedInvoice)}
+                description={`Émise le ${formatDate(selectedInvoice.issuedAt)} · échéance ${formatDate(selectedInvoice.dueAt)}`}
+                icon={<HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.8} />}
+                aside={
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {documentBadge(selectedInvoice.documentStatus)}
+                    {settlementBadge(selectedInvoice.settlementStatus)}
+                  </div>
+                }
+              />
+              <FormDialogBody className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl bg-muted/40 p-4">
+                    <p className="text-muted-foreground text-xs">Total</p>
+                    <p className="mt-1 font-semibold text-lg tabular-nums">
+                      {formatDZD(selectedInvoice.grossAmount)}
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-muted/40 p-4">
+                    <p className="text-muted-foreground text-xs">Encaissé</p>
+                    <p className="mt-1 font-semibold text-lg tabular-nums">
+                      {formatDZD(selectedInvoice.completedPaymentAmount)}
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-muted/40 p-4">
+                    <p className="text-muted-foreground text-xs">Solde</p>
+                    <p className="mt-1 font-semibold text-lg tabular-nums">
+                      {formatDZD(selectedInvoice.balanceAmount)}
+                    </p>
+                  </div>
                 </div>
-                <DialogDescription>
-                  Émise le {formatDate(selectedInvoice.issuedAt)} · échéance{" "}
-                  {formatDate(selectedInvoice.dueAt)}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-xl bg-muted/40 p-4">
-                  <p className="text-muted-foreground text-xs">Total</p>
-                  <p className="mt-1 font-semibold text-lg tabular-nums">
-                    {formatDZD(selectedInvoice.grossAmount)}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-muted/40 p-4">
-                  <p className="text-muted-foreground text-xs">Encaissé</p>
-                  <p className="mt-1 font-semibold text-lg tabular-nums">
-                    {formatDZD(selectedInvoice.completedPaymentAmount)}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-muted/40 p-4">
-                  <p className="text-muted-foreground text-xs">Solde</p>
-                  <p className="mt-1 font-semibold text-lg tabular-nums">
-                    {formatDZD(selectedInvoice.balanceAmount)}
-                  </p>
-                </div>
-              </div>
-              <div className="overflow-hidden rounded-xl border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Prestation</TableHead>
-                      <TableHead className="text-right">Qté</TableHead>
-                      <TableHead className="text-right">Prix</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {selectedInvoice.lines.map((line) => (
-                      <TableRow key={line.id}>
-                        <TableCell>{line.description}</TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {line.quantityMilli / 1000}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatDZD(line.unitAmount)}
-                        </TableCell>
-                        <TableCell className="text-right font-medium tabular-nums">
-                          {formatDZD(line.grossAmount)}
-                        </TableCell>
+                <div className="overflow-hidden rounded-xl border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Prestation</TableHead>
+                        <TableHead className="text-right">Qté</TableHead>
+                        <TableHead className="text-right">Prix</TableHead>
+                        <TableHead className="text-right">Total</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              {selectedInvoice.payments.length > 0 ? (
-                <div className="space-y-2">
-                  <p className="font-medium text-sm">Règlements</p>
-                  {selectedInvoice.payments.map((payment) => (
-                    <div
-                      className="flex items-center justify-between rounded-xl border px-4 py-3"
-                      key={payment.id}
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm">
-                            {PAYMENT_METHOD_LABELS[payment.method]}
-                          </p>
-                          {payment.status === "void" ? (
-                            <Badge variant="outline">Annulé</Badge>
-                          ) : null}
-                        </div>
-                        <p className="text-muted-foreground text-xs">
-                          {formatDate(payment.paidAt)}
-                          {payment.reference ? ` · ${payment.reference}` : ""}
-                        </p>
-                      </div>
-                      <p
-                        className={cn(
-                          "font-semibold tabular-nums",
-                          payment.status === "void" &&
-                            "text-muted-foreground line-through"
-                        )}
-                      >
-                        {formatDZD(payment.amount)}
-                      </p>
-                    </div>
-                  ))}
+                    </TableHeader>
+                    <TableBody>
+                      {selectedInvoice.lines.map((line) => (
+                        <TableRow key={line.id}>
+                          <TableCell>{line.description}</TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {line.quantityMilli / 1000}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {formatDZD(line.unitAmount)}
+                          </TableCell>
+                          <TableCell className="text-right font-medium tabular-nums">
+                            {formatDZD(line.grossAmount)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
-              ) : null}
-              {selectedInvoice.creditNotes.length > 0 ? (
-                <div className="space-y-2">
-                  <p className="font-medium text-sm">Avoirs</p>
-                  {selectedInvoice.creditNotes.map((creditNote) => (
-                    <div
-                      className="flex items-center justify-between rounded-xl border px-4 py-3"
-                      key={creditNote.id}
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm">
-                            {creditNote.number ?? "Avoir brouillon"}
+                {selectedInvoice.payments.length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="font-medium text-sm">Règlements</p>
+                    {selectedInvoice.payments.map((payment) => (
+                      <div
+                        className="flex items-center justify-between rounded-xl border px-4 py-3"
+                        key={payment.id}
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-sm">
+                              {PAYMENT_METHOD_LABELS[payment.method]}
+                            </p>
+                            {payment.status === "void" ? (
+                              <Badge variant="outline">Annulé</Badge>
+                            ) : null}
+                          </div>
+                          <p className="text-muted-foreground text-xs">
+                            {formatDate(payment.paidAt)}
+                            {payment.reference ? ` · ${payment.reference}` : ""}
                           </p>
-                          {documentBadge(creditNote.documentStatus)}
                         </div>
-                        <p className="text-muted-foreground text-xs">
-                          {formatDate(
-                            creditNote.issuedAt ?? creditNote.createdAt
+                        <p
+                          className={cn(
+                            "font-semibold tabular-nums",
+                            payment.status === "void" &&
+                              "text-muted-foreground line-through"
                           )}
-                          {creditNote.reason ? ` · ${creditNote.reason}` : ""}
+                        >
+                          {formatDZD(payment.amount)}
                         </p>
                       </div>
-                      <p className="font-semibold text-violet-600 tabular-nums dark:text-violet-300">
-                        -{formatDZD(creditNote.grossAmount)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-              {selectedInvoice.refunds.length > 0 ? (
-                <div className="space-y-2">
-                  <p className="font-medium text-sm">Remboursements</p>
-                  {selectedInvoice.refunds.map((refund) => (
-                    <div
-                      className="flex items-center justify-between rounded-xl border px-4 py-3"
-                      key={refund.id}
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm">
-                            {PAYMENT_METHOD_LABELS[refund.method]}
-                          </p>
-                          {refund.status === "void" ? (
-                            <Badge variant="outline">Annulé</Badge>
-                          ) : null}
-                        </div>
-                        <p className="text-muted-foreground text-xs">
-                          {formatDate(refund.refundedAt)}
-                          {refund.reason ? ` · ${refund.reason}` : ""}
-                        </p>
-                      </div>
-                      <p
-                        className={cn(
-                          "font-semibold text-rose-600 tabular-nums dark:text-rose-300",
-                          refund.status === "void" &&
-                            "text-muted-foreground line-through dark:text-muted-foreground"
-                        )}
+                    ))}
+                  </div>
+                ) : null}
+                {selectedInvoice.creditNotes.length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="font-medium text-sm">Avoirs</p>
+                    {selectedInvoice.creditNotes.map((creditNote) => (
+                      <div
+                        className="flex items-center justify-between rounded-xl border px-4 py-3"
+                        key={creditNote.id}
                       >
-                        -{formatDZD(refund.amount)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-              <DialogFooter>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-sm">
+                              {creditNote.number ?? "Avoir brouillon"}
+                            </p>
+                            {documentBadge(creditNote.documentStatus)}
+                          </div>
+                          <p className="text-muted-foreground text-xs">
+                            {formatDate(
+                              creditNote.issuedAt ?? creditNote.createdAt
+                            )}
+                            {creditNote.reason ? ` · ${creditNote.reason}` : ""}
+                          </p>
+                        </div>
+                        <p className="font-semibold text-violet-600 tabular-nums dark:text-violet-300">
+                          -{formatDZD(creditNote.grossAmount)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {selectedInvoice.refunds.length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="font-medium text-sm">Remboursements</p>
+                    {selectedInvoice.refunds.map((refund) => (
+                      <div
+                        className="flex items-center justify-between rounded-xl border px-4 py-3"
+                        key={refund.id}
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-sm">
+                              {PAYMENT_METHOD_LABELS[refund.method]}
+                            </p>
+                            {refund.status === "void" ? (
+                              <Badge variant="outline">Annulé</Badge>
+                            ) : null}
+                          </div>
+                          <p className="text-muted-foreground text-xs">
+                            {formatDate(refund.refundedAt)}
+                            {refund.reason ? ` · ${refund.reason}` : ""}
+                          </p>
+                        </div>
+                        <p
+                          className={cn(
+                            "font-semibold text-rose-600 tabular-nums dark:text-rose-300",
+                            refund.status === "void" &&
+                              "text-muted-foreground line-through dark:text-muted-foreground"
+                          )}
+                        >
+                          -{formatDZD(refund.amount)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </FormDialogBody>
+              <FormDialogFooter className="empty:hidden">
                 {selectedInvoice.documentStatus === "draft" ? (
                   <Button
                     disabled={isSubmitting}
@@ -2358,10 +2354,10 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                     Enregistrer un règlement
                   </Button>
                 ) : null}
-              </DialogFooter>
+              </FormDialogFooter>
             </>
           ) : null}
-        </DialogContent>
+        </FormDialogContent>
       </Dialog>
 
       <Dialog
@@ -2370,6 +2366,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
+            artwork="payment"
             description={
               paymentInvoice
                 ? `${getInvoiceDisplayName(paymentInvoice)} · solde ${formatDZD(
@@ -2457,7 +2454,8 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
-            description="Les mouvements manuels restent modifiables. Les règlements générés restent protégés."
+            artwork="transaction"
+            description="Détail du mouvement comptable."
             icon={<HugeiconsIcon icon={Wallet01Icon} strokeWidth={1.9} />}
             title={editingTransaction ? "Modifier l’écriture" : "Nouvelle écriture"}
             tone="amber"

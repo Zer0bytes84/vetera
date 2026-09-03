@@ -37,11 +37,33 @@ typography:
     fontSize: "11px"
     fontWeight: 400
     lineHeight: 1.4545
+  modal-title:
+    fontFamily: "var(--app-font-heading)"
+    fontSize: "28px"
+    fontWeight: 560
+    lineHeight: 1.2
+    letterSpacing: "-0.028em"
+  modal-title-compact:
+    fontFamily: "var(--app-font-heading)"
+    fontSize: "25px"
+    fontWeight: 560
+    lineHeight: 1.2
+    letterSpacing: "-0.028em"
+  modal-supporting:
+    fontFamily: "var(--app-font-sans)"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.5
+    letterSpacing: "normal"
 rounded:
   icon: "10px"
   dock: "14px"
   panel: "16px"
   pill: "999px"
+  modal-shell: "24px"
+  modal-icon: "19px"
+  modal-icon-compact: "17px"
+  modal-icon-compact-small: "16px"
 spacing:
   card-gap: "12px"
   card-compact: "16px"
@@ -177,6 +199,18 @@ Clinical cards and dropdown panels use gently rounded 16px corners. The identity
 - **Consequence:** Dialog descriptions state what changes and whether the action is irreversible.
 - **Feedback:** Success, partial success, and failure are surfaced through the shared toast system. Never leave a failed secondary operation only in the console.
 - **Credentials:** Temporary passwords are generated with the platform cryptographic API, shown once in a focused dialog, and copied only through an explicit action.
+
+### Workflow Modals
+
+One atmospheric header identifies the workflow above a quiet, opaque reading surface. This component extension is independent of the dashboard's Protocol header rules.
+
+- **Header:** Use one `ModalBanner` for the prominent glass icon, title, short support text, and close control. An optional companion icon may describe a relationship; show status only when it adds meaningful information.
+- **Artwork:** Use the generated local airbrush assets `modal-airbrush.webp` and `modal-amber-light.webp`. Stable per-workflow presets select the asset, hue, crop, and horizontal reflection so the composition stays recognizable across openings and themes.
+- **Icons:** Default glass tiles are 62px with 19px corners and 32px symbols. Compact tiles are 54px with 17px corners and 29px symbols. Below 640px width or at 700px height and below, default tiles use compact dimensions; already compact tiles become 50px with 16px corners, retaining 29px symbols.
+- **Typography and Copy:** Follow the current user-selected app font through `--app-font-heading` and `--app-font-sans`. Titles use the 28px/560 modal role, reducing to 25px for compact or constrained viewports. Support text is 14px/400 with normal tracking, a 1.5 line height, and a 52ch maximum width. Keep copy brief and avoid repeating the title or adding decorative status.
+- **Body and Actions:** `FormDialogContent` has 24px corners and a bounded three-row layout. `FormDialogBody` is an opaque `--card` surface that scrolls independently; the header and footer stay visible outside that scroll region. Financial detail dialogs use the same scrollable body. Keep actions in `FormDialogFooter`.
+- **Overlay and Dark Theme:** The light overlay is pearl frosted `rgb(244 241 248 / 0.46)` with 7px blur. Dark mode uses `rgb(9 7 16 / 0.5)`, artwork at 0.48 opacity beneath a dark scrim, and light title and support ink. Theme state is owned solely by `ThemeProvider`; modal styling follows that state.
+- **Transparency Fallbacks:** Without backdrop-filter support, increase overlay opacity to 0.86 in light mode and 0.76 in dark mode. Reduced transparency uses 0.94/0.9 overlay opacity without blur, solid glass-icon fills, and an opaque theme-card footer.
 
 ### Sidebar Identity Dock
 

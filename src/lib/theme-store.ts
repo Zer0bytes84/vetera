@@ -337,7 +337,8 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const mutedForegroundValue = isDark
     ? darkDashboardMutedForeground
     : mode.mutedForeground;
-  const accentValue = isDark ? darkDashboardAccent : mode.primary;
+  // Accent is an interactive surface (menus, selections), not primary ink.
+  const accentValue = isDark ? darkDashboardAccent : mode.muted;
 
   root.style.setProperty("--primary", mode.primary, "important");
   root.style.setProperty(

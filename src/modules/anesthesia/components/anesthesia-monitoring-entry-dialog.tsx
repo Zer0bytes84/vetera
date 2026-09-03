@@ -119,7 +119,8 @@ export function AnesthesiaMonitoringEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-          description={`${sheet.procedureName} — ajoutez une lecture horodatée au suivi anesthésique.`}
+            artwork="monitoring"
+          description={`${sheet.procedureName}`}
           icon={<Heartbeat weight="duotone" />}
           title={t(
             "modules.anesthesia.monitoring.addEntry",

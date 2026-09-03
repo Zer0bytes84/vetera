@@ -124,7 +124,8 @@ export function HospitalizationDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-          description={`${patient.name} · ${patient.species} — préparez l’admission et les consignes de surveillance.`}
+            artwork="hospitalization"
+          description={`${patient.name} · ${patient.species}`}
           icon={<Hospital weight="duotone" />}
           title={t(
             "modules.hospitalizations.newHospitalization",

@@ -107,7 +107,8 @@ export function AnesthesiaDrugLogEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
-          description={`${sheet.procedureName} — consignez la dose, la voie et la phase d’administration.`}
+            artwork="medication"
+          description={`${sheet.procedureName}`}
           icon={<Pill weight="duotone" />}
           title={t(
             "modules.anesthesia.drugLog.addEntry",

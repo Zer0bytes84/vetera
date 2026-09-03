@@ -569,7 +569,7 @@ function normalizeCurrency(value?: string): string {
 }
 
 function normalizeTimestamp(
-  value: Date | string | undefined,
+  value?: Date | string,
   fallback = new Date()
 ): { date: Date; value: string } {
   const date = value === undefined ? fallback : value instanceof Date ? value : new Date(value);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { flushSync } from "react-dom";
 import { useTheme } from "@/components/theme-provider";
 
 interface CircularTransitionHook {
@@ -30,25 +31,28 @@ export function useCircularTransition(): CircularTransitionHook {
       document.documentElement.style.setProperty("--x", `${x}%`);
       document.documentElement.style.setProperty("--y", `${y}%`);
 
-      if ("startViewTransition" in document) {
-        const transition = (
-          document as Document & {
-            startViewTransition: (callback: () => void) => {
-              finished: Promise<void>;
-            };
-          }
-        ).startViewTransition(() => {
-          callback();
-        });
+      const finishTransition = () => {
+        isTransitioningRef.current = false;
+      };
 
-        transition.finished.finally(() => {
-          isTransitioningRef.current = false;
-        });
-      } else {
+      if (
+        typeof document.startViewTransition !== "function" ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
         callback();
-        setTimeout(() => {
-          isTransitioningRef.current = false;
-        }, 400);
+        finishTransition();
+        return;
+      }
+
+      try {
+        const transition = document.startViewTransition(() => {
+          // Commit both the theme class and its palette before the snapshot.
+          flushSync(callback);
+        });
+        void transition.finished.then(finishTransition, finishTransition);
+      } catch {
+        callback();
+        finishTransition();
       }
     },
     []

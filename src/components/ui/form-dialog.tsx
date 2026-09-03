@@ -1,5 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
+import {
+  ModalBanner,
+  type ModalArtwork,
+  type ModalBannerTone,
+} from "@/components/ui/modal-banner";
 import { cn } from "@/lib/utils";
 import {
   DialogContent,
@@ -26,24 +31,6 @@ const formDialogContentVariants = cva(
   }
 );
 
-const formDialogIconVariants = cva(
-  "flex size-[50px] shrink-0 items-center justify-center rounded-[15px] border shadow-[inset_0_1px_0_rgb(255_255_255_/_0.78),0_10px_24px_-18px_currentColor] [&_svg]:size-6",
-  {
-    variants: {
-      tone: {
-        teal: "border-teal-300/35 bg-[linear-gradient(135deg,#d8f7eb,#e0efff_56%,#f2e4ff)] text-teal-700 dark:border-teal-300/20 dark:bg-[linear-gradient(135deg,rgb(20_184_166_/_0.24),rgb(59_130_246_/_0.22)_56%,rgb(168_85_247_/_0.22))] dark:text-teal-200",
-        sky: "border-sky-300/35 bg-[linear-gradient(135deg,#dff7ff,#e5edff_56%,#f1e6ff)] text-sky-700 dark:border-sky-300/20 dark:bg-[linear-gradient(135deg,rgb(56_189_248_/_0.22),rgb(99_102_241_/_0.2)_56%,rgb(168_85_247_/_0.2))] dark:text-sky-200",
-        amber: "border-orange-300/35 bg-[linear-gradient(135deg,#fff0d8,#ffe4e8_56%,#eee5ff)] text-orange-800 dark:border-orange-300/20 dark:bg-[linear-gradient(135deg,rgb(251_146_60_/_0.2),rgb(244_114_182_/_0.18)_56%,rgb(139_92_246_/_0.2))] dark:text-orange-200",
-        violet: "border-violet-300/35 bg-[linear-gradient(135deg,#f3e8ff,#e7e9ff_56%,#dff7ff)] text-violet-700 dark:border-violet-300/20 dark:bg-[linear-gradient(135deg,rgb(168_85_247_/_0.22),rgb(99_102_241_/_0.2)_56%,rgb(56_189_248_/_0.18))] dark:text-violet-200",
-        rose: "border-rose-300/35 bg-[linear-gradient(135deg,#ffe4ec,#fff0d8_56%,#f3e8ff)] text-rose-700 dark:border-rose-300/20 dark:bg-[linear-gradient(135deg,rgb(244_63_94_/_0.2),rgb(251_146_60_/_0.18)_56%,rgb(168_85_247_/_0.2))] dark:text-rose-200",
-      },
-    },
-    defaultVariants: {
-      tone: "teal",
-    },
-  }
-);
-
 type FormDialogContentProps = ComponentProps<typeof DialogContent> &
   VariantProps<typeof formDialogContentVariants>;
 
@@ -65,15 +52,21 @@ type FormDialogHeaderProps = Omit<
   "title"
 > & {
   title: ReactNode;
-  description: ReactNode;
+  description?: ReactNode;
+  artwork?: ModalArtwork;
   icon: ReactNode;
+  companionIcon?: ReactNode;
+  compact?: boolean;
   aside?: ReactNode;
-  tone?: VariantProps<typeof formDialogIconVariants>["tone"];
+  tone?: ModalBannerTone | null;
 };
 
 function FormDialogHeader({
+  artwork,
   aside,
   className,
+  companionIcon,
+  compact = false,
   description,
   icon,
   title,
@@ -82,28 +75,33 @@ function FormDialogHeader({
 }: FormDialogHeaderProps) {
   return (
     <DialogHeader
-      className={cn(
-        "modal-medical-header shrink-0 border-b px-6 py-5 sm:px-8",
-        className
-      )}
+      className={cn("modal-medical-header shrink-0 gap-0", className)}
       {...props}
     >
-      <div className="flex items-start justify-between gap-6 pr-7">
-        <div className="flex min-w-0 items-start gap-4">
-          <span aria-hidden="true" className={formDialogIconVariants({ tone })}>
-            {icon}
-          </span>
-          <div className="min-w-0 flex-1">
-            <DialogTitle className="text-2xl tracking-[-0.03em]">
-              {title}
-            </DialogTitle>
-            <DialogDescription className="mt-1 max-w-2xl leading-5">
-              {description}
-            </DialogDescription>
-          </div>
+      <ModalBanner
+        artwork={artwork}
+        className={compact ? "modal-banner-compact" : undefined}
+        companionIcon={companionIcon}
+        icon={icon}
+        tone={tone}
+      >
+        <div className="modal-form-heading">
+          <DialogTitle>
+            {title}
+          </DialogTitle>
+          <DialogDescription
+            className={cn(
+              "text-pretty",
+              !description && "sr-only"
+            )}
+          >
+            {description}
+          </DialogDescription>
+          {aside ? (
+            <div className="modal-form-heading-aside">{aside}</div>
+          ) : null}
         </div>
-        {aside ? <div className="hidden shrink-0 sm:block">{aside}</div> : null}
-      </div>
+      </ModalBanner>
     </DialogHeader>
   );
 }

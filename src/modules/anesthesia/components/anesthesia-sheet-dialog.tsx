@@ -124,7 +124,8 @@ export function AnesthesiaSheetDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-          description={`${patient.name} · ${patient.species} — préparez le protocole et le plan de surveillance.`}
+            artwork="anesthesia"
+          description={`${patient.name} · ${patient.species}`}
           icon={<Syringe weight="duotone" />}
           title={t(
             "modules.anesthesia.newSheet",

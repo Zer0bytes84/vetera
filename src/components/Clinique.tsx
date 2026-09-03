@@ -43,6 +43,8 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import Avatar from "@/components/Avatar";
+import { FormDialogHeader } from "@/components/ui/form-dialog";
+import { ModalBanner } from "@/components/ui/modal-banner";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { QuickPatientPicker } from "@/components/QuickPatientPicker";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
@@ -847,15 +849,19 @@ function ConsultationSessionDialog({
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
       <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1180px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
-        <DialogHeader className="modal-medical-header border-b px-6 py-5">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <DialogHeader className="modal-medical-header gap-0">
+          <ModalBanner
+            artwork="consultation"
+            className="modal-banner-compact modal-banner-record"
+            icon={<HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.8} />}
+          >
+          <div className="flex min-w-0 flex-1 flex-col gap-3">
             <div className="space-y-1.5">
               <DialogTitle className="text-xl tracking-[-0.04em]">
                 Consultation active
               </DialogTitle>
               <DialogDescription>
-                Gardez cette fiche ouverte pendant l’examen pour documenter le
-                dossier en temps réel puis clôturer la consultation.
+                Examen et suivi du patient.
               </DialogDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -913,6 +919,7 @@ function ConsultationSessionDialog({
               />
             </div>
           </div>
+          </ModalBanner>
         </DialogHeader>
 
         <div className="modal-medical-body min-h-0 overflow-y-auto p-6">
@@ -1440,14 +1447,13 @@ function BillingDialog({
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
       <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(940px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(940px,calc(100%-2rem))]">
-        <DialogHeader className="modal-medical-header border-b px-6 py-5">
-          <DialogTitle className="text-xl tracking-[-0.04em]">
-            Facturation et encaissement
-          </DialogTitle>
-          <DialogDescription>
-            Consolidez les actes facturés avant impression du reçu clinique.
-          </DialogDescription>
-        </DialogHeader>
+        <FormDialogHeader
+          artwork="billing"
+          description="Actes, produits et règlement."
+          icon={<HugeiconsIcon icon={Dollar01Icon} strokeWidth={1.8} />}
+          title="Facturation et encaissement"
+          tone="amber"
+        />
 
         <div className="modal-medical-body min-h-0 overflow-y-auto p-6">
           <div className="grid gap-6">

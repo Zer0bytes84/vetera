@@ -898,10 +898,11 @@ const Stock: React.FC = () => {
       <Dialog onOpenChange={setIsProductModalOpen} open={isProductModalOpen}>
         <FormDialogContent size="md">
           <FormDialogHeader
+            artwork="product"
             description={
               selectedProduct
-                ? "Modifiez les informations du produit ci-dessous."
-                : "Ajoutez la référence, le niveau de stock et les informations d’achat dans un même flux."
+                ? "Référence, tarifs et disponibilité."
+                : "Référence, tarifs et disponibilité."
             }
             icon={<HugeiconsIcon icon={Package02Icon} strokeWidth={1.9} />}
             title={selectedProduct ? "Modifier le produit" : "Nouveau produit"}
@@ -1247,6 +1248,7 @@ const Stock: React.FC = () => {
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
+            artwork="restock"
             description={selectedProduct?.name || "Produit sélectionné"}
             icon={<HugeiconsIcon icon={Refresh01Icon} strokeWidth={1.9} />}
             title="Réapprovisionner"

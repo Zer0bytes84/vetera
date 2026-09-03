@@ -1,14 +1,14 @@
 import { addHours, addMinutes, format } from "date-fns";
+import { Workflow } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/ui/form-dialog";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Switch } from "@/components/ui/switch";
@@ -125,114 +125,115 @@ export function AutomationConfigDialog({
 
   return (
     <Dialog onOpenChange={onClose} open={isOpen}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Configurer l'automatisation</DialogTitle>
-          <DialogDescription>
-            Modifier les paramètres pour "{automation.title}"
-          </DialogDescription>
-        </DialogHeader>
+      <FormDialogContent size="sm">
+        <FormDialogHeader
+          compact
+          artwork="automation"
+          title="Configurer l'automatisation"
+          description={`Modifier les paramètres pour "${automation.title}"`}
+          icon={<Workflow strokeWidth={1.8} />}
+        />
+        <FormDialogBody>
+          <Tabs className="mt-2 w-full" defaultValue="general">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="general">Général</TabsTrigger>
+              <TabsTrigger value="patients">Patients Ciblés</TabsTrigger>
+            </TabsList>
 
-        <Tabs className="mt-2 w-full" defaultValue="general">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="general">Général</TabsTrigger>
-            <TabsTrigger value="patients">Patients Ciblés</TabsTrigger>
-          </TabsList>
-
-          <TabsContent className="mt-4 space-y-6" value="general">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-1">
-                <Label className="font-semibold text-base" htmlFor="active">
-                  Statut Global
-                </Label>
-                <p className="text-muted-foreground text-sm">
-                  Activer ou désactiver cette tâche pour tous.
-                </p>
+            <TabsContent className="mt-4 space-y-6" value="general">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1">
+                  <Label className="font-semibold text-base" htmlFor="active">
+                    Statut Global
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
+                    Activer ou désactiver cette tâche pour tous.
+                  </p>
+                </div>
+                <Switch
+                  checked={active}
+                  id="active"
+                  onCheckedChange={setActive}
+                />
               </div>
-              <Switch
-                checked={active}
-                id="active"
-                onCheckedChange={setActive}
-              />
-            </div>
 
-            {active && (
-              <div className="flex flex-col gap-3">
-                <Label className="font-semibold text-base" htmlFor="remind">
-                  Prochaine exécution globale :
-                </Label>
-                <NativeSelect
-                  className="w-full"
-                  id="remind"
-                  onChange={(e) => setRemindIn(e.target.value)}
-                  value={remindIn}
-                >
-                  <option value="never">Ne rien changer</option>
-                  <option value="1m">Dans 1 minute (Test rapide)</option>
-                  <option value="5m">Dans 5 minutes</option>
-                  <option value="1h">Dans 1 heure</option>
-                  <option value="tomorrow">Demain</option>
-                </NativeSelect>
-                <p className="text-muted-foreground text-xs">
-                  Définit la prochaine date d'exécution pour l'ensemble des
-                  patients sélectionnés.
+              {active && (
+                <div className="flex flex-col gap-3">
+                  <Label className="font-semibold text-base" htmlFor="remind">
+                    Prochaine exécution globale :
+                  </Label>
+                  <NativeSelect
+                    className="w-full"
+                    id="remind"
+                    onChange={(e) => setRemindIn(e.target.value)}
+                    value={remindIn}
+                  >
+                    <option value="never">Ne rien changer</option>
+                    <option value="1m">Dans 1 minute (Test rapide)</option>
+                    <option value="5m">Dans 5 minutes</option>
+                    <option value="1h">Dans 1 heure</option>
+                    <option value="tomorrow">Demain</option>
+                  </NativeSelect>
+                  <p className="text-muted-foreground text-xs">
+                    Définit la prochaine date d'exécution pour l'ensemble des
+                    patients sélectionnés.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent className="mt-4" value="patients">
+              <div className="flex flex-col gap-2">
+                <p className="mb-2 text-muted-foreground text-sm">
+                  Sélectionnez les patients concernés par cette automatisation.
                 </p>
-              </div>
-            )}
-          </TabsContent>
 
-          <TabsContent className="mt-4" value="patients">
-            <div className="flex flex-col gap-2">
-              <p className="mb-2 text-muted-foreground text-sm">
-                Sélectionnez les patients concernés par cette automatisation.
-              </p>
-
-              <div className="max-h-[300px] overflow-y-auto rounded-md border">
-                {isLoadingPatients ? (
-                  <div className="p-4 text-center text-muted-foreground text-sm">
-                    Chargement...
-                  </div>
-                ) : patients.length === 0 ? (
-                  <div className="p-4 text-center text-muted-foreground text-sm">
-                    Aucun patient trouvé.
-                  </div>
-                ) : (
-                  <div className="divide-y">
-                    {patients.map((p) => (
-                      <div
-                        className="flex items-center justify-between p-3 hover:bg-muted/50"
-                        key={p.id}
-                      >
-                        <div className="flex flex-col">
-                          <span className="font-medium text-sm">
-                            {p.patient_name}
-                          </span>
-                          <span className="text-muted-foreground text-xs">
-                            Propriétaire: {p.owner_name}
-                          </span>
+                <div className="max-h-[300px] overflow-y-auto rounded-md border">
+                  {isLoadingPatients ? (
+                    <div className="p-4 text-center text-muted-foreground text-sm">
+                      Chargement...
+                    </div>
+                  ) : patients.length === 0 ? (
+                    <div className="p-4 text-center text-muted-foreground text-sm">
+                      Aucun patient trouvé.
+                    </div>
+                  ) : (
+                    <div className="divide-y">
+                      {patients.map((p) => (
+                        <div
+                          className="flex items-center justify-between p-3 hover:bg-muted/50"
+                          key={p.id}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium text-sm">
+                              {p.patient_name}
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              Propriétaire: {p.owner_name}
+                            </span>
+                          </div>
+                          <Switch
+                            checked={p.is_active}
+                            onCheckedChange={(checked) =>
+                              handlePatientToggle(p.id, checked)
+                            }
+                          />
                         </div>
-                        <Switch
-                          checked={p.is_active}
-                          onCheckedChange={(checked) =>
-                            handlePatientToggle(p.id, checked)
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        <DialogFooter className="mt-4">
+            </TabsContent>
+          </Tabs>
+        </FormDialogBody>
+        <FormDialogFooter>
           <Button onClick={onClose} variant="outline">
             Annuler
           </Button>
           <Button onClick={handleSave}>Enregistrer</Button>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

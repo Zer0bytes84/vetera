@@ -189,7 +189,8 @@ export function VaccinationDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
-          description="Documentez le vaccin, le lot et la prochaine échéance dans le dossier médical."
+            artwork="vaccination"
+          description="Vaccin, lot et prochaine échéance."
           icon={<Syringe weight="duotone" />}
           title={
             isEditing

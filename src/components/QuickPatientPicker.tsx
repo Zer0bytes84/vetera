@@ -6,13 +6,8 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { FormDialogHeader } from "@/components/ui/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
 import { usePatientsRepository } from "@/data/repositories";
@@ -66,15 +61,14 @@ export function QuickPatientPicker({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-md gap-0 overflow-hidden p-0 sm:rounded-2xl">
-        <DialogHeader className="border-black/5 border-b px-5 py-4 dark:border-white/5">
-          <DialogTitle className="font-semibold text-base tracking-[-0.02em]">
-            {title}
-          </DialogTitle>
-          <DialogDescription className="text-muted-foreground/80 text-xs">
-            {description}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-md grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0">
+        <FormDialogHeader
+          compact
+          artwork="patient-picker"
+          description={description}
+          icon={<HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.8} />}
+          title={title}
+        />
         <div className="p-3">
           <Input
             autoFocus
@@ -86,7 +80,7 @@ export function QuickPatientPicker({
             value={query}
           />
         </div>
-        <div className="max-h-72 overflow-y-auto px-2 pb-3">
+        <div className="min-h-0 max-h-72 overflow-y-auto px-2 pb-3">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center gap-1.5 py-6 text-center text-muted-foreground text-sm">
               {t("quickPatientPicker.empty", {

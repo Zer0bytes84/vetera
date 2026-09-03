@@ -22,6 +22,8 @@ import React, {
 } from "react";
 import { toast } from "sonner";
 import MotivationalHeader from "@/components/MotivationalHeader";
+import { FormDialogHeader } from "@/components/ui/form-dialog";
+import { ModalBanner } from "@/components/ui/modal-banner";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -610,18 +612,14 @@ function PatientDetailsDialog({
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
       <DialogContent className="modal-medical-shell max-h-[calc(100dvh-1.5rem)] max-w-[min(1180px,calc(100%-1.5rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-[28px] p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
-        <DialogHeader className="shrink-0 gap-0 border-border/70 border-b bg-background">
-          <div className="flex flex-col gap-4 px-5 py-4 sm:px-7 sm:py-5">
-            <div className="flex flex-col gap-4 pr-8 sm:flex-row sm:items-center sm:justify-between">
+        <DialogHeader className="modal-medical-header shrink-0 gap-0 border-border/70 border-b">
+          <ModalBanner
+            artwork="patient-record"
+            className="modal-banner-compact modal-banner-record"
+            icon={<PawPrint strokeWidth={1.8} />}
+          >
+            <div className="flex w-full min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3.5">
-                <div
-                  className={cn(
-                    "flex size-11 shrink-0 items-center justify-center rounded-2xl text-xl ring-1 ring-black/5",
-                    getSpeciesTone(patient.species)
-                  )}
-                >
-                  {getSpeciesIcon(patient.species)}
-                </div>
                 <div className="min-w-0 space-y-0.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <DialogTitle className="truncate text-xl tracking-[-0.04em] sm:text-2xl">
@@ -690,6 +688,8 @@ function PatientDetailsDialog({
               </div>
             </div>
 
+          </ModalBanner>
+          <div className="flex flex-col gap-4 px-5 py-4 sm:px-7 sm:py-5">
             <div className="grid gap-2 sm:grid-cols-3">
               <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-sky-50 px-3.5 py-3 text-sky-950 ring-1 ring-sky-100 dark:bg-sky-950/35 dark:text-sky-50 dark:ring-sky-900/60">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20">
@@ -1657,46 +1657,12 @@ function PatientCreateDialog({
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1040px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-3rem)] sm:max-w-[min(1040px,calc(100%-2rem))]">
-        <DialogHeader className="modal-medical-header shrink-0 border-b px-6 py-5 sm:px-8">
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex min-w-0 items-start gap-4">
-              <div className="modal-medical-title-icon" aria-hidden="true">
-                <HugeiconsIcon icon={Folder01Icon} size={24} strokeWidth={1.8} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <DialogTitle className="text-2xl tracking-[-0.03em]">
-                  Nouveau patient
-                </DialogTitle>
-                <DialogDescription className="mt-1 max-w-xl">
-                  Créez le dossier de l’animal et reliez-le à la bonne personne,
-                  sans perdre le fil entre les informations essentielles.
-                </DialogDescription>
-              </div>
-            </div>
-            <div
-              aria-label="Le propriétaire et le patient seront liés"
-              className="modal-record-link hidden shrink-0 sm:flex"
-            >
-              <span
-                aria-hidden="true"
-                className="modal-record-link-icon modal-record-link-owner"
-              >
-                <UserRound className="size-4" strokeWidth={1.9} />
-              </span>
-              <span aria-hidden="true" className="modal-record-link-bridge" />
-              <span
-                aria-hidden="true"
-                className="modal-record-link-icon modal-record-link-patient"
-              >
-                <SpeciesIcon className="size-4" strokeWidth={1.9} />
-              </span>
-              <div>
-                <span>Dossier relié</span>
-                <small>Propriétaire + animal</small>
-              </div>
-            </div>
-          </div>
-        </DialogHeader>
+        <FormDialogHeader
+          artwork="patient"
+          description="Identité de l’animal et coordonnées du propriétaire."
+          icon={<SpeciesIcon strokeWidth={1.8} />}
+          title="Nouveau patient"
+        />
 
         <div className="modal-medical-body min-h-0 overflow-y-auto">
           <div className="modal-patient-grid">
@@ -2947,42 +2913,15 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
         }}
         open={!!createdPatientPrompt}
       >
-        <DialogContent className="modal-medical-shell modal-hero-frame w-full max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-[560px]">
-          <DialogHeader className="modal-hero-shell gap-0 px-6 py-5">
-            <div className="relative z-[1] grid gap-4">
-              <div className="modal-hero-badge w-fit px-3 py-2">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-[14px] bg-emerald-500/12 text-emerald-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:text-emerald-300">
-                  <HugeiconsIcon
-                    className="size-4"
-                    icon={CheckmarkCircle02Icon}
-                    strokeWidth={2}
-                  />
-                </div>
-                <span className="font-medium text-[12px] text-emerald-700/90 tracking-[0.02em] dark:text-emerald-300/90">
-                  Dossier créé
-                </span>
-              </div>
-
-              <div className="space-y-1.5">
-                <DialogTitle className="text-[1.65rem] leading-[1.05] tracking-[-0.04em]">
-                  {createdPatientPrompt?.patient.name}
-                </DialogTitle>
-                <DialogDescription className="text-[0.95rem] text-muted-foreground leading-6">
-                  {createdPatientPrompt?.patient.species}
-                  {createdPatientPrompt?.patient.breed
-                    ? ` · ${createdPatientPrompt.patient.breed}`
-                    : ""}
-                  {createdPatientPrompt?.owner
-                    ? ` — ${formatOwnerName(createdPatientPrompt.owner)}`
-                    : ""}
-                  {createdPatientPrompt?.owner?.phone
-                    ? ` · ${createdPatientPrompt.owner.phone}`
-                    : ""}
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-          <div className="modal-hero-footer flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
+        <DialogContent className="modal-medical-shell gap-0 w-full max-w-[min(560px,calc(100%-2rem))] overflow-hidden p-0 sm:max-w-[560px]">
+          <FormDialogHeader
+            compact
+            artwork="patient-created"
+            title={createdPatientPrompt?.patient.name}
+            description="Dossier créé"
+            icon={<HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.8} />}
+          />
+          <div className="modal-medical-footer flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
             <Button
               className="sm:mr-auto"
               onClick={() => setCreatedPatientPrompt(null)}

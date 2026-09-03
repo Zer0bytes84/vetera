@@ -694,6 +694,7 @@ const Team: React.FC = () => {
       >
         <FormDialogContent size="sm">
           <FormDialogHeader
+            artwork="credentials"
             description="Copiez-le maintenant et transmettez-le par un canal sécurisé. Il disparaîtra à la fermeture."
             icon={<HugeiconsIcon icon={Key01Icon} strokeWidth={1.9} />}
             title="Mot de passe temporaire"
@@ -731,10 +732,11 @@ const Team: React.FC = () => {
       <Dialog onOpenChange={setIsModalOpen} open={isModalOpen}>
         <FormDialogContent size="sm">
           <FormDialogHeader
+            artwork="team"
             description={
               editingId
-                ? "Modifiez les informations du membre de l'équipe."
-                : "Créez un accès et définissez clairement le rôle du nouveau membre."
+                ? "Identité, rôle et accès."
+                : "Identité, rôle et accès."
             }
             icon={<HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.9} />}
             title={editingId ? "Modifier le membre" : "Ajouter un membre"}

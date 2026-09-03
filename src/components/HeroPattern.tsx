@@ -103,6 +103,25 @@ export function HeroPattern() {
   );
 }
 
+/**
+ * Reusable live pattern layer for surfaces that share the shell's glass language.
+ * The active pattern is resolved by the same `data-header-pattern` attribute
+ * used by the application header, so modal headers stay in sync with Apparence.
+ */
+export function HeaderPatternLayer({ className }: { className?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "header-pattern-field header-pattern-live header-pattern-modal pointer-events-none absolute inset-0",
+        className
+      )}
+    >
+      <PatternGroups />
+    </div>
+  );
+}
+
 export function HeaderPatternPreview({
   className,
   pattern,

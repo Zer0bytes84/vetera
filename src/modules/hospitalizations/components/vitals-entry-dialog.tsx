@@ -149,7 +149,8 @@ export function VitalsEntryDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="md">
         <FormDialogHeader
-          description={`${hospitalization.reason} — consignez les constantes et observations du contrôle.`}
+            artwork="vitals"
+          description={`${hospitalization.reason}`}
           icon={<Heartbeat weight="duotone" />}
           title={t(
             "modules.hospitalizations.vitals.addEntry",
