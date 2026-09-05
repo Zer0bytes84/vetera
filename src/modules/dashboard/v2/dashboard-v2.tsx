@@ -3,36 +3,15 @@ import {
   type DashboardLayoutBlock,
   DashboardLayoutManager,
 } from "../components/dashboard-layout-manager";
-import { AsterTasksChartWidget } from "../components/aster/aster-tasks-chart-widget";
-import { OwnerAddressBookWidget } from "../components/owner-address-book-widget";
 import { PatientPopulationWidget } from "../components/patient-population-widget";
-import {
-  type WaitingRoomAppointment,
-  WaitingRoomWidget,
-} from "../components/waiting-room-widget";
+import { ActivityContributionsWidget } from "./activity-contributions-widget";
+import { ClinicProgressWidget } from "./clinic-progress-widget";
 import { ActivityAnalysisWidget } from "./activity-analysis-widget";
-import { CapacityWidget } from "./capacity-widget";
 import { CashflowInsightWidget } from "./cashflow-insight-widget";
 import { ClinicalAlertsWidget } from "./clinical-alerts-widget";
 import { TodayScheduleWidget } from "./today-schedule-widget";
 import type { DashboardV2Props } from "./types";
 import { WidgetSkeleton } from "./widget-shell";
-
-const SQLITE_TIMESTAMP_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-
-function parseDashboardDate(value?: string): Date | null {
-  if (!value) {
-    return null;
-  }
-  const sqliteLike = SQLITE_TIMESTAMP_REGEX.test(value);
-  const normalized = sqliteLike ? `${value.replace(" ", "T")}Z` : value;
-  const date = new Date(normalized);
-  if (!Number.isFinite(date.getTime()) && sqliteLike) {
-    const localDate = new Date(value.replace(" ", "T"));
-    return Number.isFinite(localDate.getTime()) ? localDate : null;
-  }
-  return Number.isFinite(date.getTime()) ? date : null;
-}
 
 export function DashboardV2({
   appointments,
@@ -49,43 +28,6 @@ export function DashboardV2({
   transactions,
   vaccinations,
 }: DashboardV2Props) {
-  const todayAppointments = useMemo<WaitingRoomAppointment[]>(() => {
-    const patientsById = new Map(patients.map((patient) => [patient.id, patient]));
-    const ownersById = new Map(owners.map((owner) => [owner.id, owner]));
-    const today = new Date(metrics.referenceDate);
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    return appointments
-      .filter((appointment) => {
-        const date = parseDashboardDate(appointment.startTime);
-        return date && date >= today && date < tomorrow;
-      })
-      .map((appointment) => {
-        const patient = patientsById.get(appointment.patientId);
-        const owner = ownersById.get(appointment.ownerId);
-        const date = parseDashboardDate(appointment.startTime);
-        return {
-          id: appointment.id,
-          owner: owner
-            ? `${owner.firstName} ${owner.lastName}`.trim()
-            : "—",
-          patient: patient?.name || appointment.title,
-          patientId: appointment.patientId,
-          species: patient?.species || "—",
-          status: appointment.status,
-          time: date
-            ? date.toLocaleTimeString("fr-FR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "—",
-          type: appointment.type,
-        };
-      });
-  }, [appointments, metrics.referenceDate, owners, patients]);
-
   const blocks = useMemo<DashboardLayoutBlock[]>(
     () => [
       {
@@ -102,13 +44,39 @@ export function DashboardV2({
                 />
               </div>
               <div className="xl:col-span-5">
-                <PatientPopulationWidget
-                  className="min-h-[420px]"
-                  onOpenPatients={() => onNavigate?.("patients")}
-                  patients={patients}
+                <ClinicProgressWidget
+                  appointments={appointments}
+                  tasks={tasks}
+                  transactions={transactions}
                   referenceDate={metrics.referenceDate}
+                  onNavigate={onNavigate}
                 />
               </div>
+            </div>
+          </section>
+        ),
+      },
+      {
+        id: "v2-activity-patterns",
+        label: "Calendrier d’activité",
+        description: "Consultations sur les douze derniers mois",
+        content: (
+          <section
+            aria-label="Rythme et patientèle"
+            className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-12"
+          >
+            <div className="xl:col-span-8">
+              <ActivityContributionsWidget
+                metrics={metrics}
+                onOpenAnalytics={() => onNavigate?.("finances_analytics")}
+              />
+            </div>
+            <div className="xl:col-span-4">
+              <PatientPopulationWidget
+                onOpenPatients={() => onNavigate?.("patients")}
+                patients={patients}
+                referenceDate={metrics.referenceDate}
+              />
             </div>
           </section>
         ),
@@ -149,60 +117,17 @@ export function DashboardV2({
       {
         id: "v2-business-pulse",
         label: "Pilotage",
-        description: "Trésorerie et capacité à venir",
+        description: "Trésorerie et priorités à traiter",
         content: (
           <section aria-label="Pilotage du cabinet">
-            <div className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-12">
-              <div className="xl:col-span-7">
+            <div className="grid grid-cols-1 items-stretch gap-4">
+              <div>
                 <CashflowInsightWidget
                   onOpenFinances={() => onNavigate?.("finances")}
                   referenceDate={metrics.referenceDate}
                   transactions={transactions}
                 />
               </div>
-              <div className="xl:col-span-5">
-                <CapacityWidget
-                  appointments={appointments}
-                  onOpenAgenda={() => onNavigate?.("agenda")}
-                  referenceDate={metrics.referenceDate}
-                />
-              </div>
-            </div>
-          </section>
-        ),
-      },
-      {
-        id: "v2-owner-directory",
-        label: "Carnet des propriétaires",
-        description: "Contacts, patients liés et dossiers médicaux",
-        content: (
-          <OwnerAddressBookWidget
-            appointments={appointments}
-            onNavigateToPatient={onNavigateToPatient}
-            onOpenPatients={() => onNavigate?.("patients")}
-            owners={owners}
-            patients={patients}
-          />
-        ),
-      },
-      {
-        id: "v2-daily-workflow",
-        label: "Déroulé et actions",
-        description: "Rendez-vous du jour et tâches à traiter",
-        content: (
-          <section aria-label="Déroulé et actions du jour">
-            <div className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-12">
-              <WaitingRoomWidget
-                appointments={todayAppointments}
-                className="xl:col-span-7"
-                onNavigateToPatient={onNavigateToPatient}
-                onOpenAgenda={() => onNavigate?.("agenda")}
-              />
-              <AsterTasksChartWidget
-                className="xl:col-span-5"
-                onOpenTasks={() => onNavigate?.("taches")}
-                referenceDate={metrics.referenceDate}
-              />
             </div>
           </section>
         ),
@@ -217,7 +142,6 @@ export function DashboardV2({
       patients,
       products,
       tasks,
-      todayAppointments,
       transactions,
       vaccinations,
     ]
@@ -239,7 +163,7 @@ export function DashboardV2({
       blocks={blocks}
       isEditing={isCustomizing}
       onEditingChange={onCustomizingChange}
-      storageKeyPrefix="dashboard_layout_v2"
+      storageKeyPrefix="dashboard_layout_v3"
     />
   );
 }

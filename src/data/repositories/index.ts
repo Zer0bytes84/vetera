@@ -10,7 +10,7 @@ import {
 } from "@/domain/clinical/scheduling";
 import * as AppSettingsService from "@/services/appSettingsService";
 import { billingService } from "@/services/billingService";
-import { isTauriRuntime } from "@/services/browser-store";
+import { getBrowserTable, isTauriRuntime } from "@/services/browser-store";
 import * as AuthService from "@/services/sqlite/auth";
 import {
   generateId,
@@ -274,6 +274,7 @@ export function useAppointmentsRepository() {
       throw new Error("Rendez-vous introuvable.");
     }
 
+    let invoiceNumber = `CONS-${appointment.id}`;
     const totalAmountDa = items.reduce(
       (sum, item) => sum + Math.max(0, Number(item.amount) || 0),
       0
@@ -305,6 +306,10 @@ export function useAppointmentsRepository() {
         });
       }
 
+      if (invoice.documentStatus !== "draft" && invoice.grossAmount !== totalAmount) {
+        throw new Error("Cette consultation est déjà facturée avec un autre montant. Consultez la facture dans Finances.");
+      }
+
       if (invoice.documentStatus === "draft") {
         const clinicName =
           (await AppSettingsService.getSetting("clinic_name")) ||
@@ -320,6 +325,8 @@ export function useAppointmentsRepository() {
           clinicSnapshot: { name: clinicName },
         });
       }
+
+      invoiceNumber = invoice.number ?? invoiceNumber;
 
       if (invoice.documentStatus === "issued" && invoice.balanceAmount > 0) {
         const invoiceDetail = await billingService.getInvoice(invoice.id);
@@ -352,8 +359,15 @@ export function useAppointmentsRepository() {
     }
 
     if (totalAmount > 0 && !isTauriRuntime()) {
-      try {
-        await transactionsStore.add({
+      // Read persisted rows, not the render snapshot, when retrying an export.
+      const existing = getBrowserTable<Transaction>("transactions").find(
+        (entry) => entry.referenceId === appointment.id && entry.type === "income" && entry.status === "paid"
+      );
+      if (existing && existing.amount !== totalAmount) {
+        throw new Error("Un encaissement existe déjà avec un autre montant. Consultez Finances.");
+      }
+      if (!existing) {
+        const payment = await transactionsStore.add({
           amount: totalAmount,
           type: "income",
           category: category ?? "Consultation",
@@ -363,17 +377,11 @@ export function useAppointmentsRepository() {
           status: "paid",
           date: new Date().toISOString(),
         } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
-      } catch (err) {
-        console.error(
-          "[completeWithBilling] Erreur lors de la création de la transaction:",
-          err
-        );
-        // On ne bloque pas le flow car le RDV est déjà complété
-        // L'utilisateur pourra créer la transaction manuellement depuis Finances
+        if (!payment) throw new Error("L’encaissement n’a pas été enregistré.");
       }
     }
 
-    return { totalAmount, totalAmountDa };
+    return { totalAmount, totalAmountDa, invoiceNumber };
   };
 
   return {

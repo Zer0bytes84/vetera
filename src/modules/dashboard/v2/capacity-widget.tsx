@@ -28,6 +28,7 @@ export function CapacityWidget({
 
   return (
     <WidgetShell
+      accent="violet"
       action={
         <Button onClick={onOpenAgenda} size="sm" variant="ghost">
           Planning
@@ -41,7 +42,7 @@ export function CapacityWidget({
       iconClassName="bg-orange-50 text-orange-600 dark:bg-orange-400/10 dark:text-orange-300"
       title="Capacité"
     >
-      <div className="grid grid-cols-3 divide-x divide-zinc-200/70 border-zinc-200/70 border-b dark:divide-white/8 dark:border-white/8">
+      <div className="widget-metrics grid grid-cols-3">
         <div className="px-4 py-4">
           <p className="font-semibold text-2xl tabular-nums tracking-[-0.04em]">
             {totalAppointments}
@@ -68,13 +69,13 @@ export function CapacityWidget({
         </div>
       </div>
 
-      <div className="flex flex-1 items-end gap-2 px-5 pt-7 pb-5">
+      <div className="widget-chart-surface mx-4 mb-4 flex flex-1 items-end gap-3 rounded-xl px-4 pt-6 pb-4">
         {capacity.map((day) => {
           const today = isSameDay(day.date, referenceDate);
           const busy = day.load >= 75;
-          let barClassName = "bg-zinc-300 dark:bg-zinc-600";
+          let barClassName = "bg-lime-400 dark:bg-lime-400";
           if (today) {
-            barClassName = "bg-sky-500 dark:bg-sky-400";
+            barClassName = "bg-violet-500 dark:bg-violet-400";
           }
           if (busy) {
             barClassName = "bg-orange-400 dark:bg-orange-400/80";
@@ -87,14 +88,14 @@ export function CapacityWidget({
               <span className="mb-2 font-semibold text-[11px] tabular-nums">
                 {day.count}
               </span>
-              <div className="relative flex h-36 w-full max-w-10 items-end overflow-hidden rounded-full bg-zinc-100 p-1 ring-1 ring-zinc-950/5 dark:bg-white/7 dark:ring-white/8">
+              <div className="relative flex h-36 w-full max-w-10 items-end overflow-hidden rounded-xl bg-zinc-200/60 dark:bg-white/7">
                 <span
                   className={cn(
-                    "w-full rounded-full transition-[height] duration-500",
+                    "w-full rounded-xl transition-[height] duration-500 motion-reduce:transition-none",
                     barClassName
                   )}
                   style={{
-                    height: `${Math.max(day.load, day.count ? 10 : 3)}%`,
+                    height: `${Math.min(100, day.load)}%`,
                   }}
                 />
               </div>

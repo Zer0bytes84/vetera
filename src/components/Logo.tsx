@@ -70,7 +70,7 @@ const Logo: React.FC<LogoProps> = ({
           <BaitariMark sizePx={sizePx} />
         </div>
         {collapsed ? null : (
-          <div className="flex items-baseline">
+          <div className="flex items-center">
             <span
               className={cn(
                 "font-heading font-semibold text-zinc-900 dark:text-white",

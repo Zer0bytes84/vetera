@@ -195,8 +195,8 @@ function AppointmentTimePicker({
   const endLabel = minutesToTime(endMinutes);
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
+    <div className="appointment-time-picker space-y-3">
+      <div className="appointment-time-adjustments flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
         <div className="flex items-center gap-1">
           <Button
             aria-label="Heure précédente"
@@ -2317,8 +2317,24 @@ const Agenda: React.FC = () => {
 
   const visibleRowsCount = tableRowsByTab[tableTab].length;
 
+  const shiftPeriod = (direction: number) => {
+    setSelectedDate((current) => {
+      const next = new Date(current);
+      if (viewMode === "month") {
+        const day = next.getDate();
+        next.setDate(1);
+        next.setMonth(next.getMonth() + direction);
+        const lastDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+        next.setDate(Math.min(day, lastDay));
+      } else {
+        next.setDate(next.getDate() + direction * (viewMode === "week" ? 7 : 1));
+      }
+      return next;
+    });
+  };
+
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
+    <div className="agenda-workspace dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="agenda" />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -2346,12 +2362,9 @@ const Agenda: React.FC = () => {
       <SectionCards items={sectionCards} />
 
       <div className="grid gap-4">
-        <Card className="card-vibrant card-hover-lift min-h-[780px] rounded-[24px] border border-border bg-card shadow-none">
-          <CardHeader className="border-border border-b px-6 py-5">
-            <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
-              {t("agenda.planning")}
-            </CardDescription>
-            <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
+        <Card className="agenda-planner min-h-[640px] rounded-2xl border border-border bg-card shadow-none">
+          <CardHeader className="agenda-planner-heading border-border border-b px-5 py-5 sm:px-6">
+            <CardTitle className="font-semibold text-[22px] tracking-[-0.03em]">
               {t("agenda.consultationsAgenda")}
             </CardTitle>
             <CardAction>
@@ -2363,12 +2376,20 @@ const Agenda: React.FC = () => {
 
           <CardContent className="flex min-h-0 flex-1 flex-col px-0 pb-0">
             <Tabs
-              className="flex min-h-0 flex-1 gap-4"
+              className="flex min-h-0 flex-1 gap-0"
               onValueChange={(value) => setViewMode(value as ViewMode)}
               value={viewMode}
             >
-              <div className="flex flex-col gap-3 border-border border-b px-6 pt-5 pb-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="agenda-toolbar flex flex-col gap-3 border-border border-b px-5 py-4 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center rounded-xl border border-border bg-card p-0.5">
+                    <Button aria-label="Période précédente" size="icon-sm" variant="ghost" onClick={() => shiftPeriod(-1)}>
+                      <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.8} />
+                    </Button>
+                    <Button aria-label="Période suivante" size="icon-sm" variant="ghost" onClick={() => shiftPeriod(1)}>
+                      <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.8} />
+                    </Button>
+                  </div>
                   <Popover>
                     <PopoverTrigger
                       render={
@@ -2413,8 +2434,8 @@ const Agenda: React.FC = () => {
                   ) : null}
                 </div>
 
-                <TabsList>
-                  <TabsTrigger value="list">
+                <TabsList className="h-10 w-full justify-start rounded-xl p-1 sm:w-auto">
+                  <TabsTrigger className="flex-1 rounded-lg" value="list">
                     {t("agenda.list", { defaultValue: "Vue liste" })}
                   </TabsTrigger>
                   <TabsTrigger value="day">{t("agenda.day")}</TabsTrigger>
@@ -2919,6 +2940,13 @@ const Agenda: React.FC = () => {
                             <TableRow
                               className="cursor-pointer transition-colors hover:bg-muted/10"
                               key={row.appointment.id}
+                              tabIndex={0}
+                              onKeyDown={(event) => {
+                                if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) {
+                                  event.preventDefault();
+                                  selectAppointment(row.appointment, true);
+                                }
+                              }}
                               onClick={() =>
                                 selectAppointment(row.appointment, true)
                               }
@@ -3086,7 +3114,18 @@ const Agenda: React.FC = () => {
         }}
         open={isDialogOpen}
       >
-        <FormDialogContent size="lg">
+        <FormDialogContent
+          className="modal-medical-shell"
+          onKeyDown={(event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+              event.preventDefault();
+              if (!isSubmitting && selectedPatientId) {
+                void handleSave();
+              }
+            }
+          }}
+          size="lg"
+        >
           <FormDialogHeader
             artwork="appointment"
             description="Patient, créneau et motif de consultation."
@@ -3572,7 +3611,7 @@ const Agenda: React.FC = () => {
                   Annuler
                 </Button>
                 <Button
-                  className="h-11 min-w-[190px] justify-center shadow-sm"
+                  className="h-11 min-w-[200px] justify-center shadow-sm"
                   disabled={isSubmitting || !selectedPatientId}
                   onClick={handleSave}
                 >
@@ -3584,7 +3623,10 @@ const Agenda: React.FC = () => {
                     />
                   )}
                   {isSubmitting ? <Spinner className="size-4" /> : null}
-                  {editingAppointmentId ? "Enregistrer" : "Ajouter au planning"}
+                  <span>{editingAppointmentId ? "Enregistrer" : "Ajouter au planning"}</span>
+                  <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px] sm:inline-block">
+                    ⌘↵
+                  </kbd>
                 </Button>
               </div>
             </div>

@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 
 interface WidgetShellProps {
+  accent?: "sky" | "mint" | "amber" | "violet";
   action?: ReactNode;
   children: ReactNode;
   className?: string;
@@ -22,6 +23,7 @@ interface WidgetShellProps {
 }
 
 export function WidgetShell({
+  accent = "sky",
   action,
   children,
   className,
@@ -33,12 +35,13 @@ export function WidgetShell({
 }: WidgetShellProps) {
   return (
     <Card
+      data-widget-accent={accent}
       className={cn(
-        "dashboard-v2-widget h-full min-w-0 border-border/80 bg-card shadow-[0_1px_2px_rgba(15,23,42,0.02),0_12px_32px_-26px_rgba(15,23,42,0.35)]",
+        "dashboard-v2-widget h-full min-w-0 border-border/80 bg-card shadow-[0_1px_2px_rgba(15,23,42,0.02),0_12px_32px_-26px_rgba(15,23,42,0.35)] dark:border-white/[0.08] dark:bg-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_16px_40px_-24px_rgba(0,0,0,0.8)] dark:hover:border-white/[0.13]",
         className
       )}
     >
-      <CardHeader className="min-h-16 border-border/75 border-b px-5 py-4">
+      <CardHeader className="widget-heading min-h-20 border-border/75 border-b px-5 py-4 dark:border-white/8">
         <div className="flex min-w-0 items-center gap-3">
           <span
             className={cn(
@@ -49,11 +52,11 @@ export function WidgetShell({
             <Icon aria-hidden="true" className="size-4.5" strokeWidth={1.8} />
           </span>
           <div className="min-w-0">
-            <CardTitle className="truncate font-semibold text-[15px] tracking-[-0.015em]">
+            <CardTitle className="font-semibold text-[15px] tracking-[-0.015em]">
               {title}
             </CardTitle>
             {description ? (
-              <CardDescription className="mt-0.5 truncate text-xs">
+              <CardDescription className="mt-1 text-pretty text-xs">
                 {description}
               </CardDescription>
             ) : null}
@@ -63,7 +66,7 @@ export function WidgetShell({
           <CardAction className="self-center">{action}</CardAction>
         ) : null}
       </CardHeader>
-      <CardContent className={cn("flex-1 p-5", contentClassName)}>
+      <CardContent className={cn("widget-body flex min-h-0 flex-1 flex-col p-5", contentClassName)}>
         {children}
       </CardContent>
     </Card>

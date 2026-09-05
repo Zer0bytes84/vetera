@@ -202,22 +202,7 @@ export function AppSidebar({
               tooltip="Baitari"
             >
               <Logo
-                className={cn(
-                  "text-sidebar-foreground",
-                  isCollapsed
-                    ? "translate-y-0"
-                    : isDesktopRuntime
-                      ? "translate-y-1.5"
-                      : "translate-y-0.5",
-                  variant === "minimal" &&
-                    (isCollapsed
-                      ? isDesktopRuntime
-                        ? "translate-y-2"
-                        : "translate-y-0.5"
-                      : isDesktopRuntime
-                        ? "translate-y-1"
-                        : "translate-y-1")
-                )}
+                className="text-sidebar-foreground"
                 collapsed={isCollapsed}
                 size={variant === "sidebar" ? "xl" : "2xl"}
                 textSize="md"
@@ -225,10 +210,7 @@ export function AppSidebar({
             </SidebarMenuButton>
             {!isCollapsed && (
               <SidebarTrigger
-                className={cn(
-                  "-mr-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
-                  variant === "minimal" && isDesktopRuntime && "translate-y-1"
-                )}
+                className="-mr-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
               />
             )}
           </SidebarMenuItem>
@@ -279,7 +261,7 @@ export function AppSidebar({
             : "mx-0 mt-auto mb-0 bg-transparent px-4 py-3"
         )}
       >
-        {isCollapsed && variant === "minimal" ? (
+        {isCollapsed ? (
           <SidebarTrigger
             aria-label="Déployer la barre latérale"
             className="mb-1 size-9 rounded-xl border border-zinc-900/[0.06] bg-zinc-950/[0.025] text-sidebar-foreground/65 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:bg-zinc-950/[0.055] hover:text-sidebar-foreground dark:border-white/[0.09] dark:bg-white/[0.035] dark:hover:bg-white/[0.07]"

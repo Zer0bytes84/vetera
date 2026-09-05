@@ -54,11 +54,12 @@ export function CashflowInsightWidget({
       ),
     [series]
   );
-  const chartData =
-    period === 90 ? series.filter((_, index) => index % 3 === 0) : series;
+  // Keep every paid transaction represented, including on the 90-day view.
+  const chartData = series;
 
   return (
     <WidgetShell
+      accent="mint"
       action={
         <div className="flex rounded-full border border-zinc-200/80 bg-zinc-50 p-0.5 dark:border-white/10 dark:bg-white/5">
           {([14, 30, 90] as const).map((value) => (
@@ -86,12 +87,12 @@ export function CashflowInsightWidget({
       iconClassName="bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300"
       title="Trésorerie"
     >
-      <div className="grid grid-cols-3 divide-x divide-zinc-200/70 border-zinc-200/70 border-b dark:divide-white/8 dark:border-white/8">
+      <div className="widget-metrics grid grid-cols-3 px-1 pb-1">
         <div className="px-4 py-4">
           <p className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
             <TrendingUp className="size-3 text-emerald-500" /> Revenus
           </p>
-          <p className="mt-1.5 truncate font-semibold text-lg tabular-nums tracking-[-0.03em]">
+          <p className="mt-1.5 break-words font-medium text-xl tabular-nums tracking-[-0.03em]">
             {formatCurrency(totals.income)}
           </p>
         </div>
@@ -99,7 +100,7 @@ export function CashflowInsightWidget({
           <p className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
             <TrendingDown className="size-3 text-rose-500" /> Dépenses
           </p>
-          <p className="mt-1.5 truncate font-semibold text-lg tabular-nums tracking-[-0.03em]">
+          <p className="mt-1.5 break-words font-medium text-xl tabular-nums tracking-[-0.03em]">
             {formatCurrency(totals.expense)}
           </p>
         </div>
@@ -107,7 +108,7 @@ export function CashflowInsightWidget({
           <p className="text-[10px] text-muted-foreground">Solde net</p>
           <p
             className={cn(
-              "mt-1.5 truncate font-semibold text-lg tabular-nums tracking-[-0.03em]",
+              "mt-1.5 break-words font-medium text-xl tabular-nums tracking-[-0.03em]",
               totals.net < 0 && "text-rose-600 dark:text-rose-300"
             )}
           >
@@ -116,7 +117,7 @@ export function CashflowInsightWidget({
         </div>
       </div>
 
-      <div className="px-3 pt-5 pb-2 sm:px-5">
+      <div className="widget-chart-surface mx-3 mb-3 rounded-xl px-2 pt-5 pb-2 sm:mx-4 sm:px-3">
         <ChartContainer
           className="h-[220px] w-full"
           config={chartConfig}
@@ -125,7 +126,7 @@ export function CashflowInsightWidget({
           <ComposedChart
             accessibilityLayer
             data={chartData}
-            margin={{ left: -18, right: 6, top: 8 }}
+            margin={{ left: 0, right: 6, top: 8 }}
           >
             <defs>
               <linearGradient

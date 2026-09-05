@@ -2,6 +2,8 @@
 
 use tauri::Manager;
 
+mod clinic_database;
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_sql::Builder::new().build())
@@ -20,6 +22,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            clinic_database::open_clinic_database,
             greet,
             test_sqlite_write,
             test_sqlite_read

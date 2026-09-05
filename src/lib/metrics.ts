@@ -400,8 +400,8 @@ export function buildDashboardMetrics({
     };
   });
 
-  const activityDays = Array.from({ length: 84 }, (_, index) => {
-    const day = addDays(referenceDate, -83 + index);
+  const activityYear = Array.from({ length: 365 }, (_, index) => {
+    const day = addDays(referenceDate, -364 + index);
     const total = appointments.filter((item) => {
       const date = safeDate(item.startTime);
       return (
@@ -425,6 +425,8 @@ export function buildDashboardMetrics({
       revenue: revenueForDay,
     };
   });
+
+  const activityDays = activityYear.slice(-84);
 
   const taskCadenceSeries = Array.from({ length: 24 }, (_, index) => {
     const day = addDays(referenceDate, -23 + index);
@@ -592,6 +594,7 @@ export function buildDashboardMetrics({
     topAppointmentTypes,
     cashflowSeries,
     activityDays,
+    activityYear,
     taskCadenceSeries,
     pipelineRows: pipelineRows.map((row) => ({
       ...row,

@@ -386,7 +386,7 @@ function AppShellInner() {
           "--header-height": variant === "minimal" ? "64px" : "60px",
           "--titlebar-clearance":
             isDesktopRuntime && !isRtl
-              ? variant === "sidebar"
+              ? variant === "sidebar" || variant === "inset"
                 ? "24px"
                 : variant === "minimal"
                   ? "10px"

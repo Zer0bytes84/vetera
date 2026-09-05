@@ -39,6 +39,34 @@ const modalArtworks = {
 
 type ModalArtwork = keyof typeof modalArtworks;
 
+const artworkDefaultTones: Record<ModalArtwork, ModalBannerTone> = {
+  patient: "teal",
+  "patient-record": "teal",
+  "patient-created": "teal",
+  "patient-picker": "teal",
+  consultation: "teal",
+  vaccination: "teal",
+  weight: "teal",
+  appointment: "sky",
+  product: "amber",
+  restock: "amber",
+  payment: "amber",
+  transaction: "amber",
+  billing: "amber",
+  invoice: "violet",
+  "invoice-detail": "violet",
+  team: "violet",
+  credentials: "violet",
+  hospitalization: "violet",
+  anesthesia: "violet",
+  monitoring: "violet",
+  medication: "violet",
+  prescription: "violet",
+  assistant: "violet",
+  automation: "teal",
+  vitals: "rose",
+};
+
 interface ModalBannerProps {
   artwork?: ModalArtwork;
   children?: ReactNode;
@@ -55,18 +83,23 @@ function ModalBanner({
   className,
   companionIcon,
   icon,
-  tone = "teal",
+  tone,
 }: ModalBannerProps) {
   const { t } = useTranslation();
   const [texture, hue, position, flipped] = modalArtworks[artwork];
+  const resolvedTone = tone ?? artworkDefaultTones[artwork] ?? "teal";
 
   return (
     <div
       className={cn("modal-banner", className)}
       data-slot="modal-banner"
       data-artwork={artwork}
-      data-tone={tone ?? "teal"}
+      data-tone={resolvedTone}
     >
+      {/* 1. Luminous Mesh Gradient Bloom */}
+      <div aria-hidden="true" className="modal-banner-mesh" />
+
+      {/* 2. Atmospheric Airbrush Texture Layer */}
       <div
         aria-hidden="true"
         className="modal-banner-art"
@@ -79,6 +112,14 @@ function ModalBanner({
           } as CSSProperties
         }
       />
+
+      {/* 3. Tactile Micro-Grain / Noise Overlay */}
+      <div aria-hidden="true" className="modal-banner-grain" />
+
+      {/* 4. Soft Bottom Falloff to Card */}
+      <div aria-hidden="true" className="modal-banner-fade" />
+
+      {/* 5. Glass Badges & Optical Links */}
       <div aria-hidden="true" className="modal-banner-marks">
         {companionIcon ? (
           <>
@@ -92,12 +133,16 @@ function ModalBanner({
         ) : null}
         <span className="modal-banner-glass modal-banner-feature">{icon}</span>
       </div>
+
+      {/* 6. Title, Subtitle, Actions */}
       {children}
+
+      {/* 7. Accessible Floating Frosted Close Control */}
       <DialogClose
         aria-label={t("common.close", { defaultValue: "Fermer" })}
         className="modal-banner-close"
       >
-        <XIcon aria-hidden="true" size={18} strokeWidth={1.7} />
+        <XIcon aria-hidden="true" size={17} strokeWidth={2} />
       </DialogClose>
     </div>
   );

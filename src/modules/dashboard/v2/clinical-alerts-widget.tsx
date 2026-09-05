@@ -11,11 +11,6 @@ import {
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Progress,
-  ProgressIndicator,
-  ProgressTrack,
-} from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import type { View } from "@/types";
 import type {
@@ -97,15 +92,6 @@ export function ClinicalAlertsWidget({
   const warningCount = alerts.filter(
     (alert) => alert.tone === "warning"
   ).length;
-  const confidence = Math.max(100 - criticalCount * 20 - warningCount * 8, 0);
-  let progressColor = "bg-rose-500";
-  if (confidence >= 55) {
-    progressColor = "bg-amber-500";
-  }
-  if (confidence >= 80) {
-    progressColor = "bg-emerald-500";
-  }
-
   const handleAlert = (alert: ClinicalAlert) => {
     if (alert.patientId && alert.source !== "task") {
       onNavigateToPatient?.(alert.patientId);
@@ -116,6 +102,7 @@ export function ClinicalAlertsWidget({
 
   return (
     <WidgetShell
+      accent="amber"
       action={
         alerts.length ? (
           <Badge
@@ -141,10 +128,10 @@ export function ClinicalAlertsWidget({
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-[11px] text-muted-foreground">
-              Situation maîtrisée
+              Priorités à traiter
             </p>
             <p className="mt-0.5 font-semibold text-2xl tabular-nums tracking-[-0.035em]">
-              {confidence}%
+              {alerts.length}
             </p>
           </div>
           <div className="flex items-center gap-3 text-[11px]">
@@ -162,11 +149,6 @@ export function ClinicalAlertsWidget({
             </span>
           </div>
         </div>
-        <Progress className="mt-3" value={confidence}>
-          <ProgressTrack className="h-1.5 bg-zinc-100 dark:bg-white/8">
-            <ProgressIndicator className={progressColor} />
-          </ProgressTrack>
-        </Progress>
       </div>
 
       {alerts.length ? (

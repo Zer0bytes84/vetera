@@ -271,7 +271,6 @@ export function useSQLite<T extends { id: string }>(
       setError(null);
 
       if (!isTauriRuntime()) {
-        toast.error("Tauri non détecté, utilisation des données locales !");
         setData(
           getBrowserTable<T & Record<string, unknown>>(
             safeTableName as BrowserTableName

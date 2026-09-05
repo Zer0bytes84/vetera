@@ -325,7 +325,7 @@ function PatientStatusBadge({ status }: { status: Patient["status"] }) {
   const meta = getStatusMeta(status);
 
   return (
-    <Badge className={meta.className} variant="secondary">
+    <Badge className={cn("medical-status-tag", meta.className)} data-status={status} variant="secondary">
       {meta.label}
     </Badge>
   );
@@ -612,7 +612,7 @@ function PatientDetailsDialog({
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
       <DialogContent className="modal-medical-shell max-h-[calc(100dvh-1.5rem)] max-w-[min(1180px,calc(100%-1.5rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-[28px] p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
-        <DialogHeader className="modal-medical-header shrink-0 gap-0 border-border/70 border-b">
+        <DialogHeader className="modal-medical-header shrink-0 gap-0 border-border/40 border-b">
           <ModalBanner
             artwork="patient-record"
             className="modal-banner-compact modal-banner-record"
@@ -691,18 +691,18 @@ function PatientDetailsDialog({
           </ModalBanner>
           <div className="flex flex-col gap-4 px-5 py-4 sm:px-7 sm:py-5">
             <div className="grid gap-2 sm:grid-cols-3">
-              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-sky-50 px-3.5 py-3 text-sky-950 ring-1 ring-sky-100 dark:bg-sky-950/35 dark:text-sky-50 dark:ring-sky-900/60">
+              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20">
                   <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[10px] text-sky-700 uppercase tracking-[0.12em] dark:text-sky-300">
+                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
                     Dernière visite
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
                     {formatPatientDate(patient.lastVisit)}
                   </p>
-                  <p className="truncate text-sky-700/75 text-xs dark:text-sky-300/75">
+                  <p className="truncate text-muted-foreground text-xs">
                     {
                       history.filter((entry) => entry.status === "completed")
                         .length
@@ -721,12 +721,12 @@ function PatientDetailsDialog({
                 </div>
               </div>
 
-              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-amber-50 px-3.5 py-3 text-amber-950 ring-1 ring-amber-100 dark:bg-amber-950/30 dark:text-amber-50 dark:ring-amber-900/60">
+              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm shadow-amber-500/20">
                   <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={2} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[10px] text-amber-700 uppercase tracking-[0.12em] dark:text-amber-300">
+                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
                     Prochain créneau
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -734,7 +734,7 @@ function PatientDetailsDialog({
                       ? formatPatientDateTime(upcomingAppointment.startTime)
                       : "Aucun rendez-vous"}
                   </p>
-                  <p className="truncate text-amber-700/75 text-xs dark:text-amber-300/75">
+                  <p className="truncate text-muted-foreground text-xs">
                     {upcomingAppointment
                       ? upcomingAppointment.type
                       : "Aucune venue planifiée"}
@@ -742,12 +742,12 @@ function PatientDetailsDialog({
                 </div>
               </div>
 
-              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-emerald-50 px-3.5 py-3 text-emerald-950 ring-1 ring-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-50 dark:ring-emerald-900/60">
+              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm shadow-emerald-500/20">
                   <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={2} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[10px] text-emerald-700 uppercase tracking-[0.12em] dark:text-emerald-300">
+                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
                     Repère clinique
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -757,7 +757,7 @@ function PatientDetailsDialog({
                         ? "Suivi chronique"
                         : "Rien à signaler"}
                   </p>
-                  <p className="truncate text-emerald-700/75 text-xs dark:text-emerald-300/75">
+                  <p className="truncate text-muted-foreground text-xs">
                     {patient.allergies ||
                       patient.chronicConditions ||
                       "Aucune alerte clinique"}
@@ -768,9 +768,9 @@ function PatientDetailsDialog({
           </div>
         </DialogHeader>
 
-        <div className="min-h-0 overflow-y-auto bg-muted/10">
+        <div className="min-h-0 overflow-y-auto bg-card">
           <div className="grid min-h-full md:grid-cols-[210px_minmax(0,1fr)]">
-            <aside className="border-border/70 border-b bg-background px-4 py-3 md:sticky md:top-0 md:h-full md:border-r md:border-b-0 md:px-4 md:py-5">
+            <aside className="border-border/40 border-b bg-card px-4 py-3 md:sticky md:top-0 md:h-full md:border-r md:border-b-0 md:px-4 md:py-5">
               <p className="mb-2 hidden px-3 font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.14em] md:block">
                 Dossier patient
               </p>
@@ -783,8 +783,8 @@ function PatientDetailsDialog({
                   className={cn(
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "info"
-                      ? "bg-sky-50 text-sky-800 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-200 dark:ring-sky-900"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-sky-500/10 font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("info")}
                   type="button"
@@ -801,8 +801,8 @@ function PatientDetailsDialog({
                   className={cn(
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "medical"
-                      ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-200 dark:ring-emerald-900"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-emerald-500/10 font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("medical")}
                   type="button"
@@ -819,8 +819,8 @@ function PatientDetailsDialog({
                   className={cn(
                     "flex h-10 shrink-0 items-center gap-2.5 rounded-xl px-3 font-medium text-sm transition-colors md:w-full",
                     activeTab === "history"
-                      ? "bg-amber-50 text-amber-800 ring-1 ring-amber-100 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-900"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-amber-500/10 font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                   onClick={() => setActiveTab("history")}
                   type="button"
@@ -1656,7 +1656,17 @@ function PatientCreateDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1040px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-3rem)] sm:max-w-[min(1040px,calc(100%-2rem))]">
+      <DialogContent
+        className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1040px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-3rem)] sm:max-w-[min(1040px,calc(100%-2rem))]"
+        onKeyDown={(event) => {
+          if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+            event.preventDefault();
+            if (!isSubmitting) {
+              void handleCreate();
+            }
+          }
+        }}
+      >
         <FormDialogHeader
           artwork="patient"
           description="Identité de l’animal et coordonnées du propriétaire."
@@ -1704,7 +1714,7 @@ function PatientCreateDialog({
                     value={selectedOwnerId}
                   >
                     <NativeSelectOption value="new">
-                      Créer un nouveau propriétaire
+                      + Créer un nouveau propriétaire
                     </NativeSelectOption>
                     {ownerOptions.map((owner) => (
                       <NativeSelectOption key={owner.id} value={owner.id}>
@@ -1715,116 +1725,142 @@ function PatientCreateDialog({
                   <FieldDescription className="text-xs">
                     {selectedOwnerId === "new"
                       ? "Saisissez les coordonnées du nouveau propriétaire ci-dessous."
-                      : "La fiche du contact restera inchangée."}
+                      : "Dossier rattaché à un client existant."}
                   </FieldDescription>
                 </Field>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field>
-                    <FieldLabel>
-                      Nom <span className="modal-required">Obligatoire</span>
-                    </FieldLabel>
-                    <Input
-                      aria-invalid={Boolean(
-                        formError &&
-                          selectedOwnerId === "new" &&
-                          !newOwner.lastName?.trim()
-                      )}
-                      disabled={selectedOwnerId !== "new"}
-                      onChange={(event) =>
-                        setNewOwner((current) => ({
-                          ...current,
-                          lastName: event.target.value,
-                        }))
-                      }
-                      placeholder="Benali"
-                      value={newOwner.lastName || ""}
-                    />
-                  </Field>
+                {selectedOwner ? (
+                  <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 transition-all">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-sm text-foreground">
+                          {formatOwnerName(selectedOwner)}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {selectedOwner.phone || "Sans téléphone"}
+                          {selectedOwner.email ? ` · ${selectedOwner.email}` : ""}
+                        </p>
+                        {selectedOwner.address ? (
+                          <p className="text-muted-foreground text-xs">
+                            {selectedOwner.address}
+                            {selectedOwner.city ? `, ${selectedOwner.city}` : ""}
+                          </p>
+                        ) : null}
+                      </div>
+                      <Button
+                        onClick={() => setSelectedOwnerId("new")}
+                        size="xs"
+                        type="button"
+                        variant="ghost"
+                      >
+                        Changer
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field>
+                        <FieldLabel>
+                          Nom <span className="modal-required">Obligatoire</span>
+                        </FieldLabel>
+                        <Input
+                          aria-invalid={Boolean(
+                            formError &&
+                              selectedOwnerId === "new" &&
+                              !newOwner.lastName?.trim()
+                          )}
+                          onChange={(event) =>
+                            setNewOwner((current) => ({
+                              ...current,
+                              lastName: event.target.value,
+                            }))
+                          }
+                          placeholder="Benali"
+                          value={newOwner.lastName || ""}
+                        />
+                      </Field>
 
-                  <Field>
-                    <FieldLabel>Prénom</FieldLabel>
-                    <Input
-                      aria-invalid={Boolean(
-                        formError &&
-                          selectedOwnerId === "new" &&
-                          !newOwner.phone?.trim()
-                      )}
-                      disabled={selectedOwnerId !== "new"}
-                      onChange={(event) =>
-                        setNewOwner((current) => ({
-                          ...current,
-                          firstName: event.target.value,
-                        }))
-                      }
-                      placeholder="Nadia"
-                      value={newOwner.firstName || ""}
-                    />
-                  </Field>
+                      <Field>
+                        <FieldLabel>Prénom</FieldLabel>
+                        <Input
+                          onChange={(event) =>
+                            setNewOwner((current) => ({
+                              ...current,
+                              firstName: event.target.value,
+                            }))
+                          }
+                          placeholder="Nadia"
+                          value={newOwner.firstName || ""}
+                        />
+                      </Field>
 
-                  <Field>
-                    <FieldLabel>
-                      Téléphone
-                      <span className="modal-required">Obligatoire</span>
-                    </FieldLabel>
-                    <Input
-                      disabled={selectedOwnerId !== "new"}
-                      onChange={(event) =>
-                        setNewOwner((current) => ({
-                          ...current,
-                          phone: event.target.value,
-                        }))
-                      }
-                      placeholder="0550 00 00 00"
-                      value={newOwner.phone || ""}
-                    />
-                  </Field>
+                      <Field>
+                        <FieldLabel>
+                          Téléphone
+                          <span className="modal-required">Obligatoire</span>
+                        </FieldLabel>
+                        <Input
+                          aria-invalid={Boolean(
+                            formError &&
+                              selectedOwnerId === "new" &&
+                              !newOwner.phone?.trim()
+                          )}
+                          onChange={(event) =>
+                            setNewOwner((current) => ({
+                              ...current,
+                              phone: event.target.value,
+                            }))
+                          }
+                          placeholder="0550 00 00 00"
+                          value={newOwner.phone || ""}
+                        />
+                      </Field>
 
-                  <Field>
-                    <FieldLabel>Email</FieldLabel>
-                    <Input
-                      disabled={selectedOwnerId !== "new"}
-                      onChange={(event) =>
-                        setNewOwner((current) => ({
-                          ...current,
-                          email: event.target.value,
-                        }))
-                      }
-                      placeholder="nom@exemple.com"
-                      type="email"
-                      value={newOwner.email || ""}
-                    />
-                  </Field>
-                </div>
+                      <Field>
+                        <FieldLabel>Email</FieldLabel>
+                        <Input
+                          onChange={(event) =>
+                            setNewOwner((current) => ({
+                              ...current,
+                              email: event.target.value,
+                            }))
+                          }
+                          placeholder="nom@exemple.com"
+                          type="email"
+                          value={newOwner.email || ""}
+                        />
+                      </Field>
+                    </div>
 
-                <Field>
-                  <FieldLabel>Adresse</FieldLabel>
-                  <Input
-                    disabled={selectedOwnerId !== "new"}
-                    onChange={(event) =>
-                      setNewOwner((current) => ({
-                        ...current,
-                        address: event.target.value,
-                      }))
-                    }
-                    placeholder="Rue, numéro…"
-                    value={newOwner.address || ""}
-                  />
-                </Field>
+                    <Field>
+                      <FieldLabel>Adresse</FieldLabel>
+                      <Input
+                        onChange={(event) =>
+                          setNewOwner((current) => ({
+                            ...current,
+                            address: event.target.value,
+                          }))
+                        }
+                        placeholder="Rue, numéro…"
+                        value={newOwner.address || ""}
+                      />
+                    </Field>
 
-                <Field>
-                  <FieldLabel>Ville</FieldLabel>
-                  <Input
-                    disabled={selectedOwnerId !== "new"}
-                    onChange={(event) =>
-                      setNewOwner((current) => ({
-                        ...current,
-                        city: event.target.value,
-                      }))
-                    }
-                    value={newOwner.city || ""}
-                  />
-                </Field>
+                    <Field>
+                      <FieldLabel>Ville</FieldLabel>
+                      <Input
+                        onChange={(event) =>
+                          setNewOwner((current) => ({
+                            ...current,
+                            city: event.target.value,
+                          }))
+                        }
+                        value={newOwner.city || ""}
+                      />
+                    </Field>
+                  </>
+                )}
               </FieldGroup>
             </section>
 
@@ -1863,6 +1899,7 @@ function PatientCreateDialog({
                     aria-invalid={Boolean(
                       formError && !newPatient.name?.trim()
                     )}
+                    autoFocus
                     className="modal-patient-name-input"
                     onChange={(event) =>
                       setNewPatient((current) => ({
@@ -1993,7 +2030,7 @@ function PatientCreateDialog({
               Annuler
             </Button>
             <Button
-              className="h-11 min-w-[184px] justify-center shadow-sm"
+              className="h-11 min-w-[194px] justify-center shadow-sm"
               disabled={isSubmitting}
               onClick={handleCreate}
               type="button"
@@ -2007,7 +2044,10 @@ function PatientCreateDialog({
                   strokeWidth={2}
                 />
               )}
-              Créer le dossier
+              <span>Créer le dossier</span>
+              <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px] sm:inline-block">
+                ⌘↵
+              </kbd>
             </Button>
           </div>
         </DialogFooter>
@@ -2613,9 +2653,9 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
             ) : (
               <div className="flex min-h-0 flex-1 flex-col px-6 pt-2 pb-6">
                 <div className="flex-1 overflow-auto rounded-2xl border border-zinc-200/60 bg-background/50 backdrop-blur-md dark:border-white/[0.04]">
-                  <table className="min-w-full border-separate border-spacing-0 text-left">
+                  <table className="medical-data-table min-w-full border-separate border-spacing-0 text-left">
                     <thead className="bg-zinc-50/50 dark:bg-zinc-900/30">
-                      <tr className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                      <tr className="font-medium text-xs text-muted-foreground">
                         <th
                           className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 py-3.5 pr-3 pl-6 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
                           scope="col"
@@ -2692,7 +2732,7 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                               <div className="flex items-center gap-3">
                                 <div
                                   className={cn(
-                                    "flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm shadow-sm ring-1 ring-black/5 dark:bg-zinc-800 dark:ring-white/10",
+                                    "flex size-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-sm ring-1 ring-black/5 dark:bg-zinc-800 dark:ring-white/10",
                                     getSpeciesTone(entry.patient.species)
                                   )}
                                 >
@@ -2700,12 +2740,11 @@ const Patients: React.FC<PatientsProps> = ({ onNavigateToPatient }) => {
                                 </div>
                                 <span className="font-semibold text-sm text-zinc-950 capitalize tracking-tight dark:text-white">
                                   {entry.patient.name}{" "}
-                                  <span className="ml-1 font-medium text-zinc-500 normal-case dark:text-zinc-400">
-                                    ({entry.patient.species}
+                                  <span className="mt-0.5 block font-normal text-xs text-zinc-500 normal-case dark:text-zinc-400">
+                                    {entry.patient.species}
                                     {entry.patient.breed
                                       ? ` - ${entry.patient.breed}`
                                       : ""}
-                                    )
                                   </span>
                                 </span>
                               </div>

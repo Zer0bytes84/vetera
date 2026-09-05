@@ -1,3 +1,4 @@
+import { savePdf } from "@/lib/save-pdf";
 import {
   Activity01Icon,
   Add01Icon,
@@ -28,7 +29,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Hospital, Pill, Syringe } from "@phosphor-icons/react";
 import { jsPDF } from "jspdf";
-import QRCode from "qrcode";
 import React, {
   useCallback,
   useDeferredValue,
@@ -460,26 +460,17 @@ const generateInvoicePDF = async (data: {
     doc.text("Note médicale : " + data.diagnosis, 20, y);
   }
 
-  try {
-    const qrDataUrl = await QRCode.toDataURL("https://www.google.com", {
-      margin: 1,
-      width: 100,
-    });
-    doc.addImage(qrDataUrl, "PNG", 160, 240, 30, 30);
-    doc.setFontSize(8);
-    doc.setTextColor(grayColor);
-    doc.text("Merci pour votre confiance", 175, 275, { align: "center" });
-  } catch (error) {
-    console.error(error);
-  }
+  doc.setFontSize(8);
+  doc.setTextColor(grayColor);
+  doc.text("Merci pour votre confiance", 175, 275, { align: "center" });
 
   doc.setFontSize(9);
   doc.setTextColor(150, 150, 150);
   doc.text(`${clinicName} · Système clinique local`, 105, 290, {
     align: "center",
   });
-  doc.save(
-    `Facture-${data.patientName}-${data.date.toISOString().split("T")[0]}.pdf`
+  return savePdf(doc,
+    `Facture-${data.patientName.replace(/[^\p{L}\p{N} _-]/gu, "_")}-${data.date.toISOString().split("T")[0]}.pdf`
   );
 };
 
@@ -2205,38 +2196,50 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       const patient = getPatient(billingAppointment.patientId);
       const owner = getOwner(billingAppointment);
 
-      const { totalAmountDa } = await completeWithBilling({
+      const { totalAmountDa, invoiceNumber } = await completeWithBilling({
         appointmentId: billingAppointment.id,
         items,
         category: "Consultation",
         method: "cash",
       });
 
-      const clinicName =
-        (await getSetting("clinic_name")) ||
-        (await getSetting("cabinet_name")) ||
-        (await getSetting("practice_name")) ||
-        APP_NAME;
-
-      await generateInvoicePDF({
-        patientName: patient?.name || "Patient local",
-        ownerName: formatOwnerName(owner),
-        date: new Date(),
-        items,
-        total: totalAmountDa,
-        id: `FACT-${new Date().getFullYear()}-${Math.floor(Math.random() * 10_000)}`,
-        diagnosis: billingAppointment.diagnosis,
-        clinicName,
-      });
-
+      // Settlement is complete. Close now: a PDF/save dialog must never keep
+      // the payment form busy or invite a second encashment when export fails.
       setBillingAppointment(null);
       if (typeof window !== "undefined") {
         window.sessionStorage.removeItem(
           `vetera:consultation-start:${billingAppointment.id}`
         );
       }
+      toast.success("Encaissement enregistré.");
 
-      await audit.log({
+      const exportReceipt = async () => {
+        try {
+          const clinicName =
+            (await getSetting("clinic_name")) ||
+            (await getSetting("cabinet_name")) ||
+            (await getSetting("practice_name")) || APP_NAME;
+          const saved = await generateInvoicePDF({
+            patientName: patient?.name || "Patient local",
+            ownerName: formatOwnerName(owner),
+            date: new Date(),
+            items,
+            total: totalAmountDa,
+            id: invoiceNumber,
+            diagnosis: billingAppointment.diagnosis,
+            clinicName,
+          });
+          toast.success(saved ? "Facture PDF enregistrée, prête à imprimer." : "Encaissement conservé. Export PDF annulé.");
+        } catch (error) {
+          console.error("[Billing] Receipt export failed after successful payment", error);
+          toast.error("Encaissement enregistré, mais le PDF n’a pas pu être généré.", {
+            action: { label: "Réessayer le PDF", onClick: () => { void exportReceipt(); } },
+          });
+        }
+      };
+      void exportReceipt();
+
+      void audit.log({
         action: "create",
         entity: "billing",
         entityId: billingAppointment.id,
@@ -2246,12 +2249,12 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           totalAmountDa,
           method: "cash",
         },
-      });
+      }).catch((error) => console.error("[Billing] Additional audit failed", error));
 
-      toast.success("Facturation finalisée et reçu généré.");
+
     } catch (error) {
       console.error(error);
-      toast.error("Impossible de finaliser la facturation.");
+      toast.error(error instanceof Error ? error.message : "Impossible de finaliser la facturation.");
     }
   };
 

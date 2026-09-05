@@ -160,79 +160,68 @@ export function SectionCards({
 
         return (
           <li
+            data-signal-tone={signalTone}
             className={cn(
-              "section-card-motion group relative rounded-[16px] border border-border/80 bg-card",
-              "hover:border-foreground/15 hover:bg-muted/10 dark:hover:border-white/15 dark:hover:bg-white/[0.025]",
-              compact ? "min-h-[148px] p-4" : "min-h-[164px] p-5"
+              "clinical-signal section-card-motion group relative rounded-[16px] border border-border/80 bg-card",
+              "shadow-[0_1px_2px_rgba(15,23,42,0.02)] transition-[background-color,border-color] duration-200",
+              "hover:border-foreground/15 hover:bg-muted/10",
+              "dark:border-white/[0.08] dark:bg-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_12px_28px_-20px_rgba(0,0,0,0.7)] dark:hover:border-white/[0.14] dark:hover:bg-card/80",
+              compact ? "min-h-[184px] p-4" : "min-h-[208px] p-4"
             )}
             key={item.title}
           >
-            <div className="grid h-full grid-rows-[auto_1fr_auto]">
-              <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-full min-w-0 flex-col">
+              <div className="flex items-start justify-between gap-3">
                 <span
                   className={cn(
-                    "flex size-8 shrink-0 items-center justify-center rounded-[10px]",
+                    "signal-icon flex size-10 shrink-0 items-center justify-center rounded-xl",
                     tone.icon
                   )}
                 >
                   <Icon
                     aria-hidden="true"
-                    className="size-4"
+                    className="size-5"
                     strokeWidth={1.8}
                   />
                 </span>
-                <span className="line-clamp-2 min-w-0 font-medium text-[13px] text-foreground/80 leading-4">
-                  {item.title}
-                </span>
                 <span
                   aria-hidden="true"
-                  className={cn(
-                    "ml-auto size-1.5 shrink-0 rounded-full",
-                    tone.dot
-                  )}
+                  className={cn("mt-2 size-1.5 rounded-full", tone.dot)}
                 />
               </div>
-
-              <div
+              <p className="mt-4 font-medium text-[13px] text-muted-foreground leading-5">
+                {item.title}
+              </p>
+              <p
                 className={cn(
-                  "flex min-w-0 flex-wrap items-end justify-between gap-3",
-                  "py-3"
+                  "mt-1 min-w-0 break-words font-medium text-foreground tabular-nums leading-none tracking-[-0.035em] [overflow-wrap:anywhere]",
+                  compact ? "text-[28px]" : "text-[32px]"
                 )}
+                title={item.value}
               >
-                <span
-                  className={cn(
-                    "min-w-0 break-words font-semibold text-foreground leading-none tracking-[-0.035em] [font-variant-numeric:tabular-nums] [overflow-wrap:anywhere]",
-                    compact
-                      ? "text-[clamp(1.6rem,2vw,1.9rem)]"
-                      : "text-[clamp(1.75rem,2.1vw,2.1rem)]"
-                  )}
-                  title={item.value}
+                {item.value}
+              </p>
+              <div className="signal-footer mt-5 flex min-h-10 items-center justify-between gap-2 rounded-lg px-2.5 py-2">
+                <p
+                  className="min-w-0 text-[11px] text-muted-foreground leading-4"
+                  title={supportingCopy}
                 >
-                  {item.value}
-                </span>
+                  {supportingCopy}
+                </p>
                 <span
                   className={cn(
-                    "flex max-w-[56%] shrink-0 items-center gap-1 rounded-full px-2 py-1 text-right font-medium text-[10px] leading-[1.2] ring-1 ring-inset",
+                    "flex max-w-[48%] shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-right font-medium text-[10px] leading-[1.2]",
                     tone.status
                   )}
                   title={item.badge}
                 >
                   <TrendIcon
                     aria-hidden="true"
-                    className="size-3"
+                    className="size-3 shrink-0"
                     strokeWidth={2}
                   />
                   {item.badge}
                 </span>
-              </div>
-
-              <div className="min-h-[38px] min-w-0 border-border/60 border-t pt-3">
-                <p
-                  className="text-[11px] text-muted-foreground leading-4"
-                  title={supportingCopy}
-                >
-                  {supportingCopy}
-                </p>
               </div>
             </div>
           </li>

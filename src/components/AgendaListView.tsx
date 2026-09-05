@@ -1,5 +1,9 @@
 import {
   CalendarDays,
+  Cat,
+  Dog,
+  Bird,
+  Rabbit,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -62,21 +66,13 @@ function getDurationLabel(appointment: Appointment) {
   return `${minutes} min`;
 }
 
-function getSpeciesEmoji(species?: string) {
+function getSpeciesIcon(species?: string) {
   const normalized = species?.toLocaleLowerCase("fr") ?? "";
-  if (normalized.includes("chien")) {
-    return "🐶";
-  }
-  if (normalized.includes("chat")) {
-    return "🐱";
-  }
-  if (normalized.includes("lapin")) {
-    return "🐰";
-  }
-  if (normalized.includes("oiseau")) {
-    return "🐦";
-  }
-  return "🐾";
+  if (normalized.includes("chien")) return Dog;
+  if (normalized.includes("chat")) return Cat;
+  if (normalized.includes("lapin")) return Rabbit;
+  if (normalized.includes("oiseau")) return Bird;
+  return PawPrint;
 }
 
 export function AgendaListView({
@@ -157,9 +153,9 @@ export function AgendaListView({
   };
 
   return (
-    <div className="grid min-h-[650px] grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)]">
-      <aside className="border-border/70 border-b bg-muted/15 p-5 xl:border-r xl:border-b-0">
-        <div className="xl:sticky xl:top-4">
+    <div className="agenda-list-layout grid min-h-[560px] grid-cols-1 lg:grid-cols-[272px_minmax(0,1fr)]">
+      <aside className="agenda-date-rail border-border/70 border-b p-5 lg:border-r lg:border-b-0">
+        <div className="lg:sticky lg:top-4">
           <div className="flex items-center justify-between gap-3">
             <button
               aria-label="Mois précédent"
@@ -203,10 +199,12 @@ export function AgendaListView({
               return (
                 <button
                   aria-label={day.toLocaleDateString("fr-FR")}
+                  aria-pressed={isSelected}
+                  aria-current={isToday ? "date" : undefined}
                   className={cn(
                     "group relative mx-auto grid size-9 place-items-center rounded-xl text-xs outline-none transition-[background-color,color,transform] hover:bg-background focus-visible:ring-2 focus-visible:ring-primary/30",
                     isSelected
-                      ? "bg-foreground font-semibold text-background shadow-sm hover:bg-foreground"
+                      ? "bg-primary font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
                       : "text-foreground",
                     isToday && !isSelected && "font-semibold text-primary"
                   )}
@@ -219,7 +217,7 @@ export function AgendaListView({
                     <span
                       className={cn(
                         "absolute bottom-1 size-1 rounded-full bg-primary",
-                        isSelected && "bg-background"
+                        isSelected && "bg-primary-foreground"
                       )}
                     />
                   ) : null}
@@ -228,7 +226,7 @@ export function AgendaListView({
             })}
           </div>
 
-          <div className="mt-6 rounded-2xl border border-border/60 bg-background/80 p-4 shadow-xs">
+          <div className="agenda-day-summary mt-6 rounded-2xl p-4">
             <div className="flex items-center gap-2 text-muted-foreground">
               <CalendarDays className="size-4" />
               <span className="font-semibold text-[10px] uppercase tracking-[0.08em]">
@@ -254,10 +252,7 @@ export function AgendaListView({
       <section className="min-w-0 p-5 sm:p-6">
         <div className="flex flex-col gap-3 border-border/60 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.1em]">
-              Planning du jour
-            </p>
-            <h3 className="mt-1 font-semibold text-xl tracking-[-0.03em]">
+            <h3 className="font-semibold text-xl tracking-[-0.03em]">
               {selectedAppointments.length > 0
                 ? `${selectedAppointments.length} rendez-vous à coordonner`
                 : "Journée disponible"}
@@ -276,7 +271,7 @@ export function AgendaListView({
         </div>
 
         {selectedAppointments.length === 0 ? (
-          <div className="flex min-h-[440px] flex-col items-center justify-center text-center">
+          <div className="flex min-h-[320px] flex-col items-center justify-center text-center">
             <div className="grid size-14 place-items-center rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-300">
               <CheckCircle2 className="size-6" />
             </div>
@@ -287,7 +282,7 @@ export function AgendaListView({
             </p>
           </div>
         ) : (
-          <ol className="mt-2 divide-y divide-border/60">
+          <ol className="mt-4 space-y-2">
             {paginatedAppointments.map((appointment) => (
               <AppointmentListItem
                 appointment={appointment}
@@ -385,6 +380,7 @@ function AppointmentListItem({
 }) {
   const patient = getPatient(appointment.patientId);
   const patientName = getPatientName(appointment.patientId);
+  const SpeciesIcon = getSpeciesIcon(patient?.species);
   const ownerName = getOwnerName(appointment.ownerId) || "Sans propriétaire";
   const typeMeta = getAppointmentTypeMeta(appointment.type);
   const statusMeta = APPOINTMENT_STATUS_META[appointment.status];
@@ -396,10 +392,10 @@ function AppointmentListItem({
       <button
         aria-pressed={isSelected}
         className={cn(
-          "group grid w-full min-w-0 grid-cols-[68px_minmax(0,1fr)] gap-4 px-2 py-4 text-left outline-none transition-colors sm:grid-cols-[78px_48px_minmax(0,1fr)_auto] sm:items-center sm:px-3",
+          "agenda-appointment-row group grid w-full min-w-0 rounded-xl border border-border/60 grid-cols-[68px_minmax(0,1fr)] gap-4 px-2 py-4 text-left outline-none transition-colors sm:grid-cols-[78px_48px_minmax(0,1fr)_auto] sm:items-center sm:px-3",
           isSelected
-            ? "bg-primary/[0.055]"
-            : "hover:bg-muted/35 focus-visible:bg-muted/35"
+            ? "border-primary/40 bg-primary/[0.07] ring-1 ring-primary/20"
+            : "hover:border-primary/25 hover:bg-primary/[0.035] focus-visible:ring-2 focus-visible:ring-primary"
         )}
         onClick={() => onSelectAppointment(appointment)}
         type="button"
@@ -422,7 +418,7 @@ function AppointmentListItem({
             typeMeta.surfaceClassName
           )}
         >
-          {getSpeciesEmoji(patient?.species)}
+          <SpeciesIcon aria-hidden="true" className="size-6" strokeWidth={1.6} />
         </span>
 
         <div className="min-w-0">

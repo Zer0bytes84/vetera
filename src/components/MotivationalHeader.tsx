@@ -219,7 +219,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
               </Button>
             ) : null}
             <Button
-              className="h-10 w-full rounded-full px-5 sm:w-auto"
+              className="h-10 min-w-0 flex-1 rounded-full px-5 sm:w-auto sm:flex-none"
               onClick={() => onNavigate("clinique")}
             >
               <HugeiconsIcon

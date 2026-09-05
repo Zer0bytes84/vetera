@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core";
 import Database from "@tauri-apps/plugin-sql";
 import { runSqliteMigrations } from "./migration-runner";
 import { SQLITE_MIGRATIONS } from "./migrations";
@@ -9,8 +10,8 @@ let dbInitPromise: Promise<Database> | null = null;
 // Serialized SQLite write queue + retry helper
 // ------------------------------------------------------------------------------------
 // Writes and transactions go through `runDbOperation` (or `runDbTransaction`).
-// Read-only work goes through `runDbRead`, allowing independent widgets to
-// load concurrently while WAL keeps writes safe.
+// Reads share the queue: a multi-statement transaction must not leak
+// uncommitted state to widgets on the single native SQLite connection.
 // ====================================================================================
 
 let sqliteOperationQueue: Promise<unknown> = Promise.resolve();
@@ -125,24 +126,11 @@ export function runDbOperation<T>(
   return job;
 }
 
-/**
- * Executes a read without blocking the write queue. On a lost connection, the
- * operation falls back to the serialized path so only one reconnect occurs.
- */
-export async function runDbRead<T>(
+/** Reads wait for any active transaction to commit or roll back. */
+export function runDbRead<T>(
   operation: (database: Database) => Promise<T>
 ): Promise<T> {
-  const database = await getDatabase();
-
-  try {
-    return await withLockRetry(() => operation(database));
-  } catch (error) {
-    if (!isRecoverableConnectionError(error)) {
-      throw error;
-    }
-
-    return runDbOperation(operation);
-  }
+  return runDbOperation(operation);
 }
 
 /**
@@ -182,7 +170,10 @@ export async function getDatabase(): Promise<Database> {
     dbInitPromise = (async () => {
       console.log("[DB] Loading database...");
 
-      const loadedDb = await Database.load("sqlite:baitari.db");
+      // The stock SQL plugin uses a pool and does not pin BEGIN/COMMIT to
+      // one connection. Register our single-connection pool before any SQL.
+      await invoke("open_clinic_database");
+      const loadedDb = Database.get("sqlite:baitari.db");
       const appliedMigrations = await runSqliteMigrations(
         loadedDb,
         SQLITE_MIGRATIONS
@@ -197,7 +188,7 @@ export async function getDatabase(): Promise<Database> {
       // rendering the first screen. Running it after exposing the connection
       // prevents an old/large database from holding the whole WebView on a
       // blank bootstrap screen, especially on slower Windows machines.
-      void repairRelationalIntegrity(loadedDb);
+      void runDbOperation(() => repairRelationalIntegrity(loadedDb));
 
       return loadedDb;
     })().finally(() => {
@@ -234,7 +225,7 @@ async function applyDatabaseSafetyPragmas(database: Database): Promise<void> {
     await database.execute("PRAGMA foreign_keys = ON");
     await database.execute("PRAGMA journal_mode = WAL");
     await database.execute("PRAGMA synchronous = NORMAL");
-    await database.execute("PRAGMA busy_timeout = 10000");
+    await database.execute("PRAGMA busy_timeout = 3000");
   } catch (error) {
     console.error("[DB] Failed to apply safety pragmas:", error);
   }

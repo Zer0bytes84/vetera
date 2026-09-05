@@ -80,20 +80,18 @@ function FormDialogHeader({
     >
       <ModalBanner
         artwork={artwork}
-        className={compact ? "modal-banner-compact" : undefined}
+        className={cn(
+          "modal-workflow-banner",
+          compact && "modal-banner-compact"
+        )}
         companionIcon={companionIcon}
         icon={icon}
         tone={tone}
       >
         <div className="modal-form-heading">
-          <DialogTitle>
-            {title}
-          </DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription
-            className={cn(
-              "text-pretty",
-              !description && "sr-only"
-            )}
+            className={cn("text-pretty", !description && "sr-only")}
           >
             {description}
           </DialogDescription>
@@ -110,7 +108,7 @@ function FormDialogBody({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "modal-medical-body modal-form-fields min-h-0 overflow-y-auto p-6 sm:p-8",
+        "modal-medical-body modal-form-fields min-h-0 min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain p-5 sm:p-8",
         className
       )}
       {...props}

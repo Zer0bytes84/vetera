@@ -149,14 +149,15 @@ export function PatientPopulationWidget({
 
   return (
     <Card
+      data-widget-accent="mint"
       aria-labelledby="patient-population-title"
       className={cn(
-        "dashboard-v2-widget h-full min-h-[390px] border-border/80 bg-card shadow-[0_1px_2px_rgba(15,23,42,0.02),0_12px_32px_-26px_rgba(15,23,42,0.35)]",
+        "dashboard-v2-widget h-full min-h-[390px] border-border/80 bg-card shadow-[0_1px_2px_rgba(15,23,42,0.02),0_12px_32px_-26px_rgba(15,23,42,0.35)] dark:border-white/[0.08] dark:bg-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_16px_40px_-24px_rgba(0,0,0,0.8)] dark:hover:border-white/[0.13]",
         className
       )}
       role="region"
     >
-      <CardHeader className="min-h-16 border-border/75 border-b px-5 py-4">
+      <CardHeader className="min-h-16 border-border/75 border-b px-5 py-4 dark:border-white/8">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-950/5 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-300/10">
             <UsersRound className="size-4.5" strokeWidth={1.8} />
@@ -187,7 +188,7 @@ export function PatientPopulationWidget({
             <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.1em]">
               Patients suivis
             </p>
-            <p className="mt-1.5 font-heading font-semibold text-4xl tabular-nums leading-none tracking-[-0.055em]">
+            <p className="mt-1.5 font-heading font-semibold text-4xl tabular-nums leading-none tracking-[-0.035em]">
               {summary.activePatients.length}
             </p>
           </div>
@@ -275,32 +276,36 @@ export function PatientPopulationWidget({
           </div>
         </div>
 
-        <div className="mt-3 divide-y divide-zinc-200/70 px-5 dark:divide-white/8">
+        <div className="mt-3 grid grid-cols-3 gap-2 px-5">
           {summary.groups.map((group) => (
             <button
-              className="group flex w-full items-center gap-3 py-3 text-left outline-none transition-colors hover:bg-muted/35 focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+              className="group min-w-0 rounded-xl bg-muted/35 p-2.5 text-left outline-none ring-1 ring-border/70 transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-emerald-500/40"
               key={group.label}
               onClick={onOpenPatients}
               type="button"
             >
-              <span
-                className={cn(
-                  "flex size-8 items-center justify-center rounded-lg",
-                  group.tone
-                )}
-              >
-                <group.icon className="size-4" />
+              <span className="flex items-center justify-between gap-2">
+                <span
+                  className={cn(
+                    "flex size-7 items-center justify-center rounded-lg",
+                    group.tone
+                  )}
+                >
+                  <group.icon className="size-3.5" />
+                </span>
+                <ArrowUpRight className="size-3 text-zinc-300 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-500 dark:text-zinc-600" />
               </span>
-              <span className="min-w-0 flex-1 font-medium text-xs text-zinc-700 dark:text-zinc-300">
+              <span className="mt-2 block truncate font-medium text-[11px] text-zinc-600 dark:text-zinc-300">
                 {group.label}
               </span>
-              <span className="font-semibold text-xs text-zinc-900 tabular-nums dark:text-zinc-100">
-                {group.count}
+              <span className="mt-0.5 flex items-baseline gap-1.5">
+                <span className="font-semibold text-sm text-zinc-900 tabular-nums dark:text-zinc-100">
+                  {group.count}
+                </span>
+                <span className="text-[9px] text-zinc-400 tabular-nums dark:text-zinc-500">
+                  {group.share}%
+                </span>
               </span>
-              <span className="w-12 text-right text-[10px] text-zinc-400 tabular-nums dark:text-zinc-500">
-                {group.share}%
-              </span>
-              <ArrowUpRight className="size-3.5 text-zinc-300 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-500 dark:text-zinc-600" />
             </button>
           ))}
         </div>
