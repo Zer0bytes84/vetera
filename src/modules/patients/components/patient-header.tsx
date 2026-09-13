@@ -89,13 +89,13 @@ export function PatientHeader({
   return (
     <section
       aria-labelledby="patient-record-title"
-      className={cn("clinical-feature-surface overflow-hidden", className)}
+      className={cn("patient-identity clinical-feature-surface overflow-hidden", className)}
     >
-      <div className="relative p-4 sm:p-5 lg:p-6">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+      <div className="relative p-4 sm:p-5">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-5">
             <div className="relative shrink-0">
-              <Avatar className="size-16 rounded-2xl ring-1 ring-border sm:size-20">
+              <Avatar className="size-14 rounded-xl ring-1 ring-border sm:size-16">
                 {patient.avatarUrl ? (
                   <AvatarImage alt={patient.name} src={patient.avatarUrl} />
                 ) : null}
@@ -103,21 +103,15 @@ export function PatientHeader({
                   <AnimalAvatarIcon species={patient.species} />
                 </AvatarFallback>
               </Avatar>
-              <span
-                aria-label={status.label}
-                className="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border-2 border-card bg-emerald-500"
-              >
-                <span className="size-1.5 rounded-full bg-white" />
-              </span>
             </div>
 
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-muted-foreground text-[10px] uppercase tracking-[0.18em]">
-                Dossier patient
+                Dossier médical · <span className="font-mono normal-case tracking-normal">#{patient.id.slice(0, 8)}</span>
               </p>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">
                 <h1
-                  className="truncate font-display font-semibold text-2xl text-foreground tracking-[-0.04em] sm:text-3xl"
+                  className="truncate font-display font-semibold text-2xl text-foreground tracking-[-0.025em]"
                   id="patient-record-title"
                 >
                   {patient.name}
@@ -130,7 +124,7 @@ export function PatientHeader({
                 </Badge>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground text-sm">
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-muted-foreground text-xs">
                 <span className="inline-flex items-center gap-1.5">
                   <PawPrint className="size-4" weight="duotone" />
                   <strong className="font-medium text-foreground/85">{patient.species}</strong>
@@ -187,8 +181,8 @@ export function PatientHeader({
         </div>
       </div>
 
-      <div className="grid border-border/70 border-t bg-muted/15 sm:grid-cols-2 sm:divide-x sm:divide-border/70">
-        <div className="flex min-w-0 items-start gap-3 px-4 py-3.5 sm:px-5">
+      <div className="grid border-border/70 border-t sm:grid-cols-2 sm:divide-x sm:divide-border/70">
+        <div className={cn("flex min-w-0 items-start gap-3 px-4 py-3 sm:px-5", patient.allergies ? "bg-rose-500/5" : "bg-teal-500/5")}>
           <span
             className={cn(
               "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl",
@@ -206,12 +200,12 @@ export function PatientHeader({
           <div className="min-w-0">
             <p className="font-semibold text-muted-foreground text-xs">Allergies</p>
             <p className="mt-1 break-words font-medium text-sm leading-5">
-              {patient.allergies || "Aucune allergie connue"}
+              {patient.allergies || "Aucune allergie renseignée"}
             </p>
           </div>
         </div>
-        <div className="flex min-w-0 items-start gap-3 border-border/70 border-t px-4 py-3.5 sm:border-t-0 sm:px-5">
-          <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+        <div className="flex min-w-0 items-start gap-3 border-border/70 border-t bg-violet-500/5 px-4 py-3 sm:border-t-0 sm:px-5">
+          <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-400/10 dark:text-violet-300">
             <FirstAid className="size-4" weight="duotone" />
           </span>
           <div className="min-w-0">

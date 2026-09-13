@@ -1,4 +1,4 @@
-import { CircleDashed } from "lucide-react";
+import { ArrowUpRight, CircleDashed } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { View } from "@/types";
 import type { Appointment, Task, Transaction } from "@/types/db";
@@ -19,7 +19,6 @@ export function ClinicProgressWidget({
   onNavigate?: (view: View) => void;
 }) {
   const [days, setDays] = useState<7 | 30>(30);
-  const [focused, setFocused] = useState<number | null>(null);
   const progress = useMemo(
     () =>
       buildClinicProgress({
@@ -49,89 +48,40 @@ export function ClinicProgressWidget({
         </div>
       }
       contentClassName="flex flex-col p-0"
-      description="Trois repères, une lecture d’ensemble"
+      description="Rendez-vous, tâches et encaissements"
       icon={CircleDashed}
       title="Progression du cabinet"
     >
-      <div className="widget-chart-surface mx-4 mb-4 flex flex-1 flex-col rounded-xl p-4">
-        <div className="grid grid-cols-3 gap-2">
-          {progress.map((item, index) => (
+      <div className="progress-ledger px-5">
+        {progress.map((item) => {
+          const percent = item.total ? Math.round(item.done / item.total * 100) : null;
+          return (
             <button
-              aria-label={`${item.label} : ${item.done} sur ${item.total}. Ouvrir ${item.shortLabel.toLowerCase()}.`}
-              className="ring-stat min-w-0 rounded-lg bg-card p-2.5 text-start outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary"
-              title={`${item.label} : ${item.total ? `${Math.round((item.done / item.total) * 100)} %` : "Aucun élément sur cette période"}. Ouvrir le détail.`}
               key={item.id}
-              onBlur={() => setFocused(null)}
-              onFocus={() => setFocused(index)}
-              onMouseEnter={() => setFocused(index)}
-              onMouseLeave={() => setFocused(null)}
-              onClick={() => onNavigate?.(item.route)}
               type="button"
+              className="progress-ledger-row group w-full text-start"
+              onClick={() => onNavigate?.(item.route)}
+              aria-label={`${item.label} : ${item.done} sur ${item.total}. Ouvrir ${item.shortLabel.toLowerCase()}.`}
             >
-              <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <span
-                  className="size-2 shrink-0 rounded-[3px]"
-                  style={{ background: item.color }}
-                />
-                {item.shortLabel}
-              </span>
-              <span className="mt-1 block font-medium text-lg tabular-nums">
-                {item.done}
-                <span className="text-xs text-muted-foreground">
-                  {" "}
-                  / {item.total}
+              <span className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-2 text-sm font-medium">
+                  <span className="size-2 rounded-full" style={{ background: item.color }} />
+                  {item.shortLabel}
                 </span>
+                <ArrowUpRight aria-hidden="true" className="size-3.5 text-muted-foreground transition-colors group-hover:text-foreground" />
+              </span>
+              <span className="mt-2 flex items-baseline justify-between gap-3">
+                <span className="text-2xl font-semibold tabular-nums tracking-tight">
+                  {item.done}<span className="ml-1.5 text-sm font-normal text-muted-foreground">/ {item.total}</span>
+                </span>
+                <span className="text-xs text-muted-foreground">{percent === null ? "Aucun élément" : `${percent} % terminés`}</span>
+              </span>
+              <span className="progress-ledger-track mt-2.5 block h-2 overflow-hidden rounded-full" aria-hidden="true">
+                <span className="block h-full rounded-full transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${percent ?? 0}%`, background: item.color }} />
               </span>
             </button>
-          ))}
-        </div>
-        <div className="relative mx-auto my-5 w-full max-w-[280px] flex-1 content-center">
-          <svg
-            aria-label={progress
-              .map((item) => `${item.label} : ${item.done} sur ${item.total}`)
-              .join(". ")}
-            className="mx-auto block w-full"
-            role="img"
-            viewBox="0 0 240 240"
-          >
-            {progress.map((item, index) => {
-              const radius = 99 - index * 25;
-              const length = 2 * Math.PI * radius;
-              const ratio = item.total ? item.done / item.total : 0;
-              return (
-                <g
-                  key={item.id}
-                  className="transition-opacity duration-200 motion-reduce:transition-none"
-                  opacity={focused === null || focused === index ? 1 : 0.28}
-                >
-                  <circle
-                    cx="120"
-                    cy="120"
-                    fill="none"
-                    r={radius}
-                    stroke={item.color}
-                    strokeOpacity="0.12"
-                    strokeWidth="21"
-                  />
-                  {ratio > 0 && (
-                    <circle
-                      className="clinic-progress-arc"
-                      cx="120"
-                      cy="120"
-                      fill="none"
-                      r={radius}
-                      stroke={item.color}
-                      strokeDasharray={`${length * ratio} ${length}`}
-                      strokeLinecap="round"
-                      strokeWidth="21"
-                      transform="rotate(-90 120 120)"
-                    />
-                  )}
-                </g>
-              );
-            })}
-          </svg>
-        </div>
+          );
+        })}
       </div>
       <p className="px-5 pb-4 text-[11px] text-muted-foreground">
         {days} derniers jours · tâches selon leur échéance, paiements en nombre.

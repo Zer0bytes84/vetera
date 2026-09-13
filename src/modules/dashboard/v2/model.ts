@@ -62,6 +62,11 @@ export function formatCurrency(value: number) {
     .replace("DZD", "DA");
 }
 
+/** Repository amounts are integer centimes; chart metrics already use dinars. */
+export function formatCentimes(value: number) {
+  return formatCurrency(value / 100);
+}
+
 export function formatTime(date: Date) {
   return date.toLocaleTimeString("fr-FR", {
     hour: "2-digit",

@@ -47,11 +47,12 @@ export function NavDocuments({
         {items.map((item) => (
           <SidebarMenuItem className="group/item" key={item.name}>
             <SidebarMenuButton
+                aria-label={item.name}
               className={cn(
                 "h-9 rounded-lg px-2.5 font-medium text-sm tracking-tight antialiased transition-all duration-200 ease-out",
                 item.isActive
-                  ? "!bg-zinc-950/[0.055] !text-zinc-950 dark:!bg-white/[0.08] dark:!text-zinc-100"
-                  : "text-zinc-700 hover:!bg-zinc-950/[0.045] hover:!text-zinc-950 dark:text-zinc-400 dark:hover:!bg-white/[0.06] dark:hover:!text-zinc-100",
+                  ? "bg-zinc-950/[0.055] text-zinc-950 dark:bg-white/[0.08] dark:text-zinc-100"
+                  : "text-zinc-700 hover:bg-zinc-950/[0.045] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100",
                 "group-data-[collapsible=icon]:size-9.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:px-0"
               )}
               isActive={item.isActive}
@@ -62,8 +63,8 @@ export function NavDocuments({
                 className={cn(
                   "flex shrink-0 items-center justify-center transition-colors duration-200",
                   item.isActive
-                    ? "!text-zinc-950 dark:!text-zinc-100"
-                    : "text-zinc-600 group-hover/item:!text-zinc-950 dark:text-zinc-400 dark:group-hover/item:!text-zinc-100"
+                    ? "text-zinc-950 dark:text-zinc-100"
+                    : "text-zinc-600 group-hover/item:text-zinc-950 dark:text-zinc-400 dark:group-hover/item:text-zinc-100"
                 )}
               >
                 {item.icon}

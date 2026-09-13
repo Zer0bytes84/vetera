@@ -119,7 +119,7 @@ export function ActivityAnalysisWidget({
           ))}
         </div>
       }
-      className="min-h-[420px]"
+      className="activity-analysis-card"
       contentClassName="p-0"
       description="Consultations et encaissements sur deux axes"
       icon={Activity}
@@ -130,7 +130,7 @@ export function ActivityAnalysisWidget({
         {[
           [total, periodLabel],
           [today.consultations, `Aujourd’hui · ${today.label}`],
-          [average.toFixed(1), averageLabel],
+          [average.toLocaleString("fr-FR", { maximumFractionDigits: 1 }), averageLabel],
           [formatCurrency(revenue), "Encaissé sur la période"],
         ].map(([value, label]) => (
           <div className="min-w-0 pe-3" key={label}>
@@ -153,9 +153,9 @@ export function ActivityAnalysisWidget({
       </div>
       <div className="widget-chart-surface mx-3 mb-3 rounded-xl px-2 pt-5 pb-2 sm:mx-4 sm:px-3">
         <ChartContainer
-          className="h-[250px] w-full"
+          className="h-[200px] w-full"
           config={chartConfig}
-          initialDimension={{ width: 720, height: 250 }}
+          initialDimension={{ width: 720, height: 200 }}
         >
           <ComposedChart
             accessibilityLayer
@@ -220,9 +220,8 @@ export function ActivityAnalysisWidget({
               activeBar={{ fill: "#3664cc" }}
               dataKey="consultations"
               fill="var(--color-consultations)"
-              maxBarSize={32}
-              background={{ fill: "var(--widget-track)", radius: 8 }}
-              radius={[8, 8, 4, 4]}
+              maxBarSize={24}
+              radius={[5, 5, 2, 2]}
             />
             <Line
               yAxisId="revenue"
@@ -236,7 +235,7 @@ export function ActivityAnalysisWidget({
           </ComposedChart>
         </ChartContainer>
       </div>
-      <div className="flex items-center justify-between border-zinc-200/70 border-t px-5 py-3 text-[11px] text-muted-foreground dark:border-white/8">
+      <div className="widget-insight-footer flex items-center justify-between gap-3 border-zinc-200/70 border-t px-5 py-3 text-[11px] text-muted-foreground dark:border-white/8">
         <span>
           Pic : {busiest.consultations} consultation
           {busiest.consultations > 1 ? "s" : ""} · {busiest.label}

@@ -14,9 +14,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -151,8 +148,9 @@ export function AppSidebar({
   return (
     <Sidebar
       {...props}
+      data-desktop-runtime={isDesktopRuntime ? "true" : undefined}
       className={cn(
-        "app-sidebar",
+        "app-sidebar restored-sidebar",
         variant !== "sidebar" && "border-none",
         props.className
       )}
@@ -162,7 +160,7 @@ export function AppSidebar({
 
       <SidebarHeader
         className={cn(
-          "relative z-10 flex shrink-0 flex-row items-center",
+          "relative z-10 flex shrink-0 flex-row items-center p-0",
           "h-[calc(var(--header-height)+var(--titlebar-clearance))] transition-all duration-300",
           sidebarHeaderPadding,
           "w-full bg-transparent"
@@ -186,35 +184,35 @@ export function AppSidebar({
             data-tauri-drag-region="true"
           />
         )}
-        <SidebarMenu className="relative z-10 w-full transition-opacity duration-200">
-          <SidebarMenuItem className="flex w-full flex-row items-center justify-between">
-            <SidebarMenuButton
-              className={cn(
-                "h-12 flex-1 overflow-visible px-1 hover:bg-transparent active:bg-transparent",
-                variant === "minimal" && "h-14",
-                "transition-all duration-300 ease-out",
-                isCollapsed &&
-                  "ms-0 justify-center px-0 group-data-[collapsible=icon]:size-10!"
-              )}
-              render={
-                <button onClick={() => onNavigate("dashboard")} type="button" />
-              }
-              tooltip="Baitari"
-            >
-              <Logo
-                className="text-sidebar-foreground"
-                collapsed={isCollapsed}
-                size={variant === "sidebar" ? "xl" : "2xl"}
-                textSize="md"
-              />
-            </SidebarMenuButton>
-            {!isCollapsed && (
-              <SidebarTrigger
-                className="-mr-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-              />
+        <div
+          className={cn(
+            "relative z-10 flex w-full items-center",
+            isCollapsed ? "justify-center" : "justify-between"
+          )}
+        >
+          <button
+            aria-label="Tableau de bord Baitari"
+            className={cn(
+              "group flex items-center rounded-xl outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98]",
+              isCollapsed
+                ? "size-9 justify-center hover:bg-sidebar-accent/50"
+                : "gap-2.5 px-1 py-1 hover:opacity-85"
             )}
-          </SidebarMenuItem>
-        </SidebarMenu>
+            onClick={() => onNavigate("dashboard")}
+            title="Baitari"
+            type="button"
+          >
+            <Logo
+              className="text-sidebar-foreground"
+              collapsed={isCollapsed}
+              size={isCollapsed ? "sm" : "lg"}
+              textSize="md"
+            />
+          </button>
+          {!isCollapsed && (
+            <SidebarTrigger className="-mr-1 size-8 rounded-lg text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground" />
+          )}
+        </div>
       </SidebarHeader>
       <SidebarContent
         className={cn(
@@ -228,14 +226,14 @@ export function AppSidebar({
         <div
           className={cn(
             "flex min-h-full flex-1 flex-col",
-            isCollapsed ? "w-full items-center gap-0.5" : "gap-6"
+            isCollapsed ? "w-full items-center gap-0.5" : "gap-4"
           )}
         >
           <NavMain items={mainItems} title={t("nav.sections.patientJourney")} />
 
           {/* Subtle divider between groups in collapsed mode */}
           {isCollapsed && (
-            <div className="my-2 h-px w-8 rounded-full bg-zinc-900/8 dark:bg-white/8" />
+            <div aria-hidden="true" className="sidebar-section-divider my-2 h-px w-8 rounded-full bg-zinc-900/8 dark:bg-white/8" />
           )}
 
           <NavDocuments

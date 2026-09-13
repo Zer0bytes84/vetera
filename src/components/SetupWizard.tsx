@@ -21,6 +21,7 @@ import {
   validateLicenseKey,
 } from "@/services/licenseService";
 import Logo from "./Logo";
+import { WelcomeArtwork } from "./WelcomeArtwork";
 
 interface SetupWizardProps {
   onComplete: (userData: {
@@ -63,6 +64,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPasswords, setShowPasswords] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -123,25 +125,15 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
 
   return (
     <main
-      className="relative min-h-dvh overflow-auto bg-[#f4f5f1] text-zinc-950"
+      className="welcome-shell setup-welcome relative min-h-dvh overflow-auto bg-[#f4f5f1] text-zinc-950"
       style={{ colorScheme: "light" }}
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 overflow-hidden"
-      >
-        <div className="absolute -top-32 left-[38%] size-[34rem] rounded-full bg-[#d7eee5]/70 blur-3xl" />
-        <div className="absolute -right-32 bottom-[-14rem] size-[38rem] rounded-full bg-[#f4dfc3]/70 blur-3xl" />
-        <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] [background-size:32px_32px]" />
-      </div>
+      <WelcomeArtwork />
 
       <div className="relative mx-auto grid min-h-dvh w-full max-w-[1600px] lg:grid-cols-[minmax(340px,0.82fr)_minmax(560px,1.18fr)]">
-        <section className="relative hidden flex-col justify-between overflow-hidden border-zinc-900/10 border-r bg-[#17231f] px-10 py-9 text-white lg:flex xl:px-14 xl:py-12">
-          <div className="absolute inset-0 opacity-30 [background:radial-gradient(circle_at_20%_10%,#4a806d_0,transparent_38%),radial-gradient(circle_at_90%_80%,#715f47_0,transparent_34%)]" />
-          <div className="absolute top-0 right-0 h-full w-px bg-gradient-to-b from-transparent via-white/25 to-transparent" />
-
+        <section className="setup-intro relative hidden flex-col justify-between overflow-hidden px-10 py-9 lg:flex xl:px-14 xl:py-12">
           <div className="relative flex items-center justify-between gap-4">
-            <Logo className="brightness-0 invert" size="xl" />
+            <Logo size="xl" />
             <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-medium text-[11px] text-white/75 uppercase tracking-[0.12em]">
               Configuration locale
             </span>
@@ -349,7 +341,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                         }}
                         placeholder="6 caractères minimum"
                         required
-                        type="password"
+                        type={showPasswords ? "text" : "password"}
                         value={password}
                       />
                     </SetupField>
@@ -369,11 +361,15 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                         }}
                         placeholder="Répétez le mot de passe"
                         required
-                        type="password"
+                        type={showPasswords ? "text" : "password"}
                         value={confirmPassword}
                       />
                     </SetupField>
                   </div>
+                  <label className="flex items-center gap-2 text-sm text-zinc-600">
+                    <input type="checkbox" checked={showPasswords} onChange={event => setShowPasswords(event.target.checked)} />
+                    Afficher les mots de passe
+                  </label>
 
                   <button
                     className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold text-[15px] text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] disabled:cursor-not-allowed disabled:opacity-60"

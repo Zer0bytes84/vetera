@@ -339,14 +339,14 @@ function ReadOnlyDetail({
   value: React.ReactNode;
 }) {
   return (
-    <div className="min-w-0 border-border/60 border-b py-3 last:border-b-0">
-      <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+    <dl className="record-detail min-w-0 border-border/60 border-b py-2.5">
+      <dt className="text-xs text-muted-foreground">
         {label}
-      </p>
-      <div className="mt-1.5 break-words text-foreground text-sm leading-5">
+      </dt>
+      <dd className="mt-1 break-words font-medium text-foreground text-sm leading-5">
         {value}
-      </div>
-    </div>
+      </dd>
+    </dl>
   );
 }
 
@@ -611,7 +611,7 @@ function PatientDetailsDialog({
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-1.5rem)] max-w-[min(1180px,calc(100%-1.5rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-[28px] p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
+      <DialogContent className="patient-record-dialog modal-medical-shell max-h-[calc(100dvh-1.5rem)] max-w-[min(1180px,calc(100%-1.5rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden rounded-[28px] p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
         <DialogHeader className="modal-medical-header shrink-0 gap-0 border-border/40 border-b">
           <ModalBanner
             artwork="patient-record"
@@ -677,20 +677,12 @@ function PatientDetailsDialog({
                     Modifier
                   </Button>
                 )}
-                <Button
-                  className="h-8 px-3 text-muted-foreground text-xs hover:text-foreground"
-                  onClick={onClose}
-                  size="sm"
-                  variant="ghost"
-                >
-                  Fermer
-                </Button>
               </div>
             </div>
 
           </ModalBanner>
           <div className="flex flex-col gap-4 px-5 py-4 sm:px-7 sm:py-5">
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="record-summary grid gap-2 sm:grid-cols-3">
               <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm shadow-sky-500/20">
                   <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
@@ -742,7 +734,7 @@ function PatientDetailsDialog({
                 </div>
               </div>
 
-              <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
+              <div data-clinical-alert={Boolean(patient.allergies || patient.chronicConditions)} className="flex min-w-0 items-center gap-3 rounded-2xl bg-muted/30 px-3.5 py-3 text-foreground ring-1 ring-border/40 transition-colors dark:bg-muted/15 dark:ring-border/30">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-sm shadow-emerald-500/20">
                   <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={2} />
                 </span>
@@ -755,9 +747,9 @@ function PatientDetailsDialog({
                       ? "Allergies à surveiller"
                       : patient.chronicConditions
                         ? "Suivi chronique"
-                        : "Rien à signaler"}
+                        : "Aucune alerte renseignée"}
                   </p>
-                  <p className="truncate text-muted-foreground text-xs">
+                  <p className="whitespace-pre-wrap break-words text-muted-foreground text-xs">
                     {patient.allergies ||
                       patient.chronicConditions ||
                       "Aucune alerte clinique"}
@@ -768,8 +760,8 @@ function PatientDetailsDialog({
           </div>
         </DialogHeader>
 
-        <div className="min-h-0 overflow-y-auto bg-card">
-          <div className="grid min-h-full md:grid-cols-[210px_minmax(0,1fr)]">
+        <div className="record-workspace min-h-0 overflow-y-auto bg-card">
+          <div className="grid min-h-full md:grid-cols-[180px_minmax(0,1fr)]">
             <aside className="border-border/40 border-b bg-card px-4 py-3 md:sticky md:top-0 md:h-full md:border-r md:border-b-0 md:px-4 md:py-5">
               <p className="mb-2 hidden px-3 font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.14em] md:block">
                 Dossier patient
@@ -794,7 +786,7 @@ function PatientDetailsDialog({
                     icon={BirdIcon}
                     strokeWidth={1.8}
                   />
-                  Informations
+                    Identité
                 </button>
                 <button
                   aria-current={activeTab === "medical" ? "page" : undefined}
@@ -855,10 +847,10 @@ function PatientDetailsDialog({
                       <HugeiconsIcon icon={BirdIcon} strokeWidth={2} />
                     </span>
                     <h2 className="font-semibold text-xl tracking-[-0.03em]">
-                      Informations
+                      Identité & contacts
                     </h2>
                   </div>
-                  <div className="grid gap-4 xl:grid-cols-2">
+                  <div className="grid gap-4 lg:grid-cols-2">
                     <Card className="rounded-2xl shadow-none" size="sm">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">

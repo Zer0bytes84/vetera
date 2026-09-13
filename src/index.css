@@ -247,6 +247,8 @@
 /* Native Tauri window affordance: only the empty header surface drags. */
 [data-window-drag-region="true"] {
   user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
 }
 
 [data-window-drag-region="true"] button,
@@ -3212,6 +3214,40 @@ html[data-header-pattern="quiet"] .header-pattern-live {
   background: var(--background);
 }
 
+.restored-sidebar [data-slot="sidebar-inner"] { border-radius: 18px; }
+/* Match the main panel's Tauri top offset; minimal's p-2 added 8px twice. */
+[data-variant="minimal"] .restored-sidebar[data-desktop-runtime="true"] {
+  padding-top: 0;
+}
+.restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-inner"] {
+  margin-top: var(--titlebar-clearance);
+  height: calc(100% - var(--titlebar-clearance));
+}
+.restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-header"] {
+  height: var(--header-height);
+  padding-top: 0 !important;
+}
+.restored-sidebar [data-slot="sidebar-header-separator"] {
+  inset-inline: 0;
+  width: 100%;
+  background: color-mix(in srgb, var(--foreground) 15%, transparent);
+  opacity: 1;
+}
+[data-variant="minimal"] .restored-sidebar::before { display: none; }
+.restored-sidebar .sidebar-section-divider {
+  background: color-mix(in srgb, var(--sidebar-foreground) 12%, transparent);
+}
+.restored-sidebar [data-slot="sidebar-footer"] { border-top: 0; }
+.restored-sidebar [data-slot="sidebar-footer"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 12px;
+  height: 1px;
+  background: color-mix(in srgb, var(--sidebar-foreground) 12%, transparent);
+  pointer-events: none;
+}
+
 .apple-sidebar-glow {
   position: absolute;
   top: -7rem;
@@ -3633,7 +3669,9 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   --widget-highlight: #74a9ff;
   --widget-track: rgb(30 35 45 / 0.055);
   background: var(--card);
-  box-shadow: 0 2px 4px -2px rgb(20 24 35 / 0.08);
+  border-color: color-mix(in srgb, var(--foreground) 9%, var(--card));
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 2px 3px rgb(20 24 35 / 0.025), 0 8px 20px -14px rgb(20 24 35 / 0.2);
 }
 [data-widget-accent="mint"] {
   --widget-ink: #219e7b;
@@ -3651,8 +3689,8 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   --widget-track: rgb(255 255 255 / 0.06);
 }
 [data-widget-accent] > [data-slot="card-header"] {
-  min-height: 84px;
-  border-bottom: 0;
+  min-height: 70px;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 7%, transparent);
   border-radius: 0;
   background: transparent;
 }
@@ -3670,9 +3708,9 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   > [data-slot="card-header"]
   > div:first-child
   > span:first-child {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   background: linear-gradient(
     145deg,
     var(--widget-highlight),
@@ -3685,10 +3723,10 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   --tw-ring-color: transparent;
 }
 .widget-chart-surface {
-  background: color-mix(in oklab, var(--foreground) 3.5%, var(--card));
+  background: transparent;
 }
 .widget-metrics > div:first-child > p.tabular-nums {
-  font-size: 28px;
+  font-size: 26px;
 }
 .widget-metrics {
   font-variant-numeric: tabular-nums;
@@ -4097,6 +4135,139 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   align-content: center;
 }
 
+/* Patient records: compact clinical register with a quiet identity banner. */
+.patient-record-dialog .modal-banner-record {
+  min-height: 112px;
+  padding: 24px 76px 24px 28px;
+  gap: 16px;
+  text-align: left;
+}
+.patient-record-dialog .modal-banner-art { opacity: 0.22; }
+.patient-record-dialog .modal-banner-mesh { opacity: 0.16; }
+.patient-record-dialog .modal-banner-grain { opacity: 0.025; }
+.patient-record-dialog .modal-banner-glass {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  box-shadow: none;
+  background: var(--card);
+}
+.patient-record-dialog .modal-banner-record > .flex { position: relative; z-index: 1; }
+.patient-record-dialog .record-summary > div {
+  border-radius: 10px;
+  box-shadow: none;
+  border: 1px solid var(--border);
+  align-items: flex-start;
+}
+.patient-record-dialog .record-summary > div > span {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  box-shadow: none;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+}
+.patient-record-dialog .record-summary [data-clinical-alert="true"] {
+  background: color-mix(in oklab, var(--card) 94%, #f59e0b);
+  border-color: color-mix(in oklab, var(--border) 65%, #f59e0b);
+}
+.patient-record-dialog .record-summary [data-clinical-alert="true"] > span {
+  color: #b45309;
+  background: color-mix(in oklab, var(--card) 85%, #f59e0b);
+}
+.patient-record-dialog .record-workspace {
+  border-top: 1px solid var(--border);
+}
+.patient-record-dialog .record-workspace aside {
+  background: color-mix(in oklab, var(--card) 65%, var(--muted));
+}
+.patient-record-dialog .record-workspace nav button {
+  border-radius: 6px;
+  font-size: 12px;
+  height: 36px;
+}
+.patient-record-dialog .record-workspace section > div > .flex > span {
+  display: none;
+}
+.patient-record-dialog .record-workspace h2 {
+  font-size: 16px;
+  letter-spacing: -0.015em;
+}
+.patient-record-dialog .record-workspace [data-slot="card"] {
+  border-radius: 10px;
+  gap: 0;
+  padding-block: 0;
+  overflow: hidden;
+}
+.patient-record-dialog .record-workspace [data-slot="card-header"] {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 80%, var(--muted));
+}
+.patient-record-dialog .record-workspace [data-slot="card-content"] {
+  padding: 12px 16px;
+}
+.patient-record-dialog .record-detail { margin: 0; }
+.patient-record-page .record-register {
+  border-radius: 12px;
+  box-shadow: none;
+  background: var(--card);
+}
+.patient-record-page .patient-identity {
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.025);
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+.patient-record-page .patient-identity button { border-radius: 8px; }
+.patient-record-page .patient-clinical-metrics button {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.patient-record-page .patient-clinical-metrics button > div { width: 100%; }
+.patient-record-page .record-register table th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--card) 95%, #14b8a6);
+}
+.patient-record-page .record-register table td { vertical-align: top; }
+.patient-record-page .record-register > div:first-child {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 0;
+}
+.patient-record-page .record-register nav {
+  width: 100%;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+.patient-record-page .record-register nav button {
+  border-radius: 0;
+  height: 42px;
+  border-bottom: 2px solid transparent;
+  box-shadow: none;
+}
+.patient-record-page .record-register nav button[aria-current="page"] {
+  border-bottom-color: #0d9488;
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--card) 92%, #14b8a6);
+}
+.patient-record-page .record-register nav button[aria-current="page"] svg {
+  color: #0d9488;
+}
+.dark .patient-record-page .record-register nav button[aria-current="page"] svg {
+  color: #5eead4;
+}
+@media (max-width: 639px) {
+  .patient-record-dialog .modal-banner-record { padding: 20px 58px 20px 20px; gap: 12px; }
+  .patient-record-dialog .modal-banner-marks { display: none; }
+  .patient-record-dialog .record-summary { grid-template-columns: 1fr; }
+}
+
 .annual-activity-surface {
   background: color-mix(in oklab, var(--muted) 55%, var(--card));
 }
@@ -4145,4 +4316,25 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 }
 .dark .annual-contribution-cell[aria-pressed="true"] {
   box-shadow: inset 0 0 0 2px #fff;
+}
+
+/* Compact data panels: raised controls and measured, color-coded progress. */
+.dashboard-v2-widget .widget-heading { padding: 14px 18px; }
+.dashboard-v2-widget .widget-heading [data-slot="card-description"] { font-size: 11px; }
+.dashboard-v2-widget .widget-metrics { padding-top: 18px; padding-bottom: 16px; }
+.dashboard-v2-widget .widget-metrics > div + div { border-inline-start: 1px solid var(--border); padding-inline-start: 14px; }
+.dashboard-v2-widget .widget-insight-footer {
+  color: var(--foreground);
+  background: color-mix(in srgb, #57bca1 9%, var(--card));
+  border-color: color-mix(in srgb, #57bca1 15%, var(--border));
+}
+.progress-ledger { display: flex; flex: 1; flex-direction: column; }
+.progress-ledger-row { flex: 1; padding-block: 16px; border-bottom: 1px dashed var(--border); }
+.progress-ledger-row:last-child { border-bottom: 0; }
+.progress-ledger-row:hover { background: color-mix(in srgb, var(--foreground) 2%, transparent); }
+.progress-ledger-row:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; border-radius: 6px; }
+.progress-ledger-track { background: color-mix(in srgb, var(--foreground) 7%, var(--card)); box-shadow: inset 0 1px 2px rgb(0 0 0 / .035); }
+.dark .dashboard-v2-widget { box-shadow: inset 0 1px 0 rgb(255 255 255 / .045), 0 8px 20px -16px rgb(0 0 0 / .5); }
+@media (max-width: 767px) {
+  .activity-analysis-card .widget-metrics > div:nth-child(3) { border-inline-start: 0; padding-inline-start: 0; }
 }

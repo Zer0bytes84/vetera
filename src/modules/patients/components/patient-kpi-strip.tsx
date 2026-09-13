@@ -103,13 +103,14 @@ export function PatientKpiStrip({
         ? `${lastWeight.weightKg.toFixed(2)} kg`
         : "À renseigner",
       detail:
-        weightDelta ??
+        (weightDelta ? `${weightDelta} depuis la pesée précédente` : null) ??
         (lastWeight ? t("patientDetail.kpi.lastWeight") : "Aucune pesée"),
       caption: lastWeight
-        ? (formatDateShort(lastWeight.measuredAt) ?? "—")
+        ? `Mesuré le ${formatDateShort(lastWeight.measuredAt) ?? "—"}`
         : "Ajoutez une première mesure",
       trend: weightTrend,
       icon: Scales,
+      tone: "bg-violet-50 text-violet-600 dark:bg-violet-400/10 dark:text-violet-300",
       onClick: onWeightClick,
     },
     {
@@ -120,15 +121,18 @@ export function PatientKpiStrip({
           ? "—"
           : daysSinceLastVisit === 0
             ? t("common.today", { defaultValue: "Aujourd'hui" })
-            : `${Math.abs(daysSinceLastVisit)} j`,
+            : daysSinceLastVisit > 0
+              ? `Il y a ${daysSinceLastVisit} j`
+              : `Dans ${Math.abs(daysSinceLastVisit)} j`,
       caption:
         daysSinceLastVisit == null
           ? "—"
           : daysSinceLastVisit > 0
-            ? t("patientDetail.kpi.lastVisit")
+            ? "Consulter la chronologie"
             : "",
       trend: "neutral",
       icon: Stethoscope,
+      tone: "bg-sky-50 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300",
       onClick: onTimelineClick,
     },
     {
@@ -168,6 +172,7 @@ export function PatientKpiStrip({
               ? "neutral"
               : "up",
       icon: Syringe,
+      tone: "bg-teal-50 text-teal-600 dark:bg-teal-400/10 dark:text-teal-300",
       onClick: onVaccinationClick,
     },
     {
@@ -186,6 +191,7 @@ export function PatientKpiStrip({
         : "Aucun créneau à venir",
       trend: "neutral",
       icon: CalendarBlank,
+      tone: "bg-indigo-50 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-300",
       onClick: onAppointmentClick,
     },
   ];
@@ -194,7 +200,7 @@ export function PatientKpiStrip({
     <section
       aria-label="Repères cliniques"
       className={cn(
-        "grid overflow-hidden rounded-2xl border border-border/70 bg-card sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-border/70",
+        "patient-clinical-metrics grid overflow-hidden rounded-xl border border-border/70 bg-card sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-border/70",
         className
       )}
     >
@@ -205,7 +211,7 @@ export function PatientKpiStrip({
         return (
           <button
             aria-label={`Ouvrir ${item.title}`}
-            className="clinical-interactive group min-h-[132px] min-w-0 border-border/70 border-b px-4 py-4 text-left last:border-b-0 sm:[&:nth-child(odd)]:border-r xl:border-b-0 xl:[&:nth-child(odd)]:border-r-0"
+            className="clinical-interactive group min-w-0 border-border/70 border-b px-4 py-3 text-left last:border-b-0 sm:[&:nth-child(odd)]:border-r xl:border-b-0 xl:[&:nth-child(odd)]:border-r-0"
             key={item.title}
             onClick={item.onClick}
             type="button"
@@ -213,10 +219,10 @@ export function PatientKpiStrip({
             <div className="flex items-start gap-3">
               <span
                 className={cn(
-                  "flex size-9 shrink-0 items-center justify-center rounded-xl",
+                  "flex size-8 shrink-0 items-center justify-center rounded-lg",
                   requiresAttention
                     ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300"
-                    : "bg-muted text-muted-foreground"
+                    : item.tone
                 )}
               >
                 <Icon className="size-4" weight="duotone" />
@@ -230,9 +236,9 @@ export function PatientKpiStrip({
                 </p>
               </div>
             </div>
-            <div className="mt-3 flex min-w-0 items-end justify-between gap-3 pl-12 text-muted-foreground text-xs">
+            <div className="mt-2 flex min-w-0 items-end justify-between gap-2 pl-11 text-muted-foreground text-xs">
               <span className="min-w-0 leading-4">
-                <span className="block font-medium text-foreground/75">{item.detail}</span>
+                {item.detail !== "—" && <span className="block font-medium text-foreground/75">{item.detail}</span>}
                 <span className="mt-0.5 block line-clamp-2">{item.caption}</span>
               </span>
               {"trendLabel" in item && item.trendLabel ? (

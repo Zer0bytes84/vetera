@@ -1,90 +1,27 @@
 import type React from "react";
 import { cn } from "@/lib/utils";
-
 interface LogoProps {
   className?: string;
   collapsed?: boolean;
+  showWordmark?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
   textSize?: "sm" | "md" | "lg" | "xl" | "2xl";
 }
-
-const SIZE_PX: Record<NonNullable<LogoProps["size"]>, number> = {
-  sm: 24,
-  md: 28,
-  lg: 32,
-  xl: 36,
-  "2xl": 42,
-};
-
-const WORDMARK_CLASS_MAP: Record<NonNullable<LogoProps["size"]>, string> = {
-  sm: "text-[15px] leading-[20px]",
-  md: "text-[19px] leading-[26px]",
-  lg: "text-[22px] leading-[30px]",
-  xl: "text-[26px] leading-[34px]",
-  "2xl": "text-[28px] leading-[36px]",
-};
-
-function BaitariMark({ sizePx }: { sizePx: number }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className="overflow-visible"
-      style={{ width: sizePx, height: sizePx, flexShrink: 0 }}
-      viewBox="0 0 40 40"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M11.25 4.75V23.25C11.25 30.1 16.35 35.25 23.15 35.25C29.9 35.25 35 30.05 35 23.25C35 16.45 29.85 11.25 23.1 11.25C17.1 11.25 12.25 15.3 11.35 21.15"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="4.6"
-      />
-      <path
-        d="M5.75 23.2H13.45L16.65 17.6L20.45 28.35L24.05 21.15L26.3 23.2H35.15"
-        fill="none"
-        stroke="#20B486"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2.8"
-      />
-    </svg>
-  );
+const SIZE_PX = { sm: 24, md: 28, lg: 32, xl: 38, "2xl": 44 };
+function BrandMark() {
+  return <>
+    <path fill="#139fdf" fillRule="evenodd" d="M8 4h8v12.1A13 13 0 1 1 8 28V4Zm8 24a5 5 0 1 0 10 0 5 5 0 0 0-10 0Z" />
+    <path fill="#66dfd0" d="M25 5h6v5h5v6h-5v5h-6v-5h-5v-6h5Z" />
+  </>;
 }
-
-const Logo: React.FC<LogoProps> = ({
-  className = "",
-  collapsed = false,
-  size = "md",
-  textSize = "md",
-}) => {
-  const sizePx = collapsed ? 32 : SIZE_PX[size];
-  const wordmarkClass = WORDMARK_CLASS_MAP[textSize];
-  return (
-    <div
-      className={cn("flex select-none items-center text-current", className)}
-    >
-      <div className={cn("flex items-center", collapsed ? "gap-0" : "gap-2")}>
-        <div className="flex items-center justify-center text-[#191c20] dark:text-[#f5f6f4]">
-          <BaitariMark sizePx={sizePx} />
-        </div>
-        {collapsed ? null : (
-          <div className="flex items-center">
-            <span
-              className={cn(
-                "font-heading font-semibold text-zinc-900 dark:text-white",
-                wordmarkClass
-              )}
-              style={{ letterSpacing: "-0.045em" }}
-            >
-              Baitari
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+const Logo: React.FC<LogoProps> = ({ className = "", collapsed = false, showWordmark = true, size = "lg" }) => {
+  const compact = collapsed || !showWordmark;
+  const height = collapsed ? 34 : SIZE_PX[size];
+  return <div aria-label="Baitari" role="img" className={cn("flex select-none items-center text-current", className)}>
+    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="shrink-0" style={{height, width: compact ? height : height * 148 / 40}} viewBox={compact ? "0 0 44 44" : "0 0 148 40"}>
+      <g transform={compact ? undefined : "translate(-3, -2)"}><BrandMark /></g>
+      {!compact && <text className="brand-wordmark fill-zinc-900 dark:fill-white" style={{fontFamily: "var(--app-font-heading, 'Inter Variable', Inter, sans-serif)", fontSize: "21.5px", fontWeight: 700, letterSpacing: "-0.035em"}} x="45" y="26.5">Baitari</text>}
+    </svg>
+  </div>;
 };
-
 export default Logo;

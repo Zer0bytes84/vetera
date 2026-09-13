@@ -2,23 +2,17 @@ import {
   CheckmarkCircle01Icon,
   HelpCircleIcon,
   Logout01Icon,
-  StethoscopeIcon,
   Moon01Icon,
   Search01Icon,
   Settings01Icon,
+  StethoscopeIcon,
   Sun01Icon,
   TranslateIcon,
   User02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { renderView } from "@/app/config/view-registry";
@@ -27,6 +21,8 @@ import Avatar from "@/components/Avatar";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
 import { HeroPattern } from "@/components/HeroPattern";
+import { randomizeFloralBackground } from "@/lib/floral-background";
+import { SectionGarden } from "@/components/SectionGarden";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,7 +35,11 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { FocusProvider } from "@/contexts/focus-provider";
 import { LayoutProvider, useLayout } from "@/contexts/layout-provider";
@@ -124,7 +124,9 @@ function AppShellInner() {
     if (typeof window === "undefined") {
       return false;
     }
-    return parseRouteFromHash(window.location.hash).currentView === "parametres";
+    return (
+      parseRouteFromHash(window.location.hash).currentView === "parametres"
+    );
   });
   const [currentPatientId, setCurrentPatientId] = useState<string | null>(
     () => {
@@ -143,24 +145,27 @@ function AppShellInner() {
   });
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
 
-  const handleNavigate = useCallback((view: View) => {
-    if (view === "assistant") {
+  const handleNavigate = useCallback(
+    (view: View) => {
+      if (view === "assistant") {
+        setSettingsOpen(false);
+        setAiAssistantOpen(true);
+        return;
+      }
+      if (view === "parametres") {
+        setSettingsOpen(true);
+        return;
+      }
+      if (settingsOpen && view === "dashboard") {
+        setSettingsOpen(false);
+        return;
+      }
       setSettingsOpen(false);
-      setAiAssistantOpen(true);
-      return;
-    }
-    if (view === "parametres") {
-      setSettingsOpen(true);
-      return;
-    }
-    if (settingsOpen && view === "dashboard") {
-      setSettingsOpen(false);
-      return;
-    }
-    setSettingsOpen(false);
-    setCurrentView(view);
-    setCurrentPatientId(null);
-  }, [settingsOpen]);
+      setCurrentView(view);
+      setCurrentPatientId(null);
+    },
+    [settingsOpen]
+  );
 
   const handleNavigateToPatient = useCallback((patientId: string) => {
     setSettingsOpen(false);
@@ -209,12 +214,17 @@ function AppShellInner() {
     cachedAvatarUrl;
   const { setThemeMode, themeMode } = useThemeMode();
   const {
-    handleDoubleClick,
-    handleMouseDown,
     isDesktopRuntime,
     ref: headerRef,
   } = useTauriDrag<HTMLElement>();
   const { variant, collapsible } = useLayout();
+  const previousDecorView = useRef<string | null>(null);
+  useEffect(() => {
+    const route = `${currentView}:${currentPatientId ?? ""}`;
+    if (previousDecorView.current === route) return;
+    previousDecorView.current = route;
+    randomizeFloralBackground();
+  }, [currentView, currentPatientId]);
 
   useEffect(() => {
     if (settingsOpen) {
@@ -379,22 +389,25 @@ function AppShellInner() {
 
   return (
     <SidebarProvider
+      defaultOpen={true}
       className={cn("relative isolate bg-background", isRtl && "rtl-shell")}
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
-          "--header-height": variant === "minimal" ? "64px" : "60px",
-          "--titlebar-clearance":
-            isDesktopRuntime && !isRtl
-              ? variant === "sidebar" || variant === "inset"
-                ? "24px"
-                : variant === "minimal"
-                  ? "10px"
-                  : "0px"
-              : "0px",
+          "--header-height": "48px",
+          "--titlebar-clearance": isDesktopRuntime ? "20px" : "0px",
         } as React.CSSProperties
       }
     >
+      {isDesktopRuntime && (
+        <div
+          aria-hidden="true"
+          data-tauri-drag-region=""
+          data-window-drag-region="true"
+          data-slot="native-titlebar-drag-region"
+          className="fixed top-[3px] right-2 left-[80px] z-[60] h-[29px] cursor-default select-none"
+        />
+      )}
       <AppSidebar
         collapsible={collapsible}
         currentUserAvatar={currentUser?.avatarUrl ?? null}
@@ -407,6 +420,14 @@ function AppShellInner() {
       />
 
       <SidebarInset
+        style={
+          {
+            "--header-content-clearance":
+              isDesktopRuntime && variant === "minimal"
+                ? "8px"
+                : "var(--titlebar-clearance)",
+          } as React.CSSProperties
+        }
         className={cn(
           "!border-none backdrop-blur-xl",
           variant === "sidebar" &&
@@ -414,7 +435,7 @@ function AppShellInner() {
           variant === "inset" &&
             "!rounded-t-[24px] !rounded-b-none !border-transparent !bg-transparent p-2 pb-2 shadow-none ring-0",
           variant === "minimal" &&
-            "!mb-0 !rounded-t-[18px] !rounded-b-none !border-none !bg-background p-0 shadow-sm ring-0 dark:!bg-zinc-950",
+            "!mb-0 !rounded-t-[18px] !rounded-b-none !border-none !bg-background dark:!bg-zinc-950 p-0 shadow-sm ring-0",
           variant === "floating" &&
             "!rounded-[24px] !bg-transparent p-0 shadow-sm ring-1 ring-black/5 dark:ring-white/8",
           variant === "glass" &&
@@ -425,6 +446,9 @@ function AppShellInner() {
           "md:peer-data-[variant=floating]:max-h-dvh",
           "md:peer-data-[variant=glass]:max-h-[calc(100dvh-24px)]",
           "max-h-dvh",
+          isDesktopRuntime &&
+            variant === "minimal" &&
+            "md:!mt-[calc(var(--titlebar-clearance)-8px)] md:!max-h-[calc(100dvh-var(--titlebar-clearance)+8px)]",
           "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0",
           "md:peer-data-[variant=minimal]:peer-data-[state=collapsed]:!ms-0"
         )}
@@ -444,7 +468,7 @@ function AppShellInner() {
         {variant === "minimal" ? (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-20 rounded-t-[18px] rounded-b-none border-s border-t border-zinc-950/[0.075] dark:border-white/12"
+            className="pointer-events-none absolute inset-0 z-20 rounded-t-[18px] rounded-b-none border-zinc-950/[0.075] border-s border-t dark:border-white/12"
           />
         ) : null}
         <div
@@ -469,50 +493,56 @@ function AppShellInner() {
               "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
               variant === "minimal" && "rounded-t-[18px]",
               variant === "glass" && "rounded-t-[22px]",
-              isDesktopRuntime && "cursor-grab active:cursor-grabbing"
+              isDesktopRuntime && "cursor-default select-none"
             )}
             data-slot="app-header"
             data-window-drag-region={isDesktopRuntime ? "true" : undefined}
-            onDoubleClick={handleDoubleClick}
-            onMouseDown={handleMouseDown}
+            data-tauri-drag-region={isDesktopRuntime ? "" : undefined}
             ref={headerRef}
             style={
               {
                 "--bg-opacity-light": bgOpacityLight,
                 "--bg-opacity-dark": bgOpacityDark,
                 height:
-                  "calc(var(--header-height) + var(--titlebar-clearance))",
+                  "calc(var(--header-height) + var(--header-content-clearance))",
               } as React.CSSProperties
             }
           >
             {/* Hairline border (replaces border-b) — Protocol-faithful */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-full h-px bg-zinc-900/7.5 dark:bg-white/12"
+              className="pointer-events-none absolute inset-x-0 top-full h-px bg-foreground/15"
               data-slot="app-header-separator"
             />
             <div
-              className="relative flex w-full items-center gap-2 px-4 lg:px-6"
-              style={{ paddingTop: "var(--titlebar-clearance)" }}
+              className="relative flex w-full items-center gap-2.5 px-4 lg:px-6"
+              data-tauri-drag-region={isDesktopRuntime ? "" : undefined}
+              style={{ paddingTop: "var(--header-content-clearance)" }}
             >
-              {/* Search trigger - Premium Dribbble Style */}
+              {/* Mobile navigation toggle */}
+              <SidebarTrigger
+                aria-label="Menu"
+                className="size-9 shrink-0 rounded-full border border-black/8 bg-white/50 text-foreground transition-colors hover:bg-white md:hidden dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+              />
+
+              {/* Search trigger - Precision Linear / macOS Style */}
               <button
-                className="group relative flex h-10 w-[300px] items-center gap-3 rounded-full border border-black/5 bg-white/40 px-4 text-left text-muted-foreground text-sm shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md transition-[background-color,border-color,color,box-shadow,transform] duration-[180ms] ease-[var(--ease-out)] hover:border-black/10 hover:bg-white/60 hover:text-foreground hover:shadow-[0_4px_14px_rgba(0,0,0,0.04)] active:scale-[0.985] sm:w-[340px] dark:border-white/10 dark:bg-zinc-900/40 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:hover:border-white/20 dark:hover:bg-zinc-900/60"
+                className="group relative flex h-9 w-[260px] items-center gap-2.5 rounded-full border border-black/6 bg-white/50 px-3.5 text-left text-muted-foreground text-xs shadow-[0_1px_3px_rgba(0,0,0,0.02)] backdrop-blur-md transition-[background-color,border-color,color,box-shadow,transform] duration-[180ms] ease-[var(--ease-out)] hover:border-black/12 hover:bg-white/80 hover:text-foreground hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.985] sm:w-[300px] lg:w-[320px] dark:border-white/10 dark:bg-zinc-900/50 dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] dark:hover:border-white/20 dark:hover:bg-zinc-900/70"
                 onClick={() => setPaletteOpen(true)}
                 type="button"
               >
                 <HugeiconsIcon
-                  className="size-4 shrink-0 transition-colors duration-[160ms] ease-[var(--ease-out)] group-hover:text-primary"
+                  className="size-3.5 shrink-0 text-muted-foreground/80 transition-colors duration-[160ms] ease-[var(--ease-out)] group-hover:text-primary"
                   icon={Search01Icon}
-                  strokeWidth={1.5}
+                  strokeWidth={1.7}
                 />
                 <span className="flex-1 truncate font-medium tracking-tight">
                   {t("common.searchPlaceholder", {
                     defaultValue: "Rechercher partout...",
                   })}
                 </span>
-                <kbd className="ml-auto hidden h-6 select-none items-center gap-1 rounded-full border border-black/10 bg-white/50 px-2 font-medium font-mono text-[10px] text-muted-foreground tracking-widest shadow-xs transition-colors group-hover:bg-white xl:flex dark:border-white/10 dark:bg-zinc-800/50 dark:group-hover:bg-zinc-800">
-                  <span className="text-xs">⌘</span>K
+                <kbd className="ml-auto hidden h-5 select-none items-center gap-0.5 rounded-full border border-black/8 bg-white/60 px-1.5 font-medium font-mono text-[9px] text-muted-foreground tracking-wider shadow-2xs transition-colors group-hover:bg-white xl:flex dark:border-white/10 dark:bg-zinc-800/60 dark:group-hover:bg-zinc-800">
+                  <span className="text-[10px]">⌘</span>K
                 </kbd>
               </button>
 
@@ -739,6 +769,20 @@ function AppShellInner() {
               className="app-view-enter min-h-0 min-w-0 flex-1"
               key={`${currentView}:${currentPatientId ?? ""}`}
             >
+              {!(
+                [
+                  "dashboard",
+                  "patients",
+                  "agenda",
+                  "clinique",
+                  "stock",
+                  "finances",
+                  "finances_analytics",
+                  "equipe",
+                ] as View[]
+              ).includes(currentView) && (
+                <SectionGarden view={currentView} onNavigate={handleNavigate} />
+              )}
               {content}
             </div>
           </div>
@@ -754,15 +798,15 @@ function AppShellInner() {
       />
       {settingsModal}
       {aiAssistantOpen && (
-        <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/40 backdrop-blur-sm">
+        <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-2 backdrop-blur-sm sm:p-4 md:p-6">
           <motion.div
-            aria-label="Coworker Studio IA"
-            className="pointer-events-auto relative h-[min(880px,calc(100dvh-24px))] w-[min(1140px,calc(100vw-24px))] overflow-hidden rounded-[28px] border border-white/20 dark:border-white/10 bg-background/96 text-foreground shadow-2xl shadow-black/40 backdrop-blur-3xl ring-1 ring-black/10 dark:ring-white/15"
-            initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
+            aria-label="Coworker Studio IA"
+            className="pointer-events-auto relative h-[min(880px,calc(100dvh-24px))] w-[min(1140px,calc(100vw-24px))] overflow-hidden rounded-[28px] border border-white/20 bg-background/96 text-foreground shadow-2xl shadow-black/40 ring-1 ring-black/10 backdrop-blur-3xl dark:border-white/10 dark:ring-white/15"
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
             role="region"
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
             {assistantModal}
           </motion.div>

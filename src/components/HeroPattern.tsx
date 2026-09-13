@@ -1,5 +1,6 @@
 import type { HeaderPattern } from "@/lib/theme-store";
 import { cn } from "@/lib/utils";
+import { useFloralBackground } from "@/lib/floral-background";
 
 function PatternGroups() {
   return (
@@ -79,27 +80,19 @@ function PatternGroups() {
 }
 
 export function HeroPattern() {
+  const [background] = useFloralBackground();
   return (
-    <>
-      <div
-        aria-hidden="true"
-        className="header-pattern-original-live pointer-events-none absolute inset-0 top-[--header-height] z-0 mx-0 hidden max-w-none overflow-hidden"
-      >
-        <div
-          className="absolute -top-44 right-40 h-56 w-[33rem] rotate-[-10deg] transform-gpu rounded-full opacity-80 blur-3xl md:right-48 lg:right-56 dark:opacity-40"
-          style={{
-            backgroundImage:
-              "linear-gradient(115deg, #fff1be 28%, #ee87cb 70%, #b060ff)",
-          }}
-        />
-      </div>
-      <div
-        aria-hidden="true"
-        className="header-pattern-field header-pattern-live pointer-events-none absolute inset-0 top-[--header-height] z-0 mx-0 max-w-none overflow-hidden"
-      >
-        <PatternGroups />
-      </div>
-    </>
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-44 overflow-hidden opacity-60 dark:opacity-20"
+      style={{
+        backgroundImage: `url(/art/cabinet-floral-${background}.png)`,
+        backgroundSize: "150% auto",
+        backgroundPosition: "right bottom",
+        maskImage: "linear-gradient(to bottom, black 45%, transparent)",
+        WebkitMaskImage: "linear-gradient(to bottom, black 45%, transparent)",
+      }}
+    />
   );
 }
 

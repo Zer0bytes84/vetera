@@ -1,4 +1,1 @@
-<svg width="64" height="64" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M12.5 6.5V24.8C12.5 31.1 17.4 35.5 23.5 35.5C29.7 35.5 34.5 30.8 34.5 24.7C34.5 18.7 29.8 14 23.7 14C18.5 14 14.2 17.6 13 22.5C13.5 27 16.8 30.2 21.1 30.2C25.5 30.2 28.9 26.8 28.9 22.6" stroke="#191C20" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="31.4" cy="8.9" r="2.45" fill="#38B990"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44"><title>Baitari</title><path fill="#139fdf" fill-rule="evenodd" d="M8 4h8v12.1A13 13 0 1 1 8 28V4Zm8 24a5 5 0 1 0 10 0 5 5 0 0 0-10 0Z"/><path fill="#66dfd0" d="M25 5h6v5h5v6h-5v5h-6v-5h-5v-6h5Z"/></svg>

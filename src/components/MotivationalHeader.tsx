@@ -174,7 +174,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
           <React.Fragment key={index}>
             {part}
             {index < parts.length - 1 && (
-              <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 bg-clip-text font-semibold text-transparent uppercase dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
+              <span className="font-semibold text-foreground">
                 {userName}
               </span>
             )}

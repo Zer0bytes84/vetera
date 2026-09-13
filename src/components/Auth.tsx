@@ -5,8 +5,6 @@ import {
   CheckmarkCircle02Icon,
   LockIcon,
   Mail01Icon,
-  SparklesIcon,
-  StethoscopeIcon,
   User02Icon,
   ViewIcon,
 } from "@hugeicons/core-free-icons";
@@ -18,25 +16,11 @@ import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { APP_NAME } from "@/lib/brand";
 import Logo from "./Logo";
-
-function AuthShader() {
-  return (
-    <div aria-hidden="true" className="auth-shader">
-      <div className="auth-shader__orb auth-shader__orb--one" />
-      <div className="auth-shader__orb auth-shader__orb--two" />
-      <div className="auth-shader__orb auth-shader__orb--three" />
-      <div className="auth-shader__grain" />
-    </div>
-  );
-}
-
-const BENEFITS = [
-  "Parcours clinique unifié",
-  "Données conservées localement",
-  "Pensé pour les équipes vétérinaires",
-];
+import { WelcomeArtwork } from "./WelcomeArtwork";
+import { useFloralBackground } from "@/lib/floral-background";
 
 const Auth: React.FC = () => {
+  const [background] = useFloralBackground();
   const [view, setView] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -76,16 +60,13 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <main className="auth-shell relative min-h-screen overflow-x-hidden bg-[#f7f8f6] text-zinc-950 dark:bg-[#0b0c0d] dark:text-white">
-      <AuthShader />
+    <main className="auth-shell welcome-shell relative min-h-screen overflow-x-hidden bg-[#f7f8f6] text-zinc-950 dark:bg-[#0b0c0d] dark:text-white">
+      <WelcomeArtwork />
 
       <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
         <section className="relative hidden min-h-screen flex-col justify-between border-white/50 border-r p-10 lg:flex xl:p-14 dark:border-white/[0.06]">
           <div className="flex items-center justify-between">
             <Logo size="xl" textSize="lg" />
-            <span className="rounded-full border border-black/[0.06] bg-white/45 px-3 py-1.5 font-medium text-[11px] text-zinc-600 uppercase tracking-[0.14em] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-300">
-              Espace clinique
-            </span>
           </div>
 
           <motion.div
@@ -94,48 +75,15 @@ const Auth: React.FC = () => {
             initial={{ opacity: 0, y: 22 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="mb-6 flex size-12 items-center justify-center rounded-2xl border border-black/[0.06] bg-white/55 shadow-[0_12px_35px_-22px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.07]">
-              <HugeiconsIcon
-                className="size-5 text-primary"
-                icon={StethoscopeIcon}
-                strokeWidth={1.7}
-              />
-            </div>
-            <p className="font-semibold text-[11px] text-zinc-500 uppercase tracking-[0.2em] dark:text-zinc-400">
-              Votre pratique, parfaitement orchestrée
-            </p>
-            <h1 className="mt-4 max-w-[580px] text-balance font-heading font-semibold text-[clamp(2.8rem,5vw,5.6rem)] leading-[0.94] tracking-[-0.06em]">
-              Plus de temps pour le soin.
-              <span className="mt-2 block text-zinc-500 dark:text-zinc-400">
-                Moins pour le reste.
-              </span>
+            <h1 className="auth-editorial-title">
+              Au rythme
+              <em>du soin.</em>
             </h1>
             <p className="mt-7 max-w-lg text-pretty text-base text-zinc-600 leading-relaxed dark:text-zinc-300">
-              Baitari rassemble patients, consultations, agenda et suivi du
-              cabinet dans un espace calme, rapide et précis.
+              Vos patients, vos consultations et votre équipe. Tout commence
+              ici.
             </p>
-
-            <div className="mt-9 flex flex-wrap gap-2.5">
-              {BENEFITS.map((benefit) => (
-                <div
-                  className="flex items-center gap-2 rounded-full border border-black/[0.06] bg-white/42 px-3.5 py-2 text-sm text-zinc-700 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.045] dark:text-zinc-200"
-                  key={benefit}
-                >
-                  <HugeiconsIcon
-                    className="size-4 text-primary"
-                    icon={CheckmarkCircle02Icon}
-                    strokeWidth={1.8}
-                  />
-                  {benefit}
-                </div>
-              ))}
-            </div>
           </motion.div>
-
-          <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
-            <span className="size-1.5 rounded-full bg-primary shadow-[0_0_0_5px_color-mix(in_oklab,var(--primary)_12%,transparent)]" />
-            Application locale conçue pour rester fluide au quotidien
-          </div>
         </section>
 
         <section className="relative flex min-h-screen items-center justify-center p-5 sm:p-8 lg:p-12">
@@ -145,6 +93,11 @@ const Auth: React.FC = () => {
             initial={{ opacity: 0, y: 18, scale: 0.985 }}
             transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           >
+            <div
+              className="auth-botanical-reflection"
+              aria-hidden="true"
+              style={{ backgroundImage: `url(/art/cabinet-floral-${background}.png)` }}
+            />
             <div className="border-black/[0.055] border-b px-6 py-5 sm:px-8 lg:hidden dark:border-white/[0.07]">
               <Logo size="lg" textSize="md" />
             </div>
@@ -152,21 +105,14 @@ const Auth: React.FC = () => {
             <form className="p-6 sm:p-8" onSubmit={handleSubmit}>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="mb-4 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-                    <HugeiconsIcon
-                      className="size-[18px]"
-                      icon={SparklesIcon}
-                      strokeWidth={1.8}
-                    />
-                  </div>
-                  <h2 className="font-heading font-semibold text-2xl tracking-[-0.035em]">
+                  <h2 className="auth-welcome-title">
                     {view === "login"
                       ? "Bon retour"
                       : `Bienvenue sur ${APP_NAME}`}
                   </h2>
                   <p className="mt-1.5 text-sm text-zinc-500 leading-relaxed dark:text-zinc-400">
                     {view === "login"
-                      ? "Retrouvez votre espace clinique exactement comme vous l’avez laissé."
+                      ? "Connectez-vous pour retrouver votre cabinet."
                       : "Créez votre espace de travail clinique local."}
                   </p>
                 </div>

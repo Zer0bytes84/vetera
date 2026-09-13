@@ -19,6 +19,8 @@ import {
   WalletCards,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFloralBackground } from "@/lib/floral-background";
+import "./section-cards.css";
 
 export interface SectionCardItem {
   badge: string;
@@ -129,104 +131,111 @@ export function SectionCards({
   compact?: boolean;
   className?: string;
 }) {
+  const [background] = useFloralBackground();
   return (
-    <ul
+    <section
       className={cn(
-        "grid list-none grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4",
+        "section-atlas",
+        compact && "section-atlas-compact",
         className
       )}
+      aria-label="Indicateurs de la rubrique"
     >
-      {items.map((item, idx) => {
-        const Icon = item.icon || resolveDefaultIcon(item.title, idx);
-        const isUp = item.trend === "up";
-        const isDown = item.trend === "down";
-        const signalTone = resolveSignalTone(item);
-        const tone = signalToneStyles[signalTone];
-        const showDescription =
-          item.footerDescription &&
-          item.footerDescription.toLowerCase() !==
-            item.footerTitle.toLowerCase();
-        const supportingCopy = showDescription
-          ? `${item.footerTitle} · ${item.footerDescription}`
-          : item.footerTitle;
-        let TrendIcon = Minus;
-        if (signalTone === "critical" || signalTone === "watch") {
-          TrendIcon = TriangleAlert;
-        } else if (isUp) {
-          TrendIcon = ArrowUpRight;
-        } else if (isDown) {
-          TrendIcon = ArrowDownRight;
-        }
+      <img
+        className="section-atlas-art"
+        src={`/art/cabinet-floral-${background}.png`}
+        alt=""
+        aria-hidden="true"
+      />
+      <div className="section-atlas-caption">
+        <PawPrint size={14} aria-hidden="true" />
+        Votre cabinet, en un regard
+      </div>
+      <ul className={cn("section-atlas-grid")}>
+        {items.map((item, idx) => {
+          const Icon = item.icon || resolveDefaultIcon(item.title, idx);
+          const isUp = item.trend === "up";
+          const isDown = item.trend === "down";
+          const signalTone = resolveSignalTone(item);
+          const tone = signalToneStyles[signalTone];
+          const showDescription =
+            item.footerDescription &&
+            item.footerDescription.toLowerCase() !==
+              item.footerTitle.toLowerCase();
+          const supportingCopy = showDescription
+            ? `${item.footerTitle} · ${item.footerDescription}`
+            : item.footerTitle;
+          let TrendIcon = Minus;
+          if (signalTone === "critical" || signalTone === "watch") {
+            TrendIcon = TriangleAlert;
+          } else if (isUp) {
+            TrendIcon = ArrowUpRight;
+          } else if (isDown) {
+            TrendIcon = ArrowDownRight;
+          }
 
-        return (
-          <li
-            data-signal-tone={signalTone}
-            className={cn(
-              "clinical-signal section-card-motion group relative rounded-[16px] border border-border/80 bg-card",
-              "shadow-[0_1px_2px_rgba(15,23,42,0.02)] transition-[background-color,border-color] duration-200",
-              "hover:border-foreground/15 hover:bg-muted/10",
-              "dark:border-white/[0.08] dark:bg-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_12px_28px_-20px_rgba(0,0,0,0.7)] dark:hover:border-white/[0.14] dark:hover:bg-card/80",
-              compact ? "min-h-[184px] p-4" : "min-h-[208px] p-4"
-            )}
-            key={item.title}
-          >
-            <div className="flex h-full min-w-0 flex-col">
-              <div className="flex items-start justify-between gap-3">
-                <span
-                  className={cn(
-                    "signal-icon flex size-10 shrink-0 items-center justify-center rounded-xl",
-                    tone.icon
-                  )}
-                >
-                  <Icon
+          return (
+            <li
+              data-signal-tone={signalTone}
+              className={cn("section-atlas-card group")}
+              key={item.title}
+            >
+              <div className="flex h-full min-w-0 flex-col">
+                <div className="flex items-start justify-between gap-3">
+                  <span
+                    className={cn(
+                      "signal-icon flex size-10 shrink-0 items-center justify-center rounded-xl",
+                      tone.icon
+                    )}
+                  >
+                    <Icon
+                      aria-hidden="true"
+                      className="size-5"
+                      strokeWidth={1.8}
+                    />
+                  </span>
+                  <span
                     aria-hidden="true"
-                    className="size-5"
-                    strokeWidth={1.8}
+                    className={cn("mt-2 size-1.5 rounded-full", tone.dot)}
                   />
-                </span>
-                <span
-                  aria-hidden="true"
-                  className={cn("mt-2 size-1.5 rounded-full", tone.dot)}
-                />
-              </div>
-              <p className="mt-4 font-medium text-[13px] text-muted-foreground leading-5">
-                {item.title}
-              </p>
-              <p
-                className={cn(
-                  "mt-1 min-w-0 break-words font-medium text-foreground tabular-nums leading-none tracking-[-0.035em] [overflow-wrap:anywhere]",
-                  compact ? "text-[28px]" : "text-[32px]"
-                )}
-                title={item.value}
-              >
-                {item.value}
-              </p>
-              <div className="signal-footer mt-5 flex min-h-10 items-center justify-between gap-2 rounded-lg px-2.5 py-2">
+                </div>
+                <p className="section-atlas-label">{item.title}</p>
                 <p
-                  className="min-w-0 text-[11px] text-muted-foreground leading-4"
-                  title={supportingCopy}
-                >
-                  {supportingCopy}
-                </p>
-                <span
                   className={cn(
-                    "flex max-w-[48%] shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-right font-medium text-[10px] leading-[1.2]",
-                    tone.status
+                    "section-atlas-value",
+                    compact ? "text-[28px]" : "text-[32px]"
                   )}
-                  title={item.badge}
+                  title={item.value}
                 >
-                  <TrendIcon
-                    aria-hidden="true"
-                    className="size-3 shrink-0"
-                    strokeWidth={2}
-                  />
-                  {item.badge}
-                </span>
+                  {item.value}
+                </p>
+                <div className="section-atlas-footer">
+                  <p
+                    className="min-w-0 text-[11px] text-muted-foreground leading-4"
+                    title={supportingCopy}
+                  >
+                    {supportingCopy}
+                  </p>
+                  <span
+                    className={cn(
+                      "flex max-w-[48%] shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-right font-medium text-[10px] leading-[1.2]",
+                      tone.status
+                    )}
+                    title={item.badge}
+                  >
+                    <TrendIcon
+                      aria-hidden="true"
+                      className="size-3 shrink-0"
+                      strokeWidth={2}
+                    />
+                    {item.badge}
+                  </span>
+                </div>
               </div>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

@@ -306,8 +306,8 @@ export function PatientDetailPage({
   };
 
   return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
-      <div className="mx-auto w-full max-w-7xl space-y-5">
+    <div className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
+      <div className="mx-auto w-full max-w-7xl space-y-4">
         <Button
           className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
           onClick={() => onNavigate("patients")}
@@ -530,10 +530,10 @@ export function PatientDetailPage({
         ) : null}
 
         <div className="space-y-4">
-          <section className="clinical-surface min-w-0 overflow-hidden" aria-labelledby="medical-record-title">
+          <section className="record-register clinical-surface min-w-0 overflow-hidden" aria-labelledby="medical-record-title">
             <div className="flex flex-col gap-4 border-border/70 border-b px-5 py-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex items-center gap-3">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-teal-50 text-teal-600 dark:bg-teal-400/10 dark:text-teal-300">
                   <FirstAid className="size-4" weight="duotone" />
                 </span>
                 <div>
