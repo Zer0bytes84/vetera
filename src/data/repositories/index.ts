@@ -35,6 +35,7 @@ import type {
   Prescription,
   PrescriptionItem,
   Product,
+  StockMovement,
   Reminder,
   Task,
   Transaction,
@@ -261,11 +262,13 @@ export function useAppointmentsRepository() {
     items,
     category,
     method,
+    amountReceivedDa,
   }: {
     appointmentId: string;
     items: Array<{ desc: string; amount: number }>;
     category?: string;
     method?: "cash" | "card";
+    amountReceivedDa?: number;
   }) => {
     const appointment = appointmentsStore.data.find(
       (entry) => entry.id === appointmentId
@@ -280,6 +283,11 @@ export function useAppointmentsRepository() {
       0
     );
     const totalAmount = toCentimes(totalAmountDa);
+    const receivedAmountDa = Math.min(
+      totalAmountDa,
+      Math.max(0, Number.isFinite(Number(amountReceivedDa)) ? Number(amountReceivedDa) : totalAmountDa)
+    );
+    const receivedAmount = toCentimes(receivedAmountDa);
 
     assertAppointmentStatusTransition(appointment.status, "completed");
 
@@ -328,12 +336,12 @@ export function useAppointmentsRepository() {
 
       invoiceNumber = invoice.number ?? invoiceNumber;
 
-      if (invoice.documentStatus === "issued" && invoice.balanceAmount > 0) {
+      if (invoice.documentStatus === "issued" && invoice.balanceAmount > 0 && receivedAmount > 0) {
         const invoiceDetail = await billingService.getInvoice(invoice.id);
         const paymentSequence = invoiceDetail?.payments.length ?? 0;
         await billingService.recordPayment({
           invoiceId: invoice.id,
-          amount: invoice.balanceAmount,
+          amount: Math.min(invoice.balanceAmount, receivedAmount),
           method: method ?? "cash",
           paidAt: now,
           reference: appointment.id,
@@ -358,17 +366,17 @@ export function useAppointmentsRepository() {
       );
     }
 
-    if (totalAmount > 0 && !isTauriRuntime()) {
+    if (receivedAmount > 0 && !isTauriRuntime()) {
       // Read persisted rows, not the render snapshot, when retrying an export.
       const existing = getBrowserTable<Transaction>("transactions").find(
         (entry) => entry.referenceId === appointment.id && entry.type === "income" && entry.status === "paid"
       );
-      if (existing && existing.amount !== totalAmount) {
+      if (existing && existing.amount !== receivedAmount) {
         throw new Error("Un encaissement existe déjà avec un autre montant. Consultez Finances.");
       }
       if (!existing) {
         const payment = await transactionsStore.add({
-          amount: totalAmount,
+          amount: receivedAmount,
           type: "income",
           category: category ?? "Consultation",
           description: `Prestation: ${appointment.title}`,
@@ -381,7 +389,7 @@ export function useAppointmentsRepository() {
       }
     }
 
-    return { totalAmount, totalAmountDa, invoiceNumber };
+    return { totalAmount, totalAmountDa, amountReceived: receivedAmount, amountReceivedDa: receivedAmountDa, balanceAmountDa: totalAmountDa - receivedAmountDa, invoiceNumber };
   };
 
   return {
@@ -626,6 +634,7 @@ export function useTransactionsRepository() {
 
 export function useProductsRepository() {
   const productsStore = useSQLite<Product>("products");
+  const movementsStore = useSQLite<StockMovement>("stock_movements");
   const transactionsStore = useSQLite<Transaction>("transactions");
 
   const restockProduct = async ({
@@ -633,11 +642,13 @@ export function useProductsRepository() {
     quantity,
     unitCostAmount,
     createExpense = true,
+    expenseStatus = "paid",
   }: {
     productId: string;
     quantity: number;
     unitCostAmount: number;
     createExpense?: boolean;
+    expenseStatus?: Transaction["status"];
   }) => {
     if (quantity <= 0) {
       throw new Error(
@@ -651,7 +662,67 @@ export function useProductsRepository() {
     }
 
     const newQuantity = Number(product.quantity) + Number(quantity);
+
+    if (isTauriRuntime()) {
+      const now = toSQLiteTimestamp(new Date());
+      await runDbTransaction(async (db) => {
+        await db.execute(
+          "UPDATE products SET quantity = ?, updated_at = ? WHERE id = ?",
+          [newQuantity, now, product.id]
+        );
+        await db.execute(
+          `INSERT INTO stock_movements (
+            id, product_id, type, quantity_delta, quantity_after,
+            unit_cost_amount, reason, created_at, updated_at
+          ) VALUES (?, ?, 'restock', ?, ?, ?, ?, ?, ?)`,
+          [
+            generateId(),
+            product.id,
+            Number(quantity),
+            newQuantity,
+            unitCostAmount,
+            "Réapprovisionnement",
+            now,
+            now,
+          ]
+        );
+        if (createExpense && unitCostAmount > 0) {
+          await db.execute(
+            `INSERT INTO transactions (
+              id, date, amount, type, category, description,
+              reference_id, method, status, created_at, updated_at
+            ) VALUES (?, ?, ?, 'expense', 'Stock', ?, ?, 'cash', ?, ?, ?)`,
+            [
+              generateId(),
+              now,
+              Math.round(unitCostAmount * quantity),
+              `Réappro: ${product.name} (x${quantity})`,
+              product.id,
+              expenseStatus,
+              now,
+              now,
+            ]
+          );
+        }
+      });
+      await Promise.all([
+        productsStore.refresh(),
+        movementsStore.refresh(),
+        transactionsStore.refresh(),
+      ]);
+      return;
+    }
+
     await productsStore.update(product.id, { quantity: newQuantity });
+
+    await movementsStore.add({
+      productId: product.id,
+      type: "restock",
+      quantityDelta: Number(quantity),
+      quantityAfter: newQuantity,
+      unitCostAmount,
+      reason: "Réapprovisionnement",
+    });
 
     if (createExpense && unitCostAmount > 0) {
       await transactionsStore.add({
@@ -661,14 +732,67 @@ export function useProductsRepository() {
         description: `Réappro: ${product.name} (x${quantity})`,
         referenceId: product.id,
         method: "cash",
-        status: "paid",
+        status: expenseStatus,
         date: new Date().toISOString(),
       } as Omit<Transaction, "id" | "createdAt" | "updatedAt">);
     }
   };
 
+  const adjustProductStock = async ({
+    productId,
+    quantity,
+    reason,
+  }: {
+    productId: string;
+    quantity: number;
+    reason: string;
+  }) => {
+    if (!Number.isFinite(quantity) || quantity < 0) {
+      throw new Error("La quantité comptée doit être positive ou nulle.");
+    }
+    if (!reason.trim()) {
+      throw new Error("Un motif est requis pour corriger le stock.");
+    }
+    const product = productsStore.data.find((entry) => entry.id === productId);
+    if (!product) throw new Error("Produit introuvable.");
+    const delta = Number(quantity) - Number(product.quantity);
+    if (delta === 0) return;
+
+    if (isTauriRuntime()) {
+      const now = toSQLiteTimestamp(new Date());
+      await runDbTransaction(async (db) => {
+        await db.execute(
+          "UPDATE products SET quantity = ?, updated_at = ? WHERE id = ?",
+          [quantity, now, product.id]
+        );
+        await db.execute(
+          `INSERT INTO stock_movements (
+            id, product_id, type, quantity_delta, quantity_after,
+            reason, created_at, updated_at
+          ) VALUES (?, ?, 'adjustment', ?, ?, ?, ?, ?)`,
+          [generateId(), product.id, delta, quantity, reason.trim(), now, now]
+        );
+      });
+      await Promise.all([productsStore.refresh(), movementsStore.refresh()]);
+      return;
+    }
+
+    await productsStore.update(product.id, { quantity });
+    await movementsStore.add({
+      productId: product.id,
+      type: "adjustment",
+      quantityDelta: delta,
+      quantityAfter: quantity,
+      reason: reason.trim(),
+    });
+  };
+
   return {
     ...productsStore,
+    movements: movementsStore.data,
+    movementsLoading: movementsStore.loading,
+    adjustProductStock,
+    recordStockMovement: movementsStore.add,
     restockProduct,
   };
 }

@@ -9,10 +9,10 @@ export type LayoutVariant =
   | "glass";
 
 const LAYOUT_COLLAPSIBLE_KEY = "layout_collapsible_v7";
-const LAYOUT_VARIANT_KEY = "layout_variant_v7";
+const LAYOUT_VARIANT_KEY = "layout_variant_v8";
 const SIDEBAR_GLASS_CONTRAST_KEY = "sidebar_glass_contrast_v1";
 
-const DEFAULT_VARIANT: LayoutVariant = "inset";
+const DEFAULT_VARIANT: LayoutVariant = "minimal";
 const DEFAULT_COLLAPSIBLE: Collapsible = "icon";
 const DEFAULT_GLASS_CONTRAST = 62;
 

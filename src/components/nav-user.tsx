@@ -59,7 +59,7 @@ export function NavUser({
             render={
               <SidebarMenuButton
                 aria-label={`Ouvrir le menu du compte de ${user.name}`}
-                className="!gap-2 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-12 min-w-0 flex-1 rounded-[14px] px-2 transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-11"
+                className="!gap-2 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-16 min-w-0 flex-1 rounded-[16px] border border-sidebar-border/60 bg-sidebar-accent/45 px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-14"
                 size="lg"
                 tooltip={`Menu du compte de ${user.name}`}
               />
@@ -78,9 +78,6 @@ export function NavUser({
               >
                 {user.name}
               </span>
-              <span className="mt-0.5 truncate text-[10.5px] text-sidebar-foreground/55">
-                {user.email}
-              </span>
             </div>
             <HugeiconsIcon
               aria-hidden="true"
@@ -91,9 +88,9 @@ export function NavUser({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-64 rounded-[16px] border-border/80 p-1.5 shadow-[0_18px_48px_-24px_rgba(15,23,42,0.32)] dark:shadow-[0_22px_52px_-26px_rgba(0,0,0,0.7)]"
+            className="w-72 rounded-[20px] border-border/80 p-1.5 shadow-[0_18px_48px_-24px_rgba(15,23,42,0.32)] dark:shadow-[0_22px_52px_-26px_rgba(0,0,0,0.7)]"
             side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
+            sideOffset={10}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
@@ -116,9 +113,10 @@ export function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Votre espace clinique</div>
             <DropdownMenuGroup>
               <DropdownMenuItem
-                className="h-9 rounded-[10px]"
+                className="h-11 rounded-[12px]"
                 onClick={onProfile}
               >
                 <HugeiconsIcon
@@ -129,7 +127,7 @@ export function NavUser({
                 Mon profil
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="h-9 rounded-[10px]"
+                className="h-11 rounded-[12px]"
                 onClick={onFinances}
               >
                 <HugeiconsIcon
@@ -140,7 +138,7 @@ export function NavUser({
                 Finances
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="h-9 rounded-[10px]"
+                className="h-11 rounded-[12px]"
                 onClick={onNotifications}
               >
                 <HugeiconsIcon
@@ -151,7 +149,7 @@ export function NavUser({
                 Notifications
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="h-9 rounded-[10px]"
+                className="h-11 rounded-[12px]"
                 onClick={onSettings}
               >
                 <HugeiconsIcon

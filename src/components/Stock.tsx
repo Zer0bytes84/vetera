@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { type SectionCardItem, SectionCards } from "@/components/section-cards";
 import { StockStatusBadge } from "@/components/shared/StatusBadge";
+import { StockWorkspace } from "@/components/stock/stock-workspace";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,28 +72,19 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import type { Product } from "@/types/db";
+import type { Product, Transaction } from "@/types/db";
 import { formatDZD, toCentimes } from "@/utils/currency";
 
-// --- CATEGORY ICONS MAPPING ---
 const getCategoryIcon = (category: string) => {
   switch (category) {
-    case "Médicaments":
-      return PillIcon;
-    case "Vaccins":
-      return GivePillIcon;
-    case "Antiparasitaires":
-      return Bug01Icon;
-    case "Anti-inflammatoires":
-      return Activity01Icon;
-    case "Matériel Médical":
-      return Scissor01Icon;
-    case "Alimentation":
-      return KitchenUtensilsIcon;
-    case "Hygiène":
-      return SparklesIcon;
-    default:
-      return Package02Icon;
+    case "Médicaments": return PillIcon;
+    case "Vaccins": return GivePillIcon;
+    case "Antiparasitaires": return Bug01Icon;
+    case "Anti-inflammatoires": return Activity01Icon;
+    case "Matériel Médical": return Scissor01Icon;
+    case "Alimentation": return KitchenUtensilsIcon;
+    case "Hygiène": return SparklesIcon;
+    default: return Package02Icon;
   }
 };
 
@@ -266,8 +258,10 @@ const Stock: React.FC = () => {
     loading,
     add: addProduct,
     update: updateProduct,
-    remove: removeProduct,
     restockProduct,
+    movements,
+    recordStockMovement,
+    adjustProductStock,
   } = useProductsRepository();
   const { add: addTransaction } = useTransactionsRepository();
 
@@ -280,83 +274,29 @@ const Stock: React.FC = () => {
     salePriceAmount: 0,
   });
   const [createExpense, setCreateExpense] = useState(true);
+  const [expenseStatus, setExpenseStatus] = useState<Transaction["status"]>("paid");
 
   const [restockQty, setRestockQty] = useState<number>(0);
   const [restockCost, setRestockCost] = useState<number>(0);
+  const activeProducts = products.filter((product) => !product.archivedAt);
 
-  // Stats
-  const totalProducts = products.length;
-  const lowStock = products.filter(
-    (p) => p.quantity <= p.minStock && p.quantity > 0
-  ).length;
-  const outOfStock = products.filter((p) => p.quantity === 0).length;
-  const stockValue = products.reduce(
-    (sum, product) => sum + product.quantity * product.purchasePriceAmount,
-    0
-  );
+  const totalProducts = activeProducts.length;
+  const lowStock = activeProducts.filter((p) => p.quantity <= p.minStock && p.quantity > 0).length;
+  const outOfStock = activeProducts.filter((p) => p.quantity === 0).length;
+  const stockValue = activeProducts.reduce((sum, product) => sum + product.quantity * product.purchasePriceAmount, 0);
+  const sectionCards = useMemo<SectionCardItem[]>(() => [
+    { title: "Produits", value: String(totalProducts), badge: `${activeProducts.length} au total`, trend: "neutral", footerTitle: "Références actives", footerDescription: "Catalogue", icon: Package },
+    { title: "Stock bas", value: String(lowStock), badge: lowStock > 0 ? "à commander" : "aucune alerte", trend: lowStock > 0 ? "down" : "neutral", footerTitle: "Sous le seuil minimum", footerDescription: "Seuil atteint", icon: TriangleAlert },
+    { title: "Ruptures", value: String(outOfStock), badge: outOfStock > 0 ? "critique" : "aucune", trend: outOfStock > 0 ? "down" : "neutral", footerTitle: "Produits indisponibles", footerDescription: "Stock épuisé", icon: Ban },
+    { title: "Valeur stock", value: formatDZD(stockValue), badge: "prix d'achat", trend: "neutral", footerTitle: "Valeur immobilisée", footerDescription: "Coût d'acquisition total", icon: Wallet },
+  ], [totalProducts, lowStock, outOfStock, stockValue, activeProducts.length]);
 
-  const sectionCards = useMemo<SectionCardItem[]>(
-    () => [
-      {
-        title: "Produits",
-        value: String(totalProducts),
-        badge: `${products.length} au total`,
-        trend: "neutral",
-        footerTitle: "Références actives",
-        footerDescription: "Catalogue",
-        icon: Package,
-      },
-      {
-        title: "Stock bas",
-        value: String(lowStock),
-        badge: lowStock > 0 ? "à commander" : "aucune alerte",
-        trend: lowStock > 0 ? "down" : "neutral",
-        footerTitle: "Sous le seuil minimum",
-        footerDescription: "Seuil atteint",
-        icon: TriangleAlert,
-      },
-      {
-        title: "Ruptures",
-        value: String(outOfStock),
-        badge: outOfStock > 0 ? "critique" : "aucune",
-        trend: outOfStock > 0 ? "down" : "neutral",
-        footerTitle: "Produits indisponibles",
-        footerDescription: "Stock épuisé",
-        icon: Ban,
-      },
-      {
-        title: "Valeur stock",
-        value: formatDZD(stockValue),
-        badge: "prix d'achat",
-        trend: "neutral",
-        footerTitle: "Valeur immobilisée",
-        footerDescription: "Coût d'acquisition total",
-        icon: Wallet,
-      },
-    ],
-    [totalProducts, lowStock, outOfStock, stockValue, products.length]
-  );
-
-  // Filtering
-  const filteredProducts = useMemo(
-    () =>
-      products.filter((product) => {
-        const matchesCategory =
-          activeCategory === "Tous" || product.category === activeCategory;
-        const needle = deferredSearchTerm.toLowerCase();
-        const haystack = [
-          product.name,
-          product.category,
-          product.subCategory,
-          product.unit,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        return matchesCategory && haystack.includes(needle);
-      }),
-    [products, activeCategory, deferredSearchTerm]
-  );
+  const filteredProducts = useMemo(() => activeProducts.filter((product) => {
+    const matchesCategory = activeCategory === "Tous" || product.category === activeCategory;
+    const needle = deferredSearchTerm.toLowerCase();
+    const haystack = [product.name, product.category, product.subCategory, product.unit].filter(Boolean).join(" ").toLowerCase();
+    return matchesCategory && haystack.includes(needle);
+  }), [activeProducts, activeCategory, deferredSearchTerm]);
 
   // --- Handlers ---
   const handleOpenAdd = () => {
@@ -370,6 +310,7 @@ const Stock: React.FC = () => {
       salePriceAmount: 0,
     });
     setCreateExpense(true);
+    setExpenseStatus("paid");
     setIsProductModalOpen(true);
   };
 
@@ -389,6 +330,7 @@ const Stock: React.FC = () => {
     setRestockQty(0);
     setRestockCost(product.purchasePriceAmount / 100);
     setCreateExpense(true);
+    setExpenseStatus("paid");
     setIsRestockModalOpen(true);
   };
 
@@ -398,8 +340,10 @@ const Stock: React.FC = () => {
     }
 
     try {
-      await removeProduct(productPendingDelete.id);
-      toast.success(`${productPendingDelete.name} a été supprimé.`);
+      await updateProduct(productPendingDelete.id, {
+        archivedAt: new Date().toISOString(),
+      });
+      toast.success(`${productPendingDelete.name} a été archivé.`);
       setProductPendingDelete(null);
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -427,9 +371,9 @@ const Stock: React.FC = () => {
         name: formData.name,
         category: formData.category || "Autre",
         subCategory: formData.subCategory || "",
-        quantity: Number(formData.quantity) || 0,
+        quantity: Math.max(0, Number(formData.quantity) || 0),
         unit: formData.unit || "unité",
-        minStock: Number(formData.minStock) || 5,
+        minStock: Math.max(0, Number(formData.minStock) || 0),
         purchasePriceAmount: toCentimes(Number(formData.purchasePriceAmount)),
         salePriceAmount: toCentimes(Number(formData.salePriceAmount)),
         expiryDate: formData.expiryDate || "",
@@ -443,6 +387,16 @@ const Stock: React.FC = () => {
         const added = await addProduct(productData as any);
         if (added) {
           productId = added.id;
+          if (productData.quantity > 0) {
+            await recordStockMovement({
+              productId: added.id,
+              type: "opening",
+              quantityDelta: productData.quantity,
+              quantityAfter: productData.quantity,
+              unitCostAmount: productData.purchasePriceAmount,
+              reason: "Stock initial",
+            });
+          }
         }
       }
 
@@ -464,7 +418,7 @@ const Stock: React.FC = () => {
               category: "Achat Stock",
               description: `Stock initial: ${formData.name} (x${formData.quantity})`,
               method: "cash",
-              status: "paid",
+              status: expenseStatus,
             } as any);
           } catch (txError) {
             console.error("Failed to add initial stock transaction:", txError);
@@ -508,6 +462,7 @@ const Stock: React.FC = () => {
         quantity: restockQty,
         unitCostAmount: toCentimes(restockCost),
         createExpense,
+        expenseStatus,
       });
 
       setIsRestockModalOpen(false);
@@ -536,7 +491,10 @@ const Stock: React.FC = () => {
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <MotivationalHeader section="stock" />
+        <MotivationalHeader
+          section="stock"
+          subtitle={`${totalProducts} référence${totalProducts > 1 ? "s" : ""} active${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`}
+        />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button className="h-10 rounded-full px-5" onClick={handleOpenAdd}>
             <HugeiconsIcon
@@ -549,9 +507,24 @@ const Stock: React.FC = () => {
         </div>
       </div>
 
-      <SectionCards items={sectionCards} />
+      <StockWorkspace
+        loading={loading}
+        movements={movements}
+        onAdjust={async (product, quantity, reason) => {
+          await adjustProductStock({ productId: product.id, quantity, reason });
+          toast.success(`Inventaire de ${product.name} mis à jour.`);
+        }}
+        onDelete={setProductPendingDelete}
+        onEdit={handleOpenEdit}
+        onRestock={handleOpenRestock}
+        products={activeProducts}
+      />
 
-      <Card className="clinical-feature-surface flex min-h-[500px] flex-col overflow-hidden border-border shadow-none">
+      <div className="hidden">
+        <SectionCards items={sectionCards} />
+      </div>
+
+      <Card className="hidden clinical-feature-surface min-h-[500px] flex-col overflow-hidden border-border shadow-none">
         <CardHeader className="border-border/70 border-b px-5 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <span className="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900">
@@ -876,10 +849,10 @@ const Stock: React.FC = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer ce produit ?</AlertDialogTitle>
+          <AlertDialogTitle>Archiver ce produit ?</AlertDialogTitle>
             <AlertDialogDescription>
-              {productPendingDelete?.name} sera retiré du catalogue. Cette
-              action est irréversible.
+              {productPendingDelete?.name} sera retiré du catalogue actif. Son
+              historique de stock sera conservé.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -888,7 +861,7 @@ const Stock: React.FC = () => {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDelete}
             >
-              Supprimer
+              Archiver
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1188,27 +1161,21 @@ const Stock: React.FC = () => {
             </Field>
 
             {!selectedProduct && Number(formData.quantity) > 0 && (
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-150 bg-zinc-50/30 p-4 transition-colors hover:bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/10 dark:hover:bg-zinc-900/20">
-                <Checkbox
-                  checked={createExpense}
-                  onCheckedChange={(checked) => setCreateExpense(!!checked)}
-                />
-                <div>
-                  <span className="font-medium text-foreground text-sm">
-                    Générer une dépense
-                  </span>
-                  <p className="text-muted-foreground text-xs">
-                    Ajoutera automatiquement{" "}
-                    {formatDZD(
-                      toCentimes(
-                        (Number(formData.quantity) || 0) *
-                          (Number(formData.purchasePriceAmount) || 0)
-                      )
-                    )}{" "}
-                    aux finances
-                  </p>
-                </div>
-              </label>
+              <div className="grid gap-3 rounded-xl border border-zinc-150 bg-zinc-50/30 p-4 dark:border-zinc-800 dark:bg-zinc-900/10">
+                <label className="flex cursor-pointer items-center gap-3">
+                  <Checkbox checked={createExpense} onCheckedChange={(checked) => setCreateExpense(!!checked)} />
+                  <div className="flex-1">
+                    <span className="font-medium text-foreground text-sm">Enregistrer l’achat en finances</span>
+                    <p className="text-muted-foreground text-xs">Montant : {formatDZD(toCentimes((Number(formData.quantity) || 0) * (Number(formData.purchasePriceAmount) || 0)))}</p>
+                  </div>
+                </label>
+                {createExpense && (
+                  <NativeSelect className="w-full" onChange={(event) => setExpenseStatus(event.target.value as Transaction["status"])} value={expenseStatus}>
+                    <NativeSelectOption value="paid">Achat déjà payé</NativeSelectOption>
+                    <NativeSelectOption value="pending">À payer au fournisseur</NativeSelectOption>
+                  </NativeSelect>
+                )}
+              </div>
             )}
             </FieldGroup>
           </FormDialogBody>
@@ -1276,23 +1243,18 @@ const Stock: React.FC = () => {
               </Field>
               </div>
 
-            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-150 bg-zinc-50/30 p-4 transition-colors hover:bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/10 dark:hover:bg-zinc-900/20">
-              <Checkbox
-                checked={createExpense}
-                onCheckedChange={(checked) => setCreateExpense(!!checked)}
-              />
-              <div>
-                <span className="font-medium text-foreground text-sm">
-                  Déduire des Finances
-                </span>
-                <p className="text-muted-foreground text-xs">
-                  Total:{" "}
-                  <span className="font-bold text-foreground">
-                    {formatDZD(toCentimes(restockQty * restockCost))}
-                  </span>
-                </p>
-              </div>
-            </label>
+            <div className="grid gap-3 rounded-xl border border-zinc-150 bg-zinc-50/30 p-4 dark:border-zinc-800 dark:bg-zinc-900/10">
+              <label className="flex cursor-pointer items-center gap-3">
+                <Checkbox checked={createExpense} onCheckedChange={(checked) => setCreateExpense(!!checked)} />
+                <div className="flex-1"><span className="font-medium text-foreground text-sm">Enregistrer l’achat en finances</span><p className="text-muted-foreground text-xs">Total : <span className="font-bold text-foreground">{formatDZD(toCentimes(restockQty * restockCost))}</span></p></div>
+              </label>
+              {createExpense && (
+                <NativeSelect className="w-full" onChange={(event) => setExpenseStatus(event.target.value as Transaction["status"])} value={expenseStatus}>
+                  <NativeSelectOption value="paid">Achat déjà payé</NativeSelectOption>
+                  <NativeSelectOption value="pending">À payer au fournisseur</NativeSelectOption>
+                </NativeSelect>
+              )}
+            </div>
             </FieldGroup>
           </FormDialogBody>
 

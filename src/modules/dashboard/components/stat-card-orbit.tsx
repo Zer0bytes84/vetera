@@ -57,8 +57,17 @@ export function StatCardOrbit({
   const t = toneStyles[tone];
 
   return (
-    <Card className="dashboard-luxe-card group overflow-hidden rounded-[26px] bg-card shadow-none transition-all duration-200 hover:-translate-y-0.5">
-      <CardContent className="flex min-h-[148px] flex-col justify-between p-5">
+    <Card className="dashboard-luxe-card group relative overflow-hidden rounded-[26px] bg-card shadow-none transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+      {/* Liquid glass sheen and reflection */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[26px]">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent dark:from-white/10" />
+        <div
+          className="absolute -inset-full bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.4)_0%,transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.1)_0%,transparent_60%)]"
+        />
+        <div className="absolute inset-0 rounded-[26px] ring-1 ring-inset ring-white/50 transition-all duration-300 group-hover:ring-white/80 dark:ring-white/10 dark:group-hover:ring-white/20" />
+      </div>
+
+      <CardContent className="relative z-10 flex min-h-[148px] flex-col justify-between p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1.5">
             <p className="font-medium text-[11px] text-muted-foreground/85 tracking-[0.04em]">

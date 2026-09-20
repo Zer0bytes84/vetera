@@ -107,7 +107,7 @@ export function AppSidebar({
     title: t(item.labelKey),
     icon: (
       <HugeiconsIcon
-        className="size-[19.5px] transition-all duration-200 ease-out"
+        className="size-5"
         icon={item.icon}
         strokeWidth={1.5}
       />
@@ -123,7 +123,7 @@ export function AppSidebar({
     name: t(item.labelKey),
     icon: (
       <HugeiconsIcon
-        className="size-[19.5px] transition-all duration-200 ease-out"
+        className="size-5"
         icon={item.icon}
         strokeWidth={1.5}
       />
@@ -136,7 +136,7 @@ export function AppSidebar({
     title: t(item.labelKey),
     icon: (
       <HugeiconsIcon
-        className="size-[19.5px] transition-all duration-200 ease-out"
+        className="size-5"
         icon={item.icon}
         strokeWidth={1.5}
       />
@@ -161,7 +161,7 @@ export function AppSidebar({
       <SidebarHeader
         className={cn(
           "relative z-10 flex shrink-0 flex-row items-center p-0",
-          "h-[calc(var(--header-height)+var(--titlebar-clearance))] transition-all duration-300",
+          "h-[calc(var(--header-height)+var(--titlebar-clearance))]",
           sidebarHeaderPadding,
           "w-full bg-transparent"
         )}
@@ -193,7 +193,7 @@ export function AppSidebar({
           <button
             aria-label="Tableau de bord Baitari"
             className={cn(
-              "group flex items-center rounded-xl outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98]",
+              "group flex items-center rounded-xl outline-none transition-opacity duration-150 focus-visible:ring-2 focus-visible:ring-primary/40",
               isCollapsed
                 ? "size-9 justify-center hover:bg-sidebar-accent/50"
                 : "gap-2.5 px-1 py-1 hover:opacity-85"

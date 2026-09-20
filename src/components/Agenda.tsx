@@ -2766,26 +2766,26 @@ const Agenda: React.FC = () => {
         </div>
       </div>
 
-      <Card>
-        <CardHeader className="border-b">
-          <CardDescription>Liste opérationnelle</CardDescription>
-          <CardTitle className="text-2xl tracking-[-0.04em]">
-            Tableau du planning
+      <Card className="overflow-hidden rounded-2xl border-border/70 shadow-none">
+        <CardHeader className="gap-1 border-b border-border/50 px-6 py-5">
+          <CardTitle className="text-xl font-semibold tracking-tight">
+            Planning des rendez-vous
           </CardTitle>
+          <CardDescription className="text-sm">Patients, créneaux et suivi des visites.</CardDescription>
           <CardAction>
-            <Badge variant="outline">
-              {visibleRowsCount} visible{visibleRowsCount > 1 ? "s" : ""}
+            <Badge className="rounded-full border-transparent bg-violet-500/10 px-3 py-1 text-violet-700 dark:text-violet-300" variant="outline">
+              {visibleRowsCount} rendez-vous
             </Badge>
           </CardAction>
         </CardHeader>
 
         <CardContent className="flex min-h-0 flex-1 flex-col px-0 pb-0">
           <Tabs
-            className="gap-4"
+            className="gap-0"
             onValueChange={(value) => setTableTab(value as TableTab)}
             value={tableTab}
           >
-            <div className="flex flex-col gap-3 border-b px-6 py-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-col gap-3 border-b px-6 py-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
               <TabsList className="group-data-horizontal/tabs:!h-9 rounded-xl">
                 {TABLE_TABS.map((tab) => (
                   <TabsTrigger
@@ -2798,7 +2798,7 @@ const Agenda: React.FC = () => {
                 ))}
               </TabsList>
 
-              <div className="grid w-full gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px] xl:ml-auto xl:max-w-4xl xl:flex-1">
+              <div className="grid w-full gap-3 lg:grid-cols-[minmax(200px,1fr)_190px_190px] 2xl:ml-auto 2xl:max-w-4xl 2xl:flex-1">
                 <div className="relative">
                   <HugeiconsIcon
                     className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
@@ -2806,7 +2806,7 @@ const Agenda: React.FC = () => {
                     strokeWidth={1.5}
                   />
                   <Input
-                    className="h-9 rounded-xl border-border/60 bg-muted/40 pl-10 text-sm focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20"
+                    className="h-9 rounded-xl border-border/60 bg-muted/40 pl-10 text-sm focus-visible:border-ring focus-visible:ring-ring/20"
                     onChange={(event) => setSearchTerm(event.target.value)}
                     placeholder="Rechercher un patient, un motif..."
                     value={searchTerm}
@@ -2814,7 +2814,7 @@ const Agenda: React.FC = () => {
                 </div>
 
                 <NativeSelect
-                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-emerald-500 [&>select]:focus-visible:ring-emerald-500/20"
+                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-ring [&>select]:focus-visible:ring-ring/20"
                   onChange={(event) => setVetFilter(event.target.value)}
                   value={vetFilter}
                 >
@@ -2829,7 +2829,7 @@ const Agenda: React.FC = () => {
                 </NativeSelect>
 
                 <NativeSelect
-                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-emerald-500 [&>select]:focus-visible:ring-emerald-500/20"
+                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-ring [&>select]:focus-visible:ring-ring/20"
                   onChange={(event) => setStatusFilter(event.target.value)}
                   value={statusFilter}
                 >
@@ -2902,28 +2902,28 @@ const Agenda: React.FC = () => {
                       </EmptyContent>
                     </Empty>
                   ) : (
-                    <Table>
-                      <TableHeader className="bg-muted/5">
-                        <TableRow className="hover:bg-transparent">
-                          <TableHead className="w-[22%] min-w-[130px] py-3.5 pl-6 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                    <Table className="min-w-[900px]">
+                      <TableHeader className="bg-[#edf3ef] dark:bg-[#25332d] [&_th]:h-12 [&_th]:whitespace-nowrap [&_th]:text-[13px] [&_th]:font-semibold [&_th]:tracking-normal [&_th]:text-[#456152] dark:[&_th]:text-[#c0d4c7]">
+                        <TableRow className="border-b border-[#dce7df] hover:bg-transparent dark:border-[#35473d]">
+                          <TableHead className="w-[22%] min-w-[130px] py-3.5 pl-6 font-medium text-xs text-muted-foreground">
                             Dossier
                           </TableHead>
-                          <TableHead className="w-[18%] min-w-[110px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                          <TableHead className="w-[18%] min-w-[110px] py-3.5 font-medium text-xs text-muted-foreground">
                             Propriétaire
                           </TableHead>
-                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-medium text-xs text-muted-foreground">
                             Acte
                           </TableHead>
-                          <TableHead className="w-[20%] min-w-[130px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                          <TableHead className="w-[20%] min-w-[130px] py-3.5 font-medium text-xs text-muted-foreground">
                             Créneau
                           </TableHead>
-                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-medium text-xs text-muted-foreground">
                             Statut
                           </TableHead>
-                          <TableHead className="w-[12%] min-w-[100px] py-3.5 font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                          <TableHead className="w-[12%] min-w-[100px] py-3.5 font-medium text-xs text-muted-foreground">
                             Vétérinaire
                           </TableHead>
-                          <TableHead className="w-[4%] min-w-[40px] py-3.5 pr-6 text-right font-bold text-[11px] text-muted-foreground/80 uppercase tracking-wider">
+                          <TableHead className="w-[4%] min-w-[40px] py-3.5 pr-6 text-right font-medium text-xs text-muted-foreground">
                             Action
                           </TableHead>
                         </TableRow>
@@ -2938,7 +2938,7 @@ const Agenda: React.FC = () => {
                             : "";
                           return (
                             <TableRow
-                              className="cursor-pointer transition-colors hover:bg-muted/10"
+                              className="cursor-pointer border-border/50 transition-colors hover:bg-muted/35 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 [&>td]:py-4"
                               key={row.appointment.id}
                               tabIndex={0}
                               onKeyDown={(event) => {
@@ -2953,7 +2953,7 @@ const Agenda: React.FC = () => {
                             >
                               <TableCell className="w-[22%] min-w-[130px] pl-6">
                                 <div className="flex items-center gap-3.5">
-                                  <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500/10 to-teal-500/5 font-semibold text-emerald-600 text-sm ring-1 ring-emerald-500/20 dark:text-emerald-400">
+                                  <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 font-semibold text-violet-700 text-sm ring-1 ring-violet-500/10 dark:text-violet-300">
                                     {(row.patientName || "?")
                                       .slice(0, 2)
                                       .toUpperCase()}
@@ -2995,7 +2995,7 @@ const Agenda: React.FC = () => {
                               <TableCell className="w-[20%] min-w-[130px]">
                                 <div className="min-w-0">
                                   <p className="flex items-center gap-1.5 truncate font-semibold text-foreground text-sm tracking-tight">
-                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                    <span className="font-semibold tabular-nums text-foreground">
                                       {timePart}
                                     </span>
                                     {datePart && (

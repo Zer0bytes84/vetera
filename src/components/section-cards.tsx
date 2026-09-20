@@ -180,7 +180,22 @@ export function SectionCards({
               className={cn("section-atlas-card group")}
               key={item.title}
             >
-              <div className="flex h-full min-w-0 flex-col">
+              {/* Liquid glass specular sheen and reflection (no checkers) */}
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[18px]">
+                {/* Specular glass reflection sweep on hover */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-transparent to-transparent dark:from-white/10" />
+                <div
+                  className="absolute -inset-full bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.45)_0%,transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.12)_0%,transparent_60%)]"
+                />
+                {/* Subtle chromatic / liquid tint on hover */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                />
+                {/* Specular ring */}
+                <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-white/60 transition-all duration-300 group-hover:ring-white/90 dark:ring-white/10 dark:group-hover:ring-white/25" />
+              </div>
+
+              <div className="relative z-10 flex h-full min-w-0 flex-col">
                 <div className="flex items-start justify-between gap-3">
                   <span
                     className={cn(

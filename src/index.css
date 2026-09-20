@@ -2466,7 +2466,73 @@ html[data-header-pattern="quiet"] .header-pattern-live {
   border-bottom: 0;
 }
 
-/* Tone-specific luminous palettes (Light Theme) */
+/* Botanical editions: intact animal silhouettes, with quiet space for type. */
+.modal-banner-illustrated {
+  background: #faf8f1;
+  border-bottom: 1px solid rgb(91 105 86 / 0.12);
+}
+.modal-banner-illustrated::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--modal-botanical-image);
+  background-position: right bottom;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+  mask-image: linear-gradient(to left, black, transparent 26%);
+  -webkit-mask-image: linear-gradient(to left, black, transparent 26%);
+}
+.modal-banner-botanical {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  height: 100%;
+  aspect-ratio: 3 / 1;
+  z-index: -1;
+  pointer-events: none;
+  background-size: contain;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+  mask-image: linear-gradient(to right, black 25%, transparent 80%);
+  -webkit-mask-image: linear-gradient(to right, black 25%, transparent 80%);
+}
+.modal-banner-illustrated.modal-workflow-banner {
+  padding-inline-end: 160px;
+}
+.modal-banner-illustrated .modal-banner-glass {
+  background: rgb(255 255 255 / 0.5);
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.9), 0 3px 12px rgb(0 0 0 / 0.04);
+}
+.dark .modal-banner-illustrated {
+  background: var(--card);
+}
+.dark .modal-banner-illustrated .modal-banner-botanical,
+.dark .modal-banner-illustrated::before {
+  opacity: 0.3;
+  mix-blend-mode: luminosity;
+}
+.dark .modal-banner-illustrated .modal-banner-glass {
+  background: rgb(255 255 255 / 0.07);
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.12);
+}
+@media (max-width: 639px) {
+  .modal-banner-illustrated.modal-workflow-banner {
+    padding-inline-end: 110px;
+  }
+  .modal-banner-illustrated.modal-workflow-banner .modal-banner-marks {
+    display: none;
+  }
+  .modal-banner-illustrated .modal-banner-botanical {
+    height: min(100%, 120px);
+    top: auto;
+  }
+}
+
+/* Semantic icon palettes (Light Theme) */
 .modal-banner[data-tone="teal"] {
   --tone-glow: rgba(16, 185, 129, 0.28);
   --tone-icon: #0d684e;
@@ -3223,6 +3289,12 @@ html[data-header-pattern="quiet"] .header-pattern-live {
   margin-top: var(--titlebar-clearance);
   height: calc(100% - var(--titlebar-clearance));
 }
+/* The framed panel already supplies 16px of outer spacing. Match its
+   compact header clearance so the logo and both hairlines share one axis. */
+[data-variant="inset"] .restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-inner"] {
+  margin-top: 8px;
+  height: calc(100% - 8px);
+}
 .restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-header"] {
   height: var(--header-height);
   padding-top: 0 !important;
@@ -3230,8 +3302,11 @@ html[data-header-pattern="quiet"] .header-pattern-live {
 .restored-sidebar [data-slot="sidebar-header-separator"] {
   inset-inline: 0;
   width: 100%;
-  background: color-mix(in srgb, var(--foreground) 15%, transparent);
+  background: rgb(24 24 27 / 0.075);
   opacity: 1;
+}
+.dark .restored-sidebar [data-slot="sidebar-header-separator"] {
+  background: rgb(255 255 255 / 0.075);
 }
 [data-variant="minimal"] .restored-sidebar::before { display: none; }
 .restored-sidebar .sidebar-section-divider {
@@ -3772,7 +3847,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   scrollbar-color: var(--border) transparent;
 }
 .workspace-table [data-slot="table-header"] {
-  background: color-mix(in oklab, var(--primary) 4%, var(--card));
+  background: color-mix(in oklab, var(--muted) 35%, var(--card));
 }
 .workspace-table [data-slot="table-head"] {
   color: var(--muted-foreground);
@@ -3924,16 +3999,8 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   outline: 2px solid color-mix(in oklab, var(--primary) 24%, transparent);
   outline-offset: 2px;
 }
-.agenda-workspace {
-  --primary: oklch(0.49 0.17 267);
-  --primary-foreground: white;
-}
-.dark .agenda-workspace {
-  --primary: oklch(0.75 0.12 267);
-  --primary-foreground: oklch(0.18 0.03 267);
-}
 .agenda-planner-heading {
-  background: color-mix(in oklab, var(--primary) 8%, var(--card));
+  background: var(--card);
 }
 .agenda-planner-heading [data-slot="badge"] {
   background: var(--card);
@@ -3941,11 +4008,12 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   font-variant-numeric: tabular-nums;
 }
 .agenda-date-rail {
-  background: color-mix(in oklab, var(--primary) 4%, var(--card));
+  background: color-mix(in oklab, var(--muted) 35%, var(--card));
 }
 .agenda-day-summary {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: color-mix(in oklab, var(--muted) 45%, var(--card));
+  color: var(--foreground);
+  border: 1px solid var(--border);
 }
 .agenda-day-summary .text-muted-foreground {
   color: inherit;
@@ -3953,7 +4021,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 }
 .agenda-day-summary > div:last-child,
 .agenda-day-summary > div:last-child > * {
-  border-color: color-mix(in oklab, var(--primary-foreground) 25%, transparent);
+  border-color: var(--border);
 }
 .agenda-toolbar [data-slot="tabs-trigger"] {
   min-height: 32px;
@@ -3961,8 +4029,9 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   border-radius: 8px;
 }
 .agenda-toolbar [data-slot="tabs-trigger"][data-active] {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
 }
 .agenda-date-rail button:focus-visible {
   outline: 2px solid var(--primary);

@@ -1,43 +1,41 @@
 import { XIcon } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import airbrushTexture from "@/assets/modal-airbrush.webp";
-import amberTexture from "@/assets/modal-amber-light.webp";
 import { DialogClose } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 type ModalBannerTone = "teal" | "sky" | "amber" | "violet" | "rose";
 
 // Stable compositions keep each workflow recognizable across openings/themes.
-const modalArtworks = {
-  patient: [airbrushTexture, 0, "50% 32%", false],
-  "patient-record": [airbrushTexture, 38, "50% 58%", true],
-  "patient-created": [airbrushTexture, 115, "50% 40%", false],
-  "patient-picker": [airbrushTexture, 185, "50% 20%", true],
-  appointment: [airbrushTexture, 235, "50% 64%", true],
-  consultation: [airbrushTexture, 155, "50% 36%", false],
-  product: [amberTexture, 0, "50% 54%", false],
-  restock: [airbrushTexture, 120, "50% 68%", true],
-  invoice: [airbrushTexture, 305, "50% 44%", true],
-  "invoice-detail": [airbrushTexture, 290, "50% 65%", false],
-  payment: [amberTexture, 25, "50% 42%", true],
-  transaction: [amberTexture, 335, "50% 65%", false],
-  billing: [amberTexture, 350, "50% 30%", true],
-  team: [airbrushTexture, 335, "50% 70%", true],
-  credentials: [airbrushTexture, 275, "50% 26%", false],
-  weight: [airbrushTexture, 145, "50% 78%", true],
-  vaccination: [airbrushTexture, 205, "50% 46%", false],
-  hospitalization: [airbrushTexture, 170, "50% 60%", true],
-  vitals: [airbrushTexture, 355, "50% 40%", false],
-  anesthesia: [airbrushTexture, 255, "50% 72%", false],
-  monitoring: [airbrushTexture, 20, "50% 52%", true],
-  medication: [airbrushTexture, 85, "50% 25%", false],
-  prescription: [airbrushTexture, 190, "50% 80%", false],
-  assistant: [airbrushTexture, 320, "50% 30%", true],
-  automation: [airbrushTexture, 65, "50% 58%", false],
+const botanicalScenes = {
+  patient: "chiens",
+  "patient-record": "lilas",
+  "patient-created": "chiens",
+  "patient-picker": "lilas",
+  appointment: "oiseaux",
+  consultation: "sauge",
+  product: "lapins",
+  restock: "lapins",
+  invoice: "lilas",
+  "invoice-detail": "lilas",
+  payment: "sauge",
+  transaction: "sauge",
+  billing: "lilas",
+  team: "chiens",
+  credentials: "oiseaux",
+  weight: "lapins",
+  vaccination: "chiens",
+  hospitalization: "sauge",
+  vitals: "sauge",
+  anesthesia: "lapins",
+  monitoring: "lapins",
+  medication: "oiseaux",
+  prescription: "sauge",
+  assistant: "lilas",
+  automation: "oiseaux",
 } as const;
 
-type ModalArtwork = keyof typeof modalArtworks;
+type ModalArtwork = keyof typeof botanicalScenes;
 
 const artworkDefaultTones: Record<ModalArtwork, ModalBannerTone> = {
   patient: "teal",
@@ -86,38 +84,26 @@ function ModalBanner({
   tone,
 }: ModalBannerProps) {
   const { t } = useTranslation();
-  const [texture, hue, position, flipped] = modalArtworks[artwork];
+  const botanicalScene = botanicalScenes[artwork];
   const resolvedTone = tone ?? artworkDefaultTones[artwork] ?? "teal";
 
   return (
     <div
-      className={cn("modal-banner", className)}
+      className={cn("modal-banner modal-banner-illustrated", className)}
       data-slot="modal-banner"
       data-artwork={artwork}
       data-tone={resolvedTone}
+      style={{ "--modal-botanical-image": `url(/art/cabinet-floral-${botanicalScene}.png)` } as CSSProperties}
     >
-      {/* 1. Luminous Mesh Gradient Bloom */}
-      <div aria-hidden="true" className="modal-banner-mesh" />
-
-      {/* 2. Atmospheric Airbrush Texture Layer */}
       <div
         aria-hidden="true"
-        className="modal-banner-art"
+        className="modal-banner-botanical"
         style={
           {
-            backgroundImage: `url(${texture})`,
-            backgroundPosition: position,
-            "--modal-art-filter": `hue-rotate(${hue}deg)`,
-            transform: flipped ? "scaleX(-1)" : undefined,
+            backgroundImage: `url(/art/cabinet-floral-${botanicalScene}.png)`,
           } as CSSProperties
         }
       />
-
-      {/* 3. Tactile Micro-Grain / Noise Overlay */}
-      <div aria-hidden="true" className="modal-banner-grain" />
-
-      {/* 4. Soft Bottom Falloff to Card */}
-      <div aria-hidden="true" className="modal-banner-fade" />
 
       {/* 5. Glass Badges & Optical Links */}
       <div aria-hidden="true" className="modal-banner-marks">

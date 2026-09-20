@@ -113,7 +113,7 @@ describe("runSqliteMigrations", () => {
     );
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(16);
+    ).toBe(17);
   });
 
   it("rolls back an entire migration when one statement fails", async () => {
@@ -167,7 +167,7 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["012", "013", "014", "015", "016"]);
+    ).resolves.toEqual(["012", "013", "014", "015", "016", "017"]);
 
     const state = database.connection
       .prepare(
@@ -261,7 +261,7 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["014", "015", "016"]);
+    ).resolves.toEqual(["014", "015", "016", "017"]);
     await database.execute(
       `UPDATE owners
        SET preferred_contact = 'sms',
@@ -330,10 +330,10 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["015", "016"]);
+    ).resolves.toEqual(["015", "016", "017"]);
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(16);
+    ).toBe(17);
 
     expect(
       database.connection
@@ -564,7 +564,7 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["016"]);
+    ).resolves.toEqual(["016", "017"]);
 
     expect(
       database.connection

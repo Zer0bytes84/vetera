@@ -36,6 +36,7 @@ const ALLOWED_TABLES = new Set([
   "patients",
   "appointments",
   "products",
+  "stock_movements",
   "transactions",
   "notes",
   "consultation_documents",

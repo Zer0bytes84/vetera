@@ -1344,7 +1344,7 @@ function BillingDialog({
   ownerName?: string;
   ownerEmail?: string;
   onClose: () => void;
-  onConfirm: (items: BillingItem[]) => Promise<void>;
+  onConfirm: (items: BillingItem[], amountReceivedDa: number) => Promise<void>;
 }) {
   const [items, setItems] = useState<BillingItem[]>([
     { desc: `Consultation - ${appointment.type}`, amount: 2000 },
@@ -1352,8 +1352,18 @@ function BillingDialog({
   const [newItemDesc, setNewItemDesc] = useState("");
   const [newItemAmount, setNewItemAmount] = useState("");
   const [isConfirming, setIsConfirming] = useState(false);
+  const [amountReceived, setAmountReceived] = useState("2000");
+  const previousTotalRef = useRef(2000);
 
   const total = items.reduce((sum, item) => sum + item.amount, 0);
+  useEffect(() => {
+    setAmountReceived((current) =>
+      Number(current) === previousTotalRef.current ? String(total) : current
+    );
+    previousTotalRef.current = total;
+  }, [total]);
+  const received = Math.min(total, Math.max(0, Number(amountReceived) || 0));
+  const balance = Math.max(0, total - received);
 
   const addItem = () => {
     const parsedAmount = Number(newItemAmount);
@@ -1429,7 +1439,7 @@ function BillingDialog({
     }
     try {
       setIsConfirming(true);
-      await onConfirm(items);
+      await onConfirm(items, received);
     } finally {
       setIsConfirming(false);
     }
@@ -1592,6 +1602,23 @@ function BillingDialog({
                 <span className="font-semibold text-2xl text-foreground tracking-[-0.04em]">
                   {total} DA
                 </span>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_180px] sm:items-end">
+                <div>
+                  <p className="font-medium text-sm">Règlement aujourd’hui</p>
+                  <p className="mt-1 text-muted-foreground text-xs">Laissez 0 DA pour créer une créance à recouvrer.</p>
+                </div>
+                <Input
+                  min="0"
+                  max={total}
+                  onChange={(event) => setAmountReceived(event.target.value)}
+                  type="number"
+                  value={amountReceived}
+                />
+              </div>
+              <div className="mt-3 flex items-center justify-between rounded-xl bg-background/70 px-3 py-2 text-sm">
+                <span className="text-muted-foreground">Solde restant</span>
+                <span className={cn("font-semibold", balance > 0 ? "text-amber-700" : "text-emerald-700")}>{balance} DA</span>
               </div>
             </div>
           </div>
@@ -2187,7 +2214,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
     toast.success("Document supprimé.");
   };
 
-  const handleBillingConfirm = async (items: BillingItem[]) => {
+  const handleBillingConfirm = async (items: BillingItem[], amountReceivedDa: number) => {
     if (!billingAppointment) {
       return;
     }
@@ -2196,11 +2223,12 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
       const patient = getPatient(billingAppointment.patientId);
       const owner = getOwner(billingAppointment);
 
-      const { totalAmountDa, invoiceNumber } = await completeWithBilling({
+      const { totalAmountDa, invoiceNumber, balanceAmountDa } = await completeWithBilling({
         appointmentId: billingAppointment.id,
         items,
         category: "Consultation",
         method: "cash",
+        amountReceivedDa,
       });
 
       // Settlement is complete. Close now: a PDF/save dialog must never keep
@@ -2211,7 +2239,7 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
           `vetera:consultation-start:${billingAppointment.id}`
         );
       }
-      toast.success("Encaissement enregistré.");
+      toast.success(balanceAmountDa > 0 ? `Facture créée. Solde à recouvrer : ${balanceAmountDa} DA.` : "Encaissement enregistré.");
 
       const exportReceipt = async () => {
         try {

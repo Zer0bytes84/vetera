@@ -43,7 +43,6 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { FocusProvider } from "@/contexts/focus-provider";
 import { LayoutProvider, useLayout } from "@/contexts/layout-provider";
-import { useCircularTransition } from "@/hooks/use-circular-transition";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/i18n/config";
 import {
@@ -54,6 +53,7 @@ import { cn } from "@/lib/utils";
 // import { useNotificationToasts } from "@/services/notifications/useNotificationToasts";
 import { NotificationCenter } from "@/modules/shell/notification-center";
 import type { View } from "@/types";
+import "./shell-toolbar.css";
 
 const ALL_VIEWS: View[] = [
   "dashboard",
@@ -212,7 +212,7 @@ function AppShellInner() {
     currentUser?.avatarUrl ||
     readCachedProfile(currentUser?.email)?.avatarUrl ||
     cachedAvatarUrl;
-  const { setThemeMode, themeMode } = useThemeMode();
+  const { setThemeMode, themeMode, toggleTheme } = useThemeMode();
   const {
     isDesktopRuntime,
     ref: headerRef,
@@ -373,8 +373,6 @@ function AppShellInner() {
     de: t("language.german"),
   };
 
-  const { toggleTheme } = useCircularTransition();
-
   const assistantModal = aiAssistantOpen
     ? renderView("assistant", {
         currentTheme: themeMode,
@@ -423,7 +421,7 @@ function AppShellInner() {
         style={
           {
             "--header-content-clearance":
-              isDesktopRuntime && variant === "minimal"
+              isDesktopRuntime && (variant === "minimal" || variant === "inset")
                 ? "8px"
                 : "var(--titlebar-clearance)",
           } as React.CSSProperties
@@ -511,32 +509,34 @@ function AppShellInner() {
             {/* Hairline border (replaces border-b) — Protocol-faithful */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-full h-px bg-foreground/15"
+              className="pointer-events-none absolute inset-x-0 top-full h-px bg-zinc-900/7.5 dark:bg-white/7.5"
               data-slot="app-header-separator"
             />
             <div
-              className="relative flex w-full items-center gap-2.5 px-4 lg:px-6"
+              className="shell-toolbar relative flex min-w-0 w-full items-center gap-3 px-4 lg:px-6"
               data-tauri-drag-region={isDesktopRuntime ? "" : undefined}
               style={{ paddingTop: "var(--header-content-clearance)" }}
             >
               {/* Mobile navigation toggle */}
               <SidebarTrigger
                 aria-label="Menu"
-                className="size-9 shrink-0 rounded-full border border-black/8 bg-white/50 text-foreground transition-colors hover:bg-white md:hidden dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                className="shell-toolbar-control size-9 shrink-0 md:hidden"
               />
 
               {/* Search trigger - Precision Linear / macOS Style */}
               <button
-                className="group relative flex h-9 w-[260px] items-center gap-2.5 rounded-full border border-black/6 bg-white/50 px-3.5 text-left text-muted-foreground text-xs shadow-[0_1px_3px_rgba(0,0,0,0.02)] backdrop-blur-md transition-[background-color,border-color,color,box-shadow,transform] duration-[180ms] ease-[var(--ease-out)] hover:border-black/12 hover:bg-white/80 hover:text-foreground hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.985] sm:w-[300px] lg:w-[320px] dark:border-white/10 dark:bg-zinc-900/50 dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] dark:hover:border-white/20 dark:hover:bg-zinc-900/70"
+                className="shell-toolbar-control shell-toolbar-search group relative flex h-9 min-w-9 max-w-[320px] flex-1 items-center gap-2 rounded-full ps-3 pe-2 text-start text-muted-foreground text-xs"
+                aria-haspopup="dialog"
+                aria-label={t("common.searchPlaceholder", { defaultValue: "Rechercher partout..." })}
                 onClick={() => setPaletteOpen(true)}
                 type="button"
               >
                 <HugeiconsIcon
-                  className="size-3.5 shrink-0 text-muted-foreground/80 transition-colors duration-[160ms] ease-[var(--ease-out)] group-hover:text-primary"
+                  className="size-4 shrink-0 text-muted-foreground"
                   icon={Search01Icon}
-                  strokeWidth={1.7}
+                  strokeWidth={1.5}
                 />
-                <span className="flex-1 truncate font-medium tracking-tight">
+                <span className="shell-toolbar-search-label min-w-0 flex-1 truncate font-normal">
                   {t("common.searchPlaceholder", {
                     defaultValue: "Rechercher partout...",
                   })}
@@ -546,11 +546,11 @@ function AppShellInner() {
                 </kbd>
               </button>
 
-              <div className="ml-auto flex items-center gap-x-1.5">
+              <div className="shell-toolbar-actions ms-auto flex shrink-0 items-center gap-2">
                 {/* ── Aide et support ────────────────────────────────────── */}
                 <Button
                   aria-label="Aide et support"
-                  className="h-9 gap-1.5 rounded-full border border-black/8 bg-white/40 px-3 font-semibold text-xs shadow-none hover:bg-white/70 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                  className="shell-toolbar-control shell-toolbar-help h-9 gap-1.5 ps-2.5 pe-3 text-xs font-medium"
                   onClick={() => handleNavigate("aide")}
                   size="sm"
                   variant="outline"
@@ -558,9 +558,9 @@ function AppShellInner() {
                   <HugeiconsIcon
                     className="size-4"
                     icon={HelpCircleIcon}
-                    strokeWidth={1.5}
+                    strokeWidth={2}
                   />
-                  <span className="hidden sm:inline">Aide</span>
+                  <span className="shell-toolbar-help-label">Aide</span>
                 </Button>
 
                 {/* ── Notifications ──────────────────────────────────────── */}
@@ -573,48 +573,49 @@ function AppShellInner() {
                 <Button
                   aria-label="Ouvrir l’assistant IA"
                   className={cn(
-                    "size-9 rounded-full border border-black/8 bg-white/40 p-0 shadow-none backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-[160ms] ease-[var(--ease-out)] hover:bg-white/70 focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.97] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10",
+                    "shell-toolbar-control size-9 p-0",
                     aiAssistantOpen &&
                       "bg-primary/10 text-primary ring-2 ring-primary/20 dark:bg-primary/15"
                   )}
                   onClick={() => handleNavigate("assistant")}
+                  aria-pressed={aiAssistantOpen}
                   size="icon"
                   title="Assistant IA · ⌘J"
                   variant="ghost"
                 >
                   <HugeiconsIcon
-                    className="size-[17px]"
+                    className="size-[18px]"
                     icon={StethoscopeIcon}
-                    strokeWidth={1.6}
+                    strokeWidth={1.5}
                   />
                 </Button>
 
                 {/* ── Theme button ────────────────────────────────────── */}
                 <button
                   aria-label="Changer le thème"
-                  className="group relative grid size-9 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-[160ms] ease-[var(--ease-out)] hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.97] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                  className="shell-toolbar-control relative grid size-9 shrink-0 place-items-center overflow-hidden"
                   onClick={toggleTheme}
                   title="Changer le thème · D"
                   type="button"
                 >
                   <span
                     aria-hidden="true"
-                    className="absolute inset-0 grid place-items-center transition-all duration-300 ease-out dark:-rotate-90 dark:scale-75 dark:opacity-0"
+                    className="absolute inset-0 grid place-items-center dark:hidden"
                   >
                     <HugeiconsIcon
-                      className="size-[17px] text-amber-600"
+                      className="size-[18px] text-amber-600"
                       icon={Sun01Icon}
-                      strokeWidth={1.7}
+                      strokeWidth={1.5}
                     />
                   </span>
                   <span
                     aria-hidden="true"
-                    className="absolute inset-0 grid rotate-90 scale-75 place-items-center opacity-0 transition-all duration-300 ease-out dark:rotate-0 dark:scale-100 dark:opacity-100"
+                    className="absolute inset-0 hidden place-items-center dark:grid"
                   >
                     <HugeiconsIcon
-                      className="size-[17px] text-sky-300"
+                      className="size-[18px] text-sky-300"
                       icon={Moon01Icon}
-                      strokeWidth={1.7}
+                      strokeWidth={1.5}
                     />
                   </span>
                 </button>
@@ -623,19 +624,19 @@ function AppShellInner() {
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     aria-label="Paramètres et compte"
-                    className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-black/8 bg-white/40 text-foreground shadow-none backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-[160ms] ease-[var(--ease-out)] hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.97] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                    className="shell-toolbar-control flex size-9 items-center justify-center"
                   >
                     <HugeiconsIcon
-                      className="size-[17px]"
+                      className="size-[18px]"
                       icon={Settings01Icon}
-                      strokeWidth={1.6}
+                      strokeWidth={1.5}
                     />
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent
                     align="end"
                     className="w-64 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
-                    sideOffset={16}
+                    sideOffset={8}
                   >
                     {/* User info header */}
                     <div className="mb-1 flex items-center gap-3 px-3 py-2.5">

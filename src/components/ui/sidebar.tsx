@@ -495,7 +495,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       className={cn(
-        "relative flex w-full flex-1 flex-col md:peer-data-[variant=floating]:bg-card md:peer-data-[variant=glass]:bg-background md:peer-data-[variant=inset]:bg-background md:peer-data-[variant=minimal]:bg-background",
+        "relative flex min-w-0 w-full flex-1 flex-col md:peer-data-[variant=floating]:bg-card md:peer-data-[variant=glass]:bg-background md:peer-data-[variant=inset]:bg-background md:peer-data-[variant=minimal]:bg-background",
         "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ms-2 md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ms-0 md:peer-data-[variant=inset]:rounded-[20px]",
         "md:peer-data-[variant=minimal]:peer-data-[state=collapsed]:ms-2 md:peer-data-[variant=minimal]:m-2 md:peer-data-[variant=minimal]:ms-0 md:peer-data-[variant=minimal]:rounded-xl",
         "md:peer-data-[variant=floating]:peer-data-[state=collapsed]:ms-4 md:peer-data-[variant=floating]:my-4 md:peer-data-[variant=floating]:ms-0 md:peer-data-[variant=floating]:me-4 md:peer-data-[variant=floating]:rounded-[24px] md:peer-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:md:peer-data-[variant=floating]:shadow-[0_8px_30px_rgb(0,0,0,0.2)]",

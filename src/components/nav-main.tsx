@@ -34,7 +34,7 @@ export function NavMain({
               <SidebarMenuButton
                 aria-label={item.title}
                 className={cn(
-                  "h-9 rounded-lg px-2.5 font-medium text-sm tracking-tight antialiased transition-all duration-200 ease-out",
+                  "h-9 rounded-lg px-2.5 font-medium text-sm tracking-tight antialiased transition-colors duration-150 motion-reduce:transition-none",
                   item.isActive
                     ? "bg-zinc-950/[0.055] text-zinc-950 dark:bg-white/[0.08] dark:text-zinc-100"
                     : "text-zinc-700 hover:bg-zinc-950/[0.045] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100",
@@ -46,7 +46,7 @@ export function NavMain({
               >
                 <div
                   className={cn(
-                    "flex shrink-0 items-center justify-center transition-colors duration-200",
+                    "flex shrink-0 items-center justify-center transition-colors duration-150 motion-reduce:transition-none",
                     item.isActive
                       ? "text-zinc-950 dark:text-zinc-100"
                       : "text-zinc-600 group-hover/item:text-zinc-950 dark:text-zinc-400 dark:group-hover/item:text-zinc-100"

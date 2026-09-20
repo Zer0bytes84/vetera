@@ -273,6 +273,27 @@ END;
 -- Le premier administrateur est créé par l'assistant de premier lancement.
 `;
 
+export const MIGRATION_017_SQL = `
+ALTER TABLE products ADD COLUMN archived_at TEXT;
+
+CREATE TABLE IF NOT EXISTS stock_movements (
+    id TEXT PRIMARY KEY,
+    product_id TEXT NOT NULL,
+    type TEXT NOT NULL CHECK(type IN ('opening', 'restock', 'usage', 'adjustment', 'return')),
+    quantity_delta REAL NOT NULL,
+    quantity_after REAL NOT NULL,
+    unit_cost_amount INTEGER,
+    reason TEXT,
+    reference_id TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
+);
+
+CREATE INDEX IF NOT EXISTS idx_stock_movements_product_id ON stock_movements(product_id);
+CREATE INDEX IF NOT EXISTS idx_stock_movements_created_at ON stock_movements(created_at);
+`;
+
 export const MIGRATION_002_SQL = `-- Migration 002: Documents de consultation
 CREATE TABLE IF NOT EXISTS consultation_documents (
     id TEXT PRIMARY KEY,

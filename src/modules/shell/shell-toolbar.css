@@ -1,0 +1,77 @@
+/* The toolbar uses the available panel width, including beside an open sidebar. */
+.shell-toolbar {
+  container: shell-toolbar / inline-size;
+}
+
+.shell-toolbar .shell-toolbar-control {
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.5);
+  box-shadow: 0 0 0 1px oklch(0 0 0 / 0.06),
+    0 1px 2px -1px oklch(0 0 0 / 0.06),
+    0 2px 4px oklch(0 0 0 / 0.04);
+  transition-property: background-color, color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+.shell-toolbar .shell-toolbar-search {
+  flex-shrink: 1;
+}
+
+.shell-toolbar .shell-toolbar-control:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.shell-toolbar .shell-toolbar-control:active,
+.shell-toolbar .shell-toolbar-control[aria-expanded="true"],
+.shell-toolbar .shell-toolbar-control[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--primary) 10%, var(--background));
+  color: var(--foreground);
+}
+
+.dark .shell-toolbar .shell-toolbar-control {
+  background: rgb(255 255 255 / 0.05);
+  box-shadow: 0 0 0 1px oklch(1 0 0 / 0.08);
+}
+
+.dark .shell-toolbar .shell-toolbar-control:is(:active, [aria-expanded="true"], [aria-pressed="true"]) {
+  background: rgb(255 255 255 / 0.12);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shell-toolbar .shell-toolbar-control:hover {
+    background: rgb(255 255 255 / 0.8);
+    box-shadow: 0 0 0 1px oklch(0 0 0 / 0.08),
+      0 1px 2px -1px oklch(0 0 0 / 0.08),
+      0 2px 4px oklch(0 0 0 / 0.06);
+  }
+
+  .dark .shell-toolbar .shell-toolbar-control:hover {
+    background: rgb(255 255 255 / 0.1);
+    box-shadow: 0 0 0 1px oklch(1 0 0 / 0.13);
+  }
+}
+
+@container shell-toolbar (max-width: 520px) {
+  .shell-toolbar-help-label { display: none; }
+  .shell-toolbar-help { width: 36px; padding-inline: 0; }
+}
+
+@container shell-toolbar (max-width: 350px) {
+  .shell-toolbar-search-label,
+  .shell-toolbar-search kbd { display: none; }
+  .shell-toolbar .shell-toolbar-search {
+    flex: 0 0 36px;
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .shell-toolbar-actions { gap: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell-toolbar .shell-toolbar-control { transition: none; }
+}

@@ -57,6 +57,7 @@ export interface User {
 }
 
 export interface Product {
+  archivedAt?: string;
   category: string;
   createdAt: string;
   expiryDate?: string;
@@ -68,6 +69,25 @@ export interface Product {
   salePriceAmount: number; // In centimes
   subCategory?: string;
   unit: string;
+}
+
+export type StockMovementType =
+  | "opening"
+  | "restock"
+  | "usage"
+  | "adjustment"
+  | "return";
+
+export interface StockMovement {
+  id: string;
+  productId: string;
+  type: StockMovementType;
+  quantityDelta: number;
+  quantityAfter: number;
+  unitCostAmount?: number;
+  reason?: string;
+  referenceId?: string;
+  createdAt: string;
 }
 
 export type AppointmentStatus =

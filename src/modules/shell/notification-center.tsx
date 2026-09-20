@@ -319,14 +319,14 @@ export function NotificationCenter({
             aria-label={t("notifications.open", {
               defaultValue: "Notifications",
             })}
-            className="relative size-9 rounded-full"
+            className="shell-toolbar-control relative size-9 rounded-full"
             size="icon"
             variant="outline"
           />
         }
       >
         <HugeiconsIcon
-          className="size-5"
+          className="size-[18px]"
           icon={Notification01Icon}
           strokeWidth={1.5}
         />
@@ -344,7 +344,7 @@ export function NotificationCenter({
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[400px] gap-0 p-0"
+        className="w-[min(400px,calc(100vw-24px))] gap-0 p-0"
         sideOffset={8}
       >
         <div className="flex items-center justify-between gap-2 border-foreground/10 border-b px-4 py-3">

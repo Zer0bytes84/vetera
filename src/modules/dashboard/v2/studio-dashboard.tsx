@@ -3,10 +3,13 @@ import {
   ArrowUpRight,
   CalendarDays,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  PawPrint,
   Flower2,
+  PawPrint,
+  Shuffle,
+  Sparkles,
   Wallet,
 } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
@@ -15,7 +18,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { DashboardLayoutManager } from "../components/dashboard-layout-manager";
+import { FinancialRiskDonutWidget } from "../components/financial-risk-donut-widget";
 import {
   addDays,
   buildClinicalAlerts,
@@ -28,7 +34,9 @@ import {
 } from "./model";
 import type { DashboardV2Props } from "./types";
 import {
+  floralBackgroundList,
   floralBackgrounds,
+  randomizeFloralBackground,
   useFloralBackground,
   type FloralBackground,
 } from "@/lib/floral-background";
@@ -158,6 +166,22 @@ export function StudioDashboard(props: DashboardV2Props) {
     day: "numeric",
     month: "long",
   });
+  const currentFloralMeta =
+    floralBackgroundList.find((b) => b.id === floralBackground) ||
+    floralBackgroundList[0];
+  const completionRate = today.length
+    ? Math.round((completedToday / today.length) * 100)
+    : 100;
+  const totalBilledToday = paidToday + waitingAmount;
+  const paymentRecoveryRate =
+    totalBilledToday > 0
+      ? Math.round((paidToday / totalBilledToday) * 100)
+      : 100;
+  const avgDayMetric =
+    measure === "value"
+      ? (visits / (days.length || 1)).toFixed(1)
+      : formatCurrency(Math.round(income / (days.length || 1)));
+
   const action = (label: string, click: () => void) => (
     <button type="button" className="studio-link" onClick={click}>
       {label}
@@ -177,7 +201,7 @@ export function StudioDashboard(props: DashboardV2Props) {
       description: "Rendez-vous, patients et encaissements",
       content: (
         <section
-          className="studio-garden"
+          className="studio-garden group"
           aria-label="Les essentiels du cabinet"
           data-garden={floralBackground}
         >
@@ -188,122 +212,287 @@ export function StudioDashboard(props: DashboardV2Props) {
             aria-hidden="true"
           />
           <div className="studio-garden-toolbar">
-            <span>
-              <Flower2 size={16} aria-hidden="true" />
-              Les essentiels du jour
-            </span>
-            <div className="studio-garden-choices" aria-label="Décor floral">
+            <div className="studio-garden-badge">
+              <Sparkles size={14} className="text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
+              <span>Les essentiels du jour</span>
+            </div>
+            <div className="studio-garden-controls" aria-label="Ambiance et décor floral">
               <button
                 type="button"
+                className="studio-theme-nav"
                 aria-label="Décor précédent"
                 title="Décor précédent"
                 onClick={() => stepBackground(-1)}
               >
-                <ChevronLeft size={15} />
+                <ChevronLeft size={14} />
               </button>
+
+              <Popover>
+                <PopoverTrigger
+                  type="button"
+                  className="studio-theme-trigger"
+                  title="Changer le fond illustré"
+                >
+                  <span className="studio-theme-emoji">{currentFloralMeta.emoji}</span>
+                  <span className="studio-theme-name">{currentFloralMeta.label}</span>
+                  <ChevronDown size={12} className="opacity-60 shrink-0" />
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  className="w-72 p-2 rounded-2xl bg-card/95 backdrop-blur-2xl border border-border/80 shadow-2xl z-50"
+                >
+                  <div className="px-2 py-1.5 border-b border-border/60 mb-1.5 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <Flower2 size={13} className="text-primary" /> Ambiances du cabinet
+                    </span>
+                    <button
+                      type="button"
+                      onClick={randomizeFloralBackground}
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded-md hover:bg-muted"
+                    >
+                      <Shuffle size={11} /> Aléatoire
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 gap-1 max-h-64 overflow-y-auto pr-0.5">
+                    {floralBackgroundList.map((item) => {
+                      const isActive = floralBackground === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setFloralBackground(item.id)}
+                          className={cn(
+                            "flex items-center gap-2.5 w-full px-2.5 py-2 text-left rounded-xl text-xs transition-all",
+                            isActive
+                              ? "bg-primary/10 text-primary font-semibold ring-1 ring-primary/20"
+                              : "hover:bg-muted/70 text-foreground"
+                          )}
+                        >
+                          <span className="text-base shrink-0 select-none">{item.emoji}</span>
+                          <div className="min-w-0 flex-1">
+                            <p className="leading-tight truncate">{item.label}</p>
+                            <p className="text-[10px] text-muted-foreground font-normal leading-tight truncate mt-0.5">
+                              {item.subtitle}
+                            </p>
+                          </div>
+                          {isActive && <Check size={14} className="text-primary shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
               <button
                 type="button"
+                className="studio-theme-nav"
                 aria-label="Décor suivant"
                 title="Décor suivant"
                 onClick={() => stepBackground(1)}
               >
-                <ChevronRight size={15} />
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
+
           <div className="studio-garden-widgets">
-            <button
-              type="button"
-              className="studio-glass-widget"
+            {/* Widget 1: Consultations du jour */}
+            <div
+              role="button"
+              tabIndex={0}
+              className="studio-glass-widget group/card cursor-pointer text-left"
               onClick={() =>
                 nextVisit
                   ? onNavigateToPatient?.(nextVisit.appointment.patientId)
                   : onNavigate?.("agenda")
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  nextVisit
+                    ? onNavigateToPatient?.(nextVisit.appointment.patientId)
+                    : onNavigate?.("agenda");
+                }
+              }}
             >
-              <span className="studio-glass-heading">
-                <span className="studio-glass-icon">
-                  <CalendarDays size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  Consultations à suivre<small>Aujourd’hui</small>
-                </span>
-                <ArrowUpRight size={17} aria-hidden="true" />
-              </span>
-              <span className="studio-glass-value">
-                {toFollow.length}
-                <small>sur {today.length} rendez-vous</small>
-              </span>
-              <span className="studio-glass-detail">
-                {nextVisit ? (
-                  <>
-                    <strong>{nextVisit.patientName}</strong>
-                    <span>
-                      {nextVisit.appointment.status === "in_progress"
-                        ? "En consultation"
-                        : formatTime(nextVisit.start)}{" "}
-                      · {nextVisit.appointment.type}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <strong>
-                      {today.length
-                        ? "Aucune consultation à suivre"
-                        : "Votre agenda est libre"}
-                    </strong>
-                  </>
-                )}
-              </span>
-              <span className="studio-glass-footer">
-                <span>
-                  {completedToday} terminé{completedToday > 1 ? "s" : ""}
-                </span>
-                <span>
-                  {nextVisit ? "Ouvrir le dossier" : "Voir l’agenda"}
-                  <ArrowUpRight size={13} aria-hidden="true" />
-                </span>
-              </span>
-            </button>
-            <button
-              type="button"
-              className="studio-glass-widget studio-glass-finance"
+              {/* Liquid Glass Specular Reflection (No Checkers) */}
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[20px]">
+                <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-transparent to-transparent dark:from-white/10" />
+                <div
+                  className="absolute -inset-full bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.45)_0%,transparent_60%)] opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 dark:bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.12)_0%,transparent_60%)]"
+                />
+                <div className="absolute inset-0 rounded-[20px] ring-1 ring-inset ring-white/60 transition-all duration-300 group-hover/card:ring-white/90 dark:ring-white/10 dark:group-hover/card:ring-white/25" />
+              </div>
+
+              <div className="relative z-10 flex h-full flex-col">
+                <div className="studio-glass-heading">
+                  <span className="studio-glass-icon">
+                    <CalendarDays size={17} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-foreground">Consultations</span>
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary">
+                        <span className="size-1 rounded-full bg-primary animate-pulse" />
+                        Aujourd'hui
+                      </span>
+                    </div>
+                    <small>Flux clinique & planning</small>
+                  </div>
+                  <span className="studio-arrow-icon" aria-hidden="true">
+                    <ArrowUpRight size={16} />
+                  </span>
+                </div>
+
+                <div className="studio-glass-value-row">
+                  <div className="studio-glass-value">
+                    <span>{toFollow.length}</span>
+                    <small>à suivre · {today.length} au planning</small>
+                  </div>
+                  <span className="studio-pill-stat">
+                    {completionRate}% terminé
+                  </span>
+                </div>
+
+                {/* Progress bar track */}
+                <div className="studio-progress-track" aria-hidden="true">
+                  <div
+                    className="studio-progress-fill"
+                    style={{ width: `${completionRate}%` }}
+                  />
+                </div>
+
+                <div className="studio-glass-detail">
+                  {nextVisit ? (
+                    <div className="studio-patient-chip">
+                      <span className="studio-patient-chip-badge">
+                        {nextVisit.appointment.status === "in_progress"
+                          ? "🔴 En salle"
+                          : `⏱️ ${formatTime(nextVisit.start)}`}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <strong>{nextVisit.patientName}</strong>
+                        <span>{nextVisit.appointment.type} · {nextVisit.ownerName}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="studio-patient-empty">
+                      <strong>
+                        {today.length
+                          ? "Toutes les visites du jour sont terminées"
+                          : "Aucune consultation programmée aujourd'hui"}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+
+                <div className="studio-glass-footer">
+                  <span>
+                    <strong>{completedToday}</strong> visite{completedToday > 1 ? "s" : ""} effectuée{completedToday > 1 ? "s" : ""}
+                  </span>
+                  <span className="studio-link-action">
+                    {nextVisit ? "Dossier patient" : "Consulter l’agenda"}
+                    <ArrowUpRight size={13} aria-hidden="true" />
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Widget 2: Trésorerie & Règlements */}
+            <div
+              role="button"
+              tabIndex={0}
+              className="studio-glass-widget studio-glass-finance group/card cursor-pointer text-left"
               onClick={() => onNavigate?.("finances")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  onNavigate?.("finances");
+                }
+              }}
             >
-              <span className="studio-glass-heading">
-                <span className="studio-glass-icon">
-                  <Wallet size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  Les encaissements<small>Suivi des règlements</small>
-                </span>
-                <ArrowUpRight size={17} aria-hidden="true" />
-              </span>
-              <span className="studio-glass-value">
-                {formatCentimes(paidToday)}
-                <small>reçus aujourd’hui</small>
-              </span>
-              <span className="studio-glass-detail">
-                <strong>{formatCentimes(waitingAmount)} en attente</strong>
-                <span>
-                  {waitingPayments.length
-                    ? `${waitingPayments.length} paiement${waitingPayments.length > 1 ? "s" : ""} à suivre · toutes dates`
-                    : "Aucun paiement en attente"}
-                </span>
-              </span>
-              <span className="studio-glass-footer">
-                <span>
-                  {waitingPayments.length ? "À rapprocher" : "À jour"}
-                </span>
-                <span>
-                  Voir les finances
-                  <ArrowUpRight size={13} aria-hidden="true" />
-                </span>
-              </span>
-            </button>
+              {/* Liquid Glass Specular Reflection (No Checkers) */}
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[20px]">
+                <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-transparent to-transparent dark:from-white/10" />
+                <div
+                  className="absolute -inset-full bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.45)_0%,transparent_60%)] opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 dark:bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.12)_0%,transparent_60%)]"
+                />
+                <div className="absolute inset-0 rounded-[20px] ring-1 ring-inset ring-white/60 transition-all duration-300 group-hover/card:ring-white/90 dark:ring-white/10 dark:group-hover/card:ring-white/25" />
+              </div>
+
+              <div className="relative z-10 flex h-full flex-col">
+                <div className="studio-glass-heading">
+                  <span className="studio-glass-icon">
+                    <Wallet size={17} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-foreground">Encaissements</span>
+                      <span className={cn(
+                        "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium",
+                        waitingPayments.length === 0
+                          ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                          : "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                      )}>
+                        {waitingPayments.length === 0 ? "✓ À jour" : `⚠️ ${waitingPayments.length} en attente`}
+                      </span>
+                    </div>
+                    <small>Suivi des règlements du jour</small>
+                  </div>
+                  <span className="studio-arrow-icon" aria-hidden="true">
+                    <ArrowUpRight size={16} />
+                  </span>
+                </div>
+
+                <div className="studio-glass-value-row">
+                  <div className="studio-glass-value">
+                    <span>{formatCentimes(paidToday)}</span>
+                    <small>reçus aujourd'hui</small>
+                  </div>
+                  <span className="studio-pill-stat studio-pill-emerald">
+                    {paymentRecoveryRate}% recouvré
+                  </span>
+                </div>
+
+                {/* Progress bar track for finances */}
+                <div className="studio-progress-track studio-progress-finance" aria-hidden="true">
+                  <div
+                    className="studio-progress-fill studio-fill-emerald"
+                    style={{ width: `${paymentRecoveryRate}%` }}
+                  />
+                </div>
+
+                <div className="studio-glass-detail">
+                  <div className="studio-patient-chip studio-finance-chip">
+                    <div className="min-w-0 flex-1">
+                      <strong>{formatCentimes(waitingAmount)} en attente</strong>
+                      <span>
+                        {waitingPayments.length
+                          ? `${waitingPayments.length} facture${waitingPayments.length > 1 ? "s" : ""} à rapprocher (toutes dates)`
+                          : "Tous les dossiers du jour sont soldés"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="studio-glass-footer">
+                  <span>
+                    {waitingPayments.length ? "Rapprochement requis" : "Comptabilité fluide"}
+                  </span>
+                  <span className="studio-link-action">
+                    Gestion financière
+                    <ArrowUpRight size={13} aria-hidden="true" />
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       ),
+    },
+    {
+      id: "studio-financial-risk",
+      label: "Performance & Risques Financiers",
+      description: "Donut bi-matière hachuré, créances et répartition décisionnelle (Style Outcrowd)",
+      content: <FinancialRiskDonutWidget transactions={transactions} onOpenFinances={() => onNavigate?.("finances")} />,
     },
     {
       id: "studio-main",
@@ -337,21 +526,25 @@ export function StudioDashboard(props: DashboardV2Props) {
                     : formatCurrency(income)}
                 </strong>
                 <span>
-                  {measure === "value" ? "consultations" : "encaissés"} sur la
-                  période
+                  {measure === "value" ? "consultations au total" : "encaissés sur la période"}
                 </span>
               </div>
-              <div className="studio-measures">
-                {(["value", "revenue"] as const).map((value) => (
-                  <button
-                    type="button"
-                    key={value}
-                    aria-pressed={measure === value}
-                    onClick={() => setMeasure(value)}
-                  >
-                    {value === "value" ? "Consultations" : "Encaissements"}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-2 text-[11px] text-muted-foreground border border-border/60 bg-muted/40 px-2.5 py-1 rounded-lg">
+                  <span>Moy. : <strong className="text-foreground">{avgDayMetric}</strong> / j</span>
+                </div>
+                <div className="studio-measures">
+                  {(["value", "revenue"] as const).map((value) => (
+                    <button
+                      type="button"
+                      key={value}
+                      aria-pressed={measure === value}
+                      onClick={() => setMeasure(value)}
+                    >
+                      {value === "value" ? "Consultations" : "Encaissements"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <ChartContainer
@@ -367,7 +560,17 @@ export function StudioDashboard(props: DashboardV2Props) {
                 data={chart}
                 margin={{ left: 0, right: 16, top: 12, bottom: 0 }}
               >
-                <CartesianGrid vertical={false} strokeDasharray="3 5" />
+                <defs>
+                  <linearGradient id="studioGradientValue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8271d6" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#8271d6" stopOpacity={0.01} />
+                  </linearGradient>
+                  <linearGradient id="studioGradientRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#4ca68e" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#4ca68e" stopOpacity={0.01} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} strokeDasharray="3 5" opacity={0.35} />
                 <XAxis
                   dataKey="label"
                   axisLine={false}
@@ -396,13 +599,13 @@ export function StudioDashboard(props: DashboardV2Props) {
                   }
                 />
                 <Area
-                  type="linear"
+                  type="monotone"
                   dataKey={measure}
                   stroke={measure === "value" ? "#8271d6" : "#4ca68e"}
-                  fill={measure === "value" ? "#8271d6" : "#4ca68e"}
-                  fillOpacity={0.12}
+                  fill={measure === "value" ? "url(#studioGradientValue)" : "url(#studioGradientRevenue)"}
+                  fillOpacity={1}
                   strokeWidth={2.5}
-                  isAnimationActive={false}
+                  isAnimationActive={true}
                 />
               </AreaChart>
             </ChartContainer>

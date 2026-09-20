@@ -12,6 +12,6 @@ export {
   OrbitRevenueBars,
 } from "./orbit-board-widgets";
 export { ProcedureDemandOrbit } from "./procedure-demand-orbit";
-export { RevenueBreakdownOrbit } from "./revenue-breakdown-orbit";
 export { StatCardOrbit } from "./stat-card-orbit";
 export { TaskCadenceOrbit } from "./task-cadence-orbit";
+export { FinancialRiskDonutWidget } from "./financial-risk-donut-widget";

@@ -1,3 +1,4 @@
+import { FinancialPeriodFilter } from "@/components/financial-period-filter";
 import {
   Add01Icon,
   ArrowDown01Icon,
@@ -1178,6 +1179,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                   </Button>
                 </div>
               </div>
+              <FinancialPeriodFilter from={invoiceFrom} to={invoiceTo} onChange={(from, to) => { setInvoiceFrom(from); setInvoiceTo(to); setInvoicePage(1); }} />
               {invoiceAdvancedOpen ? (
                 <div className="grid gap-3 rounded-2xl bg-muted/35 p-3 sm:grid-cols-2 lg:grid-cols-4">
                   <DateFilter label="Du" onChange={setInvoiceFrom} value={invoiceFrom} />
@@ -1649,6 +1651,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                   </Button>
                 </div>
               </div>
+              <FinancialPeriodFilter from={journalFrom} to={journalTo} onChange={(from, to) => { setJournalFrom(from); setJournalTo(to); setJournalPage(1); }} />
               {journalAdvancedOpen ? (
                 <div className="grid gap-3 rounded-2xl bg-muted/35 p-3 sm:grid-cols-2 lg:grid-cols-4">
                   <DateFilter label="Du" onChange={setJournalFrom} value={journalFrom} />

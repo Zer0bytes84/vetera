@@ -156,44 +156,35 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
       );
     }
 
-    if (!(userName && titleText.includes(userName))) {
-      return (
-        <h1 className="flex items-center gap-2 font-semibold text-2xl text-foreground tracking-tight md:text-3xl">
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 font-medium text-[11px] text-emerald-700 dark:text-emerald-400">
+            <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
+            Cabinet actif
+          </span>
+          <span className="text-muted-foreground text-xs">·</span>
+          <span className="text-muted-foreground text-xs capitalize">
+            {headerCopy.eyebrow}
+          </span>
+        </div>
+        <h1 className="flex flex-wrap items-center gap-2.5 font-semibold text-2xl text-foreground tracking-tight md:text-3xl">
           <span>{titleText}</span>
           <span aria-hidden="true" className="shrink-0 text-[1em]">
             {emoji}
           </span>
         </h1>
-      );
-    }
-
-    const parts = titleText.split(userName);
-    return (
-      <h1 className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-2xl text-foreground tracking-tight md:text-3xl">
-        {parts.map((part, index) => (
-          <React.Fragment key={index}>
-            {part}
-            {index < parts.length - 1 && (
-              <span className="font-semibold text-foreground">
-                {userName}
-              </span>
-            )}
-          </React.Fragment>
-        ))}
-        <span aria-hidden="true" className="shrink-0 text-[1em]">
-          {emoji}
-        </span>
-      </h1>
+      </div>
     );
   };
 
   return (
     <div className="flex w-full flex-col gap-1">
-      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-        <div className="min-w-0 space-y-1">
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+        <div className="min-w-0 flex-[1_1_320px] space-y-1">
           {renderTitle(heading, headerCopy.emoji)}
           {resolvedSubtitle && (
-            <p className="max-w-[70ch] text-muted-foreground text-sm leading-5">
+            <p className="max-w-[70ch] text-muted-foreground text-sm leading-relaxed">
               {resolvedSubtitle}
             </p>
           )}
