@@ -21,6 +21,12 @@ src-tauri/target
 *.sqlite
 *.sqlite3
 
+# Local activation-server state (keys, admin token and issued licences)
+activation-server/data/*
+!activation-server/data/.gitkeep
+activation-server/.vercel/
+activation-server/node_modules/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

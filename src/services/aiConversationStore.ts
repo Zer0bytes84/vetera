@@ -17,6 +17,7 @@ export interface PersistedAIMessage {
 }
 
 export interface PersistedAIConversation {
+  patientId?: string;
   createdAt: string;
   id: string;
   messages: PersistedAIMessage[];
@@ -89,6 +90,7 @@ const parseConversation = (value: unknown): PersistedAIConversation | null => {
 
   return {
     createdAt: asDateString(value.createdAt),
+    patientId: typeof value.patientId === "string" ? value.patientId : undefined,
     id,
     messages: messages.slice(-MAX_MESSAGES_PER_CONVERSATION),
     title: asString(value.title, "Nouvelle conversation").slice(0, 120),

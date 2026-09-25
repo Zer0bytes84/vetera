@@ -1,3 +1,4 @@
+import { LicenseStatusCard } from "@/components/LicenseStatusCard";
 import {
   Alert02Icon,
   BookOpenTextIcon,
@@ -28,6 +29,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { relaunch } from "@tauri-apps/plugin-process";
 import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -63,6 +65,7 @@ import {
 } from "@/lib/theme-store";
 import { cn } from "@/lib/utils";
 import { getSetting, setSetting } from "@/services/appSettingsService";
+import { openActivationAdminWindow } from "@/services/activationAdminWindowService";
 import {
   type BackupInfo,
   createBackup,
@@ -2078,6 +2081,46 @@ const Parametres: React.FC<ParametresProps> = ({
                     </article>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+            <LicenseStatusCard />
+            <Card className="border-primary/15 bg-primary/[0.025]" size="sm">
+              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
+                    <HugeiconsIcon
+                      aria-hidden="true"
+                      className="size-5"
+                      icon={Shield01Icon}
+                      strokeWidth={1.8}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-sm">
+                      Administration des licences
+                    </h3>
+                    <p className="mt-1 max-w-xl text-muted-foreground text-sm leading-5">
+                      Générez, suivez et révoquez les accès depuis le centre
+                      d&apos;activation.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  className="shrink-0"
+                  onClick={() => {
+                    openActivationAdminWindow().catch((error) => {
+                      toast.error(
+                        error instanceof Error
+                          ? error.message
+                          : "Impossible d'ouvrir le centre d'activation."
+                      );
+                    });
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  Ouvrir le centre d&apos;activation
+                </Button>
               </CardContent>
             </Card>
           </div>

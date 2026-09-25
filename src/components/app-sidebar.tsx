@@ -109,7 +109,7 @@ export function AppSidebar({
       <HugeiconsIcon
         className="size-5"
         icon={item.icon}
-        strokeWidth={1.5}
+        strokeWidth={1.8}
       />
     ),
     isActive: currentView === item.view,
@@ -125,7 +125,7 @@ export function AppSidebar({
       <HugeiconsIcon
         className="size-5"
         icon={item.icon}
-        strokeWidth={1.5}
+        strokeWidth={1.8}
       />
     ),
     isActive: currentView === item.view,
@@ -138,7 +138,7 @@ export function AppSidebar({
       <HugeiconsIcon
         className="size-5"
         icon={item.icon}
-        strokeWidth={1.5}
+        strokeWidth={1.8}
       />
     ),
     isActive: currentView === item.view,
@@ -159,6 +159,7 @@ export function AppSidebar({
       <div className="apple-sidebar-glow" />
 
       <SidebarHeader
+        data-window-drag-region={isDesktopRuntime ? "true" : undefined}
         className={cn(
           "relative z-10 flex shrink-0 flex-row items-center p-0",
           "h-[calc(var(--header-height)+var(--titlebar-clearance))]",
@@ -177,13 +178,6 @@ export function AppSidebar({
           data-slot="sidebar-header-separator"
         />
 
-        {/* Invisible drag area to fill remaining space */}
-        {isDesktopRuntime && (
-          <div
-            className="absolute inset-x-0 top-0 z-0 h-[40px] cursor-grab active:cursor-grabbing"
-            data-tauri-drag-region="true"
-          />
-        )}
         <div
           className={cn(
             "relative z-10 flex w-full items-center",

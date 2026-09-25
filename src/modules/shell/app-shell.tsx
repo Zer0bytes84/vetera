@@ -214,9 +214,10 @@ function AppShellInner() {
     cachedAvatarUrl;
   const { setThemeMode, themeMode, toggleTheme } = useThemeMode();
   const {
+    handleMouseDown: handleWindowMouseDown,
     isDesktopRuntime,
     ref: headerRef,
-  } = useTauriDrag<HTMLElement>();
+  } = useTauriDrag<HTMLElement>(true);
   const { variant, collapsible } = useLayout();
   const previousDecorView = useRef<string | null>(null);
   useEffect(() => {
@@ -387,6 +388,16 @@ function AppShellInner() {
 
   return (
     <SidebarProvider
+      onMouseDownCapture={(event) => {
+        const target = event.target as HTMLElement;
+        // Portalled dialogs/menus must never become window drag surfaces.
+        if (!event.currentTarget.contains(target)) return;
+        if (target.closest('[role="dialog"], [role="menu"], [data-no-drag]')) return;
+        if (target.closest('[data-window-drag-region="true"]') ||
+            (isDesktopRuntime && event.clientY >= 4 && event.clientY < 20 && event.clientX > 80)) {
+          handleWindowMouseDown(event);
+        }
+      }}
       defaultOpen={true}
       className={cn("relative isolate bg-background", isRtl && "rtl-shell")}
       dir={isRtl ? "rtl" : "ltr"}
@@ -397,15 +408,6 @@ function AppShellInner() {
         } as React.CSSProperties
       }
     >
-      {isDesktopRuntime && (
-        <div
-          aria-hidden="true"
-          data-tauri-drag-region=""
-          data-window-drag-region="true"
-          data-slot="native-titlebar-drag-region"
-          className="fixed top-[3px] right-2 left-[80px] z-[60] h-[29px] cursor-default select-none"
-        />
-      )}
       <AppSidebar
         collapsible={collapsible}
         currentUserAvatar={currentUser?.avatarUrl ?? null}
@@ -495,7 +497,6 @@ function AppShellInner() {
             )}
             data-slot="app-header"
             data-window-drag-region={isDesktopRuntime ? "true" : undefined}
-            data-tauri-drag-region={isDesktopRuntime ? "" : undefined}
             ref={headerRef}
             style={
               {
@@ -514,7 +515,6 @@ function AppShellInner() {
             />
             <div
               className="shell-toolbar relative flex min-w-0 w-full items-center gap-3 px-4 lg:px-6"
-              data-tauri-drag-region={isDesktopRuntime ? "" : undefined}
               style={{ paddingTop: "var(--header-content-clearance)" }}
             >
               {/* Mobile navigation toggle */}

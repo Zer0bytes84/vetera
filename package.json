@@ -81,7 +81,7 @@
     "build": "vite build",
     "build:strict": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run --exclude tests/activation-server.test.mjs",
     "test:watch": "vitest",
     "format": "ultracite fix src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts",
     "typecheck": "tsc --noEmit",
@@ -89,11 +89,16 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
+    "activation-server": "node activation-server/server.mjs",
+    "activation:open": "open http://127.0.0.1:5180/#/activation-admin",
+    "license:server": "node activation-server/server.mjs",
     "check": "ultracite check src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts",
-    "fix": "ultracite fix src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts"
+    "fix": "ultracite fix src biome.jsonc components.json eslint.config.js generate-license.ts package.json tsconfig.app.json tsconfig.json tsconfig.node.json vite.config.ts",
+    "activation:prepare": "node activation-server/prepare.mjs",
+    "test:licenses": "node --test tests/activation-server.test.mjs"
   },
   "type": "module",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "private": true,
   "overrides": {
     "@tauri-apps/api": "^2.10.1"

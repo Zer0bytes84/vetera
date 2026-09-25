@@ -22,7 +22,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
 
 export function NavDocuments({
   title,
@@ -48,24 +47,13 @@ export function NavDocuments({
           <SidebarMenuItem className="group/item" key={item.name}>
             <SidebarMenuButton
                 aria-label={item.name}
-              className={cn(
-                "h-9 rounded-lg px-2.5 font-medium text-sm tracking-tight antialiased transition-colors duration-150 motion-reduce:transition-none",
-                item.isActive
-                  ? "bg-zinc-950/[0.055] text-zinc-950 dark:bg-white/[0.08] dark:text-zinc-100"
-                  : "text-zinc-700 hover:bg-zinc-950/[0.045] hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100",
-                "group-data-[collapsible=icon]:size-9.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:px-0"
-              )}
+              className="sidebar-nav-link group-data-[collapsible=icon]:size-9.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
               isActive={item.isActive}
               render={<button onClick={item.onClick} type="button" />}
               tooltip={item.name}
             >
               <div
-                className={cn(
-                  "flex shrink-0 items-center justify-center transition-colors duration-150 motion-reduce:transition-none",
-                  item.isActive
-                    ? "text-zinc-950 dark:text-zinc-100"
-                    : "text-zinc-600 group-hover/item:text-zinc-950 dark:text-zinc-400 dark:group-hover/item:text-zinc-100"
-                )}
+                className="sidebar-nav-icon"
               >
                 {item.icon}
               </div>

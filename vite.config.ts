@@ -1,10 +1,13 @@
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
+// @ts-expect-error Build helper is shared with Node integration tests.
+import { licenseBuildConfig } from "./scripts/license-build-config.mjs";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
+  define: licenseBuildConfig(command, { ...loadEnv(mode, process.cwd(), ""), ...process.env }, process.cwd()),
   // Tauri desktop bundles should resolve assets relative to index.html.
   // Keeping "/" here breaks packaged builds with "Importing a module script failed".
   base: process.env.TAURI_ENV_PLATFORM ? "./" : "/",
@@ -74,4 +77,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

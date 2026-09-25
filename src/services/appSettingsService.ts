@@ -130,32 +130,59 @@ export async function markSetupComplete(): Promise<void> {
 /**
  * Get stored license info
  */
-export async function getLicenseInfo(): Promise<{
+export interface StoredLicense {
+  activationToken: string;
   key: string;
   email: string;
   activatedAt: string;
-} | null> {
-  const [key, email, activatedAt] = await Promise.all([
-    getSetting("license_key"),
-    getSetting("license_email"),
-    getSetting("license_activated_at"),
-  ]);
-
-  if (!(key && email)) {
-    return null;
-  }
-
-  return { key, email, activatedAt: activatedAt || "" };
+  lastSeen?: number;
+  denied?: string;
 }
 
-/**
- * Store license info
- */
+export async function getLicenseInfo(): Promise<StoredLicense | null> {
+  const current = await getSetting("license_credentials_v2");
+  if (current) {
+    const parsed = JSON.parse(current) as StoredLicense;
+    if (
+      !parsed ||
+      typeof parsed.email !== "string" ||
+      typeof parsed.activationToken !== "string"
+    )
+      throw new Error("Activation locale endommagée.");
+    return parsed;
+  }
+  const [key, email, token, activatedAt] = await Promise.all([
+    getSetting("license_key"),
+    getSetting("license_email"),
+    getSetting("license_activation_token"),
+    getSetting("license_activated_at"),
+  ]);
+  return key && email
+    ? {
+        key,
+        email,
+        activationToken: token || "",
+        activatedAt: activatedAt || "",
+      }
+    : null;
+}
+
+export async function saveLicenseState(state: StoredLicense): Promise<void> {
+  await setSetting("license_credentials_v2", JSON.stringify(state));
+}
+
+// Kept for callers migrating from the old setup flow. The lease must already
+// have been cryptographically verified before it is saved here.
 export async function saveLicenseInfo(
   key: string,
-  email: string
+  email: string,
+  activationToken = ""
 ): Promise<void> {
-  await setSetting("license_key", key);
-  await setSetting("license_email", email);
-  await setSetting("license_activated_at", new Date().toISOString());
+  await saveLicenseState({
+    key,
+    email,
+    activationToken,
+    activatedAt: new Date().toISOString(),
+    lastSeen: Date.now(),
+  });
 }

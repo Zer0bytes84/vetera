@@ -1,5 +1,6 @@
 "use client";
 
+import { FloralArtwork } from "@/components/FloralArtwork";
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
@@ -141,12 +142,7 @@ export function SectionCards({
       )}
       aria-label="Indicateurs de la rubrique"
     >
-      <img
-        className="section-atlas-art"
-        src={`/art/cabinet-floral-${background}.png`}
-        alt=""
-        aria-hidden="true"
-      />
+      <FloralArtwork className="section-atlas-art" scene={background} />
       <div className="section-atlas-caption">
         <PawPrint size={14} aria-hidden="true" />
         Votre cabinet, en un regard

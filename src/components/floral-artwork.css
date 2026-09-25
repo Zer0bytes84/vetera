@@ -1,0 +1,37 @@
+.floral-artwork {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--floral-paper);
+}
+.floral-artwork > .floral-artwork-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left bottom;
+  opacity: 1;
+  /* Match the original paper without tinting or stretching the animals. */
+  mask-image: linear-gradient(to bottom, transparent, black 8%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 8%);
+}
+.floral-artwork-flowers {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 32%;
+  background: url('/art/cabinet-floral-lilas.png') right bottom / auto 100% no-repeat;
+  mix-blend-mode: multiply;
+  mask-image: linear-gradient(to right, transparent, black 42%);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 42%);
+  opacity: .72;
+}
+.dark .floral-artwork {
+  background: #252d29;
+}
+.dark .floral-artwork > .floral-artwork-scene,
+.dark .floral-artwork-flowers {
+  mix-blend-mode: luminosity;
+  opacity: .24;
+}

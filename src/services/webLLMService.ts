@@ -292,6 +292,7 @@ export const generateText = async (
     imageUri?: string;
     onToken?: (text: string) => void;
     signal?: AbortSignal;
+    includeKnowledge?: boolean;
   }
 ): Promise<string> => {
   if (unloadPromise) {
@@ -308,6 +309,9 @@ export const generateText = async (
   }
 
   beginGeneration();
+  const generationEngine = engine;
+  const interrupt = () => { void generationEngine?.interruptGenerate().catch(() => {}); };
+  options?.signal?.addEventListener("abort", interrupt, { once: true });
   try {
     const currentEngine = engine;
     if (!currentEngine) {
@@ -316,7 +320,7 @@ export const generateText = async (
 
     throwIfAborted(options?.signal);
 
-    const knowledge = vetKnowledgeService.getContextForQuery(
+    const knowledge = options?.includeKnowledge === false ? "" : vetKnowledgeService.getContextForQuery(
       `${prompt}\n${context}`
     );
     const enrichedContext = [context, knowledge].filter(Boolean).join("\n\n");
@@ -368,6 +372,7 @@ export const generateText = async (
         fullText += token;
         options.onToken(fullText);
       }
+      throwIfAborted(options?.signal);
       return fullText;
     }
 
@@ -382,6 +387,7 @@ export const generateText = async (
     throwIfAborted(options?.signal);
     return response.choices?.[0]?.message?.content?.trim() || "";
   } finally {
+    options?.signal?.removeEventListener("abort", interrupt);
     endGeneration();
   }
 };

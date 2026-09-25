@@ -3,6 +3,7 @@
 use tauri::Manager;
 
 mod clinic_database;
+mod license_installation;
 
 fn main() {
     tauri::Builder::default()
@@ -22,6 +23,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            license_installation::license_installation_id,
             clinic_database::open_clinic_database,
             greet,
             test_sqlite_write,

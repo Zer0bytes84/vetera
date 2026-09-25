@@ -14,6 +14,7 @@ import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import i18n, { isRtlLanguage } from "@/i18n/config";
+import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
 
 type ErrorBoundaryState = {
   hasError: boolean;
@@ -82,17 +83,27 @@ function AppDirectionProvider({ children }: React.PropsWithChildren) {
   return <DirectionProvider direction={dir}>{children}</DirectionProvider>;
 }
 
+function AppProviders() {
+  const content = (
+    <TooltipProvider>
+      <App />
+      <Toaster />
+    </TooltipProvider>
+  );
+
+  if (isActivationAdminRoute()) {
+    return content;
+  }
+
+  return <AuthProvider>{content}</AuthProvider>;
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <AppDirectionProvider>
         <ThemeProvider defaultTheme="dark">
-          <AuthProvider>
-            <TooltipProvider>
-              <App />
-              <Toaster />
-            </TooltipProvider>
-          </AuthProvider>
+          <AppProviders />
         </ThemeProvider>
       </AppDirectionProvider>
     </ErrorBoundary>

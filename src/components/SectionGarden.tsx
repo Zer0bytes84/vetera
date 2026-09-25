@@ -1,3 +1,4 @@
+import { FloralArtwork } from "@/components/FloralArtwork";
 import { ArrowUpRight, Activity, PawPrint } from "lucide-react";
 import {
   useAppointmentsRepository,
@@ -121,12 +122,7 @@ export function SectionGarden({
       className="studio-garden mx-4 mb-5 lg:mx-6"
       aria-label="Repères de la rubrique"
     >
-      <img
-        className="studio-garden-art"
-        src={`/art/cabinet-floral-${background}.png`}
-        alt=""
-        aria-hidden="true"
-      />
+      <FloralArtwork className="studio-garden-art" scene={background} />
       <div className="studio-garden-toolbar">
         <span>
           <PawPrint size={16} />

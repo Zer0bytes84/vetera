@@ -59,7 +59,7 @@ export function NavUser({
             render={
               <SidebarMenuButton
                 aria-label={`Ouvrir le menu du compte de ${user.name}`}
-                className="!gap-2 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-16 min-w-0 flex-1 rounded-[16px] border border-sidebar-border/60 bg-sidebar-accent/45 px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-14"
+                className="!gap-2 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-16 min-w-0 flex-1 rounded-[16px] border border-sidebar-border/60 bg-sidebar-accent/45 px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-14"
                 size="lg"
                 tooltip={`Menu du compte de ${user.name}`}
               />

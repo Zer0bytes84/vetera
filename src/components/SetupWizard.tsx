@@ -15,16 +15,21 @@ import type React from "react";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { APP_NAME } from "@/lib/brand";
+import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import { cn } from "@/lib/utils";
 import {
   formatLicenseKey,
-  validateLicenseKey,
 } from "@/services/licenseService";
+import {
+  activateLicense,
+  createLicenseRequestMailto,
+} from "@/services/licenseActivationService";
 import Logo from "./Logo";
 import { WelcomeArtwork } from "./WelcomeArtwork";
 
 interface SetupWizardProps {
   onComplete: (userData: {
+    activationToken: string;
     name: string;
     email: string;
     password: string;
@@ -58,8 +63,14 @@ const setupBenefits: Array<{
 ];
 
 const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
+  const {
+    handleMouseDown: handleWindowMouseDown,
+    isDesktopRuntime,
+    ref: windowDragRef,
+  } = useTauriDrag<HTMLElement>();
   const [step, setStep] = useState<1 | 2>(1);
   const [licenseKey, setLicenseKey] = useState("");
+  const [activationToken, setActivationToken] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -67,13 +78,14 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   const [showPasswords, setShowPasswords] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isActivating, setIsActivating] = useState(false);
 
   const handleKeyChange = (value: string) => {
     setLicenseKey(formatLicenseKey(value));
     setError("");
   };
 
-  const handleValidateLicense = () => {
+  const handleValidateLicense = async () => {
     if (!(licenseKey && email)) {
       setError("Veuillez remplir tous les champs");
       return;
@@ -82,12 +94,21 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
       setError("Adresse email invalide");
       return;
     }
-    if (!validateLicenseKey(licenseKey, email)) {
-      setError("Clé de licence invalide pour cette adresse email");
-      return;
-    }
+    setIsActivating(true);
     setError("");
-    setStep(2);
+    try {
+      const result = await activateLicense(email, licenseKey);
+      setActivationToken(result.activationToken);
+      setStep(2);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Impossible de vérifier cette licence."
+      );
+    } finally {
+      setIsActivating(false);
+    }
   };
 
   const handleCreateAccount = async () => {
@@ -107,7 +128,13 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     setIsLoading(true);
     setError("");
     try {
-      await onComplete({ name, email, password, licenseKey });
+      await onComplete({
+        activationToken,
+        name,
+        email,
+        password,
+        licenseKey,
+      });
     } catch (err) {
       setError(`Erreur lors de la création du compte: ${String(err)}`);
       setIsLoading(false);
@@ -117,7 +144,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   const submitStep = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (step === 1) {
-      handleValidateLicense();
+      void handleValidateLicense();
       return;
     }
     handleCreateAccount();
@@ -126,6 +153,9 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   return (
     <main
       className="welcome-shell setup-welcome relative min-h-dvh overflow-auto bg-[#f4f5f1] text-zinc-950"
+      data-window-drag-region={isDesktopRuntime ? "true" : undefined}
+      onMouseDown={handleWindowMouseDown}
+      ref={windowDragRef}
       style={{ colorScheme: "light" }}
     >
       <WelcomeArtwork />
@@ -272,9 +302,9 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                       autoComplete="off"
                       className={`${fieldClassName} font-mono uppercase tracking-[0.08em]`}
                       id="setup-license"
-                      maxLength={19}
+                      maxLength={24}
                       onChange={(event) => handleKeyChange(event.target.value)}
-                      placeholder="XXXX-XXXX-XXXX-XXXX"
+                      placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"
                       required
                       type="text"
                       value={licenseKey}
@@ -282,15 +312,32 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                   </SetupField>
 
                   <button
-                    className="group mt-1 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold text-[15px] text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] focus-visible:outline-2 focus-visible:outline-emerald-700 focus-visible:outline-offset-2"
+                    className="group mt-1 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold text-[15px] text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] focus-visible:outline-2 focus-visible:outline-emerald-700 focus-visible:outline-offset-2 disabled:cursor-wait disabled:opacity-60"
+                    disabled={isActivating}
                     type="submit"
                   >
-                    Vérifier et continuer
-                    <HugeiconsIcon
-                      className="size-4 transition-transform group-hover:translate-x-0.5"
-                      icon={ArrowRight01Icon}
-                      strokeWidth={2.4}
-                    />
+                    {isActivating ? (
+                      <Spinner className="size-5 text-white" />
+                    ) : (
+                      <>
+                        Vérifier et continuer
+                        <HugeiconsIcon
+                          className="size-4 transition-transform group-hover:translate-x-0.5"
+                          icon={ArrowRight01Icon}
+                          strokeWidth={2.4}
+                        />
+                      </>
+                    )}
+                  </button>
+                  <button
+                    className="mx-auto flex cursor-pointer items-center gap-2 pt-1 font-medium text-sm text-zinc-600 transition hover:text-zinc-950"
+                    onClick={() => {
+                      window.location.href = createLicenseRequestMailto(email);
+                    }}
+                    type="button"
+                  >
+                    <HugeiconsIcon className="size-4" icon={MailIcon} strokeWidth={1.8} />
+                    Demander une licence par courriel
                   </button>
                 </div>
               ) : (

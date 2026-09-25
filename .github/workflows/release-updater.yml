@@ -26,6 +26,8 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     env:
+      VITE_LICENSE_SERVER_URL: ${{ vars.VITE_LICENSE_SERVER_URL }}
+      VITE_LICENSE_PUBLIC_KEY: ${{ vars.VITE_LICENSE_PUBLIC_KEY }}
       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
       TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
       APPLE_ID: ${{ secrets.APPLE_ID }}
@@ -112,6 +114,7 @@ jobs:
         run: |
           npm run typecheck
           npm test
+          npm run test:licenses
 
       - name: Build Tauri app
         if: runner.os != 'Windows'

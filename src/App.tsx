@@ -5,7 +5,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { appSettingsRepository } from "@/data/repositories";
 import i18n, { isRtlLanguage } from "@/i18n/config";
-import { saveLicenseInfo } from "@/services/appSettingsService";
+import { acceptLicenseActivation } from "@/services/licenseRuntime";
+import { LicenseGate } from "@/components/LicenseGate";
 import { checkAutoBackup } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
 import {
@@ -14,6 +15,7 @@ import {
 } from "@/services/demo-data";
 import { createInitialAdmin } from "@/services/sqlite/auth";
 import { startAppUpdateCheck } from "@/services/updateService";
+import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
 
 const AppShell = lazy(async () => {
   const module = await import("@/modules/shell/app-shell");
@@ -21,8 +23,12 @@ const AppShell = lazy(async () => {
 });
 const Auth = lazy(() => import("@/components/Auth"));
 const SetupWizard = lazy(() => import("@/components/SetupWizard"));
+const ActivationAdminPage = lazy(
+  () => import("@/modules/activation-admin/activation-admin-page")
+);
 
 interface SetupPayload {
+  activationToken: string;
   email: string;
   licenseKey: string;
   name: string;
@@ -58,7 +64,7 @@ function isDatabaseLockedError(error: unknown) {
   return message.toLowerCase().includes("database is locked");
 }
 
-export function App() {
+function MainApp() {
   const [isCheckingSetup, setIsCheckingSetup] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
   const [startupError, setStartupError] = useState<Error | null>(null);
@@ -161,7 +167,10 @@ export function App() {
   }, []);
 
   const handleSetupComplete = async (userData: SetupPayload) => {
-    await saveLicenseInfo(userData.licenseKey, userData.email);
+    await acceptLicenseActivation(
+      userData.email,
+      userData.activationToken
+    );
     await createInitialAdmin({
       email: userData.email,
       password: userData.password,
@@ -201,9 +210,21 @@ export function App() {
 
   return (
     <Suspense fallback={<AppLoadingState />}>
-      <AppShell />
+      <LicenseGate><AppShell /></LicenseGate>
     </Suspense>
   );
+}
+
+export function App() {
+  if (isActivationAdminRoute()) {
+    return (
+      <Suspense fallback={<AppLoadingState />}>
+        <ActivationAdminPage />
+      </Suspense>
+    );
+  }
+
+  return <MainApp />;
 }
 
 function AppLoadingState() {

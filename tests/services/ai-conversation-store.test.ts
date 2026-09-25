@@ -45,6 +45,14 @@ function createState(messageCount = 2, content = "Message clinique") : Persisted
 }
 
 describe("AI conversation store", () => {
+  it("preserves the patient scope of each conversation", () => {
+    const storage = createMemoryStorage();
+    vi.stubGlobal("window", { localStorage: storage });
+    const state = createState();
+    state.conversations[0].patientId = "patient-1";
+    saveAIAgentState(state);
+    expect(loadAIAgentState()?.conversations[0].patientId).toBe("patient-1");
+  });
   afterEach(() => {
     vi.unstubAllGlobals();
   });

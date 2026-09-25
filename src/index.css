@@ -136,19 +136,19 @@
 }
 
 .dark {
-  --background: #09090b; /* deep obsidian black */
+  --background: #141718; /* charcoal canvas */
   --foreground: oklch(0.967 0.001 286); /* zinc-100 */
-  --card: #121215; /* elevated dark surface */
+  --card: #1c2021; /* elevated dark surface */
   --card-foreground: oklch(0.967 0.001 286);
-  --popover: #16161a;
+  --popover: #24292a;
   --popover-foreground: oklch(0.967 0.001 286);
   --primary: oklch(0.765 0.177 163); /* emerald-400 */
   --primary-foreground: oklch(0.141 0.005 286);
-  --secondary: #1c1c21;
+  --secondary: #272c2d;
   --secondary-foreground: oklch(0.967 0.001 286);
-  --muted: #18181c;
-  --muted-foreground: #9ca3af;
-  --accent: #222228;
+  --muted: #232829;
+  --muted-foreground: #afb8b6;
+  --accent: #303737;
   --accent-foreground: oklch(0.967 0.001 286);
   --destructive: oklch(0.704 0.191 22.216);
   --border: rgba(255, 255, 255, 0.08);
@@ -159,19 +159,19 @@
   --chart-3: oklch(0.8 0.15 72); /* amber */
   --chart-4: oklch(0.705 0.015 286); /* zinc-400 */
   --chart-5: oklch(0.6 0.14 163); /* emerald-500 */
-  --sidebar: #0e0e11;
+  --sidebar: #171b1c;
   --sidebar-foreground: oklch(0.967 0.001 286);
   --sidebar-primary: oklch(0.765 0.177 163);
   --sidebar-primary-foreground: oklch(0.141 0.005 286);
-  --sidebar-accent: #1a1a20;
+  --sidebar-accent: #252d2c;
   --sidebar-accent-foreground: oklch(0.967 0.001 286);
   --sidebar-border: rgba(255, 255, 255, 0.07); /* refined 7% white border */
   --sidebar-ring: oklch(0.765 0.177 163);
-  --bg-app: #09090b;
-  --bg-panel: #121215;
+  --bg-app: #141718;
+  --bg-panel: #1c2021;
   --text-primary: oklch(0.967 0.001 286);
   --text-secondary: oklch(0.705 0.015 286);
-  --text-muted: oklch(0.552 0.016 286);
+  --text-muted: #9aa5a2;
   --border-color: rgba(255, 255, 255, 0.07);
   --success: #34d399;
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -193,15 +193,15 @@
   --task-low: rgba(248, 113, 113, 0.7);
   --task-low-glow: rgba(248, 113, 113, 0.3);
   --dashboard-ink: oklch(0.967 0.001 286);
-  --dashboard-surface: #121215;
-  --dashboard-panel: rgba(18, 18, 21, 0.94);
+  --dashboard-surface: #1c2021;
+  --dashboard-panel: rgba(28, 32, 33, 0.94);
   --dashboard-border-soft: rgba(
     255,
     255,
     255,
     0.08
   ); /* translucent 8% white card/panel border */
-  --surface-subtle: #18181c;
+  --surface-subtle: #232829;
   --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
   --shadow-feature:
     0 1px 0 rgba(255, 255, 255, 0.06) inset,
@@ -2512,8 +2512,8 @@ html[data-header-pattern="quiet"] .header-pattern-live {
 }
 .dark .modal-banner-illustrated .modal-banner-botanical,
 .dark .modal-banner-illustrated::before {
-  opacity: 0.3;
-  mix-blend-mode: luminosity;
+  opacity: 0.42;
+  mix-blend-mode: normal;
 }
 .dark .modal-banner-illustrated .modal-banner-glass {
   background: rgb(255 255 255 / 0.07);
@@ -3281,6 +3281,53 @@ html[data-header-pattern="quiet"] .header-pattern-live {
 }
 
 .restored-sidebar [data-slot="sidebar-inner"] { border-radius: 18px; }
+.sidebar-nav-link {
+  height: 40px;
+  gap: 10px;
+  padding-inline: 8px;
+  border-radius: 11px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 150ms cubic-bezier(.2,0,0,1), color 150ms cubic-bezier(.2,0,0,1);
+}
+.sidebar-nav-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: inherit;
+}
+.sidebar-nav-link:hover {
+  background: var(--sidebar-accent);
+  color: var(--sidebar-foreground);
+}
+.sidebar-nav-link[data-active] {
+  background: color-mix(in srgb, #638675 13%, var(--sidebar));
+  color: #315f4b;
+  box-shadow: inset 0 0 0 1px rgb(70 110 90 / 8%);
+}
+.sidebar-nav-link[data-active] .sidebar-nav-icon {
+  background: color-mix(in srgb, #638675 16%, transparent);
+}
+.dark .sidebar-nav-link[data-active] {
+  background: #2a3832;
+  color: #d3eddd;
+  box-shadow: inset 0 0 0 1px rgb(174 218 191 / 12%);
+}
+.dark .sidebar-nav-link[data-active] .sidebar-nav-icon {
+  color: #a6d5bb;
+  background: #354a3f;
+}
+.sidebar-nav-link:focus-visible {
+  outline: 2px solid var(--sidebar-ring);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-nav-link { transition: none; }
+}
 /* Match the main panel's Tauri top offset; minimal's p-2 added 8px twice. */
 [data-variant="minimal"] .restored-sidebar[data-desktop-runtime="true"] {
   padding-top: 0;

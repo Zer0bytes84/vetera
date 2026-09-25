@@ -86,7 +86,7 @@ export function HeroPattern() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-0 top-0 z-0 h-44 overflow-hidden opacity-60 dark:opacity-20"
       style={{
-        backgroundImage: `url(/art/cabinet-floral-${background}.png)`,
+        backgroundImage: `url(/art/cabinet-floral-${["chats", "chiots", "nac"].includes(background) ? "lilas" : background}.png)`,
         backgroundSize: "150% auto",
         backgroundPosition: "right bottom",
         maskImage: "linear-gradient(to bottom, black 45%, transparent)",

@@ -15,6 +15,7 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { APP_NAME } from "@/lib/brand";
+import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import Logo from "./Logo";
 import { WelcomeArtwork } from "./WelcomeArtwork";
 import { useFloralBackground } from "@/lib/floral-background";
@@ -29,6 +30,11 @@ const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { login, register, error: authError } = useAuth();
+  const {
+    handleMouseDown: handleWindowMouseDown,
+    isDesktopRuntime,
+    ref: windowDragRef,
+  } = useTauriDrag<HTMLElement>();
   const errorMessage = authError || formError;
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -60,7 +66,12 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <main className="auth-shell welcome-shell relative min-h-screen overflow-x-hidden bg-[#f7f8f6] text-zinc-950 dark:bg-[#0b0c0d] dark:text-white">
+    <main
+      className="auth-shell welcome-shell relative min-h-screen overflow-x-hidden bg-[#f7f8f6] text-zinc-950 dark:bg-[#0b0c0d] dark:text-white"
+      data-window-drag-region={isDesktopRuntime ? "true" : undefined}
+      onMouseDown={handleWindowMouseDown}
+      ref={windowDragRef}
+    >
       <WelcomeArtwork />
 
       <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
@@ -96,7 +107,7 @@ const Auth: React.FC = () => {
             <div
               className="auth-botanical-reflection"
               aria-hidden="true"
-              style={{ backgroundImage: `url(/art/cabinet-floral-${background}.png)` }}
+              style={{ backgroundImage: `url(/art/cabinet-floral-${["chats", "chiots", "nac"].includes(background) ? "lilas" : background}.png)` }}
             />
             <div className="border-black/[0.055] border-b px-6 py-5 sm:px-8 lg:hidden dark:border-white/[0.07]">
               <Logo size="lg" textSize="md" />

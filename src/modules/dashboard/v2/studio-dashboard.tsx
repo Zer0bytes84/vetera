@@ -1,3 +1,4 @@
+import { FloralArtwork } from "@/components/FloralArtwork";
 import { useState, type ReactNode } from "react";
 import {
   ArrowUpRight,
@@ -205,12 +206,7 @@ export function StudioDashboard(props: DashboardV2Props) {
           aria-label="Les essentiels du cabinet"
           data-garden={floralBackground}
         >
-          <img
-            className="studio-garden-art"
-            src={`/art/cabinet-floral-${floralBackground}.png`}
-            alt=""
-            aria-hidden="true"
-          />
+          <FloralArtwork className="studio-garden-art" scene={floralBackground} />
           <div className="studio-garden-toolbar">
             <div className="studio-garden-badge">
               <Sparkles size={14} className="text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
