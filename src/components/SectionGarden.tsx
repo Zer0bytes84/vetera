@@ -1,5 +1,4 @@
-import { FloralArtwork } from "@/components/FloralArtwork";
-import { ArrowUpRight, Activity, PawPrint } from "lucide-react";
+import { SectionCards } from "@/components/section-cards";
 import {
   useAppointmentsRepository,
   usePatientsRepository,
@@ -7,7 +6,6 @@ import {
   useTasksRepository,
   useTransactionsRepository,
 } from "@/data/repositories";
-import { useFloralBackground } from "@/lib/floral-background";
 import {
   formatCentimes,
   parseDashboardDate,
@@ -29,7 +27,6 @@ export function SectionGarden({
   view: View;
   onNavigate: (view: View) => void;
 }) {
-  const [background] = useFloralBackground();
   const { data: patients, loading: patientsLoading } = usePatientsRepository();
   const { data: appointments, loading: appointmentsLoading } =
     useAppointmentsRepository();
@@ -118,40 +115,19 @@ export function SectionGarden({
   const cards = pairs[view];
   if (!cards) return null;
   return (
-    <section
-      className="studio-garden mx-4 mb-5 lg:mx-6"
-      aria-label="Repères de la rubrique"
-    >
-      <FloralArtwork className="studio-garden-art" scene={background} />
-      <div className="studio-garden-toolbar">
-        <span>
-          <PawPrint size={16} />
-          Les repères du cabinet
-        </span>
-      </div>
-      <div className="studio-garden-widgets">
-        {cards.map((card) => (
-          <button
-            className="studio-glass-widget"
-            key={card.title}
-            type="button"
-            onClick={() => onNavigate(card.target)}
-          >
-            <span className="studio-glass-heading">
-              <Activity size={20} />
-              {card.title}
-              <ArrowUpRight size={16} />
-            </span>
-            <span className="studio-glass-value">
-              {loading ? "…" : card.value}
-            </span>
-            <span className="studio-glass-detail">{card.detail}</span>
-            <span className="studio-glass-footer">
-              Ouvrir la rubrique <ArrowUpRight size={14} />
-            </span>
-          </button>
-        ))}
-      </div>
-    </section>
+    <SectionCards
+      className="mx-4 mb-5 lg:mx-6"
+      items={cards.map(card => ({
+        title: card.title,
+        value: loading ? "…" : String(card.value),
+        footerTitle: card.title === "Rendez-vous aujourd’hui" ? "aujourd’hui" : "Repère du cabinet",
+        footerDescription: card.detail,
+        badge: loading ? "Chargement" : "Données du cabinet",
+        tone: "quiet",
+        trend: "neutral",
+        onClick: () => onNavigate(card.target),
+        actionLabel: "Ouvrir la rubrique",
+      }))}
+    />
   );
 }

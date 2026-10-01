@@ -1,4 +1,4 @@
-import { FloralArtwork } from "@/components/FloralArtwork";
+import { SectionCards } from "@/components/section-cards";
 import {
   AlertTriangle,
   Archive,
@@ -127,7 +127,6 @@ function ProductDetail({
     <Dialog onOpenChange={onOpenChange} open={Boolean(product)}>
       <DialogContent className="max-w-[calc(100%-2rem)] gap-0 overflow-hidden p-0 sm:max-w-xl" showCloseButton>
         <div className="relative overflow-hidden border-b bg-[#f6f3e9] px-6 pb-6 pt-7 dark:bg-[#1f251f]">
-          <div className="absolute inset-y-0 right-0 w-2/5 bg-[url('/art/cabinet-floral-nac.png')] bg-cover bg-left opacity-35" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#f6f3e9] via-[#f6f3e9]/95 to-transparent dark:from-[#1f251f] dark:via-[#1f251f]/95" />
           <DialogHeader className="relative max-w-[75%]">
             <div className="mb-2 flex items-center gap-2">
@@ -212,23 +211,24 @@ export function StockWorkspace({ loading, movements, onAdjust, onDelete, onEdit,
 
   return (
     <div className="space-y-4">
-      <section className="relative overflow-hidden rounded-[26px] border border-[#dcd7c9] bg-[#f8f5ea] shadow-[0_18px_55px_-42px_rgba(50,65,52,.55)] dark:border-white/10 dark:bg-[#1d221e]">
-        <FloralArtwork scene="chiens" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(248,245,234,.08)_22%,rgba(248,245,234,.72)_42%,#f8f5ea_62%,#f8f5ea_100%)] dark:bg-[linear-gradient(90deg,rgba(29,34,30,.14)_0%,rgba(29,34,30,.3)_22%,rgba(29,34,30,.84)_44%,#1d221e_62%,#1d221e_100%)]" />
-        <div className="relative grid min-h-[224px] items-stretch gap-3 p-4 lg:grid-cols-[minmax(250px,.72fr)_1fr_1fr] lg:p-5">
-          <div aria-hidden="true" className="hidden min-h-44 lg:block" />
-
-          <button className="group flex min-h-44 flex-col justify-between rounded-2xl border border-white/65 bg-white/65 p-5 text-left shadow-[0_18px_40px_-32px_rgba(62,76,64,.7)] backdrop-blur-2xl transition hover:-translate-y-0.5 hover:bg-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/15 dark:bg-[#171e1c]/85 dark:text-white dark:hover:bg-[#202a26]/90" onClick={() => setStatus("low")} type="button">
-            <div className="flex items-start justify-between"><span className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700"><PackageOpen className="size-5" /></span><ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></div>
-            <div><p className="text-muted-foreground text-xs">À réapprovisionner</p><div className="mt-1 flex items-end gap-2"><strong className="text-4xl tracking-[-0.06em]">{reorder.length}</strong><span className="pb-1 text-muted-foreground text-sm">référence{reorder.length > 1 ? "s" : ""}</span></div><p className="mt-2 line-clamp-1 text-sm">{reorder[0]?.name || "Aucune commande urgente"}</p></div>
-          </button>
-
-          <button className="group flex min-h-44 flex-col justify-between rounded-2xl border border-white/65 bg-white/65 p-5 text-left shadow-[0_18px_40px_-32px_rgba(62,76,64,.7)] backdrop-blur-2xl transition hover:-translate-y-0.5 hover:bg-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/15 dark:bg-[#171e1c]/85 dark:text-white dark:hover:bg-[#202a26]/90" onClick={() => setStatus("expiring")} type="button">
-            <div className="flex items-start justify-between"><span className="flex size-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700"><CalendarClock className="size-5" /></span><ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></div>
-            <div><p className="text-muted-foreground text-xs">Péremptions à surveiller</p><div className="mt-1 flex items-end gap-2"><strong className="text-4xl tracking-[-0.06em]">{expiries.length}</strong><span className="pb-1 text-muted-foreground text-sm">dans 90 jours</span></div><p className="mt-2 line-clamp-1 text-sm">{expiries[0]?.name || "Aucune échéance proche"}</p></div>
-          </button>
-        </div>
-      </section>
+      <SectionCards items={[
+        {
+          title: "À réapprovisionner", icon: PackageOpen,
+          value: String(reorder.length), footerTitle: "références sous le seuil",
+          footerDescription: reorder[0]?.name || "Aucune commande urgente",
+          badge: reorder.length ? "Stock à suivre" : "À jour",
+          tone: reorder.length ? "watch" : "quiet", trend: "neutral",
+          onClick: () => setStatus("low"), actionLabel: "Voir les produits concernés",
+        },
+        {
+          title: "Péremptions à surveiller", icon: CalendarClock,
+          value: String(expiries.length), footerTitle: "dans les 90 prochains jours",
+          footerDescription: expiries[0]?.name || "Aucune échéance proche",
+          badge: expiries.length ? "À vérifier" : "À jour",
+          tone: expiries.length ? "watch" : "quiet", trend: "neutral",
+          onClick: () => setStatus("expiring"), actionLabel: "Voir les échéances",
+        },
+      ]} />
 
       <Card className="overflow-hidden border-border/70 shadow-none">
         <Tabs defaultValue="catalogue">

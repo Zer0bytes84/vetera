@@ -17,11 +17,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { APP_NAME } from "@/lib/brand";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import Logo from "./Logo";
-import { WelcomeArtwork } from "./WelcomeArtwork";
-import { useFloralBackground } from "@/lib/floral-background";
 
 const Auth: React.FC = () => {
-  const [background] = useFloralBackground();
   const [view, setView] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -72,7 +69,6 @@ const Auth: React.FC = () => {
       onMouseDown={handleWindowMouseDown}
       ref={windowDragRef}
     >
-      <WelcomeArtwork />
 
       <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
         <section className="relative hidden min-h-screen flex-col justify-between border-white/50 border-r p-10 lg:flex xl:p-14 dark:border-white/[0.06]">
@@ -104,11 +100,6 @@ const Auth: React.FC = () => {
             initial={{ opacity: 0, y: 18, scale: 0.985 }}
             transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div
-              className="auth-botanical-reflection"
-              aria-hidden="true"
-              style={{ backgroundImage: `url(/art/cabinet-floral-${["chats", "chiots", "nac"].includes(background) ? "lilas" : background}.png)` }}
-            />
             <div className="border-black/[0.055] border-b px-6 py-5 sm:px-8 lg:hidden dark:border-white/[0.07]">
               <Logo size="lg" textSize="md" />
             </div>

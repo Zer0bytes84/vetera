@@ -6,11 +6,13 @@ import {
   getModelPreferences,
   resolveModelId,
 } from "@/lib/ai-models";
+import { isTauriRuntime } from "./browser-store";
 import { vetKnowledgeService } from "./vetKnowledgeService";
 
 export interface ProgressReport {
   progress: number;
   text: string;
+  status?: "idle" | "loading" | "ready" | "error";
 }
 
 export interface LocalChatTurn {
@@ -38,7 +40,8 @@ let activeModelId: string | null = null;
 let initPromise: Promise<void> | null = null;
 let initializingModelId: string | null = null;
 let initializing = false;
-let globalProgress: ProgressReport = { progress: 0, text: "Initialisation..." };
+let globalProgress: ProgressReport = { progress: 0, text: "Modèle non chargé", status: "idle" };
+let initializationController: AbortController | null = null;
 let unloadPromise: Promise<void> | null = null;
 let webLLMModulePromise: Promise<typeof import("@mlc-ai/web-llm")> | null = null;
 
@@ -54,7 +57,10 @@ const MAX_HISTORY_TEXT_LENGTH = 5000;
 const progressListeners = new Set<(report: ProgressReport) => void>();
 
 const loadWebLLMModule = () => {
-  webLLMModulePromise ??= import("@mlc-ai/web-llm");
+  webLLMModulePromise ??= import("@mlc-ai/web-llm").catch((error) => {
+    webLLMModulePromise = null;
+    throw error;
+  });
   return webLLMModulePromise;
 };
 
@@ -141,144 +147,148 @@ export const subscribeToProgress = (
   callback: (report: ProgressReport) => void
 ): (() => void) => {
   progressListeners.add(callback);
-  if (initializing || globalProgress.progress > 0) {
-    callback(globalProgress);
-  }
+  callback(globalProgress);
   return () => progressListeners.delete(callback);
 };
 
 export const getCurrentProgress = (): ProgressReport => globalProgress;
 
+// Bound the GPU preflight and module import as well as the download itself.
+const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promise<T> => {
+  let timer: ReturnType<typeof setTimeout>;
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(message)), ms);
+    }),
+  ]).finally(() => clearTimeout(timer));
+};
+
 export const getWebGPUStatus = async (): Promise<WebGPUStatus> => {
-  if (typeof navigator === "undefined") {
-    return { available: true };
-  }
-
-  const gpu = (
-    navigator as Navigator & {
-      gpu?: { requestAdapter?: () => Promise<unknown> };
-    }
+  const gpu = typeof navigator === "undefined" ? undefined : (
+    navigator as Navigator & { gpu?: { requestAdapter: () => Promise<unknown> } }
   ).gpu;
-
   if (!gpu?.requestAdapter) {
-    return {
-      available: false,
-      reason: "WebGPU n'est pas disponible sur cet appareil.",
-    };
+    return { available: false, reason: "WebGPU n’est pas disponible dans cette fenêtre. Mettez à jour votre système et Baitari pour utiliser le modèle local." };
   }
-
   try {
-    const adapter = await gpu.requestAdapter();
-    return adapter
-      ? { available: true }
-      : {
-          available: false,
-          reason: "Le moteur graphique local n'a pas pu être initialisé.",
-        };
-  } catch {
-    return {
-      available: false,
-      reason: "WebGPU a refusé l'accès au moteur graphique local.",
+    const adapter = await withTimeout(gpu.requestAdapter(), 15_000,
+      "Le moteur graphique ne répond pas. Fermez puis relancez Baitari.");
+    return adapter ? { available: true } : {
+      available: false, reason: "Aucun GPU compatible n’est accessible. Fermez les applications utilisant le GPU puis réessayez.",
     };
+  } catch (error) {
+    return { available: false, reason: error instanceof Error ? error.message : "L’accès au GPU a été refusé." };
   }
 };
+
+function explainLoadError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/WebGPU|GPU|graphique|ne répond|interrompu|annulée|ne progresse/.test(message)) return message;
+  if (/shader.?f16|feature.*support/i.test(message)) return "Ce GPU ne prend pas en charge les fonctions nécessaires à ce modèle. Mettez à jour votre système et Baitari.";
+  if (/memory|allocation|out of|device.*lost/i.test(message)) return "La mémoire graphique est insuffisante. Fermez les applications lourdes puis réessayez avec le modèle léger.";
+  if (/quota|storage|indexeddb|cache/i.test(message)) return "Le modèle ne peut pas être enregistré sur cet appareil. Vérifiez l’espace disque et l’accès au stockage local.";
+  if (/fetch|network|load failed|download|http/i.test(message)) return "Téléchargement impossible. Vérifiez la connexion et l’accès à Hugging Face puis réessayez.";
+  return `Le modèle n’a pas pu être chargé : ${message}`;
+}
 
 export const initializeWebLLM = async (
   modelIdOrCallback?: string | ((report: ProgressReport) => void),
   onProgress?: (report: ProgressReport) => void
 ): Promise<void> => {
-  let modelId: string;
-  let callback: ((report: ProgressReport) => void) | undefined;
-
-  if (typeof modelIdOrCallback === "function") {
-    modelId = DEFAULT_MODEL_ID;
-    callback = modelIdOrCallback;
-  } else {
-    modelId = resolveModelId(modelIdOrCallback);
-    callback = onProgress;
-  }
-
-  if (unloadPromise) {
-    await unloadPromise;
-  }
-
-  if (engine && activeModelId === modelId) {
-    return;
-  }
-
-  const webGPUStatus = await getWebGPUStatus();
-  if (!webGPUStatus.available) {
-    const error = new Error(
-      webGPUStatus.reason ?? "WebGPU n'est pas disponible sur cet appareil."
-    );
-    notifyProgress({ progress: 0, text: error.message });
-    callback?.({ progress: 0, text: error.message });
-    throw error;
-  }
-
-  // A model switch must wait for the current download to finish so two GPU
-  // initializations never compete for memory at the same time.
-  if (initPromise) {
-    const pendingInitialization = initPromise;
-    if (initializingModelId === modelId) {
-      return pendingInitialization;
-    }
-
-    try {
-      await pendingInitialization;
-    } catch {
-      // A failed model can be retried, or replaced by the requested model.
-    }
-
-    if (engine && activeModelId === modelId) {
-      return;
-    }
-  }
-
-  if (engine && activeModelId !== modelId) {
-    // Do not keep two WebGPU pipelines alive during a model switch. This is
-    // especially important on integrated GPUs where the second allocation
-    // otherwise looks like a frozen white page.
-    await unloadCurrentEngine();
-  }
-
-  initializing = true;
-  initializingModelId = modelId;
-  const initialProgress = { progress: 0, text: "Préparation du modèle local..." };
-  notifyProgress(initialProgress);
-  callback?.(initialProgress);
-
-  const nextInitialization = (async () => {
-    try {
-      const { CreateMLCEngine } = await loadWebLLMModule();
-      const nextEngine = await CreateMLCEngine(modelId, {
-        initProgressCallback: (report) => {
-          const progress = { progress: report.progress, text: report.text };
-          notifyProgress(progress);
-          callback?.(progress);
-        },
-      });
-      engine = nextEngine;
-      activeModelId = modelId;
-      notifyProgress({ progress: 1, text: "Mode local prêt" });
-      callback?.({ progress: 1, text: "Mode local prêt" });
-    } catch (error) {
-      notifyProgress({ progress: 0, text: "Échec du chargement du modèle local" });
-      console.error("[WebLLM] Echec du chargement:", error);
-      throw error;
-    }
-  })();
-
-  initPromise = nextInitialization;
+  const modelId = resolveModelId(typeof modelIdOrCallback === "string" ? modelIdOrCallback : undefined);
+  const callback = typeof modelIdOrCallback === "function" ? modelIdOrCallback : onProgress;
+  // Every caller follows the same lifecycle, including callers joining a load.
+  const unsubscribe = callback ? subscribeToProgress(callback) : () => {};
   try {
-    await nextInitialization;
-  } finally {
-    if (initPromise === nextInitialization) {
-      initializing = false;
-      initializingModelId = null;
-      initPromise = null;
+    while (initPromise) {
+      const pending = initPromise;
+      if (initializingModelId === modelId) return await pending;
+      try { await pending; } catch { /* The requested model may still load. */ }
     }
-  }
+    if (unloadPromise) {
+      await unloadPromise;
+      return await initializeWebLLM(modelId);
+    }
+    if (engine && activeModelId === modelId) return;
+
+    const controller = new AbortController();
+    initializationController = controller;
+    initializing = true;
+    initializingModelId = modelId;
+    notifyProgress({ progress: 0, text: "Vérification du moteur graphique…", status: "loading" });
+    // Defer work until the shared promise has been assigned; concurrent clicks
+    // must never start two downloads during the GPU preflight.
+    const nextInitialization = Promise.resolve().then(async () => {
+      const pendingEngine: { current: MLCEngine | null } = { current: null };
+      let stalledTimer: ReturnType<typeof setTimeout> | undefined;
+      let totalTimer: ReturnType<typeof setTimeout> | undefined;
+      const aborted = new Promise<never>((_, reject) => {
+        controller.signal.addEventListener("abort", () => reject(controller.signal.reason), { once: true });
+      });
+      const cancel = (message: string) => controller.abort(new Error(message));
+      const armStallTimer = () => {
+        clearTimeout(stalledTimer);
+        stalledTimer = setTimeout(() => cancel("Le chargement ne progresse plus depuis 3 minutes. Vérifiez votre connexion puis réessayez."), 180_000);
+      };
+      try {
+        const work = (async () => {
+          const gpu = await getWebGPUStatus();
+          if (!gpu.available) throw new Error(gpu.reason);
+          if (controller.signal.aborted) throw controller.signal.reason;
+          if (engine) await unloadCurrentEngine();
+          notifyProgress({ progress: 0, text: "Préparation du téléchargement…", status: "loading" });
+          const { MLCEngine: Engine, prebuiltAppConfig } = await withTimeout(loadWebLLMModule(), 30_000,
+            "Le moteur local ne répond pas. Rechargez Baitari puis réessayez.");
+          if (controller.signal.aborted) throw controller.signal.reason;
+          pendingEngine.current = new Engine({
+            appConfig: { ...prebuiltAppConfig, useIndexedDBCache: isTauriRuntime() },
+            initProgressCallback: (report) => {
+              if (controller.signal.aborted) return;
+              const progress = Math.min(0.99, Math.max(0, report.progress));
+              if (progress > globalProgress.progress || report.text !== globalProgress.text) armStallTimer();
+              notifyProgress({ progress, text: report.text, status: "loading" });
+            },
+          });
+          armStallTimer();
+          totalTimer = setTimeout(() => cancel("Installation interrompue après 30 minutes. Réessayez sur une connexion plus rapide."), 1_800_000);
+          await pendingEngine.current.reload(modelId);
+          if (controller.signal.aborted) {
+            await pendingEngine.current.unload();
+            throw controller.signal.reason;
+          }
+          engine = pendingEngine.current;
+          activeModelId = modelId;
+        })();
+        // Ignore late progress/success after cancellation and release its GPU.
+        await Promise.race([work, aborted]);
+        initializing = false;
+        notifyProgress({ progress: 1, text: "Mode local prêt", status: "ready" });
+      } catch (error) {
+        controller.abort(error);
+        if (pendingEngine.current) void pendingEngine.current.unload().catch(() => {});
+        initializing = false;
+        const message = explainLoadError(error);
+        notifyProgress({ progress: 0, text: message, status: "error" });
+        console.error("[WebLLM] Échec du chargement:", error);
+        const failure = new Error(message, { cause: error });
+        failure.name = "LocalModelLoadError";
+        throw failure;
+      } finally {
+        clearTimeout(stalledTimer);
+        clearTimeout(totalTimer);
+        if (initializationController === controller) initializationController = null;
+      }
+    });
+    initPromise = nextInitialization;
+    try { await nextInitialization; } finally {
+      if (initPromise === nextInitialization) {
+        initializing = false;
+        initializingModelId = null;
+        initPromise = null;
+      }
+    }
+  } finally { unsubscribe(); }
 };
 
 export const generateText = async (
@@ -397,6 +407,7 @@ export const isWebLLMReady = (): boolean => engine !== null;
 export const isWebLLMLoading = (): boolean => initializing;
 
 export const resetWebLLM = async (): Promise<void> => {
+  initializationController?.abort(new Error("Installation annulée."));
   if (initPromise) {
     try {
       await initPromise;
@@ -406,6 +417,7 @@ export const resetWebLLM = async (): Promise<void> => {
   }
 
   await unloadCurrentEngine();
+  notifyProgress({ progress: 0, text: "Modèle non chargé", status: "idle" });
 };
 
 export const hasModelInCache = async (modelId: string): Promise<boolean> => {

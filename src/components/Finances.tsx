@@ -1,3 +1,6 @@
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
+import { invoiceDocument } from "@/lib/invoice-document";
+import { InvoicePdfPreview } from "@/modules/invoices/components/invoice-pdf-preview";
 import { FinancialPeriodFilter } from "@/components/financial-period-filter";
 import {
   Add01Icon,
@@ -90,7 +93,6 @@ import {
   useTransactionsRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import { getSetting } from "@/services/appSettingsService";
 import { type BillingActor, billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
@@ -424,6 +426,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
     update: updateTransaction,
   } = useTransactionsRepository();
 
+  const [previewInvoice, setPreviewInvoice] = useState<InvoiceDetail | null>(null);
   const [activeTab, setActiveTab] = useState<FinanceTab>("invoices");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(true);
@@ -789,14 +792,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
     }
   };
 
-  const getClinicSnapshot = async () => {
-    const name =
-      (await getSetting("clinic_name")) ||
-      (await getSetting("cabinet_name")) ||
-      (await getSetting("practice_name")) ||
-      "Baitari";
-    return { name };
-  };
+  const getClinicSnapshot = getInvoiceSettings;
 
   const normalizeInvoiceLines = (): BillingLineInput[] | null => {
     const normalized: BillingLineInput[] = [];
@@ -2338,6 +2334,7 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
                 ) : null}
               </FormDialogBody>
               <FormDialogFooter className="empty:hidden">
+                {selectedInvoice.documentStatus === "issued" && <Button variant="outline" onClick={() => { setPreviewInvoice(selectedInvoice); setSelectedInvoice(null); }}>Aperçu / PDF</Button>}
                 {selectedInvoice.documentStatus === "draft" ? (
                   <Button
                     disabled={isSubmitting}
@@ -2450,6 +2447,11 @@ const Finances: React.FC<{ onNavigate?: (view: View) => void }> = ({
           </FormDialogFooter>
         </FormDialogContent>
       </Dialog>
+
+      {previewInvoice && (() => {
+        const document = invoiceDocument(previewInvoice, getInvoicePatientName(previewInvoice, patients) || "Patient non renseigné");
+        return <InvoicePdfPreview data={document.data} settings={document.settings} onClose={() => setPreviewInvoice(null)} />;
+      })()}
 
       <Dialog
         onOpenChange={(open) => !open && setIsTransactionDialogOpen(false)}

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type Database from "@tauri-apps/plugin-sql";
 import type { AutomationItem } from "@/modules/dashboard/hooks/useAutomations";
 import { runDbOperation, runDbRead } from "./database";

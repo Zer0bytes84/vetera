@@ -59,21 +59,21 @@ export function NavUser({
             render={
               <SidebarMenuButton
                 aria-label={`Ouvrir le menu du compte de ${user.name}`}
-                className="!gap-2 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-16 min-w-0 flex-1 rounded-[16px] border border-sidebar-border/60 bg-sidebar-accent/45 px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent [@media(max-height:820px)]:h-14"
+                className="sidebar-user-card !gap-2.5 group-data-[collapsible=icon]:!size-11 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-auto min-h-14 min-w-0 flex-1 rounded-xl border border-sidebar-border bg-sidebar-accent/45 px-2.5 py-3 transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent"
                 size="lg"
                 tooltip={`Menu du compte de ${user.name}`}
               />
             }
           >
             <Avatar
-              className="size-8 rounded-full ring-1 ring-sidebar-border/70 transition-all group-data-[collapsible=icon]:size-8"
+              className="size-8 shrink-0 rounded-full ring-1 ring-sidebar-border/70 transition-all group-data-[collapsible=icon]:size-8"
               name={user.name}
               size="sm"
               src={normalizedAvatar}
             />
             <div className="grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
               <span
-                className="sidebar-user-name truncate font-medium text-[13px] text-sidebar-foreground tracking-[-0.015em] antialiased"
+                className="sidebar-user-name whitespace-normal break-words font-medium text-[13px] text-sidebar-foreground leading-5 tracking-[-0.01em] antialiased"
                 title={user.name}
               >
                 {user.name}
@@ -102,7 +102,7 @@ export function NavUser({
                     src={normalizedAvatar}
                   />
                   <div className="grid flex-1 text-start text-sm leading-tight">
-                    <span className="truncate font-medium text-[15px] tracking-tight antialiased">
+                    <span className="whitespace-normal break-words font-medium text-[15px] tracking-tight antialiased">
                       {user.name}
                     </span>
                     <span className="truncate text-muted-foreground/80 text-xs">

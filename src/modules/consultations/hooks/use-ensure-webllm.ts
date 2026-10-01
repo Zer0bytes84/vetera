@@ -20,15 +20,16 @@ export type WebLLMState = {
   reset: () => void;
 };
 
-const PROGRESS_SNAPSHOT = getCurrentProgress();
-
-const INITIAL_STATE = {
-  activeModelId: getActiveModelId(),
-  error: null as string | null,
-  isLoading: false,
-  isReady: isWebLLMReady(),
-  progress: PROGRESS_SNAPSHOT.progress,
-  progressText: PROGRESS_SNAPSHOT.text,
+const getInitialState = () => {
+  const report = getCurrentProgress();
+  return {
+    activeModelId: getActiveModelId(),
+    error: report.status === "error" ? report.text : null,
+    isLoading: report.status === "loading",
+    isReady: isWebLLMReady(),
+    progress: report.progress,
+    progressText: report.text,
+  };
 };
 
 /**
@@ -37,12 +38,16 @@ const INITIAL_STATE = {
  * à `ensure()` pendant un init déjà en cours sont no-op.
  */
 export function useEnsureWebLLM(): WebLLMState {
-  const [state, setState] = useState(INITIAL_STATE);
+  const [state, setState] = useState(getInitialState);
 
   useEffect(() => {
     const unsubscribe = subscribeToProgress((report) => {
       setState((previous) => ({
         ...previous,
+        activeModelId: getActiveModelId(),
+        error: report.status === "error" ? report.text : null,
+        isLoading: report.status === "loading",
+        isReady: report.status === "ready",
         progress: report.progress,
         progressText: report.text,
       }));
@@ -92,15 +97,8 @@ export function useEnsureWebLLM(): WebLLMState {
   };
 
   const reset = () => {
-    resetWebLLM();
-    setState((previous) => ({
-      ...previous,
-      activeModelId: null,
-      isLoading: false,
-      isReady: false,
-      progress: 0,
-      progressText: "",
-    }));
+    // The service broadcasts idle only once GPU resources have been released.
+    void resetWebLLM();
   };
 
   return {

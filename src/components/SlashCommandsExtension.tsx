@@ -1,8 +1,9 @@
-/* eslint-disable react-refresh/only-export-components */
 import { Extension } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
 import Suggestion from "@tiptap/suggestion";
 import tippy, { type Instance } from "tippy.js";
+import { documentNoteTemplateOrder, documentNoteTemplates } from "./document-note-templates";
+import { insertDocumentTable } from "./document-table-presets";
 import SlashCommandMenu from "./SlashCommandMenu";
 
 export interface SlashCommandItem {
@@ -22,8 +23,8 @@ const SlashCommands = Extension.create({
       suggestion: {
         char: "/",
         command: ({ editor, range, props }: any) => {
-          props.command(editor);
           editor.chain().focus().deleteRange(range).run();
+          props.command(editor);
         },
       },
     };
@@ -42,6 +43,38 @@ const SlashCommands = Extension.create({
 export const getSlashCommandItems = (
   onAiAction: (action: string) => void
 ): SlashCommandItem[] => [
+  {
+    title: "Tableau vierge",
+    description: "Un tableau de 3 colonnes et 3 lignes",
+    icon: "▦",
+    keywords: ["tableau", "grille", "colonnes", "lignes"],
+    group: "table",
+    command: (editor) => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+  },
+  {
+    title: "Suivi des constantes",
+    description: "Poids, température et observations",
+    icon: "♡",
+    keywords: ["tableau", "constantes", "poids", "température", "suivi"],
+    group: "table",
+    command: (editor) => insertDocumentTable(editor, "vitals"),
+  },
+  {
+    title: "Tableau de traitements",
+    description: "Produit, dose, voie et fréquence",
+    icon: "✚",
+    keywords: ["tableau", "traitement", "dose", "médicament"],
+    group: "table",
+    command: (editor) => insertDocumentTable(editor, "treatments"),
+  },
+  ...documentNoteTemplateOrder.map((kind): SlashCommandItem => ({
+    title: documentNoteTemplates[kind].title,
+    description: documentNoteTemplates[kind].description,
+    icon: kind === "phone" ? "✉" : "▤",
+    keywords: ["modèle", "note", "vétérinaire", kind],
+    group: "template",
+    command: (editor) => editor.chain().focus().insertContent(documentNoteTemplates[kind].content).run(),
+  })),
   {
     title: "Titre 1",
     description: "Grand titre de section",
@@ -118,6 +151,14 @@ export const getSlashCommandItems = (
     command: (editor) => editor.chain().focus().setHorizontalRule().run(),
   },
   {
+    title: "Liste à cocher",
+    description: "Suivre les étapes d’un soin ou d’un dossier",
+    icon: "☑",
+    keywords: ["tache", "tâche", "checklist", "soins", "à faire"],
+    group: "format",
+    command: (editor) => editor.chain().focus().toggleTaskList().run(),
+  },
+  {
     title: "Corriger",
     description: "Corriger l'orthographe et la grammaire",
     icon: "🔧",
@@ -142,8 +183,8 @@ export const getSlashCommandItems = (
     command: () => onAiAction("Résume en points clés"),
   },
   {
-    title: "Rédiger avec l'IA",
-    description: "L'assistant rédige du contenu pour vous",
+    title: "Proposer un brouillon",
+    description: "Créer une proposition à relire avant insertion",
     icon: "✍️",
     keywords: ["ai", "ia", "rédiger", "écrire", "write", "generate"],
     group: "ai",
@@ -156,16 +197,20 @@ export const createSlashCommandsSuggestion = (
 ) => ({
   items: ({ query }: { query: string }) => {
     const items = getSlashCommandItems(onAiAction);
+    const search = query.trim().toLocaleLowerCase("fr");
+    if (!search) {
+      const frequent = new Set(["Note de consultation", "Suivi clinique", "Consignes de sortie", "Tableau vierge", "Liste à cocher"]);
+      return items.filter((item) => frequent.has(item.title));
+    }
     return items
       .filter((item) => {
-        const search = query.toLowerCase();
         return (
-          item.title.toLowerCase().includes(search) ||
-          item.description.toLowerCase().includes(search) ||
+          item.title.toLocaleLowerCase("fr").includes(search) ||
+          item.description.toLocaleLowerCase("fr").includes(search) ||
           item.keywords?.some((k) => k.includes(search))
         );
       })
-      .slice(0, 10);
+      .slice(0, 20);
   },
 
   render: () => {

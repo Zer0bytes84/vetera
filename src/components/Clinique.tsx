@@ -1,4 +1,3 @@
-import { savePdf } from "@/lib/save-pdf";
 import {
   Activity01Icon,
   Add01Icon,
@@ -124,7 +123,12 @@ import { AnesthesiaSheet } from "@/modules/anesthesia";
 import { ConsultationSessionDrawer } from "@/modules/consultations";
 import { HospitalizationSheet } from "@/modules/hospitalizations";
 import { PrescriptionSheet } from "@/modules/prescriptions";
-import { getSetting } from "@/services/appSettingsService";
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
+import { exportInvoicePdf } from "@/lib/invoice-pdf";
+import { invoiceDocument } from "@/lib/invoice-document";
+import { billingService } from "@/services/billingService";
+import { isTauriRuntime } from "@/services/browser-store";
+import { toCentimes } from "@/utils/currency";
 import { useAudit } from "@/services/auditService";
 import { useAppointmentReminderSync } from "@/services/reminderService";
 import type { View } from "@/types";
@@ -365,114 +369,6 @@ function AppointmentStatusBadge({
     </Badge>
   );
 }
-
-const generateInvoicePDF = async (data: {
-  patientName: string;
-  ownerName?: string;
-  date: Date;
-  items: BillingItem[];
-  total: number;
-  id: string;
-  diagnosis?: string;
-  clinicName?: string;
-}) => {
-  const doc = new jsPDF();
-  const primaryColor = "#2563EB";
-  const grayColor = "#52525B";
-  const clinicName = data.clinicName?.trim() || APP_NAME;
-
-  doc.setFontSize(22);
-  doc.setTextColor(primaryColor);
-  doc.text(clinicName, 20, 20);
-
-  doc.setFontSize(10);
-  doc.setTextColor(grayColor);
-  doc.text("Clinique vétérinaire", 20, 26);
-  doc.text(`${clinicName} · Gestion locale du cabinet`, 20, 31);
-  doc.text("Support interne", 20, 36);
-
-  doc.setDrawColor(200, 200, 200);
-  doc.line(20, 45, 190, 45);
-
-  doc.setFontSize(16);
-  doc.setTextColor(0, 0, 0);
-  doc.text("FACTURE", 150, 20, { align: "center" });
-
-  doc.setFontSize(10);
-  doc.setTextColor(grayColor);
-  doc.text(`N°: ${data.id}`, 150, 26, { align: "center" });
-  doc.text(`Date: ${data.date.toLocaleDateString("fr-FR")}`, 150, 31, {
-    align: "center",
-  });
-
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(0, 0, 0);
-  doc.text("Facturé à :", 20, 60);
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(grayColor);
-
-  let yPos = 66;
-  if (data.ownerName) {
-    doc.text(`Propriétaire : ${data.ownerName}`, 20, yPos);
-    yPos += 6;
-  }
-  doc.text(`Patient : ${data.patientName}`, 20, yPos);
-
-  let y = 90;
-  doc.setFillColor(245, 245, 245);
-  doc.rect(20, y - 8, 170, 10, "F");
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(0, 0, 0);
-  doc.text("DESCRIPTION", 25, y);
-  doc.text("MONTANT", 185, y, { align: "right" });
-
-  y += 10;
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(grayColor);
-
-  data.items.forEach((item) => {
-    doc.text(item.desc, 25, y);
-    doc.text(`${item.amount} DA`, 185, y, { align: "right" });
-    y += 10;
-  });
-
-  y += 5;
-  doc.setDrawColor(0, 0, 0);
-  doc.line(20, y, 190, y);
-  y += 10;
-
-  doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(0, 0, 0);
-  doc.text("TOTAL À PAYER", 90, y);
-  doc.setTextColor(primaryColor);
-  doc.text(`${data.total} DA`, 185, y, { align: "right" });
-
-  if (data.diagnosis) {
-    y += 20;
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "italic");
-    doc.setTextColor(grayColor);
-    doc.text("Note médicale : " + data.diagnosis, 20, y);
-  }
-
-  doc.setFontSize(8);
-  doc.setTextColor(grayColor);
-  doc.text("Merci pour votre confiance", 175, 275, { align: "center" });
-
-  doc.setFontSize(9);
-  doc.setTextColor(150, 150, 150);
-  doc.text(`${clinicName} · Système clinique local`, 105, 290, {
-    align: "center",
-  });
-  return savePdf(doc,
-    `Facture-${data.patientName.replace(/[^\p{L}\p{N} _-]/gu, "_")}-${data.date.toISOString().split("T")[0]}.pdf`
-  );
-};
 
 const generatePrescriptionPDF = (data: {
   patientName: string;
@@ -2243,20 +2139,21 @@ const Clinique: React.FC<CliniqueProps> = ({ onNavigate }) => {
 
       const exportReceipt = async () => {
         try {
-          const clinicName =
-            (await getSetting("clinic_name")) ||
-            (await getSetting("cabinet_name")) ||
-            (await getSetting("practice_name")) || APP_NAME;
-          const saved = await generateInvoicePDF({
-            patientName: patient?.name || "Patient local",
-            ownerName: formatOwnerName(owner),
-            date: new Date(),
-            items,
-            total: totalAmountDa,
-            id: invoiceNumber,
-            diagnosis: billingAppointment.diagnosis,
-            clinicName,
-          });
+          const invoice = isTauriRuntime()
+            ? await billingService.getInvoice(`appointment-invoice-${billingAppointment.id}`)
+            : null;
+          if (isTauriRuntime() && !invoice) throw new Error("Facture enregistrée introuvable. Réessayez depuis Finances.");
+          const document = invoice ? invoiceDocument(invoice, patient?.name || "Patient") : {
+            settings: await getInvoiceSettings(),
+            data: {
+              number: invoiceNumber, date: new Date(), patientName: patient?.name || "Patient",
+              ownerName: formatOwnerName(owner),
+              items: items.map((item) => ({ description: item.desc, amount: toCentimes(item.amount) })),
+              totalAmount: toCentimes(totalAmountDa), paidAmount: toCentimes(totalAmountDa - balanceAmountDa),
+              balanceAmount: toCentimes(balanceAmountDa),
+            },
+          };
+          const saved = await exportInvoicePdf(document.data, document.settings);
           toast.success(saved ? "Facture PDF enregistrée, prête à imprimer." : "Encaissement conservé. Export PDF annulé.");
         } catch (error) {
           console.error("[Billing] Receipt export failed after successful payment", error);

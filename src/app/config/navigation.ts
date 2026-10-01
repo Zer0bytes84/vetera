@@ -2,6 +2,7 @@ import {
   Calendar01Icon,
   DashboardSquare01Icon,
   Hospital01Icon,
+  File01Icon,
   PackageIcon,
   StethoscopeIcon,
   Task01Icon,
@@ -56,6 +57,7 @@ export const navigationSections: Array<{
   {
     titleKey: "nav.sections.operations",
     items: [
+      { view: "notes", labelKey: "views.notes", icon: File01Icon },
       { view: "stock", labelKey: "views.stock", icon: PackageIcon },
       { view: "finances", labelKey: "views.finances", icon: Wallet01Icon },
       { view: "equipe", labelKey: "views.equipe", icon: UserGroupIcon },

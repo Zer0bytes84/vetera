@@ -1619,7 +1619,6 @@ const ALERT_CONFIG = {
 
 export function ProspeoDailyAlerts({
   alerts,
-  onDismiss,
 }: {
   alerts: DailyAlert[];
   onDismiss?: (id: string) => void;

@@ -410,7 +410,7 @@ export function Help() {
   const activeSection =
     sections.find((s) => s.id === activeSectionId) || sections[0];
 
-  const handleFeedback = (helpful: boolean) => {
+  const handleFeedback = (_helpful: boolean) => {
     setFeedbackSubmitted(true);
     setTimeout(() => {
       setFeedbackSubmitted(false);

@@ -700,7 +700,7 @@ export function PatientDetailPage({
               onNew={openNewVaccination}
               patientId={patientId}
             />
-            <PatientDocumentsList className="h-full" patientId={patientId} />
+            <PatientDocumentsList className="h-full" onOpenNotes={() => onNavigate("notes")} patientId={patientId} />
           </section>
         </div>
       </div>

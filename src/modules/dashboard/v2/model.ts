@@ -52,12 +52,14 @@ export function isSameDay(left: Date, right: Date) {
   return startOfDay(left).getTime() === startOfDay(right).getTime();
 }
 
+const dashboardCurrencyFormatter = new Intl.NumberFormat("fr-DZ", {
+  maximumFractionDigits: 0,
+  style: "currency",
+  currency: "DZD",
+});
+
 export function formatCurrency(value: number) {
-  return new Intl.NumberFormat("fr-DZ", {
-    maximumFractionDigits: 0,
-    style: "currency",
-    currency: "DZD",
-  })
+  return dashboardCurrencyFormatter
     .format(value)
     .replace("DZD", "DA");
 }

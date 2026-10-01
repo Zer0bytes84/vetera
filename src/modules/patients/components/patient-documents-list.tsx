@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Empty,
   EmptyDescription,
@@ -18,7 +19,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { useConsultationDocumentsRepository } from "@/data/repositories";
+import { useConsultationDocumentsRepository, useNotesRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { ConsultationDocument } from "@/types/db";
 
@@ -26,6 +27,7 @@ interface PatientDocumentsListProps {
   className?: string;
   onOpenDocument?: (document: ConsultationDocument) => void;
   onUpload?: () => void;
+  onOpenNotes?: () => void;
   patientId: string;
 }
 
@@ -78,10 +80,13 @@ export function PatientDocumentsList({
   className,
   onOpenDocument,
   onUpload,
+  onOpenNotes,
   patientId,
 }: PatientDocumentsListProps) {
   const { t } = useTranslation();
   const repo = useConsultationDocumentsRepository();
+  const notesRepo = useNotesRepository();
+  const { currentUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -91,6 +96,23 @@ export function PatientDocumentsList({
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
+  const clinicalNotes = notesRepo.data
+    .filter((note) => note.patientId === patientId && note.userId === currentUser?.uid)
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+
+  const openNotes = (noteId?: string) => {
+    sessionStorage.setItem("documents:open-patient", patientId);
+    if (noteId) sessionStorage.setItem("documents:open-note", noteId);
+    onOpenNotes?.();
+  };
+
+  const createClinicalNote = async () => {
+    if (!currentUser) return;
+    const created = await notesRepo.createEmptyNote(currentUser.uid);
+    if (!created) return;
+    await notesRepo.update(created.id, { patientId, title: "Note clinique" });
+    openNotes(created.id);
+  };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -197,6 +219,22 @@ export function PatientDocumentsList({
           <Plus className="size-3.5" weight="bold" />
           {isUploading ? "Import..." : t("patientDetail.documents.upload")}
         </Button>
+      </div>
+      <div className="mb-5 rounded-xl border border-emerald-900/10 bg-emerald-50/45 p-3 dark:border-emerald-200/10 dark:bg-emerald-200/5">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div>
+            <p className="font-semibold text-xs">Écrits du dossier</p>
+            <p className="text-[11px] text-muted-foreground">Notes cliniques rédigées dans Documents</p>
+          </div>
+          <Button className="h-7 rounded-lg text-xs" onClick={() => void createClinicalNote()} size="sm" variant="outline">Rédiger</Button>
+        </div>
+        {clinicalNotes.length ? clinicalNotes.slice(0, 3).map((note) => (
+          <button className="flex w-full items-center justify-between gap-2 border-t border-border/50 py-2 text-left text-xs hover:text-primary" key={note.id} onClick={() => openNotes(note.id)} type="button">
+            <span className="truncate font-medium">{note.title || "Sans titre"}</span>
+            <span className="shrink-0 text-muted-foreground">{formatDate(note.updatedAt)}</span>
+          </button>
+        )) : <p className="text-xs text-muted-foreground">Aucun écrit pour ce patient.</p>}
+        {clinicalNotes.length > 3 && <button className="mt-1 text-xs font-medium text-primary" onClick={() => openNotes()} type="button">Voir les {clinicalNotes.length} écrits</button>}
       </div>
       <div className="flex flex-1 flex-col">
         {docs.length === 0 ? (

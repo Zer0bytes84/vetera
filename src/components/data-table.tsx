@@ -163,9 +163,7 @@ function formatStatusLabel(status: string): string {
 
 // ─── Columns ─────────────────────────────────────────────────────────────
 
-function createColumns(
-  activeTab: AppointmentTableRow["tab"]
-): ColumnDef<AppointmentTableRow>[] {
+function createColumns(): ColumnDef<AppointmentTableRow>[] {
   return [
     {
       id: "drag",
@@ -649,7 +647,7 @@ export function DataTable({ data }: { data: AppointmentTableRow[] }) {
     pageSize: 10,
   });
 
-  const columns = React.useMemo(() => createColumns(activeTab), [activeTab]);
+  const columns = React.useMemo(() => createColumns(), []);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {}),

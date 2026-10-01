@@ -65,6 +65,8 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
     }
 
     const formatItems = items.filter((item) => item.group === "format");
+    const tableItems = items.filter((item) => item.group === "table");
+    const templateItems = items.filter((item) => item.group === "template");
     const aiItems = items.filter((item) => item.group === "ai");
     const ungroupedItems = items.filter((item) => !item.group);
 
@@ -94,10 +96,10 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
     const getGlobalIndex = (item: SlashCommandItem) =>
       items.findIndex((i) => i.title === item.title);
 
-    const hasGroups = formatItems.length > 0 || aiItems.length > 0;
+    const hasGroups = items.length > 5 && (formatItems.length > 0 || tableItems.length > 0 || templateItems.length > 0 || aiItems.length > 0);
 
     return (
-      <div className="max-h-[320px] min-w-[280px] overflow-hidden overflow-y-auto rounded-lg border border-border bg-popover shadow-md">
+      <div className="max-h-[280px] min-w-[264px] overflow-hidden overflow-y-auto rounded-lg border border-border bg-popover shadow-md">
         <div className="flex flex-col gap-0.5 p-1">
           {hasGroups ? (
             <>
@@ -113,13 +115,31 @@ const SlashCommandMenu = forwardRef<any, SlashCommandMenuProps>(
                   </div>
                 </div>
               )}
+              {tableItems.length > 0 && (
+                <div>
+                  {formatItems.length > 0 && <div className="mx-2 my-1 border-border border-t" />}
+                  <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">Tableaux</p>
+                  <div className="flex flex-col gap-0.5">
+                    {tableItems.map((item) => renderItem(item, getGlobalIndex(item)))}
+                  </div>
+                </div>
+              )}
+              {templateItems.length > 0 && (
+                <div>
+                  {(formatItems.length > 0 || tableItems.length > 0) && <div className="mx-2 my-1 border-border border-t" />}
+                  <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">Modèles de document</p>
+                  <div className="flex flex-col gap-0.5">
+                    {templateItems.map((item) => renderItem(item, getGlobalIndex(item)))}
+                  </div>
+                </div>
+              )}
               {aiItems.length > 0 && (
                 <div>
-                  {formatItems.length > 0 && (
+                  {(formatItems.length > 0 || tableItems.length > 0 || templateItems.length > 0) && (
                     <div className="mx-2 my-1 border-border border-t" />
                   )}
                   <p className="px-2 pt-1.5 pb-1 font-medium text-muted-foreground text-xs">
-                    Assistant
+                    Aide à la rédaction
                   </p>
                   <div className="flex flex-col gap-0.5">
                     {aiItems.map((item) =>

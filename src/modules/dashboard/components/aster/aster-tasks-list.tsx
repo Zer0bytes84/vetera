@@ -5,7 +5,6 @@ import type { DashboardMetrics } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 
 export function AsterTasksList({
-  metrics,
   className,
 }: {
   metrics: DashboardMetrics;

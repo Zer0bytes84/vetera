@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { DialogClose } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type ModalBannerTone = "teal" | "sky" | "amber" | "violet" | "rose";
 
 // Stable compositions keep each workflow recognizable across openings/themes.
-const botanicalScenes = {
+const _botanicalScenes = {
   patient: "chiens",
   "patient-record": "lilas",
   "patient-created": "chiens",
@@ -35,7 +35,7 @@ const botanicalScenes = {
   automation: "oiseaux",
 } as const;
 
-type ModalArtwork = keyof typeof botanicalScenes;
+type ModalArtwork = keyof typeof _botanicalScenes;
 
 const artworkDefaultTones: Record<ModalArtwork, ModalBannerTone> = {
   patient: "teal",
@@ -84,7 +84,6 @@ function ModalBanner({
   tone,
 }: ModalBannerProps) {
   const { t } = useTranslation();
-  const botanicalScene = botanicalScenes[artwork];
   const resolvedTone = tone ?? artworkDefaultTones[artwork] ?? "teal";
 
   return (
@@ -93,18 +92,7 @@ function ModalBanner({
       data-slot="modal-banner"
       data-artwork={artwork}
       data-tone={resolvedTone}
-      style={{ "--modal-botanical-image": `url(/art/cabinet-floral-${botanicalScene}.png)` } as CSSProperties}
     >
-      <div
-        aria-hidden="true"
-        className="modal-banner-botanical"
-        style={
-          {
-            backgroundImage: `url(/art/cabinet-floral-${botanicalScene}.png)`,
-          } as CSSProperties
-        }
-      />
-
       {/* 5. Glass Badges & Optical Links */}
       <div aria-hidden="true" className="modal-banner-marks">
         {companionIcon ? (

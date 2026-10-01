@@ -53,7 +53,10 @@ function diffPercent(
   return { trendPercent: current > 0 ? 100 : 0, trendUp: current > 0 };
 }
 
-export function useConsultationSummary(referenceDate: Date = new Date()) {
+export function useConsultationSummary(referenceDate?: Date) {
+  // Depend on the date's value, not a freshly allocated Date on every render.
+  // Live summaries capture the current time when refreshed, once per minute.
+  const referenceTimestamp = referenceDate?.getTime();
   const [summary, setSummary] = useState<ConsultationSummary | null>(null);
   const [backlogRows, setBacklogRows] = useState<ConsultationSoap[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +65,7 @@ export function useConsultationSummary(referenceDate: Date = new Date()) {
   const fetchSummary = useCallback(async () => {
     try {
       const data = await runDbRead(async (db) =>
-        computeSummary(db, referenceDate)
+        computeSummary(db, new Date(referenceTimestamp ?? Date.now()))
       );
       setSummary(data);
       setError(null);
@@ -72,18 +75,18 @@ export function useConsultationSummary(referenceDate: Date = new Date()) {
     } finally {
       setIsLoading(false);
     }
-  }, [referenceDate]);
+  }, [referenceTimestamp]);
 
   const fetchBacklog = useCallback(async () => {
     try {
       const rows = await runDbRead(async (db) =>
-        computeBacklog(db, referenceDate)
+        computeBacklog(db, new Date(referenceTimestamp ?? Date.now()))
       );
       setBacklogRows(rows);
     } catch (err) {
       console.error("Failed to fetch SOAP backlog", err);
     }
-  }, [referenceDate]);
+  }, [referenceTimestamp]);
 
   useEffect(() => {
     void fetchSummary();

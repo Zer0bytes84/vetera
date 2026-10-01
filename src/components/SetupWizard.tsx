@@ -25,7 +25,6 @@ import {
   createLicenseRequestMailto,
 } from "@/services/licenseActivationService";
 import Logo from "./Logo";
-import { WelcomeArtwork } from "./WelcomeArtwork";
 
 interface SetupWizardProps {
   onComplete: (userData: {
@@ -158,7 +157,6 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
       ref={windowDragRef}
       style={{ colorScheme: "light" }}
     >
-      <WelcomeArtwork />
 
       <div className="relative mx-auto grid min-h-dvh w-full max-w-[1600px] lg:grid-cols-[minmax(340px,0.82fr)_minmax(560px,1.18fr)]">
         <section className="setup-intro relative hidden flex-col justify-between overflow-hidden px-10 py-9 lg:flex xl:px-14 xl:py-12">

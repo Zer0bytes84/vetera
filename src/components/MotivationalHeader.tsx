@@ -159,11 +159,6 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
     return (
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 font-medium text-[11px] text-emerald-700 dark:text-emerald-400">
-            <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
-            Cabinet actif
-          </span>
-          <span className="text-muted-foreground text-xs">·</span>
           <span className="text-muted-foreground text-xs capitalize">
             {headerCopy.eyebrow}
           </span>

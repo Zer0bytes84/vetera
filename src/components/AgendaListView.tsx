@@ -66,13 +66,14 @@ function getDurationLabel(appointment: Appointment) {
   return `${minutes} min`;
 }
 
-function getSpeciesIcon(species?: string) {
+function SpeciesIcon({ species }: { species?: string }) {
   const normalized = species?.toLocaleLowerCase("fr") ?? "";
-  if (normalized.includes("chien")) return Dog;
-  if (normalized.includes("chat")) return Cat;
-  if (normalized.includes("lapin")) return Rabbit;
-  if (normalized.includes("oiseau")) return Bird;
-  return PawPrint;
+  const props = { "aria-hidden": true as const, className: "size-6", strokeWidth: 1.6 };
+  if (normalized.includes("chien")) return <Dog {...props} />;
+  if (normalized.includes("chat")) return <Cat {...props} />;
+  if (normalized.includes("lapin")) return <Rabbit {...props} />;
+  if (normalized.includes("oiseau")) return <Bird {...props} />;
+  return <PawPrint {...props} />;
 }
 
 export function AgendaListView({
@@ -380,7 +381,6 @@ function AppointmentListItem({
 }) {
   const patient = getPatient(appointment.patientId);
   const patientName = getPatientName(appointment.patientId);
-  const SpeciesIcon = getSpeciesIcon(patient?.species);
   const ownerName = getOwnerName(appointment.ownerId) || "Sans propriétaire";
   const typeMeta = getAppointmentTypeMeta(appointment.type);
   const statusMeta = APPOINTMENT_STATUS_META[appointment.status];
@@ -418,7 +418,7 @@ function AppointmentListItem({
             typeMeta.surfaceClassName
           )}
         >
-          <SpeciesIcon aria-hidden="true" className="size-6" strokeWidth={1.6} />
+          <SpeciesIcon species={patient?.species} />
         </span>
 
         <div className="min-w-0">

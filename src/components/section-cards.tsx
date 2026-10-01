@@ -1,6 +1,7 @@
 "use client";
 
-import { FloralArtwork } from "@/components/FloralArtwork";
+import { FittedAmount } from "@/shared/ui/fitted-amount";
+
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
@@ -20,10 +21,11 @@ import {
   WalletCards,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useFloralBackground } from "@/lib/floral-background";
 import "./section-cards.css";
 
 export interface SectionCardItem {
+  onClick?: () => void;
+  actionLabel?: string;
   badge: string;
   footerDescription: string;
   footerTitle: string;
@@ -45,6 +47,7 @@ const iconRules: [pattern: RegExp, icon: LucideIcon][] = [
   [/encaissé|solde|revenu|valeur|panier|ca annuel/i, WalletCards],
   [/dépensé|décaissement|écriture/i, ReceiptText],
   [/équipe|support/i, Users],
+  [/rappel|action/i, ClipboardList],
 ];
 
 const CRITICAL_SIGNAL_PATTERN = /urgence|rupture|relance|accès à revoir|alerte/;
@@ -132,7 +135,6 @@ export function SectionCards({
   compact?: boolean;
   className?: string;
 }) {
-  const [background] = useFloralBackground();
   return (
     <section
       className={cn(
@@ -142,12 +144,7 @@ export function SectionCards({
       )}
       aria-label="Indicateurs de la rubrique"
     >
-      <FloralArtwork className="section-atlas-art" scene={background} />
-      <div className="section-atlas-caption">
-        <PawPrint size={14} aria-hidden="true" />
-        Votre cabinet, en un regard
-      </div>
-      <ul className={cn("section-atlas-grid")}>
+      <ul className="section-atlas-grid" data-card-count={items.length}>
         {items.map((item, idx) => {
           const Icon = item.icon || resolveDefaultIcon(item.title, idx);
           const isUp = item.trend === "up";
@@ -158,9 +155,8 @@ export function SectionCards({
             item.footerDescription &&
             item.footerDescription.toLowerCase() !==
               item.footerTitle.toLowerCase();
-          const supportingCopy = showDescription
-            ? `${item.footerTitle} · ${item.footerDescription}`
-            : item.footerTitle;
+          const supportingCopy = showDescription ? item.footerDescription : "";
+          const Content = item.onClick ? "button" : "div";
           let TrendIcon = Minus;
           if (signalTone === "critical" || signalTone === "watch") {
             TrendIcon = TriangleAlert;
@@ -176,60 +172,23 @@ export function SectionCards({
               className={cn("section-atlas-card group")}
               key={item.title}
             >
-              {/* Liquid glass specular sheen and reflection (no checkers) */}
-              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[18px]">
-                {/* Specular glass reflection sweep on hover */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/35 via-transparent to-transparent dark:from-white/10" />
-                <div
-                  className="absolute -inset-full bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.45)_0%,transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.12)_0%,transparent_60%)]"
-                />
-                {/* Subtle chromatic / liquid tint on hover */}
-                <div
-                  className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                />
-                {/* Specular ring */}
-                <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-white/60 transition-all duration-300 group-hover:ring-white/90 dark:ring-white/10 dark:group-hover:ring-white/25" />
-              </div>
-
-              <div className="relative z-10 flex h-full min-w-0 flex-col">
-                <div className="flex items-start justify-between gap-3">
-                  <span
-                    className={cn(
-                      "signal-icon flex size-10 shrink-0 items-center justify-center rounded-xl",
-                      tone.icon
-                    )}
-                  >
-                    <Icon
-                      aria-hidden="true"
-                      className="size-5"
-                      strokeWidth={1.8}
-                    />
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className={cn("mt-2 size-1.5 rounded-full", tone.dot)}
-                  />
+              <Content className="section-atlas-content" onClick={item.onClick} {...(item.onClick ? { type: "button" as const } : {})}>
+                <div className="section-atlas-card-heading">
+                  <p className="section-atlas-label">{item.title}</p>
+                  <Icon aria-hidden="true" className="size-[18px] shrink-0 text-muted-foreground" strokeWidth={1.7} />
                 </div>
-                <p className="section-atlas-label">{item.title}</p>
-                <p
-                  className={cn(
-                    "section-atlas-value",
-                    compact ? "text-[28px]" : "text-[32px]"
-                  )}
-                  title={item.value}
-                >
-                  {item.value}
-                </p>
-                <div className="section-atlas-footer">
+                <div className="section-atlas-body">
+                  <FittedAmount className="section-atlas-value" value={item.value} maxFontSize={compact ? 28 : 34} />
+                  <p className="section-atlas-context">{item.footerTitle}</p>
                   <p
-                    className="min-w-0 text-[11px] text-muted-foreground leading-4"
+                    className="section-atlas-detail"
                     title={supportingCopy}
                   >
                     {supportingCopy}
                   </p>
                   <span
                     className={cn(
-                      "flex max-w-[48%] shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-right font-medium text-[10px] leading-[1.2]",
+                      "section-atlas-status flex w-fit max-w-full items-center gap-1 rounded-md px-1.5 py-1 font-medium text-[10px] leading-[1.2]",
                       tone.status
                     )}
                     title={item.badge}
@@ -241,8 +200,9 @@ export function SectionCards({
                     />
                     {item.badge}
                   </span>
+                  {item.onClick && <span className="section-atlas-action">{item.actionLabel || "Ouvrir la rubrique"}<ArrowUpRight size={14} aria-hidden="true" /></span>}
                 </div>
-              </div>
+              </Content>
             </li>
           );
         })}

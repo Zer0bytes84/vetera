@@ -9,6 +9,7 @@ import {
   normalizeAppointmentInterval,
 } from "@/domain/clinical/scheduling";
 import * as AppSettingsService from "@/services/appSettingsService";
+import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import { billingService } from "@/services/billingService";
 import { getBrowserTable, isTauriRuntime } from "@/services/browser-store";
 import * as AuthService from "@/services/sqlite/auth";
@@ -319,18 +320,14 @@ export function useAppointmentsRepository() {
       }
 
       if (invoice.documentStatus === "draft") {
-        const clinicName =
-          (await AppSettingsService.getSetting("clinic_name")) ||
-          (await AppSettingsService.getSetting("cabinet_name")) ||
-          (await AppSettingsService.getSetting("practice_name")) ||
-          "Baitari";
+        const clinicSnapshot = await getInvoiceSettings();
 
         invoice = await billingService.issueInvoice({
           invoiceId: invoice.id,
           idempotencyKey: `appointment:${appointment.id}:issue`,
           issuedAt: now,
           dueAt: now,
-          clinicSnapshot: { name: clinicName },
+          clinicSnapshot,
         });
       }
 

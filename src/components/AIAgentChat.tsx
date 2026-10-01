@@ -178,20 +178,6 @@ const TOOL_LABELS: Record<string, string> = {
   add_note: "Ajout pense-bête clinique",
 };
 
-const ACTION_CARD_KEYWORDS = [
-  "soap",
-  "résumé",
-  "synthèse",
-  "rappel",
-  "vaccin",
-  "email",
-  "e-mail",
-  "note",
-  "planifier",
-  "dossier",
-  "historique",
-];
-
 // Collapsible Reasoning Component (Ace Studio Reference Style)
 function ThoughtAccordion({
   steps = [],
@@ -451,8 +437,6 @@ export function AIAgentChat({
   currentView: _currentView,
   onClose,
   patientId: contextPatientId,
-  userAvatarUrl,
-  userDisplayName,
 }: AIAgentChatProps) {
   const { currentUser } = useAuth();
   const [engineUnavailable, setEngineUnavailable] = useState<string | null>(
@@ -639,10 +623,7 @@ export function AIAgentChat({
     const unsub = subscribeToProgress((report) => {
       setDownloadProgress(report.progress);
       setModelLoadingText(report.text);
-      setIsModelLoading(isWebLLMLoading());
-      if (report.progress === 1) {
-        setIsModelLoading(false);
-      }
+      setIsModelLoading(report.status === "loading");
     });
 
     return unsub;
@@ -740,14 +721,15 @@ export function AIAgentChat({
     [activeConversation?.messages]
   );
   const selectedModel = getModelById(selectedModelId);
+  const hasDraft = draft !== null;
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const viewport = messagesViewportRef.current;
       if (viewport)
-        viewport.scrollTop = draft !== null ? 0 : viewport.scrollHeight;
+        viewport.scrollTop = hasDraft ? 0 : viewport.scrollHeight;
     });
     return () => cancelAnimationFrame(frame);
-  }, [messages.length, activeConversationId, draft !== null, isLoading]);
+  }, [messages.length, activeConversationId, hasDraft, isLoading]);
   useEffect(() => {
     const viewport = messagesViewportRef.current;
     if (

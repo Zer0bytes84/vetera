@@ -263,6 +263,9 @@ export interface BillingClinicSnapshot {
   name: string;
   phone?: string | null;
   registrationNumber?: string | null;
+  logoDataUrl?: string | null;
+  footer?: string | null;
+  accent?: "graphite" | "forest" | "blue";
 }
 
 export interface BillingLineInput {
@@ -398,6 +401,7 @@ export interface Note {
   createdAt: string;
   id: string;
   isFavorite: boolean;
+  patientId?: string | null;
   tags?: string; // JSON string
   title: string;
   updatedAt: string;

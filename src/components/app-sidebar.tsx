@@ -1,6 +1,7 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Settings2 } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
@@ -107,9 +108,9 @@ export function AppSidebar({
     title: t(item.labelKey),
     icon: (
       <HugeiconsIcon
-        className="size-5"
+        className={isCollapsed ? "size-6" : "size-5"}
         icon={item.icon}
-        strokeWidth={1.8}
+        strokeWidth={isCollapsed ? 1.9 : 1.8}
       />
     ),
     isActive: currentView === item.view,
@@ -120,12 +121,12 @@ export function AppSidebar({
     ...(patientSection?.items.slice(4) ?? []),
     ...(operationsSection?.items ?? []),
   ].map((item) => ({
-    name: t(item.labelKey),
+    name: item.view === "notes" ? "Documents" : t(item.labelKey),
     icon: (
       <HugeiconsIcon
-        className="size-5"
+        className={isCollapsed ? "size-6" : "size-5"}
         icon={item.icon}
-        strokeWidth={1.8}
+        strokeWidth={isCollapsed ? 1.9 : 1.8}
       />
     ),
     isActive: currentView === item.view,
@@ -213,22 +214,17 @@ export function AppSidebar({
           "relative z-10 overflow-y-auto",
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           isCollapsed
-            ? "flex flex-col items-center px-0 pt-2"
+            ? "flex flex-col items-center overflow-y-auto! overflow-x-hidden px-0 py-5"
             : "px-4 pt-2 pb-6"
         )}
       >
         <div
           className={cn(
             "flex min-h-full flex-1 flex-col",
-            isCollapsed ? "w-full items-center gap-0.5" : "gap-4"
+            isCollapsed ? "w-full items-center gap-4" : "gap-4"
           )}
         >
           <NavMain items={mainItems} title={t("nav.sections.patientJourney")} />
-
-          {/* Subtle divider between groups in collapsed mode */}
-          {isCollapsed && (
-            <div aria-hidden="true" className="sidebar-section-divider my-2 h-px w-8 rounded-full bg-zinc-900/8 dark:bg-white/8" />
-          )}
 
           <NavDocuments
             items={documents.map((item) => ({
@@ -249,14 +245,14 @@ export function AppSidebar({
         className={cn(
           "relative z-10 shrink-0 border-sidebar-border/80 border-t transition-all duration-300 dark:border-white/10",
           isCollapsed
-            ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-1 px-0 py-3"
-            : "mx-0 mt-auto mb-0 bg-transparent px-4 py-3"
+            ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-2 px-0 py-3"
+            : "mx-0 mt-auto mb-0 bg-transparent px-3 py-3"
         )}
       >
         {isCollapsed ? (
           <SidebarTrigger
             aria-label="Déployer la barre latérale"
-            className="mb-1 size-9 rounded-xl border border-zinc-900/[0.06] bg-zinc-950/[0.025] text-sidebar-foreground/65 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:bg-zinc-950/[0.055] hover:text-sidebar-foreground dark:border-white/[0.09] dark:bg-white/[0.035] dark:hover:bg-white/[0.07]"
+            className="size-11 rounded-xl text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-foreground"
             title="Déployer la barre latérale"
           />
         ) : null}
@@ -269,7 +265,7 @@ export function AppSidebar({
           <NavUser
             onFinances={() => onNavigate("finances")}
             onNotifications={() => onNavigate("taches")}
-            onProfile={() => onNavigate("equipe")}
+            onProfile={() => onNavigate("parametres")}
             onSettings={() => onNavigate("parametres")}
             user={{
               name: resolvedUserName,
@@ -278,6 +274,21 @@ export function AppSidebar({
             }}
           />
         </div>
+        {isCollapsed && (
+          <button
+            aria-label="Paramètres"
+            aria-current={currentView === "parametres" ? "page" : undefined}
+            className={cn(
+              "flex size-11 items-center justify-center rounded-xl text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+              currentView === "parametres" && "bg-sidebar-accent text-sidebar-foreground"
+            )}
+            onClick={() => onNavigate("parametres")}
+            title="Paramètres"
+            type="button"
+          >
+            <Settings2 aria-hidden="true" className="size-6" strokeWidth={1.8} />
+          </button>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

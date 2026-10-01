@@ -1,3 +1,4 @@
+import { noteMarkdownToHTML } from "@/lib/note-markdown";
 import { APP_NAME } from "@/lib/brand";
 import type { ChatMessage } from "../types";
 import {
@@ -19,37 +20,10 @@ const NOTE_ASSISTANT_PROMPT = `Tu es un assistant de redaction clinique.
 Ton objectif: produire un texte professionnel, lisible et exploitable en consultation.
 - Style direct.
 - Pas de blabla.
-- Utilise des puces si utile.`;
-
-const convertMarkdownToHTML = (text: string): string => {
-  let html = text;
-
-  html = html
-    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-    .replace(/^# (.+)$/gm, "<h1>$1</h1>")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/^[-*] (.+)$/gm, "<li>$1</li>")
-    .replace(/^(\d+)\. (.+)$/gm, "<li>$2</li>");
-
-  html = html.replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>${match}</ul>`);
-
-  const lines = html.split("\n");
-  return lines
-    .map((line) => {
-      const trimmed = line.trim();
-      if (!trimmed) {
-        return "";
-      }
-      if (trimmed.startsWith("<")) {
-        return trimmed;
-      }
-      return `<p>${trimmed}</p>`;
-    })
-    .filter(Boolean)
-    .join("\n");
-};
+- Utilise des puces si utile.
+- N'invente jamais de faits, de diagnostic, de traitement, de posologie ou de résultat d'examen.
+- Conserve le sens des notes fournies et laisse les informations manquantes à compléter par le vétérinaire.
+- Ne réponds qu'avec le texte proposé, sans commentaire.`;
 
 const NOTE_PROMPTS: Record<string, (text: string) => string> = {
   "Corrige l'orthographe et la grammaire": (text) =>
@@ -61,7 +35,7 @@ const NOTE_PROMPTS: Record<string, (text: string) => string> = {
 };
 
 const isWriteInstruction = (instruction: string): boolean => {
-  const normalized = instruction.toLowerCase();
+  const normalized = instruction.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   return (
     normalized.includes("redige") ||
     normalized.includes("ecris") ||
@@ -127,5 +101,5 @@ export const assistWithNote = async (
     maxTokens: 1100,
   });
 
-  return convertMarkdownToHTML(generated);
+  return noteMarkdownToHTML(generated);
 };

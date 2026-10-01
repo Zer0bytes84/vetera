@@ -15,6 +15,8 @@ import {
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import MotivationalHeader from "@/components/MotivationalHeader";
+import { SectionCards } from "@/components/section-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -418,17 +420,9 @@ const Tasks: React.FC = () => {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-[1480px] space-y-6 px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
-      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="clinical-eyebrow">Suivi quotidien</p>
-          <h1 className="mt-2 font-semibold text-3xl tracking-[-0.035em] sm:text-4xl">
-            Rappels
-          </h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground text-sm sm:text-base">
-            Les actions à ne pas oublier, réunies avec les rappels du planning.
-          </p>
-        </div>
+    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
+      <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <MotivationalHeader section="taches" title="Rappels" subtitle="Retrouvez les actions à suivre et les rappels du planning." />
         <NativeSelect
           aria-label="Périmètre des rappels"
           className="w-full md:w-44"
@@ -439,6 +433,12 @@ const Tasks: React.FC = () => {
           <NativeSelectOption value="team">Toute l'équipe</NativeSelectOption>
         </NativeSelect>
       </header>
+
+      <SectionCards items={[
+        { title: "À traiter", icon: Bell, value: String(counts.today), footerTitle: "aujourd’hui et échéances passées", footerDescription: "Actions et rappels encore ouverts", badge: counts.today ? "À suivre" : "À jour", tone: counts.today ? "watch" : "quiet", trend: "neutral", onClick: () => setActiveView("today"), actionLabel: "Voir les rappels à traiter" },
+        { title: "À venir", icon: CalendarDays, value: String(counts.upcoming), footerTitle: "prochaines échéances", footerDescription: "Rappels futurs et actions sans date", badge: "À planifier", tone: "quiet", trend: "neutral", onClick: () => setActiveView("upcoming"), actionLabel: "Voir les prochains rappels" },
+        { title: "Terminés", icon: CheckCircle2, value: String(counts.completed), footerTitle: "sur le périmètre sélectionné", footerDescription: "Actions clôturées et rappels traités", badge: counts.completed ? "Traités" : "Aucun terminé", tone: counts.completed ? "positive" : "quiet", trend: "neutral", onClick: () => setActiveView("completed"), actionLabel: "Voir l’historique" },
+      ]} />
 
       <form
         className="clinical-feature-surface overflow-hidden"

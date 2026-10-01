@@ -17,7 +17,9 @@ export default defineConfig(({ command, mode }) => ({
     host: "0.0.0.0",
     strictPort: true,
     watch: {
-      usePolling: true,
+      // Native file events avoid scanning the whole project every second.
+      // Polling remains available for network-mounted development workspaces.
+      usePolling: process.env.VITE_USE_POLLING === "true",
       interval: 1000,
     },
     fs: {
@@ -40,6 +42,7 @@ export default defineConfig(({ command, mode }) => ({
     ],
   },
   build: {
+    manifest: true,
     rollupOptions: {
       onwarn(warning, warn) {
         if (
@@ -51,6 +54,9 @@ export default defineConfig(({ command, mode }) => ({
         warn(warning);
       },
       output: {
+        // Keep shared dependencies out of lazy vendor chunks: otherwise the
+        // entry imports PDF/editor/chart chunks through their shared modules.
+        onlyExplicitManualChunks: true,
         manualChunks(id) {
           if (!id.includes("node_modules")) {
             return;

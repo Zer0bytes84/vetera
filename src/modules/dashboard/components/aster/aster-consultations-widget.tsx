@@ -14,7 +14,6 @@ import type { DashboardMetrics } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 
 export function AsterConsultationsWidget({
-  metrics,
   className,
 }: {
   metrics: DashboardMetrics;

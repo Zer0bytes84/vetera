@@ -399,3 +399,24 @@ describe("credit-note voiding", () => {
     ).rejects.toMatchObject({ code: "INVOICE_NOT_ISSUED" });
   });
 });
+
+describe("invoice branding snapshot", () => {
+  it("preserves logo, footer and accent on the issued invoice and PDF mapping", async () => {
+    const draft = await createInvoiceDraft({ id: "brand-1", ownerId: "owner-1", lines: [{ description: "Consultation", quantityMilli: 1000, unitAmount: 200000, discountBps: 0, taxBps: 0 }] });
+    const clinicSnapshot = { name: "Cabinet Jardin", address: "Alger", logoDataUrl: "data:image/png;base64,aGVsbG8=", footer: "Merci", accent: "forest" as const };
+    await issueInvoice({ invoiceId: draft.id, idempotencyKey: "brand-issue", clinicSnapshot });
+    await recordPayment({ invoiceId: draft.id, idempotencyKey: "brand-pay", amount: 50000, method: "cash" });
+    const persisted = await getInvoice(draft.id);
+    expect(persisted?.clinicSnapshot).toMatchObject(clinicSnapshot);
+    const { invoiceDocument } = await import("@/lib/invoice-document");
+    const document = invoiceDocument(persisted!, "Milo");
+    expect(document.settings.name).toBe("Cabinet Jardin");
+    expect(document.settings.logoDataUrl).toBe(clinicSnapshot.logoDataUrl);
+    expect(document.data).toMatchObject({ totalAmount: 200000, paidAmount: 50000, balanceAmount: 150000 });
+  });
+  it("rejects a remote logo before issuing an invoice", async () => {
+    const draft = await createInvoiceDraft({ id: "brand-invalid", ownerId: "owner-1", lines: [{ description: "Consultation", quantityMilli: 1000, unitAmount: 200000, discountBps: 0, taxBps: 0 }] });
+    await expect(issueInvoice({ invoiceId: draft.id, idempotencyKey: "invalid-brand", clinicSnapshot: { name: "Cabinet", logoDataUrl: "https://example.com/logo.png" } })).rejects.toMatchObject({ code: "CLINIC_SNAPSHOT_INVALID" });
+    expect((await getInvoice(draft.id))?.documentStatus).toBe("draft");
+  });
+});

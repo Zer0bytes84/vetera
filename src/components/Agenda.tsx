@@ -1623,7 +1623,7 @@ const Agenda: React.FC = () => {
     appointmentsByDate.get(formatDateInput(date)) ?? [];
 
   const dailyAppointments = useMemo(
-    () => getAppointmentsForDate(selectedDate),
+    () => appointmentsByDate.get(formatDateInput(selectedDate)) ?? [],
     [appointmentsByDate, selectedDate]
   );
 
@@ -1682,7 +1682,7 @@ const Agenda: React.FC = () => {
   const previousDayAppointments = useMemo(() => {
     const previous = new Date(selectedDate);
     previous.setDate(previous.getDate() - 1);
-    return getAppointmentsForDate(previous);
+    return appointmentsByDate.get(formatDateInput(previous)) ?? [];
   }, [appointmentsByDate, selectedDate]);
 
   const upcomingAppointments = useMemo(() => {

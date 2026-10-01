@@ -273,6 +273,11 @@ END;
 -- Le premier administrateur est créé par l'assistant de premier lancement.
 `;
 
+export const MIGRATION_018_SQL = `
+ALTER TABLE notes ADD COLUMN patient_id TEXT REFERENCES patients(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_notes_patient_id ON notes(patient_id);
+`;
+
 export const MIGRATION_017_SQL = `
 ALTER TABLE products ADD COLUMN archived_at TEXT;
 

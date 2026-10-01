@@ -88,6 +88,10 @@ describe("runSqliteMigrations", () => {
       .prepare("PRAGMA table_info(notification_state)")
       .all()
       .map((row) => String(row.name));
+    const noteColumns = database.connection
+      .prepare("PRAGMA table_info(notes)")
+      .all()
+      .map((row) => String(row.name));
 
     expect(tables).toEqual(
       expect.arrayContaining([
@@ -111,9 +115,10 @@ describe("runSqliteMigrations", () => {
     expect(notificationColumns).toEqual(
       expect.arrayContaining(["id", "notification_id", "read_at"])
     );
+    expect(noteColumns).toContain("patient_id");
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(17);
+    ).toBe(18);
   });
 
   it("rolls back an entire migration when one statement fails", async () => {
@@ -167,7 +172,7 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["012", "013", "014", "015", "016", "017"]);
+    ).resolves.toEqual(["012", "013", "014", "015", "016", "017", "018"]);
 
     const state = database.connection
       .prepare(
@@ -261,7 +266,7 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["014", "015", "016", "017"]);
+    ).resolves.toEqual(["014", "015", "016", "017", "018"]);
     await database.execute(
       `UPDATE owners
        SET preferred_contact = 'sms',
@@ -330,10 +335,10 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["015", "016", "017"]);
+    ).resolves.toEqual(["015", "016", "017", "018"]);
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(17);
+    ).toBe(18);
 
     expect(
       database.connection
@@ -564,7 +569,7 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["016", "017"]);
+    ).resolves.toEqual(["016", "017", "018"]);
 
     expect(
       database.connection

@@ -1,6 +1,5 @@
 import type { HeaderPattern } from "@/lib/theme-store";
 import { cn } from "@/lib/utils";
-import { useFloralBackground } from "@/lib/floral-background";
 
 function PatternGroups() {
   return (
@@ -80,19 +79,11 @@ function PatternGroups() {
 }
 
 export function HeroPattern() {
-  const [background] = useFloralBackground();
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-44 overflow-hidden opacity-60 dark:opacity-20"
-      style={{
-        backgroundImage: `url(/art/cabinet-floral-${["chats", "chiots", "nac"].includes(background) ? "lilas" : background}.png)`,
-        backgroundSize: "150% auto",
-        backgroundPosition: "right bottom",
-        maskImage: "linear-gradient(to bottom, black 45%, transparent)",
-        WebkitMaskImage: "linear-gradient(to bottom, black 45%, transparent)",
-      }}
-    />
+    <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-0 h-56 overflow-hidden">
+      {/* Radiant's GradientBackground, positioned within the application canvas. */}
+      <div className="absolute -top-40 right-0 h-56 w-[33rem] transform-gpu rotate-[-10deg] rounded-full bg-linear-115 from-[#fff1be] from-28% via-[#ee87cb] via-70% to-[#b060ff] blur-3xl md:right-40 lg:right-48 dark:opacity-35" />
+    </div>
   );
 }
 

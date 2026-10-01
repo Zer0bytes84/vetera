@@ -34,7 +34,6 @@ interface CommandPaletteProps {
   open: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HugeiconType = any;
 
 interface CommandItemData {
@@ -116,7 +115,7 @@ export function CommandPalette({
     },
     {
       id: "notes",
-      label: t("commandPalette.notes", { defaultValue: "Notes" }),
+      label: "Documents",
       icon: Note01Icon,
       href: "/notes",
       category: t("commandPalette.navigation", { defaultValue: "Navigation" }),

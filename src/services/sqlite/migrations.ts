@@ -16,6 +16,7 @@ import {
   MIGRATION_015_SQL,
   MIGRATION_016_SQL,
   MIGRATION_017_SQL,
+  MIGRATION_018_SQL,
 } from "./schema";
 
 export interface SqliteMigration {
@@ -80,4 +81,5 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     name: "stock-movements",
     sql: MIGRATION_017_SQL,
   },
+  { version: "018", name: "patient-linked-notes", sql: MIGRATION_018_SQL },
 ] as const;

@@ -1,0 +1,734 @@
+/* Operational polish: preserve the approved KPI row and the Protocol shell. */
+.studio-dashboard {
+  --dashboard-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.studio-dashboard .studio-panel h2 {
+  line-height: 1.4;
+  text-wrap: balance;
+}
+.studio-dashboard .studio-panel header p {
+  text-wrap: pretty;
+}
+.studio-dashboard .studio-panel footer {
+  line-height: 1.5;
+}
+.studio-dashboard
+  .studio-panel
+  :is(strong, time, .studio-count, .studio-visit-status) {
+  font-variant-numeric: tabular-nums;
+}
+.studio-dashboard
+  :is(
+    .studio-segment button,
+    .studio-measures button,
+    .studio-date-controls button,
+    .studio-link
+  ) {
+  min-height: 32px;
+  cursor: pointer;
+}
+.studio-dashboard .studio-segment button {
+  font-size: 12px;
+  line-height: 1.3;
+  padding: 6px 9px;
+}
+.studio-dashboard .studio-date-controls button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 32px;
+}
+.studio-dashboard
+  :is(
+    .studio-segment button,
+    .studio-date-controls button,
+    .studio-measures button,
+    .studio-link
+  ):focus-visible,
+.studio-dashboard
+  :is(
+    .studio-appointment,
+    .studio-alert,
+    .classic-debt-list button
+  ):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.studio-dashboard button:disabled {
+  cursor: default;
+}
+.studio-dashboard
+  :is(
+    .studio-date-controls button,
+    .studio-panel footer button,
+    .studio-agenda-strip button
+  ):disabled {
+  opacity: 0.45;
+}
+.studio-dashboard
+  :is(
+    .studio-panel header svg,
+    .studio-link svg,
+    .classic-debt-list svg,
+    .studio-appointment > svg
+  ) {
+  flex-shrink: 0;
+}
+.studio-dashboard
+  :is(.studio-appointment, .studio-alert, .classic-debt-list button) {
+  border-radius: 6px;
+}
+.studio-dashboard :is(.studio-appointment strong, .studio-alert strong) {
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+.studio-dashboard :is(.studio-appointment small, .studio-alert small) {
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.studio-dashboard .studio-visit-status {
+  flex-shrink: 0;
+  font-size: 11px;
+  padding: 4px 6px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  border-radius: 5px;
+}
+.studio-dashboard .studio-empty {
+  padding: 28px 20px;
+  gap: 10px;
+}
+.studio-dashboard .studio-empty p {
+  max-width: 34ch;
+  line-height: 1.5;
+}
+.studio-dashboard .studio-empty svg {
+  color: var(--muted-foreground);
+}
+.studio-dashboard .classic-category-heading {
+  font-size: 13px;
+}
+.studio-dashboard .classic-category-list p {
+  font-size: 12px;
+}
+.studio-dashboard .classic-category-list {
+  gap: 20px;
+}
+.studio-dashboard .classic-debt-list button {
+  font-size: 13px;
+}
+.studio-dashboard .classic-debt-list small {
+  font-size: 12px;
+}
+.studio-dashboard .classic-balance {
+  padding-top: 16px;
+}
+.studio-dashboard .classic-balance p {
+  line-height: 1.5;
+}
+.studio-dashboard .studio-species > div {
+  font-size: 13px;
+}
+.studio-dashboard .studio-species small {
+  font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) and (pointer: fine) {
+  .studio-dashboard
+    :is(
+      .studio-segment button,
+      .studio-measures button,
+      .studio-date-controls button,
+      .studio-link
+    ) {
+    transition:
+      background-color 120ms ease,
+      color 120ms ease,
+      transform 120ms var(--dashboard-ease);
+  }
+  .studio-dashboard
+    :is(.studio-segment button, .studio-measures button):hover:not(
+      :disabled
+    ):not([aria-pressed="true"]) {
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  }
+  .studio-dashboard .studio-date-controls button:hover:not(:disabled) {
+    background: var(--muted);
+  }
+  .studio-dashboard
+    :is(.studio-appointment, .studio-alert, .classic-debt-list button):hover {
+    background: var(--muted);
+  }
+  .studio-dashboard
+    :is(
+      .studio-segment button,
+      .studio-measures button,
+      .studio-date-controls button,
+      .studio-link
+    ):active:not(:disabled):not(:focus-visible) {
+    transform: scale(0.97);
+  }
+}
+@media (pointer: coarse) {
+  .studio-dashboard
+    :is(
+      .studio-segment button,
+      .studio-measures button,
+      .studio-date-controls button,
+      .studio-link,
+      .studio-panel footer button
+    ) {
+    min-height: 40px;
+  }
+  .studio-dashboard .studio-date-controls button {
+    min-width: 40px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-dashboard
+    :is(
+      .studio-segment button,
+      .studio-measures button,
+      .studio-date-controls button,
+      .studio-link
+    ) {
+    transition: none;
+    transform: none !important;
+  }
+}
+@media (max-width: 640px) {
+  .studio-dashboard .studio-panel > header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .studio-dashboard .classic-receivables > header {
+    flex-wrap: nowrap;
+  }
+  .studio-dashboard .classic-receivables > header > div {
+    min-width: 0;
+  }
+  .studio-dashboard .studio-chart-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .studio-dashboard .studio-chart-heading > div {
+    min-width: 0;
+  }
+  .studio-dashboard .studio-measures {
+    align-self: flex-start;
+  }
+  .studio-dashboard .studio-panel footer > span {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .studio-dashboard .classic-debt-list button {
+    flex-wrap: wrap;
+  }
+  .studio-dashboard .classic-debt-list button > span {
+    flex-basis: 55%;
+  }
+}
+.studio-dashboard .studio-alert strong,
+.studio-dashboard .studio-appointment strong {
+  font-size: 13px;
+}
+.studio-dashboard .studio-alert small,
+.studio-dashboard .studio-appointment small {
+  font-size: 12px;
+}
+.studio-dashboard .studio-agenda-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.studio-dashboard .studio-agenda-strip {
+  font-size: 12px;
+}
+
+/* Inset frames and compact operational content, matching the supplied references. */
+.studio-dashboard {
+  --studio-frame-line: color-mix(in srgb, var(--foreground) 9%, var(--card));
+  --studio-inner-line: color-mix(in srgb, var(--foreground) 6%, var(--card));
+  --studio-plot-surface: color-mix(in srgb, var(--muted) 45%, var(--card));
+  --studio-species-1: #7258df;
+  --studio-species-2: #2799aa;
+  --studio-species-3: #d99227;
+  --studio-species-4: #6489cb;
+  --studio-species-5: #7b8d84;
+  container-type: inline-size;
+}
+.dark .studio-dashboard {
+  --studio-species-1: #b49bef;
+  --studio-species-2: #54bac9;
+  --studio-species-3: #e5ae5a;
+  --studio-species-4: #8faee1;
+  --studio-species-5: #a0b4a9;
+}
+.studio-dashboard .studio-main-grid,
+.studio-dashboard .studio-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.studio-dashboard .studio-finish {
+  padding: 5px;
+  background: var(--muted);
+  border: 1px solid var(--studio-frame-line);
+  border-radius: 16px;
+  box-shadow: none;
+  overflow: visible;
+}
+.studio-widget-surface {
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--studio-inner-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.studio-widget-surface > header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 20px 18px;
+}
+.studio-widget-surface > header > div:first-child {
+  min-width: 0;
+}
+.studio-dashboard .studio-widget-surface h2 {
+  font-size: 16px;
+  font-weight: 550;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+}
+.studio-widget-surface > header p {
+  margin-top: 6px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.studio-widget-surface > header > :last-child:not(:first-child) {
+  flex-shrink: 0;
+}
+.studio-dashboard .studio-widget-surface > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 10px 20px;
+  margin: 0;
+  border-top: 1px solid var(--studio-inner-line);
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.studio-widget-surface > footer > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.studio-widget-surface .studio-link {
+  font-size: 12px;
+  font-weight: 500;
+  gap: 5px;
+  color: var(--foreground);
+}
+.studio-widget-surface .studio-segment {
+  border-radius: 8px;
+  padding: 3px;
+}
+.studio-widget-surface .studio-date-controls {
+  gap: 6px;
+}
+.studio-widget-surface .studio-date-controls button {
+  width: 32px;
+  border: 1px solid var(--studio-frame-line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--muted-foreground);
+}
+.studio-widget-surface .studio-chart-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 20px 18px;
+}
+.studio-widget-surface .studio-chart-heading > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.studio-activity-total {
+  display: block;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+.studio-widget-surface .studio-chart-heading .studio-activity-total {
+  color: var(--foreground);
+  margin-top: 0;
+}
+.studio-widget-surface .studio-chart-heading > div > span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.studio-widget-surface .studio-measures {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--muted);
+}
+.studio-widget-surface .studio-measures button {
+  padding: 5px 8px;
+  font-size: 11px;
+  border: 0;
+  border-radius: 6px;
+}
+.studio-widget-surface .studio-measures button[aria-pressed="true"] {
+  background: var(--card);
+  color: var(--foreground);
+}
+.studio-activity-plot {
+  margin: 0 20px 16px;
+  padding: 12px 8px 8px;
+  border: 1px solid var(--studio-inner-line);
+  border-radius: 12px;
+  background: var(--studio-plot-surface);
+}
+.studio-dashboard .studio-activity .studio-chart {
+  height: 210px;
+  width: 100%;
+  margin: 0;
+  aspect-ratio: auto;
+}
+.studio-activity .recharts-cartesian-axis-tick-value {
+  fill: var(--muted-foreground);
+  font-size: 11px;
+}
+.studio-activity-empty {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+.studio-activity-empty strong {
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+}
+.studio-activity-empty span {
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 35ch;
+}
+.studio-activity-summary {
+  display: grid;
+  gap: 4px;
+  font-size: 11px;
+}
+.studio-activity-summary strong {
+  color: var(--foreground);
+  font-weight: 500;
+}
+.studio-widget-surface .studio-agenda-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 20px 12px;
+  padding: 0 0 12px;
+  background: transparent;
+  border-bottom: 1px solid var(--studio-inner-line);
+  color: var(--muted-foreground);
+}
+.studio-widget-surface .studio-agenda-strip button {
+  min-height: 28px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  color: var(--foreground);
+  font-weight: 450;
+}
+.studio-dashboard .studio-widget-surface .studio-agenda-list {
+  display: grid;
+  gap: 8px;
+  max-height: 302px;
+  padding: 0 20px 16px;
+  flex: none;
+}
+.studio-dashboard .studio-widget-surface .studio-appointment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 11px;
+  border: 1px solid var(--studio-inner-line);
+  border-radius: 10px;
+  background: var(--card);
+  text-align: left;
+}
+.studio-widget-surface .studio-appointment time {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 51px;
+  min-height: 39px;
+  border-radius: 7px;
+  background: var(--studio-plot-surface);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+}
+.studio-dashboard .studio-widget-surface .studio-appointment-copy {
+  min-width: 0;
+  flex: 1;
+}
+.studio-dashboard .studio-widget-surface .studio-appointment-state {
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+}
+.studio-dashboard .studio-widget-surface .studio-appointment-state svg {
+  display: block;
+}
+.studio-widget-surface .studio-appointment small {
+  margin-top: 3px;
+}
+.studio-widget-surface .studio-empty {
+  min-height: 202px;
+  padding: 22px 10px;
+}
+.studio-dashboard .studio-widget-surface .studio-alert-list {
+  padding: 0 20px 12px;
+}
+.studio-dashboard .studio-widget-surface .studio-alert {
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 0;
+  border-top: 1px solid var(--studio-inner-line);
+  border-radius: 0;
+}
+.studio-widget-surface .studio-alert:first-child {
+  border-top: 0;
+}
+.studio-alert-symbol {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+.studio-alert-symbol.critical {
+  background: color-mix(in srgb, var(--foreground) 5%, var(--card));
+  color: #bb3a41;
+}
+.studio-alert-symbol.warning {
+  background: color-mix(in srgb, var(--foreground) 5%, var(--card));
+  color: #a26515;
+}
+.studio-alert-symbol.info {
+  background: color-mix(in srgb, var(--foreground) 5%, var(--card));
+  color: #4a72b7;
+}
+.dark .studio-alert-symbol.critical {
+  color: #ed9298;
+}
+.dark .studio-alert-symbol.warning {
+  color: #e1b269;
+}
+.dark .studio-alert-symbol.info {
+  color: #91b2eb;
+}
+.studio-alert-copy {
+  flex: 1;
+  min-width: 0;
+}
+.studio-widget-surface .studio-alert small {
+  margin-top: 3px;
+}
+.studio-widget-surface .studio-count {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--studio-inner-line);
+  border-radius: 8px;
+  font-size: 12px;
+  background: var(--studio-plot-surface);
+}
+.studio-dashboard .studio-widget-surface .studio-population-chart {
+  position: relative;
+  display: block;
+  padding: 0 20px;
+  margin: -4px 0 8px;
+}
+.studio-dashboard .studio-widget-surface .studio-species-donut {
+  width: 100%;
+  max-width: 320px;
+  height: 166px;
+  margin: 0 auto;
+  aspect-ratio: auto;
+}
+.studio-dashboard .studio-widget-surface .studio-population-total {
+  position: absolute;
+  top: 90px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+}
+.studio-widget-surface .studio-population-total strong {
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+.studio-widget-surface .studio-population-total span {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.studio-dashboard .studio-widget-surface .studio-species {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 20px 18px;
+}
+.studio-dashboard .studio-widget-surface .studio-species > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--studio-inner-line);
+  border-radius: 8px;
+  background: var(--studio-plot-surface);
+  font-size: 12px;
+}
+.studio-widget-surface .studio-species > div > span {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+.studio-widget-surface .studio-species i {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.studio-widget-surface .studio-species strong {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.studio-widget-surface .studio-species small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted-foreground);
+}
+.studio-widget-surface .studio-species small {
+  margin-inline-start: 0;
+}
+.studio-dashboard .studio-widget-surface .studio-species:has(> div:only-child) {
+  grid-template-columns: minmax(0, 1fr);
+}
+@container (max-width: 760px) {
+  .studio-dashboard .studio-main-grid,
+  .studio-dashboard .studio-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@container (max-width: 480px) {
+  .studio-widget-surface > header {
+    padding: 18px 16px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .studio-widget-surface .studio-chart-heading {
+    padding-inline: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .studio-activity-plot {
+    margin-inline: 16px;
+  }
+  .studio-dashboard .studio-widget-surface > footer {
+    padding-inline: 16px;
+  }
+  .studio-dashboard .studio-widget-surface .studio-agenda-list,
+  .studio-dashboard .studio-widget-surface .studio-alert-list {
+    padding-inline: 16px;
+  }
+  .studio-widget-surface .studio-agenda-strip {
+    margin-inline: 16px;
+  }
+  .studio-dashboard .studio-widget-surface .studio-species {
+    padding-inline: 16px;
+  }
+}
+@media (pointer: coarse) {
+  .studio-widget-surface .studio-date-controls button {
+    width: 40px;
+    min-height: 40px;
+  }
+  .studio-widget-surface .studio-agenda-strip button {
+    min-height: 40px;
+  }
+}
+
+/* Financial overview: settlement colors and readable, actionable balances. */
+.studio-dashboard .classic-financial-grid { align-items: stretch; }
+.studio-dashboard .classic-receipts,
+.studio-dashboard .classic-receivables { border-radius: 16px; }
+.studio-dashboard .classic-collected { color: #047857; }
+.studio-dashboard .classic-collected > span:first-child { color: #047857; }
+.studio-dashboard .classic-balance {
+  margin: 0 20px 12px; padding: 18px; border: 0; border-radius: 12px;
+  background: #fff4e6; color: #994b0b;
+}
+.studio-dashboard .classic-balance > span:first-child,
+.studio-dashboard .classic-balance p { color: #994b0b; }
+.studio-dashboard .classic-category-track { height: 8px; border-radius: 4px; }
+.studio-dashboard .classic-category-track span { border-radius: 4px; }
+.studio-dashboard .classic-category-heading i { width: 8px; height: 8px; border-radius: 50%; }
+.studio-dashboard .classic-debt-list button { padding: 13px 0; }
+.studio-dashboard .classic-debt-list button:hover { color: #7651ed; }
+.studio-dashboard .classic-finance-error { display: flex; align-items: center; gap: 12px; margin: 0 20px 12px; padding: 12px; border-radius: 8px; background: #fff1f2; color: #9f1239; font-size: 12px; }
+.studio-dashboard .classic-finance-error button { flex-shrink: 0; text-decoration: underline; text-underline-offset: 3px; }
+.studio-dashboard .classic-finance-loading { padding: 0 20px 8px; color: var(--muted-foreground); font-size: 12px; }
+.dark .studio-dashboard .classic-balance { background: #332516; color: #fcd29b; }
+.dark .studio-dashboard .classic-balance > span:first-child,
+.dark .studio-dashboard .classic-balance p { color: #fcd29b; }
+.dark .studio-dashboard .classic-collected,
+.dark .studio-dashboard .classic-collected > span:first-child { color: #6ee7b7; }
+.dark .studio-dashboard .classic-finance-error { background: #3b1724; color: #fecdd3; }
+.studio-dashboard .classic-receivables .studio-count { background: #fff1dc; color: #99520b; }
+.studio-dashboard .classic-balance[data-pending="false"] { background: #eefaf4; color: #086746; }
+.studio-dashboard .classic-balance[data-pending="false"] > span:first-child,
+.studio-dashboard .classic-balance[data-pending="false"] p { color: #086746; }
+.dark .studio-dashboard .classic-receivables .studio-count { background: #392a18; color: #fcd29b; }
+.dark .studio-dashboard .classic-balance[data-pending="false"] { background: #132e25; color: #9cebc5; }
+.dark .studio-dashboard .classic-balance[data-pending="false"] > span:first-child,
+.dark .studio-dashboard .classic-balance[data-pending="false"] p { color: #9cebc5; }
+.studio-dashboard .classic-receivables .studio-count[data-pending="false"] { background: var(--muted); color: var(--muted-foreground); white-space: nowrap; }
+.dark .studio-dashboard :is(.classic-receipts,.classic-receivables) { --muted-foreground: #a4a8b2; }
+.dark .studio-dashboard .classic-empty-ring { border-color: #34363e; }
+.dark .studio-dashboard .classic-category-track { background: #34363e; }

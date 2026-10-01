@@ -1,3 +1,4 @@
+import { HeroPattern } from "@/components/HeroPattern";
 import {
   CheckmarkCircle01Icon,
   HelpCircleIcon,
@@ -5,7 +6,6 @@ import {
   Moon01Icon,
   Search01Icon,
   Settings01Icon,
-  StethoscopeIcon,
   Sun01Icon,
   TranslateIcon,
   User02Icon,
@@ -20,10 +20,7 @@ import { useThemeMode } from "@/app/hooks/use-theme-mode";
 import Avatar from "@/components/Avatar";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
-import { HeroPattern } from "@/components/HeroPattern";
-import { randomizeFloralBackground } from "@/lib/floral-background";
 import { SectionGarden } from "@/components/SectionGarden";
-import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,6 +36,7 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { FocusProvider } from "@/contexts/focus-provider";
@@ -107,6 +105,24 @@ export function AppShell() {
   );
 }
 
+function DocumentsSidebarMode({ active }: { active: boolean }) {
+  const { isMobile, open, setOpen } = useSidebar();
+  const previousOpen = useRef<boolean | null>(null);
+  const setOpenRef = useRef(setOpen);
+  useEffect(() => { setOpenRef.current = setOpen; }, [setOpen]);
+  useEffect(() => {
+    if (isMobile) return;
+    if (active) {
+      if (previousOpen.current === null) previousOpen.current = open;
+      setOpenRef.current(false);
+    } else if (previousOpen.current !== null) {
+      setOpenRef.current(previousOpen.current);
+      previousOpen.current = null;
+    }
+  }, [active, isMobile, open]);
+  return null;
+}
+
 function AppShellInner() {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.dir() === "rtl";
@@ -116,17 +132,7 @@ function AppShellInner() {
       return DEFAULT_VIEW;
     }
     const initialView = parseRouteFromHash(window.location.hash).currentView;
-    return initialView === "parametres" || initialView === "assistant"
-      ? DEFAULT_VIEW
-      : initialView;
-  });
-  const [settingsOpen, setSettingsOpen] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return (
-      parseRouteFromHash(window.location.hash).currentView === "parametres"
-    );
+    return initialView === "assistant" ? DEFAULT_VIEW : initialView;
   });
   const [currentPatientId, setCurrentPatientId] = useState<string | null>(
     () => {
@@ -145,30 +151,23 @@ function AppShellInner() {
   });
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    sidebarScrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
+  }, [currentView, currentPatientId]);
+
   const handleNavigate = useCallback(
     (view: View) => {
       if (view === "assistant") {
-        setSettingsOpen(false);
         setAiAssistantOpen(true);
         return;
       }
-      if (view === "parametres") {
-        setSettingsOpen(true);
-        return;
-      }
-      if (settingsOpen && view === "dashboard") {
-        setSettingsOpen(false);
-        return;
-      }
-      setSettingsOpen(false);
       setCurrentView(view);
       setCurrentPatientId(null);
     },
-    [settingsOpen]
+    []
   );
 
   const handleNavigateToPatient = useCallback((patientId: string) => {
-    setSettingsOpen(false);
     setCurrentView("patient_detail");
     setCurrentPatientId(patientId);
   }, []);
@@ -193,7 +192,6 @@ function AppShellInner() {
   const [cachedAvatarUrl, setCachedAvatarUrl] = useState(
     () => readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
   );
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (!currentUser?.email) {
@@ -224,13 +222,9 @@ function AppShellInner() {
     const route = `${currentView}:${currentPatientId ?? ""}`;
     if (previousDecorView.current === route) return;
     previousDecorView.current = route;
-    randomizeFloralBackground();
   }, [currentView, currentPatientId]);
 
   useEffect(() => {
-    if (settingsOpen) {
-      return;
-    }
     let hash = `#/${currentView}`;
     if (currentView === "patient_detail" && currentPatientId) {
       hash = `#/patient/${currentPatientId}`;
@@ -238,7 +232,7 @@ function AppShellInner() {
     if (window.location.hash !== hash) {
       window.history.replaceState(null, "", hash);
     }
-  }, [currentView, currentPatientId, settingsOpen]);
+  }, [currentView, currentPatientId]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -249,15 +243,6 @@ function AppShellInner() {
         setCurrentPatientId(null);
         return;
       }
-      if (next.currentView === "parametres") {
-        setSettingsOpen(true);
-        setCurrentView((previousView) =>
-          previousView === "parametres" ? DEFAULT_VIEW : previousView
-        );
-        setCurrentPatientId(null);
-        return;
-      }
-      setSettingsOpen(false);
       setCurrentView((previousView) =>
         previousView === next.currentView ? previousView : next.currentView
       );
@@ -273,6 +258,11 @@ function AppShellInner() {
   useEffect(() => {
     // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard router branches by key
     const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === ",") {
+        event.preventDefault();
+        handleNavigate("parametres");
+        return;
+      }
       const target = event.target as HTMLElement;
       if (
         target.tagName === "INPUT" ||
@@ -289,7 +279,7 @@ function AppShellInner() {
       }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "j") {
         event.preventDefault();
-        handleNavigate("assistant");
+        handleNavigate("notes");
         return;
       }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "n") {
@@ -333,7 +323,7 @@ function AppShellInner() {
         patientId: currentPatientId,
         currentTheme: themeMode,
         onThemeChange: setThemeMode,
-        onOpenAIAgent: () => handleNavigate("assistant"),
+        onOpenAIAgent: () => handleNavigate("notes"),
         userAvatarUrl: resolvedAvatarUrl,
         userDisplayName:
           currentUser?.displayName || currentUser?.email || "Utilisateur",
@@ -350,16 +340,6 @@ function AppShellInner() {
       resolvedAvatarUrl,
     ]
   );
-
-  const settingsModal = settingsOpen
-    ? renderView("parametres", {
-        currentTheme: themeMode,
-        onNavigate: handleNavigate,
-        onThemeChange: setThemeMode,
-        userDisplayName:
-          currentUser?.displayName || currentUser?.email || "Utilisateur",
-      })
-    : null;
 
   const userDisplayName =
     currentUser?.displayName || currentUser?.email || "Utilisateur";
@@ -399,7 +379,7 @@ function AppShellInner() {
         }
       }}
       defaultOpen={true}
-      className={cn("relative isolate bg-background", isRtl && "rtl-shell")}
+      className={cn("relative isolate !bg-sidebar", isRtl && "rtl-shell")}
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
@@ -408,6 +388,7 @@ function AppShellInner() {
         } as React.CSSProperties
       }
     >
+      <DocumentsSidebarMode active={currentView === "notes"} />
       <AppSidebar
         collapsible={collapsible}
         currentUserAvatar={currentUser?.avatarUrl ?? null}
@@ -486,8 +467,8 @@ function AppShellInner() {
           )}
           ref={sidebarScrollRef}
         >
-          <HeroPattern />
 
+          <HeroPattern />
           <motion.header
             className={cn(
               "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
@@ -568,27 +549,6 @@ function AppShellInner() {
                   onNavigate={handleNavigate}
                   onNavigateToPatient={handleNavigateToPatient}
                 />
-
-                {/* ── Assistant clinique ─────────────────────────────────── */}
-                <Button
-                  aria-label="Ouvrir l’assistant IA"
-                  className={cn(
-                    "shell-toolbar-control size-9 p-0",
-                    aiAssistantOpen &&
-                      "bg-primary/10 text-primary ring-2 ring-primary/20 dark:bg-primary/15"
-                  )}
-                  onClick={() => handleNavigate("assistant")}
-                  aria-pressed={aiAssistantOpen}
-                  size="icon"
-                  title="Assistant IA · ⌘J"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon
-                    className="size-[18px]"
-                    icon={StethoscopeIcon}
-                    strokeWidth={1.5}
-                  />
-                </Button>
 
                 {/* ── Theme button ────────────────────────────────────── */}
                 <button
@@ -713,7 +673,7 @@ function AppShellInner() {
                     {/* Profile */}
                     <DropdownMenuItem
                       className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                      onClick={() => handleNavigate("equipe")}
+                      onClick={() => handleNavigate("parametres")}
                     >
                       <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
                         <HugeiconsIcon
@@ -780,6 +740,9 @@ function AppShellInner() {
                   "finances",
                   "finances_analytics",
                   "equipe",
+                  "notes",
+                  "taches",
+                  "parametres",
                 ] as View[]
               ).includes(currentView) && (
                 <SectionGarden view={currentView} onNavigate={handleNavigate} />
@@ -797,7 +760,6 @@ function AppShellInner() {
         onNavigate={handleNavigate}
         onNavigateToPatient={handleNavigateToPatient}
       />
-      {settingsModal}
       {aiAssistantOpen && (
         <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-2 backdrop-blur-sm sm:p-4 md:p-6">
           <motion.div

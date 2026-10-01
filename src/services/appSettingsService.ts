@@ -10,7 +10,7 @@ import {
   isTauriRuntime,
   setBrowserSetting,
 } from "./browser-store";
-import { runDbOperation, runDbRead } from "./sqlite/database";
+import { runDbOperation, runDbRead, runDbTransaction } from "./sqlite/database";
 
 // Ensure app_settings table exists (run on first access)
 let tableCreated = false;
@@ -78,6 +78,21 @@ export async function setSetting(key: string, value: string): Promise<void> {
       [key, value]
     )
   );
+}
+
+/** Save related document settings together, so identity cannot diverge in SQLite. */
+export async function setSettings(values: Record<string, string>): Promise<void> {
+  if (!isTauriRuntime()) {
+    for (const [key, value] of Object.entries(values)) setBrowserSetting(key, value);
+    return;
+  }
+  await ensureTable();
+  await runDbTransaction(async (db) => {
+    for (const [key, value] of Object.entries(values)) {
+      await db.execute(`INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`, [key, value]);
+    }
+  });
 }
 
 /**

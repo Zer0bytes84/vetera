@@ -596,6 +596,12 @@ function normalizeClinicSnapshot(
       "Le nom de la clinique est obligatoire lors de l'émission."
     );
   }
+  if (snapshot.logoDataUrl && (snapshot.logoDataUrl.length > 1_500_000 || !/^data:image\/(png|jpeg);base64,[a-z0-9+/=]+$/i.test(snapshot.logoDataUrl))) {
+    throw new BillingDomainError("CLINIC_SNAPSHOT_INVALID", "Le logo de la facture est invalide.");
+  }
+  if (snapshot.accent && !["graphite", "forest", "blue"].includes(snapshot.accent)) {
+    throw new BillingDomainError("CLINIC_SNAPSHOT_INVALID", "La couleur de la facture est invalide.");
+  }
   return {
     id: normalizeOptionalText(snapshot.id),
     name,
@@ -604,6 +610,9 @@ function normalizeClinicSnapshot(
     phone: normalizeOptionalText(snapshot.phone),
     email: normalizeOptionalText(snapshot.email),
     address: normalizeOptionalText(snapshot.address),
+    ...(snapshot.logoDataUrl ? { logoDataUrl: snapshot.logoDataUrl } : {}),
+    ...(typeof snapshot.footer === "string" ? { footer: snapshot.footer.trim().slice(0, 400) } : {}),
+    ...(snapshot.accent ? { accent: snapshot.accent } : {}),
   };
 }
 
