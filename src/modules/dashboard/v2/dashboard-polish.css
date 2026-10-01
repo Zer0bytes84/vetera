@@ -696,8 +696,10 @@
 
 /* Financial overview: settlement colors and readable, actionable balances. */
 .studio-dashboard .classic-financial-grid { align-items: stretch; }
+.studio-dashboard .classic-financial-grid > .studio-finish { display: flex; min-width: 0; }
+.studio-dashboard .classic-financial-grid > .studio-finish > .studio-panel { width: 100%; }
 .studio-dashboard .classic-receipts,
-.studio-dashboard .classic-receivables { border-radius: 16px; }
+.studio-dashboard .classic-receivables { border: 1px solid var(--studio-inner-line); border-radius: 12px; }
 .studio-dashboard .classic-collected { color: #047857; }
 .studio-dashboard .classic-collected > span:first-child { color: #047857; }
 .studio-dashboard .classic-balance {

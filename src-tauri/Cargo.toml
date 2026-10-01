@@ -1,6 +1,6 @@
 [package]
 name = "vetera"
-version = "3.3.8"
+version = "3.3.9"
 description = "Système de gestion vétérinaire professionnel"
 authors = ["Zouhir Kherroubi"]
 license = ""

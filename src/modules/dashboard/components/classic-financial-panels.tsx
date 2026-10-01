@@ -53,6 +53,7 @@ export function ClassicFinancialPanels({
   const visible = receivables.slice(page * 4, page * 4 + 4);
   return (
     <div className="classic-financial-grid">
+      <div className="studio-finish">
       <section
         className="studio-panel classic-receipts"
         aria-label="Recettes et règlements"
@@ -188,6 +189,8 @@ export function ClassicFinancialPanels({
           </button>
         </footer>
       </section>
+      </div>
+      <div className="studio-finish">
       <section
         className="studio-panel classic-receivables"
         aria-label="Créances à suivre"
@@ -279,6 +282,7 @@ export function ClassicFinancialPanels({
           )}
         </footer>
       </section>
+      </div>
     </div>
   );
 }
