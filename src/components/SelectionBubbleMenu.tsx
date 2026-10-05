@@ -8,7 +8,7 @@ import {
   TextBoldIcon,
   TextItalicIcon,
   TextStrikethroughIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Editor } from "@tiptap/react";
 import type React from "react";

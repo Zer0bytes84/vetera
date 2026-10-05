@@ -1,6 +1,6 @@
 "use client";
 
-import { StethoscopeIcon } from "@hugeicons/core-free-icons";
+import { StethoscopeIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -66,7 +66,7 @@ export function QuickPatientPicker({
           compact
           artwork="patient-picker"
           description={description}
-          icon={<HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.8} />}
+          icon={<HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />}
           title={title}
         />
         <div className="p-3">
@@ -103,7 +103,7 @@ export function QuickPatientPicker({
                       <HugeiconsIcon
                         className="size-4"
                         icon={StethoscopeIcon}
-                        strokeWidth={2}
+                        strokeWidth={1.5}
                       />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col">

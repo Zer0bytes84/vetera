@@ -6,7 +6,7 @@ import {
   Pill,
   Syringe,
   X,
-} from "@phosphor-icons/react";
+} from "@/lib/icons";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
+import { SkeletonBlock } from "@/design-system/primitives";
 import { Textarea } from "@/components/ui/textarea";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
@@ -34,7 +35,6 @@ import {
   HospitalizationList,
 } from "@/modules/hospitalizations";
 import { PrescriptionList, PrescriptionSheet } from "@/modules/prescriptions";
-import { cn } from "@/lib/utils";
 import type { View } from "@/types";
 import type {
   AnesthesiaSheet,
@@ -45,8 +45,13 @@ import type {
 } from "@/types/db";
 import { PatientDocumentsList } from "./components/patient-documents-list";
 import { PatientHeader } from "./components/patient-header";
+import {
+  OwnerContact,
+  recordDate,
+  handleRecordTabKeys,
+} from "./components/medical-record-summary";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
-import { PatientRecordHealth } from "./components/patient-record-health";
 import { PatientTimeline } from "./components/patient-timeline";
 import { VaccinationDialog } from "./components/vaccination-dialog";
 import { VaccinationList } from "./components/vaccination-list";
@@ -60,16 +65,24 @@ interface PatientDetailPageProps {
 }
 
 type PatientRecordSection =
+  | "overview"
+  | "vaccinations"
+  | "weight"
+  | "documents"
   | "timeline"
   | "prescriptions"
   | "hospitalizations"
   | "anesthesia";
 
 const PATIENT_RECORD_SECTIONS = [
+  { value: "overview", label: "Synthèse", icon: FirstAid },
   { value: "timeline", label: "Chronologie", icon: FirstAid },
   { value: "prescriptions", label: "Ordonnances", icon: Pill },
   { value: "hospitalizations", label: "Hospitalisations", icon: Hospital },
   { value: "anesthesia", label: "Anesthésies", icon: Syringe },
+  { value: "vaccinations", label: "Vaccinations", icon: Syringe },
+  { value: "weight", label: "Poids", icon: FirstAid },
+  { value: "documents", label: "Documents", icon: FirstAid },
 ] satisfies Array<{
   value: PatientRecordSection;
   label: string;
@@ -120,7 +133,7 @@ export function PatientDetailPage({
   const [vaccinationDialogOpen, setVaccinationDialogOpen] = useState(false);
   const [editingVaccination, setEditingVaccination] =
     useState<Vaccination | null>(null);
-  const [activeTab, setActiveTab] = useState<PatientRecordSection>("timeline");
+  const [activeTab, setActiveTab] = useState<PatientRecordSection>("overview");
   const [isProfileEditorOpen, setIsProfileEditorOpen] = useState(false);
   const [profileDraft, setProfileDraft] = useState<PatientProfileDraft | null>(
     null
@@ -154,6 +167,17 @@ export function PatientDetailPage({
     [patientsRepo.data, patientId]
   );
 
+  useEffect(() => {
+    if (
+      !patient ||
+      sessionStorage.getItem("vetera:pending-vaccination") !== patientId
+    )
+      return;
+    sessionStorage.removeItem("vetera:pending-vaccination");
+    setEditingVaccination(null);
+    setVaccinationDialogOpen(true);
+  }, [patient, patientId]);
+
   const owner = useMemo(
     () => ownersRepo.data.find((o) => o.id === patient?.ownerId) ?? undefined,
     [ownersRepo.data, patient?.ownerId]
@@ -181,8 +205,7 @@ export function PatientDetailPage({
     () =>
       appointments.find(
         (apt) =>
-          apt.status === "completed" &&
-          new Date(apt.startTime).getTime() <= now
+          apt.status === "completed" && new Date(apt.startTime).getTime() <= now
       ) ?? null,
     [appointments, now]
   );
@@ -191,10 +214,15 @@ export function PatientDetailPage({
       appointments
         .filter(
           (apt) =>
-            ["scheduled", "confirmed", "arrived", "waiting", "in_progress"].includes(
-              apt.status
-            ) &&
-            new Date(apt.startTime).getTime() > now
+            [
+              "scheduled",
+              "confirmed",
+              "arrived",
+              "waiting",
+              "in_progress",
+            ].includes(apt.status) &&
+            (new Date(apt.startTime).getTime() > now ||
+              ["arrived", "waiting", "in_progress"].includes(apt.status))
         )
         .sort(
           (a, b) =>
@@ -205,12 +233,21 @@ export function PatientDetailPage({
   const clinicalNoteAppointment = useMemo(
     () =>
       appointments.find(
-        (appointment) =>
-          appointment.status !== "cancelled" &&
-          appointment.status !== "no_show"
-      ) ?? null,
+        (appointment) => appointment.status === "in_progress"
+      ) ??
+      appointments.find((appointment) => appointment.status === "completed") ??
+      null,
     [appointments]
   );
+
+  useEffect(() => {
+    setActiveTab("overview");
+    setIsProfileEditorOpen(false);
+    setSoapOpen(false);
+    setSelectedHospitalization(null);
+    setSelectedAnesthesia(null);
+    setPrescriptionOpen(false);
+  }, [patientId]);
 
   const handleTabChange = (val: PatientRecordSection) => {
     setActiveTab(val);
@@ -224,6 +261,22 @@ export function PatientDetailPage({
     return (
       <div className="flex h-full w-full items-center justify-center p-8">
         <Spinner className="size-8 text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (patientsRepo.error) {
+    return (
+      <div className="p-8">
+        <h2 className="text-lg font-semibold">
+          Le dossier ne peut pas être chargé
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Réessayez pour retrouver les informations du patient.
+        </p>
+        <Button className="mt-4" onClick={() => void patientsRepo.refresh()}>
+          Réessayer
+        </Button>
       </div>
     );
   }
@@ -300,6 +353,9 @@ export function PatientDetailPage({
       setIsSavingProfile(false);
     }
   };
+  const recentVisits = appointments.filter((appointment) =>
+    ["completed", "in_progress"].includes(appointment.status)
+  );
   const openSoapForAppointment = (appointmentId: string) => {
     setSoapAppointmentId(appointmentId);
     setSoapOpen(true);
@@ -320,7 +376,10 @@ export function PatientDetailPage({
 
         <PatientHeader
           onEditProfile={openProfileEditor}
-          onNewAppointment={() => onNavigate("agenda")}
+          onNewAppointment={() => {
+            prepareAppointment(patient.id);
+            onNavigate("agenda");
+          }}
           onOpenClinicalNote={
             clinicalNoteAppointment
               ? () => openSoapForAppointment(clinicalNoteAppointment.id)
@@ -329,18 +388,52 @@ export function PatientDetailPage({
           owner={owner}
           patient={patient}
         >
-          <PatientKpiStrip
-            className="rounded-none border-x-0 border-b-0 bg-card/60"
-            lastVisit={lastAppointment?.startTime ?? patient.lastVisit}
-            nextAppointment={nextAppointment ?? undefined}
-            nextVaccination={getNextDueVaccination(vaccinations)}
-            now={now}
-            onAppointmentClick={() => onNavigate("agenda")}
-            onTimelineClick={() => handleTabChange("timeline")}
-            onVaccinationClick={openNewVaccination}
-            onWeightClick={openNewWeight}
-            weightEntries={weightEntries}
-          />
+          {appointmentsRepo.loading ||
+          vaccinationsRepo.loading ||
+          weightsRepo.loading ? (
+            <div
+              className="grid grid-cols-2 gap-4 border-t border-border p-5 xl:grid-cols-4"
+              aria-label="Chargement du suivi clinique"
+              aria-busy="true"
+            >
+              {[0, 1, 2, 3].map((index) => (
+                <SkeletonBlock key={index} className="h-16" />
+              ))}
+            </div>
+          ) : appointmentsRepo.error ||
+            vaccinationsRepo.error ||
+            weightsRepo.error ? (
+            <div
+              role="status"
+              className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3 text-sm"
+            >
+              <span>Une partie du suivi clinique n’a pas pu être chargée.</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  void appointmentsRepo.refresh();
+                  void vaccinationsRepo.refresh();
+                  void weightsRepo.refresh();
+                }}
+              >
+                Réessayer
+              </Button>
+            </div>
+          ) : (
+            <PatientKpiStrip
+              className="rounded-none border-x-0 border-b-0 bg-card/60"
+              lastVisit={lastAppointment?.startTime ?? patient.lastVisit}
+              nextAppointment={nextAppointment ?? undefined}
+              nextVaccination={getNextDueVaccination(vaccinations)}
+              now={now}
+              onAppointmentClick={() => onNavigate("agenda")}
+              onTimelineClick={() => handleTabChange("timeline")}
+              onVaccinationClick={() => handleTabChange("vaccinations")}
+              onWeightClick={() => handleTabChange("weight")}
+              weightEntries={weightEntries}
+            />
+          )}
         </PatientHeader>
 
         {isProfileEditorOpen && profileDraft ? (
@@ -529,179 +622,393 @@ export function PatientDetailPage({
           </section>
         ) : null}
 
-        <div className="space-y-4">
-          <section className="record-register clinical-surface min-w-0 overflow-hidden" aria-labelledby="medical-record-title">
-            <div className="flex flex-col gap-4 border-border/70 border-b px-5 py-4 xl:flex-row xl:items-center xl:justify-between">
-              <div className="flex items-center gap-3">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-teal-50 text-teal-600 dark:bg-teal-400/10 dark:text-teal-300">
-                  <FirstAid className="size-4" weight="duotone" />
-                </span>
-                <div>
-                  <h2 className="font-semibold text-foreground text-lg tracking-[-0.02em]" id="medical-record-title">
-                    Dossier médical
-                  </h2>
-                  <p className="mt-0.5 text-muted-foreground text-xs">
-                    Historique, traitements et protocoles regroupés dans un seul registre.
-                  </p>
-                </div>
-              </div>
-              <nav
-                aria-label="Sections du dossier médical"
-                className="flex w-full max-w-full gap-1 overflow-x-auto rounded-xl bg-muted/60 p-1 xl:w-auto"
-              >
-                {PATIENT_RECORD_SECTIONS.map((section) => {
-                  const Icon = section.icon;
-                  const isActive = activeTab === section.value;
-                  return (
-                    <button
-                      aria-current={isActive ? "page" : undefined}
-                      className={cn(
-                        "flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-lg px-3 font-medium text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                        isActive
-                          ? "bg-card text-foreground shadow-sm ring-1 ring-border/80"
-                          : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
-                      )}
-                      key={section.value}
-                      onClick={() => handleTabChange(section.value)}
-                      type="button"
-                    >
-                      <Icon className="size-4" weight="duotone" />
-                      <span>{section.label}</span>
-                    </button>
-                  );
-                })}
-              </nav>
+        <div className="medical-workspace">
+          <section
+            className="medical-register"
+            aria-labelledby="medical-record-title"
+          >
+            <div className="medical-register-header">
+              <h2 id="medical-record-title">Dossier clinique</h2>
+              <p>Consultations, traitements et suivi de {patient.name}.</p>
             </div>
-
-            <div className="min-w-0 p-4 sm:p-5">
-                {activeTab === "timeline" ? (
-                  <PatientTimeline
+            <div
+              role="tablist"
+              onKeyDown={handleRecordTabKeys}
+              aria-label="Sections du dossier médical"
+              className="medical-tabs"
+            >
+              {PATIENT_RECORD_SECTIONS.map((section) => (
+                <button
+                  key={section.value}
+                  type="button"
+                  role="tab"
+                  tabIndex={activeTab === section.value ? 0 : -1}
+                  id={`record-tab-${section.value}`}
+                  aria-selected={activeTab === section.value}
+                  aria-controls="record-tab-content"
+                  onClick={() => handleTabChange(section.value)}
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+            <div
+              className="medical-tab-content"
+              id="record-tab-content"
+              role="tabpanel"
+              tabIndex={0}
+              aria-labelledby={`record-tab-${activeTab}`}
+            >
+              {activeTab === "overview" && (
+                <div className="medical-overview">
+                  <section>
+                    <div className="medical-overview-heading">
+                      <h3>Prise en charge</h3>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleTabChange("timeline")}
+                      >
+                        Voir l’historique
+                      </Button>
+                    </div>
+                    <dl className="medical-facts">
+                      <div>
+                        <dt>Dernière consultation terminée</dt>
+                        <dd>
+                          {appointmentsRepo.loading
+                            ? "Chargement…"
+                            : appointmentsRepo.error
+                              ? "Indisponible"
+                              : lastAppointment
+                                ? recordDate(lastAppointment.startTime)
+                                : patient.lastVisit
+                                  ? recordDate(patient.lastVisit)
+                                  : "Aucune enregistrée"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Prochain rendez-vous</dt>
+                        <dd>
+                          {appointmentsRepo.loading
+                            ? "Chargement…"
+                            : appointmentsRepo.error
+                              ? "Indisponible"
+                              : nextAppointment
+                                ? recordDate(nextAppointment.startTime, true)
+                                : "Aucun rendez-vous prévu"}
+                        </dd>
+                      </div>
+                    </dl>
+                    {lastAppointment && (
+                      <p className="medical-secondary mt-4">
+                        {lastAppointment.reason || lastAppointment.title}
+                      </p>
+                    )}
+                    <div className="medical-action-row">
+                      {clinicalNoteAppointment && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            openSoapForAppointment(clinicalNoteAppointment.id)
+                          }
+                        >
+                          Consulter la note clinique
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={openNewWeight}
+                      >
+                        Enregistrer un poids
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={openNewVaccination}
+                      >
+                        Enregistrer un vaccin
+                      </Button>
+                    </div>
+                  </section>
+                  <section>
+                    <h3 className="medical-section-title">Dernières visites</h3>
+                    {appointmentsRepo.loading ? (
+                      <Spinner className="size-5" />
+                    ) : appointmentsRepo.error ? (
+                      <div className="medical-empty">
+                        Les visites ne sont pas disponibles.{" "}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => void appointmentsRepo.refresh()}
+                        >
+                          Réessayer
+                        </Button>
+                      </div>
+                    ) : recentVisits.length ? (
+                      <div>
+                        {recentVisits.slice(0, 4).map((appointment) => (
+                          <button
+                            className="medical-visit"
+                            type="button"
+                            key={appointment.id}
+                            onClick={() =>
+                              openSoapForAppointment(appointment.id)
+                            }
+                          >
+                            <time>{recordDate(appointment.startTime)}</time>
+                            <div>
+                              <strong>
+                                {appointment.type} ·{" "}
+                                {
+                                  {
+                                    scheduled: "Planifiée",
+                                    confirmed: "Confirmée",
+                                    arrived: "Arrivé",
+                                    waiting: "En attente",
+                                    in_progress: "En cours",
+                                    completed: "Terminée",
+                                    cancelled: "Annulée",
+                                    no_show: "Absent",
+                                  }[appointment.status]
+                                }
+                              </strong>
+                              <p>{appointment.reason || appointment.title}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="medical-empty">
+                        Aucune visite enregistrée. Planifiez un rendez-vous pour
+                        commencer le suivi.
+                      </p>
+                    )}
+                  </section>
+                  <section>
+                    <h3 className="medical-section-title">
+                      Informations de suivi
+                    </h3>
+                    <dl className="medical-facts">
+                      <div>
+                        <dt>Date de naissance</dt>
+                        <dd>{recordDate(patient.dateOfBirth)}</dd>
+                      </div>
+                      <div>
+                        <dt>Dernière pesée</dt>
+                        <dd>
+                          {weightsRepo.loading
+                            ? "Chargement…"
+                            : weightsRepo.error
+                              ? "Indisponible"
+                              : weightEntries.length
+                                ? `${[...weightEntries].sort((a, b) => b.measuredAt.localeCompare(a.measuredAt))[0].weightKg.toLocaleString("fr-FR")} kg`
+                                : "Non renseignée"}
+                        </dd>
+                      </div>
+                    </dl>
+                  </section>
+                </div>
+              )}
+              {activeTab === "vaccinations" &&
+                (vaccinationsRepo.loading ? (
+                  <SkeletonBlock className="h-48" />
+                ) : vaccinationsRepo.error ? (
+                  <div className="medical-empty">
+                    Les vaccinations ne sont pas disponibles.{" "}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => void vaccinationsRepo.refresh()}
+                    >
+                      Réessayer
+                    </Button>
+                  </div>
+                ) : (
+                  <VaccinationList
                     className="border-0 shadow-none"
-                    onEditWeight={openEditWeight}
-                    onJumpToAppointment={openSoapForAppointment}
+                    onEdit={openEditVaccination}
+                    onNew={openNewVaccination}
                     patientId={patientId}
                   />
-                ) : null}
+                ))}
+              {activeTab === "weight" &&
+                (weightsRepo.loading ? (
+                  <SkeletonBlock className="h-48" />
+                ) : weightsRepo.error ? (
+                  <div className="medical-empty">
+                    Les pesées ne sont pas disponibles.{" "}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => void weightsRepo.refresh()}
+                    >
+                      Réessayer
+                    </Button>
+                  </div>
+                ) : (
+                  <WeightEvolutionChart
+                    className="border-0 shadow-none"
+                    entries={weightEntries}
+                    onAdd={openNewWeight}
+                    onEditEntry={openEditWeight}
+                    title="Évolution du poids"
+                    emptyMessage={t("patientDetail.overview.weightEmpty")}
+                  />
+                ))}
+              {activeTab === "documents" && (
+                <PatientDocumentsList
+                  className="border-0 shadow-none"
+                  onOpenNotes={() => onNavigate("notes")}
+                  patientId={patientId}
+                />
+              )}
+              {activeTab === "timeline" ? (
+                <PatientTimeline
+                  className="border-0 shadow-none"
+                  onEditWeight={openEditWeight}
+                  onJumpToAppointment={openSoapForAppointment}
+                  patientId={patientId}
+                />
+              ) : null}
 
-                {activeTab === "prescriptions" ? (
-                  <PrescriptionList
-                    onNew={async () => {
-                      const todayStart = new Date();
-                      todayStart.setHours(0, 0, 0, 0);
-                      const todayEnd = new Date();
-                      todayEnd.setHours(23, 59, 59, 999);
+              {activeTab === "prescriptions" ? (
+                <PrescriptionList
+                  onNew={async () => {
+                    const todayStart = new Date();
+                    todayStart.setHours(0, 0, 0, 0);
+                    const todayEnd = new Date();
+                    todayEnd.setHours(23, 59, 59, 999);
 
-                      const todayApt = appointments.find((apt) => {
-                        const d = new Date(apt.startTime);
-                        return (
-                          d >= todayStart &&
-                          d <= todayEnd &&
-                          apt.status !== "cancelled"
-                        );
-                      });
+                    const todayApt = appointments.find((apt) => {
+                      const d = new Date(apt.startTime);
+                      return (
+                        d >= todayStart &&
+                        d <= todayEnd &&
+                        apt.status !== "cancelled"
+                      );
+                    });
 
-                      if (todayApt) {
-                        setPrescriptionAppointmentId(todayApt.id);
-                        setPrescriptionOpen(true);
-                      } else {
-                        const nowTime = new Date();
-                        const endTime = new Date(
-                          nowTime.getTime() + 30 * 60 * 1000
-                        );
+                    if (todayApt) {
+                      setPrescriptionAppointmentId(todayApt.id);
+                      setPrescriptionOpen(true);
+                    } else {
+                      const nowTime = new Date();
+                      const endTime = new Date(
+                        nowTime.getTime() + 30 * 60 * 1000
+                      );
 
-                        try {
-                          const newApt = await appointmentsRepo.saveAppointment(
-                            {
-                              patientId,
-                              title: `Consultation - ${patient.name}`,
-                              type: "Consultation",
-                              status: "in_progress",
-                              startTime: nowTime,
-                              endTime,
-                              vetId: currentUser?.id,
-                              reason: "Ordonnance",
-                            }
-                          );
+                      try {
+                        const newApt = await appointmentsRepo.saveAppointment({
+                          patientId,
+                          title: `Consultation - ${patient.name}`,
+                          type: "Consultation",
+                          status: "in_progress",
+                          startTime: nowTime,
+                          endTime,
+                          vetId: currentUser?.id,
+                          reason: "Ordonnance",
+                        });
 
-                          if (newApt && newApt.id) {
-                            setPrescriptionAppointmentId(newApt.id);
-                            setPrescriptionOpen(true);
-                            toast.success(
-                              "Nouvelle session de consultation créée pour l'ordonnance."
-                            );
-                          }
-                        } catch (err) {
-                          console.error(
-                            "Failed to create quick appointment",
-                            err
-                          );
-                          toast.error(
-                            "Impossible de créer une nouvelle session de consultation."
+                        if (newApt && newApt.id) {
+                          setPrescriptionAppointmentId(newApt.id);
+                          setPrescriptionOpen(true);
+                          toast.success(
+                            "Nouvelle session de consultation créée pour l'ordonnance."
                           );
                         }
+                      } catch (err) {
+                        console.error(
+                          "Failed to create quick appointment",
+                          err
+                        );
+                        toast.error(
+                          "Impossible de créer une nouvelle session de consultation."
+                        );
                       }
-                    }}
+                    }
+                  }}
+                  patient={patient}
+                />
+              ) : null}
+
+              {activeTab === "hospitalizations" ? (
+                selectedHospitalization ? (
+                  <HospitalizationDetail
+                    hospitalization={selectedHospitalization}
+                    onBack={() => setSelectedHospitalization(null)}
                     patient={patient}
                   />
-                ) : null}
+                ) : (
+                  <HospitalizationList
+                    onSelect={setSelectedHospitalization}
+                    patient={patient}
+                  />
+                )
+              ) : null}
 
-                {activeTab === "hospitalizations" ? (
-                  selectedHospitalization ? (
-                    <HospitalizationDetail
-                      hospitalization={selectedHospitalization}
-                      onBack={() => setSelectedHospitalization(null)}
-                      patient={patient}
-                    />
-                  ) : (
-                    <HospitalizationList
-                      onSelect={setSelectedHospitalization}
-                      patient={patient}
-                    />
-                  )
-                ) : null}
-
-                {activeTab === "anesthesia" ? (
-                  selectedAnesthesia ? (
-                    <AnesthesiaDetail
-                      onBack={() => setSelectedAnesthesia(null)}
-                      patient={patient}
-                      sheet={selectedAnesthesia}
-                    />
-                  ) : (
-                    <AnesthesiaList
-                      onSelect={setSelectedAnesthesia}
-                      patient={patient}
-                    />
-                  )
-                ) : null}
+              {activeTab === "anesthesia" ? (
+                selectedAnesthesia ? (
+                  <AnesthesiaDetail
+                    onBack={() => setSelectedAnesthesia(null)}
+                    patient={patient}
+                    sheet={selectedAnesthesia}
+                  />
+                ) : (
+                  <AnesthesiaList
+                    onSelect={setSelectedAnesthesia}
+                    patient={patient}
+                  />
+                )
+              ) : null}
             </div>
           </section>
 
-          <section aria-label="Suivi du dossier" className="grid items-stretch gap-4 lg:grid-cols-2">
-            <PatientRecordHealth
-              className="h-full"
-              onCompleteProfile={openProfileEditor}
-              owner={owner}
-              patient={patient}
-              vaccinations={vaccinations}
-              weightEntries={weightEntries}
-            />
-            <WeightEvolutionChart
-              className="@container/card h-full"
-              emptyMessage={t("patientDetail.overview.weightEmpty")}
-              entries={weightEntries}
-              onAdd={openNewWeight}
-              onEditEntry={openEditWeight}
-              title={t("patientDetail.weight.title")}
-            />
-            <VaccinationList
-              className="@container/card h-full"
-              onEdit={openEditVaccination}
-              onNew={openNewVaccination}
-              patientId={patientId}
-            />
-            <PatientDocumentsList className="h-full" onOpenNotes={() => onNavigate("notes")} patientId={patientId} />
-          </section>
+          <aside
+            className="medical-rail"
+            aria-label="Informations permanentes du patient"
+          >
+            {ownersRepo.loading ? (
+              <section aria-busy="true">
+                <h3 className="medical-section-title">Propriétaire</h3>
+                <SkeletonBlock className="h-20" />
+              </section>
+            ) : ownersRepo.error ? (
+              <section>
+                <h3 className="medical-section-title">Propriétaire</h3>
+                <p className="medical-empty">
+                  Les coordonnées ne sont pas disponibles.
+                </p>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => void ownersRepo.refresh()}
+                >
+                  Réessayer
+                </Button>
+              </section>
+            ) : (
+              <OwnerContact owner={owner} />
+            )}
+            <section>
+              <h3 className="medical-section-title">Notes générales</h3>
+              <p className="medical-note">
+                {patient.generalNotes?.trim() ||
+                  "Aucune note générale enregistrée."}
+              </p>
+              <Button
+                className="mt-3"
+                size="sm"
+                variant="ghost"
+                onClick={openProfileEditor}
+              >
+                Modifier les informations
+              </Button>
+            </section>
+          </aside>
         </div>
       </div>
 

@@ -1,3 +1,4 @@
+import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import {
   CalendarDays,
   Cat,
@@ -12,7 +13,7 @@ import {
   PawPrint,
   Stethoscope,
   UserRound,
-} from "lucide-react";
+} from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -389,7 +390,7 @@ function AppointmentListItem({
 
   return (
     <li>
-      <button
+      <div role="button" tabIndex={0} data-row-id={appointment.id}
         aria-pressed={isSelected}
         className={cn(
           "agenda-appointment-row group grid w-full min-w-0 rounded-xl border border-border/60 grid-cols-[68px_minmax(0,1fr)] gap-4 px-2 py-4 text-left outline-none transition-colors sm:grid-cols-[78px_48px_minmax(0,1fr)_auto] sm:items-center sm:px-3",
@@ -398,7 +399,11 @@ function AppointmentListItem({
             : "hover:border-primary/25 hover:bg-primary/[0.035] focus-visible:ring-2 focus-visible:ring-primary"
         )}
         onClick={() => onSelectAppointment(appointment)}
-        type="button"
+        onKeyDown={event => {
+          if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault(); onSelectAppointment(appointment);
+          }
+        }}
       >
         <div className="self-start pt-0.5 sm:self-center sm:pt-0">
           <p className="font-semibold text-sm tabular-nums">
@@ -423,9 +428,9 @@ function AppointmentListItem({
 
         <div className="min-w-0">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <p className="truncate font-semibold text-sm tracking-[-0.01em]">
+            <button type="button" className="truncate rounded font-semibold text-sm tracking-[-0.01em] hover:text-primary" onClick={event => { event.stopPropagation(); openPatientPeek(appointment.patientId); }}>
               {patientName}
-            </p>
+            </button>
             <span
               className={cn(
                 "rounded-full px-2 py-0.5 font-medium text-[10px]",
@@ -491,7 +496,7 @@ function AppointmentListItem({
             <ChevronRight className="size-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
           )}
         </div>
-      </button>
+      </div>
     </li>
   );
 }

@@ -7,7 +7,7 @@ import {
   Pill,
   Printer,
   Thermometer,
-} from "@phosphor-icons/react";
+} from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 

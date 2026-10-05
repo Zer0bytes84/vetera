@@ -24,7 +24,7 @@ import {
   DashboardSquareEditIcon,
   DragDropVerticalIcon,
   ResetPasswordIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -33,6 +33,10 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { getSetting, setSetting } from "@/services/appSettingsService";
+import {
+  migrateClassicDashboardOrder,
+  normalizeDashboardOrder as normalizeOrder,
+} from "../model/dashboard-layout";
 
 export interface DashboardLayoutBlock {
   content: ReactNode;
@@ -46,27 +50,14 @@ interface DashboardLayoutManagerProps {
   isEditing: boolean;
   onEditingChange: (isEditing: boolean) => void;
   storageKeyPrefix?: string;
+  /** Operational priorities precede any previously saved widget order. */
+  firstBlockIds?: string[];
+  migrateFromPrefix?: string;
 }
 
 type SaveStatus = "idle" | "saving" | "saved";
 
 const STORAGE_KEY_PREFIX = "dashboard_layout_v1";
-
-function normalizeOrder(value: unknown, availableIds: string[]): string[] {
-  if (!Array.isArray(value)) {
-    return availableIds;
-  }
-
-  const available = new Set(availableIds);
-  const knownIds = value.filter(
-    (id): id is string => typeof id === "string" && available.has(id)
-  );
-
-  return [
-    ...new Set(knownIds),
-    ...availableIds.filter((id) => !knownIds.includes(id)),
-  ];
-}
 
 function SortableDashboardBlock({
   block,
@@ -132,7 +123,7 @@ function SortableDashboardBlock({
             <HugeiconsIcon
               className="size-3.5"
               icon={DragDropVerticalIcon}
-              strokeWidth={1.8}
+              strokeWidth={1.5}
             />
             Déplacer
           </button>
@@ -151,7 +142,7 @@ function DragPreview({ block }: { block: DashboardLayoutBlock }) {
           <HugeiconsIcon
             className="size-4"
             icon={DragDropVerticalIcon}
-            strokeWidth={1.8}
+            strokeWidth={1.5}
           />
         </span>
         <div className="min-w-0">
@@ -170,6 +161,8 @@ export function DashboardLayoutManager({
   isEditing,
   onEditingChange,
   storageKeyPrefix = STORAGE_KEY_PREFIX,
+  firstBlockIds = [],
+  migrateFromPrefix,
 }: DashboardLayoutManagerProps) {
   const { currentUser } = useAuth();
   const availableIdsKey = blocks.map((block) => block.id).join("|");
@@ -198,6 +191,23 @@ export function DashboardLayoutManager({
     let isCurrent = true;
 
     getSetting(storageKey)
+      .then(async (value) => {
+        if (value || !migrateFromPrefix) return value;
+        const previous = await getSetting(
+          `${migrateFromPrefix}:${currentUser?.id ?? "local"}`
+        );
+        if (!previous) return null;
+        try {
+          const oldOrder: unknown = JSON.parse(previous);
+          if (!Array.isArray(oldOrder)) return null;
+          const migrated = migrateClassicDashboardOrder(oldOrder, availableIds);
+          const serialized = JSON.stringify(migrated);
+          await setSetting(storageKey, serialized);
+          return serialized;
+        } catch {
+          return null;
+        }
+      })
       .then((savedValue) => {
         if (!isCurrent) {
           return;
@@ -224,7 +234,7 @@ export function DashboardLayoutManager({
     return () => {
       isCurrent = false;
     };
-  }, [availableIds, storageKey]);
+  }, [availableIds, storageKey, migrateFromPrefix, currentUser?.id]);
 
   const persistOrder = useCallback(
     (nextOrder: string[]) => {
@@ -303,7 +313,13 @@ export function DashboardLayoutManager({
     [order, persistOrder]
   );
 
-  const orderedBlocks = order
+  const orderedIds = [
+    ...firstBlockIds.filter((id) => availableIds.includes(id)),
+    ...normalizeOrder(order, availableIds).filter(
+      (id) => !firstBlockIds.includes(id)
+    ),
+  ];
+  const orderedBlocks = orderedIds
     .map((id) => blocksById.get(id))
     .filter((block): block is DashboardLayoutBlock => Boolean(block));
   const activeBlock = activeId ? blocksById.get(activeId) : undefined;
@@ -317,7 +333,7 @@ export function DashboardLayoutManager({
               <HugeiconsIcon
                 className="size-3.5"
                 icon={DashboardSquareEditIcon}
-                strokeWidth={1.8}
+                strokeWidth={1.5}
               />
             </span>
             <div className="min-w-0">
@@ -342,7 +358,7 @@ export function DashboardLayoutManager({
               type="button"
               variant="outline"
             >
-              <HugeiconsIcon icon={ResetPasswordIcon} strokeWidth={1.8} />
+              <HugeiconsIcon icon={ResetPasswordIcon} strokeWidth={1.5} />
               Réinitialiser
             </Button>
             <Button
@@ -350,7 +366,7 @@ export function DashboardLayoutManager({
               size="sm"
               type="button"
             >
-              <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.8} />
+              <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={1.5} />
               Terminer
             </Button>
           </div>
@@ -391,7 +407,7 @@ export function DashboardLayoutManager({
               <SortableDashboardBlock
                 block={block}
                 index={index}
-                isEditing={isEditing}
+                isEditing={isEditing && !firstBlockIds.includes(block.id)}
                 key={block.id}
                 onMoveByKeyboard={handleKeyboardMove}
               />

@@ -1,4 +1,4 @@
-import { XIcon } from "lucide-react";
+import { XIcon } from "@/lib/icons";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { DialogClose } from "@/components/ui/dialog";

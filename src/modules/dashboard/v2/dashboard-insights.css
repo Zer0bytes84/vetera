@@ -15,7 +15,7 @@
 .studio-dashboard .dashboard-insights .insight-card {
   min-width: 0;
   padding: 5px;
-  border: 1px solid color-mix(in srgb, var(--foreground) 9%, var(--card));
+  border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--muted);
   overflow: visible;
@@ -32,13 +32,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 44px;
+  min-height: 36px;
 }
 .studio-dashboard .insight-heading h2 {
   font-size: 16px;
-  font-weight: 550;
+  font-weight: 500;
   line-height: 1.35;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 .insight-period {
@@ -73,7 +73,7 @@
 }
 .insight-metric {
   display: grid;
-  grid-template-rows: 16px 42px 24px;
+  grid-template-rows: 16px 40px 24px;
   gap: 4px;
   margin: 12px 0;
   min-width: 0;
@@ -123,7 +123,7 @@
   white-space: nowrap;
 }
 .insight-visual {
-  height: 232px;
+  height: 216px;
   padding: 12px;
   background: var(--insight-plot);
   border: 1px solid color-mix(in srgb, var(--foreground) 7%, var(--card));
@@ -189,10 +189,11 @@
   font-size: 11px;
 }
 .studio-dashboard .insight-surface .insight-footer {
-  margin-top: 12px;
-  padding: 0;
+  margin-top: 14px;
+  padding: 12px 0 0;
   border: 0;
-  min-height: 42px;
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 8%, var(--card));
+  min-height: 54px;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -255,14 +256,14 @@
 .insight-day {
   font-size: 10px;
   color: var(--muted-foreground);
-  line-height: 20px;
+  line-height: 18px;
 }
 .insight-heatmap-row {
   display: contents;
 }
 .insight-heatmap-row > button {
   display: block;
-  height: 20px;
+  height: 18px;
   border: 0;
   border-radius: 3px;
   padding: 0;
@@ -342,7 +343,7 @@
   color: #f7f9fa;
 }
 .insight-types-chart {
-  height: 208px;
+  height: 192px;
   width: 100%;
   aspect-ratio: auto;
 }
@@ -417,4 +418,11 @@
   .dashboard-insights * {
     transition: none !important;
   }
+}
+
+.insight-surface {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45);
+}
+.dark .insight-surface {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
 }

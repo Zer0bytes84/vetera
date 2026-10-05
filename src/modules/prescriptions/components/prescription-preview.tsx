@@ -1,4 +1,4 @@
-import { FileText } from "lucide-react";
+import { FileText } from "@/lib/icons";
 import { ModalBanner } from "@/components/ui/modal-banner";
 import { useTranslation } from "react-i18next";
 

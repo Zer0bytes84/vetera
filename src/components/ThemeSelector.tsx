@@ -1,4 +1,4 @@
-import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
+import { CheckmarkCircle02Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import {
@@ -65,7 +65,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                   <HugeiconsIcon
                     className="size-2.5"
                     icon={CheckmarkCircle02Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                 </div>
               )}
@@ -117,7 +117,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                     <HugeiconsIcon
                       className="size-2.5"
                       icon={CheckmarkCircle02Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                   </div>
                 )}

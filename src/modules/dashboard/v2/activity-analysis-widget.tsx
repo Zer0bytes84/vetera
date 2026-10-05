@@ -1,4 +1,4 @@
-import { Activity, ArrowUpRight } from "lucide-react";
+import { Activity, ArrowUpRight } from "@/lib/icons";
 import { useMemo, useState } from "react";
 import {
   Bar,

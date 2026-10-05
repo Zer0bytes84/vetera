@@ -1,5 +1,6 @@
 import type { DashboardMetrics } from "@/lib/metrics";
 import type { View } from "@/types";
+import type { WidgetState } from "../components/clinical/shared";
 import type {
   Appointment,
   Owner,
@@ -24,7 +25,22 @@ export interface DashboardV2Data {
 export interface DashboardV2Props extends DashboardV2Data {
   isCustomizing: boolean;
   isLoading?: boolean;
+  widgetStates?: Partial<
+    Record<
+      | "schedule"
+      | "patients"
+      | "payments"
+      | "appointments"
+      | "activity"
+      | "priorities",
+      WidgetState
+    >
+  >;
   onCustomizingChange: (value: boolean) => void;
   onNavigate?: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
+  onStatusChange?: (
+    appointmentId: string,
+    next: import("@/types/db").AppointmentStatus
+  ) => Promise<unknown>;
 }

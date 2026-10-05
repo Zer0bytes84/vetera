@@ -4,7 +4,7 @@ import {
   EyeIcon,
   ZapIcon,
   SparklesIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import type { IconSvgElement } from "@hugeicons/react";
 
 import { APP_NAME } from "@/lib/brand";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import * as React from "react";
@@ -131,7 +131,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
   const totalCashflow = cashflowData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card className="dashboard-luxe-card group relative col-span-1 overflow-hidden p-6 shadow-sm lg:p-8 xl:col-span-2">
+    <Card className="surface-card group relative col-span-1 overflow-hidden p-6 shadow-sm lg:p-8 xl:col-span-2">
       {/* Background radial glow */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-100">
         <div className="absolute -top-24 -right-24 h-96 w-96 animate-pulse rounded-full bg-violet-500/15 blur-3xl duration-4000 dark:bg-violet-500/10" />
@@ -447,7 +447,7 @@ function FinancialSegmentation({ metrics }: { metrics: DashboardMetrics }) {
   const total = metrics.summary.income30;
 
   return (
-    <Card className="dashboard-luxe-card relative flex flex-col overflow-hidden p-6 shadow-sm lg:p-8 xl:col-span-1">
+    <Card className="surface-card relative flex flex-col overflow-hidden p-6 shadow-sm lg:p-8 xl:col-span-1">
       <div className="mb-6">
         <h3 className="font-semibold text-foreground text-lg tracking-tight">
           Répartition des Revenus
@@ -562,7 +562,7 @@ export function FinancialAnalyticsV2Page({
           <HugeiconsIcon
             className="mr-2 size-4"
             icon={ArrowLeft01Icon}
-            strokeWidth={2.5}
+            strokeWidth={1.5}
           />
           Retour aux Finances
         </Button>

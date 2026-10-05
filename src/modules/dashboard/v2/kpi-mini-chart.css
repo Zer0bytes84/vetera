@@ -1,0 +1,16 @@
+/* Shared compact charts used by both dashboard views. */
+.studio-kpi-visual { display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; height: 64px; margin-top: 8px; min-width: 0; }
+.studio-kpi-visual svg { display: block; width: 100%; height: 40px; }
+.studio-kpi-visual-caption { display: flex; justify-content: space-between; gap: 6px; font-size: 10px; line-height: 1.4; color: var(--muted-foreground); }
+.studio-kpi-visual-caption strong { font-weight: 500; color: var(--foreground); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.studio-kpi-track { display: flex; width: 100%; height: 12px; gap: 3px; overflow: hidden; border-radius: 4px; background: var(--muted); }
+.studio-kpi-track > span { min-width: 2px; flex-basis: 0; border-radius: 3px; }
+.studio-kpi-segments { justify-content: center; gap: 10px; }
+.studio-kpi-visual { position: relative; }
+.studio-kpi-visual svg, .studio-kpi-track { cursor: crosshair; }
+.studio-kpi-visual svg:focus-visible, .studio-kpi-track:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; border-radius: 4px; }
+.studio-mini-bar, .studio-kpi-track > span { transition: opacity 120ms ease-out; }
+.studio-mini-tooltip { position: absolute; bottom: 62px; transform: translateX(-50%); z-index: 2; display: flex; flex-direction: column; gap: 3px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--popover); color: var(--popover-foreground); box-shadow: 0 4px 12px #00000014; font-size: 11px; white-space: nowrap; pointer-events: none; }
+.studio-mini-tooltip > span { color: var(--muted-foreground); }
+.studio-mini-tooltip strong { font-weight: 550; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .studio-mini-bar, .studio-kpi-track > span { transition: none; } }

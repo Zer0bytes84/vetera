@@ -1,4 +1,4 @@
-import { Heartbeat } from "@phosphor-icons/react";
+import { Heartbeat } from "@/lib/icons";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";

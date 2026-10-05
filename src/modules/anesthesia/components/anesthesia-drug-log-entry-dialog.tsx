@@ -1,4 +1,4 @@
-import { Pill } from "@phosphor-icons/react";
+import { Pill } from "@/lib/icons";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";

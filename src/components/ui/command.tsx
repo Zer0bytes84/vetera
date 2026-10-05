@@ -1,7 +1,7 @@
 "use client";
 
 import { Command as CommandPrimitive } from "cmdk";
-import { CheckIcon, SearchIcon } from "lucide-react";
+import { CheckIcon, SearchIcon } from "@/lib/icons";
 import type * as React from "react";
 import {
   Dialog,
@@ -71,7 +71,7 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div className="relative p-2 pb-1" data-slot="command-input-wrapper">
-      <InputGroup className="h-14 rounded-xl border border-transparent bg-muted/60 shadow-none transition-[border-color,background-color] duration-200 ease-out focus-within:border-border focus-within:bg-muted *:data-[slot=input-group-addon]:ps-4!">
+      <InputGroup className="h-14 rounded-xl border border-transparent bg-muted/60 shadow-none transition-[border-color,background-color] duration-200 ease-out focus-within:border-ring/50 focus-within:ring-2 focus-within:ring-ring/15 focus-within:bg-muted *:data-[slot=input-group-addon]:ps-4!">
         <CommandPrimitive.Input
           className={cn(
             "w-full font-medium text-base outline-hidden placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",

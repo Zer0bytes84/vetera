@@ -1,0 +1,49 @@
+/* GitHub Next proportions: two shallow halos fading below the header. */
+.page-mesh {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 220px;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.7;
+  -webkit-mask-image: linear-gradient(to bottom, black 0px, black 50px, transparent 210px);
+  mask-image: linear-gradient(to bottom, black 0px, black 50px, transparent 210px);
+  animation: page-mesh-enter 500ms ease-out both;
+}
+
+/* Fade only the leading edge, keeping the approved right-hand composition. */
+.page-mesh-colors {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 0.12), black clamp(80px, 14%, 160px));
+  mask-image: linear-gradient(to right, rgb(0 0 0 / 0.12), black clamp(80px, 14%, 160px));
+}
+
+.page-mesh-halo {
+  position: absolute;
+  top: -33px;
+  left: var(--halo-x);
+  width: var(--halo-width);
+  height: var(--halo-height);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse closest-side, var(--halo-color) 0%, var(--halo-color) 20%, transparent 100%);
+}
+
+.dark .page-mesh { opacity: 0.25; }
+
+@keyframes page-mesh-enter {
+  from { opacity: 0; }
+  to { opacity: 0.7; }
+}
+
+.dark .page-mesh { animation-name: page-mesh-enter-dark; }
+
+@keyframes page-mesh-enter-dark {
+  from { opacity: 0; }
+  to { opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-mesh { animation: none; }
+}

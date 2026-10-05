@@ -1,4 +1,4 @@
-import { ArrowUpRight, Grid2X2 } from "lucide-react";
+import { ArrowUpRight, Grid2X2 } from "@/lib/icons";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { DashboardMetrics } from "@/lib/metrics";

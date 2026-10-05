@@ -44,12 +44,10 @@ export const APPOINTMENT_TYPE_META: Record<
       "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
   },
   Contrôle: {
-    badgeClassName: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
-    surfaceClassName:
-      "border-violet-200/70 bg-violet-500/8 dark:border-violet-900/70 dark:bg-violet-500/10",
-    dotClassName: "bg-violet-500",
-    iconClassName:
-      "bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300",
+    badgeClassName: "bg-frame text-ink-muted",
+    surfaceClassName: "border-hairline bg-frame",
+    dotClassName: "bg-signal-quiet",
+    iconClassName: "bg-frame text-ink-muted",
   },
 };
 
@@ -70,7 +68,7 @@ export const APPOINTMENT_STATUS_META: Record<
   },
   confirmed: {
     label: "Confirmé",
-    className: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+    className: "bg-secondary/10 text-sky-700 dark:text-secondary",
   },
   arrived: {
     label: "Arrivé",
@@ -108,7 +106,7 @@ export const CLINIQUE_STATUS_META: Record<Appointment["status"], StatusColor> =
     },
     confirmed: {
       label: "Confirmé",
-      className: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+      className: "bg-secondary/10 text-sky-700 dark:text-secondary",
     },
     arrived: {
       label: "À accueillir",
@@ -172,7 +170,7 @@ export const STOCK_STATUS_META: Record<
 > = {
   expired: {
     label: "Expiré",
-    className: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
+    className: "bg-frame text-ink-muted",
   },
   out: {
     label: "Rupture",
@@ -238,7 +236,7 @@ export const TRANSACTION_STATUS_META: Record<string, StatusColor> = {
 
 export const SPECIES_TONE: Record<string, string> = {
   chien: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  chat: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
+  chat: "bg-frame text-ink-muted",
   nac: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
 };
 

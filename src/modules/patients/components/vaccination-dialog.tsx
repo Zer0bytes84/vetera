@@ -1,4 +1,4 @@
-import { CheckCircle, Plus, Syringe } from "@phosphor-icons/react";
+import { CheckCircle, Plus, Syringe } from "@/lib/icons";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";

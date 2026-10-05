@@ -3,7 +3,7 @@ import {
   ArrowRight01Icon,
   Delete01Icon,
   SparklesIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -179,7 +179,7 @@ export function AIAgentPanel({
             <HugeiconsIcon
               className="size-4 text-white"
               icon={SparklesIcon}
-              strokeWidth={2}
+              strokeWidth={1.5}
             />
           </div>
           <p className="font-semibold text-foreground text-sm">Assistant</p>
@@ -192,7 +192,7 @@ export function AIAgentPanel({
               size="icon-xs"
               variant="ghost"
             >
-              <HugeiconsIcon data-icon icon={Delete01Icon} strokeWidth={2} />
+              <HugeiconsIcon data-icon icon={Delete01Icon} strokeWidth={1.5} />
             </Button>
           )}
           <Button
@@ -201,7 +201,7 @@ export function AIAgentPanel({
             size="icon-xs"
             variant="ghost"
           >
-            <HugeiconsIcon data-icon icon={ArrowDown01Icon} strokeWidth={2} />
+            <HugeiconsIcon data-icon icon={ArrowDown01Icon} strokeWidth={1.5} />
           </Button>
         </div>
       </div>
@@ -249,7 +249,7 @@ export function AIAgentPanel({
               <HugeiconsIcon
                 className="size-6 text-violet-500"
                 icon={SparklesIcon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             </div>
             <p className="font-medium text-foreground text-sm">
@@ -345,7 +345,7 @@ export function AIAgentPanel({
               <HugeiconsIcon
                 data-icon
                 icon={ArrowRight01Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             )}
           </Button>

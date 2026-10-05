@@ -1,4 +1,4 @@
-import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "lucide-react";
+import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Turtle } from "@/lib/icons";
 import type React from "react";
 import { useState } from "react";
 

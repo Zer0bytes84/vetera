@@ -1,4 +1,4 @@
-import { Plus, Scales } from "@phosphor-icons/react";
+import { Plus, Scales } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,

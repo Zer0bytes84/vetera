@@ -1,15 +1,26 @@
+import { useRowSaveFlash } from "@/hooks/useRowSaveFlash";
+import { ThemeControl } from "./components/theme-control";
+import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
+import { ToolbarIcon } from "./components/toolbar-icon";
 import { HeroPattern } from "@/components/HeroPattern";
+import { SaveIndicator } from "@/design-system/patterns/save-indicator";
+import { useSaveIndicator } from "@/hooks/useSaveIndicator";
+import {
+  PatientPeek,
+  PATIENT_PEEK_EVENT,
+  openPatientPeek,
+} from "@/modules/patients/pages/patient-peek";
+import { prepareAppointment } from "./model/clinical-actions";
 import {
   CheckmarkCircle01Icon,
   HelpCircleIcon,
   Logout01Icon,
   Moon01Icon,
-  Search01Icon,
   Settings01Icon,
   Sun01Icon,
   TranslateIcon,
   User02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -21,7 +32,6 @@ import Avatar from "@/components/Avatar";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
 import { SectionGarden } from "@/components/SectionGarden";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,7 +119,9 @@ function DocumentsSidebarMode({ active }: { active: boolean }) {
   const { isMobile, open, setOpen } = useSidebar();
   const previousOpen = useRef<boolean | null>(null);
   const setOpenRef = useRef(setOpen);
-  useEffect(() => { setOpenRef.current = setOpen; }, [setOpen]);
+  useEffect(() => {
+    setOpenRef.current = setOpen;
+  }, [setOpen]);
   useEffect(() => {
     if (isMobile) return;
     if (active) {
@@ -150,22 +162,28 @@ function AppShellInner() {
     return parseRouteFromHash(window.location.hash).currentView === "assistant";
   });
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
+  const [peekPatientId, setPeekPatientId] = useState<string | null>(null);
+  const saveState = useSaveIndicator();
+  useRowSaveFlash();
+  useEffect(() => {
+    const open = (event: Event) =>
+      setPeekPatientId((event as CustomEvent<{ id: string }>).detail.id);
+    window.addEventListener(PATIENT_PEEK_EVENT, open);
+    return () => window.removeEventListener(PATIENT_PEEK_EVENT, open);
+  }, []);
 
   useEffect(() => {
     sidebarScrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
   }, [currentView, currentPatientId]);
 
-  const handleNavigate = useCallback(
-    (view: View) => {
-      if (view === "assistant") {
-        setAiAssistantOpen(true);
-        return;
-      }
-      setCurrentView(view);
-      setCurrentPatientId(null);
-    },
-    []
-  );
+  const handleNavigate = useCallback((view: View) => {
+    if (view === "assistant") {
+      setAiAssistantOpen(true);
+      return;
+    }
+    setCurrentView(view);
+    setCurrentPatientId(null);
+  }, []);
 
   const handleNavigateToPatient = useCallback((patientId: string) => {
     setCurrentView("patient_detail");
@@ -210,7 +228,7 @@ function AppShellInner() {
     currentUser?.avatarUrl ||
     readCachedProfile(currentUser?.email)?.avatarUrl ||
     cachedAvatarUrl;
-  const { setThemeMode, themeMode, toggleTheme } = useThemeMode();
+  const { setThemeMode, themeMode, toggleTheme, isDarkMode } = useThemeMode();
   const {
     handleMouseDown: handleWindowMouseDown,
     isDesktopRuntime,
@@ -263,20 +281,43 @@ function AppShellInner() {
         handleNavigate("parametres");
         return;
       }
-      const target = event.target as HTMLElement;
-      if (
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable
-      ) {
-        return;
-      }
-
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setPaletteOpen((current) => !current);
         return;
       }
+      const target = event.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (
+        !(event.metaKey || event.ctrlKey || event.altKey) &&
+        event.key.toLowerCase() === "n"
+      ) {
+        event.preventDefault();
+        prepareAppointment();
+        handleNavigate("agenda");
+        setTimeout(
+          () => window.dispatchEvent(new CustomEvent("vetera:new-appointment")),
+          150
+        );
+        return;
+      }
+      if (
+        !(event.metaKey || event.ctrlKey || event.altKey) &&
+        event.key.toLowerCase() === "j"
+      ) {
+        event.preventDefault();
+        handleNavigate("assistant");
+        return;
+      }
+
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "j") {
         event.preventDefault();
         handleNavigate("notes");
@@ -319,7 +360,7 @@ function AppShellInner() {
     () =>
       renderView(currentView, {
         onNavigate: handleNavigate,
-        onNavigateToPatient: handleNavigateToPatient,
+        onNavigateToPatient: openPatientPeek,
         patientId: currentPatientId,
         currentTheme: themeMode,
         onThemeChange: setThemeMode,
@@ -372,9 +413,15 @@ function AppShellInner() {
         const target = event.target as HTMLElement;
         // Portalled dialogs/menus must never become window drag surfaces.
         if (!event.currentTarget.contains(target)) return;
-        if (target.closest('[role="dialog"], [role="menu"], [data-no-drag]')) return;
-        if (target.closest('[data-window-drag-region="true"]') ||
-            (isDesktopRuntime && event.clientY >= 4 && event.clientY < 20 && event.clientX > 80)) {
+        if (target.closest('[role="dialog"], [role="menu"], [data-no-drag]'))
+          return;
+        if (
+          target.closest('[data-window-drag-region="true"]') ||
+          (isDesktopRuntime &&
+            event.clientY >= 4 &&
+            event.clientY < 20 &&
+            event.clientX > 80)
+        ) {
           handleWindowMouseDown(event);
         }
       }}
@@ -467,8 +514,7 @@ function AppShellInner() {
           )}
           ref={sidebarScrollRef}
         >
-
-          <HeroPattern />
+          <HeroPattern view={currentView} />
           <motion.header
             className={cn(
               "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
@@ -504,46 +550,34 @@ function AppShellInner() {
                 className="shell-toolbar-control size-9 shrink-0 md:hidden"
               />
 
-              {/* Search trigger - Precision Linear / macOS Style */}
-              <button
-                className="shell-toolbar-control shell-toolbar-search group relative flex h-9 min-w-9 max-w-[320px] flex-1 items-center gap-2 rounded-full ps-3 pe-2 text-start text-muted-foreground text-xs"
-                aria-haspopup="dialog"
-                aria-label={t("common.searchPlaceholder", { defaultValue: "Rechercher partout..." })}
-                onClick={() => setPaletteOpen(true)}
-                type="button"
-              >
-                <HugeiconsIcon
-                  className="size-4 shrink-0 text-muted-foreground"
-                  icon={Search01Icon}
-                  strokeWidth={1.5}
-                />
-                <span className="shell-toolbar-search-label min-w-0 flex-1 truncate font-normal">
-                  {t("common.searchPlaceholder", {
-                    defaultValue: "Rechercher partout...",
-                  })}
-                </span>
-                <kbd className="ml-auto hidden h-5 select-none items-center gap-0.5 rounded-full border border-black/8 bg-white/60 px-1.5 font-medium font-mono text-[9px] text-muted-foreground tracking-wider shadow-2xs transition-colors group-hover:bg-white xl:flex dark:border-white/10 dark:bg-zinc-800/60 dark:group-hover:bg-zinc-800">
-                  <span className="text-[10px]">⌘</span>K
-                </kbd>
-              </button>
+              <div className="hidden lg:block">
+                <SaveIndicator state={saveState} />
+              </div>
 
               <div className="shell-toolbar-actions ms-auto flex shrink-0 items-center gap-2">
-                {/* ── Aide et support ────────────────────────────────────── */}
-                <Button
-                  aria-label="Aide et support"
-                  className="shell-toolbar-control shell-toolbar-help h-9 gap-1.5 ps-2.5 pe-3 text-xs font-medium"
-                  onClick={() => handleNavigate("aide")}
-                  size="sm"
-                  variant="outline"
-                >
-                  <HugeiconsIcon
-                    className="size-4"
-                    icon={HelpCircleIcon}
-                    strokeWidth={2}
-                  />
-                  <span className="shell-toolbar-help-label">Aide</span>
-                </Button>
-
+                <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
+                  <button
+                    type="button"
+                    aria-label="Rechercher partout"
+                    aria-haspopup="dialog"
+                    aria-keyshortcuts="Meta+K Control+K"
+                    onClick={() => setPaletteOpen(true)}
+                    className="shell-toolbar-control grid size-9 shrink-0 place-items-center"
+                  >
+                    <ToolbarIcon name="search" />
+                  </button>
+                </ShortcutTooltip>
+                <ShortcutTooltip label="Ouvrir l’assistant" shortcut="J">
+                  <button
+                    type="button"
+                    aria-label="Ouvrir l’assistant"
+                    aria-keyshortcuts="J"
+                    onClick={() => handleNavigate("assistant")}
+                    className="shell-toolbar-control grid size-9 shrink-0 place-items-center"
+                  >
+                    <ToolbarIcon name="assistant" />
+                  </button>
+                </ShortcutTooltip>
                 {/* ── Notifications ──────────────────────────────────────── */}
                 <NotificationCenter
                   onNavigate={handleNavigate}
@@ -551,34 +585,7 @@ function AppShellInner() {
                 />
 
                 {/* ── Theme button ────────────────────────────────────── */}
-                <button
-                  aria-label="Changer le thème"
-                  className="shell-toolbar-control relative grid size-9 shrink-0 place-items-center overflow-hidden"
-                  onClick={toggleTheme}
-                  title="Changer le thème · D"
-                  type="button"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 grid place-items-center dark:hidden"
-                  >
-                    <HugeiconsIcon
-                      className="size-[18px] text-amber-600"
-                      icon={Sun01Icon}
-                      strokeWidth={1.5}
-                    />
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 hidden place-items-center dark:grid"
-                  >
-                    <HugeiconsIcon
-                      className="size-[18px] text-sky-300"
-                      icon={Moon01Icon}
-                      strokeWidth={1.5}
-                    />
-                  </span>
-                </button>
+                <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
 
                 {/* ── Settings + account dropdown ─────────────────────── */}
                 <DropdownMenu>
@@ -586,11 +593,7 @@ function AppShellInner() {
                     aria-label="Paramètres et compte"
                     className="shell-toolbar-control flex size-9 items-center justify-center"
                   >
-                    <HugeiconsIcon
-                      className="size-[18px]"
-                      icon={Settings01Icon}
-                      strokeWidth={1.5}
-                    />
+                    <ToolbarIcon name="settings" />
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent
@@ -702,6 +705,18 @@ function AppShellInner() {
 
                     <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
 
+                    <DropdownMenuItem
+                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                      onClick={() => handleNavigate("aide")}
+                    >
+                      <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted">
+                        <HugeiconsIcon icon={HelpCircleIcon} size={16} strokeWidth={1.5} />
+                      </div>
+                      <span className="font-medium text-sm">Aide et support</span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
                     {/* Logout */}
                     <DropdownMenuItem
                       className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-rose-600 focus:bg-rose-50 focus:text-rose-600 dark:text-rose-400 dark:focus:bg-rose-500/10"
@@ -754,11 +769,22 @@ function AppShellInner() {
       </SidebarInset>
 
       {/* Command Palette */}
+      {peekPatientId && (
+        <PatientPeek
+          patientId={peekPatientId}
+          onClose={() => setPeekPatientId(null)}
+          onOpenFull={() => {
+            const id = peekPatientId;
+            setPeekPatientId(null);
+            handleNavigateToPatient(id);
+          }}
+        />
+      )}
       <CommandPalette
         isOpen={paletteOpen}
         onClose={() => setPaletteOpen(false)}
         onNavigate={handleNavigate}
-        onNavigateToPatient={handleNavigateToPatient}
+        onNavigateToPatient={openPatientPeek}
       />
       {aiAssistantOpen && (
         <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-2 backdrop-blur-sm sm:p-4 md:p-6">

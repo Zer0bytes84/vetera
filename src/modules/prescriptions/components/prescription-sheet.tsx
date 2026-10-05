@@ -1,4 +1,4 @@
-import { Pill } from "@phosphor-icons/react";
+import { Pill } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";

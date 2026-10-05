@@ -3,7 +3,7 @@ import {
   Folder01Icon,
   MoreHorizontalCircle01Icon,
   Share01Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useTranslation } from "react-i18next";
 import {

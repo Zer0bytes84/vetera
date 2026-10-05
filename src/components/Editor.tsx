@@ -3,7 +3,7 @@ import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { TableKit } from "@tiptap/extension-table";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Columns3, ListTodo, PenLine, Plus, Rows3, Table2, Trash2, WandSparkles } from "lucide-react";
+import { Columns3, ListTodo, PenLine, Plus, Rows3, Table2, Trash2, WandSparkles } from "@/lib/icons";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";

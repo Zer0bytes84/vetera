@@ -2,7 +2,7 @@
 
 import { FittedAmount } from "@/shared/ui/fitted-amount";
 
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "@/lib/icons";
 import {
   Activity,
   AlarmClock,
@@ -19,7 +19,7 @@ import {
   TriangleAlert,
   Users,
   WalletCards,
-} from "lucide-react";
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import "./section-cards.css";
 

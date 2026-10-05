@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, format } from "date-fns";
-import { CalendarDays, ChevronDown } from "lucide-react";
+import { CalendarDays, ChevronDown } from "@/lib/icons";
 import { fr } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
@@ -22,7 +22,7 @@ export function FinancialPeriodFilter({ from, to, onChange }: { from: string; to
   const apply = (start: string, end: string) => { onChange(start, end); setOpen(false); };
   return <div className="py-2">
     <Popover open={open} onOpenChange={(next) => { if (next) setDraft({ from: parse(from), to: parse(to) }); setOpen(next); }}>
-      <PopoverTrigger render={<Button variant="outline" className="h-9 gap-2 rounded-xl bg-background/70 px-3 text-xs font-medium" aria-label={`Choisir la période : ${label}`}><CalendarDays className="size-4 text-muted-foreground" /><span>{label}</span><ChevronDown className="ml-1 size-3.5 text-muted-foreground" /></Button>} />
+      <PopoverTrigger render={<Button variant="outline" className="list-filter-control h-[30px] gap-1.5 rounded-full bg-background px-2.5 text-xs font-medium" aria-label={`Choisir la période : ${label}`}><CalendarDays className="size-3.5 text-muted-foreground" /><span>{label}</span><ChevronDown className="ml-1 size-3 text-muted-foreground" /></Button>} />
       <PopoverContent align="start" sideOffset={8} className="w-auto max-w-[calc(100vw-24px)] gap-0 rounded-2xl p-0 overflow-hidden">
         <div className="border-b px-4 py-3"><p className="font-semibold">Période</p><p className="mt-1 text-xs text-muted-foreground">Choisissez un raccourci ou deux dates.</p></div>
         <div className="flex flex-col sm:flex-row">

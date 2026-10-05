@@ -10,14 +10,14 @@ import { Spinner } from "@/components/ui/spinner";
 import { DashboardOrbitPage } from "@/modules/dashboard/dashboard-orbit-page";
 import type { View } from "@/types";
 
-const AgendaPage = lazy(() => import("@/components/Agenda"));
-const CliniquePage = lazy(() => import("@/components/Clinique"));
-const FinancesPage = lazy(() => import("@/components/Finances"));
+const AgendaPage = lazy(() => import("@/modules/agenda/pages/agenda-page"));
+const CliniquePage = lazy(() => import("@/modules/clinique/pages/clinique-page"));
+const FinancesPage = lazy(() => import("@/modules/finances/pages/finances-page"));
 const HelpPage = lazy(() => import("@/components/Help"));
 const NotesPage = lazy(() => import("@/components/NotesPro"));
 const ParametresPage = lazy(() => import("@/components/Parametres"));
-const PatientsPage = lazy(() => import("@/components/Patients"));
-const StockPage = lazy(() => import("@/components/Stock"));
+const PatientsPage = lazy(() => import("@/modules/patients/pages/patients-page"));
+const StockPage = lazy(() => import("@/modules/stock/pages/stock-page"));
 const TasksPage = lazy(() => import("@/components/Tasks"));
 const TeamPage = lazy(() => import("@/components/Team"));
 const FinancialAnalyticsPage = lazy(async () => {

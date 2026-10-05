@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { ChevronDown, Wallet } from "lucide-react";
+import { ChevronDown, Wallet } from "@/lib/icons";
 import {
   Area,
   AreaChart,
@@ -21,6 +21,7 @@ import type { DashboardV2Props } from "./types";
 import { buildDashboardInsights } from "./insights-model";
 import { formatCurrency } from "./model";
 import "./dashboard-insights.css";
+import { ClassicWidgetState } from "../components/classic-widget-state";
 
 const CLINICAL_PERIODS = [84, 182, 365] as const;
 const periodLabel = (period: number) =>
@@ -75,7 +76,11 @@ export function DashboardInsights({
   metrics,
   appointments,
   transactions,
-}: Pick<DashboardV2Props, "metrics" | "appointments" | "transactions">) {
+  widgetStates,
+}: Pick<
+  DashboardV2Props,
+  "metrics" | "appointments" | "transactions" | "widgetStates"
+>) {
   const fillId = `cash-fill-${useId().replace(/:/g, "")}`;
   const [cashPeriod, setCashPeriod] = useState<3 | 6 | 12>(6);
   const [period, setPeriod] = useState<84 | 182 | 365>(182);
@@ -172,134 +177,142 @@ export function DashboardInsights({
                 <ChevronDown size={13} aria-hidden="true" />
               </div>
             </header>
-            <div className="insight-metric">
-              <span className="insight-label">Encaissements</span>
-              <FittedAmount
-                className="insight-amount"
-                value={formatCurrency(cashIn)}
-                maxFontSize={36}
-              />
-              <div className="insight-secondary">
-                <span>Dépenses réglées</span>
-                <strong>{formatCurrency(cashOut)}</strong>
-              </div>
-            </div>
-            <div className="insight-visual insight-cash-visual">
-              <div className="insight-chart-legend">
-                <span>
-                  <i className="insight-dot" />
-                  Encaissements
-                </span>
-                <span>
-                  <i className="insight-dot insight-dot-expense" />
-                  Dépenses
-                </span>
-              </div>
-              {cashIn > 0 || cashOut > 0 ? (
-                <ChartContainer
-                  config={{
-                    income: {
-                      label: "Encaissements",
-                      color: "var(--insight-purple)",
-                    },
-                    expense: {
-                      label: "Dépenses",
-                      color: "var(--insight-orange)",
-                    },
-                  }}
-                  className="insight-cash-chart"
-                  initialDimension={{ width: 320, height: 180 }}
-                >
-                  <AreaChart
-                    accessibilityLayer
-                    data={cashMonths}
-                    margin={{ left: 0, right: 8, top: 12, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
-                        <stop
-                          offset="0%"
-                          stopColor="var(--color-income)"
-                          stopOpacity={0.14}
-                        />
-                        <stop
-                          offset="100%"
-                          stopColor="var(--color-income)"
-                          stopOpacity={0.01}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid vertical={false} strokeDasharray="3 5" />
-                    <XAxis
-                      dataKey="label"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={10}
-                      minTickGap={12}
-                      height={28}
-                    />
-                    <YAxis
-                      tickLine={false}
-                      axisLine={false}
-                      width={36}
-                      tickCount={4}
-                      tickFormatter={(value) =>
-                        value >= 1000
-                          ? `${Math.round(value / 1000)}k`
-                          : String(value)
-                      }
-                    />
-                    <ChartTooltip
-                      content={
-                        <ChartTooltipContent
-                          labelFormatter={(_, payload) =>
-                            payload[0]?.payload.fullLabel
-                          }
-                          formatter={(value, name) => (
-                            <span>
-                              {name === "income" ? "Encaissements" : "Dépenses"}{" "}
-                              : {formatCurrency(Number(value))}
-                            </span>
-                          )}
-                        />
-                      }
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="income"
-                      stroke="var(--color-income)"
-                      strokeWidth={2}
-                      fill={`url(#${fillId})`}
-                      activeDot={{ r: 4 }}
-                      isAnimationActive={false}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="expense"
-                      stroke="var(--color-expense)"
-                      strokeWidth={2}
-                      fill="transparent"
-                      activeDot={{ r: 4 }}
-                      isAnimationActive={false}
-                    />
-                  </AreaChart>
-                </ChartContainer>
-              ) : (
-                <div className="insight-cash-empty">
-                  <Wallet size={24} strokeWidth={1.5} aria-hidden="true" />
-                  <strong>Aucun règlement sur cette période</strong>
-                  <span>Les montants réglés apparaîtront ici.</span>
+            <ClassicWidgetState
+              label="Encaissements et dépenses"
+              state={widgetStates?.payments}
+              placeholderClassName="min-h-[380px]"
+            >
+              <div className="insight-metric">
+                <span className="insight-label">Encaissements</span>
+                <FittedAmount
+                  className="insight-amount"
+                  value={formatCurrency(cashIn)}
+                  maxFontSize={36}
+                />
+                <div className="insight-secondary">
+                  <span>Dépenses réglées</span>
+                  <strong>{formatCurrency(cashOut)}</strong>
                 </div>
-              )}
-            </div>
-            <footer className="insight-footer">
-              <span title={cashRange}>
-                {cashRange}
-                <small>
-                  Mois en cours partiel · hors paiements en attente.
-                </small>
-              </span>
-            </footer>
+              </div>
+              <div className="insight-visual insight-cash-visual">
+                <div className="insight-chart-legend">
+                  <span>
+                    <i className="insight-dot" />
+                    Encaissements
+                  </span>
+                  <span>
+                    <i className="insight-dot insight-dot-expense" />
+                    Dépenses
+                  </span>
+                </div>
+                {cashIn > 0 || cashOut > 0 ? (
+                  <ChartContainer
+                    config={{
+                      income: {
+                        label: "Encaissements",
+                        color: "var(--insight-purple)",
+                      },
+                      expense: {
+                        label: "Dépenses",
+                        color: "var(--insight-orange)",
+                      },
+                    }}
+                    className="insight-cash-chart"
+                    initialDimension={{ width: 320, height: 180 }}
+                  >
+                    <AreaChart
+                      accessibilityLayer
+                      data={cashMonths}
+                      margin={{ left: 0, right: 8, top: 12, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="0%"
+                            stopColor="var(--color-income)"
+                            stopOpacity={0.14}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="var(--color-income)"
+                            stopOpacity={0.01}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} strokeDasharray="3 5" />
+                      <XAxis
+                        dataKey="label"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={10}
+                        minTickGap={12}
+                        height={28}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        width={36}
+                        tickCount={4}
+                        tickFormatter={(value) =>
+                          value >= 1000
+                            ? `${Math.round(value / 1000)}k`
+                            : String(value)
+                        }
+                      />
+                      <ChartTooltip
+                        content={
+                          <ChartTooltipContent
+                            labelFormatter={(_, payload) =>
+                              payload[0]?.payload.fullLabel
+                            }
+                            formatter={(value, name) => (
+                              <span>
+                                {name === "income"
+                                  ? "Encaissements"
+                                  : "Dépenses"}{" "}
+                                : {formatCurrency(Number(value))}
+                              </span>
+                            )}
+                          />
+                        }
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="income"
+                        stroke="var(--color-income)"
+                        strokeWidth={2}
+                        fill={`url(#${fillId})`}
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="expense"
+                        stroke="var(--color-expense)"
+                        strokeWidth={2}
+                        fill="transparent"
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                      />
+                    </AreaChart>
+                  </ChartContainer>
+                ) : (
+                  <div className="insight-cash-empty">
+                    <Wallet size={24} strokeWidth={1.5} aria-hidden="true" />
+                    <strong>Aucun règlement sur cette période</strong>
+                    <span>Les montants réglés apparaîtront ici.</span>
+                  </div>
+                )}
+              </div>
+              <footer className="insight-footer">
+                <span title={cashRange}>
+                  {cashRange}
+                  <small>
+                    Mois en cours partiel · hors paiements en attente.
+                  </small>
+                </span>
+              </footer>
+            </ClassicWidgetState>
           </div>
         </section>
 
@@ -312,85 +325,97 @@ export function DashboardInsights({
               <h2>Affluence des rendez-vous</h2>
               {clinicalPeriodSelect("Période des rendez-vous")}
             </header>
-            <div className="insight-metric">
-              <span className="insight-label">Rendez-vous enregistrés</span>
-              <div className="insight-count">
-                <strong>{total.toLocaleString("fr-FR")}</strong>
-                <span>sur {period} jours</span>
-              </div>
-              <div className="insight-secondary">
-                <span>Heures de pointe du cabinet</span>
-                <span>Jour × heure</span>
-              </div>
-            </div>
-            <div className="insight-visual insight-heatmap-visual">
-              <div className="insight-heatmap-scroll">
-                <div className="insight-heatmap">
-                  <span />
-                  {insights.hours.map((hour, index) => (
-                    <span
-                      className="insight-hour"
-                      title={hour.label}
-                      key={hour.label}
-                    >
-                      {index === 0 ? "<8" : index === 11 ? "18+" : index + 7}
-                    </span>
-                  ))}
-                  {insights.weekdays.map((day, dayIndex) => (
-                    <div className="insight-heatmap-row" key={day.label}>
-                      <span className="insight-day">{day.label}</span>
-                      {insights.hours.map((hour, hourIndex) => (
-                        <button
-                          type="button"
-                          key={hour.label}
-                          data-level={level(hour.counts[dayIndex])}
-                          aria-pressed={
-                            selectedSlot?.day === dayIndex &&
-                            selectedSlot.hour === hourIndex
-                          }
-                          title={`${day.label} ${hour.label} : ${hour.counts[dayIndex]} rendez-vous`}
-                          aria-label={`${day.label} ${hour.label} : ${hour.counts[dayIndex]} rendez-vous`}
-                          onClick={() =>
-                            setSelectedSlot({ day: dayIndex, hour: hourIndex })
-                          }
-                        >
-                          <span className="sr-only">
-                            {hour.counts[dayIndex]}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  ))}
+            <ClassicWidgetState
+              label="Affluence des rendez-vous"
+              state={widgetStates?.appointments}
+              placeholderClassName="min-h-[380px]"
+            >
+              <div className="insight-metric">
+                <span className="insight-label">Rendez-vous enregistrés</span>
+                <div className="insight-count">
+                  <strong>{total.toLocaleString("fr-FR")}</strong>
+                  <span>sur {period} jours</span>
+                </div>
+                <div className="insight-secondary">
+                  <span>Heures de pointe du cabinet</span>
+                  <span>Jour × heure</span>
                 </div>
               </div>
-              <div className="insight-heatmap-legend">
-                <span>Moins</span>
-                {[0, 1, 2, 3, 4].map((value) => (
-                  <i key={value} data-level={value} />
-                ))}
-                <span>Plus</span>
+              <div className="insight-visual insight-heatmap-visual">
+                <div className="insight-heatmap-scroll">
+                  <div className="insight-heatmap">
+                    <span />
+                    {insights.hours.map((hour, index) => (
+                      <span
+                        className="insight-hour"
+                        title={hour.label}
+                        key={hour.label}
+                      >
+                        {index === 0 ? "<8" : index === 11 ? "18+" : index + 7}
+                      </span>
+                    ))}
+                    {insights.weekdays.map((day, dayIndex) => (
+                      <div className="insight-heatmap-row" key={day.label}>
+                        <span className="insight-day">{day.label}</span>
+                        {insights.hours.map((hour, hourIndex) => (
+                          <button
+                            type="button"
+                            key={hour.label}
+                            data-level={level(hour.counts[dayIndex])}
+                            aria-pressed={
+                              selectedSlot?.day === dayIndex &&
+                              selectedSlot.hour === hourIndex
+                            }
+                            title={`${day.label} ${hour.label} : ${hour.counts[dayIndex]} rendez-vous`}
+                            aria-label={`${day.label} ${hour.label} : ${hour.counts[dayIndex]} rendez-vous`}
+                            onClick={() =>
+                              setSelectedSlot({
+                                day: dayIndex,
+                                hour: hourIndex,
+                              })
+                            }
+                          >
+                            <span className="sr-only">
+                              {hour.counts[dayIndex]}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="insight-heatmap-legend">
+                  <span>Moins</span>
+                  {[0, 1, 2, 3, 4].map((value) => (
+                    <i key={value} data-level={value} />
+                  ))}
+                  <span>Plus</span>
+                </div>
               </div>
-            </div>
-            <footer className="insight-footer insight-slot" aria-live="polite">
-              {selected && (
-                <>
-                  <span>
-                    {total
-                      ? `${insights.weekdays[selected.day].label} · ${insights.hours[selected.hour].label}`
-                      : "Aucun rendez-vous"}
-                    <small>
-                      {selectedSlot
-                        ? "Créneau sélectionné"
-                        : "Créneau le plus fréquent"}
-                    </small>
-                  </span>
-                  <strong>
-                    {selected.count}
-                    <small>rendez-vous</small>
-                  </strong>
-                </>
-              )}
-            </footer>
+              <footer
+                className="insight-footer insight-slot"
+                aria-live="polite"
+              >
+                {selected && (
+                  <>
+                    <span>
+                      {total
+                        ? `${insights.weekdays[selected.day].label} · ${insights.hours[selected.hour].label}`
+                        : "Aucun rendez-vous"}
+                      <small>
+                        {selectedSlot
+                          ? "Créneau sélectionné"
+                          : "Créneau le plus fréquent"}
+                      </small>
+                    </span>
+                    <strong>
+                      {selected.count}
+                      <small>rendez-vous</small>
+                    </strong>
+                  </>
+                )}
+              </footer>
+            </ClassicWidgetState>
           </div>
         </section>
 
@@ -403,100 +428,110 @@ export function DashboardInsights({
               <h2>Répartition des actes</h2>
               {clinicalPeriodSelect("Période de la répartition des actes")}
             </header>
-            <div className="insight-metric">
-              <span className="insight-label">Types de visites</span>
-              <div className="insight-count">
-                <strong>{total.toLocaleString("fr-FR")}</strong>
-                <span>rendez-vous</span>
-              </div>
-              <div className="insight-secondary">
-                <span>Hors annulations et absences</span>
-                <span>{periodLabel(period)}</span>
-              </div>
-            </div>
-            <div className="insight-visual insight-types-visual">
-              {total > 0 ? (
-                <ChartContainer
-                  config={{ count: { label: "Rendez-vous", color: "#30c5ea" } }}
-                  className="insight-types-chart"
-                  initialDimension={{ width: 320, height: 208 }}
-                >
-                  <BarChart
-                    accessibilityLayer
-                    data={chartTypes}
-                    margin={{ left: -20, right: 2, top: 22, bottom: 0 }}
-                    barCategoryGap="24%"
-                  >
-                    <XAxis
-                      type="category"
-                      dataKey="label"
-                      tickFormatter={shortType}
-                      tickLine={false}
-                      axisLine={false}
-                      interval={0}
-                      tickMargin={12}
-                      height={30}
-                    />
-                    <YAxis
-                      type="number"
-                      domain={[0, "dataMax"]}
-                      allowDecimals={false}
-                      tickLine={false}
-                      axisLine={false}
-                      width={40}
-                      tickCount={4}
-                    />
-                    <ChartTooltip
-                      cursor={false}
-                      content={
-                        <ChartTooltipContent
-                          formatter={(value) => `${value} rendez-vous`}
-                        />
-                      }
-                    />
-                    <Bar
-                      dataKey="count"
-                      maxBarSize={34}
-                      shape={<SegmentedBar />}
-                      isAnimationActive={false}
-                    >
-                      {chartTypes.map((type, index) => (
-                        <Cell
-                          key={type.label}
-                          fill={index === 0 ? "var(--color-count)" : "#8ba4ad"}
-                        />
-                      ))}
-                      <LabelList
-                        dataKey="count"
-                        position="top"
-                        offset={8}
-                        className="insight-bar-value"
-                      />
-                    </Bar>
-                  </BarChart>
-                </ChartContainer>
-              ) : (
-                <div className="insight-chart-empty">
-                  Aucun rendez-vous sur cette période.
+            <ClassicWidgetState
+              label="Répartition des actes"
+              state={widgetStates?.appointments}
+              placeholderClassName="min-h-[380px]"
+            >
+              <div className="insight-metric">
+                <span className="insight-label">Types de visites</span>
+                <div className="insight-count">
+                  <strong>{total.toLocaleString("fr-FR")}</strong>
+                  <span>rendez-vous</span>
                 </div>
-              )}
-            </div>
-            <footer className="insight-footer">
-              <span>
-                {leadingType?.label ?? "Les actes apparaîtront ici"}
-                <small>
-                  {leadingType
-                    ? `${leadingType.count} rendez-vous · type le plus fréquent`
-                    : "Même période que l’affluence."}
-                </small>
-              </span>
-              {leadingType && (
-                <strong>
-                  {Math.round((leadingType.count / total) * 100)}
-                  <small>% des visites</small>
-                </strong>
-              )}
-            </footer>
+                <div className="insight-secondary">
+                  <span>Hors annulations et absences</span>
+                  <span>{periodLabel(period)}</span>
+                </div>
+              </div>
+              <div className="insight-visual insight-types-visual">
+                {total > 0 ? (
+                  <ChartContainer
+                    config={{
+                      count: { label: "Rendez-vous", color: "#30c5ea" },
+                    }}
+                    className="insight-types-chart"
+                    initialDimension={{ width: 320, height: 208 }}
+                  >
+                    <BarChart
+                      accessibilityLayer
+                      data={chartTypes}
+                      margin={{ left: -20, right: 2, top: 22, bottom: 0 }}
+                      barCategoryGap="24%"
+                    >
+                      <XAxis
+                        type="category"
+                        dataKey="label"
+                        tickFormatter={shortType}
+                        tickLine={false}
+                        axisLine={false}
+                        interval={0}
+                        tickMargin={12}
+                        height={30}
+                      />
+                      <YAxis
+                        type="number"
+                        domain={[0, "dataMax"]}
+                        allowDecimals={false}
+                        tickLine={false}
+                        axisLine={false}
+                        width={40}
+                        tickCount={4}
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={
+                          <ChartTooltipContent
+                            formatter={(value) => `${value} rendez-vous`}
+                          />
+                        }
+                      />
+                      <Bar
+                        dataKey="count"
+                        maxBarSize={34}
+                        shape={<SegmentedBar />}
+                        isAnimationActive={false}
+                      >
+                        {chartTypes.map((type, index) => (
+                          <Cell
+                            key={type.label}
+                            fill={
+                              index === 0 ? "var(--color-count)" : "#8ba4ad"
+                            }
+                          />
+                        ))}
+                        <LabelList
+                          dataKey="count"
+                          position="top"
+                          offset={8}
+                          className="insight-bar-value"
+                        />
+                      </Bar>
+                    </BarChart>
+                  </ChartContainer>
+                ) : (
+                  <div className="insight-chart-empty">
+                    Aucun rendez-vous sur cette période.
+                  </div>
+                )}
+              </div>
+              <footer className="insight-footer">
+                <span>
+                  {leadingType?.label ?? "Les actes apparaîtront ici"}
+                  <small>
+                    {leadingType
+                      ? `${leadingType.count} rendez-vous · type le plus fréquent`
+                      : "Même période que l’affluence."}
+                  </small>
+                </span>
+                {leadingType && (
+                  <strong>
+                    {Math.round((leadingType.count / total) * 100)}
+                    <small>% des visites</small>
+                  </strong>
+                )}
+              </footer>
+            </ClassicWidgetState>
           </div>
         </section>
       </div>

@@ -9,7 +9,7 @@ import {
   X,
   FileText,
   Stethoscope,
-} from "lucide-react";
+} from "@/lib/icons";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";

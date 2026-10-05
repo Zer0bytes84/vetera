@@ -1,4 +1,4 @@
-import { Hospital } from "@phosphor-icons/react";
+import { Hospital } from "@/lib/icons";
 import { useEffect, useRef } from "react";
 
 import { Badge } from "@/components/ui/badge";

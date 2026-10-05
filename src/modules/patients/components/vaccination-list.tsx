@@ -1,4 +1,5 @@
-import { PencilSimple, Plus, Syringe, Trash } from "@phosphor-icons/react";
+import { parseDashboardDate } from "@/modules/dashboard/v2/model";
+import { PencilSimple, Plus, Syringe, Trash } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -31,8 +32,8 @@ function formatDateShort(value?: string) {
   if (!value) {
     return "—";
   }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
+  const date = parseDashboardDate(value);
+  if (!date) {
     return "—";
   }
   return date.toLocaleDateString("fr-FR", {

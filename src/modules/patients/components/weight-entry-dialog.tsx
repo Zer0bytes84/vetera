@@ -1,4 +1,4 @@
-import { Plus, Scales, Trash } from "@phosphor-icons/react";
+import { Plus, Scales, Trash } from "@/lib/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";

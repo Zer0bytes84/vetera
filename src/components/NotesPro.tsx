@@ -14,9 +14,9 @@ import {
   SearchIcon,
   StarIcon,
   Undo02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Check, ChevronDown, ChevronRight, FileText, Folder, FolderOpen, Hash, Pin, Star, X } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, FileText, Folder, FolderOpen, Hash, Pin, Star, X } from "@/lib/icons";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "@/components/Editor";
@@ -143,7 +143,7 @@ function PatientPicker({
           <p className="mt-0.5 text-[11px] leading-4 text-[#6e8171] dark:text-[#adbfaf]">{isFilter ? "Ce choix filtre la bibliothèque sans modifier les notes." : "La note sera enregistrée dans le dossier choisi."}</p>
         </div>
         <div className="relative px-1 pb-1.5">
-          <HugeiconsIcon aria-hidden="true" className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-[#809482]" icon={SearchIcon} />
+          <HugeiconsIcon aria-hidden="true" className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-[#809482]" icon={SearchIcon} strokeWidth={1.5} />
           <Input aria-label="Rechercher un patient" autoFocus className="h-9 rounded-lg border-[#e4ebe2] bg-[#f7faf6] pl-8 text-xs dark:border-white/10 dark:bg-[#1b241e]" onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un patient…" value={query} />
         </div>
         <div className="max-h-60 overflow-y-auto overscroll-contain py-0.5">
@@ -447,13 +447,13 @@ const NotesPro: React.FC = () => {
         </div>
         <div className="flex w-full shrink-0 flex-wrap items-center gap-2 lg:w-auto lg:flex-nowrap">
           <div className="relative min-w-[160px] flex-1 lg:w-48 lg:flex-none">
-            <HugeiconsIcon aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-[#718675] dark:text-[#aec4b1]" icon={SearchIcon} />
+            <HugeiconsIcon aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-[#718675] dark:text-[#aec4b1]" icon={SearchIcon} strokeWidth={1.5} />
             <Input aria-label="Rechercher dans les documents et dossiers" className="h-10 rounded-full border-[#dfe8df] bg-white/75 pr-9 pl-10 text-sm shadow-sm placeholder:text-[#7a8b7c] focus-visible:ring-[#6c9a76]/40 dark:border-white/25 dark:bg-[#25352b]/90 dark:text-white dark:placeholder:text-[#b4c6b7]" onChange={(event) => setSearchTerm(event.target.value)} placeholder="Rechercher…" type="search" value={searchTerm} />
             {searchTerm && <button aria-label="Effacer la recherche" className="absolute top-1/2 right-2.5 flex size-5 -translate-y-1/2 items-center justify-center rounded-full text-[#68806d] hover:bg-[#e7eee5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6c9a76]/40 dark:text-[#bbcebc] dark:hover:bg-white/10" onClick={() => setSearchTerm("")} type="button"><X className="size-3.5" /></button>}
           </div>
           <DropdownMenu>
               <DropdownMenuTrigger render={<Button className="h-10 gap-2.5 bg-[#264735] pr-3 pl-2.5 font-medium text-white shadow-[0_8px_22px_-12px_rgba(20,53,31,0.8)] ring-1 ring-white/15 transition-[background-color,box-shadow] hover:bg-[#335b42] hover:shadow-[0_12px_26px_-12px_rgba(20,53,31,0.8)] aria-expanded:bg-[#335b42] dark:bg-[#d9eadb] dark:text-[#17261c] dark:ring-[#d9eadb]/25 dark:hover:bg-white dark:aria-expanded:bg-white" type="button" />}>
-                <span className="flex size-6 items-center justify-center rounded-full bg-white/15 dark:bg-[#264735]/10"><HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={2} /></span>
+                <span className="flex size-6 items-center justify-center rounded-full bg-white/15 dark:bg-[#264735]/10"><HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={1.5} /></span>
                 Nouveau document
                 <span aria-hidden="true" className="ml-1 flex h-5 items-center border-white/20 border-l pl-2.5 dark:border-[#17261c]/20"><ChevronDown className="size-3.5" /></span>
               </DropdownMenuTrigger>
@@ -466,7 +466,7 @@ const NotesPro: React.FC = () => {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => void handleCreateNote()}><HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} />Page vierge</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => void handleCreateNote()}><HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} strokeWidth={1.5} />Page vierge</DropdownMenuItem>
               </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -525,7 +525,7 @@ const NotesPro: React.FC = () => {
                       <span className="text-[11px] tabular-nums text-[#788d7b] dark:text-[#a9bdaa]">{group.notes.length}</span>
                       <ChevronRight aria-hidden="true" className={cn("size-3.5 shrink-0 text-[#849687] transition-transform dark:text-[#a9bdaa]", isOpen && "rotate-90")} />
                     </button>
-                    <button aria-label={`Créer une note de consultation dans ${group.label}`} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-[#608069] hover:bg-white hover:text-[#234b32] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50 dark:text-[#b4cbb7] dark:hover:bg-white/10" onClick={() => void handleCreateTemplate("consultation", group.patientId)} title={`Nouvelle note de consultation · ${group.label}`} type="button"><HugeiconsIcon className="size-3.5" icon={Add01Icon} /></button>
+                    <button aria-label={`Créer une note de consultation dans ${group.label}`} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-[#608069] hover:bg-white hover:text-[#234b32] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50 dark:text-[#b4cbb7] dark:hover:bg-white/10" onClick={() => void handleCreateTemplate("consultation", group.patientId)} title={`Nouvelle note de consultation · ${group.label}`} type="button"><HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={1.5} /></button>
                   </div>
                   {isOpen && <div className="ml-4 space-y-0.5 border-[#dce8db] border-l pl-1 dark:border-white/10">
                 {group.notes.map((note) => {
@@ -569,7 +569,7 @@ const NotesPro: React.FC = () => {
                               >
                                 <HugeiconsIcon
                                   className="size-3.5"
-                                  icon={MoreVerticalIcon}
+                                  icon={MoreVerticalIcon} strokeWidth={1.5}
                                 />
                               </Button>
                             }
@@ -580,22 +580,22 @@ const NotesPro: React.FC = () => {
                             >
                               <HugeiconsIcon
                                 className="mr-2 size-4"
-                                icon={StarIcon}
+                                icon={StarIcon} strokeWidth={1.5}
                               />
                               {note.isFavorite
                                 ? "Retirer des favoris"
                                 : "Ajouter aux favoris"}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => togglePin(note)}>
-                              <HugeiconsIcon className="mr-2 size-4" icon={Bookmark01Icon} />
+                              <HugeiconsIcon className="mr-2 size-4" icon={Bookmark01Icon} strokeWidth={1.5} />
                               {isPinned ? "Désépingler" : "Épingler"}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => void handleDuplicateNote(note)}>
-                              <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} />
+                              <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} strokeWidth={1.5} />
                               Dupliquer la note
                             </DropdownMenuItem>
                             {note.patientId && <DropdownMenuItem onClick={() => void handleCreateTemplate("followup", note.patientId ?? "")}>
-                              <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} />
+                              <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} strokeWidth={1.5} />
                               Nouveau suivi clinique
                             </DropdownMenuItem>}
                             <DropdownMenuItem
@@ -603,7 +603,7 @@ const NotesPro: React.FC = () => {
                             >
                               <HugeiconsIcon
                                 className="mr-2 size-4"
-                                icon={DownloadIcon}
+                                icon={DownloadIcon} strokeWidth={1.5}
                               />
                               Exporter (.md)
                             </DropdownMenuItem>
@@ -614,7 +614,7 @@ const NotesPro: React.FC = () => {
                             >
                               <HugeiconsIcon
                                 className="mr-2 size-4"
-                                icon={Delete01Icon}
+                                icon={Delete01Icon} strokeWidth={1.5}
                               />
                               Supprimer
                             </DropdownMenuItem>
@@ -635,7 +635,7 @@ const NotesPro: React.FC = () => {
         <main className="flex min-h-0 min-w-0 flex-1 flex-col bg-[#f7f8f5] dark:bg-[#111714]">
           <div className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-[#e4e9e2] border-b bg-[#f7f8f5] px-4 py-1.5 dark:border-white/10 dark:bg-[#111714]">
             <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-[#5f7765] dark:text-[#b2cbb6]">
-              <HugeiconsIcon aria-hidden="true" className="size-4 shrink-0" icon={Folder01Icon} />
+              <HugeiconsIcon aria-hidden="true" className="size-4 shrink-0" icon={Folder01Icon} strokeWidth={1.5} />
               <span className="truncate">{activeNote?.patientId ? patientLookup.get(activeNote.patientId)?.name ?? "Dossier patient" : "Documents du cabinet"}</span>
             </span>
             <div className="flex min-w-0 flex-wrap items-center gap-1">
@@ -679,7 +679,7 @@ const NotesPro: React.FC = () => {
                     }
                     variant="ghost"
                   >
-                    <HugeiconsIcon className="size-3.5" icon={Folder01Icon} />
+                    <HugeiconsIcon className="size-3.5" icon={Folder01Icon} strokeWidth={1.5} />
                   </Button>
 
                   <div className="mx-0.5 h-4 w-px bg-foreground/15" />
@@ -695,7 +695,7 @@ const NotesPro: React.FC = () => {
                       )}
                       onClick={() => setIsPreviewMode(false)}
                     >
-                      <HugeiconsIcon className="size-3" icon={EditIcon} />
+                      <HugeiconsIcon className="size-3" icon={EditIcon} strokeWidth={1.5} />
                       Éditer
                     </button>
                     <button
@@ -707,7 +707,7 @@ const NotesPro: React.FC = () => {
                       )}
                       onClick={() => setIsPreviewMode(true)}
                     >
-                      <HugeiconsIcon className="size-3" icon={EyeIcon} />
+                      <HugeiconsIcon className="size-3" icon={EyeIcon} strokeWidth={1.5} />
                       Aperçu
                     </button>
                   </div>
@@ -728,7 +728,7 @@ const NotesPro: React.FC = () => {
                         >
                           <HugeiconsIcon
                             className="size-3.5"
-                            icon={Undo02Icon}
+                            icon={Undo02Icon} strokeWidth={1.5}
                           />
                         </Button>
                         <Button
@@ -743,7 +743,7 @@ const NotesPro: React.FC = () => {
                         >
                           <HugeiconsIcon
                             className="size-3.5"
-                            icon={Redo02Icon}
+                            icon={Redo02Icon} strokeWidth={1.5}
                           />
                         </Button>
                       </div>
@@ -765,7 +765,7 @@ const NotesPro: React.FC = () => {
                     <span className="flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
                       <HugeiconsIcon
                         className="size-3"
-                        icon={CheckmarkCircle02Icon}
+                        icon={CheckmarkCircle02Icon} strokeWidth={1.5}
                       />
                       Sauvegardé
                     </span>
@@ -803,7 +803,7 @@ const NotesPro: React.FC = () => {
                     title="Épingler"
                     variant="ghost"
                   >
-                    <HugeiconsIcon className="size-3.5" icon={Bookmark01Icon} />
+                    <HugeiconsIcon className="size-3.5" icon={Bookmark01Icon} strokeWidth={1.5} />
                   </Button>
                   <Button
                     className={cn(
@@ -820,7 +820,7 @@ const NotesPro: React.FC = () => {
                     <HugeiconsIcon
                       className="size-3.5"
                       fill={activeNote.isFavorite ? "currentColor" : "none"}
-                      icon={StarIcon}
+                      icon={StarIcon} strokeWidth={1.5}
                     />
                   </Button>
                   <Button
@@ -830,7 +830,7 @@ const NotesPro: React.FC = () => {
                     title="Copier le contenu"
                     variant="ghost"
                   >
-                    <HugeiconsIcon className="size-3.5" icon={CopyIcon} />
+                    <HugeiconsIcon className="size-3.5" icon={CopyIcon} strokeWidth={1.5} />
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger
@@ -843,32 +843,32 @@ const NotesPro: React.FC = () => {
                         >
                           <HugeiconsIcon
                             className="size-3.5"
-                            icon={MoreVerticalIcon}
+                            icon={MoreVerticalIcon} strokeWidth={1.5}
                           />
                         </Button>
                       }
                     />
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => void handleDuplicateNote(activeNote)}>
-                        <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} />
+                        <HugeiconsIcon className="mr-2 size-4" icon={CopyIcon} strokeWidth={1.5} />
                         Dupliquer la note
                       </DropdownMenuItem>
                       {activeNote.patientId && <DropdownMenuItem onClick={() => void handleCreateTemplate("followup", activeNote.patientId ?? "")}>
-                        <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} />
+                        <HugeiconsIcon className="mr-2 size-4" icon={File01Icon} strokeWidth={1.5} />
                         Nouveau suivi clinique
                       </DropdownMenuItem>}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => handleExportNote("md")}>
                         <HugeiconsIcon
                           className="mr-2 size-4"
-                          icon={DownloadIcon}
+                          icon={DownloadIcon} strokeWidth={1.5}
                         />
                         Exporter en Markdown
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleExportNote("txt")}>
                         <HugeiconsIcon
                           className="mr-2 size-4"
-                          icon={DownloadIcon}
+                          icon={DownloadIcon} strokeWidth={1.5}
                         />
                         Exporter en Texte
                       </DropdownMenuItem>
@@ -879,7 +879,7 @@ const NotesPro: React.FC = () => {
                       >
                         <HugeiconsIcon
                           className="mr-2 size-4"
-                          icon={Delete01Icon}
+                          icon={Delete01Icon} strokeWidth={1.5}
                         />
                         Supprimer
                       </DropdownMenuItem>
@@ -981,7 +981,7 @@ const NotesPro: React.FC = () => {
                   <p className="mt-4 max-w-md text-sm leading-6 text-[#647467] dark:text-[#b0c0b2]">{activePatient ? `Les nouvelles notes seront directement rattachées au dossier de ${activePatient.name}. Vous pourrez changer ce rattachement depuis l’en-tête du document.` : "Rédigez librement, puis rattachez votre document au dossier d’un patient. Les notes sont enregistrées au fil de l’écriture."}</p>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
                     <Button className="h-10 rounded-xl bg-[#264735] px-4 text-white hover:bg-[#1d382a] dark:bg-[#d9eadb] dark:text-[#17261c] dark:hover:bg-white" onClick={() => void handleCreateTemplate("consultation")}>
-                      <HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} />Note de consultation
+                      <HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} strokeWidth={1.5} />Note de consultation
                     </Button>
                     <button className="text-sm font-medium text-[#3b694a] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/40 dark:text-[#b8d8bc]" onClick={() => void handleCreateNote()} type="button">Page vierge</button>
                   </div>
@@ -991,7 +991,7 @@ const NotesPro: React.FC = () => {
                       <span className="shrink-0 text-xs text-[#718273] dark:text-[#a7b7a9]">{formatDate(filteredNotes[0].updatedAt)}</span>
                     </button>
                   )}
-                  {!showSidebar && <Button className="mt-6 w-fit" onClick={() => setShowSidebar(true)} variant="outline"><HugeiconsIcon className="mr-2 size-4" icon={Folder01Icon} />Voir la bibliothèque</Button>}
+                  {!showSidebar && <Button className="mt-6 w-fit" onClick={() => setShowSidebar(true)} variant="outline"><HugeiconsIcon className="mr-2 size-4" icon={Folder01Icon} strokeWidth={1.5} />Voir la bibliothèque</Button>}
                 </div>
               </div>
             </div>

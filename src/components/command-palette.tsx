@@ -12,7 +12,7 @@ import {
   StethoscopeIcon,
   UserIcon,
   UserMultipleIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -206,7 +206,7 @@ export function CommandPalette({
             <HugeiconsIcon
               className="mr-2 h-5 w-5 shrink-0 text-muted-foreground"
               icon={Home04Icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
             />
             <CommandInput
               className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
@@ -250,7 +250,7 @@ export function CommandPalette({
                         <HugeiconsIcon
                           className="h-4 w-4 text-muted-foreground"
                           icon={item.icon}
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                         />
                       </div>
                       <span className="flex-1">{item.label}</span>

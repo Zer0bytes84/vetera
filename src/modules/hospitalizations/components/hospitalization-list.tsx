@@ -1,4 +1,4 @@
-import { ArrowsClockwise, Hospital, Plus } from "@phosphor-icons/react";
+import { ArrowsClockwise, Hospital, Plus } from "@/lib/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 

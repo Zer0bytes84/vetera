@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "@/lib/icons";
 import { Cell, Pie, PieChart } from "recharts";
 import {
   ChartContainer,

@@ -1,10 +1,11 @@
+import { parseDashboardDate } from "@/modules/dashboard/v2/model";
 import {
   ArrowUpRight,
   CalendarBlank,
   Scales,
   Stethoscope,
   Syringe,
-} from "@phosphor-icons/react";
+} from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
@@ -26,8 +27,8 @@ function formatDateShort(value: string | undefined) {
   if (!value) {
     return null;
   }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
+  const date = parseDashboardDate(value);
+  if (!date) {
     return null;
   }
   return date.toLocaleDateString("fr-FR", {
@@ -90,7 +91,7 @@ export function PatientKpiStrip({
     : null;
 
   const nextVaccDate = nextVaccination?.nextDueAt
-    ? new Date(nextVaccination.nextDueAt)
+    ? parseDashboardDate(nextVaccination.nextDueAt)
     : null;
   const nextVaccDaysOut = nextVaccDate
     ? diffDays(nextVaccDate, currentDate)
@@ -206,7 +207,7 @@ export function PatientKpiStrip({
     >
       {items.map((item) => {
         const Icon = item.icon;
-        const requiresAttention = item.trend === "down";
+        const requiresAttention = "trendLabel" in item && item.trend === "down";
 
         return (
           <button

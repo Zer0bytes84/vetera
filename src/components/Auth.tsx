@@ -7,7 +7,7 @@ import {
   Mail01Icon,
   User02Icon,
   ViewIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
@@ -133,7 +133,7 @@ const Auth: React.FC = () => {
                     <HugeiconsIcon
                       className="mt-0.5 size-4 shrink-0"
                       icon={Alert02Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                     <span className="font-medium">{errorMessage}</span>
                   </motion.div>
@@ -157,7 +157,7 @@ const Auth: React.FC = () => {
                         <HugeiconsIcon
                           className="auth-field__icon"
                           icon={User02Icon}
-                          strokeWidth={1.7}
+                          strokeWidth={1.5}
                         />
                         <input
                           autoComplete="name"
@@ -182,7 +182,7 @@ const Auth: React.FC = () => {
                     <HugeiconsIcon
                       className="auth-field__icon"
                       icon={Mail01Icon}
-                      strokeWidth={1.7}
+                      strokeWidth={1.5}
                     />
                     <input
                       aria-invalid={Boolean(errorMessage)}
@@ -208,7 +208,7 @@ const Auth: React.FC = () => {
                     <HugeiconsIcon
                       className="auth-field__icon"
                       icon={LockIcon}
-                      strokeWidth={1.7}
+                      strokeWidth={1.5}
                     />
                     <input
                       aria-invalid={Boolean(errorMessage)}
@@ -237,7 +237,7 @@ const Auth: React.FC = () => {
                       <HugeiconsIcon
                         className="size-3.5"
                         icon={ViewIcon}
-                        strokeWidth={1.7}
+                        strokeWidth={1.5}
                       />
                       {showPassword ? "Masquer" : "Afficher"}
                     </button>
@@ -249,7 +249,7 @@ const Auth: React.FC = () => {
                 <HugeiconsIcon
                   className="size-4 shrink-0 text-primary"
                   icon={CheckmarkCircle02Icon}
-                  strokeWidth={1.8}
+                  strokeWidth={1.5}
                 />
                 Votre session et vos données restent sur cet appareil.
               </div>
@@ -269,7 +269,7 @@ const Auth: React.FC = () => {
                     <HugeiconsIcon
                       className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
                       icon={ArrowRight01Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                   </>
                 )}
@@ -297,7 +297,7 @@ const Auth: React.FC = () => {
                   <HugeiconsIcon
                     className="size-3.5"
                     icon={ArrowLeft01Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                   Revenir à la connexion
                 </button>

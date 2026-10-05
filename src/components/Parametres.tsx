@@ -1,3 +1,4 @@
+import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
 import { InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
 import {
@@ -12,7 +13,7 @@ import {
   Shield01Icon,
   PencilEdit01Icon,
   UserCircle02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { relaunch } from "@tauri-apps/plugin-process";
 import React, { useEffect, useState } from "react";
@@ -349,7 +350,7 @@ const BackupSettings: React.FC = () => {
             <p>Les cinq dernières copies sont conservées automatiquement.</p>
           </div>
           <Button aria-label="Actualiser les sauvegardes" disabled={loading || busy} onClick={() => void load()} size="icon-sm" variant="ghost">
-            <HugeiconsIcon className={cn("size-4", loading && "animate-spin")} icon={Refresh01Icon} strokeWidth={1.8} />
+            <HugeiconsIcon className={cn("size-4", loading && "animate-spin")} icon={Refresh01Icon} strokeWidth={1.5} />
           </Button>
         </div>
         {loading ? <div className="flex justify-center p-6"><Spinner /></div> : backups.length === 0 ? (
@@ -363,7 +364,7 @@ const BackupSettings: React.FC = () => {
             <div className="flex items-center gap-2">
               <Button disabled={busy} onClick={() => setPending({ kind: "restore", filename: backup.filename })} size="sm" variant="outline">Restaurer…</Button>
               <Button aria-label={`Supprimer la sauvegarde du ${formatDate(backup.date)}`} disabled={busy} onClick={() => setPending({ kind: "delete", filename: backup.filename })} size="icon-sm" variant="ghost">
-                <HugeiconsIcon className="size-4" icon={Delete01Icon} strokeWidth={1.8} />
+                <HugeiconsIcon className="size-4" icon={Delete01Icon} strokeWidth={1.5} />
               </Button>
             </div>
           </div>
@@ -719,6 +720,7 @@ const Parametres: React.FC<ParametresProps> = ({
                 </div>
               </div>
             </section>
+            <DashboardVersionSetting />
             <SidebarLayoutSettings />
           </div>
         );
@@ -740,13 +742,13 @@ const Parametres: React.FC<ParametresProps> = ({
                     <HugeiconsIcon
                       className="size-4.5 text-green-700"
                       icon={CheckmarkCircle02Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                   ) : (
                     <HugeiconsIcon
                       className="size-4.5 text-red-700"
                       icon={Alert02Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                   )}
                   <p
@@ -804,7 +806,7 @@ const Parametres: React.FC<ParametresProps> = ({
                     <HugeiconsIcon
                       className="size-4"
                       icon={SaveIcon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                   )}
                   {isSaving ? "Modification..." : "Modifier le mot de passe"}
@@ -883,7 +885,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   }}
                   type="button"
                 >
-                  <HugeiconsIcon icon={item.icon} strokeWidth={1.8} />
+                  <HugeiconsIcon icon={item.icon} strokeWidth={1.5} />
                   <span>{item.label}</span>
                 </button>
               ))}

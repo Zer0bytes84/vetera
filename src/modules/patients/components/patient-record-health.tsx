@@ -3,7 +3,7 @@ import {
   CheckCircle,
   ShieldCheck,
   WarningCircle,
-} from "@phosphor-icons/react";
+} from "@/lib/icons";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

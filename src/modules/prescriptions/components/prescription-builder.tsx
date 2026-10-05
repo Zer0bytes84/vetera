@@ -5,7 +5,7 @@ import {
   Pill,
   Trash,
   X,
-} from "@phosphor-icons/react";
+} from "@/lib/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 

@@ -58,7 +58,7 @@ export function ChartAreaInteractive({
   }, [data, timeRange]);
 
   return (
-    <Card className="dashboard-chart-card @container/card">
+    <Card className="surface-card @container/card">
       <CardHeader>
         <CardTitle className="text-xl">Activité clinique</CardTitle>
         <CardDescription className="text-sm">

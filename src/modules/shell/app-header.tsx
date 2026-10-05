@@ -9,7 +9,7 @@ import {
   Sun03Icon,
   Task01Icon,
   User02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -135,7 +135,7 @@ export function AppHeader({
             <HugeiconsIcon
               className="size-4"
               icon={Menu01Icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
             />
           </Button>
           <div className="min-w-0">
@@ -163,7 +163,7 @@ export function AppHeader({
               <HugeiconsIcon
                 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
                 icon={SearchIcon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
               <Input
                 className="h-10 cursor-pointer rounded-2xl border border-neutral-200 bg-white pr-12 pl-9 text-sm shadow-sm backdrop-blur-xl transition-all hover:border-neutral-300 hover:shadow-md focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-neutral-600"
@@ -185,7 +185,7 @@ export function AppHeader({
             <HugeiconsIcon
               className="size-[18px]"
               icon={BotIcon}
-              strokeWidth={2}
+              strokeWidth={1.5}
             />
           </Button>
           <div className="relative" ref={notificationsRef}>
@@ -198,7 +198,7 @@ export function AppHeader({
               <HugeiconsIcon
                 className="size-[18px]"
                 icon={Task01Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
               {notifications > 0 ? (
                 <span className="glow-ring absolute -top-0.5 -right-0.5 flex size-[18px] items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-pink-500 font-bold text-[9px] text-white shadow-lg shadow-rose-500/30">
@@ -280,13 +280,13 @@ export function AppHeader({
               <HugeiconsIcon
                 className="size-[18px]"
                 icon={Sun03Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             ) : (
               <HugeiconsIcon
                 className="size-[18px]"
                 icon={Moon02Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             )}
           </Button>
@@ -308,7 +308,7 @@ export function AppHeader({
               <HugeiconsIcon
                 className={`size-3.5 text-muted-foreground transition ${accountMenuOpen ? "rotate-180" : ""}`}
                 icon={ChevronDown}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             </button>
 
@@ -325,7 +325,7 @@ export function AppHeader({
                   <HugeiconsIcon
                     className="size-4 text-muted-foreground"
                     icon={User02Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                   <span>Profil</span>
                 </button>
@@ -340,7 +340,7 @@ export function AppHeader({
                   <HugeiconsIcon
                     className="size-4 text-muted-foreground"
                     icon={Settings01Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                   <span>Paramètres</span>
                 </button>
@@ -356,7 +356,7 @@ export function AppHeader({
                   <HugeiconsIcon
                     className="size-4"
                     icon={Logout01Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                   <span>Déconnexion</span>
                 </button>

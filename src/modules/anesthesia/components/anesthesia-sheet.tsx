@@ -1,4 +1,4 @@
-import { Syringe } from "@phosphor-icons/react";
+import { Syringe } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

@@ -15,7 +15,7 @@ import {
   TextBoldIcon,
   TextItalicIcon,
   TextStrikethroughIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -404,7 +404,7 @@ const Notes: React.FC = () => {
             onClick={handleCreateNote}
             size="icon"
           >
-            <HugeiconsIcon className="size-4" icon={Add01Icon} />
+            <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
           </Button>
         </div>
 
@@ -413,7 +413,7 @@ const Notes: React.FC = () => {
           <div className="relative">
             <HugeiconsIcon
               className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground/50"
-              icon={SearchIcon}
+              icon={SearchIcon} strokeWidth={1.5}
             />
             <Input
               className="h-9 rounded-lg border-border/50 bg-muted/40 pl-9 text-sm placeholder:text-muted-foreground/50 focus:bg-background"
@@ -455,7 +455,7 @@ const Notes: React.FC = () => {
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <HugeiconsIcon
                 className="mb-2 size-10 text-muted-foreground/30"
-                icon={File01Icon}
+                icon={File01Icon} strokeWidth={1.5}
               />
               <p className="text-muted-foreground text-sm">
                 {searchTerm ? "Aucune note trouvée" : "Aucune note"}
@@ -492,7 +492,7 @@ const Notes: React.FC = () => {
                         <HugeiconsIcon
                           className="size-3.5 shrink-0 text-amber-500"
                           fill="currentColor"
-                          icon={StarIcon}
+                          icon={StarIcon} strokeWidth={1.5}
                         />
                       )}
                     </div>
@@ -533,7 +533,7 @@ const Notes: React.FC = () => {
                                 : "text-muted-foreground"
                             )}
                             fill={note.isFavorite ? "currentColor" : "none"}
-                            icon={StarIcon}
+                            icon={StarIcon} strokeWidth={1.5}
                           />
                         </Button>
                         <DropdownMenu>
@@ -546,7 +546,7 @@ const Notes: React.FC = () => {
                             >
                               <HugeiconsIcon
                                 className="size-3 text-muted-foreground"
-                                icon={MoreVerticalIcon}
+                                icon={MoreVerticalIcon} strokeWidth={1.5}
                               />
                             </Button>
                           </DropdownMenuTrigger>
@@ -557,7 +557,7 @@ const Notes: React.FC = () => {
                             >
                               <HugeiconsIcon
                                 className="mr-2 size-4"
-                                icon={Delete01Icon}
+                                icon={Delete01Icon} strokeWidth={1.5}
                               />
                               Supprimer
                             </DropdownMenuItem>
@@ -589,7 +589,7 @@ const Notes: React.FC = () => {
                     title={`${btn.label} (Ctrl+${btn.label[0]})`}
                     variant="ghost"
                   >
-                    <HugeiconsIcon className="size-4" icon={btn.icon} />
+                    <HugeiconsIcon className="size-4" icon={btn.icon} strokeWidth={1.5} />
                   </Button>
                 ))}
               </div>
@@ -597,14 +597,14 @@ const Notes: React.FC = () => {
               <div className="flex items-center gap-3">
                 {isSaving ? (
                   <span className="flex items-center gap-1.5 text-muted-foreground text-xs">
-                    <HugeiconsIcon className="size-3.5" icon={Clock01Icon} />
+                    <HugeiconsIcon className="size-3.5" icon={Clock01Icon} strokeWidth={1.5} />
                     Sauvegarde...
                   </span>
                 ) : lastSaved ? (
                   <span className="flex items-center gap-1.5 text-muted-foreground/60 text-xs">
                     <HugeiconsIcon
                       className="size-3.5"
-                      icon={CheckmarkCircle02Icon}
+                      icon={CheckmarkCircle02Icon} strokeWidth={1.5}
                     />
                     Sauvegardé
                   </span>
@@ -624,7 +624,7 @@ const Notes: React.FC = () => {
                   <HugeiconsIcon
                     className="size-4"
                     fill={activeNote.isFavorite ? "currentColor" : "none"}
-                    icon={StarIcon}
+                    icon={StarIcon} strokeWidth={1.5}
                   />
                 </Button>
 
@@ -637,7 +637,7 @@ const Notes: React.FC = () => {
                     >
                       <HugeiconsIcon
                         className="size-4"
-                        icon={MoreVerticalIcon}
+                        icon={MoreVerticalIcon} strokeWidth={1.5}
                       />
                     </Button>
                   </DropdownMenuTrigger>
@@ -648,7 +648,7 @@ const Notes: React.FC = () => {
                     >
                       <HugeiconsIcon
                         className="mr-2 size-4"
-                        icon={Delete01Icon}
+                        icon={Delete01Icon} strokeWidth={1.5}
                       />
                       Supprimer
                     </DropdownMenuItem>
@@ -693,7 +693,7 @@ const Notes: React.FC = () => {
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/50">
               <HugeiconsIcon
                 className="size-8 text-muted-foreground/40"
-                icon={File01Icon}
+                icon={File01Icon} strokeWidth={1.5}
               />
             </div>
             <h3 className="mt-4 font-medium text-lg">Sélectionnez une note</h3>
@@ -701,7 +701,7 @@ const Notes: React.FC = () => {
               Choisissez une note dans la liste ou créez-en une nouvelle
             </p>
             <Button className="mt-4 rounded-lg" onClick={handleCreateNote}>
-              <HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} />
+              <HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} strokeWidth={1.5} />
               Créer une note
             </Button>
           </div>

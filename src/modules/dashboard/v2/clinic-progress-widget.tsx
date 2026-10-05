@@ -1,4 +1,4 @@
-import { ArrowUpRight, CircleDashed } from "lucide-react";
+import { ArrowUpRight, CircleDashed } from "@/lib/icons";
 import { useMemo, useState } from "react";
 import type { View } from "@/types";
 import type { Appointment, Task, Transaction } from "@/types/db";

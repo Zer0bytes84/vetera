@@ -15,6 +15,14 @@ export function parseDashboardDate(value?: string): Date | null {
     return null;
   }
 
+  // Calendar dates (journal/vaccine due dates) have no timezone. Parsing them
+  // as UTC midnight shifts them to the previous day west of Greenwich.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+  }
+
   const sqliteLike = SQLITE_TIMESTAMP_REGEX.test(value);
   const normalized = sqliteLike ? `${value.replace(" ", "T")}Z` : value;
   const date = new Date(normalized);
@@ -165,7 +173,7 @@ export function buildClinicalAlerts({
       return [];
     }
     const dueDate = parseDashboardDate(task.dueDate);
-    if (!(dueDate && dueDate <= endOfDay(referenceDate))) {
+    if (dueDate ? dueDate > endOfDay(addDays(referenceDate,7)) : task.priority !== "high") {
       return [];
     }
     const patient = task.patientId
@@ -177,9 +185,7 @@ export function buildClinicalAlerts({
         source: "task",
         tone: task.priority === "high" ? "critical" : "warning",
         title: task.title,
-        detail: patient
-          ? `${patient.name} · action arrivée à échéance`
-          : "Action arrivée à échéance",
+        detail: [patient?.name, dueDate ? dueDate <= endOfDay(referenceDate) ? "Action arrivée à échéance" : `Échéance le ${dueDate.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}` : "Priorité haute · sans date"].filter(Boolean).join(" · "),
         patientId: task.patientId,
       },
     ];
@@ -203,12 +209,19 @@ export function buildClinicalAlerts({
     ];
   });
 
-  const vaccineAlerts = vaccinations.flatMap<ClinicalAlert>((vaccination) => {
+  const latestVaccinations = new Map<string,Vaccination>();
+  for (const vaccination of vaccinations) {
+    const key = `${vaccination.patientId}:${vaccination.vaccineName.trim().toLocaleLowerCase()}`;
+    const previous = latestVaccinations.get(key);
+    if (!previous || (parseDashboardDate(vaccination.administeredAt)?.getTime() ?? 0) > (parseDashboardDate(previous.administeredAt)?.getTime() ?? 0)) latestVaccinations.set(key,vaccination);
+  }
+  const vaccineAlerts = [...latestVaccinations.values()].flatMap<ClinicalAlert>((vaccination) => {
     const dueDate = parseDashboardDate(vaccination.nextDueAt);
-    if (!(dueDate && dueDate >= today && dueDate <= next30Days)) {
+    if (!(dueDate && dueDate <= next30Days)) {
       return [];
     }
     const patient = patientById.get(vaccination.patientId);
+    if (!patient || patient.status === "decede") return [];
     return [
       {
         id: `vaccine:${vaccination.id}`,
@@ -216,7 +229,7 @@ export function buildClinicalAlerts({
         tone:
           dueDate <= endOfDay(addDays(referenceDate, 7)) ? "warning" : "info",
         title: `${patient?.name ?? "Patient"} · ${vaccination.vaccineName}`,
-        detail: `Rappel le ${dueDate.toLocaleDateString("fr-FR", {
+        detail: `${dueDate < today ? "Rappel dépassé ·" : "Rappel le"} ${dueDate.toLocaleDateString("fr-FR", {
           day: "numeric",
           month: "short",
         })}`,
@@ -228,7 +241,7 @@ export function buildClinicalAlerts({
   const noShowAlerts = appointments.flatMap<ClinicalAlert>((appointment) => {
     const start = parseDashboardDate(appointment.startTime);
     if (
-      !(start && start >= lastSevenDays && appointment.status === "no_show")
+      !(start && start >= lastSevenDays && start <= referenceDate && appointment.status === "no_show")
     ) {
       return [];
     }

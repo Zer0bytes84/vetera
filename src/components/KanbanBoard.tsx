@@ -21,7 +21,7 @@ import {
   Delete01Icon,
   Menu01Icon,
   PlayCircle02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
@@ -127,7 +127,7 @@ function KanbanCardBody({
               : "cursor-grab hover:text-muted-foreground/60 active:cursor-grabbing"
           )}
         >
-          <HugeiconsIcon className="size-4" icon={Menu01Icon} strokeWidth={2} />
+          <HugeiconsIcon className="size-4" icon={Menu01Icon} strokeWidth={1.5} />
         </button>
 
         <div className="min-w-0 flex-1">
@@ -171,7 +171,7 @@ function KanbanCardBody({
                 <HugeiconsIcon
                   className="size-2.5"
                   icon={Clock01Icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
                 {formatDate(task.dueDate)}
               </span>
@@ -229,7 +229,7 @@ function KanbanCardBody({
             <HugeiconsIcon
               className="size-3"
               icon={Delete01Icon}
-              strokeWidth={2}
+              strokeWidth={1.5}
             />
           </Button>
         </div>
@@ -385,7 +385,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 <HugeiconsIcon
                   className={cn("size-4.5", column.color)}
                   icon={Icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
                 <span className={cn("font-semibold text-sm", column.color)}>
                   {column.title}

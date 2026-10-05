@@ -13,7 +13,7 @@ import {
   Shield01Icon,
   User02Icon,
   Wallet01Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type * as React from "react";
 import { useState } from "react";
@@ -446,7 +446,7 @@ export function Help() {
           <div className="relative">
             <HugeiconsIcon
               className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-zinc-400"
-              icon={HelpCircleIcon}
+              icon={HelpCircleIcon} strokeWidth={1.5}
             />
             <input
               className="w-full rounded-lg border border-zinc-200 bg-white py-1.5 pr-3 pl-9 text-sm outline-none transition-all placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-zinc-900"
@@ -502,7 +502,7 @@ export function Help() {
                                   : "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
                               )}
                               icon={Icon}
-                              strokeWidth={isActive ? 2.5 : 2}
+                              strokeWidth={1.5}
                             />
                             <span className="truncate">{section.title}</span>
                           </button>
@@ -527,7 +527,7 @@ export function Help() {
                 <HugeiconsIcon
                   className="size-6 text-zinc-700 dark:text-zinc-300"
                   icon={activeSection.icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
               </div>
               <div>
@@ -551,7 +551,7 @@ export function Help() {
                 <HugeiconsIcon
                   className="mt-0.5 size-5 shrink-0 text-primary"
                   icon={InformationCircleIcon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
                 <div className="text-sm text-zinc-700 leading-relaxed dark:text-zinc-300">
                   <strong className="mr-2 font-semibold text-primary">
@@ -570,7 +570,7 @@ export function Help() {
                 <HugeiconsIcon
                   className="size-4 shrink-0"
                   icon={Book01Icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
                 <span>Documentation officielle {APP_NAME} • Rév. 2026.5</span>
               </div>

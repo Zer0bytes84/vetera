@@ -1,4 +1,4 @@
-import { Hospital } from "@phosphor-icons/react";
+import { Hospital } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

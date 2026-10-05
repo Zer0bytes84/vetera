@@ -1,4 +1,4 @@
-import { Pill, Plus, Printer } from "@phosphor-icons/react";
+import { Pill, Plus, Printer } from "@/lib/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

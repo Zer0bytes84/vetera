@@ -1,3 +1,4 @@
+import { ToolbarIcon } from "./components/toolbar-icon";
 import {
   Calendar01Icon,
   CalendarCheckIn01Icon,
@@ -8,7 +9,7 @@ import {
   StethoscopeIcon,
   Task01Icon,
   Tick01Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -212,7 +213,7 @@ function NotificationItemRow({
               <HugeiconsIcon
                 className="size-3.5"
                 icon={Tick01Icon}
-                strokeWidth={item.isRead ? 1.5 : 2}
+                strokeWidth={1.5}
               />
             </button>
             <button
@@ -227,7 +228,7 @@ function NotificationItemRow({
               <HugeiconsIcon
                 className="size-3.5"
                 icon={Cancel01Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             </button>
           </div>
@@ -325,11 +326,7 @@ export function NotificationCenter({
           />
         }
       >
-        <HugeiconsIcon
-          className="size-[18px]"
-          icon={Notification01Icon}
-          strokeWidth={1.5}
-        />
+        <ToolbarIcon name="notifications" />
         {unreadCount > 0 ? (
           <span
             aria-label={`${unreadCount} non lues`}
@@ -370,7 +367,7 @@ export function NotificationCenter({
               <HugeiconsIcon
                 className="size-3.5"
                 icon={Tick01Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
               Tout lire
             </Button>

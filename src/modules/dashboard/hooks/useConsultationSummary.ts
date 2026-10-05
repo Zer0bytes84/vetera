@@ -152,16 +152,7 @@ async function computeSummary(
                 AND assessment != '' AND plan != ''
                 THEN (julianday(updated_at) - julianday(created_at)) * 24.0 END) as avg_hours
      FROM consultation_soaps`,
-    [
-      in7Iso,
-      in14Iso,
-      in7Iso,
-      in7Iso,
-      in7Iso,
-      in7Iso,
-      backlogIso,
-      in7Iso,
-    ]
+    [in7Iso, in14Iso, in7Iso, in7Iso, in7Iso, in7Iso, backlogIso, in7Iso]
   );
   const row = counts[0] ?? {};
   const total7d = Number(row.current_count ?? 0);

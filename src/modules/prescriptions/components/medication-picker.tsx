@@ -1,4 +1,4 @@
-import { CaretUpDown, Check, Pill } from "@phosphor-icons/react";
+import { CaretUpDown, Check, Pill } from "@/lib/icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";

@@ -1,3 +1,4 @@
+import { ListSearch } from "@/components/ui/list-controls";
 import {
   Bell,
   CalendarDays,
@@ -8,10 +9,9 @@ import {
   Pencil,
   Plus,
   RotateCcw,
-  Search,
   Trash2,
   UserRound,
-} from "lucide-react";
+} from "@/lib/icons";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -387,8 +387,11 @@ const Tasks: React.FC = () => {
   };
 
   const toggleTask = async (task: Task) => {
-    await tasksRepository.update(task.id, {
-      status: task.status === "done" ? "todo" : "done",
+    const nextStatus = task.status === "done" ? "todo" : "done";
+    if (!await tasksRepository.update(task.id, { status: nextStatus })) return;
+    toast.success(nextStatus === "done" ? "Rappel terminé" : "Rappel réouvert", {
+      duration: 5000,
+      action: { label: "Annuler", onClick: () => { void tasksRepository.update(task.id, { status: task.status }); } },
     });
   };
 
@@ -602,16 +605,7 @@ const Tasks: React.FC = () => {
               </button>
             ))}
           </div>
-          <div className="relative w-full lg:w-72">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              aria-label="Rechercher dans les rappels"
-              className="pl-9"
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Rechercher..."
-              value={query}
-            />
-          </div>
+          <ListSearch className="w-full lg:w-64" label="Rechercher dans les rappels" placeholder="Rechercher…" value={query} onValueChange={setQuery} />
         </div>
 
         {visibleItems.length === 0 ? (

@@ -4,7 +4,7 @@ import {
   MonitorDotIcon,
   StarsIcon,
   Sun02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { cn } from "@/lib/utils";

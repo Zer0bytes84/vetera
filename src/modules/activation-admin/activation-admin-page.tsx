@@ -20,7 +20,7 @@ import {
   ShieldCheck,
   Sparkles,
   X,
-} from "lucide-react";
+} from "@/lib/icons";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";

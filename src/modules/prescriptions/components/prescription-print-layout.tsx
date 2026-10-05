@@ -1,4 +1,4 @@
-import { Pill, Stethoscope } from "@phosphor-icons/react";
+import { Pill, Stethoscope } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";

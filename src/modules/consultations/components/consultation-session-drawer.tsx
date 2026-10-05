@@ -1,4 +1,4 @@
-import { Notebook, X } from "@phosphor-icons/react";
+import { Notebook, X } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";

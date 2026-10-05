@@ -6,7 +6,7 @@ import {
   Settings01Icon,
   UserCircleIcon,
   Wallet01Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Avatar from "@/components/Avatar";
 import {

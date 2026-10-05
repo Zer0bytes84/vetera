@@ -125,16 +125,16 @@ export const ACCENT_THEMES: Record<
     label: "Émeraude",
     description: "Nature et sérénité",
     light: {
-      primary: "oklch(0.596 0.145 163.225)",
+      primary: "#059669",
       primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.596 0.145 163.225)",
+      ring: "#059669",
       muted: "oklch(0.967 0.004 156.743)",
       mutedForeground: "oklch(0.551 0.023 163.225)",
     },
     dark: {
-      primary: "oklch(0.696 0.17 162.48)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.696 0.17 162.48)",
+      primary: "#34d399",
+      primaryForeground: "#09090b",
+      ring: "#34d399",
       muted: "oklch(0.268 0.007 162.48)",
       mutedForeground: "oklch(0.708 0.013 163.225)",
     },
@@ -144,16 +144,16 @@ export const ACCENT_THEMES: Record<
     label: "Violet",
     description: "Créatif et élégant",
     light: {
-      primary: "oklch(0.546 0.245 307.225)",
+      primary: "#4124fb",
       primaryForeground: "oklch(1 0 0)",
-      ring: "oklch(0.546 0.245 307.225)",
+      ring: "#8b7aff",
       muted: "oklch(0.967 0.003 307.225)",
       mutedForeground: "oklch(0.551 0.023 307.225)",
     },
     dark: {
-      primary: "oklch(0.646 0.245 307.225)",
+      primary: "#4124fb",
       primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.646 0.245 307.225)",
+      ring: "#8b7aff",
       muted: "oklch(0.268 0.007 307.225)",
       mutedForeground: "oklch(0.708 0.013 307.225)",
     },
@@ -314,10 +314,10 @@ export const DENSITY_MAP: Record<
 };
 
 export const DEFAULT_THEME: ThemeConfig = {
-  accent: "noir",
+  accent: "violet",
   radius: "md",
   density: "comfortable",
-  font: "inter",
+  font: "geist",
   headerPattern: "opaline",
   sidebarStyle: "classic",
 };
@@ -329,16 +329,16 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const accent = ACCENT_THEMES[config.accent];
   const mode = isDark ? accent.dark : accent.light;
 
-  const darkDashboardMuted = "oklch(0.225 0.006 240)";
-  const darkDashboardMutedForeground = "oklch(0.68 0.006 240)";
-  const darkDashboardAccent = "oklch(0.255 0.008 240)";
+  const darkDashboardMuted = "var(--frame)";
+  const darkDashboardMutedForeground = "var(--ink-muted)";
+  const darkDashboardAccent = "var(--surface-raised)";
 
-  const mutedValue = isDark ? darkDashboardMuted : mode.muted;
+  const mutedValue = "var(--frame)";
   const mutedForegroundValue = isDark
     ? darkDashboardMutedForeground
-    : mode.mutedForeground;
+    : "var(--ink-muted)";
   // Accent is an interactive surface (menus, selections), not primary ink.
-  const accentValue = isDark ? darkDashboardAccent : mode.muted;
+  const accentValue = isDark ? darkDashboardAccent : "var(--frame)";
 
   root.style.setProperty("--primary", mode.primary, "important");
   root.style.setProperty(
@@ -347,23 +347,12 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
     "important"
   );
   root.style.setProperty("--ring", mode.ring, "important");
-  root.style.setProperty("--sidebar-primary", mode.primary, "important");
-  root.style.setProperty(
-    "--sidebar-primary-foreground",
-    mode.primaryForeground,
-    "important"
-  );
-  root.style.setProperty("--sidebar-ring", mode.ring, "important");
-  root.style.setProperty(
-    "--sidebar-accent",
-    `color-mix(in oklch, ${mode.primary} ${isDark ? "14%" : "10%"}, transparent)`,
-    "important"
-  );
-  root.style.setProperty(
-    "--sidebar-accent-foreground",
-    mode.primary,
-    "important"
-  );
+  // Navigation stays neutral like the CRM; primary color belongs to actions.
+  root.style.setProperty("--sidebar-primary", "var(--frame)", "important");
+  root.style.setProperty("--sidebar-primary-foreground", "var(--ink)", "important");
+  root.style.setProperty("--sidebar-ring", "var(--ink-muted)", "important");
+  root.style.setProperty("--sidebar-accent", isDark ? "#2a2a2a" : "#eeeeef", "important");
+  root.style.setProperty("--sidebar-accent-foreground", "var(--ink)", "important");
 
   // Keep dark surfaces globally coherent with dashboard visuals.
   // In dark mode, avoid runtime accent overrides that create mismatched pages.
@@ -421,12 +410,12 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
     );
   }
 
-  const font = config.font || "geist";
-  root.style.setProperty("--app-font-sans", FONT_MAP[font].css);
-  root.style.setProperty("--app-font-heading", FONT_MAP[font].css);
-  root.style.setProperty("--font-sans", FONT_MAP[font].css);
-  root.style.setProperty("--font-heading", FONT_MAP[font].css);
-  root.dataset.font = font;
+  root.style.setProperty("--app-font-sans", FONT_MAP[config.font].css);
+  root.style.setProperty("--app-font-heading", FONT_MAP.geist.css);
+  root.style.setProperty("--app-font-display", FONT_MAP.geist.css);
+  root.style.setProperty("--font-sans", FONT_MAP[config.font].css);
+  root.style.setProperty("--font-heading", FONT_MAP.geist.css);
+  root.dataset.font = config.font;
   root.dataset.headerPattern = config.headerPattern || "opaline";
   root.dataset.radius = config.radius;
   root.dataset.density = config.density;
@@ -442,6 +431,13 @@ export function getThemeConfig(): ThemeConfig {
     if (stored) {
       const parsed = JSON.parse(stored) as ThemeConfig;
       const config = { ...DEFAULT_THEME, ...parsed };
+      // Apply the requested CRM visual trial once; later appearance choices persist.
+      if (localStorage.getItem("baitari-crm-geist-trial-v1") !== "true") {
+        config.accent = "violet";
+        config.font = "geist";
+        localStorage.setItem("theme-config", JSON.stringify(config));
+        localStorage.setItem("baitari-crm-geist-trial-v1", "true");
+      }
       if (localStorage.getItem(ORIGINAL_HEADER_RESTORE_KEY) !== "true") {
         config.headerPattern = DEFAULT_THEME.headerPattern;
         localStorage.setItem("theme-config", JSON.stringify(config));
@@ -450,6 +446,7 @@ export function getThemeConfig(): ThemeConfig {
       return config;
     }
   } catch {}
+  localStorage.setItem("baitari-crm-geist-trial-v1", "true");
   return { ...DEFAULT_THEME };
 }
 

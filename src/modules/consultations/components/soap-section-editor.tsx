@@ -4,7 +4,7 @@ import {
   ClipboardText,
   ListChecks,
   type Icon,
-} from "@phosphor-icons/react";
+} from "@/lib/icons";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type { SoapSectionKey } from "@/types/db";

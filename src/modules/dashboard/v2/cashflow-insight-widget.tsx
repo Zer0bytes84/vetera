@@ -1,4 +1,4 @@
-import { ArrowUpRight, Landmark, TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Landmark, TrendingDown, TrendingUp } from "@/lib/icons";
 import { useMemo, useState } from "react";
 import {
   Area,

@@ -9,7 +9,7 @@ import {
   Shield01Icon,
   SparklesIcon,
   UserCircle02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import type React from "react";
 import { useState } from "react";
@@ -190,7 +190,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                   <HugeiconsIcon
                     className="size-5"
                     icon={icon}
-                    strokeWidth={1.8}
+                    strokeWidth={1.5}
                   />
                 </span>
                 <span className="min-w-0">
@@ -227,7 +227,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                         <HugeiconsIcon
                           className="size-4"
                           icon={CheckmarkCircle02Icon}
-                          strokeWidth={2.4}
+                          strokeWidth={1.5}
                         />
                       ) : (
                         item
@@ -263,7 +263,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                   <HugeiconsIcon
                     className="mt-0.5 size-4 shrink-0"
                     icon={Alert02Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                   <span>{error}</span>
                 </div>
@@ -322,7 +322,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                         <HugeiconsIcon
                           className="size-4 transition-transform group-hover:translate-x-0.5"
                           icon={ArrowRight01Icon}
-                          strokeWidth={2.4}
+                          strokeWidth={1.5}
                         />
                       </>
                     )}
@@ -334,7 +334,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     }}
                     type="button"
                   >
-                    <HugeiconsIcon className="size-4" icon={MailIcon} strokeWidth={1.8} />
+                    <HugeiconsIcon className="size-4" icon={MailIcon} strokeWidth={1.5} />
                     Demander une licence par courriel
                   </button>
                 </div>
@@ -344,7 +344,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     <HugeiconsIcon
                       className="size-4.5 shrink-0"
                       icon={CheckmarkCircle02Icon}
-                      strokeWidth={2.2}
+                      strokeWidth={1.5}
                     />
                     Licence vérifiée pour {email}
                   </div>
@@ -429,7 +429,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                         <HugeiconsIcon
                           className="size-4"
                           icon={SparklesIcon}
-                          strokeWidth={2.2}
+                          strokeWidth={1.5}
                         />
                       </>
                     )}
@@ -446,7 +446,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     <HugeiconsIcon
                       className="size-4"
                       icon={ArrowLeft01Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                     Modifier la licence
                   </button>
@@ -458,7 +458,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               <HugeiconsIcon
                 className="size-4 text-emerald-700"
                 icon={Shield01Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
               Activation sécurisée · Vos données restent sur cet appareil
             </div>
@@ -486,7 +486,7 @@ function SetupField({ children, icon, id, label }: SetupFieldProps) {
         <HugeiconsIcon
           className="pointer-events-none absolute top-1/2 left-3.5 z-10 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-emerald-700"
           icon={icon}
-          strokeWidth={1.9}
+          strokeWidth={1.5}
         />
         {children}
       </div>

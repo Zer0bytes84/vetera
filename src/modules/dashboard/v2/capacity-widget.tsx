@@ -1,4 +1,4 @@
-import { ArrowUpRight, CalendarRange, Clock4 } from "lucide-react";
+import { ArrowUpRight, CalendarRange, Clock4 } from "@/lib/icons";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

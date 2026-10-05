@@ -42,9 +42,13 @@ import { Kbd } from "@/components/ui/kbd";
 import {
   useAppointmentsRepository,
   usePatientsRepository,
+  useOwnersRepository,
 } from "@/data/repositories";
 import type { View } from "@/types";
 import type { Appointment, Patient } from "@/types/db";
+import { parseActionQuery } from "@/modules/shell/model/action-query";
+import { prepareAppointment, prepareInvoice, prepareVaccination } from "@/modules/shell/model/clinical-actions";
+import { useFocus } from "@/contexts/focus-provider";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -186,6 +190,8 @@ export default function CommandPalette({
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.slice(0, 2) ?? "fr";
   const dateLocale = localeByLanguage[lang] ?? fr;
+  const { requestFocus } = useFocus();
+  const { data: owners } = useOwnersRepository();
 
   const { data: patients, loading: patientsLoading } =
     usePatientsRepository();
@@ -290,6 +296,9 @@ export default function CommandPalette({
   );
 
   const q = normalizeSearch(query);
+  const intent = parseActionQuery(query);
+  const actionPatients = intent && intent.kind !== "invoice" ? patients.filter(patient => matchesSearch(`${patient.name} ${patient.species}`, intent.entity)).slice(0, 5) : [];
+  const actionOwners = intent?.kind === "invoice" ? owners.filter(owner => matchesSearch(`${owner.firstName} ${owner.lastName}`, intent.entity.replace(/^(mme|m|mr|madame|monsieur)\.?\s+/, ""))).slice(0, 5) : [];
 
   const patientsById = useMemo(() => {
     const map = new Map<string, Patient>();
@@ -367,10 +376,9 @@ export default function CommandPalette({
         sub: `${patient.species}${patient.breed ? ` · ${patient.breed}` : ""}`,
         at: Date.now(),
       });
-      onNavigateToPatient(patient.id);
-    } else {
-      onNavigate("agenda");
     }
+    requestFocus("appointment", appt.id);
+    onNavigate("agenda");
     onClose();
   };
 
@@ -387,11 +395,11 @@ export default function CommandPalette({
   const commandItemClassName =
     "!transition-none data-[selected=true]:!bg-muted data-[selected=true]:!text-foreground data-[selected=true]:ring-1 data-[selected=true]:ring-border/80";
 
-  const fireAction = (view: View, event: string) => {
+  const fireAction = (view: View, event: string, detail?: { patientId: string }) => {
     onNavigate(view);
     onClose();
     window.setTimeout(() => {
-      window.dispatchEvent(new CustomEvent(event));
+      window.dispatchEvent(new CustomEvent(event, { detail }));
     }, 120);
   };
 
@@ -435,7 +443,7 @@ export default function CommandPalette({
                 <HugeiconsIcon
                   className="size-5"
                   icon={FileSearchIcon}
-                  strokeWidth={1.7}
+                  strokeWidth={1.5}
                 />
               </span>
               <div className="space-y-1">
@@ -453,6 +461,14 @@ export default function CommandPalette({
             </div>
           </CommandEmpty>
 
+          {intent && <CommandGroup heading="Actions sur vos dossiers">
+            {actionPatients.map(patient => <CommandItem key={`action:${patient.id}`} className={commandItemClassName} value={`${query} ${patient.name}`} onSelect={() => {
+              if (intent.kind === "vaccination") { prepareVaccination(patient.id); window.location.hash = `#/patient/${encodeURIComponent(patient.id)}`; }
+              else { prepareAppointment(patient.id); fireAction("agenda", "vetera:new-appointment", { patientId: patient.id }); }
+              onClose();
+            }}><HugeiconsIcon icon={intent.kind === "vaccination" ? VaccineIcon : StethoscopeIcon} strokeWidth={1.5} size={18}/><div className="ml-3"><p className="text-[13px] font-medium">{intent.kind === "vaccination" ? "Enregistrer un vaccin" : "Nouvelle consultation"} · {patient.name}</p><p className="mt-1 text-[11px] text-ink-muted">{patient.species} · dossier existant</p></div></CommandItem>)}
+            {actionOwners.map(owner => <CommandItem key={`invoice:${owner.id}`} className={commandItemClassName} value={`${query} ${owner.firstName} ${owner.lastName}`} onSelect={() => { prepareInvoice(owner.id); fireAction("finances", "vetera:new-invoice"); }}><HugeiconsIcon icon={WalletIcon} strokeWidth={1.5} size={18}/><div className="ml-3"><p className="text-[13px] font-medium">Nouvelle facture · {owner.firstName} {owner.lastName}</p><p className="mt-1 text-[11px] text-ink-muted">Propriétaire existant · montants à renseigner</p></div></CommandItem>)}
+          </CommandGroup>}
           {/* Recents (only when no query) */}
           {!q && recents.length > 0 && (
             <CommandGroup heading={t("commandPalette.group.recents")}>
@@ -474,7 +490,7 @@ export default function CommandPalette({
                       <HugeiconsIcon
                         className="size-4 text-zinc-700 dark:text-zinc-300"
                         icon={Icon}
-                        strokeWidth={2}
+                        strokeWidth={1.5}
                       />
                     </div>
                     <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
@@ -508,7 +524,7 @@ export default function CommandPalette({
                     <HugeiconsIcon
                       className="size-4 text-emerald-700 dark:text-emerald-400"
                       icon={MedicalFileIcon}
-                      strokeWidth={1.8}
+                      strokeWidth={1.5}
                     />
                   </div>
                   <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
@@ -546,7 +562,7 @@ export default function CommandPalette({
                       <HugeiconsIcon
                         className="size-4 text-sky-700 dark:text-sky-400"
                         icon={Calendar01Icon}
-                        strokeWidth={2}
+                        strokeWidth={1.5}
                       />
                     </div>
                     <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
@@ -589,7 +605,7 @@ export default function CommandPalette({
                       <HugeiconsIcon
                         className="size-4 text-zinc-700 dark:text-zinc-300"
                         icon={action.icon}
-                        strokeWidth={2}
+                        strokeWidth={1.5}
                       />
                     </div>
                     <div className="ml-2 flex flex-col items-start justify-center gap-0.5">
@@ -619,7 +635,7 @@ export default function CommandPalette({
                 <HugeiconsIcon
                   className="size-4"
                   icon={UserAdd01Icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
               </div>
               <span className="ml-2 font-medium">
@@ -637,7 +653,7 @@ export default function CommandPalette({
                 <HugeiconsIcon
                   className="size-4"
                   icon={CalendarAdd01Icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
               </div>
               <span className="ml-2 font-medium">
@@ -657,7 +673,7 @@ export default function CommandPalette({
                 <HugeiconsIcon
                   className="size-4"
                   icon={ClinicIcon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
               </div>
               <span className="ml-2 font-medium">
@@ -676,7 +692,7 @@ export default function CommandPalette({
                 <HugeiconsIcon
                   className="size-4"
                   icon={PillIcon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
               </div>
               <span className="ml-2 font-medium">
@@ -695,7 +711,7 @@ export default function CommandPalette({
                 <HugeiconsIcon
                   className="size-4"
                   icon={HospitalBed01Icon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
               </div>
               <span className="ml-2 font-medium">
@@ -712,7 +728,7 @@ export default function CommandPalette({
                 <HugeiconsIcon
                   className="size-4"
                   icon={VaccineIcon}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 />
               </div>
               <span className="ml-2 font-medium">

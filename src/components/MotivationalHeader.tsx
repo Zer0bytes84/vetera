@@ -1,9 +1,8 @@
-import {
-  DashboardSquareEditIcon,
-  StethoscopeIcon,
-} from "@hugeicons/core-free-icons";
+import { DashboardSquareEditIcon, StethoscopeIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
+import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -150,7 +149,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   const renderTitle = (titleText: string, emoji: string) => {
     if (!isDashboard) {
       return (
-        <h1 className="font-semibold text-2xl text-foreground tracking-[-0.025em] md:text-[28px]">
+        <h1 className="font-display font-medium text-2xl text-foreground tracking-[-0.025em] md:text-[28px]">
           {titleText}
         </h1>
       );
@@ -163,7 +162,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
             {headerCopy.eyebrow}
           </span>
         </div>
-        <h1 className="flex flex-wrap items-center gap-2.5 font-semibold text-2xl text-foreground tracking-tight md:text-3xl">
+        <h1 className="flex flex-wrap items-center gap-2.5 font-display font-medium text-2xl text-foreground tracking-tight md:text-3xl">
           <span>{titleText}</span>
           <span aria-hidden="true" className="shrink-0 text-[1em]">
             {emoji}
@@ -185,13 +184,14 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
           )}
         </div>
         {onNavigate && (
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex max-w-full flex-wrap items-center gap-2">
             {dashboardViewControl}
             {onCustomize ? (
               <Button
                 aria-label="Personnaliser le tableau de bord"
                 aria-pressed={isCustomizing}
-                className="size-10 rounded-full bg-background/65 p-0 shadow-sm backdrop-blur-md"
+                size="icon-sm"
+                className="size-[30px] rounded-full bg-background/65 p-0"
                 disabled={isCustomizing}
                 onClick={onCustomize}
                 title="Personnaliser le tableau de bord"
@@ -200,21 +200,34 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
                 <HugeiconsIcon
                   className="size-[18px]"
                   icon={DashboardSquareEditIcon}
-                  strokeWidth={1.6}
+                  strokeWidth={1.5}
                 />
               </Button>
             ) : null}
-            <Button
-              className="h-10 min-w-0 flex-1 rounded-full px-5 sm:w-auto sm:flex-none"
-              onClick={() => onNavigate("clinique")}
-            >
-              <HugeiconsIcon
-                data-icon="inline-start"
-                icon={StethoscopeIcon}
-                strokeWidth={1.5}
-              />
-              Nouvelle consultation
-            </Button>
+            <ShortcutTooltip label="Nouvelle consultation" shortcut="N">
+              <Button
+                aria-keyshortcuts="N"
+                className="h-10 w-auto min-w-0 flex-none rounded-full px-5 text-sm"
+                onClick={() => {
+                  prepareAppointment();
+                  onNavigate("agenda");
+                  setTimeout(
+                    () =>
+                      window.dispatchEvent(
+                        new CustomEvent("vetera:new-appointment")
+                      ),
+                    150
+                  );
+                }}
+              >
+                <HugeiconsIcon
+                  data-icon="inline-start"
+                  icon={StethoscopeIcon}
+                  strokeWidth={1.5}
+                />
+                Nouvelle consultation
+              </Button>
+            </ShortcutTooltip>
           </div>
         )}
       </div>

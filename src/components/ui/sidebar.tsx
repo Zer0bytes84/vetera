@@ -315,7 +315,7 @@ function Sidebar({
   );
 }
 
-import { LayoutLeftIcon } from "@hugeicons/core-free-icons";
+import { LayoutLeftIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 function SidebarTrigger({

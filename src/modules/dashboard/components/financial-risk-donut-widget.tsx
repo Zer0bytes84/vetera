@@ -13,6 +13,7 @@ import {
   type FinancialCategory,
   type FinancialSource,
 } from "../v2/financial-model";
+import { ListFilter } from "@/components/ui/list-controls";
 import { ClassicFinancialPanels } from "./classic-financial-panels";
 
 export type RiskCategoryData = FinancialCategory;
@@ -99,20 +100,19 @@ export function FinancialRiskDonutWidget({
               setPage(0);
             }}
           />
-          <label className="classic-category-select">
-            <span className="sr-only">Origine des recettes</span>
-            <select
-              value={source}
-              onChange={(event) => {
-                setSource(event.target.value as FinancialSource);
-                setPage(0);
-              }}
-            >
-              <option value="all">Toutes les recettes</option>
-              <option value="invoices">Factures du cabinet</option>
-              <option value="manual">Recettes hors facture</option>
-            </select>
-          </label>
+          <ListFilter
+            label="Recettes"
+            value={source}
+            onValueChange={(value) => {
+              setSource(value as FinancialSource);
+              setPage(0);
+            }}
+            options={[
+              { value: "all", label: "Toutes" },
+              { value: "invoices", label: "Factures du cabinet" },
+              { value: "manual", label: "Hors facture" },
+            ]}
+          />
         </>
       }
     />

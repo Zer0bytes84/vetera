@@ -42,4 +42,19 @@ export default defineConfig([
       ],
     },
   },
+  {
+    files: ["src/design-system/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [{ group: ["@/hooks/*", "@/data/*", "@/services/*", "@/contexts/*", "**/hooks/*", "**/repositories/*"], message: "Le design system reçoit des props et ne lit pas les données métier." }],
+        paths: [{ name: "react", importNames: ["useEffect", "useState", "useSyncExternalStore"], message: "Placer la logique dans le conteneur ou un hook de module." }],
+      }],
+    },
+  },
+  {
+    files: ["src/modules/**/components/*view.tsx", "src/modules/**/components/*shared.tsx", "src/modules/dashboard/components/clinical/*.tsx"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [{ group: ["@/data/*", "@/services/*", "@/contexts/*"], message: "La vue reçoit ses données par props ; les lectures et écritures restent dans son conteneur." }] }],
+    },
+  },
 ]);

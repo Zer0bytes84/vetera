@@ -2,7 +2,7 @@ import {
   ArrowDown01Icon,
   ArrowUp01Icon,
   type Package02Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { cn } from "@/lib/utils";
@@ -45,13 +45,13 @@ export function StatTile({
                   <HugeiconsIcon
                     className="size-3"
                     icon={ArrowUp01Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                 ) : (
                   <HugeiconsIcon
                     className="size-3"
                     icon={ArrowDown01Icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                 )}
                 {Math.abs(trend).toFixed(0)}%
@@ -67,7 +67,7 @@ export function StatTile({
                 : "text-amber-600 dark:text-amber-400"
             )}
           >
-            <HugeiconsIcon className="size-5" icon={Icon} strokeWidth={2} />
+            <HugeiconsIcon className="size-5" icon={Icon} strokeWidth={1.5} />
           </div>
         </div>
       </CardContent>

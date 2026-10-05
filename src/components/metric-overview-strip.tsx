@@ -1,4 +1,4 @@
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import { ArrowRight01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 
@@ -172,7 +172,7 @@ export function MetricOverviewStrip({
                   <HugeiconsIcon
                     className={cn("size-[18px]", tone.icon)}
                     icon={item.icon}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                 </div>
               </div>
@@ -214,7 +214,7 @@ export function MetricOverviewStrip({
                     <HugeiconsIcon
                       className="size-3.5 transition-transform group-hover:translate-x-0.5"
                       icon={ArrowRight01Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                   </button>
                 ) : (
@@ -228,7 +228,7 @@ export function MetricOverviewStrip({
                     <HugeiconsIcon
                       className="size-3.5"
                       icon={ArrowRight01Icon}
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
                   </span>
                 )}

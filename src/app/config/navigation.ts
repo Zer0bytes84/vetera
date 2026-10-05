@@ -8,7 +8,7 @@ import {
   Task01Icon,
   UserGroupIcon,
   Wallet01Icon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import type { IconSvgElement } from "@hugeicons/react";
 import type { TFunction } from "i18next";
 

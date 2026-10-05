@@ -1,3 +1,8 @@
+import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
+import { buildFinancialOverview } from "./financial-model";
+import { KpiPeriodFilter, kpiRange, kpiWithin, kpiBuckets, type KpiPeriod } from "./kpi-period";
+import { KpiMiniChart, KpiSegments } from "./kpi-mini-chart";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { FittedAmount } from "@/shared/ui/fitted-amount";
 import { useId, useState, type ReactNode } from "react";
 import {
@@ -10,8 +15,7 @@ import {
   Package,
   PawPrint,
   Syringe,
-  Wallet,
-} from "lucide-react";
+} from "@/lib/icons";
 import {
   Area,
   Bar,
@@ -44,6 +48,10 @@ import type { DashboardV2Props } from "./types";
 import "./studio-dashboard.css";
 import { DashboardInsights } from "./dashboard-insights";
 import "./dashboard-polish.css";
+import { NowBoard } from "./now-board";
+import { ClassicWidgetState } from "../components/classic-widget-state";
+import { SkeletonBlock } from "@/design-system/primitives";
+import type { WidgetState } from "../components/clinical/shared";
 
 const ALERT_ICONS = {
   task: ListTodo,
@@ -58,12 +66,14 @@ function Panel({
   action,
   children,
   className = "",
+  state,
 }: {
   title: string;
   detail: string;
   action?: ReactNode;
   children: ReactNode;
   className?: string;
+  state?: WidgetState;
 }) {
   return (
     <section
@@ -78,7 +88,9 @@ function Panel({
           </div>
           {action}
         </header>
-        {children}
+        <ClassicWidgetState state={state} label={title}>
+          {children}
+        </ClassicWidgetState>
       </div>
     </section>
   );
@@ -92,7 +104,10 @@ export function StudioDashboard(props: DashboardV2Props) {
     transactions,
     onNavigate,
     onNavigateToPatient,
+    onStatusChange,
   } = props;
+  const financials = useDashboardFinancials();
+  const [kpiPeriods, setKpiPeriods] = useState<Record<string, KpiPeriod>>({ consultations: "day", income: "day", patients: "all", receivables: "all" });
   const [period, setPeriod] = useState<14 | 30 | 84>(30);
   const [measure, setMeasure] = useState<"value" | "revenue">("value");
   const [dayOffset, setDayOffset] = useState(0);
@@ -137,13 +152,21 @@ export function StudioDashboard(props: DashboardV2Props) {
       .reduce((sum, transaction) => sum + transaction.amount, 0);
   const paidToday = collectedOn(metrics.referenceDate);
   const paidYesterday = collectedOn(addDays(metrics.referenceDate, -1));
-  const waitingPayments = transactions.filter(
-    (t) => t.type === "income" && t.status === "pending"
-  );
-  const waitingAmount = waitingPayments.reduce((sum, t) => sum + t.amount, 0);
-  const completedToday = today.filter(
-    (row) => row.appointment.status === "completed"
-  ).length;
+  const consultationRange = kpiRange(kpiPeriods.consultations, metrics.referenceDate);
+  const periodAppointments = appointments.filter(a => !["cancelled", "no_show"].includes(a.status) && kpiWithin(a.startTime, consultationRange));
+  const periodCompleted = periodAppointments.filter(a => a.status === "completed").length;
+  const incomeRange = kpiRange(kpiPeriods.income, metrics.referenceDate);
+  const periodPaid = transactions.filter(t => t.type === "income" && t.status === "paid" && kpiWithin(t.date, incomeRange)).reduce((sum, t) => sum + t.amount, 0);
+  const consultationBuckets = kpiBuckets(kpiPeriods.consultations, metrics.referenceDate);
+  const incomeBuckets = kpiBuckets(kpiPeriods.income, metrics.referenceDate);
+  const recentVisits = consultationBuckets.map(range => appointments.filter(a => !["cancelled", "no_show"].includes(a.status) && kpiWithin(a.startTime, range)).length);
+  const recentIncome = incomeBuckets.map(range => transactions.filter(t => t.type === "income" && t.status === "paid" && kpiWithin(t.date, range)).reduce((sum, t) => sum + t.amount, 0) / 100);
+  const receivablesOverview = buildFinancialOverview(financials.invoices, transactions, kpiRange(kpiPeriods.receivables, metrics.referenceDate), "all");
+  const waitingAmount = Math.round(receivablesOverview.categories.reduce((sum, c) => sum + c.riskValue, 0) * 100);
+  const settledAmount = Math.round(receivablesOverview.categories.reduce((sum, c) => sum + c.safeValue, 0) * 100);
+  const waitingCount = receivablesOverview.receivables.length;
+  const periodPatients = patients.filter(p => kpiPeriods.patients === "all" || kpiWithin(p.createdAt, kpiRange(kpiPeriods.patients, metrics.referenceDate)));
+  const periodContext = (period: KpiPeriod) => ({ day: "aujourd’hui", week: "cette semaine", month: "ce mois", year: "cette année", all: "toutes dates" })[period];
   const toFollow = today.filter(
     (row) => !["completed", "no_show"].includes(row.appointment.status)
   );
@@ -160,6 +183,7 @@ export function StudioDashboard(props: DashboardV2Props) {
     return result;
   }, {});
   const speciesEntries = Object.entries(species).sort((a, b) => b[1] - a[1]);
+  const kpiSpeciesEntries = Object.entries(periodPatients.reduce<Record<string, number>>((result, patient) => { const key = patient.species || "Non renseigné"; result[key] = (result[key] || 0) + 1; return result; }, {})).sort((a, b) => b[1] - a[1]);
   const colors = [1, 2, 3, 4, 5].map(
     (index) => `var(--studio-species-${index})`
   );
@@ -186,13 +210,40 @@ export function StudioDashboard(props: DashboardV2Props) {
       <ArrowUpRight size={15} aria-hidden="true" />
     </button>
   );
-  if (props.isLoading)
-    return (
-      <div className="studio-loading" role="status">
-        Préparation de votre tableau de bord…
-      </div>
-    );
   const blocks = [
+    {
+      id: "studio-now",
+      label: "Maintenant",
+      description: "Prochain patient, salle d’attente et prise en charge",
+      content: (
+        <section
+          aria-label="Priorité immédiate du cabinet"
+        >
+          <div>
+            <ClassicWidgetState
+              state={props.widgetStates?.schedule}
+              label="Maintenant"
+            >
+              <NowBoard
+                today={today}
+                patients={patients}
+                onStatusChange={onStatusChange}
+                onOpenConsultation={(appointmentId) => {
+                  window.sessionStorage.setItem(
+                    "vetera:pending-consultation-start",
+                    appointmentId
+                  );
+                  onNavigate?.("clinique");
+                }}
+                onOpenPatient={(patientId) => onNavigateToPatient?.(patientId)}
+                onOpenAgenda={() => onNavigate?.("agenda")}
+                onPlan={() => { prepareAppointment(); onNavigate?.("agenda"); window.setTimeout(() => window.dispatchEvent(new CustomEvent("vetera:new-appointment")), 150); }}
+              />
+            </ClassicWidgetState>
+          </div>
+        </section>
+      ),
+    },
     {
       id: "studio-overview",
       label: "Les repères du jour",
@@ -205,44 +256,46 @@ export function StudioDashboard(props: DashboardV2Props) {
           <div className="studio-garden-widgets">
             {[
               {
+                id: "consultations",
                 title: "Consultations",
-                icon: CalendarDays,
-                value: String(today.length),
-                context: "aujourd’hui",
+                value: String(periodAppointments.length),
+                context: periodContext(kpiPeriods.consultations),
                 detail: toFollow[0]
                   ? `${formatTime(toFollow[0].start)} · ${toFollow[0].patientName}`
                   : "Aucune visite à suivre",
-                status: today.length
-                  ? `${completedToday}/${today.length} terminées`
+                status: periodAppointments.length
+                  ? `${periodCompleted}/${periodAppointments.length} terminées`
                   : "Agenda libre",
                 tone: toFollow.length ? "watch" : "quiet",
                 action: "Voir l’agenda",
+                visual: <KpiMiniChart values={recentVisits} labels={consultationBuckets.map(b => b.label)} color="var(--studio-species-1)" caption={kpiPeriods.consultations === "day" ? "Consultations · 7 derniers jours" : `Consultations · ${kpiPeriods.consultations === "all" ? "année en cours" : periodContext(kpiPeriods.consultations)}`} bars />,
                 view: "agenda" as const,
               },
               {
+                id: "income",
                 title: "Encaissements",
-                icon: Wallet,
-                value: formatCentimes(paidToday),
-                context: "aujourd’hui",
+                value: formatCentimes(periodPaid),
+                context: periodContext(kpiPeriods.income),
                 detail: `Hier : ${formatCentimes(paidYesterday)}`,
                 status:
-                  paidYesterday > 0
+                  kpiPeriods.income === "day" && paidYesterday > 0
                     ? `${paidToday >= paidYesterday ? "+" : ""}${Math.round(((paidToday - paidYesterday) / paidYesterday) * 100)}% vs hier`
                     : "Règlements reçus",
                 tone:
                   paidYesterday > 0 && paidToday >= paidYesterday
                     ? "positive"
                     : "quiet",
+                visual: <KpiMiniChart values={recentIncome} unit="DA" labels={incomeBuckets.map(b => b.label)} color="var(--studio-mini-green)" caption={kpiPeriods.income === "day" ? "Encaissements en DA · 7 jours" : `Encaissements en DA · ${kpiPeriods.income === "all" ? "année en cours" : periodContext(kpiPeriods.income)}`} />,
                 action: "Voir les finances",
                 view: "finances" as const,
               },
               {
-                title: "Patients suivis",
-                icon: PawPrint,
-                value: String(patients.length),
-                context: "au cabinet",
+                id: "patients",
+                title: kpiPeriods.patients === "all" ? "Patients suivis" : "Nouveaux patients",
+                value: String(periodPatients.length),
+                context: kpiPeriods.patients === "all" ? "au cabinet" : periodContext(kpiPeriods.patients),
                 detail:
-                  speciesEntries
+                  kpiSpeciesEntries
                     .slice(0, 2)
                     .map(
                       ([name, count]) =>
@@ -251,57 +304,85 @@ export function StudioDashboard(props: DashboardV2Props) {
                     .join(" · ") || "Aucun dossier enregistré",
                 status: "Dossiers patients",
                 tone: "quiet",
+                visual: <KpiSegments segments={kpiSpeciesEntries.map(([label, value], i) => ({ label, value, color: colors[i % colors.length] }))} caption="Répartition par espèce" value={`${kpiSpeciesEntries.length} espèces`} />,
                 action: "Ouvrir les dossiers",
                 view: "patients" as const,
               },
               {
+                id: "receivables",
                 title: "À encaisser",
-                icon: Wallet,
                 value: formatCentimes(waitingAmount),
-                context: "toutes dates",
-                detail: `${waitingPayments.length} écriture${waitingPayments.length > 1 ? "s" : ""} en attente`,
-                status: waitingPayments.length ? "À suivre" : "À jour",
-                tone: waitingPayments.length ? "watch" : "positive",
+                context: periodContext(kpiPeriods.receivables),
+                detail: `${waitingCount} solde${waitingCount > 1 ? "s" : ""} à recouvrer`,
+                status: waitingCount ? "À suivre" : "À jour",
+                tone: waitingCount ? "watch" : "positive",
+                visual: <KpiSegments segments={[{ label: "Encaissé", value: settledAmount / 100, color: "var(--studio-mini-green)" }, { label: "En attente", value: Math.max(0, waitingAmount) / 100, color: "var(--studio-species-3)" }]} caption="Recettes encaissées" unit="DA" value={settledAmount + waitingAmount > 0 ? `${Math.round(settledAmount / (settledAmount + Math.max(0, waitingAmount)) * 100)} %` : "—"} />,
                 action: "Suivre les règlements",
                 view: "finances" as const,
               },
             ].map(
               ({
+                id,
                 title,
-                icon: Icon,
                 value,
                 context,
                 detail,
                 status,
                 tone,
                 action,
+                visual,
                 view,
               }) => (
-                <button
-                  type="button"
-                  key={title}
-                  className="studio-kpi"
-                  onClick={() => onNavigate?.(view)}
+                <ClassicWidgetState
+                  key={id}
+                  label={title}
+                  state={
+                    id === "receivables" ? { loading: financials.loading || Boolean(props.widgetStates?.payments?.loading), skeleton: financials.loading || Boolean(props.widgetStates?.payments?.skeleton), error: financials.error || props.widgetStates?.payments?.error, retry: () => { void financials.refresh(); props.widgetStates?.payments?.retry(); } } : view === "patients"
+                      ? props.widgetStates?.patients
+                      : view === "agenda"
+                        ? props.widgetStates?.schedule
+                        : props.widgetStates?.payments
+                  }
+                  placeholderClassName="studio-kpi"
+                  skeleton={
+                    <>
+                      <span className="studio-kpi-heading">{title}</span>
+                      <span className="studio-kpi-body">
+                        <SkeletonBlock className="h-10 w-2/3" />
+                        <SkeletonBlock className="h-4 w-1/3" />
+                        <SkeletonBlock className="mt-3 h-4 w-3/4" />
+                        <SkeletonBlock className="h-5 w-1/2" />
+                        <SkeletonBlock className="mt-3 h-5 w-full" />
+                      </span>
+                    </>
+                  }
                 >
-                  <span className="studio-kpi-heading">
-                    <span>{title}</span>
-                    <Icon size={18} aria-hidden="true" />
-                  </span>
-                  <span className="studio-kpi-body">
-                    <FittedAmount className="studio-kpi-value" value={value} />
-                    <span className="studio-kpi-context">{context}</span>
-                    <span className="studio-kpi-detail">{detail}</span>
-                    <span
-                      className={`studio-kpi-status studio-kpi-status-${tone}`}
-                    >
-                      {status}
+                  <div className="studio-kpi">
+
+                    <span className="studio-kpi-heading">
+                      <span>{title}</span>
+                      <KpiPeriodFilter label={title} value={kpiPeriods[id]} onChange={value => setKpiPeriods(current => ({ ...current, [id]: value }))} />
                     </span>
-                    <span className="studio-kpi-action">
-                      <span>{action}</span>
-                      <ArrowUpRight size={14} aria-hidden="true" />
-                    </span>
-                  </span>
-                </button>
+                    <div className="studio-kpi-body">
+                      <FittedAmount
+                        className="studio-kpi-value"
+                        value={value}
+                      />
+                      <span className="studio-kpi-context">{context}</span>
+                      <span className="studio-kpi-detail">{detail}</span>
+                      <span
+                        className={`studio-kpi-status studio-kpi-status-${tone}`}
+                      >
+                        {status}
+                      </span>
+                      {visual}
+                      <button type="button" className="studio-kpi-action" onClick={() => onNavigate?.(view)}>
+                        <span>{action}</span>
+                        <ArrowUpRight size={14} aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+                </ClassicWidgetState>
               )
             )}
           </div>
@@ -314,10 +395,15 @@ export function StudioDashboard(props: DashboardV2Props) {
       description: "Recettes, règlements et soldes à recouvrer",
       content: (
         <div className="studio-financial-section">
-          <FinancialRiskDonutWidget
-            transactions={transactions}
-            onOpenFinances={() => onNavigate?.("finances")}
-          />
+          <ClassicWidgetState
+            state={props.widgetStates?.payments}
+            label="Recettes et règlements"
+          >
+            <FinancialRiskDonutWidget
+              transactions={transactions}
+              onOpenFinances={() => onNavigate?.("finances")}
+            />
+          </ClassicWidgetState>
         </div>
       ),
     },
@@ -330,6 +416,7 @@ export function StudioDashboard(props: DashboardV2Props) {
           metrics={metrics}
           appointments={appointments}
           transactions={transactions}
+          widgetStates={props.widgetStates}
         />
       ),
     },
@@ -343,6 +430,7 @@ export function StudioDashboard(props: DashboardV2Props) {
             title="Activité du cabinet"
             detail="Consultations et encaissements par jour."
             className="studio-activity"
+            state={props.widgetStates?.activity}
             action={
               <div className="studio-segment" aria-label="Période du graphique">
                 {([14, 30, 84] as const).map((value) => (
@@ -518,6 +606,7 @@ export function StudioDashboard(props: DashboardV2Props) {
             title="Planning du jour"
             detail={selectedDate}
             className="studio-agenda"
+            state={props.widgetStates?.schedule}
             action={
               <div className="studio-date-controls">
                 <button
@@ -610,6 +699,7 @@ export function StudioDashboard(props: DashboardV2Props) {
             title="Priorités du cabinet"
             detail="Suivis cliniques, rappels et stock à vérifier."
             className="studio-priorities"
+            state={props.widgetStates?.priorities}
             action={<span className="studio-count">{alerts.length}</span>}
           >
             <div className="studio-alert-list">
@@ -690,6 +780,7 @@ export function StudioDashboard(props: DashboardV2Props) {
             title="Répartition des patients"
             detail="Dossiers enregistrés par espèce."
             className="studio-patients"
+            state={props.widgetStates?.patients}
             action={action("Dossiers", () => onNavigate?.("patients"))}
           >
             <div className="studio-population-chart">
@@ -698,7 +789,7 @@ export function StudioDashboard(props: DashboardV2Props) {
                   <ChartContainer
                     config={{ count: { label: "Patients" } }}
                     className="studio-species-donut"
-                    initialDimension={{ width: 280, height: 166 }}
+                    initialDimension={{ width: 280, height: 142 }}
                   >
                     <PieChart accessibilityLayer>
                       <Pie
@@ -709,9 +800,9 @@ export function StudioDashboard(props: DashboardV2Props) {
                         nameKey="name"
                         dataKey="count"
                         cx="50%"
-                        cy={142}
-                        innerRadius={100}
-                        outerRadius={122}
+                        cy={120}
+                        innerRadius={80}
+                        outerRadius={100}
                         startAngle={180}
                         endAngle={0}
                         cornerRadius={5}
@@ -792,6 +883,7 @@ export function StudioDashboard(props: DashboardV2Props) {
         isEditing={props.isCustomizing}
         onEditingChange={props.onCustomizingChange}
         storageKeyPrefix="dashboard_studio_v1"
+        firstBlockIds={["studio-now"]}
       />
     </div>
   );

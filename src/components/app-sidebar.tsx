@@ -1,7 +1,6 @@
 "use client";
 
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Settings2 } from "lucide-react";
+import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
@@ -107,10 +106,9 @@ export function AppSidebar({
   ].map((item) => ({
     title: t(item.labelKey),
     icon: (
-      <HugeiconsIcon
-        className={isCollapsed ? "size-6" : "size-5"}
-        icon={item.icon}
-        strokeWidth={isCollapsed ? 1.9 : 1.8}
+      <SidebarIcon
+        className={isCollapsed ? "size-6!" : "size-[22px]!"}
+        view={item.view}
       />
     ),
     isActive: currentView === item.view,
@@ -123,10 +121,9 @@ export function AppSidebar({
   ].map((item) => ({
     name: item.view === "notes" ? "Documents" : t(item.labelKey),
     icon: (
-      <HugeiconsIcon
-        className={isCollapsed ? "size-6" : "size-5"}
-        icon={item.icon}
-        strokeWidth={isCollapsed ? 1.9 : 1.8}
+      <SidebarIcon
+        className={isCollapsed ? "size-6!" : "size-[22px]!"}
+        view={item.view}
       />
     ),
     isActive: currentView === item.view,
@@ -136,11 +133,7 @@ export function AppSidebar({
   const secondaryItems = (configSection?.items ?? []).map((item) => ({
     title: t(item.labelKey),
     icon: (
-      <HugeiconsIcon
-        className="size-5"
-        icon={item.icon}
-        strokeWidth={1.8}
-      />
+      <SidebarIcon className="size-[22px]!" view={item.view} />
     ),
     isActive: currentView === item.view,
     onClick: () => onNavigate(item.view),
@@ -286,7 +279,7 @@ export function AppSidebar({
             title="Paramètres"
             type="button"
           >
-            <Settings2 aria-hidden="true" className="size-6" strokeWidth={1.8} />
+            <SidebarIcon view="parametres" className="size-6" />
           </button>
         )}
       </SidebarFooter>

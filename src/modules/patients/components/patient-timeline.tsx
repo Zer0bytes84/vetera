@@ -4,7 +4,7 @@ import {
   Stethoscope,
   Syringe,
   TrendUp,
-} from "@phosphor-icons/react";
+} from "@/lib/icons";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 

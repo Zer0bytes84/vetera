@@ -1,0 +1,128 @@
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-frame: var(--frame);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-hairline: var(--hairline);
+  --color-signal-critical: var(--signal-critical);
+  --color-signal-watch: var(--signal-watch);
+  --color-signal-positive: var(--signal-positive);
+  --color-signal-quiet: var(--signal-quiet);
+  --font-display: var(--app-font-display);
+  --shadow-hairline: 0 0 0 1px var(--hairline);
+  --shadow-card: var(--elev-card);
+  --shadow-float: var(--elev-float);
+  --radius-shell: 24px;
+  --radius-panel: 16px;
+  --radius-body: 12px;
+  --radius-control: 10px;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 150ms;
+  --duration-base: 220ms;
+  --animate-row-flash: row-flash 1.2s ease-out;
+  --animate-skeleton: skeleton-fade 1.6s ease-in-out infinite;
+}
+
+:root {
+  --canvas: #fafafa;
+  --frame: #f3f3f5;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --ink: #202124;
+  --ink-muted: #63656a;
+  --ink-faint: #696b71;
+  --hairline: #e3e3e6;
+  --signal-critical: #f43f5e;
+  --signal-watch: #f59e0b;
+  --signal-positive: #10b981;
+  --signal-quiet: #696b71;
+  --primary: #4124fb;
+  --primary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #202124;
+  --elev-card:
+    0 0 0 1px var(--hairline), 0 1px 2px rgb(9 9 11 / 0.04),
+    0 12px 32px -24px rgb(9 9 11 / 0.25);
+  --elev-float:
+    0 0 0 1px var(--hairline), 0 8px 24px -8px rgb(9 9 11 / 0.18),
+    0 24px 48px -24px rgb(9 9 11 / 0.22);
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --app-font-sans: "Geist Variable", "Inter Variable", sans-serif;
+  --app-font-heading: "Geist Variable", "Inter Variable", sans-serif;
+  --app-font-display: "Geist Variable", "Inter Variable", sans-serif;
+
+  /* Public shadcn/legacy variables remain aliases, not a second palette. */
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface-raised);
+  --popover-foreground: var(--ink);
+  --muted: var(--frame);
+  --muted-foreground: var(--ink-muted);
+  --border: var(--hairline);
+  --input: var(--hairline);
+  --accent: var(--frame);
+  --accent-foreground: var(--ink);
+}
+.dark {
+  --canvas: #161616;
+  --frame: #171717;
+  --surface: #1b1d20;
+  --surface-raised: #222222;
+  --ink: #f9fbff;
+  --ink-muted: #a4a4a4;
+  --ink-faint: #989898;
+  --hairline: #303030;
+  --primary: #4124fb;
+  --primary-foreground: #f9fbff;
+  --secondary: #1e1e1e;
+  --secondary-foreground: #f9fbff;
+  --signal-critical: #fb7185;
+  --signal-watch: #fcd34d;
+  --signal-positive: #34d399;
+  --signal-quiet: #63656a;
+  --elev-card: 0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --elev-float:
+    0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 16px 40px -16px rgb(0 0 0 / 0.5);
+}
+
+@utility surface-card {
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 16px;
+  box-shadow: var(--elev-card);
+}
+@keyframes row-flash {
+  from {
+    background-color: color-mix(in srgb, var(--primary) 8%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@keyframes skeleton-fade {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-row-flash,
+  .animate-skeleton {
+    animation: none;
+  }
+}
+
+/* CRM reference: a pressed, illuminated primary control in both themes. */
+@utility crm-primary-control {
+  box-shadow: 0 2px 3px rgb(42 42 42 / .16), 0 0 0 0.5px rgb(14 14 14 / .32), inset 0 2px 4px rgb(255 255 255 / .16), inset 0 0 0 0.5px rgb(255 255 255 / .12), inset 0 -5px 10px rgb(0 0 0 / .1);
+}

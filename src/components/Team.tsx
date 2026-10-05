@@ -1,3 +1,4 @@
+import { ListSearch } from "@/components/ui/list-controls";
 import {
   Add01Icon,
   Briefcase01Icon,
@@ -8,11 +9,10 @@ import {
   GraduationScrollIcon,
   Key01Icon,
   MailIcon,
-  SearchIcon,
   Shield01Icon,
   SmartPhone01Icon,
   StethoscopeIcon,
-} from "@hugeicons/core-free-icons";
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type React from "react";
 import { useMemo, useState } from "react";
@@ -382,7 +382,7 @@ const Team: React.FC = () => {
               <HugeiconsIcon
                 className="size-4"
                 icon={Add01Icon}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
               <span>Nouveau Membre</span>
             </Button>
@@ -410,20 +410,7 @@ const Team: React.FC = () => {
         </CardHeader>
         {/* Toolbar */}
         <div className="flex flex-col items-center justify-between gap-4 border-border border-b px-6 py-4 md:flex-row">
-          <div className="relative w-full md:w-[400px]">
-            <HugeiconsIcon
-              className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground"
-              icon={SearchIcon}
-              strokeWidth={2}
-            />
-            <Input
-              className="h-10 rounded-xl pl-9"
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher un membre..."
-              type="text"
-              value={searchTerm}
-            />
-          </div>
+          <ListSearch className="w-full md:w-72" label="Rechercher un membre" placeholder="Rechercher un membre…" value={searchTerm} onValueChange={setSearchTerm} />
 
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <span className="flex items-center gap-1.5">
@@ -508,7 +495,7 @@ const Team: React.FC = () => {
                               <HugeiconsIcon
                                 className="size-4"
                                 icon={Key01Icon}
-                                strokeWidth={2}
+                                strokeWidth={1.5}
                               />
                             )}
                           </Button>
@@ -523,7 +510,7 @@ const Team: React.FC = () => {
                             <HugeiconsIcon
                               className="size-4"
                               icon={Edit01Icon}
-                              strokeWidth={2}
+                              strokeWidth={1.5}
                             />
                           </Button>
                           {user.email !== "zohir.kh@gmail.com" && (
@@ -538,7 +525,7 @@ const Team: React.FC = () => {
                               <HugeiconsIcon
                                 className="size-4"
                                 icon={Delete01Icon}
-                                strokeWidth={2}
+                                strokeWidth={1.5}
                               />
                             </Button>
                           )}
@@ -558,7 +545,7 @@ const Team: React.FC = () => {
                         <HugeiconsIcon
                           className="size-3"
                           icon={RoleIcon}
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                         />
                         {config.label}
                       </Badge>
@@ -570,7 +557,7 @@ const Team: React.FC = () => {
                         <HugeiconsIcon
                           className="size-3.5 text-muted-foreground"
                           icon={MailIcon}
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                         />
                         <span className="truncate">
                           {user.email || "Pas d'email"}
@@ -580,7 +567,7 @@ const Team: React.FC = () => {
                         <HugeiconsIcon
                           className="size-3.5 text-muted-foreground"
                           icon={SmartPhone01Icon}
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                         />
                         <span>{user.phone || "Non renseigné"}</span>
                       </div>
@@ -603,7 +590,7 @@ const Team: React.FC = () => {
                               ? CheckmarkCircle02Icon
                               : Cancel01Icon
                           }
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                         />{" "}
                         {
                           TEAM_STATUS_META[
@@ -696,7 +683,7 @@ const Team: React.FC = () => {
           <FormDialogHeader
             artwork="credentials"
             description="Copiez-le maintenant et transmettez-le par un canal sécurisé. Il disparaîtra à la fermeture."
-            icon={<HugeiconsIcon icon={Key01Icon} strokeWidth={1.9} />}
+            icon={<HugeiconsIcon icon={Key01Icon} strokeWidth={1.5} />}
             title="Mot de passe temporaire"
             tone="violet"
           />
@@ -738,7 +725,7 @@ const Team: React.FC = () => {
                 ? "Identité, rôle et accès."
                 : "Identité, rôle et accès."
             }
-            icon={<HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.9} />}
+            icon={<HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.5} />}
             title={editingId ? "Modifier le membre" : "Ajouter un membre"}
             tone="rose"
           />

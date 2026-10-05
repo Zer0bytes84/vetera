@@ -47,7 +47,7 @@ import {
   Loader,
   Plus,
   TrendingUp,
-} from "lucide-react";
+} from "@/lib/icons";
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { Badge } from "@/components/ui/badge";
@@ -708,7 +708,7 @@ export function DataTable({ data }: { data: AppointmentTableRow[] }) {
 
   return (
     <Tabs
-      className="dashboard-table-card w-full flex-col justify-start gap-6"
+      className="surface-card w-full flex-col justify-start gap-6"
       onValueChange={(value) => {
         setActiveTab(value as AppointmentTableRow["tab"]);
         setPagination((prev) => ({ ...prev, pageIndex: 0 }));
