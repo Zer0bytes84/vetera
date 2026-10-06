@@ -1,5 +1,6 @@
-# Baitari 3.3.11
+# Baitari 3.3.12
 
+- Correction des clés React des icônes d’animaux personnalisées : l’avertissement HugeiconsIcon disparaît, avec un test de régression couvrant les espèces.
 - Tableau de bord plus compact : indicateurs essentiels en première rangée, encaissements affichés par mois par défaut et filtres de période indépendants.
 - Widget Recettes avec trois courbes, légende interactive, survol détaillé et échelle adaptée aux petits soldes. Les montants restent issus des factures et écritures du cabinet.
 - Créances repensées autour d’un objectif d’encaissement, d’une jauge segmentée interactive et des soldes en retard, partiels ou à régler. Un solde restant conserve un segment ouvert, même lorsqu’il représente moins de 1 %.
@@ -11,5 +12,3 @@
 - Installateurs versionnés pour macOS Apple Silicon, Windows x64 et Linux x64, avec mises à jour automatiques signées.
 
 Compatible avec les données locales existantes. Aucune migration destructive ajoutée dans cette version.
-
-Cette version a été remplacée par la 3.3.12 avant la distribution des installateurs.
