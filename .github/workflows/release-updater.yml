@@ -132,6 +132,7 @@ jobs:
             ${{ matrix.bundle_path }}/**/*.dmg
             ${{ matrix.bundle_path }}/**/*.app.tar.gz
             ${{ matrix.bundle_path }}/**/*.AppImage.tar.gz
+            ${{ matrix.bundle_path }}/**/*.AppImage
             ${{ matrix.bundle_path }}/**/*.appimage
             ${{ matrix.bundle_path }}/**/*.deb
             ${{ matrix.bundle_path }}/**/*.rpm

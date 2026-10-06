@@ -76,7 +76,7 @@ export function StockView(props: StockViewProps) {
           section="stock"
           subtitle={`${totalProducts} référence${totalProducts > 1 ? "s" : ""} active${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`}
         />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button className="h-10 rounded-full px-5 text-sm" onClick={handleOpenAdd}>
             <HugeiconsIcon
               className="size-4"

@@ -78,6 +78,13 @@ export function DashboardPage({
   const invoices = useDashboardFinancials();
   const { version, setVersion } = useDashboardVersion();
   const [isCustomizing, setIsCustomizing] = useState(false);
+  useEffect(() => {
+    if (window.sessionStorage.getItem("baitari:customize-dashboard") !== "true") return;
+    window.sessionStorage.removeItem("baitari:customize-dashboard");
+    void setVersion("classic");
+    setIsCustomizing(true);
+  }, [setVersion]);
+
   const [trendsOpen, setTrendsOpen] = useState(true);
   const [trendDays, setTrendDays] = useState<30 | 90>(30);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
@@ -328,7 +335,6 @@ export function DashboardPage({
       <MotivationalHeader
         section="dashboard"
         isCustomizing={isCustomizing}
-        onCustomize={() => setIsCustomizing(true)}
         onNavigate={onNavigate}
         dashboardViewControl={
           <DashboardModeToggle

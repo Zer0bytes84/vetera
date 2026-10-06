@@ -1,6 +1,3 @@
-import type { CSSProperties } from "react";
-import type { View } from "@/types";
-import "./page-mesh.css";
 import type { HeaderPattern } from "@/lib/theme-store";
 import { cn } from "@/lib/utils";
 
@@ -81,53 +78,18 @@ function PatternGroups() {
   );
 }
 
-// Stable palettes keep each workspace recognizable when revisiting a page.
-const PAGE_PALETTES: Record<View, readonly [string, string]> = {
-  dashboard: ["#6366f1", "#f9a8d4"],
-  agenda: ["#06b6d4", "#67e8f9"],
-  clinique: ["#67e8f9", "#34d399"],
-  patients: ["#2dd4bf", "#a5b4fc"],
-  patient_detail: ["#34d399", "#67e8f9"],
-  notes: ["#a78bfa", "#f9a8d4"],
-  stock: ["#84cc16", "#6ee7b7"],
-  finances: ["#f59e0b", "#f9a8d4"],
-  finances_analytics: ["#fbbf24", "#fb7185"],
-  parametres: ["#a5b4fc", "#ddd6fe"],
-  equipe: ["#fb7185", "#c4b5fd"],
-  taches: ["#fcd34d", "#67e8f9"],
-  aide: ["#67e8f9", "#ddd6fe"],
-  assistant: ["#8b5cf6", "#22d3ee"],
-};
-
-function meshRandom(seed: number) {
-  const value = Math.sin(seed) * 10000;
-  return value - Math.floor(value);
-}
-
-export function HeroPattern({ view = "dashboard" }: { view?: View }) {
-  const seed = Array.from(view).reduce(
-    (value, character) => value + character.charCodeAt(0),
-    0
-  );
+/** Radiant's original halo, shared by every workspace page. */
+export function HeroPattern() {
   return (
-    <div aria-hidden="true" className="page-mesh" key={view}>
-      <div className="page-mesh-colors">
-      {PAGE_PALETTES[view].map((color, index) => {
-        const haloSeed = seed + index * 13;
-        return (
-          <span
-            className="page-mesh-halo"
-            key={index}
-            style={{
-              "--halo-color": color,
-              "--halo-x": `${50 + (meshRandom(haloSeed) - 0.5) * 15}%`,
-              "--halo-width": `${(0.45 + meshRandom(haloSeed + 200) * 0.15) * 200}%`,
-              "--halo-height": `${220 * (0.55 + meshRandom(haloSeed + 300) * 0.15) * 2}px`,
-            } as CSSProperties}
-          />
-        );
-      })}
-      </div>
+    <div
+      aria-hidden="true"
+      data-shell-gradient="radiant"
+      className="pointer-events-none absolute inset-0 z-0 mx-0 max-w-none overflow-hidden dark:hidden"
+    >
+      <div
+        className="absolute -top-44 right-40 h-56 w-[33rem] rotate-[-10deg] transform-gpu rounded-full opacity-80 blur-3xl md:right-48 lg:right-56 dark:opacity-40"
+        style={{ backgroundImage: "linear-gradient(115deg, #fff1be 28%, #ee87cb 70%, #b060ff)" }}
+      />
     </div>
   );
 }

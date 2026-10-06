@@ -72,3 +72,361 @@
 @media (prefers-reduced-motion: reduce) {
   .shell-toolbar .shell-toolbar-control { transition: none; }
 }
+
+/* Optional navigation material: the capsule is the visible header surface. */
+:root[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root[data-chrome-style="liquid-glass"] :is(
+  [data-slot="app-header-separator"],
+  [data-slot="sidebar-header-separator"]
+) {
+  display: none;
+}
+
+:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+  position: relative;
+  isolation: isolate;
+  min-height: 44px;
+  padding: 4px;
+  gap: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.28);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    inset 0 1.5px 1px rgb(255 255 255 / 0.95),
+    inset 0 -1px 1.5px rgb(255 255 255 / 0.7),
+    inset 1px 0 2px rgb(255 255 255 / 0.8),
+    inset -1px 0 2px rgb(65 55 95 / 0.12),
+    0 6px 18px -9px rgb(32 24 60 / 0.32);
+}
+
+:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(115deg, rgb(255 255 255 / 0.4), transparent 20%, transparent 78%, rgb(255 255 255 / 0.32)),
+    linear-gradient(180deg, rgb(255 255 255 / 0.3), transparent 46%, rgb(255 255 255 / 0.12));
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.6);
+}
+
+:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+  background: rgb(36 36 40 / 0.38);
+  box-shadow:
+    inset 0 1.5px 1px rgb(255 255 255 / 0.42),
+    inset 0 -1px 1.5px rgb(255 255 255 / 0.12),
+    inset 1px 0 2px rgb(255 255 255 / 0.2),
+    0 8px 24px -10px rgb(0 0 0 / 0.65);
+}
+
+:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions::before {
+  background:
+    linear-gradient(115deg, rgb(255 255 255 / 0.15), transparent 28%, transparent 72%, rgb(255 255 255 / 0.1)),
+    linear-gradient(180deg, rgb(255 255 255 / 0.08), transparent 50%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+}
+
+/* Individual glass wells keep each filled silhouette distinct. */
+:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgb(24 24 27 / 0.18);
+  color: #202124;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.4), rgb(255 255 255 / 0.08));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.78),
+    inset 0 -1px 2px rgb(24 24 27 / 0.09),
+    0 2px 5px -3px rgb(24 24 27 / 0.24);
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.7));
+}
+
+:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control {
+  border-color: rgb(255 255 255 / 0.32);
+  color: #f4f4f5;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.03));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.19),
+    inset 0 1px 1px rgb(255 255 255 / 0.13),
+    0 2px 5px -3px rgb(0 0 0 / 0.45);
+}
+
+:root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control svg {
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.5));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
+    background: rgb(255 255 255 / 0.85);
+    color: #09090b;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.95), 0 3px 7px -4px rgb(24 24 27 / 0.3);
+  }
+  :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
+    background: rgb(255 255 255 / 0.18);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3), 0 3px 7px -4px rgb(0 0 0 / 0.5);
+  }
+}
+
+:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:is(:active, [aria-expanded="true"], [aria-pressed="true"]) {
+  background: color-mix(in srgb, var(--primary) 12%, var(--background));
+  color: var(--foreground);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent), inset 0 1px 3px rgb(24 24 27 / 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control { transition: none; }
+}
+
+@media (max-width: 480px) {
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar { padding-inline: 12px; gap: 8px; }
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { padding-inline: 6px; gap: 3px; }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background: rgb(255 255 255 / 0.94); }
+  :root.dark[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background: rgb(30 30 36 / 0.96); }
+}
+
+/* The floating mode has no full-width header or framed workspace. */
+:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-inset"] {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100dvh;
+  max-height: 100dvh !important;
+  border-radius: 0 !important;
+  background: var(--background) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="shell-panel-frame"] {
+  display: none;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="shell-scroll-panel"] {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="app-header"] {
+  height: 0 !important;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  overflow: visible;
+}
+
+:root[data-chrome-style="liquid-glass"] .shell-toolbar {
+  position: absolute;
+  top: max(0px, calc(var(--titlebar-clearance) - 6px));
+  inset-inline: 0;
+  padding-top: 0 !important;
+  pointer-events: none;
+}
+
+:root[data-chrome-style="liquid-glass"] .shell-toolbar > [data-slot="sidebar-trigger"],
+:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+  pointer-events: auto;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="header-save-indicator"] {
+  display: none;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="shell-view-content"] {
+  /* Bring desktop page headings onto the sidebar logo's axis. */
+  padding-top: calc(var(--titlebar-clearance) + 12px);
+}
+
+@media (max-width: 767px) {
+  :root[data-chrome-style="liquid-glass"] [data-slot="shell-view-content"] {
+    padding-top: calc(var(--titlebar-clearance) + 64px);
+  }
+}
+
+@media (min-width: 768px) {
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-container"] {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: var(--sidebar);
+    box-shadow: none !important;
+  }
+
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-inner"] {
+    margin-top: 0 !important;
+    height: 100% !important;
+    padding-top: var(--titlebar-clearance);
+    border-radius: 0 !important;
+    background: var(--sidebar);
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-container"]::before {
+    display: none;
+  }
+
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-container"]::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 1px;
+    background: var(--border);
+    pointer-events: none;
+  }
+
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-gap"] {
+    width: var(--sidebar-width);
+    background: var(--sidebar);
+  }
+
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar"][data-collapsible="icon"] :is([data-slot="sidebar-gap"], [data-slot="sidebar-container"]) {
+    width: var(--sidebar-width-icon);
+  }
+
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar"][data-collapsible="offcanvas"] [data-slot="sidebar-gap"] {
+    width: 0;
+  }
+}
+
+:root[data-chrome-style="liquid-glass"] .restored-sidebar [data-slot="sidebar-footer"]::before,
+:root[data-chrome-style="liquid-glass"] .restored-sidebar .sidebar-section-divider {
+  display: none;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-inner"]::before,
+:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-inner"]::after,
+:root[data-chrome-style="liquid-glass"] .apple-sidebar-glow {
+  display: none;
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+    background: var(--background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Match the actual layout, rather than masking inset offsets with CSS. */
+:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-inner"] {
+  border: 0;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-header"] {
+  height: 74px !important;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-header"] [data-slot="sidebar-trigger"] {
+  transform: none;
+}
+
+:root[data-chrome-style="liquid-glass"] [data-slot="shell-scroll-panel"] {
+  border: 0;
+  background: var(--background);
+}
+
+/* The outline family is exclusive to Liquid Glass. */
+[data-toolbar-glyph="rounded"] { display: none; }
+:root[data-chrome-style="liquid-glass"] [data-toolbar-glyph="filled"] { display: none; }
+:root[data-chrome-style="liquid-glass"] [data-toolbar-glyph="rounded"] { display: inline; }
+
+:root[data-chrome-style="liquid-glass"] [data-slot="sidebar-header"] [data-slot="sidebar-trigger"] {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Only native Liquid Glass places the toggle on the traffic-light axis.
+   Classic chrome keeps the original toggle in the logo row. */
+.sidebar-window-toggle {
+  display: none;
+}
+:root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-logo-toggle {
+  display: none;
+}
+:root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-window-toggle {
+  display: inline-flex;
+  top: calc(0px - var(--titlebar-clearance));
+}
+
+.sidebar-icon-mode-toggle { display: none; }
+@media (min-width: 768px) {
+  :root[data-chrome-style="liquid-glass"] [data-slot="sidebar-wrapper"]:has(.restored-sidebar[data-desktop-runtime="true"]) {
+    --sidebar-width-icon: 80px !important;
+  }
+  :root[data-chrome-style="liquid-glass"] [data-collapsible="icon"] .restored-sidebar[data-desktop-runtime="true"] [data-slot="sidebar-header"] {
+    height: 106px !important;
+    padding-bottom: 32px;
+  }
+  :root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-icon-mode-toggle {
+    display: inline-flex;
+    bottom: 2px;
+    left: calc(50% - 16px);
+  }
+  :root[data-chrome-style="liquid-glass"] .restored-sidebar[data-desktop-runtime="true"] .sidebar-footer-toggle {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root[data-chrome-style="liquid-glass"] :is(div, header):has(> [data-slot="page-header-actions"]) {
+    align-items: flex-end;
+  }
+  :root[data-chrome-style="liquid-glass"] [data-slot="page-header-actions"] {
+    margin-inline-end: 0;
+    margin-block-start: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root[data-chrome-style="liquid-glass"] [data-slot="shell-view-content"] {
+    padding-top: calc(var(--titlebar-clearance) + 52px);
+  }
+}
+
+/* Compensate only the actual scrollbar width; overlay scrollbars reserve nothing. */
+[data-slot="shell-scroll-panel"] {
+  scrollbar-gutter: auto;
+}
+[data-slot="shell-view-content"] > .app-view-enter {
+  margin-inline-end: calc(0px - var(--shell-scrollbar-width, 0px));
+}
+@supports selector(::-webkit-scrollbar) {
+  [data-slot="shell-scroll-panel"] {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+  [data-slot="shell-scroll-panel"]::-webkit-scrollbar {
+    width: 6px;
+  }
+  [data-slot="shell-scroll-panel"]::-webkit-scrollbar-track {
+    margin-top: var(--shell-scroll-start, calc(var(--titlebar-clearance, 0px) + 63px));
+    margin-bottom: 10px;
+  }
+  [data-slot="shell-scroll-panel"]::-webkit-scrollbar-thumb {
+    border-width: 1px;
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildFinancialOverview } from "../../src/modules/dashboard/v2/financial-model";
+import { buildFinancialOverview, collectionProgress } from "../../src/modules/dashboard/v2/financial-model";
 import type { Invoice, Transaction } from "../../src/types/db";
 const range = { from: "2026-01-01", to: "2026-12-31" };
 const invoice = (id: string, overrides: Partial<Invoice> = {}) =>
@@ -96,5 +96,22 @@ describe("financial overview", () => {
         (row) => row.totalValue === 0
       )
     ).toBe(true);
+  });
+});
+
+describe("collection goal meter", () => {
+  it("keeps a visible unfilled segment even for a very small overdue balance", () => {
+    const overview = buildFinancialOverview([invoice("late", { settlementStatus: "overdue", grossAmount: 10000000, creditAmount: 0, balanceAmount: 100, completedPaymentAmount: 9999900 })], [], range, "all");
+    const category = overview.categories[0];
+    expect(overview.receivables[0].detail).toBe("Échéance dépassée");
+    expect(collectionProgress(category.totalValue, category.safeValue)).toEqual({ percentage: 99, filledSegments: 39 });
+  });
+  it("fills every segment only when fully paid", () => {
+    expect(collectionProgress(100, 100)).toEqual({ percentage: 100, filledSegments: 40 });
+    expect(collectionProgress(100, 70)).toEqual({ percentage: 70, filledSegments: 28 });
+  });
+  it("does not show progress for empty or completely unpaid receipts", () => {
+    expect(collectionProgress(0, 0)).toEqual({ percentage: null, filledSegments: 0 });
+    expect(collectionProgress(100, 0)).toEqual({ percentage: 0, filledSegments: 0 });
   });
 });

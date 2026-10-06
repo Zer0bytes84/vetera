@@ -6,6 +6,7 @@ import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { PageDate } from "@/components/PageDate";
 
 interface MotivationalHeaderProps {
   dashboardViewControl?: React.ReactNode;
@@ -149,19 +150,18 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   const renderTitle = (titleText: string, emoji: string) => {
     if (!isDashboard) {
       return (
-        <h1 className="font-display font-medium text-2xl text-foreground tracking-[-0.025em] md:text-[28px]">
-          {titleText}
-        </h1>
+        <div className="space-y-1">
+          <PageDate />
+          <h1 className="font-display font-medium text-2xl text-foreground tracking-tight md:text-3xl">
+            {titleText}
+          </h1>
+        </div>
       );
     }
 
     return (
       <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-xs capitalize">
-            {headerCopy.eyebrow}
-          </span>
-        </div>
+        <PageDate />
         <h1 className="flex flex-wrap items-center gap-2.5 font-display font-medium text-2xl text-foreground tracking-tight md:text-3xl">
           <span>{titleText}</span>
           <span aria-hidden="true" className="shrink-0 text-[1em]">

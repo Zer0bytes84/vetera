@@ -100,7 +100,7 @@
     "test:licenses": "node --test tests/activation-server.test.mjs"
   },
   "type": "module",
-  "version": "3.3.10",
+  "version": "3.3.11",
   "private": true,
   "overrides": {
     "@tauri-apps/api": "^2.10.1"

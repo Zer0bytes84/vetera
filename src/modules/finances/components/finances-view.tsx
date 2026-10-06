@@ -201,7 +201,7 @@ export function FinancesView(props: FinancesViewProps) {
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <MotivationalHeader section="finances" />
-        <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-2 md:w-auto">
+        <div data-slot="page-header-actions" className="flex w-full shrink-0 flex-wrap items-center justify-end gap-2 md:w-auto">
           <Button
             className="h-10 min-w-24 whitespace-nowrap rounded-full px-5 text-sm"
             onClick={() => onNavigate?.("finances_analytics")}

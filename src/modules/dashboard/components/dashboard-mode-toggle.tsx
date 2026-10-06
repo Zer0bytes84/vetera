@@ -1,3 +1,4 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { DashboardSquare01Icon, StethoscopeIcon } from "@/lib/hugeicons";
@@ -24,20 +25,21 @@ export function DashboardModeToggle({
     <div
       role="group"
       aria-label="Vue du tableau de bord"
-      className="inline-flex max-w-full items-center rounded-control bg-frame p-1 shadow-hairline"
+      className="inline-flex max-w-full items-center rounded-full bg-muted/60 p-0.5 shadow-hairline"
     >
       {modes.map((mode) => (
-        <button
-          key={mode.value}
+        <Tooltip key={mode.value}>
+          <TooltipTrigger render={<button
           type="button"
+          aria-label={mode.label}
           aria-pressed={value === mode.value}
-          className={`relative isolate inline-flex h-8 items-center justify-center gap-2 rounded-[7px] px-3 text-[12px] font-medium transition-colors duration-150 ${value === mode.value ? "text-ink" : "text-ink-muted hover:text-ink"} ${focusRing}`}
+          className={`relative isolate inline-flex size-8 items-center justify-center rounded-full p-0 text-[12px] font-medium transition-colors duration-150 ${value === mode.value ? "text-ink" : "text-ink-muted hover:text-ink"} ${focusRing}`}
           onClick={() => onChange(mode.value)}
-        >
+        />}>
           {value === mode.value && (
             <motion.span
               aria-hidden="true"
-              className="absolute inset-0 -z-10 rounded-[7px] bg-surface-raised shadow-card"
+              className="absolute inset-0 -z-10 rounded-full bg-surface-raised shadow-sm"
               layoutId={reducedMotion ? undefined : "dashboard-selected-view"}
               transition={{
                 duration: reducedMotion ? 0 : MOTION.base,
@@ -47,12 +49,13 @@ export function DashboardModeToggle({
           )}
           <HugeiconsIcon
             icon={mode.icon}
-            size={15}
+            size={17}
             strokeWidth={1.5}
-            className={value === mode.value ? "text-primary" : "text-ink-muted"}
+            className={value === mode.value ? "text-foreground" : "text-muted-foreground"}
           />
-          <span>{mode.label}</span>
-        </button>
+          </TooltipTrigger>
+          <TooltipContent>{mode.label}</TooltipContent>
+        </Tooltip>
       ))}
     </div>
   );

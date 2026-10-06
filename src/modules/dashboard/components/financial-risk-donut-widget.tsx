@@ -14,6 +14,7 @@ import {
   type FinancialSource,
 } from "../v2/financial-model";
 import { ListFilter } from "@/components/ui/list-controls";
+import { buildReceiptsSeries } from "../v2/receipts-series";
 import { ClassicFinancialPanels } from "./classic-financial-panels";
 
 export type RiskCategoryData = FinancialCategory;
@@ -27,7 +28,6 @@ export function FinancialRiskDonutWidget({
 }) {
   const [source, setSource] = useState<FinancialSource>("all");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [page, setPage] = useState(0);
   const [range, setRange] = useState(() =>
     financialPeriodRange("year", new Date())
   );
@@ -78,14 +78,12 @@ export function FinancialRiskDonutWidget({
     () => buildFinancialOverview(invoices, transactions, range, source),
     [invoices, transactions, range, source]
   );
-  const pageCount = Math.max(1, Math.ceil(overview.receivables.length / 4));
+  const series = useMemo(() => buildReceiptsSeries(invoices, transactions, range, source), [invoices, transactions, range, source]);
   return (
     <ClassicFinancialPanels
       categories={overview.categories}
+      series={series}
       receivables={overview.receivables}
-      page={Math.min(page, pageCount - 1)}
-      pageCount={pageCount}
-      onPage={setPage}
       onOpenFinances={onOpenFinances}
       loading={source !== "manual" && loading}
       error={source !== "manual" ? error : ""}
@@ -97,7 +95,6 @@ export function FinancialRiskDonutWidget({
             to={range.to}
             onChange={(from, to) => {
               setRange({ from, to });
-              setPage(0);
             }}
           />
           <ListFilter
@@ -105,7 +102,6 @@ export function FinancialRiskDonutWidget({
             value={source}
             onValueChange={(value) => {
               setSource(value as FinancialSource);
-              setPage(0);
             }}
             options={[
               { value: "all", label: "Toutes" },

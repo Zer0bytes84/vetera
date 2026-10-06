@@ -11,7 +11,7 @@ import {
   Tick01Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -239,6 +239,10 @@ function NotificationItemRow({
 }
 
 export interface NotificationCenterProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  anchor?: HTMLElement | null | RefObject<HTMLElement | null>;
+  hideTrigger?: boolean;
   onNavigate: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
 }
@@ -246,6 +250,10 @@ export interface NotificationCenterProps {
 export function NotificationCenter({
   onNavigate,
   onNavigateToPatient,
+  open: controlledOpen,
+  onOpenChange,
+  anchor,
+  hideTrigger = false,
 }: NotificationCenterProps) {
   const { t } = useTranslation();
   const { requestFocus } = useFocus();
@@ -260,7 +268,9 @@ export function NotificationCenter({
     markAllRead,
   } = useNotificationCenter();
 
-  const [open, setOpen] = useState(false);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = controlledOpen ?? localOpen;
+  const setOpen = (next: boolean) => { setLocalOpen(next); onOpenChange?.(next); };
   const [filter, setFilter] = useState<NotificationFilter>("all");
 
   const filteredItems = useMemo(() => {
@@ -314,7 +324,7 @@ export function NotificationCenter({
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger
+      {!hideTrigger && <PopoverTrigger
         render={
           <Button
             aria-label={t("notifications.open", {
@@ -338,8 +348,9 @@ export function NotificationCenter({
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
-      </PopoverTrigger>
+      </PopoverTrigger>}
       <PopoverContent
+        anchor={anchor}
         align="end"
         className="w-[min(400px,calc(100vw-24px))] gap-0 p-0"
         sideOffset={8}

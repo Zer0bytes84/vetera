@@ -126,35 +126,35 @@ function PatientPicker({
         render={
           <Button
             aria-label={isFilter ? "Afficher les documents d’un patient" : "Rattacher la note à un dossier patient"}
-            className="h-8 max-w-[210px] gap-1.5 rounded-lg border-0 bg-transparent px-2 text-xs font-medium text-[#3f634a] shadow-none hover:bg-[#eaf0e9] dark:text-[#bad6be] dark:hover:bg-white/10"
+            className="h-8 max-w-[210px] gap-1.5 rounded-lg border-0 bg-transparent px-2 text-xs font-medium text-foreground shadow-none hover:bg-muted dark:text-foreground dark:hover:bg-white/10"
             size="sm"
             type="button"
             variant="ghost"
           />
         }
       >
-        <span className="shrink-0 text-[#778a7b] dark:text-[#a4b9a8]">{isFilter ? "Afficher" : "Rattacher"}</span>
+        <span className="shrink-0 text-muted-foreground dark:text-muted-foreground">{isFilter ? "Afficher" : "Rattacher"}</span>
         <span className="min-w-0 truncate">{selected?.name ?? emptyLabel}</span>
         <ChevronDown aria-hidden="true" className="size-3.5 shrink-0" />
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[min(320px,calc(100vw-32px))] gap-0 rounded-xl border border-[#e0e9df] bg-white p-1.5 shadow-[0_14px_38px_-18px_rgba(25,47,29,0.3)] dark:border-white/10 dark:bg-[#243027]" sideOffset={7}>
+      <PopoverContent align="end" className="w-[min(320px,calc(100vw-32px))] gap-0 rounded-xl border border-border bg-white p-1.5 shadow-[0_14px_38px_-18px_rgba(25,47,29,0.3)] dark:border-white/10 dark:bg-muted" sideOffset={7}>
         <div className="px-2.5 pt-2 pb-2.5">
-          <p className="text-xs font-semibold text-[#2d4a35] dark:text-[#e4f0e6]">{isFilter ? "Afficher les documents de" : "Rattacher cette note à"}</p>
-          <p className="mt-0.5 text-[11px] leading-4 text-[#6e8171] dark:text-[#adbfaf]">{isFilter ? "Ce choix filtre la bibliothèque sans modifier les notes." : "La note sera enregistrée dans le dossier choisi."}</p>
+          <p className="text-xs font-semibold text-foreground dark:text-foreground">{isFilter ? "Afficher les documents de" : "Rattacher cette note à"}</p>
+          <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground dark:text-muted-foreground">{isFilter ? "Ce choix filtre la bibliothèque sans modifier les notes." : "La note sera enregistrée dans le dossier choisi."}</p>
         </div>
         <div className="relative px-1 pb-1.5">
-          <HugeiconsIcon aria-hidden="true" className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-[#809482]" icon={SearchIcon} strokeWidth={1.5} />
-          <Input aria-label="Rechercher un patient" autoFocus className="h-9 rounded-lg border-[#e4ebe2] bg-[#f7faf6] pl-8 text-xs dark:border-white/10 dark:bg-[#1b241e]" onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un patient…" value={query} />
+          <HugeiconsIcon aria-hidden="true" className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-muted-foreground" icon={SearchIcon} strokeWidth={1.5} />
+          <Input aria-label="Rechercher un patient" autoFocus className="h-9 rounded-lg border-border bg-card pl-8 text-xs dark:border-white/10 dark:bg-card" onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un patient…" value={query} />
         </div>
         <div className="max-h-60 overflow-y-auto overscroll-contain py-0.5">
-          {!query && <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-[#425b48] hover:bg-[#edf3ec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50 dark:text-[#d1e2d3] dark:hover:bg-white/10" onClick={() => select("")} type="button"><span className="min-w-0 flex-1">{emptyLabel}</span>{!value && <Check aria-hidden="true" className="size-3.5" />}</button>}
+          {!query && <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-foreground dark:hover:bg-white/10" onClick={() => select("")} type="button"><span className="min-w-0 flex-1">{emptyLabel}</span>{!value && <Check aria-hidden="true" className="size-3.5" />}</button>}
           {results.map((patient) => (
-            <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left hover:bg-[#edf3ec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50 dark:hover:bg-white/10" key={patient.id} onClick={() => select(patient.id)} type="button">
-              <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-[#2b4432] dark:text-[#e7f0e8]">{patient.name}</span><span className="block truncate text-[11px] text-[#718374] dark:text-[#a8baa9]">{patient.species}{patient.breed ? ` · ${patient.breed}` : ""}</span></span>
-              {value === patient.id && <Check aria-hidden="true" className="size-3.5 shrink-0 text-[#3b7b4c] dark:text-[#b2d9b7]" />}
+            <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:hover:bg-white/10" key={patient.id} onClick={() => select(patient.id)} type="button">
+              <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-foreground dark:text-foreground">{patient.name}</span><span className="block truncate text-[11px] text-muted-foreground dark:text-muted-foreground">{patient.species}{patient.breed ? ` · ${patient.breed}` : ""}</span></span>
+              {value === patient.id && <Check aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground dark:text-muted-foreground" />}
             </button>
           ))}
-          {results.length === 0 && <p className="px-2.5 py-5 text-center text-xs text-[#718374] dark:text-[#a8baa9]">Aucun patient trouvé</p>}
+          {results.length === 0 && <p className="px-2.5 py-5 text-center text-xs text-muted-foreground dark:text-muted-foreground">Aucun patient trouvé</p>}
         </div>
       </PopoverContent>
     </Popover>
@@ -445,17 +445,17 @@ const NotesPro: React.FC = () => {
         <div className="min-w-0 flex-1">
           <MotivationalHeader section="notes" title="Documents" subtitle="Vos notes cliniques, reliées aux dossiers de vos patients." />
         </div>
-        <div className="flex w-full shrink-0 flex-wrap items-center gap-2 lg:w-auto lg:flex-nowrap">
+        <div data-slot="page-header-actions" className="flex w-full shrink-0 flex-wrap items-center gap-2 lg:w-auto lg:flex-nowrap">
           <div className="relative min-w-[160px] flex-1 lg:w-48 lg:flex-none">
-            <HugeiconsIcon aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-[#718675] dark:text-[#aec4b1]" icon={SearchIcon} strokeWidth={1.5} />
-            <Input aria-label="Rechercher dans les documents et dossiers" className="h-10 rounded-full border-[#dfe8df] bg-white/75 pr-9 pl-10 text-sm shadow-sm placeholder:text-[#7a8b7c] focus-visible:ring-[#6c9a76]/40 dark:border-white/25 dark:bg-[#25352b]/90 dark:text-white dark:placeholder:text-[#b4c6b7]" onChange={(event) => setSearchTerm(event.target.value)} placeholder="Rechercher…" type="search" value={searchTerm} />
-            {searchTerm && <button aria-label="Effacer la recherche" className="absolute top-1/2 right-2.5 flex size-5 -translate-y-1/2 items-center justify-center rounded-full text-[#68806d] hover:bg-[#e7eee5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6c9a76]/40 dark:text-[#bbcebc] dark:hover:bg-white/10" onClick={() => setSearchTerm("")} type="button"><X className="size-3.5" /></button>}
+            <HugeiconsIcon aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground dark:text-muted-foreground" icon={SearchIcon} strokeWidth={1.5} />
+            <Input aria-label="Rechercher dans les documents et dossiers" className="h-10 rounded-full border-border bg-card pr-9 pl-10 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-ring/40" onChange={(event) => setSearchTerm(event.target.value)} placeholder="Rechercher…" type="search" value={searchTerm} />
+            {searchTerm && <button aria-label="Effacer la recherche" className="absolute top-1/2 right-2.5 flex size-5 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 dark:text-muted-foreground dark:hover:bg-white/10" onClick={() => setSearchTerm("")} type="button"><X className="size-3.5" /></button>}
           </div>
           <DropdownMenu>
-              <DropdownMenuTrigger render={<Button className="h-10 gap-2.5 bg-[#264735] pr-3 pl-2.5 font-medium text-white shadow-[0_8px_22px_-12px_rgba(20,53,31,0.8)] ring-1 ring-white/15 transition-[background-color,box-shadow] hover:bg-[#335b42] hover:shadow-[0_12px_26px_-12px_rgba(20,53,31,0.8)] aria-expanded:bg-[#335b42] dark:bg-[#d9eadb] dark:text-[#17261c] dark:ring-[#d9eadb]/25 dark:hover:bg-white dark:aria-expanded:bg-white" type="button" />}>
-                <span className="flex size-6 items-center justify-center rounded-full bg-white/15 dark:bg-[#264735]/10"><HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={1.5} /></span>
+              <DropdownMenuTrigger render={<Button className="h-10 gap-2 rounded-full px-5 text-sm" type="button" />}>
+                <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
                 Nouveau document
-                <span aria-hidden="true" className="ml-1 flex h-5 items-center border-white/20 border-l pl-2.5 dark:border-[#17261c]/20"><ChevronDown className="size-3.5" /></span>
+                <span aria-hidden="true" className="ml-1 flex h-4 items-center border-current/20 border-l pl-2"><ChevronDown className="size-3.5" /></span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-72 p-1.5">
                 <DropdownMenuLabel className="px-2 pt-2 pb-1.5 text-[11px] uppercase tracking-[0.08em]">Partir d’un modèle</DropdownMenuLabel>
@@ -473,30 +473,30 @@ const NotesPro: React.FC = () => {
       </div>
 
       {/* Main workspace */}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-t-[22px] border border-b-0 border-foreground/10 bg-white dark:bg-zinc-950 md:flex-row">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-t-[22px] border border-b-0 border-foreground/10 bg-card md:flex-row">
         <aside
           className={cn(
-            "flex min-h-0 shrink-0 flex-col border-foreground/10 border-r bg-[#f5f7f2] transition-[width,height] duration-200 ease-out dark:bg-[#171e1a]",
+            "flex min-h-0 shrink-0 flex-col border-foreground/10 border-r bg-muted transition-[width,height] duration-200 ease-out dark:bg-muted",
             showSidebar
-              ? "h-[44%] w-full border-b md:h-auto md:w-[min(356px,40vw)] md:border-b-0"
+              ? "h-[38%] w-full border-b md:h-auto md:w-[min(304px,34vw)] md:border-b-0"
               : "h-0 w-0 overflow-hidden border-0"
           )}
         >
           <div className="shrink-0 px-5 pt-5 pb-4">
             <div className="flex items-baseline justify-between gap-3">
-              <h2 className="font-semibold text-xl tracking-[-0.025em] text-[#263a30] dark:text-[#ecf2ed]">Bibliothèque</h2>
-              <span className="text-xs font-medium tabular-nums text-[#63746a] dark:text-[#a6b8ab]">{filteredNotes.length} document{filteredNotes.length === 1 ? "" : "s"}</span>
+              <h2 className="font-semibold text-xl tracking-[-0.025em] text-foreground dark:text-foreground">Bibliothèque</h2>
+              <span className="text-xs font-medium tabular-nums text-muted-foreground dark:text-muted-foreground">{filteredNotes.length} document{filteredNotes.length === 1 ? "" : "s"}</span>
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center border-[#dbe4d9] border-b px-4 dark:border-white/10">
+          <div className="flex shrink-0 items-center border-border border-b px-4 dark:border-white/10">
             {([
               { id: "all", label: "Tous" },
               { id: "recent", label: "Récents" },
               { id: "favorites", label: "Favoris" },
               { id: "pinned", label: "Épinglés" },
             ] as const).map((option) => (
-              <button aria-pressed={filter === option.id} className={cn("-mb-px min-w-0 flex-1 border-b-2 border-transparent px-1 py-3 text-center font-medium text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50", filter === option.id ? "border-[#32684a] text-[#234332] dark:border-[#a9d0af] dark:text-white" : "text-[#66796c] hover:text-[#234332] dark:text-[#adbcaf] dark:hover:text-white")} key={option.id} onClick={() => setFilter(option.id)} type="button">{option.label}</button>
+              <button aria-pressed={filter === option.id} className={cn("-mb-px min-w-0 flex-1 border-b-2 border-transparent px-1 py-3 text-center font-medium text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50", filter === option.id ? "border-foreground text-foreground dark:border-foreground dark:text-foreground" : "text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-white")} key={option.id} onClick={() => setFilter(option.id)} type="button">{option.label}</button>
             ))}
           </div>
 
@@ -504,10 +504,10 @@ const NotesPro: React.FC = () => {
           <ScrollArea className="min-h-0 flex-1 overscroll-contain">
             {filteredNotes.length === 0 ? (
               <div className="px-6 py-9">
-                <p className="font-medium text-sm text-[#34493b] dark:text-[#e5eee6]">
+                <p className="font-medium text-sm text-foreground dark:text-foreground">
                   {searchTerm ? "Aucun résultat" : filter !== "all" ? "Aucune note dans cette vue" : activePatient ? `Aucune note pour ${activePatient.name}` : "Aucun document"}
                 </p>
-                <p className="mt-1 text-xs leading-5 text-[#66796c] dark:text-[#adbcaf]">
+                <p className="mt-1 text-xs leading-5 text-muted-foreground dark:text-muted-foreground">
                   {searchTerm
                     ? "Essayez un autre nom ou vérifiez le dossier sélectionné."
                     : filter !== "all" ? "Choisissez Tous pour retrouver les autres documents." : activePatient ? "Créez une note pour commencer ce dossier." : "Vos notes apparaîtront ici après leur création."}
@@ -519,15 +519,15 @@ const NotesPro: React.FC = () => {
                   const isOpen = Boolean(searchTerm) || !closedFolders.includes(group.key);
                   return <section className="mb-1" key={group.key}>
                   <div className="group/folder flex items-center gap-1 px-1 py-1">
-                    <button aria-expanded={isOpen} className="flex min-h-9 min-w-0 flex-1 items-center gap-2 rounded-lg px-2 text-left text-[#496650] hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50 dark:text-[#bed3c1] dark:hover:bg-white/5" onClick={() => setClosedFolders((current) => current.includes(group.key) ? current.filter((key) => key !== group.key) : [...current, group.key])} type="button">
+                    <button aria-expanded={isOpen} className="flex min-h-9 min-w-0 flex-1 items-center gap-2 rounded-lg px-2 text-left text-foreground hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-foreground dark:hover:bg-white/5" onClick={() => setClosedFolders((current) => current.includes(group.key) ? current.filter((key) => key !== group.key) : [...current, group.key])} type="button">
                       {isOpen ? <FolderOpen aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.8} /> : <Folder aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.8} />}
                       <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">{group.label}</span>
-                      <span className="text-[11px] tabular-nums text-[#788d7b] dark:text-[#a9bdaa]">{group.notes.length}</span>
-                      <ChevronRight aria-hidden="true" className={cn("size-3.5 shrink-0 text-[#849687] transition-transform dark:text-[#a9bdaa]", isOpen && "rotate-90")} />
+                      <span className="text-[11px] tabular-nums text-muted-foreground dark:text-muted-foreground">{group.notes.length}</span>
+                      <ChevronRight aria-hidden="true" className={cn("size-3.5 shrink-0 text-muted-foreground transition-transform dark:text-muted-foreground", isOpen && "rotate-90")} />
                     </button>
-                    <button aria-label={`Créer une note de consultation dans ${group.label}`} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-[#608069] hover:bg-white hover:text-[#234b32] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50 dark:text-[#b4cbb7] dark:hover:bg-white/10" onClick={() => void handleCreateTemplate("consultation", group.patientId)} title={`Nouvelle note de consultation · ${group.label}`} type="button"><HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={1.5} /></button>
+                    <button aria-label={`Créer une note de consultation dans ${group.label}`} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-white hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-muted-foreground dark:hover:bg-white/10" onClick={() => void handleCreateTemplate("consultation", group.patientId)} title={`Nouvelle note de consultation · ${group.label}`} type="button"><HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={1.5} /></button>
                   </div>
-                  {isOpen && <div className="ml-4 space-y-0.5 border-[#dce8db] border-l pl-1 dark:border-white/10">
+                  {isOpen && <div className="ml-4 space-y-0.5 border-border border-l pl-1 dark:border-white/10">
                 {group.notes.map((note) => {
                   const isSelected = selectedNoteId === note.id;
                   const isPinned = (note as any).isPinned;
@@ -537,24 +537,24 @@ const NotesPro: React.FC = () => {
                       className={cn(
                         "group flex w-full items-center gap-1 rounded-lg px-2 py-1 transition-colors duration-150",
                         isSelected
-                          ? "bg-[#e1ebe0] dark:bg-[#2c4032]"
+                          ? "bg-muted dark:bg-muted"
                           : "hover:bg-white/80 dark:hover:bg-white/5"
                       )}
                       key={note.id}
                     >
                       <button
                         aria-current={isSelected ? "true" : undefined}
-                        className="flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-md px-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/50"
+                        className="flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-md px-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                         onClick={() => handleSelectNote(note.id)}
                         type="button"
                       >
-                        <FileText aria-hidden="true" className={cn("size-4 shrink-0", isSelected ? "text-[#356a4b] dark:text-[#b8d7bc]" : "text-[#78897a] dark:text-[#9dad9e]")} strokeWidth={1.6} />
-                        <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[#273d2e] dark:text-[#e9f0e9]">
-                          {note.title || "Sans titre"}
+                        <FileText aria-hidden="true" className={cn("size-4 shrink-0", isSelected ? "text-foreground dark:text-foreground" : "text-muted-foreground dark:text-muted-foreground")} strokeWidth={1.6} />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[13px] font-medium text-foreground" title={note.title || "Sans titre"}>{note.title || "Sans titre"}</span>
+                          <span className="mt-0.5 block text-[11px] text-muted-foreground tabular-nums">{formatDate(note.updatedAt)}</span>
                         </span>
-                        {isPinned && <Pin aria-label="Épinglé" className="size-3 shrink-0 text-[#557961]" />}
+                        {isPinned && <Pin aria-label="Épinglé" className="size-3 shrink-0 text-muted-foreground" />}
                         {note.isFavorite && <Star aria-label="Favori" className="size-3 shrink-0 fill-amber-500 text-amber-500" />}
-                        <span className="shrink-0 text-[11px] text-[#687a6b] tabular-nums dark:text-[#a7b7a9]">{formatDate(note.updatedAt)}</span>
                       </button>
 
                       <div className="shrink-0">
@@ -563,7 +563,7 @@ const NotesPro: React.FC = () => {
                             render={
                               <Button
                                 aria-label={`Plus d’actions pour ${note.title || "ce document"}`}
-                                className="size-7 rounded-md text-[#6b7d6e] hover:bg-white hover:text-[#273d2e] dark:text-[#adbcaf] dark:hover:bg-white/10 dark:hover:text-white"
+                                className="size-7 rounded-md text-muted-foreground hover:bg-white hover:text-foreground dark:text-muted-foreground dark:hover:bg-white/10 dark:hover:text-white"
                                 size="icon-sm"
                                 variant="ghost"
                               >
@@ -632,9 +632,9 @@ const NotesPro: React.FC = () => {
         </aside>
 
         {/* ── EDITOR AREA ── */}
-        <main className="flex min-h-0 min-w-0 flex-1 flex-col bg-[#f7f8f5] dark:bg-[#111714]">
-          <div className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-[#e4e9e2] border-b bg-[#f7f8f5] px-4 py-1.5 dark:border-white/10 dark:bg-[#111714]">
-            <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-[#5f7765] dark:text-[#b2cbb6]">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col bg-muted dark:bg-muted">
+          <div className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-border border-b bg-muted px-4 py-1.5 dark:border-white/10 dark:bg-muted">
+            <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground dark:text-muted-foreground">
               <HugeiconsIcon aria-hidden="true" className="size-4 shrink-0" icon={Folder01Icon} strokeWidth={1.5} />
               <span className="truncate">{activeNote?.patientId ? patientLookup.get(activeNote.patientId)?.name ?? "Dossier patient" : "Documents du cabinet"}</span>
             </span>
@@ -650,7 +650,7 @@ const NotesPro: React.FC = () => {
               />
               {activeNote && (
                 <>
-                  <span aria-hidden="true" className="mx-0.5 h-4 w-px bg-[#dce5da] dark:bg-white/10" />
+                  <span aria-hidden="true" className="mx-0.5 h-4 w-px bg-muted dark:bg-white/10" />
                   <PatientPicker
                     kind="link"
                     onSelect={(patientId) => {
@@ -667,7 +667,7 @@ const NotesPro: React.FC = () => {
           {selectedNoteId && activeNote ? (
             <div className="flex h-full min-h-0 flex-col">
               {/* Document actions */}
-              <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-[#e4e9e2] border-b bg-[#f7f8f5]/95 px-4 py-2 backdrop-blur-sm dark:border-white/10 dark:bg-[#111714]/95">
+              <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 border-border border-b bg-muted/95 px-4 py-2 backdrop-blur-sm dark:border-white/10 dark:bg-muted/95">
                 <div className="flex items-center gap-1.5">
                   {/* Toggle sidebar */}
                   <Button
@@ -693,6 +693,8 @@ const NotesPro: React.FC = () => {
                           ? "text-foreground/70 hover:text-foreground"
                           : "bg-white text-foreground shadow-sm dark:bg-zinc-700"
                       )}
+                      aria-pressed={!isPreviewMode}
+                      type="button"
                       onClick={() => setIsPreviewMode(false)}
                     >
                       <HugeiconsIcon className="size-3" icon={EditIcon} strokeWidth={1.5} />
@@ -705,6 +707,8 @@ const NotesPro: React.FC = () => {
                           ? "bg-white text-foreground shadow-sm dark:bg-zinc-700"
                           : "text-foreground/70 hover:text-foreground"
                       )}
+                      aria-pressed={isPreviewMode}
+                      type="button"
                       onClick={() => setIsPreviewMode(true)}
                     >
                       <HugeiconsIcon className="size-3" icon={EyeIcon} strokeWidth={1.5} />
@@ -771,7 +775,7 @@ const NotesPro: React.FC = () => {
                     </span>
                   ) : null}
                   {!isPreviewMode && aiStatus.loading && (
-                    <span aria-live="polite" className="ml-2 flex items-center gap-1.5 text-xs font-medium text-[#3b694a] dark:text-[#b8d8bc]">
+                    <span aria-live="polite" className="ml-2 flex items-center gap-1.5 text-xs font-medium text-foreground dark:text-foreground">
                       <span className="size-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
                       Proposition en cours…
                     </span>
@@ -890,7 +894,7 @@ const NotesPro: React.FC = () => {
 
               {/* Editor content area */}
               <div
-                className="min-h-0 flex-1 cursor-text select-text overflow-y-auto overscroll-contain bg-[#f7f8f5] pb-8 [scrollbar-gutter:stable] dark:bg-[#111714]"
+                className="min-h-0 flex-1 cursor-text select-text overflow-y-auto overscroll-contain bg-muted pb-8 [scrollbar-gutter:stable] dark:bg-muted"
                 onClick={(e) => {
                   if (e.target === e.currentTarget) {
                     editorInstance?.commands.focus("end");
@@ -898,7 +902,7 @@ const NotesPro: React.FC = () => {
                 }}
               >
                 <div
-                  className="mx-auto my-6 flex min-h-[calc(100%-48px)] w-[calc(100%-40px)] max-w-[820px] flex-col bg-white px-8 py-9 shadow-[0_2px_3px_rgba(32,51,37,0.03),0_16px_48px_-30px_rgba(32,51,37,0.25)] ring-1 ring-[#e8ece5] dark:bg-[#1b241e] dark:shadow-none dark:ring-white/10 md:my-8 md:w-[calc(100%-64px)] md:px-11 md:py-11"
+                  className="mx-auto my-5 flex min-h-[calc(100%-40px)] w-[calc(100%-32px)] max-w-[820px] flex-col bg-card px-5 py-6 shadow-sm ring-1 ring-border md:my-5 md:w-[calc(100%-40px)] md:px-8 md:py-8"
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       editorInstance?.commands.focus("end");
@@ -919,7 +923,8 @@ const NotesPro: React.FC = () => {
                     <>
                       {/* Note title */}
                       <input
-                        className="mb-2.5 w-full bg-transparent font-heading text-[31px] font-semibold leading-tight tracking-[-0.035em] text-[#203426] outline-none placeholder:text-[#8a9a8c] focus-visible:ring-2 focus-visible:ring-[#5d9375]/30 dark:text-[#f1f5ef] dark:placeholder:text-[#849a89]"
+                        aria-label="Titre du document"
+                        className="mb-2.5 w-full bg-transparent font-heading text-[31px] font-semibold leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
                         onChange={(e) => handleTitleChange(e.target.value)}
                         placeholder="Sans titre"
                         type="text"
@@ -928,13 +933,13 @@ const NotesPro: React.FC = () => {
 
                       {/* Meta line below title */}
                       <div className="mb-9 flex flex-wrap items-center gap-2.5">
-                        <p className="text-xs text-[#6a7a6d] dark:text-[#a7b7a9]">
+                        <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                           {formatFullDate(activeNote.updatedAt)}
                         </p>
                         {wordCount > 0 && (
                           <>
                             <span className="text-foreground/50">·</span>
-                            <p className="text-xs text-[#6a7a6d] tabular-nums dark:text-[#a7b7a9]">
+                            <p className="text-xs text-muted-foreground tabular-nums dark:text-muted-foreground">
                               {wordCount} mots
                             </p>
                           </>
@@ -974,21 +979,21 @@ const NotesPro: React.FC = () => {
 
             </div>
           ) : (
-            <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8f5] px-5 py-6 dark:bg-[#111714] md:px-8 md:py-8">
-              <div className="mx-auto flex min-h-[440px] w-full max-w-[820px] flex-col bg-white px-8 py-9 shadow-[0_2px_3px_rgba(32,51,37,0.03),0_16px_48px_-30px_rgba(32,51,37,0.25)] ring-1 ring-[#e8ece5] dark:bg-[#1b241e] dark:shadow-none dark:ring-white/10 md:px-11 md:py-11">
+            <div className="min-h-0 flex-1 overflow-y-auto bg-muted px-5 py-6 dark:bg-muted md:px-8 md:py-8">
+              <div className="mx-auto flex min-h-[440px] w-full max-w-[820px] flex-col bg-card px-5 py-6 shadow-sm ring-1 ring-border md:px-8 md:py-8">
                 <div className="flex flex-1 flex-col justify-center py-12">
-                  <h2 className="max-w-md font-heading text-[32px] font-semibold leading-tight tracking-[-0.035em] text-[#203426] dark:text-[#f1f5ef]">{activePatient ? `Le dossier de ${activePatient.name} commence ici.` : "Un espace pour chaque observation."}</h2>
-                  <p className="mt-4 max-w-md text-sm leading-6 text-[#647467] dark:text-[#b0c0b2]">{activePatient ? `Les nouvelles notes seront directement rattachées au dossier de ${activePatient.name}. Vous pourrez changer ce rattachement depuis l’en-tête du document.` : "Rédigez librement, puis rattachez votre document au dossier d’un patient. Les notes sont enregistrées au fil de l’écriture."}</p>
+                  <h2 className="max-w-md font-heading text-[32px] font-semibold leading-tight tracking-[-0.035em] text-foreground dark:text-foreground">{activePatient ? `Le dossier de ${activePatient.name} commence ici.` : "Un espace pour chaque observation."}</h2>
+                  <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground dark:text-muted-foreground">{activePatient ? `Les nouvelles notes seront directement rattachées au dossier de ${activePatient.name}. Vous pourrez changer ce rattachement depuis l’en-tête du document.` : "Rédigez librement, puis rattachez votre document au dossier d’un patient. Les notes sont enregistrées au fil de l’écriture."}</p>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
-                    <Button className="h-10 rounded-xl bg-[#264735] px-4 text-white hover:bg-[#1d382a] dark:bg-[#d9eadb] dark:text-[#17261c] dark:hover:bg-white" onClick={() => void handleCreateTemplate("consultation")}>
+                    <Button className="h-10 rounded-full px-5" onClick={() => void handleCreateTemplate("consultation")}>
                       <HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} strokeWidth={1.5} />Note de consultation
                     </Button>
-                    <button className="text-sm font-medium text-[#3b694a] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/40 dark:text-[#b8d8bc]" onClick={() => void handleCreateNote()} type="button">Page vierge</button>
+                    <button className="text-sm font-medium text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 dark:text-foreground" onClick={() => void handleCreateNote()} type="button">Page vierge</button>
                   </div>
                   {filteredNotes[0] && (
-                    <button className="mt-10 flex max-w-md items-center justify-between gap-4 border-[#e9eee8] border-t py-4 text-left hover:text-[#2f6241] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5d9375]/40 dark:border-white/10 dark:hover:text-[#b8d8bc]" onClick={() => handleSelectNote(filteredNotes[0].id)} type="button">
-                      <span className="min-w-0"><span className="block text-xs text-[#718273] dark:text-[#a7b7a9]">Reprendre la dernière note</span><span className="mt-1 block truncate text-sm font-medium text-[#2b4232] dark:text-[#e8efe8]">{filteredNotes[0].title || "Sans titre"}</span></span>
-                      <span className="shrink-0 text-xs text-[#718273] dark:text-[#a7b7a9]">{formatDate(filteredNotes[0].updatedAt)}</span>
+                    <button className="mt-10 flex max-w-md items-center justify-between gap-4 border-border border-t py-4 text-left hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 dark:border-white/10 dark:hover:text-foreground" onClick={() => handleSelectNote(filteredNotes[0].id)} type="button">
+                      <span className="min-w-0"><span className="block text-xs text-muted-foreground dark:text-muted-foreground">Reprendre la dernière note</span><span className="mt-1 block truncate text-sm font-medium text-foreground dark:text-foreground">{filteredNotes[0].title || "Sans titre"}</span></span>
+                      <span className="shrink-0 text-xs text-muted-foreground dark:text-muted-foreground">{formatDate(filteredNotes[0].updatedAt)}</span>
                     </button>
                   )}
                   {!showSidebar && <Button className="mt-6 w-fit" onClick={() => setShowSidebar(true)} variant="outline"><HugeiconsIcon className="mr-2 size-4" icon={Folder01Icon} strokeWidth={1.5} />Voir la bibliothèque</Button>}

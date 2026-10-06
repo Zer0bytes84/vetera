@@ -122,3 +122,14 @@ export function buildFinancialOverview(
     receivables,
   };
 }
+
+/** Never show a full goal meter while any balance remains outstanding. */
+export function collectionProgress(total: number, collected: number, segments = 40) {
+  if (total <= 0) return { percentage: null, filledSegments: 0 };
+  const fraction = Math.max(0, Math.min(1, collected / total));
+  const incomplete = collected < total;
+  return {
+    percentage: Math.min(incomplete ? 99 : 100, Math.round(fraction * 100)),
+    filledSegments: incomplete ? Math.min(segments - 1, Math.floor(fraction * segments)) : segments,
+  };
+}

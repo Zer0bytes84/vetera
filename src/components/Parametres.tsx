@@ -1,3 +1,4 @@
+import { PageDate } from "@/components/PageDate";
 import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
 import { InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
@@ -30,6 +31,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLayout } from "@/contexts/layout-provider";
 import { useUsersRepository } from "@/data/repositories";
@@ -403,6 +405,7 @@ interface ParametresProps {
 
 const Parametres: React.FC<ParametresProps> = ({
   currentTheme = "light",
+  onNavigate,
   onThemeChange,
 }) => {
   const sanitizeAvatarValue = (value?: string | null) => {
@@ -700,6 +703,18 @@ const Parametres: React.FC<ParametresProps> = ({
               </div>
               <div className="settings-row">
                 <div>
+                  <label htmlFor="liquid-glass-navigation" className="settings-row-title cursor-pointer">Liquid Glass</label>
+                  <p id="liquid-glass-description" className="settings-row-detail">Une capsule de verre et des contours arrondis autour des icônes.</p>
+                </div>
+                <Switch
+                  id="liquid-glass-navigation"
+                  aria-describedby="liquid-glass-description"
+                  checked={themeConfig.chromeStyle === "liquid-glass"}
+                  onCheckedChange={(checked) => handleThemeConfigChange({ ...themeConfig, chromeStyle: checked ? "liquid-glass" : "classic" })}
+                />
+              </div>
+              <div className="settings-row">
+                <div>
                   <p className="settings-row-title">Couleur d’accent</p>
                   <p className="settings-row-detail">Repère discret dans l’interface.</p>
                 </div>
@@ -718,6 +733,20 @@ const Parametres: React.FC<ParametresProps> = ({
                     </button>
                   ))}
                 </div>
+              </div>
+            </section>
+            <section className="settings-panel">
+              <div className="settings-row">
+                <div>
+                  <p className="settings-row-title">Disposition du tableau de bord</p>
+                  <p className="settings-row-detail">Réorganisez les rangées de widgets de la vue classique.</p>
+                </div>
+                <Button variant="outline" onClick={() => {
+                  window.sessionStorage.setItem("baitari:customize-dashboard", "true");
+                  onNavigate?.("dashboard");
+                }} disabled={!onNavigate}>
+                  Réorganiser les widgets
+                </Button>
               </div>
             </section>
             <DashboardVersionSetting />
@@ -864,6 +893,7 @@ const Parametres: React.FC<ParametresProps> = ({
     <div className="settings-page">
       <div className="settings-page-header">
         <div>
+          <div className="mb-1"><PageDate /></div>
           <h1>Paramètres</h1>
           <p>Votre compte, votre espace et les données du cabinet.</p>
         </div>

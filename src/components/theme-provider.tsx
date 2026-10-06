@@ -1,4 +1,5 @@
 import * as React from "react";
+import { isTauri } from "@tauri-apps/api/core";
 import {
   applyTheme as applyAppearance,
   getThemeConfig,
@@ -129,6 +130,16 @@ export function ThemeProvider({
   React.useLayoutEffect(() => {
     applyTheme(resolvedTheme);
   }, [resolvedTheme, applyTheme]);
+
+  React.useEffect(() => {
+    if (!isTauri()) return;
+    let cancelled = false;
+    // Native titlebar controls must follow the chosen app theme, not macOS alone.
+    void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
+      if (!cancelled) return getCurrentWindow().setTheme(resolvedTheme);
+    }).catch((error) => console.warn("Native window theme could not be synchronized", error));
+    return () => { cancelled = true; };
+  }, [resolvedTheme]);
 
   React.useEffect(() => {
     const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY);

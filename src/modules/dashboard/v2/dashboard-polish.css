@@ -1,5 +1,15 @@
 /* Operational polish: preserve the approved KPI row and the Protocol shell. */
 .studio-dashboard {
+  --dashboard-analytical-background: var(--sidebar);
+  --analysis-foreground: var(--sidebar-foreground);
+  --analysis-muted: var(--ink-muted);
+  --analysis-border: var(--sidebar-border);
+  --analysis-card: var(--sidebar);
+  --analysis-control: rgb(255 255 255 / .52);
+  --analysis-plot: rgb(255 255 255 / .45);
+  --analysis-invoices: #61779f;
+  --analysis-manual: #42828b;
+  --analysis-pending: #ad805d;
   --dashboard-ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 .studio-dashboard .studio-panel h2 {
@@ -763,3 +773,116 @@
 .studio-kpi-action { text-align: left; width: 100%; }
 .studio-kpi-action:hover { color: var(--primary); }
 .studio-kpi-action:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 3px; }
+
+/* A tighter classic dashboard, with full-size values and usable chart targets. */
+.studio-dashboard .studio-kpi-heading { min-height: 36px; padding-block: 4px; }
+.studio-dashboard .studio-kpi-body { gap: 4px; padding: 12px 13px 10px; }
+.studio-dashboard .studio-kpi-detail { margin-top: 4px; }
+.studio-dashboard .studio-kpi-visual { height: 54px; margin-top: 4px; gap: 4px; }
+.studio-dashboard .studio-kpi-visual svg { height: 34px; }
+.studio-dashboard .studio-mini-tooltip { bottom: 52px; }
+.studio-dashboard .studio-kpi-action { margin-top: 4px; padding-top: 8px; min-height: 30px; }
+
+.studio-dashboard :is(.studio-panel, .studio-widget-surface) > header { padding-block: 14px 10px; }
+.studio-dashboard :is(.studio-panel, .studio-widget-surface) > footer { min-height: 44px; padding-block: 8px; }
+.studio-dashboard .classic-finance-totals { padding-block: 10px; }
+.studio-dashboard .classic-finance-distribution { padding-block: 10px 12px; }
+.studio-dashboard .classic-donut { max-width: 136px; }
+.studio-dashboard .classic-category-list { gap: 18px; }
+.studio-dashboard .classic-balance { padding-block: 12px; }
+.studio-dashboard .classic-debt-list button { padding-block: 10px; }
+.studio-dashboard .studio-chart-heading { padding-bottom: 10px; }
+.studio-dashboard .studio-activity .studio-chart { height: 160px; }
+.studio-dashboard .studio-widget-surface .studio-empty { min-height: 160px; padding-block: 16px; }
+.studio-dashboard .studio-widget-surface .studio-alert { min-height: 56px; padding-block: 9px; }
+
+.studio-dashboard .insight-surface { padding-block: 14px 12px; }
+.studio-dashboard .insight-metric { margin-block: 8px; }
+.studio-dashboard .insight-visual { height: 196px; padding: 10px; }
+.studio-dashboard .insight-heatmap-visual { gap: 8px; }
+.studio-dashboard .insight-heatmap { gap: 2px; }
+.studio-dashboard .insight-surface .insight-footer { margin-top: 10px; padding-top: 8px; min-height: 46px; }
+.studio-dashboard .insight-types-chart { height: 172px; }
+.studio-dashboard :is(.visit-flow-main, .visit-flow-queue) { padding-block: 14px; }
+.studio-dashboard .visit-flow-patient { margin-top: 10px; }
+.studio-dashboard .visit-flow-steps { margin-block: 12px; }
+
+.studio-dashboard .insights-grid { align-items: stretch; }
+.studio-dashboard .dashboard-insights .insight-card { display: flex; }
+.studio-dashboard .insight-surface { flex: 1; }
+
+/* Financial filters share the title row; the donut stays near the totals. */
+.studio-dashboard .classic-receipts > header { align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.studio-dashboard .classic-receipts > header > div:first-child { flex-shrink: 0; }
+.studio-dashboard .classic-receipts .classic-finance-controls { padding: 0; margin-inline-start: auto; justify-content: flex-end; gap: 6px; min-width: 0; }
+.studio-dashboard .classic-financial-grid .studio-panel > header { padding-block: 12px 8px; }
+.studio-dashboard .classic-finance-totals { padding-block: 8px; }
+.studio-dashboard .classic-finance-distribution { padding-block: 8px; }
+.studio-dashboard .classic-category-list { gap: 14px; }
+.studio-dashboard .classic-balance { margin-bottom: 8px; padding-block: 10px; }
+.studio-dashboard .classic-debt-list { padding-bottom: 10px; }
+.studio-dashboard .classic-financial-grid .studio-panel > footer { min-height: 40px; padding-block: 6px; }
+@media (max-width: 640px) {
+  .studio-dashboard .classic-receipts .classic-finance-controls { margin-inline-start: 0; justify-content: flex-start; width: 100%; }
+}
+
+/* Analytical cards share the sidebar gray in both themes. */
+.dark .studio-dashboard {
+  --dashboard-analytical-background: var(--sidebar);
+  --analysis-foreground: var(--sidebar-foreground);
+  --analysis-muted: var(--ink-muted);
+  --analysis-border: var(--sidebar-border);
+  --analysis-card: var(--sidebar);
+  --analysis-control: rgb(255 255 255 / .04);
+  --analysis-plot: rgb(0 0 0 / .16);
+  --analysis-invoices: #b7c8e1;
+  --analysis-manual: #95c2c5;
+  --analysis-pending: #d5ac88;
+}
+.studio-dashboard .insights-types .insight-surface {
+  background: var(--dashboard-analytical-background);
+  --card: var(--analysis-card);
+  --background: var(--analysis-card);
+  --popover: var(--analysis-card);
+  --popover-foreground: var(--analysis-foreground);
+  --foreground: var(--analysis-foreground);
+  --muted-foreground: var(--analysis-muted);
+  --border: var(--analysis-border);
+  --ring: var(--analysis-invoices);
+  --insight-act-primary: #8ba7bd;
+  --insight-act-secondary: #b2bdc6;
+  border-color: var(--analysis-border);
+  color-scheme: light;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .5);
+}
+.dark .studio-dashboard .insights-types .insight-surface { color-scheme: dark; --insight-act-primary: #a4bdd2; --insight-act-secondary: #8499a8; box-shadow: inset 0 1px 0 rgb(237 228 206 / .06); }
+.studio-dashboard .insights-types .insight-types-visual { background: var(--analysis-plot); border-color: var(--analysis-border); color: var(--analysis-foreground); }
+.studio-dashboard .insights-types .insight-heading select { background: var(--analysis-control); border-color: var(--analysis-border); }
+.studio-dashboard .insights-types .insight-types-chart .insight-bar-value { fill: var(--analysis-foreground); }
+.studio-dashboard .insights-types .insight-types-chart .recharts-cartesian-axis-tick text { fill: var(--analysis-muted) !important; }
+.studio-dashboard .insights-types .insight-chart-empty { color: var(--analysis-muted); }
+
+/* Compact essentials leave the financial row visible without miniature charts. */
+.studio-dashboard .studio-kpi-heading { min-height: 32px; padding: 3px 10px; }
+.studio-dashboard .studio-kpi-body { padding: 10px 12px 8px; gap: 10px; }
+.studio-dashboard .studio-kpi-measure { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.studio-dashboard .studio-kpi-measure .studio-kpi-value { flex: 1; min-width: 0; }
+.studio-dashboard .studio-kpi-context { flex-shrink: 0; margin-top: 0; font-size: 10px; white-space: nowrap; }
+.studio-dashboard .studio-kpi-meta { display: flex; align-items: center; justify-content: space-between; min-width: 0; gap: 6px; }
+.studio-dashboard .studio-kpi-meta .studio-kpi-detail { flex: 1; min-width: 0; margin: 0; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.studio-dashboard .studio-kpi-meta .studio-kpi-status { flex-shrink: 0; font-size: 9px; padding: 3px 5px; }
+.studio-dashboard .studio-kpi-action { margin-top: 0; padding-top: 7px; min-height: 27px; font-size: 10px; }
+@media (max-width: 650px) {
+  .studio-dashboard .studio-kpi-measure { align-items: flex-start; flex-direction: column; gap: 1px; }
+  .studio-dashboard .studio-kpi-meta { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .studio-dashboard .studio-kpi-meta .studio-kpi-detail { width: 100%; }
+}
+@container (max-width: 740px) {
+  .studio-dashboard .studio-garden-widgets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.studio-dashboard .studio-kpi-title { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.studio-dashboard .studio-kpi-title > svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--muted-foreground); }
+.studio-dashboard .studio-kpi-title > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.studio-dashboard .studio-main-grid.studio-main-analytics { grid-template-columns: minmax(0, 1fr); }

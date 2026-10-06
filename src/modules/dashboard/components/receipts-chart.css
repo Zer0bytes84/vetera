@@ -1,0 +1,182 @@
+.receipts-analytics {
+  --receipts-invoices: #078b70;
+  --receipts-manual: #4697ee;
+  --receipts-pending: #e6a035;
+  padding: 0 20px 10px;
+}
+.dark .receipts-analytics { --receipts-invoices: #43c7a0; --receipts-manual: #78b7fb; --receipts-pending: #edb557; }
+.receipts-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0 9px; border-bottom: 1px solid var(--border); }
+.receipts-summary > div { flex: 1; min-width: 0; }
+.receipts-summary > div > span:last-child { font-weight: 500; letter-spacing: -.035em; line-height: 1.2; }
+.receipts-summary > div > span:first-child { display: block; font-size: 11px; color: var(--muted-foreground); margin-bottom: 4px; }
+.receipts-rate { flex-shrink: 0; padding: 5px 8px; border-radius: 6px; background: color-mix(in srgb, var(--receipts-invoices) 9%, var(--card)); color: var(--receipts-invoices); font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.receipts-legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 9px 0 5px; }
+.receipts-legend > div { min-width: 0; }
+.receipts-legend > div > span:first-child { display: flex; align-items: center; gap: 6px; color: var(--muted-foreground); font-size: 10px; margin-bottom: 4px; }
+.receipts-analytics i { display: inline-block; width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; }
+.receipts-chart { width: 100%; height: 150px; aspect-ratio: auto; }
+.receipts-chart-empty { display: grid; place-items: center; min-height: 140px; font-size: 12px; color: var(--muted-foreground); }
+.receipts-tooltip { min-width: 230px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--popover); color: var(--popover-foreground); box-shadow: 0 6px 24px rgb(0 0 0 / .1); font-size: 11px; }
+.receipts-tooltip > strong { display: block; margin-bottom: 10px; font-weight: 550; text-transform: capitalize; }
+.receipts-tooltip > div { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-block: 4px; }
+.receipts-tooltip > div > span { display: flex; align-items: center; gap: 6px; color: var(--muted-foreground); }
+.receipts-tooltip b { font-weight: 550; font-variant-numeric: tabular-nums; }
+.receipts-tooltip .receipts-tooltip-total { margin-top: 5px; padding-top: 8px; border-top: 1px solid var(--border); }
+@media (max-width: 640px) { .receipts-analytics { padding-inline: 14px; } .receipts-legend { gap: 8px; } .receipts-legend > div > span:first-child { align-items: flex-start; line-height: 1.4; min-height: 28px; } .receipts-legend i { margin-top: 3px; } .receipts-chart { height: 160px; } }
+
+/* The companion card uses the same surfaces, with amber reserved for open balances. */
+.studio-dashboard .classic-receivables { --receipts-pending: #df9424; }
+.dark .studio-dashboard .classic-receivables { --receipts-pending: #edb557; }
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance {
+  padding: 8px 0 10px; margin: 0 20px; border-radius: 0; background: transparent;
+  border-bottom: 1px solid var(--border); color: var(--foreground);
+}
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance > span:first-child,
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance p { color: var(--muted-foreground); }
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance p { margin-top: 4px; font-size: 11px; }
+.studio-dashboard .classic-receivables .classic-debt-list { padding-bottom: 6px; }
+.studio-dashboard .classic-receivables .classic-debt-empty { padding-block: 6px; }
+.studio-dashboard .classic-financial-grid:has(.receipts-analytics) { align-items: stretch; }
+.studio-dashboard .classic-financial-grid > .studio-finish { display: flex; }
+.studio-dashboard .classic-financial-grid > .studio-finish > section { flex: 1; }
+.studio-dashboard .classic-financial-grid > .studio-finish > section > footer { margin-top: auto; }
+
+/* A quiet material surface shared with the acts widget. */
+.studio-dashboard .classic-financial-grid .finance-signature-card {
+  --receipts-invoices: var(--analysis-invoices);
+  --receipts-manual: var(--analysis-manual);
+  --receipts-pending: var(--analysis-pending);
+  --border: var(--analysis-border);
+  --muted-foreground: var(--analysis-muted);
+  --foreground: var(--analysis-foreground);
+  --card: var(--analysis-card);
+  --popover: var(--analysis-card);
+  --popover-foreground: var(--analysis-foreground);
+  background: var(--dashboard-analytical-background);
+  color: var(--analysis-foreground);
+  border-color: var(--analysis-border);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .5);
+}
+.dark .studio-dashboard .classic-financial-grid .finance-signature-card { box-shadow: inset 0 1px 0 rgb(237 228 206 / .06); }
+.studio-dashboard .finance-signature-card > header h2 { color: var(--analysis-foreground); }
+.finance-signature-card .receipts-analytics { --receipts-invoices: var(--analysis-invoices); --receipts-manual: var(--analysis-manual); --receipts-pending: var(--analysis-pending); }
+.finance-signature-card .receipts-chart { height: 170px; }
+.finance-signature-card .receipts-chart .recharts-cartesian-axis-tick text { fill: var(--analysis-muted) !important; }
+.finance-signature-card .receipts-rate { color: var(--analysis-manual); background: color-mix(in srgb, var(--analysis-manual) 10%, transparent); }
+.finance-signature-card .receipts-summary { padding-bottom: 12px; }
+.finance-signature-card .receipts-legend { padding-block: 12px 7px; }
+.finance-signature-card .receipts-tooltip { border-color: var(--analysis-border); color: var(--analysis-foreground); background: var(--analysis-card); }
+.finance-signature-card footer, .finance-signature-card footer .studio-link { color: var(--analysis-muted); }
+.finance-signature-card .classic-finance-controls button { background: var(--analysis-control); color: var(--analysis-foreground); border-color: var(--analysis-border); }
+.finance-signature-card .classic-finance-controls button [class*="text-muted"] { color: var(--analysis-muted); }
+.finance-signature-card .receipts-chart-empty { color: var(--analysis-muted); min-height: 170px; }
+.finance-signature-card .receipts-tooltip i { width: 6px; height: 6px; border-radius: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .finance-signature-card .classic-finance-controls button:hover { background: color-mix(in srgb, var(--analysis-muted) 8%, var(--analysis-control)); }
+}
+
+.receivables-breakdown {
+  --debt-collected: #b87543;
+  --debt-collected-light: #eac77b;
+  --debt-overdue: #d3663f;
+  --debt-partial: #d8a338;
+  --debt-awaiting: #dbb16b;
+  padding: 13px 20px 5px;
+}
+.dark .receivables-breakdown { --debt-collected: #ce945c; --debt-collected-light: #f2d99a; --debt-overdue: #f09674; --debt-partial: #e6ba62; --debt-awaiting: #d6b67f; }
+.debt-breakdown-heading { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; color: var(--foreground); }
+.debt-breakdown-heading small { color: var(--muted-foreground); font-size: 10px; }
+.debt-segment-bar { display: flex; gap: 3px; height: 27px; margin-block: 11px 13px; }
+.debt-segment-bar > i { min-width: 0; flex: 1; border-radius: 3px; background: var(--muted); }
+.debt-status-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.debt-status-grid > div { min-width: 0; border-radius: 6px; padding: 5px 4px; outline-offset: 2px; transition: background-color 150ms ease; }
+.debt-status-grid > div:focus-visible { outline: 2px solid var(--ring); }
+.debt-status-grid > div > span:first-child { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--muted-foreground); }
+.debt-status-grid i { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.debt-status-grid strong { display: block; font-size: 22px; font-weight: 500; letter-spacing: -.025em; line-height: 1.4; }
+.debt-status-grid small { display: block; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--muted-foreground); }
+.debt-breakdown-detail { font-size: 10px; color: var(--muted-foreground); min-height: 28px; margin-block: 6px 0; }
+.studio-dashboard .classic-receivables .classic-debt-list button[data-overdue] small { color: var(--debt-overdue, #b85430); }
+.studio-dashboard .classic-receivables .classic-debt-list button:hover { color: var(--foreground); background: var(--muted); }
+@media (hover: hover) and (pointer: fine) { .debt-status-grid > div:hover { background: var(--muted); } }
+@media (max-width: 640px) { .receivables-breakdown { padding-inline: 14px; } .debt-segment-bar { gap: 2px; } }
+
+/* The companion follows the reference's meter-and-three-metrics composition. */
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance { border-bottom: 0; padding-bottom: 8px; }
+.classic-receivables .receivables-breakdown { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 10px; padding-bottom: 14px; }
+.debt-pile-scale { display: flex; justify-content: space-between; gap: 10px; margin-top: 13px; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+.classic-receivables .debt-segment-bar { height: 38px; gap: 4px; margin-block: 9px 24px; }
+.classic-receivables .debt-status-grid { gap: 14px; }
+.classic-receivables .debt-status-grid > div { padding: 4px 0; }
+.classic-receivables .debt-status-grid .debt-status-amount { font-size: 19px; margin-block: 5px 2px; white-space: nowrap; letter-spacing: -.035em; }
+.classic-receivables .debt-breakdown-detail { min-height: 14px; margin-top: 16px; }
+@media (max-width: 640px) {
+ .classic-receivables .debt-segment-bar { gap: 3px; }
+ .classic-receivables .debt-status-grid { gap: 8px; }
+ .classic-receivables .debt-status-grid .debt-status-amount { font-size: 16px; }
+}
+
+.classic-receivables .debt-segment-bar > i:not([data-filled]) { background: color-mix(in srgb, var(--muted-foreground) 24%, var(--card)); }
+.classic-receivables .debt-status-amount { font-weight: 500; line-height: 1.4; }
+
+.debt-pile-interaction { position: relative; }
+.debt-segment-bar { outline-offset: 5px; }
+.debt-segment-bar:focus-visible { outline: 2px solid var(--ring); border-radius: 3px; }
+.debt-segment-bar > i { transform-origin: bottom; transition: transform 140ms cubic-bezier(.23,1,.32,1), filter 140ms ease; }
+.debt-segment-bar > i[data-active] { transform: translateY(-3px) scaleY(1.12); filter: brightness(1.12); box-shadow: 0 2px 5px rgb(80 46 16 / .14); }
+.debt-pile-tooltip { position: absolute; bottom: calc(100% - 2px); transform: translateX(-50%); width: 180px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; background: var(--popover); color: var(--popover-foreground); box-shadow: 0 5px 18px rgb(0 0 0 / .12); z-index: 5; pointer-events: none; }
+.debt-pile-tooltip > span { display: flex; gap: 6px; align-items: center; font-size: 10px; color: var(--muted-foreground); }
+.debt-pile-tooltip i { width: 6px; height: 6px; border-radius: 2px; background: var(--muted-foreground); }
+.debt-pile-tooltip i[data-collected] { background: var(--debt-collected); }
+.debt-pile-tooltip strong { display: block; font-weight: 550; font-size: 17px; font-variant-numeric: tabular-nums; margin-top: 3px; }
+.debt-pile-tooltip small { display: block; font-size: 10px; color: var(--muted-foreground); margin-top: 3px; }
+@media (prefers-reduced-motion: reduce) { .debt-segment-bar > i { transition: none; } }
+/* Keep the second row readable in a nearly full-screen desktop window. */
+.studio-dashboard .classic-financial-grid .studio-panel > header { padding: 10px 16px 6px; }
+.finance-signature-card .receipts-analytics { padding: 0 16px 6px; }
+.finance-signature-card .receipts-summary { padding-block: 2px 8px; }
+.finance-signature-card .receipts-legend { padding-block: 8px 4px; }
+.finance-signature-card .receipts-chart { height: 138px; }
+.finance-signature-card .receipts-chart-empty { min-height: 138px; }
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance { margin-inline: 16px; padding: 4px 0 2px; }
+.classic-receivables .receivables-breakdown { padding: 8px 16px 10px; }
+.classic-receivables .debt-pile-scale { margin-top: 8px; }
+.classic-receivables .debt-segment-bar { height: 30px; margin-block: 8px 12px; }
+.classic-receivables .debt-status-grid .debt-status-amount { margin-block: 3px 1px; }
+.classic-receivables .debt-breakdown-detail { margin-top: 8px; }
+.studio-dashboard .classic-financial-grid .studio-panel > footer { padding: 6px 16px; min-height: 36px; }
+@media (max-width: 640px) {
+ .studio-dashboard .classic-financial-grid .studio-panel > header { padding-inline: 14px; }
+ .finance-signature-card .receipts-analytics, .classic-receivables .receivables-breakdown { padding-inline: 14px; }
+ .studio-dashboard .classic-financial-grid .classic-receivables .classic-balance { margin-inline: 14px; }
+}
+
+/* Direct manipulation of the three series, without hiding the other data. */
+.receipts-legend { gap: 8px; }
+.receipts-series-button { min-width: 0; text-align: left; padding: 5px 6px; margin-inline: -6px; border-radius: 6px; transition: background-color 140ms ease; }
+.receipts-series-button > span:first-child { display: flex; align-items: center; gap: 6px; color: var(--muted-foreground); font-size: 10px; margin-bottom: 4px; }
+.receipts-series-button > span:last-child { font-weight: 500; letter-spacing: -.02em; }
+.receipts-series-button[data-highlighted] { background: color-mix(in srgb, var(--analysis-muted) 8%, transparent); }
+.receipts-series-button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.receipts-chart-note { display: flex; justify-content: space-between; gap: 10px; font-size: 9px; color: var(--muted-foreground); padding-top: 1px; }
+.finance-signature-card .receipts-chart { height: 148px; }
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance > span[title] { font-size: 30px !important; }
+.studio-dashboard .classic-financial-grid .classic-receivables .classic-balance p { margin-top: 2px; }
+@media (max-width: 640px) {
+ .receipts-series-button > span:first-child { min-height: 28px; line-height: 1.4; align-items: flex-start; }
+ .receipts-series-button > span:first-child i { margin-top: 3px; }
+ .receipts-chart-note > span:last-child { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .receipts-series-button { transition: none; } }
+/* Final compact rhythm: preserve readable amounts and a usable plot. */
+.studio-dashboard .classic-financial-grid > .studio-finish > .studio-panel > header { padding: 8px 16px 6px; }
+.studio-dashboard .classic-financial-grid > .studio-finish > .studio-panel > footer { min-height: 36px; padding: 4px 16px; }
+.studio-dashboard .finance-signature-card .receipts-summary { padding: 0 0 6px; }
+.studio-dashboard .finance-signature-card .receipts-summary > div > span:first-child { margin-bottom: 2px; font-size: 10px; }
+.studio-dashboard .finance-signature-card .receipts-summary > div > span:last-child { font-size: 28px !important; }
+.studio-dashboard .finance-signature-card .receipts-legend { padding: 5px 0 2px; }
+.studio-dashboard .finance-signature-card .receipts-series-button { padding-block: 3px; }
+.studio-dashboard .finance-signature-card .receipts-series-button > span:first-child { margin-bottom: 2px; line-height: 1.25; }
+.studio-dashboard .finance-signature-card .receipts-series-button > span:last-child { line-height: 1.3; }
+.studio-dashboard .finance-signature-card .receipts-chart { height: 128px; }
+.studio-dashboard .finance-signature-card .receipts-chart-empty { min-height: 128px; }

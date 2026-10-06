@@ -426,6 +426,7 @@ const Tasks: React.FC = () => {
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="taches" title="Rappels" subtitle="Retrouvez les actions à suivre et les rappels du planning." />
+        <div data-slot="page-header-actions">
         <NativeSelect
           aria-label="Périmètre des rappels"
           className="w-full md:w-44"
@@ -435,6 +436,7 @@ const Tasks: React.FC = () => {
           <NativeSelectOption value="mine">Mes rappels</NativeSelectOption>
           <NativeSelectOption value="team">Toute l'équipe</NativeSelectOption>
         </NativeSelect>
+        </div>
       </header>
 
       <SectionCards items={[

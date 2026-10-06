@@ -448,7 +448,7 @@ export function DashboardInsights({
                 {total > 0 ? (
                   <ChartContainer
                     config={{
-                      count: { label: "Rendez-vous", color: "#30c5ea" },
+                      count: { label: "Rendez-vous", color: "var(--insight-act-primary)" },
                     }}
                     className="insight-types-chart"
                     initialDimension={{ width: 320, height: 208 }}
@@ -463,6 +463,7 @@ export function DashboardInsights({
                         type="category"
                         dataKey="label"
                         tickFormatter={shortType}
+                        tick={{ fill: "var(--analysis-muted)", fontSize: 10 }}
                         tickLine={false}
                         axisLine={false}
                         interval={0}
@@ -472,6 +473,7 @@ export function DashboardInsights({
                       <YAxis
                         type="number"
                         domain={[0, "dataMax"]}
+                        tick={{ fill: "var(--analysis-muted)", fontSize: 10 }}
                         allowDecimals={false}
                         tickLine={false}
                         axisLine={false}
@@ -496,7 +498,7 @@ export function DashboardInsights({
                           <Cell
                             key={type.label}
                             fill={
-                              index === 0 ? "var(--color-count)" : "#8ba4ad"
+                              index === 0 ? "var(--color-count)" : "var(--insight-act-secondary)"
                             }
                           />
                         ))}

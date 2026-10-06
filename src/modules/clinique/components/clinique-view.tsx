@@ -156,7 +156,7 @@ export function CliniqueView(props: CliniqueViewProps) {
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="clinique" />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button
             className="h-10 rounded-full px-5"
             onClick={() => onNavigate?.("agenda")}

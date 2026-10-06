@@ -195,12 +195,19 @@ export function AppSidebar({
               collapsed={isCollapsed}
               size={isCollapsed ? "sm" : "lg"}
               textSize="md"
+              variant="refined"
             />
           </button>
           {!isCollapsed && (
-            <SidebarTrigger className="-mr-1 size-8 rounded-lg text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground" />
+            <SidebarTrigger className="sidebar-logo-toggle -mr-1 size-8 rounded-lg text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground" />
           )}
         </div>
+        {!isCollapsed && isDesktopRuntime && (
+          <SidebarTrigger className="sidebar-window-toggle absolute end-3 size-8 rounded-lg text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground" />
+        )}
+        {isCollapsed && isDesktopRuntime && (
+          <SidebarTrigger aria-label="Déployer la barre latérale" title="Déployer la barre latérale" className="sidebar-icon-mode-toggle absolute size-8 text-sidebar-foreground/65 hover:text-sidebar-foreground" />
+        )}
       </SidebarHeader>
       <SidebarContent
         className={cn(
@@ -245,7 +252,7 @@ export function AppSidebar({
         {isCollapsed ? (
           <SidebarTrigger
             aria-label="Déployer la barre latérale"
-            className="size-11 rounded-xl text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            className="sidebar-footer-toggle size-11 rounded-xl text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-foreground"
             title="Déployer la barre latérale"
           />
         ) : null}

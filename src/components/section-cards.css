@@ -20,3 +20,8 @@ button.section-atlas-content:hover .section-atlas-body { border-color: var(--mut
 @container (max-width: 600px) { .section-atlas-grid[data-card-count="3"] { grid-template-columns: 1fr; } }
 @container (max-width: 400px) { .section-atlas-grid, .section-atlas-grid[data-card-count="2"] { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .section-atlas-body { transition: none; } }
+
+/* Match the dashboard's minimal title icons across all overview rows. */
+.section-atlas-label { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.section-atlas-title-icon { width: 14px; height: 14px; flex-shrink: 0; color: var(--muted-foreground); }
+.section-atlas-label > span { min-width: 0; }

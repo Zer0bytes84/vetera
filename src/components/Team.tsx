@@ -373,7 +373,7 @@ const Team: React.FC = () => {
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <MotivationalHeader section="equipe" />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
           {canManageTeam ? (
             <Button
               className="h-10 rounded-full px-5"

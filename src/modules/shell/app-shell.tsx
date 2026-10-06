@@ -2,6 +2,7 @@ import { useRowSaveFlash } from "@/hooks/useRowSaveFlash";
 import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
+import { getThemeConfig } from "@/lib/theme-store";
 import { HeroPattern } from "@/components/HeroPattern";
 import { SaveIndicator } from "@/design-system/patterns/save-indicator";
 import { useSaveIndicator } from "@/hooks/useSaveIndicator";
@@ -155,6 +156,8 @@ function AppShellInner() {
     }
   );
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const [aiAssistantOpen, setAiAssistantOpen] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -174,6 +177,37 @@ function AppShellInner() {
 
   useEffect(() => {
     sidebarScrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
+  }, [currentView, currentPatientId]);
+
+  useEffect(() => {
+    const panel = sidebarScrollRef.current;
+    if (!panel) return;
+    const content = panel.querySelector<HTMLElement>(".app-view-enter");
+    const updateScrollGeometry = () => {
+      const style = getComputedStyle(panel);
+      const borders = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+      const scrollbarWidth = Math.max(0, panel.offsetWidth - panel.clientWidth - borders);
+      panel.style.setProperty("--shell-scrollbar-width", `${scrollbarWidth}px`);
+      const action = panel.querySelector<HTMLElement>('[aria-keyshortcuts="N"], [data-slot="page-header-actions"]');
+      if (action) {
+        const top = action.getBoundingClientRect().top - panel.getBoundingClientRect().top + panel.scrollTop;
+        panel.style.setProperty("--shell-scroll-start", `${Math.max(0, top)}px`);
+      }
+    };
+    const observer = new ResizeObserver(updateScrollGeometry);
+    observer.observe(panel);
+    if (content) observer.observe(content);
+    let frame = requestAnimationFrame(updateScrollGeometry);
+    const mutations = new MutationObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(updateScrollGeometry);
+    });
+    mutations.observe(panel, { childList: true, subtree: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      mutations.disconnect();
+    };
   }, [currentView, currentPatientId]);
 
   const handleNavigate = useCallback((view: View) => {
@@ -234,7 +268,18 @@ function AppShellInner() {
     isDesktopRuntime,
     ref: headerRef,
   } = useTauriDrag<HTMLElement>(true);
-  const { variant, collapsible } = useLayout();
+  const { variant: preferredVariant, collapsible } = useLayout();
+  const [liquidGlass, setLiquidGlass] = useState(() => getThemeConfig().chromeStyle === "liquid-glass");
+  useEffect(() => {
+    const syncChromeStyle = () => setLiquidGlass(getThemeConfig().chromeStyle === "liquid-glass");
+    window.addEventListener("baitari-theme-config-changed", syncChromeStyle);
+    window.addEventListener("storage", syncChromeStyle);
+    return () => {
+      window.removeEventListener("baitari-theme-config-changed", syncChromeStyle);
+      window.removeEventListener("storage", syncChromeStyle);
+    };
+  }, []);
+  const variant = liquidGlass ? "sidebar" : preferredVariant;
   const previousDecorView = useRef<string | null>(null);
   useEffect(() => {
     const route = `${currentView}:${currentPatientId ?? ""}`;
@@ -485,10 +530,12 @@ function AppShellInner() {
           <>
             <div
               aria-hidden="true"
+              data-slot="shell-panel-frame"
               className="pointer-events-none absolute inset-0 z-0 rounded-t-[24px] rounded-b-none bg-white/35 shadow-[inset_0_0_2px_1px_rgba(255,255,255,0.5),0_1px_2px_rgba(15,23,42,0.05)] backdrop-blur-xl dark:bg-zinc-900/30 dark:shadow-[inset_0_0_2px_1px_rgba(255,255,255,0.1),0_1px_2px_rgba(0,0,0,0.34)]"
             />
             <div
               aria-hidden="true"
+              data-slot="shell-panel-frame"
               className="pointer-events-none absolute inset-0 z-20 rounded-t-[24px] rounded-b-none border border-zinc-950/[0.065] shadow-[inset_0_1px_0_rgba(255,255,255,0.56)] dark:border-white/10 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             />
           </>
@@ -496,12 +543,13 @@ function AppShellInner() {
         {variant === "minimal" ? (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-20 rounded-t-[18px] rounded-b-none border-zinc-950/[0.075] border-s border-t dark:border-white/12"
+            data-slot="shell-panel-frame"
+              className="pointer-events-none absolute inset-0 z-20 rounded-t-[18px] rounded-b-none border-zinc-950/[0.075] border-s border-t dark:border-white/12"
           />
         ) : null}
         <div
           className={cn(
-            "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-background transition-[background-color,border-radius,box-shadow,opacity] duration-[240ms] ease-[var(--ease-out)] [scrollbar-gutter:stable]",
+            "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-background transition-[background-color,border-radius,box-shadow,opacity] duration-[240ms] ease-[var(--ease-out)] [scrollbar-gutter:auto]",
             variant === "sidebar" && "rounded-none shadow-none ring-0",
             variant === "inset" &&
               "rounded-t-[16px] rounded-b-none shadow-2xl ring-1 ring-black/10 dark:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.78)] dark:ring-white/10",
@@ -512,9 +560,10 @@ function AppShellInner() {
             variant === "glass" &&
               "rounded-[22px] shadow-[0_18px_55px_-32px_rgba(15,23,42,0.32)] ring-1 ring-black/[0.06] dark:shadow-[0_24px_64px_-34px_rgba(0,0,0,0.8)] dark:ring-white/10"
           )}
+          data-slot="shell-scroll-panel"
           ref={sidebarScrollRef}
         >
-          <HeroPattern view={currentView} />
+          <HeroPattern />
           <motion.header
             className={cn(
               "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
@@ -550,7 +599,7 @@ function AppShellInner() {
                 className="shell-toolbar-control size-9 shrink-0 md:hidden"
               />
 
-              <div className="hidden lg:block">
+              <div data-slot="header-save-indicator" className="hidden lg:block">
                 <SaveIndicator state={saveState} />
               </div>
 
@@ -567,19 +616,11 @@ function AppShellInner() {
                     <ToolbarIcon name="search" />
                   </button>
                 </ShortcutTooltip>
-                <ShortcutTooltip label="Ouvrir l’assistant" shortcut="J">
-                  <button
-                    type="button"
-                    aria-label="Ouvrir l’assistant"
-                    aria-keyshortcuts="J"
-                    onClick={() => handleNavigate("assistant")}
-                    className="shell-toolbar-control grid size-9 shrink-0 place-items-center"
-                  >
-                    <ToolbarIcon name="assistant" />
-                  </button>
-                </ShortcutTooltip>
-                {/* ── Notifications ──────────────────────────────────────── */}
                 <NotificationCenter
+                  hideTrigger
+                  open={notificationsOpen}
+                  onOpenChange={setNotificationsOpen}
+                  anchor={settingsButtonRef}
                   onNavigate={handleNavigate}
                   onNavigateToPatient={handleNavigateToPatient}
                 />
@@ -590,6 +631,7 @@ function AppShellInner() {
                 {/* ── Settings + account dropdown ─────────────────────── */}
                 <DropdownMenu>
                   <DropdownMenuTrigger
+                    ref={settingsButtonRef}
                     aria-label="Paramètres et compte"
                     className="shell-toolbar-control flex size-9 items-center justify-center"
                   >
@@ -620,6 +662,14 @@ function AppShellInner() {
                     </div>
 
                     <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
+                    <DropdownMenuItem
+                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                      onClick={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
+                    >
+                      <ToolbarIcon name="notifications" />
+                      <span className="font-medium text-sm">Notifications</span>
+                    </DropdownMenuItem>
 
                     {/* Language submenu */}
                     <DropdownMenuSub>
@@ -740,7 +790,7 @@ function AppShellInner() {
           </motion.header>
 
           {/* View content */}
-          <div className="flex min-h-0 flex-1 flex-col gap-4 py-4">
+          <div data-slot="shell-view-content" className="flex min-h-0 flex-1 flex-col gap-4 py-4">
             <div
               className="app-view-enter min-h-0 min-w-0 flex-1"
               key={`${currentView}:${currentPatientId ?? ""}`}

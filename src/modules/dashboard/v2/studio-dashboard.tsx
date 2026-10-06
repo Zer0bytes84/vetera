@@ -1,8 +1,6 @@
 import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
 import { buildFinancialOverview } from "./financial-model";
-import { KpiPeriodFilter, kpiRange, kpiWithin, kpiBuckets, type KpiPeriod } from "./kpi-period";
-import { KpiMiniChart, KpiSegments } from "./kpi-mini-chart";
-import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
+import { KpiPeriodFilter, kpiRange, kpiWithin, type KpiPeriod } from "./kpi-period";
 import { FittedAmount } from "@/shared/ui/fitted-amount";
 import { useId, useState, type ReactNode } from "react";
 import {
@@ -15,6 +13,8 @@ import {
   Package,
   PawPrint,
   Syringe,
+  Wallet,
+  ReceiptText,
 } from "@/lib/icons";
 import {
   Area,
@@ -48,7 +48,6 @@ import type { DashboardV2Props } from "./types";
 import "./studio-dashboard.css";
 import { DashboardInsights } from "./dashboard-insights";
 import "./dashboard-polish.css";
-import { NowBoard } from "./now-board";
 import { ClassicWidgetState } from "../components/classic-widget-state";
 import { SkeletonBlock } from "@/design-system/primitives";
 import type { WidgetState } from "../components/clinical/shared";
@@ -104,22 +103,13 @@ export function StudioDashboard(props: DashboardV2Props) {
     transactions,
     onNavigate,
     onNavigateToPatient,
-    onStatusChange,
   } = props;
   const financials = useDashboardFinancials();
-  const [kpiPeriods, setKpiPeriods] = useState<Record<string, KpiPeriod>>({ consultations: "day", income: "day", patients: "all", receivables: "all" });
+  const [kpiPeriods, setKpiPeriods] = useState<Record<string, KpiPeriod>>({ consultations: "day", income: "month", patients: "all", receivables: "all" });
   const [period, setPeriod] = useState<14 | 30 | 84>(30);
   const [measure, setMeasure] = useState<"value" | "revenue">("value");
-  const [dayOffset, setDayOffset] = useState(0);
   const [alertPage, setAlertPage] = useState(0);
   const activityFillId = `activity-fill-${useId().replace(/:/g, "")}`;
-  const date = addDays(metrics.referenceDate, dayOffset);
-  const schedule = buildTodaySchedule({
-    appointments,
-    patients,
-    owners: props.owners,
-    referenceDate: date,
-  });
   const alerts = buildClinicalAlerts({
     appointments,
     patients,
@@ -157,13 +147,8 @@ export function StudioDashboard(props: DashboardV2Props) {
   const periodCompleted = periodAppointments.filter(a => a.status === "completed").length;
   const incomeRange = kpiRange(kpiPeriods.income, metrics.referenceDate);
   const periodPaid = transactions.filter(t => t.type === "income" && t.status === "paid" && kpiWithin(t.date, incomeRange)).reduce((sum, t) => sum + t.amount, 0);
-  const consultationBuckets = kpiBuckets(kpiPeriods.consultations, metrics.referenceDate);
-  const incomeBuckets = kpiBuckets(kpiPeriods.income, metrics.referenceDate);
-  const recentVisits = consultationBuckets.map(range => appointments.filter(a => !["cancelled", "no_show"].includes(a.status) && kpiWithin(a.startTime, range)).length);
-  const recentIncome = incomeBuckets.map(range => transactions.filter(t => t.type === "income" && t.status === "paid" && kpiWithin(t.date, range)).reduce((sum, t) => sum + t.amount, 0) / 100);
   const receivablesOverview = buildFinancialOverview(financials.invoices, transactions, kpiRange(kpiPeriods.receivables, metrics.referenceDate), "all");
   const waitingAmount = Math.round(receivablesOverview.categories.reduce((sum, c) => sum + c.riskValue, 0) * 100);
-  const settledAmount = Math.round(receivablesOverview.categories.reduce((sum, c) => sum + c.safeValue, 0) * 100);
   const waitingCount = receivablesOverview.receivables.length;
   const periodPatients = patients.filter(p => kpiPeriods.patients === "all" || kpiWithin(p.createdAt, kpiRange(kpiPeriods.patients, metrics.referenceDate)));
   const periodContext = (period: KpiPeriod) => ({ day: "aujourd’hui", week: "cette semaine", month: "ce mois", year: "cette année", all: "toutes dates" })[period];
@@ -189,11 +174,6 @@ export function StudioDashboard(props: DashboardV2Props) {
   );
   const totalAlertPages = Math.max(1, Math.ceil(alerts.length / 4));
   const page = Math.min(alertPage, totalAlertPages - 1);
-  const selectedDate = date.toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
   const avgDayMetric =
     measure === "value"
       ? visits > 0 && visits / (days.length || 1) < 0.1
@@ -212,39 +192,6 @@ export function StudioDashboard(props: DashboardV2Props) {
   );
   const blocks = [
     {
-      id: "studio-now",
-      label: "Maintenant",
-      description: "Prochain patient, salle d’attente et prise en charge",
-      content: (
-        <section
-          aria-label="Priorité immédiate du cabinet"
-        >
-          <div>
-            <ClassicWidgetState
-              state={props.widgetStates?.schedule}
-              label="Maintenant"
-            >
-              <NowBoard
-                today={today}
-                patients={patients}
-                onStatusChange={onStatusChange}
-                onOpenConsultation={(appointmentId) => {
-                  window.sessionStorage.setItem(
-                    "vetera:pending-consultation-start",
-                    appointmentId
-                  );
-                  onNavigate?.("clinique");
-                }}
-                onOpenPatient={(patientId) => onNavigateToPatient?.(patientId)}
-                onOpenAgenda={() => onNavigate?.("agenda")}
-                onPlan={() => { prepareAppointment(); onNavigate?.("agenda"); window.setTimeout(() => window.dispatchEvent(new CustomEvent("vetera:new-appointment")), 150); }}
-              />
-            </ClassicWidgetState>
-          </div>
-        </section>
-      ),
-    },
-    {
       id: "studio-overview",
       label: "Les repères du jour",
       description: "Rendez-vous, patients et encaissements",
@@ -258,6 +205,7 @@ export function StudioDashboard(props: DashboardV2Props) {
               {
                 id: "consultations",
                 title: "Consultations",
+                icon: CalendarDays,
                 value: String(periodAppointments.length),
                 context: periodContext(kpiPeriods.consultations),
                 detail: toFollow[0]
@@ -268,12 +216,12 @@ export function StudioDashboard(props: DashboardV2Props) {
                   : "Agenda libre",
                 tone: toFollow.length ? "watch" : "quiet",
                 action: "Voir l’agenda",
-                visual: <KpiMiniChart values={recentVisits} labels={consultationBuckets.map(b => b.label)} color="var(--studio-species-1)" caption={kpiPeriods.consultations === "day" ? "Consultations · 7 derniers jours" : `Consultations · ${kpiPeriods.consultations === "all" ? "année en cours" : periodContext(kpiPeriods.consultations)}`} bars />,
                 view: "agenda" as const,
               },
               {
                 id: "income",
                 title: "Encaissements",
+                icon: Wallet,
                 value: formatCentimes(periodPaid),
                 context: periodContext(kpiPeriods.income),
                 detail: `Hier : ${formatCentimes(paidYesterday)}`,
@@ -285,12 +233,12 @@ export function StudioDashboard(props: DashboardV2Props) {
                   paidYesterday > 0 && paidToday >= paidYesterday
                     ? "positive"
                     : "quiet",
-                visual: <KpiMiniChart values={recentIncome} unit="DA" labels={incomeBuckets.map(b => b.label)} color="var(--studio-mini-green)" caption={kpiPeriods.income === "day" ? "Encaissements en DA · 7 jours" : `Encaissements en DA · ${kpiPeriods.income === "all" ? "année en cours" : periodContext(kpiPeriods.income)}`} />,
                 action: "Voir les finances",
                 view: "finances" as const,
               },
               {
                 id: "patients",
+                icon: PawPrint,
                 title: kpiPeriods.patients === "all" ? "Patients suivis" : "Nouveaux patients",
                 value: String(periodPatients.length),
                 context: kpiPeriods.patients === "all" ? "au cabinet" : periodContext(kpiPeriods.patients),
@@ -304,19 +252,18 @@ export function StudioDashboard(props: DashboardV2Props) {
                     .join(" · ") || "Aucun dossier enregistré",
                 status: "Dossiers patients",
                 tone: "quiet",
-                visual: <KpiSegments segments={kpiSpeciesEntries.map(([label, value], i) => ({ label, value, color: colors[i % colors.length] }))} caption="Répartition par espèce" value={`${kpiSpeciesEntries.length} espèces`} />,
                 action: "Ouvrir les dossiers",
                 view: "patients" as const,
               },
               {
                 id: "receivables",
                 title: "À encaisser",
+                icon: ReceiptText,
                 value: formatCentimes(waitingAmount),
                 context: periodContext(kpiPeriods.receivables),
                 detail: `${waitingCount} solde${waitingCount > 1 ? "s" : ""} à recouvrer`,
                 status: waitingCount ? "À suivre" : "À jour",
                 tone: waitingCount ? "watch" : "positive",
-                visual: <KpiSegments segments={[{ label: "Encaissé", value: settledAmount / 100, color: "var(--studio-mini-green)" }, { label: "En attente", value: Math.max(0, waitingAmount) / 100, color: "var(--studio-species-3)" }]} caption="Recettes encaissées" unit="DA" value={settledAmount + waitingAmount > 0 ? `${Math.round(settledAmount / (settledAmount + Math.max(0, waitingAmount)) * 100)} %` : "—"} />,
                 action: "Suivre les règlements",
                 view: "finances" as const,
               },
@@ -324,13 +271,13 @@ export function StudioDashboard(props: DashboardV2Props) {
               ({
                 id,
                 title,
+                icon: Icon,
                 value,
                 context,
                 detail,
                 status,
                 tone,
                 action,
-                visual,
                 view,
               }) => (
                 <ClassicWidgetState
@@ -348,11 +295,11 @@ export function StudioDashboard(props: DashboardV2Props) {
                     <>
                       <span className="studio-kpi-heading">{title}</span>
                       <span className="studio-kpi-body">
-                        <SkeletonBlock className="h-10 w-2/3" />
+                        <SkeletonBlock className="h-8 w-2/3" />
                         <SkeletonBlock className="h-4 w-1/3" />
-                        <SkeletonBlock className="mt-3 h-4 w-3/4" />
+                        <SkeletonBlock className="h-4 w-3/4" />
                         <SkeletonBlock className="h-5 w-1/2" />
-                        <SkeletonBlock className="mt-3 h-5 w-full" />
+                        <SkeletonBlock className="h-4 w-full" />
                       </span>
                     </>
                   }
@@ -360,22 +307,18 @@ export function StudioDashboard(props: DashboardV2Props) {
                   <div className="studio-kpi">
 
                     <span className="studio-kpi-heading">
-                      <span>{title}</span>
+                      <span className="studio-kpi-title" title={title}><Icon size={14} strokeWidth={1.5} aria-hidden="true" /><span>{title}</span></span>
                       <KpiPeriodFilter label={title} value={kpiPeriods[id]} onChange={value => setKpiPeriods(current => ({ ...current, [id]: value }))} />
                     </span>
                     <div className="studio-kpi-body">
-                      <FittedAmount
-                        className="studio-kpi-value"
-                        value={value}
-                      />
-                      <span className="studio-kpi-context">{context}</span>
-                      <span className="studio-kpi-detail">{detail}</span>
-                      <span
-                        className={`studio-kpi-status studio-kpi-status-${tone}`}
-                      >
-                        {status}
-                      </span>
-                      {visual}
+                      <div className="studio-kpi-measure">
+                        <FittedAmount className="studio-kpi-value" value={value} maxFontSize={29} />
+                        <span className="studio-kpi-context">{context}</span>
+                      </div>
+                      <div className="studio-kpi-meta">
+                        <span className="studio-kpi-detail" title={detail}>{detail}</span>
+                        <span className={`studio-kpi-status studio-kpi-status-${tone}`} title={status}>{status}</span>
+                      </div>
                       <button type="button" className="studio-kpi-action" onClick={() => onNavigate?.(view)}>
                         <span>{action}</span>
                         <ArrowUpRight size={14} aria-hidden="true" />
@@ -422,10 +365,10 @@ export function StudioDashboard(props: DashboardV2Props) {
     },
     {
       id: "studio-main",
-      label: "Activité et rendez-vous",
-      description: "Une courbe lisible et un agenda navigable",
+      label: "Activité du cabinet",
+      description: "Consultations et encaissements par jour",
       content: (
-        <div className="studio-main-grid">
+        <div className="studio-main-grid studio-main-analytics">
           <Panel
             title="Activité du cabinet"
             detail="Consultations et encaissements par jour."
@@ -600,90 +543,6 @@ export function StudioDashboard(props: DashboardV2Props) {
                 </span>
               </div>
               {action("Explorer", () => onNavigate?.("finances_analytics"))}
-            </footer>
-          </Panel>
-          <Panel
-            title="Planning du jour"
-            detail={selectedDate}
-            className="studio-agenda"
-            state={props.widgetStates?.schedule}
-            action={
-              <div className="studio-date-controls">
-                <button
-                  type="button"
-                  aria-label="Jour précédent"
-                  onClick={() => setDayOffset(dayOffset - 1)}
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Jour suivant"
-                  onClick={() => setDayOffset(dayOffset + 1)}
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            }
-          >
-            <div className="studio-agenda-strip">
-              <span>{schedule.length} rendez-vous</span>
-              <button
-                type="button"
-                onClick={() => setDayOffset(0)}
-                disabled={dayOffset === 0}
-              >
-                Aujourd’hui
-              </button>
-            </div>
-            <div className="studio-agenda-list">
-              {schedule.length ? (
-                schedule.map((row) => (
-                  <button
-                    type="button"
-                    className="studio-appointment"
-                    key={row.appointment.id}
-                    onClick={() =>
-                      onNavigateToPatient?.(row.appointment.patientId)
-                    }
-                  >
-                    <time dateTime={row.start.toISOString()}>
-                      {formatTime(row.start)}
-                    </time>
-                    <span className="studio-appointment-copy">
-                      <strong>{row.patientName}</strong>
-                      <small>
-                        {row.appointment.type} · {row.ownerName}
-                      </small>
-                    </span>
-                    <span className="studio-appointment-state">
-                      {["cancelled", "no_show"].includes(
-                        row.appointment.status
-                      ) ? (
-                        <span className="studio-visit-status">
-                          {row.appointment.status === "cancelled"
-                            ? "Annulé"
-                            : "Absent"}
-                        </span>
-                      ) : row.appointment.status === "completed" ? (
-                        <Check size={16} aria-label="Terminé" />
-                      ) : (
-                        <ArrowUpRight size={15} aria-hidden="true" />
-                      )}
-                    </span>
-                  </button>
-                ))
-              ) : (
-                <div className="studio-empty">
-                  <CalendarDays size={28} strokeWidth={1.3} />
-                  <strong>Une journée à organiser</strong>
-                  <p>Aucun rendez-vous à cette date.</p>
-                  {action("Planifier une visite", () => onNavigate?.("agenda"))}
-                </div>
-              )}
-            </div>
-            <footer>
-              {action("Ouvrir l’agenda", () => onNavigate?.("agenda"))}
             </footer>
           </Panel>
         </div>
@@ -876,14 +735,18 @@ export function StudioDashboard(props: DashboardV2Props) {
       ),
     },
   ];
+  const rowOrder = ["studio-overview", "studio-financial-risk", "studio-insights", "studio-main"];
+  const orderedBlocks = [...blocks].sort((a, b) => {
+    const rank = (id: string) => { const index = rowOrder.indexOf(id); return index === -1 ? rowOrder.length : index; };
+    return rank(a.id) - rank(b.id);
+  });
   return (
     <div className="studio-dashboard">
       <DashboardLayoutManager
-        blocks={blocks}
+        blocks={orderedBlocks}
         isEditing={props.isCustomizing}
         onEditingChange={props.onCustomizingChange}
-        storageKeyPrefix="dashboard_studio_v1"
-        firstBlockIds={["studio-now"]}
+        storageKeyPrefix="dashboard_studio_v2"
       />
     </div>
   );

@@ -53,6 +53,7 @@ export const HEADER_PATTERNS: Record<
 };
 
 export interface ThemeConfig {
+  chromeStyle: "classic" | "liquid-glass";
   accent: AccentColor;
   density: "compact" | "comfortable" | "spacious";
   font: FontFamily;
@@ -314,7 +315,8 @@ export const DENSITY_MAP: Record<
 };
 
 export const DEFAULT_THEME: ThemeConfig = {
-  accent: "violet",
+  chromeStyle: "liquid-glass",
+  accent: "noir",
   radius: "md",
   density: "comfortable",
   font: "geist",
@@ -326,6 +328,7 @@ const ORIGINAL_HEADER_RESTORE_KEY = "baitari_original_header_restored_v2";
 
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const root = document.documentElement;
+  root.dataset.chromeStyle = config.chromeStyle === "liquid-glass" ? "liquid-glass" : "classic";
   const accent = ACCENT_THEMES[config.accent];
   const mode = isDark ? accent.dark : accent.light;
 
@@ -433,7 +436,7 @@ export function getThemeConfig(): ThemeConfig {
       const config = { ...DEFAULT_THEME, ...parsed };
       // Apply the requested CRM visual trial once; later appearance choices persist.
       if (localStorage.getItem("baitari-crm-geist-trial-v1") !== "true") {
-        config.accent = "violet";
+        config.accent = "noir";
         config.font = "geist";
         localStorage.setItem("theme-config", JSON.stringify(config));
         localStorage.setItem("baitari-crm-geist-trial-v1", "true");
@@ -443,13 +446,22 @@ export function getThemeConfig(): ThemeConfig {
         localStorage.setItem("theme-config", JSON.stringify(config));
         localStorage.setItem(ORIGINAL_HEADER_RESTORE_KEY, "true");
       }
+      // Restore the neutral controls after the CRM violet trial, once only.
+      // Explicit later accent choices remain available in Appearance.
+      if (localStorage.getItem("baitari-neutral-controls-v1") !== "true") {
+        if (config.accent === "violet") config.accent = "noir";
+        localStorage.setItem("theme-config", JSON.stringify(config));
+        localStorage.setItem("baitari-neutral-controls-v1", "true");
+      }
       return config;
     }
   } catch {}
   localStorage.setItem("baitari-crm-geist-trial-v1", "true");
+  localStorage.setItem("baitari-neutral-controls-v1", "true");
   return { ...DEFAULT_THEME };
 }
 
 export function saveThemeConfig(config: ThemeConfig) {
   localStorage.setItem("theme-config", JSON.stringify(config));
+  window.dispatchEvent(new Event("baitari-theme-config-changed"));
 }

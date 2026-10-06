@@ -330,11 +330,11 @@
   width: 100%;
   min-width: 460px;
   margin: 1.5rem 0;
-  border: 1px solid #dce7dc;
+  border: 1px solid var(--border);
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 12px;
-  background: #fff;
+  background: var(--card);
   font-size: 13px;
   line-height: 1.5;
   table-layout: fixed;
@@ -353,8 +353,8 @@
   position: relative;
   min-width: 100px;
   padding: 10px 12px;
-  border-right: 1px solid #e6ece5;
-  border-bottom: 1px solid #e6ece5;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   text-align: left;
   vertical-align: top;
   overflow-wrap: anywhere;
@@ -362,8 +362,8 @@
 
 .tiptap-editor .ProseMirror th,
 .document-rich-content th {
-  background: #f0f5ef;
-  color: #2b4935;
+  background: var(--muted);
+  color: var(--foreground);
   font-weight: 650;
 }
 
@@ -389,18 +389,18 @@
   right: -2px;
   bottom: 0;
   width: 4px;
-  background: #6da982;
+  background: var(--primary);
   pointer-events: none;
 }
 
 .dark .tiptap-editor .ProseMirror table,
-.dark .document-rich-content table { border-color: #415247; background: #1b241e; }
+.dark .document-rich-content table { border-color: var(--border); background: var(--card); }
 .dark .tiptap-editor .ProseMirror th,
-.dark .document-rich-content th { background: #293a2e; color: #e3f0e3; }
+.dark .document-rich-content th { background: var(--muted); color: var(--foreground); }
 .dark .tiptap-editor .ProseMirror th,
 .dark .tiptap-editor .ProseMirror td,
 .dark .document-rich-content th,
-.dark .document-rich-content td { border-color: #3b4b40; }
+.dark .document-rich-content td { border-color: var(--border); }
 
 .tiptap-editor .ProseMirror ul[data-type="taskList"],
 .document-rich-content ul[data-type="taskList"] {

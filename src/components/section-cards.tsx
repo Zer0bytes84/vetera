@@ -174,8 +174,10 @@ export function SectionCards({
             >
               <Content className="section-atlas-content" onClick={item.onClick} {...(item.onClick ? { type: "button" as const } : {})}>
                 <div className="section-atlas-card-heading">
-                  <p className="section-atlas-label">{item.title}</p>
-                  <Icon aria-hidden="true" className="size-[18px] shrink-0 text-muted-foreground" strokeWidth={1.7} />
+                  <p className="section-atlas-label">
+                    <Icon aria-hidden="true" className="section-atlas-title-icon" size={14} strokeWidth={1.5} />
+                    <span>{item.title}</span>
+                  </p>
                 </div>
                 <div className="section-atlas-body">
                   <FittedAmount className="section-atlas-value" value={item.value} maxFontSize={compact ? 28 : 34} />
