@@ -1,9 +1,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+#[cfg(debug_assertions)]
 use tauri::Manager;
 
 mod clinic_database;
 mod license_installation;
+mod local_ai_models;
+mod local_ai_download;
 
 fn main() {
     tauri::Builder::default()
@@ -12,11 +15,11 @@ fn main() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .setup(|app| {
+        .setup(|_app| {
             // DevTools only in debug mode
             #[cfg(debug_assertions)]
             {
-                let window = app.get_webview_window("main").unwrap();
+                let window = _app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
 
@@ -25,6 +28,10 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             license_installation::license_installation_id,
             clinic_database::open_clinic_database,
+            local_ai_models::local_ai_model_status,
+            local_ai_models::import_local_ai_model,
+            local_ai_download::download_local_ai_models,
+            local_ai_download::cancel_local_ai_download,
             greet,
             test_sqlite_write,
             test_sqlite_read

@@ -2,6 +2,7 @@ import { CalendarPlus, Notebook, PencilSimple } from "@/lib/icons";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getSpeciesTheme } from "@/lib/species-theme";
 import type { Owner, Patient } from "@/types/db";
 import { ClinicalAlerts, PatientIdentity } from "./medical-record-summary";
 
@@ -23,29 +24,49 @@ export function PatientHeader({
   onOpenClinicalNote,
   patient,
 }: PatientHeaderProps) {
+  const speciesTheme = getSpeciesTheme(patient.species);
+
   return (
     <section
-      className={cn(
-        "patient-identity overflow-hidden rounded-[14px] border border-border bg-card",
-        className
-      )}
+      className={cn("patient-identity medical-patient-header relative overflow-hidden", className)}
       aria-label={`Identité et alertes de ${patient.name}`}
     >
-      <div className="flex flex-col gap-5 p-5 sm:p-6 xl:flex-row xl:items-center xl:justify-between">
+      <div
+        className="absolute inset-x-0 top-0 h-1"
+        style={{
+          background: `linear-gradient(90deg, ${speciesTheme.accentHex} 0%, ${speciesTheme.accentHex}88 40%, transparent 100%)`,
+        }}
+        aria-hidden="true"
+      />
+      <div className="medical-header-main">
         <PatientIdentity patient={patient} />
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <div className="medical-header-actions" aria-label="Actions du dossier">
           {onOpenClinicalNote && (
-            <Button variant="outline" size="sm" onClick={onOpenClinicalNote}>
-              <Notebook className="size-4" />
+            <Button
+              size="sm"
+              className="medical-action medical-action-primary"
+              onClick={onOpenClinicalNote}
+            >
+              <Notebook className="size-4" aria-hidden="true" />
               Note clinique
             </Button>
           )}
-          <Button size="sm" onClick={onNewAppointment}>
-            <CalendarPlus className="size-4" />
-            Rendez-vous
+          <Button
+            variant="outline"
+            size="sm"
+            className="medical-action medical-action-outline"
+            onClick={onNewAppointment}
+          >
+            <CalendarPlus className="size-4" aria-hidden="true" />
+            Planifier un rendez-vous
           </Button>
-          <Button variant="ghost" size="sm" onClick={onEditProfile}>
-            <PencilSimple className="size-4" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="medical-action medical-action-ghost"
+            onClick={onEditProfile}
+          >
+            <PencilSimple className="size-4" aria-hidden="true" />
             Modifier
           </Button>
         </div>

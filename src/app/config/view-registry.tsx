@@ -10,8 +10,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { DashboardOrbitPage } from "@/modules/dashboard/dashboard-orbit-page";
 import type { View } from "@/types";
 
+const ClinicalWorkspace = lazy(() => import("@/modules/clinique/pages/clinical-workspace"));
 const AgendaPage = lazy(() => import("@/modules/agenda/pages/agenda-page"));
-const CliniquePage = lazy(() => import("@/modules/clinique/pages/clinique-page"));
 const FinancesPage = lazy(() => import("@/modules/finances/pages/finances-page"));
 const HelpPage = lazy(() => import("@/components/Help"));
 const NotesPage = lazy(() => import("@/components/NotesPro"));
@@ -117,10 +117,12 @@ export function renderView(view: View, props: ViewRegistryProps) {
           userDisplayName={props.userDisplayName}
         />
       );
+    case "soins":
+      return renderLazyView(<ClinicalWorkspace initialTab="soins" onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
     case "agenda":
       return renderLazyView(<AgendaPage />);
     case "clinique":
-      return renderLazyView(<CliniquePage onNavigate={props.onNavigate} />);
+      return renderLazyView(<ClinicalWorkspace onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
     case "patients":
       return renderLazyView(
         <PatientsPage onNavigateToPatient={props.onNavigateToPatient} />

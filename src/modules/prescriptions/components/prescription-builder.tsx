@@ -18,6 +18,16 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -25,7 +35,8 @@ import {
   usePrescriptionsRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
-import { useAudit } from "@/services/auditService";
+import { useAudit } from "@/services/use-audit";
+import { toast } from "sonner";
 import type { Patient, PrescriptionItem } from "@/types/db";
 import type { PrescriptionVet } from "../types";
 
@@ -163,6 +174,8 @@ export function PrescriptionBuilder({
   const [showPreview, setShowPreview] = useState(false);
   const [status, setStatus] = useState<"draft" | "signed">("draft");
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [signConfirmOpen, setSignConfirmOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const prescriptionsRepo = usePrescriptionsRepository();
   const itemsRepo = usePrescriptionItemsRepository();
@@ -170,7 +183,7 @@ export function PrescriptionBuilder({
 
   // Init : si une prescription existe pour cette consultation, on hydrate
   useEffect(() => {
-    const existing = prescriptionsRepo.forAppointment(appointmentId)[0];
+    const existing = prescriptionsRepo.forAppointment(appointmentId).find(row => row.status === "draft" || row.status === "signed");
     if (existing) {
       setWeightKg(existing.weightKg);
       setDiagnosis(existing.diagnosis ?? "");
@@ -305,25 +318,40 @@ export function PrescriptionBuilder({
         templateVersion: "1.0",
       };
 
-      // 1) Sauver la prescription
-      const createdPrescription = await prescriptionsRepo.add(prescription);
-      if (!createdPrescription) {
-        throw new Error("Impossible d'enregistrer l'ordonnance.");
-      }
-      const prescriptionId = createdPrescription.id;
-
-      // 2) Purger les anciens items
-      const existing = prescriptionsRepo.forAppointment(appointmentId);
-      for (const p of existing) {
-        if (p.id !== prescriptionId) {
-          const oldItems = itemsRepo.forPrescription(p.id);
-          for (const it of oldItems) {
-            await itemsRepo.remove(it.id);
-          }
+      // Upsert : une seule ordonnance par consultation. On met à jour la
+      // ligne existante au lieu d'en empiler une nouvelle à chaque
+      // sauvegarde (les anciennes lignes vides polluaient la liste).
+      const existing = prescriptionsRepo.forAppointment(appointmentId).find(row => row.status === "draft" || row.status === "signed");
+      let prescriptionId: string;
+      let finalStatus = newStatus;
+      if (existing) {
+        // Une ordonnance signée reste signée : on ne la fait jamais
+        // repasser en brouillon.
+        finalStatus = existing.status === "signed" ? "signed" : newStatus;
+        const updated = await prescriptionsRepo.update(existing.id, {
+          ...prescription,
+          status: finalStatus,
+          signedAt:
+            finalStatus === "signed" ? (existing.signedAt ?? now) : undefined,
+        });
+        if (!updated) {
+          throw new Error("Impossible d'enregistrer l'ordonnance.");
         }
+        prescriptionId = existing.id;
+        // Purger les anciens items de cette ordonnance avant réinsertion.
+        const oldItems = itemsRepo.forPrescription(existing.id);
+        for (const it of oldItems) {
+          await itemsRepo.remove(it.id);
+        }
+      } else {
+        const createdPrescription = await prescriptionsRepo.add(prescription);
+        if (!createdPrescription) {
+          throw new Error("Impossible d'enregistrer l'ordonnance.");
+        }
+        prescriptionId = createdPrescription.id;
       }
 
-      // 3) Insérer les nouveaux
+      // Insérer les nouveaux items
       for (const it of items) {
         await itemsRepo.add({
           prescriptionId,
@@ -348,17 +376,17 @@ export function PrescriptionBuilder({
         });
       }
 
-      setStatus(newStatus);
+      setStatus(finalStatus);
       setSavedAt(now);
 
       await audit.log({
-        action: "create",
+        action: existing ? "update" : "create",
         entity: "prescription",
         entityId: prescriptionId,
         payload: {
           patientId: patient.id,
           appointmentId,
-          status: newStatus,
+          status: finalStatus,
           itemCount: items.length,
         },
       });
@@ -378,6 +406,31 @@ export function PrescriptionBuilder({
     ]
   );
 
+  const saveWithFeedback = useCallback(
+    async (newStatus: "draft" | "signed") => {
+      setIsSaving(true);
+      try {
+        await handleSave(newStatus);
+        toast.success(
+          newStatus === "signed"
+            ? "Ordonnance signée."
+            : "Brouillon d'ordonnance enregistré."
+        );
+        setSignConfirmOpen(false);
+      } catch (error) {
+        console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Impossible d'enregistrer l'ordonnance."
+        );
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [handleSave]
+  );
+
   return (
     <div className={cn("space-y-4", className)}>
       <BuilderHeader
@@ -385,8 +438,8 @@ export function PrescriptionBuilder({
           setShowPreview(true);
           onPreviewChange?.(true);
         }}
-        onSaveDraft={() => void handleSave("draft")}
-        onSign={() => void handleSave("signed")}
+        onSaveDraft={() => void saveWithFeedback("draft")}
+        onSign={() => setSignConfirmOpen(true)}
         savedAt={savedAt}
         status={status}
       />
@@ -486,6 +539,28 @@ export function PrescriptionBuilder({
           vet={vet ?? currentUser ?? null}
         />
       ) : null}
+
+      <AlertDialog onOpenChange={setSignConfirmOpen} open={signConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Signer l'ordonnance ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              La signature fige l'ordonnance pour {patient.name} : elle ne
+              pourra plus repasser en brouillon. Vérifiez les médicaments,
+              les doses et les instructions avant de confirmer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSaving}>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isSaving}
+              onClick={() => void saveWithFeedback("signed")}
+            >
+              Signer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

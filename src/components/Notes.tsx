@@ -370,7 +370,9 @@ const Notes: React.FC = () => {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNoteId, content]);
+
 
   // Stats
   const stats = useMemo(() => {

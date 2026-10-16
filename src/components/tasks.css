@@ -1,0 +1,20 @@
+/* Keep the due list in view; these rules only affect the Reminders page. */
+.reminders-page .section-atlas-compact .section-atlas-card-heading {
+  min-height: 28px;
+  padding-block: 4px;
+}
+
+.reminders-page .section-atlas-compact .section-atlas-body {
+  min-height: 0;
+  padding: 10px;
+}
+
+.reminders-page .section-atlas-compact .section-atlas-context,
+.reminders-page .section-atlas-compact .section-atlas-status {
+  margin-top: 6px;
+}
+
+.reminders-page .section-atlas-compact .section-atlas-action {
+  margin-top: 8px;
+  padding-top: 6px;
+}

@@ -63,3 +63,21 @@ export function formatAge(
   }
   return formatMessage("patientDetail.header.ageDays", { count: age.days });
 }
+
+/**
+ * Version française sans i18n, pour les composants qui affichent
+ * déjà du français en dur. Référence unique avec computeAge.
+ */
+export function formatAgeFr(age: AgeParts | null): string {
+  if (!age) {
+    return "Âge non renseigné";
+  }
+  if (age.years >= 1) {
+    const years = `${age.years} an${age.years > 1 ? "s" : ""}`;
+    return age.months > 0 ? `${years} ${age.months} mois` : years;
+  }
+  if (age.months >= 1) {
+    return `${age.months} mois`;
+  }
+  return `${age.days} jour${age.days > 1 ? "s" : ""}`;
+}

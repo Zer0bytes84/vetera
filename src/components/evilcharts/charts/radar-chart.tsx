@@ -348,7 +348,7 @@ export function EvilRadarChart<
 }
 
 // Generate random loading data for radar chart animation
-function generateLoadingData(dataKey: string) {
+function generateLoadingData(dataKey: string, _refresh?: number) {
   const categories = ["A", "B", "C", "D", "E", "F"];
   return categories.slice(0, LOADING_POINTS).map((cat) => ({
     [dataKey]: cat,
@@ -371,13 +371,13 @@ function useLoadingData(isLoading: boolean, dataKey: string) {
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadingData = useMemo(
-    () => generateLoadingData(dataKey),
+    () => generateLoadingData(dataKey, refreshKey),
     [dataKey, refreshKey]
   );
 
   return loadingData;
+
 }
 
 // Create stroke and fill gradients for radar chart paths

@@ -55,7 +55,7 @@ const resources = {
           patientsSub: "Dossiers médicaux",
           clinique: "Consultations",
           cliniqueSub: "Suivi clinique",
-          notes: "Notes",
+          notes: "Documents",
           notesSub: "Mémos et documents",
           stock: "Stock & Pharma",
           stockSub: "Inventaire produits",
@@ -248,7 +248,7 @@ const resources = {
         agenda: "Agenda",
         clinique: "Clinique",
         patients: "Patients",
-        notes: "Notes",
+        notes: "Documents",
         stock: "Produits",
         finances: "Finances",
         finances_analytics: "Analyse financière",
@@ -354,7 +354,7 @@ const resources = {
         },
         dashboard: {
           eyebrow: "Tableau de bord",
-          title: "Bonjour {{name}}",
+          title: "Bonjour {{name}} 👋",
           subtitle: "Vue synthétique de l’activité clinique.",
         },
         agenda: {

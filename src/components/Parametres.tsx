@@ -1,4 +1,8 @@
+import { isActivationOwner } from "@/services/adminAccess";
+import { LocalDataResetSettings } from "./local-data-reset-settings";
+import { AboutTeam } from "./about-team";
 import { PageDate } from "@/components/PageDate";
+import { MascotSettings } from "@/components/mascot/mascot-settings";
 import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
 import { InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
@@ -58,18 +62,19 @@ import {
   restoreBackup,
 } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { updatePassword } from "@/services/sqlite/auth";
 import {
-  getCurrentProgress,
-  initializeWebLLM,
-  isWebLLMLoading,
-  isWebLLMReady,
-  resetWebLLM,
-  type ProgressReport,
-  subscribeToProgress,
-} from "@/services/webLLMService";
-import { getModelPreferences } from "@/lib/ai-models";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { updatePassword } from "@/services/sqlite/auth";
+import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
+import { AI_ONBOARDING_OPEN_EVENT, AI_SETTINGS_PENDING_KEY } from "@/modules/consultations/services/ai-model-provisioning";
 import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
@@ -106,7 +111,15 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Profil",
         description: "Identité, avatar et coordonnées",
         icon: UserCircle02Icon,
-        keywords: ["nom", "email", "téléphone", "cabinet", "photo", "avatar", "bio"],
+        keywords: [
+          "nom",
+          "email",
+          "téléphone",
+          "cabinet",
+          "photo",
+          "avatar",
+          "bio",
+        ],
       },
       {
         id: "securite",
@@ -120,20 +133,44 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
   {
     label: "Espace de travail",
     items: [
-      { id: "cabinet", label: "Cabinet & factures", description: "Coordonnées, logo et présentation des PDF", icon: InformationSquareIcon },
+      {
+        id: "cabinet",
+        label: "Cabinet & factures",
+        description: "Coordonnées, logo et présentation des PDF",
+        icon: InformationSquareIcon,
+      },
       {
         id: "apparence",
         label: "Apparence",
         description: "Thème, couleur et navigation",
         icon: LaptopIcon,
-        keywords: ["clair", "sombre", "dark", "couleur", "accent", "police", "font", "arrondi", "sidebar", "barre latérale"],
+        keywords: [
+          "clair",
+          "sombre",
+          "dark",
+          "couleur",
+          "accent",
+          "police",
+          "font",
+          "arrondi",
+          "sidebar",
+          "barre latérale",
+          "peluche",
+          "mascotte",
+          "compagnon",
+        ],
       },
       {
         id: "ia",
-        label: "Rédaction",
-        description: "Outils de rédaction sur cet appareil",
+        label: "Assistant IA",
+        description: "Dictée, rédaction et recherche sur cet appareil",
         icon: PencilEdit01Icon,
-        keywords: ["assistant", "modèle", "modèle local", "intelligence artificielle", "webllm"],
+        keywords: [
+          "assistant",
+          "modèle",
+          "modèle local",
+          "intelligence artificielle",
+        ],
       },
     ],
   },
@@ -143,9 +180,17 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       {
         id: "sauvegarde",
         label: "Sauvegarde",
-        description: "Protéger et restaurer les données",
+        description: "Sauvegarder, restaurer et réinitialiser les données",
         icon: DatabaseIcon,
-        keywords: ["backup", "export", "import", "restaurer", "base de données"],
+        keywords: [
+          "backup",
+          "export",
+          "import",
+          "restaurer",
+          "base de données",
+          "réinitialisation",
+          "réinitialiser",
+        ],
       },
       {
         id: "apropos",
@@ -158,116 +203,26 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
   },
 ];
 
-// IA Settings Component
-const IASettings: React.FC = () => {
-  const [modelStatus, setModelStatus] = useState<
-    "not_downloaded" | "downloading" | "ready" | "error"
-  >("not_downloaded");
-  const [progress, setProgress] = useState<ProgressReport>({
-    progress: 0,
-    text: "Initializing...",
-  });
-  const [isInitializing, setIsInitializing] = useState(false);
-
-  useEffect(() => {
-    if (isWebLLMReady()) {
-      setModelStatus("ready");
-    } else if (isWebLLMLoading()) {
-      setModelStatus("downloading");
-      setProgress(getCurrentProgress());
-    }
-
-    const unsubscribe = subscribeToProgress((report) => {
-      setProgress(report);
-      if (report.status === "ready") {
-        setModelStatus("ready");
-      } else if (report.status === "error") {
-        setModelStatus("error");
-      } else if (report.status === "loading") {
-        setModelStatus("downloading");
-      } else {
-        setModelStatus("not_downloaded");
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const handleDownloadModel = async () => {
-    setIsInitializing(true);
-    setModelStatus("downloading");
-
-    try {
-      const preferences = getModelPreferences();
-      await initializeWebLLM(preferences.defaultModelId, (report) => {
-        setProgress(report);
-      });
-      setModelStatus("ready");
-    } catch (error) {
-      console.error("[IASettings] Model download failed:", error);
-      setModelStatus("error");
-    } finally {
-      setIsInitializing(false);
-    }
-  };
-
-  return (
-    <section className="settings-panel">
-      <div className="settings-panel-heading">
-        <h3>Rédaction assistée sur cet appareil</h3>
-        <p>Correction, reformulation et résumé des notes, une fois le modèle installé.</p>
-      </div>
-      <div className="settings-row">
-        <div>
-          <p className="settings-row-title">
-            {modelStatus === "ready" ? "Prêt à utiliser" : modelStatus === "downloading" ? "Installation en cours" : modelStatus === "error" ? "Installation interrompue" : "Modèle non installé"}
-          </p>
-          <p className="settings-row-detail">
-            {modelStatus === "ready" ? "Fonctionne localement, y compris sans connexion." : modelStatus === "downloading" ? `${progress.text.startsWith("Fetching param") ? "Téléchargement des fichiers du modèle…" : /shader|pipeline/i.test(progress.text) ? "Préparation du modèle sur le GPU…" : progress.text} · ${Math.round(progress.progress * 100)} %` : modelStatus === "error" ? progress.text : "Installation nécessaire pour les outils de rédaction hors ligne."}
-          </p>
-        </div>
-        {(modelStatus === "not_downloaded" || modelStatus === "error") && (
-          <Button disabled={isInitializing} onClick={handleDownloadModel}>
-            {isInitializing && <Spinner className="size-4" />}
-            {modelStatus === "error" ? "Réessayer" : "Installer"}
-          </Button>
-        )}
-        {modelStatus === "ready" && <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Actif</span>}
-        {modelStatus === "downloading" && (
-          <div className="flex shrink-0 items-center gap-3">
-            <Spinner className="size-4" />
-            <Button variant="outline" onClick={() => { void resetWebLLM(); }}>Annuler</Button>
-          </div>
-        )}
-      </div>
-      {modelStatus === "downloading" && (
-        <div className="px-6 pb-5">
-          <div role="progressbar" aria-label="Installation du modèle local" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress.progress * 100)} className="h-1.5 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none" style={{ width: `${Math.round(progress.progress * 100)}%` }} />
-          </div>
-        </div>
-      )}
-      <p className="border-t border-border px-6 py-4 text-xs leading-5 text-muted-foreground">
-        Le modèle est téléchargé une fois puis conservé sur cet appareil. Les fonctions locales n’envoient pas vos notes à un service distant.
-      </p>
-    </section>
-  );
-};
-
 // Backup Settings Component
 const BackupSettings: React.FC = () => {
   const [backups, setBackups] = useState<BackupInfo[]>([]);
   const [lastBackup, setLastBackup] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState<{ kind: "restore" | "delete" | "import"; filename?: string } | null>(null);
+  const [pending, setPending] = useState<{
+    kind: "restore" | "delete" | "import";
+    filename?: string;
+  } | null>(null);
   const [passphrase, setPassphrase] = useState("");
   const desktop = isTauriRuntime();
 
   const load = async () => {
     setLoading(true);
     try {
-      const [items, date] = await Promise.all([listBackups(), getLastBackupDate()]);
+      const [items, date] = await Promise.all([
+        listBackups(),
+        getLastBackupDate(),
+      ]);
       setBackups(items);
       setLastBackup(date);
     } catch {
@@ -277,25 +232,44 @@ const BackupSettings: React.FC = () => {
     }
   };
 
-  useEffect(() => { void load(); }, []);
-  const formatDate = (date: string) => new Date(date).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" });
+  useEffect(() => {
+    void load();
+  }, []);
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleString("fr-FR", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
 
-  const run = async (operation: () => Promise<boolean | BackupInfo | null>, success: string, restart = false) => {
+  const run = async (
+    operation: () => Promise<boolean | BackupInfo | null>,
+    success: string,
+    restart = false
+  ) => {
     setBusy(true);
     try {
       const result = await operation();
       if (!result) {
-        if (success.startsWith("Sauvegarde")) toast.error("L’opération a échoué. Réessayez.");
+        if (success.startsWith("Sauvegarde"))
+          toast.error("L’opération a échoué. Réessayez.");
         return;
       }
       toast.success(success);
       if (restart) {
-        try { await relaunch(); } catch { window.location.reload(); }
+        try {
+          await relaunch();
+        } catch {
+          window.location.reload();
+        }
       } else {
         await load();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "L’opération a échoué. Réessayez.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "L’opération a échoué. Réessayez."
+      );
     } finally {
       setBusy(false);
     }
@@ -308,24 +282,46 @@ const BackupSettings: React.FC = () => {
     setPending(null);
     setPassphrase("");
     if (action.kind === "restore" && action.filename) {
-      void run(() => restoreBackup(action.filename!, password), "Sauvegarde restaurée. Redémarrage…", true);
+      void run(
+        () => restoreBackup(action.filename!, password),
+        "Sauvegarde restaurée. Redémarrage…",
+        true
+      );
     } else if (action.kind === "delete" && action.filename) {
       void run(() => deleteBackup(action.filename!), "Sauvegarde supprimée.");
     } else {
-      void run(() => importDatabase(password), "Base importée. Redémarrage…", true);
+      void run(
+        () => importDatabase(password),
+        "Base importée. Redémarrage…",
+        true
+      );
     }
   };
 
   return (
     <div className="settings-section-stack">
-      {!desktop && <p className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">Les sauvegardes de la base sont disponibles dans l’application de bureau.</p>}
+      {!desktop && (
+        <p className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
+          Les sauvegardes de la base sont disponibles dans l’application de
+          bureau.
+        </p>
+      )}
       <section className="settings-panel">
         <div className="settings-row border-t-0">
           <div>
             <p className="settings-row-title">Dernière sauvegarde</p>
-            <p className="settings-row-detail">{lastBackup ? formatDate(lastBackup) : "Aucune sauvegarde enregistrée"}</p>
+            <p className="settings-row-detail">
+              {lastBackup
+                ? formatDate(lastBackup)
+                : "Aucune sauvegarde enregistrée"}
+            </p>
           </div>
-          <Button disabled={!desktop || busy || loading} onClick={() => void run(() => createBackup("manual"), "Sauvegarde créée.")}>
+          <Button
+            disabled={!desktop || busy || loading}
+            onClick={() =>
+              void run(() => createBackup("manual"), "Sauvegarde créée.")
+            }
+          >
             {busy && <Spinner className="size-4" />}
             Sauvegarder maintenant
           </Button>
@@ -333,16 +329,32 @@ const BackupSettings: React.FC = () => {
         <div className="settings-row">
           <div>
             <p className="settings-row-title">Copie externe</p>
-            <p className="settings-row-detail">Conserver une copie de la base sur un autre support.</p>
+            <p className="settings-row-detail">
+              Conserver une copie de la base sur un autre support.
+            </p>
           </div>
-          <Button disabled={!desktop || busy} onClick={() => void run(() => exportDatabase(), "Base exportée.")} variant="outline">Exporter</Button>
+          <Button
+            disabled={!desktop || busy}
+            onClick={() => void run(() => exportDatabase(), "Base exportée.")}
+            variant="outline"
+          >
+            Exporter
+          </Button>
         </div>
         <div className="settings-row">
           <div>
             <p className="settings-row-title">Importer une base</p>
-            <p className="settings-row-detail">Remplace les données actuelles par celles du fichier choisi.</p>
+            <p className="settings-row-detail">
+              Remplace les données actuelles par celles du fichier choisi.
+            </p>
           </div>
-          <Button disabled={!desktop || busy} onClick={() => setPending({ kind: "import" })} variant="outline">Importer…</Button>
+          <Button
+            disabled={!desktop || busy}
+            onClick={() => setPending({ kind: "import" })}
+            variant="outline"
+          >
+            Importer…
+          </Button>
         </div>
       </section>
       <section className="settings-panel">
@@ -351,45 +363,124 @@ const BackupSettings: React.FC = () => {
             <h3>Sauvegardes conservées</h3>
             <p>Les cinq dernières copies sont conservées automatiquement.</p>
           </div>
-          <Button aria-label="Actualiser les sauvegardes" disabled={loading || busy} onClick={() => void load()} size="icon-sm" variant="ghost">
-            <HugeiconsIcon className={cn("size-4", loading && "animate-spin")} icon={Refresh01Icon} strokeWidth={1.5} />
+          <Button
+            aria-label="Actualiser les sauvegardes"
+            disabled={loading || busy}
+            onClick={() => void load()}
+            size="icon-sm"
+            variant="ghost"
+          >
+            <HugeiconsIcon
+              className={cn("size-4", loading && "animate-spin")}
+              icon={Refresh01Icon}
+              strokeWidth={1.5}
+            />
           </Button>
         </div>
-        {loading ? <div className="flex justify-center p-6"><Spinner /></div> : backups.length === 0 ? (
-          <p className="border-t border-border px-6 py-6 text-sm text-muted-foreground">Votre première copie apparaîtra ici après la sauvegarde.</p>
-        ) : backups.map((backup) => (
-          <div className="settings-row" key={backup.filename}>
-            <div>
-              <p className="settings-row-title">{formatDate(backup.date)}</p>
-              <p className="settings-row-detail">Version {backup.version} · {backup.filename.includes("auto") ? "Automatique" : "Manuelle"}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button disabled={busy} onClick={() => setPending({ kind: "restore", filename: backup.filename })} size="sm" variant="outline">Restaurer…</Button>
-              <Button aria-label={`Supprimer la sauvegarde du ${formatDate(backup.date)}`} disabled={busy} onClick={() => setPending({ kind: "delete", filename: backup.filename })} size="icon-sm" variant="ghost">
-                <HugeiconsIcon className="size-4" icon={Delete01Icon} strokeWidth={1.5} />
-              </Button>
-            </div>
+        {loading ? (
+          <div className="flex justify-center p-6">
+            <Spinner />
           </div>
-        ))}
+        ) : backups.length === 0 ? (
+          <p className="border-t border-border px-6 py-6 text-sm text-muted-foreground">
+            Votre première copie apparaîtra ici après la sauvegarde.
+          </p>
+        ) : (
+          backups.map((backup) => (
+            <div className="settings-row" key={backup.filename}>
+              <div>
+                <p className="settings-row-title">{formatDate(backup.date)}</p>
+                <p className="settings-row-detail">
+                  Version {backup.version} ·{" "}
+                  {backup.filename.includes("auto")
+                    ? "Automatique"
+                    : "Manuelle"}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  disabled={busy}
+                  onClick={() =>
+                    setPending({ kind: "restore", filename: backup.filename })
+                  }
+                  size="sm"
+                  variant="outline"
+                >
+                  Restaurer…
+                </Button>
+                <Button
+                  aria-label={`Supprimer la sauvegarde du ${formatDate(backup.date)}`}
+                  disabled={busy}
+                  onClick={() =>
+                    setPending({ kind: "delete", filename: backup.filename })
+                  }
+                  size="icon-sm"
+                  variant="ghost"
+                >
+                  <HugeiconsIcon
+                    className="size-4"
+                    icon={Delete01Icon}
+                    strokeWidth={1.5}
+                  />
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
       </section>
-      <p className="text-xs leading-5 text-muted-foreground">Une copie de sécurité est créée avant toute importation ou restauration.</p>
-      <AlertDialog open={pending !== null} onOpenChange={(open) => { if (!open) { setPending(null); setPassphrase(""); } }}>
+      <p className="text-xs leading-5 text-muted-foreground">
+        Une copie de sécurité est créée avant toute importation ou restauration.
+      </p>
+      <AlertDialog
+        open={pending !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPending(null);
+            setPassphrase("");
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{pending?.kind === "delete" ? "Supprimer cette sauvegarde ?" : pending?.kind === "restore" ? "Restaurer cette sauvegarde ?" : "Importer une base de données ?"}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {pending?.kind === "delete"
+                ? "Supprimer cette sauvegarde ?"
+                : pending?.kind === "restore"
+                  ? "Restaurer cette sauvegarde ?"
+                  : "Importer une base de données ?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {pending?.kind === "delete" ? "Cette copie sera supprimée définitivement. Les données actuelles du cabinet resteront intactes." : "Les données actuelles seront remplacées. Une copie de sécurité sera conservée et l’application redémarrera après l’opération."}
+              {pending?.kind === "delete"
+                ? "Cette copie sera supprimée définitivement. Les données actuelles du cabinet resteront intactes."
+                : "Les données actuelles seront remplacées. Une copie de sécurité sera conservée et l’application redémarrera après l’opération."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           {pending?.kind !== "delete" && (
             <Field>
-              <FieldLabel htmlFor="backup-password">Mot de passe de la sauvegarde, si chiffrée</FieldLabel>
-              <Input autoComplete="off" id="backup-password" onChange={(event) => setPassphrase(event.target.value)} type="password" value={passphrase} />
+              <FieldLabel htmlFor="backup-password">
+                Mot de passe de la sauvegarde, si chiffrée
+              </FieldLabel>
+              <Input
+                autoComplete="off"
+                id="backup-password"
+                onChange={(event) => setPassphrase(event.target.value)}
+                type="password"
+                value={passphrase}
+              />
             </Field>
           )}
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmPending} variant={pending?.kind === "delete" ? "destructive" : "default"}>{pending?.kind === "delete" ? "Supprimer" : pending?.kind === "restore" ? "Restaurer" : "Choisir le fichier"}</AlertDialogAction>
+            <AlertDialogAction
+              onClick={confirmPending}
+              variant={pending?.kind === "delete" ? "destructive" : "default"}
+            >
+              {pending?.kind === "delete"
+                ? "Supprimer"
+                : pending?.kind === "restore"
+                  ? "Restaurer"
+                  : "Choisir le fichier"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -422,7 +513,18 @@ const Parametres: React.FC<ParametresProps> = ({
     return normalized;
   };
 
-  const [activeTab, setActiveTab] = useState<SettingsTab>("profil");
+  const [activeTab, setActiveTab] = useState<SettingsTab>(() =>
+    typeof window !== "undefined" && window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true" ? "ia" : "profil"
+  );
+  useEffect(() => {
+    const openAISettings = () => {
+      window.sessionStorage.removeItem(AI_SETTINGS_PENDING_KEY);
+      setActiveTab("ia");
+    };
+    if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true") openAISettings();
+    window.addEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
+    return () => window.removeEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
+  }, []);
   const { currentUser, refreshCurrentUser } = useAuth();
   const { data: users, update: updateUserDoc } = useUsersRepository();
   const userDoc = users.find((u) => u.email === currentUser?.email);
@@ -453,12 +555,9 @@ const Parametres: React.FC<ParametresProps> = ({
       } else if (currentUser?.email === "zohir.kh@gmail.com") {
         setDisplayName("Zouhir Kherroubi");
       }
-
-
     };
 
     loadProfileState();
-
   }, [currentUser, userDoc]);
 
   useEffect(() => {
@@ -520,8 +619,6 @@ const Parametres: React.FC<ParametresProps> = ({
         phone,
         avatarUrl: sanitizeAvatarValue(avatarUrl),
       });
-
-
 
       writeCachedProfile(currentUser.email, {
         displayName,
@@ -618,7 +715,15 @@ const Parametres: React.FC<ParametresProps> = ({
         return (
           <div className="settings-section-stack">
             {message && (
-              <p className={cn("rounded-lg border px-4 py-3 text-sm", message.type === "success" ? "border-emerald-500/25 text-emerald-700 dark:text-emerald-300" : "border-destructive/25 text-destructive")} role="status">
+              <p
+                className={cn(
+                  "rounded-lg border px-4 py-3 text-sm",
+                  message.type === "success"
+                    ? "border-emerald-500/25 text-emerald-700 dark:text-emerald-300"
+                    : "border-destructive/25 text-destructive"
+                )}
+                role="status"
+              >
                 {message.text}
               </p>
             )}
@@ -626,9 +731,15 @@ const Parametres: React.FC<ParametresProps> = ({
               <div className="settings-profile-identity">
                 <Avatar name={displayName} size="xl" src={avatarUrl} />
                 <div className="min-w-0">
-                  <h3 className="truncate text-lg font-semibold">{displayName || "Votre profil"}</h3>
-                  <p className="mt-0.5 truncate text-sm text-muted-foreground">{currentUser?.email}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{roleLabel}</p>
+                  <h3 className="truncate text-lg font-semibold">
+                    {displayName || "Votre profil"}
+                  </h3>
+                  <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                    {currentUser?.email}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {roleLabel}
+                  </p>
                 </div>
               </div>
               <details className="settings-avatar-picker">
@@ -640,7 +751,10 @@ const Parametres: React.FC<ParametresProps> = ({
                       <button
                         aria-label={`Choisir l’avatar ${emoji}`}
                         aria-pressed={avatarUrl === value}
-                        className={cn("settings-avatar-choice", avatarUrl === value && "settings-avatar-choice-active")}
+                        className={cn(
+                          "settings-avatar-choice",
+                          avatarUrl === value && "settings-avatar-choice-active"
+                        )}
                         key={emoji}
                         onClick={() => setAvatarUrl(value)}
                         type="button"
@@ -651,9 +765,30 @@ const Parametres: React.FC<ParametresProps> = ({
                   })}
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Button onClick={() => setAvatarUrl("")} size="sm" type="button" variant="outline">Automatique</Button>
-                  <label className={cn(buttonVariants({ size: "sm", variant: "outline" }), "cursor-pointer")} htmlFor="profile-photo-upload">Choisir une photo</label>
-                  <input accept="image/*" className="sr-only" id="profile-photo-upload" onChange={handleImageUpload} type="file" />
+                  <Button
+                    onClick={() => setAvatarUrl("")}
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                  >
+                    Automatique
+                  </Button>
+                  <label
+                    className={cn(
+                      buttonVariants({ size: "sm", variant: "outline" }),
+                      "cursor-pointer"
+                    )}
+                    htmlFor="profile-photo-upload"
+                  >
+                    Choisir une photo
+                  </label>
+                  <input
+                    accept="image/*"
+                    className="sr-only"
+                    id="profile-photo-upload"
+                    onChange={handleImageUpload}
+                    type="file"
+                  />
                 </div>
               </details>
             </section>
@@ -665,11 +800,23 @@ const Parametres: React.FC<ParametresProps> = ({
               <div className="settings-profile-fields">
                 <Field>
                   <FieldLabel htmlFor="settings-name">Nom complet</FieldLabel>
-                  <Input id="settings-name" autoComplete="name" onChange={(event) => setDisplayName(event.target.value)} value={displayName} />
+                  <Input
+                    id="settings-name"
+                    autoComplete="name"
+                    onChange={(event) => setDisplayName(event.target.value)}
+                    value={displayName}
+                  />
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="settings-phone">Téléphone</FieldLabel>
-                  <Input id="settings-phone" autoComplete="tel" onChange={(event) => setPhone(event.target.value)} placeholder="+213…" type="tel" value={phone} />
+                  <Input
+                    id="settings-phone"
+                    autoComplete="tel"
+                    onChange={(event) => setPhone(event.target.value)}
+                    placeholder="+213…"
+                    type="tel"
+                    value={phone}
+                  />
                 </Field>
               </div>
               <div className="settings-profile-footer">
@@ -686,6 +833,7 @@ const Parametres: React.FC<ParametresProps> = ({
       case "apparence":
         return (
           <div className="settings-section-stack">
+            <MascotSettings />
             <section className="settings-panel">
               <div className="settings-panel-heading">
                 <h3>Affichage</h3>
@@ -693,8 +841,21 @@ const Parametres: React.FC<ParametresProps> = ({
               </div>
               <div className="settings-row">
                 <div>
+                  <label htmlFor="premium-visual-style" className="settings-row-title cursor-pointer">Style Premium</label>
+                  <p id="premium-style-description" className="settings-row-detail">
+                    {themeConfig.visualStyle === "premium" ? "Premium : surfaces douces et espace aéré." : "Classique : votre apparence actuelle."}
+                  </p>
+                </div>
+                <Switch id="premium-visual-style" aria-describedby="premium-style-description"
+                  checked={themeConfig.visualStyle === "premium"}
+                  onCheckedChange={(checked) => handleThemeConfigChange({ ...themeConfig, visualStyle: checked ? "premium" : "classic" })} />
+              </div>
+              <div className="settings-row">
+                <div>
                   <p className="settings-row-title">Mode</p>
-                  <p className="settings-row-detail">Suit votre environnement ou reste fixe.</p>
+                  <p className="settings-row-detail">
+                    Suit votre environnement ou reste fixe.
+                  </p>
                 </div>
                 <ThemeModeToggle
                   mode={currentTheme}
@@ -703,33 +864,66 @@ const Parametres: React.FC<ParametresProps> = ({
               </div>
               <div className="settings-row">
                 <div>
-                  <label htmlFor="liquid-glass-navigation" className="settings-row-title cursor-pointer">Liquid Glass</label>
-                  <p id="liquid-glass-description" className="settings-row-detail">Une capsule de verre et des contours arrondis autour des icônes.</p>
+                  <label
+                    htmlFor="liquid-glass-navigation"
+                    className="settings-row-title cursor-pointer"
+                  >
+                    Liquid Glass
+                  </label>
+                  <p
+                    id="liquid-glass-description"
+                    className="settings-row-detail"
+                  >
+                    Une capsule de verre et des contours arrondis autour des
+                    icônes.
+                  </p>
                 </div>
                 <Switch
                   id="liquid-glass-navigation"
                   aria-describedby="liquid-glass-description"
                   checked={themeConfig.chromeStyle === "liquid-glass"}
-                  onCheckedChange={(checked) => handleThemeConfigChange({ ...themeConfig, chromeStyle: checked ? "liquid-glass" : "classic" })}
+                  onCheckedChange={(checked) =>
+                    handleThemeConfigChange({
+                      ...themeConfig,
+                      chromeStyle: checked ? "liquid-glass" : "classic",
+                    })
+                  }
                 />
               </div>
               <div className="settings-row">
                 <div>
                   <p className="settings-row-title">Couleur d’accent</p>
-                  <p className="settings-row-detail">Repère discret dans l’interface.</p>
+                  <p className="settings-row-detail">
+                    Repère discret dans l’interface.
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {(Object.entries(ACCENT_THEMES) as [keyof typeof ACCENT_THEMES, typeof ACCENT_THEMES.blue][]).map(([key, theme]) => (
+                  {(
+                    Object.entries(ACCENT_THEMES) as [
+                      keyof typeof ACCENT_THEMES,
+                      typeof ACCENT_THEMES.blue,
+                    ][]
+                  ).map(([key, theme]) => (
                     <button
                       aria-label={`Couleur ${theme.label}`}
                       aria-pressed={themeConfig.accent === key}
-                      className={cn("settings-swatch", themeConfig.accent === key && "settings-swatch-active")}
+                      className={cn(
+                        "settings-swatch",
+                        themeConfig.accent === key && "settings-swatch-active"
+                      )}
                       key={key}
-                      onClick={() => handleThemeConfigChange({ ...themeConfig, accent: key })}
+                      onClick={() =>
+                        handleThemeConfigChange({ ...themeConfig, accent: key })
+                      }
                       title={theme.label}
                       type="button"
                     >
-                      <span className={cn("size-5 rounded-full bg-gradient-to-br", theme.previewGradient)} />
+                      <span
+                        className={cn(
+                          "size-5 rounded-full bg-gradient-to-br",
+                          theme.previewGradient
+                        )}
+                      />
                     </button>
                   ))}
                 </div>
@@ -738,13 +932,24 @@ const Parametres: React.FC<ParametresProps> = ({
             <section className="settings-panel">
               <div className="settings-row">
                 <div>
-                  <p className="settings-row-title">Disposition du tableau de bord</p>
-                  <p className="settings-row-detail">Réorganisez les rangées de widgets de la vue classique.</p>
+                  <p className="settings-row-title">
+                    Disposition du tableau de bord
+                  </p>
+                  <p className="settings-row-detail">
+                    Réorganisez les rangées de widgets de la journée clinique.
+                  </p>
                 </div>
-                <Button variant="outline" onClick={() => {
-                  window.sessionStorage.setItem("baitari:customize-dashboard", "true");
-                  onNavigate?.("dashboard");
-                }} disabled={!onNavigate}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    window.sessionStorage.setItem(
+                      "baitari:customize-dashboard",
+                      "true"
+                    );
+                    onNavigate?.("dashboard");
+                  }}
+                  disabled={!onNavigate}
+                >
                   Réorganiser les widgets
                 </Button>
               </div>
@@ -803,7 +1008,9 @@ const Parametres: React.FC<ParametresProps> = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 <Field>
-                  <FieldLabel htmlFor="settings-password">Nouveau mot de passe</FieldLabel>
+                  <FieldLabel htmlFor="settings-password">
+                    Nouveau mot de passe
+                  </FieldLabel>
                   <Input
                     id="settings-password"
                     autoComplete="new-password"
@@ -814,7 +1021,9 @@ const Parametres: React.FC<ParametresProps> = ({
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="settings-confirm">Confirmer le mot de passe</FieldLabel>
+                  <FieldLabel htmlFor="settings-confirm">
+                    Confirmer le mot de passe
+                  </FieldLabel>
                   <Input
                     id="settings-confirm"
                     autoComplete="new-password"
@@ -842,14 +1051,12 @@ const Parametres: React.FC<ParametresProps> = ({
                 </Button>
               </CardContent>
             </Card>
-
-
           </div>
         );
       case "ia":
-        return <IASettings />;
+        return <AIModelSettings />;
       case "sauvegarde":
-        return <BackupSettings />;
+        return <div className="settings-section-stack"><BackupSettings /><LocalDataResetSettings /></div>;
       case "apropos":
         return (
           <div className="settings-section-stack">
@@ -858,21 +1065,30 @@ const Parametres: React.FC<ParametresProps> = ({
                 <Logo collapsed size="lg" />
                 <div className="min-w-0">
                   <h3 className="text-lg font-semibold">{APP_NAME}</h3>
-                  <p className="text-sm text-muted-foreground">Version {getAppVersion()}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Version {getAppVersion()}
+                  </p>
                 </div>
               </div>
             </section>
+            <AboutTeam />
             <LicenseStatusCard />
-            <section className="settings-panel">
+            {isActivationOwner(currentUser?.email) && <section className="settings-panel">
               <div className="settings-row">
                 <div>
                   <p className="settings-row-title">Centre d’activation</p>
-                  <p className="settings-row-detail">Gérer les accès accordés aux testeurs.</p>
+                  <p className="settings-row-detail">
+                    Gérer les accès accordés aux testeurs.
+                  </p>
                 </div>
                 <Button
                   onClick={() => {
                     openActivationAdminWindow().catch((error) => {
-                      toast.error(error instanceof Error ? error.message : "Impossible d’ouvrir le centre d’activation.");
+                      toast.error(
+                        error instanceof Error
+                          ? error.message
+                          : "Impossible d’ouvrir le centre d’activation."
+                      );
                     });
                   }}
                   type="button"
@@ -881,7 +1097,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   Ouvrir
                 </Button>
               </div>
-            </section>
+            </section>}
           </div>
         );
       default:
@@ -893,7 +1109,9 @@ const Parametres: React.FC<ParametresProps> = ({
     <div className="settings-page">
       <div className="settings-page-header">
         <div>
-          <div className="mb-1"><PageDate /></div>
+          <div className="mb-1">
+            <PageDate />
+          </div>
           <h1>Paramètres</h1>
           <p>Votre compte, votre espace et les données du cabinet.</p>
         </div>
@@ -906,12 +1124,19 @@ const Parametres: React.FC<ParametresProps> = ({
               {group.items.map((item) => (
                 <button
                   aria-current={activeTab === item.id ? "page" : undefined}
-                  className={cn("settings-nav-item", activeTab === item.id && "settings-nav-item-active")}
+                  className={cn(
+                    "settings-nav-item",
+                    activeTab === item.id && "settings-nav-item-active"
+                  )}
                   key={item.id}
                   onClick={(event) => {
-                    const scrollContainer = event.currentTarget.closest('[data-slot="sidebar-inset"]');
+                    const scrollContainer = event.currentTarget.closest(
+                      '[data-slot="sidebar-inset"]'
+                    );
                     setActiveTab(item.id);
-                    requestAnimationFrame(() => scrollContainer?.scrollTo({ top: 0, behavior: "instant" }));
+                    requestAnimationFrame(() =>
+                      scrollContainer?.scrollTo({ top: 0, behavior: "instant" })
+                    );
                   }}
                   type="button"
                 >
@@ -922,13 +1147,22 @@ const Parametres: React.FC<ParametresProps> = ({
             </div>
           ))}
         </nav>
-        <section aria-labelledby="settings-section-title" className="settings-page-main">
+        <section
+          aria-labelledby="settings-section-title"
+          className="settings-page-main" data-settings-section={activeTab}
+        >
           <div className="settings-content-heading">
             <h2 id="settings-section-title">{activeNavItem.label}</h2>
             <p>{activeNavItem.description}</p>
           </div>
-          <div className="settings-content" hidden={activeTab !== "cabinet"}><InvoiceSettingsPanel /></div>
-          {activeTab !== "cabinet" && <div className="settings-content" key={activeTab}>{renderContent()}</div>}
+          <div className="settings-content" hidden={activeTab !== "cabinet"}>
+            <InvoiceSettingsPanel />
+          </div>
+          {activeTab !== "cabinet" && (
+            <div className="settings-content" key={activeTab}>
+              {renderContent()}
+            </div>
+          )}
         </section>
       </div>
     </div>
@@ -936,7 +1170,14 @@ const Parametres: React.FC<ParametresProps> = ({
 };
 
 function SidebarLayoutSettings() {
-  const { variant, setVariant, collapsible, setCollapsible, glassContrast, setGlassContrast } = useLayout();
+  const {
+    variant,
+    setVariant,
+    collapsible,
+    setCollapsible,
+    glassContrast,
+    setGlassContrast,
+  } = useLayout();
   return (
     <section className="settings-panel">
       <div className="settings-panel-heading">
@@ -946,13 +1187,21 @@ function SidebarLayoutSettings() {
       <div className="settings-row">
         <div>
           <p className="settings-row-title">Présentation</p>
-          <p className="settings-row-detail">La version épurée laisse plus de place au contenu.</p>
+          <p className="settings-row-detail">
+            La version épurée laisse plus de place au contenu.
+          </p>
         </div>
-        <div className="settings-segmented" role="group" aria-label="Présentation de la barre latérale">
-          {([
-            ["minimal", "Épurée"],
-            ["inset", "Encadrée"],
-          ] as const).map(([value, label]) => (
+        <div
+          className="settings-segmented"
+          role="group"
+          aria-label="Présentation de la barre latérale"
+        >
+          {(
+            [
+              ["minimal", "Épurée"],
+              ["inset", "Encadrée"],
+            ] as const
+          ).map(([value, label]) => (
             <button
               aria-pressed={variant === value}
               className={cn(variant === value && "settings-segmented-active")}
@@ -968,17 +1217,27 @@ function SidebarLayoutSettings() {
       <div className="settings-row">
         <div>
           <p className="settings-row-title">Réduire la barre latérale</p>
-          <p className="settings-row-detail">Laissez les icônes visibles ou masquez la barre.</p>
+          <p className="settings-row-detail">
+            Laissez les icônes visibles ou masquez la barre.
+          </p>
         </div>
-        <div className="settings-segmented" role="group" aria-label="Réduction de la barre latérale">
-          {([
-            ["icon", "Icônes"],
-            ["offcanvas", "Masquée"],
-            ["none", "Jamais"],
-          ] as const).map(([value, label]) => (
+        <div
+          className="settings-segmented"
+          role="group"
+          aria-label="Réduction de la barre latérale"
+        >
+          {(
+            [
+              ["icon", "Icônes"],
+              ["offcanvas", "Masquée"],
+              ["none", "Jamais"],
+            ] as const
+          ).map(([value, label]) => (
             <button
               aria-pressed={collapsible === value}
-              className={cn(collapsible === value && "settings-segmented-active")}
+              className={cn(
+                collapsible === value && "settings-segmented-active"
+              )}
               key={value}
               onClick={() => setCollapsible(value)}
               type="button"
@@ -992,10 +1251,20 @@ function SidebarLayoutSettings() {
         <div className="settings-row">
           <div>
             <p className="settings-row-title">Contraste du verre</p>
-            <p className="settings-row-detail">Réglage conservé pour votre disposition actuelle.</p>
+            <p className="settings-row-detail">
+              Réglage conservé pour votre disposition actuelle.
+            </p>
           </div>
           <div className="flex w-40 items-center gap-3">
-            <Slider aria-label="Contraste du verre" max={100} min={0} onValueChange={(value) => setGlassContrast(Array.isArray(value) ? value[0] ?? 0 : value)} value={[glassContrast]} />
+            <Slider
+              aria-label="Contraste du verre"
+              max={100}
+              min={0}
+              onValueChange={(value) =>
+                setGlassContrast(Array.isArray(value) ? (value[0] ?? 0) : value)
+              }
+              value={[glassContrast]}
+            />
             <span className="text-xs tabular-nums">{glassContrast}%</span>
           </div>
         </div>

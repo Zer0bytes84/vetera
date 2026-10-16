@@ -1,10 +1,3 @@
-import {
-  getActiveModelId,
-  generateText,
-  initializeWebLLM,
-  isWebLLMReady,
-} from "@/services/webLLMService";
-import { resolveModelId } from "@/lib/ai-models";
 import type { SoapSectionKey } from "@/types/db";
 
 export type SoapDraft = {
@@ -25,28 +18,6 @@ export const EMPTY_SOAP_DRAFT: SoapDraft = {
   groundingScore: null,
 };
 
-const SOAP_SYSTEM_PROMPT = `Tu es un assistant vétérinaire expert. Ton rôle est de transformer une dictée libre (ou des notes en langage naturel) d'un vétérinaire clinicien en une note SOAP structurée, prête à être intégrée dans un dossier patient.
-
-RÈGLES STRICTES :
-1. Tu dois répondre UNIQUEMENT avec un objet JSON valide.
-2. Aucun texte avant ou après le JSON. Pas de markdown, pas de commentaire.
-3. Le JSON doit avoir ces 4 clés : "subjective", "objective", "assessment", "plan". La clé optionnelle "confidence" est autorisée si elle est demandée.
-4. Chaque valeur est une chaîne de caractères. Chaîne vide si la section n'a pas d'information disponible.
-5. Tu peux reformuler pour rendre la note professionnelle, mais tu ne dois JAMAIS inventer de faits cliniques qui ne sont pas dans la dictée.
-6. Fonctionne en extraction conservatrice : si une information n'est pas explicitement dite, laisse la section vide.
-7. Ne déduis jamais une maladie, une cause, une race, une mesure, un traitement ou un pronostic à partir d'un signe isolé.
-8. La section Objective ne contient que les examens, mesures ou observations explicitement dictés.
-9. La section Assessment ne contient une interprétation que si elle est explicitement formulée par le vétérinaire.
-10. La section Plan ne contient que les actions, traitements ou suivis explicitement formulés.
-11. En cas de doute, recopie le fait dans la section la plus proche et laisse les autres vides. La sécurité prime sur la complétude.
-
-Format de sortie (exemple) :
-{"subjective":"...","objective":"...","assessment":"...","plan":"..."}`;
-
-const CONFIDENCE_SYSTEM_PROMPT = `En plus de la note SOAP, tu dois estimer ta confiance globale dans la qualité de la structuration (0.0 = très incertain, 1.0 = parfaitement structuré). Ajoute une clé supplémentaire "confidence" (nombre entre 0 et 1).
-
-Réponds UNIQUEMENT avec un objet JSON valide de la forme :
-{"subjective":"...","objective":"...","assessment":"...","plan":"...","confidence":0.85}`;
 
 /**
  * Extrait le premier objet JSON valide d'une chaîne. Le LLM peut parfois
@@ -234,54 +205,4 @@ export function normalizeSoapDraft(
     }
   }
   return draft;
-}
-
-export interface StructureOptions {
-  /** Prompt optionnel ajouté après la dictée (ex : instructions espèce). */
-  extraUserHint?: string;
-  /** Modèle explicite à utiliser (sinon celui par défaut). */
-  modelId?: string;
-  /** Active l'estimation de confiance (JSON avec clé "confidence"). */
-  withConfidence?: boolean;
-}
-
-/**
- * Demande au moteur WebLLM local de structurer une dictée libre en SOAP.
- * Retourne un `SoapDraft` ou `null` si la réponse n'a pas pu être parsée.
- */
-export async function structureDictationIntoSoap(
-  transcript: string,
-  options: StructureOptions = {}
-): Promise<SoapDraft | null> {
-  const cleaned = transcript.trim();
-  if (!cleaned) {
-    return EMPTY_SOAP_DRAFT;
-  }
-  const targetModelId = resolveModelId(options.modelId);
-  if (!isWebLLMReady() || getActiveModelId() !== targetModelId) {
-    await initializeWebLLM(targetModelId);
-  }
-  const systemPrompt = options.withConfidence
-    ? `${SOAP_SYSTEM_PROMPT}\n\n${CONFIDENCE_SYSTEM_PROMPT}`
-    : SOAP_SYSTEM_PROMPT;
-  const userPrompt = `Dictée du vétérinaire à structurer :
-
-"""
-${cleaned}
-"""
-
-${options.extraUserHint ?? ""}
-
-Renvoie UNIQUEMENT l'objet JSON SOAP.`.trim();
-
-  const raw = await generateText(userPrompt, "", {
-    systemPrompt,
-    temperature: 0,
-    maxTokens: 768,
-  });
-  const parsed = extractJsonObject(raw);
-  if (!parsed) {
-    return null;
-  }
-  return normalizeSoapDraft(parsed, cleaned);
 }

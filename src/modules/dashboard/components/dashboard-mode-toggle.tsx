@@ -1,13 +1,15 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { DashboardSquare01Icon, StethoscopeIcon } from "@/lib/hugeicons";
-import { focusRing } from "@/design-system/primitives";
-import { MOTION } from "@/design-system/motion";
 import type { DashboardVersion } from "../hooks/use-dashboard-version";
 
 const modes = [
-  { value: "classic", label: "Vue classique", icon: DashboardSquare01Icon },
+  { value: "analytics", label: "Vue d’ensemble", icon: DashboardSquare01Icon },
   { value: "clinical", label: "Journée clinique", icon: StethoscopeIcon },
 ] as const;
 
@@ -15,7 +17,6 @@ const modes = [
 export function DashboardModeToggle({
   value,
   onChange,
-  reducedMotion = false,
 }: {
   value: DashboardVersion;
   onChange: (value: DashboardVersion) => void;
@@ -23,40 +24,47 @@ export function DashboardModeToggle({
 }) {
   return (
     <div
-      role="group"
       aria-label="Vue du tableau de bord"
-      className="inline-flex max-w-full items-center rounded-full bg-muted/60 p-0.5 shadow-hairline"
+      className="dashboard-mode-toggle inline-flex items-center rounded-lg border border-black/8 bg-black/[0.03] p-0.5 dark:border-white/10 dark:bg-white/[0.05]"
+      data-slot="dashboard-mode-toggle"
     >
-      {modes.map((mode) => (
-        <Tooltip key={mode.value}>
-          <TooltipTrigger render={<button
-          type="button"
-          aria-label={mode.label}
-          aria-pressed={value === mode.value}
-          className={`relative isolate inline-flex size-8 items-center justify-center rounded-full p-0 text-[12px] font-medium transition-colors duration-150 ${value === mode.value ? "text-ink" : "text-ink-muted hover:text-ink"} ${focusRing}`}
-          onClick={() => onChange(mode.value)}
-        />}>
-          {value === mode.value && (
-            <motion.span
-              aria-hidden="true"
-              className="absolute inset-0 -z-10 rounded-full bg-surface-raised shadow-sm"
-              layoutId={reducedMotion ? undefined : "dashboard-selected-view"}
-              transition={{
-                duration: reducedMotion ? 0 : MOTION.base,
-                ease: MOTION.easeOut,
-              }}
-            />
-          )}
-          <HugeiconsIcon
-            icon={mode.icon}
-            size={17}
-            strokeWidth={1.5}
-            className={value === mode.value ? "text-foreground" : "text-muted-foreground"}
-          />
-          </TooltipTrigger>
-          <TooltipContent>{mode.label}</TooltipContent>
-        </Tooltip>
-      ))}
+      {modes.map((mode) => {
+        const isSelected = value === mode.value;
+        return (
+          <Tooltip key={mode.value}>
+            <TooltipTrigger
+              render={
+                <button
+                  type="button"
+                  value={mode.value}
+                  aria-label={mode.label}
+                  aria-pressed={isSelected}
+                  onClick={() => onChange(mode.value)}
+                  className={cn(
+                    "relative inline-flex size-7 items-center justify-center rounded-md text-[12px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                    isSelected
+                      ? "bg-white text-zinc-900 shadow-2xs dark:bg-zinc-800 dark:text-zinc-100 font-semibold"
+                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent"
+                  )}
+                />
+              }
+            >
+              <HugeiconsIcon
+                icon={mode.icon}
+                size={16}
+                strokeWidth={1.5}
+                className={cn(
+                  "relative z-10",
+                  isSelected
+                    ? "text-zinc-900 dark:text-zinc-100"
+                    : "text-zinc-500 dark:text-zinc-400"
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent>{mode.label}</TooltipContent>
+          </Tooltip>
+        );
+      })}
     </div>
   );
 }

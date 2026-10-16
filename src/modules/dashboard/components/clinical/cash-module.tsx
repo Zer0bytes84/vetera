@@ -157,6 +157,11 @@ export function CashModule({
           description="Les factures et les règlements alimentent ce suivi automatiquement."
         />
       )}
+      <dl className="premium-widget-metrics" aria-label="Bilan de trésorerie">
+        <div><dt><i className="finder-dot finder-dot-blue" aria-hidden="true" />Encaissé</dt><dd>{formatCentimes(cash.income)}</dd></div>
+        <div><dt><i className="finder-dot finder-dot-orange" aria-hidden="true" />Dépensé</dt><dd>{formatCentimes(cash.expense)}</dd></div>
+        <div><dt><i className="finder-dot finder-dot-green" aria-hidden="true" />À recouvrer</dt><dd>{formatCentimes(pending)}</dd></div>
+      </dl>
       <div className="mt-3 flex justify-end border-t border-hairline pt-3">
         <ModuleLink onClick={onFinances}>Voir les finances</ModuleLink>
       </div>

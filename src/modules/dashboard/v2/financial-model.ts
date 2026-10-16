@@ -10,6 +10,7 @@ export interface FinancialCategory {
   totalCount: number;
   riskCount: number;
 }
+export type RiskCategoryData = FinancialCategory;
 export interface Receivable {
   id: string;
   label: string;

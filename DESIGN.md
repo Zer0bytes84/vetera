@@ -51,6 +51,24 @@ colors:
   signal-quiet: "#696b71"
   signal-quiet-dark: "#63656a"
 typography:
+  premium-welcome:
+    fontFamily: "Roobert, Geist Variable, sans-serif"
+    fontSize: "32px"
+    fontWeight: 500
+    lineHeight: 1.2
+    scope: "Premium dashboard greeting only, user-requested reference size on 2026-10-15; scales down to 24px in narrower windows."
+  premium-heading:
+    fontFamily: "Roobert, Geist Variable, sans-serif"
+    fontSize: "18px"
+    fontWeight: 500
+    lineHeight: 1.3333
+    scope: "Premium only, user-approved on 2026-10-15; headings use local Regular/Medium trial faces for visual evaluation. Licensed production files required before commercial distribution."
+  premium-body:
+    fontFamily: "Geist Variable, sans-serif"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.5
+    scope: "Premium body, controls and tabular data; Classic typography stays unchanged."
   landing-ui:
     fontFamily: "Manrope, Arial, sans-serif"
     fontWeight: 400

@@ -45,6 +45,11 @@ import type {
   WeightEntry,
 } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
+import { useMemo } from "react";
+import { toast } from "sonner";
+import { inventoryService, announceInventoryChanged } from "@/modules/stock/services/inventory-service";
+import { useStockInventory } from "@/modules/stock/hooks/use-stock-inventory";
+import { summarizeInventory } from "@/modules/stock/services/inventory-store";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -631,6 +636,17 @@ export function useTransactionsRepository() {
 
 export function useProductsRepository() {
   const productsStore = useSQLite<Product>("products");
+  const inventory = useStockInventory();
+  const summaries = useMemo(() => summarizeInventory(inventory.balances), [inventory.balances]);
+  const products = useMemo(() => productsStore.data.map(product => {
+    if (!isTauriRuntime()) return product;
+    const summary = summaries.get(product.id);
+    return {...product, ...(inventory.supported ? {availableQuantity: Math.max(0, Math.min(product.quantity, summary?.availableQuantity ?? 0)),
+      expiredQuantity: summary?.expiredQuantity ?? 0, expiringQuantity: summary?.expiringQuantity ?? 0,
+      lotsCount: summary?.lotsCount ?? 0, nearestExpiryDate: summary?.nearestExpiryDate ?? null, inventoryInvalid: summary?.invalid ?? false} : {}),
+      availabilityPending: !inventory.ready};
+  }), [productsStore.data, inventory.supported, inventory.ready, summaries]);
+  const saveProduct = (productId: string | undefined, draft: Partial<Product>, authorId?: string) => inventoryService.saveProduct({id: productId ?? generateId(), create: !productId, draft, authorId});
   const movementsStore = useSQLite<StockMovement>("stock_movements");
   const transactionsStore = useSQLite<Transaction>("transactions");
 
@@ -663,26 +679,7 @@ export function useProductsRepository() {
     if (isTauriRuntime()) {
       const now = toSQLiteTimestamp(new Date());
       await runDbTransaction(async (db) => {
-        await db.execute(
-          "UPDATE products SET quantity = ?, updated_at = ? WHERE id = ?",
-          [newQuantity, now, product.id]
-        );
-        await db.execute(
-          `INSERT INTO stock_movements (
-            id, product_id, type, quantity_delta, quantity_after,
-            unit_cost_amount, reason, created_at, updated_at
-          ) VALUES (?, ?, 'restock', ?, ?, ?, ?, ?, ?)`,
-          [
-            generateId(),
-            product.id,
-            Number(quantity),
-            newQuantity,
-            unitCostAmount,
-            "Réapprovisionnement",
-            now,
-            now,
-          ]
-        );
+        await changeStockInDatabase(db, {productId, quantity, mode: "restock", unitCostAmount, reason: "Réapprovisionnement", occurredAt: now}, generateId);
         if (createExpense && unitCostAmount > 0) {
           await db.execute(
             `INSERT INTO transactions (
@@ -702,6 +699,7 @@ export function useProductsRepository() {
           );
         }
       });
+      announceInventoryChanged();
       await Promise.all([
         productsStore.refresh(),
         movementsStore.refresh(),
@@ -753,27 +751,18 @@ export function useProductsRepository() {
     const product = productsStore.data.find((entry) => entry.id === productId);
     if (!product) throw new Error("Produit introuvable.");
     const delta = Number(quantity) - Number(product.quantity);
-    if (delta === 0) return;
 
     if (isTauriRuntime()) {
       const now = toSQLiteTimestamp(new Date());
       await runDbTransaction(async (db) => {
-        await db.execute(
-          "UPDATE products SET quantity = ?, updated_at = ? WHERE id = ?",
-          [quantity, now, product.id]
-        );
-        await db.execute(
-          `INSERT INTO stock_movements (
-            id, product_id, type, quantity_delta, quantity_after,
-            reason, created_at, updated_at
-          ) VALUES (?, ?, 'adjustment', ?, ?, ?, ?, ?)`,
-          [generateId(), product.id, delta, quantity, reason.trim(), now, now]
-        );
+        await changeStockInDatabase(db, {productId, quantity, mode: "adjustment", reason, occurredAt: now}, generateId);
       });
+      announceInventoryChanged();
       await Promise.all([productsStore.refresh(), movementsStore.refresh()]);
       return;
     }
 
+    if (delta === 0) return;
     await productsStore.update(product.id, { quantity });
     await movementsStore.add({
       productId: product.id,
@@ -786,6 +775,15 @@ export function useProductsRepository() {
 
   return {
     ...productsStore,
+    data: products,
+    saveProduct,
+    add: async (draft: Omit<Product, "id" | "createdAt" | "updatedAt">) => isTauriRuntime() && await inventoryService.supported()
+      ? saveProduct(undefined, draft) : productsStore.add(draft),
+    update: async (productId: string, draft: Partial<Product>) => {
+      if (!isTauriRuntime() || !await inventoryService.supported()) return productsStore.update(productId, draft);
+      try {await saveProduct(productId, draft); return true;}
+      catch (error) { toast.error(error instanceof Error ? error.message : "Le produit n’a pas pu être enregistré."); return false; }
+    },
     movements: movementsStore.data,
     movementsLoading: movementsStore.loading,
     adjustProductStock,
@@ -895,8 +893,8 @@ export function useConsultationSoapsRepository() {
         ),
     /**
      * Upsert : crée le SOAP s'il n'existe pas, met à jour sinon.
-     * Respecte la contrainte UNIQUE(appointment_id) en faisant
-     * `INSERT OR REPLACE` côté hook (re-add après remove).
+     * Met à jour la ligne existante sans la supprimer ; la contrainte
+     * UNIQUE(appointment_id) garantit une seule note par consultation.
      */
     upsertForAppointment: async (
       appointmentId: string,
@@ -917,10 +915,9 @@ export function useConsultationSoapsRepository() {
         if (!ok) {
           return null;
         }
-        return (
-          store.data.find((soap) => soap.appointmentId === appointmentId) ??
-          null
-        );
+        // React peut encore exposer le snapshot antérieur après await.
+        // L’écriture est confirmée : retourner les valeurs réellement envoyées.
+        return { ...existing, ...patch };
       }
       const draft = {
         appointmentId,
@@ -1297,3 +1294,4 @@ export function useNotificationStateRepository() {
     },
   };
 }
+import { changeStockInDatabase } from "@/modules/stock/services/stock-store";

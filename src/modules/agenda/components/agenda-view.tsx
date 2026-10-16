@@ -1,3 +1,6 @@
+import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
+import { AgendaCareSchedule } from "@/modules/care-tasks/agenda-care-schedule";
+import { formatPhone } from "@/utils/display-format";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import {
   Add01Icon,
@@ -233,14 +236,14 @@ export function AgendaView(props: AgendaViewProps) {
         <MotivationalHeader section="agenda" />
         <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button
-            className="h-10 rounded-full px-5 text-sm"
+            className="h-9 px-4"
             onClick={() => setSelectedDate(new Date())}
             variant="outline"
           >
             {t("agenda.today")}
           </Button>
           <Button
-            className="h-10 rounded-full px-5 text-sm"
+            className="h-9 px-4"
             onClick={() => handleOpenCreate()}
           >
             <HugeiconsIcon
@@ -275,8 +278,8 @@ export function AgendaView(props: AgendaViewProps) {
               value={viewMode}
             >
               <div className="agenda-toolbar flex flex-col gap-3 border-border border-b px-5 py-4 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center rounded-xl border border-border bg-card p-0.5">
+                <div className="agenda-date-controls flex flex-wrap items-center gap-2">
+                  <div className="agenda-period-navigation flex items-center rounded-xl border border-border bg-card p-0.5">
                     <Button
                       aria-label="Période précédente"
                       size="icon-sm"
@@ -301,7 +304,7 @@ export function AgendaView(props: AgendaViewProps) {
                     <PopoverTrigger
                       render={
                         <Button
-                          className="h-10 gap-2 rounded-xl"
+                          className="agenda-selected-date h-10 gap-2 rounded-xl"
                           variant="outline"
                         >
                           <HugeiconsIcon
@@ -341,7 +344,7 @@ export function AgendaView(props: AgendaViewProps) {
                   ) : null}
                 </div>
 
-                <TabsList className="h-10 w-full justify-start rounded-xl p-1 sm:w-auto">
+                <TabsList className="engraved-view-tabs h-10 w-full justify-start rounded-xl p-1 sm:w-auto" aria-label="Vue de l’agenda">
                   <TabsTrigger className="flex-1 rounded-lg" value="list">
                     {t("agenda.list", { defaultValue: "Vue liste" })}
                   </TabsTrigger>
@@ -350,6 +353,9 @@ export function AgendaView(props: AgendaViewProps) {
                   <TabsTrigger value="month">{t("agenda.month")}</TabsTrigger>
                 </TabsList>
               </div>
+
+            <AgendaStays selectedDate={selectedDate} weekDays={weekDays} mode={viewMode} patientName={getPatientName}/>
+            <AgendaCareSchedule selectedDate={selectedDate} weekDays={weekDays} mode={viewMode} patientName={getPatientName} />
 
               {loadingAppointments ? (
                 <div className="flex items-center justify-center p-6">
@@ -903,7 +909,7 @@ export function AgendaView(props: AgendaViewProps) {
                                     <span className="text-[10px] opacity-60">
                                       📞
                                     </span>{" "}
-                                    {row.owner?.phone || "Non renseigné"}
+                                    {formatPhone(row.owner?.phone) || "Non renseigné"}
                                   </p>
                                 </div>
                               </TableCell>

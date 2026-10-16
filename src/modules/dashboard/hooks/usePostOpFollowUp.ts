@@ -53,7 +53,7 @@ export function usePostOpFollowUp() {
               TRIM(COALESCE(o.first_name, '') || ' ' || COALESCE(o.last_name, '')),
               ''
             ) AS ownerName,
-            a.procedure AS procedure,
+            a.procedure_name AS procedure,
             a.ended_at AS endedAt,
             a.id AS anesthesiaId,
             (SELECT v.temperature_c FROM hospitalization_vitals v

@@ -1,8 +1,18 @@
-import { parseDashboardDate } from "@/modules/dashboard/v2/model";
 import { PencilSimple, Plus, Syringe, Trash } from "@/lib/icons";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,11 +38,13 @@ interface VaccinationListProps {
   patientId: string;
 }
 
+import { normalizeDate } from "./patients-shared";
+
 function formatDateShort(value?: string) {
   if (!value) {
     return "—";
   }
-  const date = parseDashboardDate(value);
+  const date = normalizeDate(value);
   if (!date) {
     return "—";
   }
@@ -51,17 +63,17 @@ export function VaccinationList({
 }: VaccinationListProps) {
   const { t } = useTranslation();
   const repo = useVaccinationsRepository();
+  const [deleteTarget, setDeleteTarget] = useState<Vaccination | null>(null);
 
   const entries = repo.forPatient(patientId);
 
-  const handleDelete = async (entry: Vaccination) => {
-    if (!window.confirm(t("patientDetail.vaccinations.confirmDelete"))) {
-      return;
-    }
-    const ok = await repo.remove(entry.id);
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const ok = await repo.remove(deleteTarget.id);
     if (ok) {
       toast.success(t("patientDetail.vaccinations.delete"));
     }
+    setDeleteTarget(null);
   };
 
   return (
@@ -181,7 +193,7 @@ export function VaccinationList({
                     <Button
                       aria-label={t("patientDetail.vaccinations.delete")}
                       className="size-8 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
-                      onClick={() => handleDelete(entry)}
+                      onClick={() => setDeleteTarget(entry)}
                       size="icon"
                       variant="ghost"
                     >
@@ -194,6 +206,42 @@ export function VaccinationList({
           </ul>
         )}
       </div>
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("patientDetail.vaccinations.confirmDeleteTitle", {
+                defaultValue: "Supprimer ce vaccin ?",
+              })}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget
+                ? t("patientDetail.vaccinations.confirmDeleteMessage", {
+                    defaultValue: `« ${deleteTarget.vaccineName} » sera définitivement retiré du carnet. Cette action est irréversible.`,
+                  })
+                : t("patientDetail.vaccinations.confirmDelete", {
+                    defaultValue: "Supprimer ce vaccin du carnet ?",
+                  })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t("common.cancel", { defaultValue: "Annuler" })}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void confirmDelete()}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("common.delete", { defaultValue: "Supprimer" })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

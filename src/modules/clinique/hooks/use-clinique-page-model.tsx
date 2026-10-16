@@ -1,3 +1,4 @@
+import { formatDinars, formatNumber } from "@/utils/display-format";
 import {
   useCallback,
   useDeferredValue,
@@ -16,11 +17,13 @@ import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
+  useConsultationSoapsRepository,
   useOwnersRepository,
   usePatientsRepository,
   useUsersRepository,
 } from "@/data/repositories";
 import { PRE_CONSULTATION_STATUSES } from "@/domain/clinical/scheduling";
+import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
 
 import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import { exportInvoicePdf } from "@/lib/invoice-pdf";
@@ -28,7 +31,7 @@ import { invoiceDocument } from "@/lib/invoice-document";
 import { billingService } from "@/services/billingService";
 import { isTauriRuntime } from "@/services/browser-store";
 import { toCentimes } from "@/utils/currency";
-import { useAudit } from "@/services/auditService";
+import { useAudit } from "@/services/use-audit";
 import { useAppointmentReminderSync } from "@/services/reminderService";
 
 import type {
@@ -63,7 +66,6 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
   >(null);
   const [activeConsultation, setActiveConsultation] =
     useState<Appointment | null>(null);
-  const [soapOpen, setSoapOpen] = useState<boolean>(false);
   const [prescriptionOpen, setPrescriptionOpen] = useState<boolean>(false);
   const [hospitalizationOpen, setHospitalizationOpen] =
     useState<boolean>(false);
@@ -94,6 +96,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     add: addConsultationDocument,
     remove: removeConsultationDocument,
   } = useConsultationDocumentsRepository();
+  const soapsRepo = useConsultationSoapsRepository();
 
   const patientsById = useMemo(
     () => new Map(patients.map((patient) => [patient.id, patient])),
@@ -210,10 +213,16 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     [appointments, selectedAppointmentId]
   );
 
+  const [consultationOpenRequest, setConsultationOpenRequest] = useState(0);
+  useEffect(() => {
+    const open = () => setConsultationOpenRequest(value => value + 1);
+    window.addEventListener("vetera:open-consultation", open);
+    return () => window.removeEventListener("vetera:open-consultation", open);
+  }, []);
   // Consume the "pending consultation start" hint set by another view
   // (e.g. AgendaListView's Démarrer button). When the user navigates
   // from Agenda into Clinique with that flag set, we auto-open the
-  // consultation drawer for the matching appointment so a single click
+  // inline consultation for the matching appointment so a single click
   // is enough — no need to re-select the row in Clinique.
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -268,7 +277,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
         setActiveConsultation(target);
       });
     }
-  }, [appointments, loadingAppointments, transitionAppointmentStatus]);
+  }, [appointments, loadingAppointments, transitionAppointmentStatus, consultationOpenRequest]);
 
   // Palette-driven quick actions (⌘K): listen for medical action events
   // dispatched by the CommandPalette. If a consultation is already active
@@ -387,43 +396,56 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     [todaysAppointments]
   );
 
-  const sectionCards = useMemo<SectionCardItem[]>(
-    () => [
+  const sectionCards = useMemo<SectionCardItem[]>(() => {
+    const completionRate =
+      stats.total > 0
+        ? Math.round((stats.completed / stats.total) * 100)
+        : 100;
+    return [
       {
         title: "Consultations",
-        value: String(stats.total),
-        badge: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""}`,
+        value: formatNumber(stats.total),
+        change: stats.total > 0 ? completionRate : null,
+        changeLabel: "% d'avancement jour",
         trend: "neutral",
-        footerTitle: "Flux consultatoire",
+        detailRow: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""} · ${stats.inProgress} en cours · ${stats.pending} en attente`,
+        footerTitle: "Consultations du jour",
         footerDescription: "Flux du jour",
       },
       {
         title: "En cours",
-        value: String(stats.inProgress),
-        badge: `${stats.inProgress} active${stats.inProgress > 1 ? "s" : ""}`,
-        trend: "neutral",
-        footerTitle: "Activité en cours",
+        value: formatNumber(stats.inProgress),
+        badge:
+          stats.inProgress > 0 ? "En salle d'examen" : "Aucun acte en cours",
+        tone: stats.inProgress > 0 ? "watch" : "quiet",
+        trend: stats.inProgress > 0 ? "up" : "neutral",
+        detailRow: `${stats.inProgress} dossier médical actif · Notes SOAP en rédaction`,
+        footerTitle: "Notes à compléter",
         footerDescription: "À documenter",
       },
       {
-        title: "Terminés",
-        value: String(stats.completed),
-        badge: `${stats.completed} finie${stats.completed > 1 ? "s" : ""}`,
+        title: "Terminées",
+        value: formatNumber(stats.completed),
+        change: stats.completed > 0 ? 100 : 0,
+        changeLabel: "clôturées",
+        tone: "positive",
         trend: "up",
+        detailRow: `${stats.completed} consultation${stats.completed > 1 ? "s" : ""} validée${stats.completed > 1 ? "s" : ""} · Prêt pour facturation`,
         footerTitle: "Consultations clôturées",
         footerDescription: "Clôturées",
       },
       {
         title: "En attente",
-        value: String(stats.pending),
-        badge: `${stats.pending} en salle`,
-        trend: "neutral",
-        footerTitle: "Patients en attente",
+        value: formatNumber(stats.pending),
+        badge: stats.pending > 0 ? "Salle d'attente" : "File d'attente vide",
+        tone: stats.pending > 0 ? "watch" : "positive",
+        trend: stats.pending > 0 ? "up" : "neutral",
+        detailRow: `${stats.pending} patient en attente · Prise en charge immédiate`,
+        footerTitle: "Prises en charge à démarrer",
         footerDescription: "À lancer",
       },
-    ],
-    [stats.completed, stats.inProgress, stats.pending, stats.total]
-  );
+    ];
+  }, [stats.completed, stats.inProgress, stats.pending, stats.total]);
 
   const getPatient = (patientId: string) => patientsById.get(patientId);
   const getOwner = (appointment: Appointment) => {
@@ -505,6 +527,20 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       return;
     }
 
+    // B1 : une consultation ne peut être clôturée que si la note SOAP a
+    // été relue et validée (risque médico-légal sinon).
+    const soap = soapsRepo.forAppointment(activeConsultation.id);
+    if (!soap || !isSoapReviewed(soap)) {
+      toast.error(
+        "Validez la note SOAP avant de clôturer la consultation.",
+        {
+          description:
+            "Ouvrez la note clinique, relisez-la puis cliquez sur Valider.",
+        }
+      );
+      return;
+    }
+
     try {
       const finalAppointmentPatch: Partial<Appointment> = {
         ...payload.appointmentPatch,
@@ -544,7 +580,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       moveSelectionToStatusTab("completed", activeConsultation.id);
       setActiveConsultation(null);
       setBillingAppointment(updatedAppointment);
-      toast.success("Consultation clôturée et déplacée dans Terminés.");
+      toast.success("Consultation clôturée et déplacée dans Terminées.");
     } catch (error) {
       console.error(error);
       toast.error("Impossible de clôturer la consultation.");
@@ -628,7 +664,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       }
       toast.success(
         balanceAmountDa > 0
-          ? `Facture créée. Solde à recouvrer : ${balanceAmountDa} DA.`
+          ? `Facture créée. Solde à recouvrer : ${formatDinars(balanceAmountDa)}.`
           : "Encaissement enregistré."
       );
 
@@ -815,8 +851,6 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     setPrescriptionOpen,
     setSearchQuery,
     setSelectedAppointmentId,
-    setSoapOpen,
-    soapOpen,
     stats,
     t,
     visibleCount,

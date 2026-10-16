@@ -51,7 +51,7 @@ export function getOverallVaccinationStatus(
   return vaccinations.reduce<VaccinationStatus>((acc, vacc) => {
     const status = getVaccinationStatus(vacc, now);
     return priority[status] > priority[acc] ? status : acc;
-  }, "up_to_date");
+  }, "unknown");
 }
 
 /**

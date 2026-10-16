@@ -74,16 +74,21 @@ export function ModuleTotals({
     tone?: "positive" | "watch" | "quiet";
   }[];
 }) {
+  const dotColor = (index: number) =>
+    index === 0 ? "finder-dot-blue" : index === 1 ? "finder-dot-orange" : "finder-dot-red";
   return (
-    <dl className="flex flex-wrap gap-x-6 gap-y-3 border-b border-hairline pb-4">
-      {values.map((row) => (
-        <div key={row.label} className="flex items-baseline gap-2">
+    <dl className="module-totals-grid flex flex-wrap gap-x-6 gap-y-3 border-b border-hairline pb-4">
+      {values.map((row, index) => (
+        <div key={row.label} className="module-totals-item flex items-baseline gap-2">
           <dd
             className={`font-display text-[20px] font-medium tabular-nums ${row.tone === "positive" ? "text-emerald-700 dark:text-emerald-300" : row.tone === "watch" ? "text-amber-800 dark:text-amber-300" : "text-ink"}`}
           >
             {row.value}
           </dd>
-          <dt className="text-[11px] text-ink-muted">{row.label}</dt>
+          <dt className="flex items-center gap-1.5 text-[11px] text-ink-muted">
+            <i className={`finder-dot ${dotColor(index)}`} aria-hidden="true" />
+            {row.label}
+          </dt>
         </div>
       ))}
     </dl>

@@ -21,7 +21,6 @@ import {
   useTasksRepository,
   useUsersRepository,
 } from "@/data/repositories";
-import { Input } from "@/shared/ui/input";
 import type { View } from "@/types";
 
 export function AppHeader({
@@ -155,26 +154,39 @@ export function AppHeader({
         </div>
 
         <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-          <button
-            className="hidden w-[170px] text-left md:block lg:w-[210px]"
+          {/* Bouton recherche mobile */}
+          <Button
+            className="size-10 rounded-2xl border border-black/6 bg-white/70 text-muted-foreground hover:bg-white hover:text-foreground dark:border-white/8 dark:bg-white/6 dark:hover:bg-white/10 md:hidden"
             onClick={onOpenPalette}
+            size="icon-sm"
+            variant="ghost"
+            aria-label="Rechercher (⌘K)"
           >
-            <div className="relative">
-              <HugeiconsIcon
-                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                icon={SearchIcon}
-                strokeWidth={1.5}
-              />
-              <Input
-                className="h-10 cursor-pointer rounded-2xl border border-neutral-200 bg-white pr-12 pl-9 text-sm shadow-sm backdrop-blur-xl transition-all hover:border-neutral-300 hover:shadow-md focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-neutral-600"
-                placeholder="Rechercher..."
-                readOnly
-                value=""
-              />
-              <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded-lg border border-black/6 bg-white/80 px-1.5 py-0.5 font-semibold text-[10px] text-muted-foreground tracking-wide dark:border-white/8 dark:bg-white/8">
-                ⌘K
-              </span>
-            </div>
+            <HugeiconsIcon
+              className="size-[18px]"
+              icon={SearchIcon}
+              strokeWidth={1.5}
+            />
+          </Button>
+
+          {/* Barre de recherche CMD+K desktop */}
+          <button
+            type="button"
+            className="group hidden h-10 w-48 items-center gap-2.5 rounded-2xl border border-black/6 bg-white/70 px-3 text-left shadow-xs backdrop-blur-xl transition-all duration-150 hover:border-black/12 hover:bg-white hover:text-foreground hover:shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/8 dark:bg-white/6 dark:hover:border-white/15 dark:hover:bg-white/10 sm:w-56 md:flex md:w-64 lg:w-72"
+            onClick={onOpenPalette}
+            aria-label="Ouvrir la palette de commandes (⌘K)"
+          >
+            <HugeiconsIcon
+              className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
+              icon={SearchIcon}
+              strokeWidth={1.5}
+            />
+            <span className="flex-1 truncate text-xs font-normal text-muted-foreground transition-colors group-hover:text-foreground md:text-[13px]">
+              Rechercher un patient, une page…
+            </span>
+            <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-lg border border-black/6 bg-white/80 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/12 dark:border-white/8 dark:bg-white/8 dark:group-hover:border-white/15">
+              ⌘K
+            </kbd>
           </button>
           <Button
             className="size-10 rounded-2xl border border-black/6 bg-white/70 text-muted-foreground hover:bg-white hover:text-foreground dark:border-white/8 dark:bg-white/6 dark:hover:bg-white/10"

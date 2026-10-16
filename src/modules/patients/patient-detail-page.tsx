@@ -1,16 +1,22 @@
+import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
 import {
   ArrowLeft,
   Check,
+  ChevronRight,
+  Clock,
+  FileText,
   FirstAid,
   Hospital,
   Pill,
+  Scales,
   Syringe,
   X,
 } from "@/lib/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   NativeSelect,
@@ -21,15 +27,19 @@ import { SkeletonBlock } from "@/design-system/primitives";
 import { Textarea } from "@/components/ui/textarea";
 import { PATIENT_STATUS_META } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
   useOwnersRepository,
   usePatientsRepository,
+  usePrescriptionsRepository,
+  useTasksRepository,
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
 import { AnesthesiaDetail, AnesthesiaList } from "@/modules/anesthesia";
-import { ConsultationSessionDrawer } from "@/modules/consultations";
+import { SoapPanel } from "@/modules/consultations/components/soap-panel";
+import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
 import {
   HospitalizationDetail,
   HospitalizationList,
@@ -45,13 +55,15 @@ import type {
 } from "@/types/db";
 import { PatientDocumentsList } from "./components/patient-documents-list";
 import { PatientHeader } from "./components/patient-header";
+import { PatientContextWidgets } from "./components/patient-context-widgets";
 import {
   OwnerContact,
   recordDate,
-  handleRecordTabKeys,
 } from "./components/medical-record-summary";
+import { MedicalRecordTabs } from "./components/medical-record-tabs";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
+import { PatientRecordHealth } from "./components/patient-record-health";
 import { PatientTimeline } from "./components/patient-timeline";
 import { VaccinationDialog } from "./components/vaccination-dialog";
 import { VaccinationList } from "./components/vaccination-list";
@@ -75,24 +87,75 @@ type PatientRecordSection =
   | "anesthesia";
 
 const PATIENT_RECORD_SECTIONS = [
-  { value: "overview", label: "Synthèse", icon: FirstAid },
-  { value: "timeline", label: "Chronologie", icon: FirstAid },
-  { value: "prescriptions", label: "Ordonnances", icon: Pill },
-  { value: "hospitalizations", label: "Hospitalisations", icon: Hospital },
-  { value: "anesthesia", label: "Anesthésies", icon: Syringe },
-  { value: "vaccinations", label: "Vaccinations", icon: Syringe },
-  { value: "weight", label: "Poids", icon: FirstAid },
-  { value: "documents", label: "Documents", icon: FirstAid },
+  {
+    value: "overview",
+    label: "Synthèse",
+    icon: FirstAid,
+    color: "text-rose-600 dark:text-rose-400",
+    activeClass: "!bg-rose-50 !text-rose-700 !border-rose-200/80 dark:!bg-rose-950/50 dark:!text-rose-300 dark:!border-rose-800/40 shadow-xs",
+  },
+  {
+    value: "timeline",
+    label: "Chronologie",
+    icon: Clock,
+    color: "text-sky-600 dark:text-sky-400",
+    activeClass: "!bg-sky-50 !text-sky-700 !border-sky-200/80 dark:!bg-sky-950/50 dark:!text-sky-300 dark:!border-sky-800/40 shadow-xs",
+  },
+  {
+    value: "prescriptions",
+    label: "Ordonnances",
+    icon: Pill,
+    color: "text-violet-600 dark:text-violet-400",
+    activeClass: "!bg-violet-50 !text-violet-700 !border-violet-200/80 dark:!bg-violet-950/50 dark:!text-violet-300 dark:!border-violet-800/40 shadow-xs",
+  },
+  {
+    value: "hospitalizations",
+    label: "Hospitalisations",
+    icon: Hospital,
+    color: "text-amber-600 dark:text-amber-400",
+    activeClass: "!bg-amber-50 !text-amber-700 !border-amber-200/80 dark:!bg-amber-950/50 dark:!text-amber-300 dark:!border-amber-800/40 shadow-xs",
+  },
+  {
+    value: "anesthesia",
+    label: "Anesthésies",
+    icon: Syringe,
+    color: "text-teal-600 dark:text-teal-400",
+    activeClass: "!bg-teal-50 !text-teal-700 !border-teal-200/80 dark:!bg-teal-950/50 dark:!text-teal-300 dark:!border-teal-800/40 shadow-xs",
+  },
+  {
+    value: "vaccinations",
+    label: "Vaccinations",
+    icon: Syringe,
+    color: "text-emerald-600 dark:text-emerald-400",
+    activeClass: "!bg-emerald-50 !text-emerald-700 !border-emerald-200/80 dark:!bg-emerald-950/50 dark:!text-emerald-300 dark:!border-emerald-800/40 shadow-xs",
+  },
+  {
+    value: "weight",
+    label: "Poids",
+    icon: Scales,
+    color: "text-indigo-600 dark:text-indigo-400",
+    activeClass: "!bg-indigo-50 !text-indigo-700 !border-indigo-200/80 dark:!bg-indigo-950/50 dark:!text-indigo-300 dark:!border-indigo-800/40 shadow-xs",
+  },
+  {
+    value: "documents",
+    label: "Documents",
+    icon: FileText,
+    color: "text-slate-600 dark:text-slate-300",
+    activeClass: "!bg-slate-100 !text-slate-800 !border-slate-300/80 dark:!bg-slate-800/60 dark:!text-slate-200 dark:!border-slate-700/60 shadow-xs",
+  },
 ] satisfies Array<{
   value: PatientRecordSection;
   label: string;
   icon: typeof FirstAid;
+  color: string;
+  activeClass: string;
 }>;
 
 type PatientProfileDraft = Pick<
   Patient,
   | "allergies"
   | "breed"
+  | "chipNumber"
   | "chronicConditions"
   | "dateOfBirth"
   | "generalNotes"
@@ -100,12 +163,15 @@ type PatientProfileDraft = Pick<
   | "sex"
   | "species"
   | "status"
+  | "sterilized"
+  | "tattooNumber"
 >;
 
 function createProfileDraft(patient: Patient): PatientProfileDraft {
   return {
     allergies: patient.allergies ?? "",
     breed: patient.breed ?? "",
+    chipNumber: patient.chipNumber ?? "",
     chronicConditions: patient.chronicConditions ?? "",
     dateOfBirth: patient.dateOfBirth ?? "",
     generalNotes: patient.generalNotes ?? "",
@@ -113,6 +179,8 @@ function createProfileDraft(patient: Patient): PatientProfileDraft {
     sex: patient.sex,
     species: patient.species,
     status: patient.status,
+    sterilized: patient.sterilized ?? false,
+    tattooNumber: patient.tattooNumber ?? "",
   };
 }
 
@@ -122,11 +190,14 @@ export function PatientDetailPage({
 }: PatientDetailPageProps) {
   const { t } = useTranslation();
   const { currentUser } = useAuth();
+  const { requestFocus } = useFocus();
   const patientsRepo = usePatientsRepository();
   const appointmentsRepo = useAppointmentsRepository();
+  const prescriptionsRepo = usePrescriptionsRepository();
   const vaccinationsRepo = useVaccinationsRepository();
   const weightsRepo = useWeightEntriesRepository();
   const ownersRepo = useOwnersRepository();
+  const tasksRepo = useTasksRepository();
 
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
   const [editingWeight, setEditingWeight] = useState<WeightEntry | null>(null);
@@ -139,10 +210,10 @@ export function PatientDetailPage({
     null
   );
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const pageRef = useRef<HTMLDivElement>(null);
   const [soapAppointmentId, setSoapAppointmentId] = useState<string | null>(
     null
   );
-  const [soapOpen, setSoapOpen] = useState<boolean>(false);
 
   const [selectedHospitalization, setSelectedHospitalization] =
     useState<Hospitalization | null>(null);
@@ -153,6 +224,35 @@ export function PatientDetailPage({
   const [prescriptionAppointmentId, setPrescriptionAppointmentId] = useState<
     string | null
   >(null);
+  // Session créée automatiquement pour porter une ordonnance : si l'utilisateur
+  // ferme la sheet sans rien enregistrer, on la supprime pour ne pas laisser
+  // de rendez-vous fantôme qui polluerait la note clinique.
+  const [autoCreatedAppointmentId, setAutoCreatedAppointmentId] = useState<
+    string | null
+  >(null);
+
+  const handlePrescriptionOpenChange = async (next: boolean) => {
+    setPrescriptionOpen(next);
+    if (!next) {
+      if (autoCreatedAppointmentId) {
+        const saved = prescriptionsRepo.forAppointment(
+          autoCreatedAppointmentId
+        );
+        if (saved.length === 0) {
+          try {
+            await appointmentsRepo.remove(autoCreatedAppointmentId);
+          } catch (err) {
+            console.error(
+              "[PatientDetailPage] cleanup auto-created appointment failed",
+              err
+            );
+          }
+        }
+        setAutoCreatedAppointmentId(null);
+      }
+      setPrescriptionAppointmentId(null);
+    }
+  };
 
   // Stable "now" snapshot — évite l'avertissement React `Date.now()` impurity
   // tout en restant à jour toutes les 60s pour les KPIs temporels.
@@ -185,6 +285,11 @@ export function PatientDetailPage({
 
   const weightEntries = useMemo(
     () => weightsRepo.forPatient(patientId),
+    [weightsRepo, patientId]
+  );
+  // Référence unique pour la dernière pesée (tri par date décroissante).
+  const latestWeight = useMemo(
+    () => weightsRepo.latestFor(patientId),
     [weightsRepo, patientId]
   );
   const vaccinations = useMemo(
@@ -239,14 +344,18 @@ export function PatientDetailPage({
       null,
     [appointments]
   );
+  const patientTasks = tasksRepo.data.filter(
+    (task) => task.patientId === patientId && task.status !== "done"
+  );
 
   useEffect(() => {
     setActiveTab("overview");
     setIsProfileEditorOpen(false);
-    setSoapOpen(false);
+    setSoapAppointmentId(null);
     setSelectedHospitalization(null);
     setSelectedAnesthesia(null);
     setPrescriptionOpen(false);
+    setAutoCreatedAppointmentId(null);
   }, [patientId]);
 
   const handleTabChange = (val: PatientRecordSection) => {
@@ -318,6 +427,18 @@ export function PatientDetailPage({
     setProfileDraft(createProfileDraft(patient));
     setIsProfileEditorOpen(true);
   };
+  // Dirige l'utilisateur vers le bon formulaire selon le repère manquant.
+  const completeRecordCheck = (label: string) => {
+    if (label === "Poids") {
+      openNewWeight();
+      return;
+    }
+    if (label === "Vaccins") {
+      handleTabChange("vaccinations");
+      return;
+    }
+    openProfileEditor();
+  };
   const closeProfileEditor = () => {
     setProfileDraft(null);
     setIsProfileEditorOpen(false);
@@ -334,11 +455,14 @@ export function PatientDetailPage({
         ...profileDraft,
         allergies: profileDraft.allergies?.trim() || undefined,
         breed: profileDraft.breed?.trim() || undefined,
+        chipNumber: profileDraft.chipNumber?.trim() || undefined,
         chronicConditions: profileDraft.chronicConditions?.trim() || undefined,
         dateOfBirth: profileDraft.dateOfBirth || undefined,
         generalNotes: profileDraft.generalNotes?.trim() || undefined,
         name: profileDraft.name.trim(),
         species: profileDraft.species.trim(),
+        sterilized: profileDraft.sterilized ?? false,
+        tattooNumber: profileDraft.tattooNumber?.trim() || undefined,
       });
       if (!updated) {
         toast.error("Le dossier n'a pas pu être mis à jour.");
@@ -358,22 +482,85 @@ export function PatientDetailPage({
   );
   const openSoapForAppointment = (appointmentId: string) => {
     setSoapAppointmentId(appointmentId);
-    setSoapOpen(true);
+    requestAnimationFrame(() => {
+      const scrollPanel = pageRef.current?.closest<HTMLElement>(
+        '[data-slot="shell-scroll-panel"]'
+      );
+      if (scrollPanel) {
+        scrollPanel.scrollTo({ top: 0, behavior: "instant" });
+      } else {
+        pageRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+      }
+    });
   };
 
   return (
-    <div className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
+    <div ref={pageRef} className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
       <div className="mx-auto w-full max-w-7xl space-y-4">
-        <Button
-          className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
-          onClick={() => onNavigate("patients")}
-          size="sm"
-          variant="ghost"
-        >
-          <ArrowLeft className="size-4" weight="duotone" />
-          {t("patientDetail.back")}
-        </Button>
+        <header className="patient-record-heading">
+          <h2>Dossier patient</h2>
+        </header>
+        <PatientContextWidgets
+          patientName={patient.name}
+          appointments={appointments}
+          appointmentsLoading={appointmentsRepo.loading}
+          appointmentsError={Boolean(appointmentsRepo.error)}
+          lastAppointment={lastAppointment}
+          lastVisit={patient.lastVisit}
+          nextAppointment={nextAppointment}
+          now={now}
+          tasks={patientTasks}
+          tasksLoading={tasksRepo.loading}
+          tasksError={Boolean(tasksRepo.error)}
+          onOpenHistory={() => {
+            handleTabChange("timeline");
+            requestAnimationFrame(() =>
+              document
+                .getElementById("record-tab-content")
+                ?.scrollIntoView({ block: "start" })
+            );
+          }}
+          onOpenLastConsultation={() => {
+            if (lastAppointment) {
+              openSoapForAppointment(lastAppointment.id);
+            } else {
+              handleTabChange("timeline");
+              requestAnimationFrame(() =>
+                document
+                  .getElementById("record-tab-content")
+                  ?.scrollIntoView({ block: "start" })
+              );
+            }
+          }}
+          onOpenTask={(taskId) => {
+            requestFocus("task", taskId);
+            onNavigate("taches");
+          }}
+          onRetryTasks={() => void tasksRepo.refresh()}
+        />
+        <div className="patient-record-actions flex flex-wrap items-center gap-2">
+          <Button
+            className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+            onClick={() => onNavigate("patients")}
+            size="sm"
+            variant="ghost"
+          >
+            <ArrowLeft className="size-4" weight="duotone" />
+            {t("patientDetail.back")}
+          </Button>
+          <Button variant="outline" onClick={() => { requestFocus("care_patient", patientId); onNavigate("clinique"); }}>Ouvrir les soins de ce patient</Button>
+        </div>
 
+        {soapAppointmentId && (
+          <section id="patient-consultation-note" aria-label={`Note de consultation de ${patient.name}`} className="space-y-4 border-b border-border pb-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">Consultation · {patient.name}</h2>
+              <Button onClick={() => setSoapAppointmentId(null)} size="sm" variant="ghost">Revenir au dossier</Button>
+            </div>
+            <SoapPanel appointmentId={soapAppointmentId} key={soapAppointmentId} patientId={patientId} />
+            <ConsultationProducts key={`products:${soapAppointmentId}`} appointmentId={soapAppointmentId} patientId={patientId} />
+          </section>
+        )}
         <PatientHeader
           onEditProfile={openProfileEditor}
           onNewAppointment={() => {
@@ -387,57 +574,55 @@ export function PatientDetailPage({
           }
           owner={owner}
           patient={patient}
-        >
-          {appointmentsRepo.loading ||
-          vaccinationsRepo.loading ||
-          weightsRepo.loading ? (
-            <div
-              className="grid grid-cols-2 gap-4 border-t border-border p-5 xl:grid-cols-4"
-              aria-label="Chargement du suivi clinique"
-              aria-busy="true"
+        />
+        {appointmentsRepo.loading ||
+        vaccinationsRepo.loading ||
+        weightsRepo.loading ? (
+          <div
+            className="medical-kpi-strip"
+            aria-label="Chargement du suivi clinique"
+            aria-busy="true"
+          >
+            {[0, 1, 2].map((index) => (
+              <div className="medical-kpi" key={index}>
+                <SkeletonBlock className="h-24" />
+              </div>
+            ))}
+          </div>
+        ) : appointmentsRepo.error ||
+          vaccinationsRepo.error ||
+          weightsRepo.error ? (
+          <div role="status" className="medical-kpi-load-error">
+            <span>Une partie du suivi clinique n’a pas pu être chargée.</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                void appointmentsRepo.refresh();
+                void vaccinationsRepo.refresh();
+                void weightsRepo.refresh();
+              }}
             >
-              {[0, 1, 2, 3].map((index) => (
-                <SkeletonBlock key={index} className="h-16" />
-              ))}
-            </div>
-          ) : appointmentsRepo.error ||
-            vaccinationsRepo.error ||
-            weightsRepo.error ? (
-            <div
-              role="status"
-              className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3 text-sm"
-            >
-              <span>Une partie du suivi clinique n’a pas pu être chargée.</span>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  void appointmentsRepo.refresh();
-                  void vaccinationsRepo.refresh();
-                  void weightsRepo.refresh();
-                }}
-              >
-                Réessayer
-              </Button>
-            </div>
-          ) : (
-            <PatientKpiStrip
-              className="rounded-none border-x-0 border-b-0 bg-card/60"
-              lastVisit={lastAppointment?.startTime ?? patient.lastVisit}
-              nextAppointment={nextAppointment ?? undefined}
-              nextVaccination={getNextDueVaccination(vaccinations)}
-              now={now}
-              onAppointmentClick={() => onNavigate("agenda")}
-              onTimelineClick={() => handleTabChange("timeline")}
-              onVaccinationClick={() => handleTabChange("vaccinations")}
-              onWeightClick={() => handleTabChange("weight")}
-              weightEntries={weightEntries}
-            />
-          )}
-        </PatientHeader>
+              Réessayer
+            </Button>
+          </div>
+        ) : (
+          <PatientKpiStrip
+            lastVisit={lastAppointment?.startTime ?? patient.lastVisit}
+            nextAppointment={nextAppointment ?? undefined}
+            nextVaccination={getNextDueVaccination(vaccinations)}
+            now={now}
+            onAppointmentClick={() => onNavigate("agenda")}
+            onTimelineClick={() => handleTabChange("timeline")}
+            onVaccinationClick={() => handleTabChange("vaccinations")}
+            onWeightClick={() => handleTabChange("weight")}
+            showLastVisit={false}
+            weightEntries={weightEntries}
+          />
+        )}
 
         {isProfileEditorOpen && profileDraft ? (
-          <section className="clinical-feature-surface p-5 sm:p-6">
+          <section className="rounded-2xl border border-border/80 bg-card/95 shadow-md p-5 sm:p-6 backdrop-blur-xl">
             <div className="flex flex-col gap-4 border-border/70 border-b pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="font-semibold text-foreground text-lg tracking-[-0.02em]">
@@ -618,6 +803,51 @@ export function PatientDetailPage({
                   value={profileDraft.generalNotes}
                 />
               </label>
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">N° de puce électronique</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? { ...current, chipNumber: event.target.value }
+                        : current
+                    )
+                  }
+                  placeholder="15 chiffres..."
+                  value={profileDraft.chipNumber}
+                />
+              </label>
+              <label className="grid gap-2 text-sm">
+                <span className="font-medium">Tatouage</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? { ...current, tattooNumber: event.target.value }
+                        : current
+                    )
+                  }
+                  placeholder="N° de tatouage..."
+                  value={profileDraft.tattooNumber}
+                />
+              </label>
+              <label className="flex cursor-pointer items-center gap-3 text-sm md:col-span-2">
+                <input
+                  checked={Boolean(profileDraft.sterilized)}
+                  className="size-4 accent-primary"
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? { ...current, sterilized: event.target.checked }
+                        : current
+                    )
+                  }
+                  type="checkbox"
+                />
+                <span className="font-medium">
+                  Animal stérilisé / castré
+                </span>
+              </label>
             </div>
           </section>
         ) : null}
@@ -631,27 +861,38 @@ export function PatientDetailPage({
               <h2 id="medical-record-title">Dossier clinique</h2>
               <p>Consultations, traitements et suivi de {patient.name}.</p>
             </div>
-            <div
-              role="tablist"
-              onKeyDown={handleRecordTabKeys}
-              aria-label="Sections du dossier médical"
-              className="medical-tabs"
-            >
-              {PATIENT_RECORD_SECTIONS.map((section) => (
-                <button
-                  key={section.value}
-                  type="button"
-                  role="tab"
-                  tabIndex={activeTab === section.value ? 0 : -1}
-                  id={`record-tab-${section.value}`}
-                  aria-selected={activeTab === section.value}
-                  aria-controls="record-tab-content"
-                  onClick={() => handleTabChange(section.value)}
-                >
-                  {section.label}
-                </button>
-              ))}
-            </div>
+            <MedicalRecordTabs label="Sections du dossier médical">
+              {PATIENT_RECORD_SECTIONS.map((section) => {
+                const SectionIcon = section.icon;
+                const isSelected = activeTab === section.value;
+                return (
+                  <button
+                    key={section.value}
+                    type="button"
+                    role="tab"
+                    tabIndex={isSelected ? 0 : -1}
+                    id={`record-tab-${section.value}`}
+                    aria-selected={isSelected}
+                    aria-controls="record-tab-content"
+                    className={cn(
+                      "group cursor-pointer transition-all",
+                      isSelected && section.activeClass
+                    )}
+                    onClick={() => handleTabChange(section.value)}
+                  >
+                    <SectionIcon
+                      className={cn(
+                        "size-4 shrink-0 transition-transform group-hover:scale-110",
+                        section.color
+                      )}
+                      weight="duotone"
+                      aria-hidden="true"
+                    />
+                    <span>{section.label}</span>
+                  </button>
+                );
+              })}
+            </MedicalRecordTabs>
             <div
               className="medical-tab-content"
               id="record-tab-content"
@@ -663,83 +904,24 @@ export function PatientDetailPage({
                 <div className="medical-overview">
                   <section>
                     <div className="medical-overview-heading">
-                      <h3>Prise en charge</h3>
+                      <h3>Actes & Dernières consultations</h3>
                       <Button
                         size="sm"
                         variant="ghost"
+                        className="h-7 text-[12px] text-[#5D5D5D] hover:text-[#292929] cursor-pointer"
                         onClick={() => handleTabChange("timeline")}
                       >
-                        Voir l’historique
+                        Voir tout l’historique
                       </Button>
                     </div>
-                    <dl className="medical-facts">
-                      <div>
-                        <dt>Dernière consultation terminée</dt>
-                        <dd>
-                          {appointmentsRepo.loading
-                            ? "Chargement…"
-                            : appointmentsRepo.error
-                              ? "Indisponible"
-                              : lastAppointment
-                                ? recordDate(lastAppointment.startTime)
-                                : patient.lastVisit
-                                  ? recordDate(patient.lastVisit)
-                                  : "Aucune enregistrée"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Prochain rendez-vous</dt>
-                        <dd>
-                          {appointmentsRepo.loading
-                            ? "Chargement…"
-                            : appointmentsRepo.error
-                              ? "Indisponible"
-                              : nextAppointment
-                                ? recordDate(nextAppointment.startTime, true)
-                                : "Aucun rendez-vous prévu"}
-                        </dd>
-                      </div>
-                    </dl>
-                    {lastAppointment && (
-                      <p className="medical-secondary mt-4">
-                        {lastAppointment.reason || lastAppointment.title}
-                      </p>
-                    )}
-                    <div className="medical-action-row">
-                      {clinicalNoteAppointment && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            openSoapForAppointment(clinicalNoteAppointment.id)
-                          }
-                        >
-                          Consulter la note clinique
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={openNewWeight}
-                      >
-                        Enregistrer un poids
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={openNewVaccination}
-                      >
-                        Enregistrer un vaccin
-                      </Button>
-                    </div>
-                  </section>
-                  <section>
-                    <h3 className="medical-section-title">Dernières visites</h3>
+
                     {appointmentsRepo.loading ? (
-                      <Spinner className="size-5" />
+                      <div className="py-6 flex justify-center">
+                        <Spinner className="size-5" />
+                      </div>
                     ) : appointmentsRepo.error ? (
                       <div className="medical-empty">
-                        Les visites ne sont pas disponibles.{" "}
+                        Les consultations ne sont pas disponibles.{" "}
                         <Button
                           variant="ghost"
                           size="sm"
@@ -749,48 +931,100 @@ export function PatientDetailPage({
                         </Button>
                       </div>
                     ) : recentVisits.length ? (
-                      <div>
-                        {recentVisits.slice(0, 4).map((appointment) => (
-                          <button
-                            className="medical-visit"
-                            type="button"
-                            key={appointment.id}
-                            onClick={() =>
-                              openSoapForAppointment(appointment.id)
-                            }
-                          >
-                            <time>{recordDate(appointment.startTime)}</time>
-                            <div>
-                              <strong>
-                                {appointment.type} ·{" "}
-                                {
-                                  {
-                                    scheduled: "Planifiée",
-                                    confirmed: "Confirmée",
-                                    arrived: "Arrivé",
-                                    waiting: "En attente",
-                                    in_progress: "En cours",
-                                    completed: "Terminée",
-                                    cancelled: "Annulée",
-                                    no_show: "Absent",
-                                  }[appointment.status]
-                                }
-                              </strong>
-                              <p>{appointment.reason || appointment.title}</p>
-                            </div>
-                          </button>
-                        ))}
+                      <div className="space-y-2">
+                        {recentVisits.slice(0, 4).map((appointment) => {
+                          const statusConfig: Record<string, { label: string; className: string }> = {
+                            scheduled: { label: "Planifiée", className: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300" },
+                            confirmed: { label: "Confirmée", className: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300" },
+                            arrived: { label: "Arrivé", className: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" },
+                            waiting: { label: "En attente", className: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" },
+                            in_progress: { label: "En cours", className: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300" },
+                            completed: { label: "Terminée", className: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" },
+                            cancelled: { label: "Annulée", className: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300" },
+                            no_show: { label: "Absent", className: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300" },
+                          };
+                          const currentStatus = statusConfig[appointment.status] || {
+                            label: appointment.status,
+                            className: "bg-muted text-muted-foreground",
+                          };
+
+                          return (
+                            <button
+                              className="medical-visit group justify-between cursor-pointer"
+                              type="button"
+                              key={appointment.id}
+                              onClick={() =>
+                                openSoapForAppointment(appointment.id)
+                              }
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <time>{recordDate(appointment.startTime)}</time>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <strong>{appointment.type}</strong>
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${currentStatus.className}`}>
+                                      {currentStatus.label}
+                                    </span>
+                                  </div>
+                                  <p className="truncate">{appointment.reason || appointment.title}</p>
+                                </div>
+                              </div>
+                              <ChevronRight className="size-4 shrink-0 text-[#7F7F7F] transition-transform duration-200 group-hover:text-[#292929] dark:group-hover:text-white group-hover:translate-x-0.5" />
+                            </button>
+                          );
+                        })}
                       </div>
                     ) : (
-                      <p className="medical-empty">
-                        Aucune visite enregistrée. Planifiez un rendez-vous pour
-                        commencer le suivi.
-                      </p>
+                      <div className="p-4 rounded-lg bg-[#F5F5F5] dark:bg-white/[0.04] text-center text-[13px] text-[#5D5D5D]">
+                        <p>Aucune visite enregistrée pour {patient.name}.</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-2.5 h-8 text-[12px] cursor-pointer"
+                          onClick={() => {
+                            prepareAppointment(patient.id);
+                            onNavigate("agenda");
+                          }}
+                        >
+                          Planifier la première consultation
+                        </Button>
+                      </div>
                     )}
+
+                    <div className="medical-action-row">
+                      {clinicalNoteAppointment && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 text-[12px] border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                          onClick={() =>
+                            openSoapForAppointment(clinicalNoteAppointment.id)
+                          }
+                        >
+                          Dernière note clinique
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-[12px] border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                        onClick={openNewWeight}
+                      >
+                        + Pesée
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-[12px] border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                        onClick={openNewVaccination}
+                      >
+                        + Vaccin
+                      </Button>
+                    </div>
                   </section>
                   <section>
                     <h3 className="medical-section-title">
-                      Informations de suivi
+                      Informations permanentes
                     </h3>
                     <dl className="medical-facts">
                       <div>
@@ -804,9 +1038,9 @@ export function PatientDetailPage({
                             ? "Chargement…"
                             : weightsRepo.error
                               ? "Indisponible"
-                              : weightEntries.length
-                                ? `${[...weightEntries].sort((a, b) => b.measuredAt.localeCompare(a.measuredAt))[0].weightKg.toLocaleString("fr-FR")} kg`
-                                : "Non renseignée"}
+                              : latestWeight
+                                ? `${latestWeight.weightKg.toLocaleString("fr-FR")} kg`
+                                : "Aucune pesée"}
                         </dd>
                       </div>
                     </dl>
@@ -915,6 +1149,7 @@ export function PatientDetailPage({
 
                         if (newApt && newApt.id) {
                           setPrescriptionAppointmentId(newApt.id);
+                          setAutoCreatedAppointmentId(newApt.id);
                           setPrescriptionOpen(true);
                           toast.success(
                             "Nouvelle session de consultation créée pour l'ordonnance."
@@ -935,6 +1170,7 @@ export function PatientDetailPage({
                 />
               ) : null}
 
+              {activeTab === "hospitalizations" && <PatientStays patientId={patientId} onOpen={() => onNavigate("clinique")}/>}
               {activeTab === "hospitalizations" ? (
                 selectedHospitalization ? (
                   <HospitalizationDetail
@@ -1008,6 +1244,13 @@ export function PatientDetailPage({
                 Modifier les informations
               </Button>
             </section>
+            <PatientRecordHealth
+              onCompleteCheck={completeRecordCheck}
+              owner={owner}
+              patient={patient}
+              vaccinations={vaccinations}
+              weightEntries={weightEntries}
+            />
           </aside>
         </div>
       </div>
@@ -1036,27 +1279,9 @@ export function PatientDetailPage({
         vaccination={editingVaccination}
       />
 
-      <ConsultationSessionDrawer
-        appointmentId={soapAppointmentId ?? ""}
-        onOpenChange={(next) => {
-          setSoapOpen(next);
-          if (!next) {
-            setSoapAppointmentId(null);
-          }
-        }}
-        open={soapOpen && Boolean(soapAppointmentId)}
-        patientId={patientId}
-        patientName={patient.name}
-      />
-
       <PrescriptionSheet
         appointmentId={prescriptionAppointmentId ?? ""}
-        onOpenChange={(next) => {
-          setPrescriptionOpen(next);
-          if (!next) {
-            setPrescriptionAppointmentId(null);
-          }
-        }}
+        onOpenChange={(next) => void handlePrescriptionOpenChange(next)}
         open={prescriptionOpen && Boolean(prescriptionAppointmentId)}
         patient={patient}
         vet={currentUser}

@@ -1,10 +1,17 @@
 "use client";
 
+import { CalendarPlus, Stethoscope, Search, ClipboardList } from "@/lib/icons";
+import { PREMIUM_SHORTCUTS, type PremiumShortcut } from "@/lib/visual-style";
+
 import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
+import { PremiumSidebarIcon } from "@/modules/shell/components/premium-sidebar-icon";
+import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
+import { CalendarPlus as PremiumCalendarPlus, Stethoscope as PremiumStethoscope, Search as PremiumSearch, ClipboardList as PremiumClipboardList } from "lucide-react";
+import "@/modules/shell/premium-sidebar.css";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
-import Logo from "@/components/Logo";
+import { SidebarBrand } from "@/components/mascot/sidebar-brand";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -27,6 +34,7 @@ import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  onQuickAction?: (action: PremiumShortcut) => void;
   currentView: View;
   onNavigate: (view: View) => void;
   currentUserName: string;
@@ -36,6 +44,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 
 export function AppSidebar({
   currentView,
+  onQuickAction,
   onNavigate,
   currentUserName,
   currentUserEmail,
@@ -45,7 +54,31 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const { t } = useTranslation();
   const { state } = useSidebar();
+  const isPremium = useIsPremium();
+  const NavigationIcon = isPremium ? PremiumSidebarIcon : SidebarIcon;
+  const navigationRef = React.useRef<HTMLDivElement>(null);
   const isCollapsed = state === "collapsed";
+  React.useEffect(() => {
+    const navigation = navigationRef.current;
+    if (!navigation) return;
+    const revealActiveItem = () => {
+      const active = navigation.querySelector<HTMLElement>('[data-active]');
+      if (!active) return;
+      const viewport = navigation.getBoundingClientRect();
+      const item = active.getBoundingClientRect();
+      const top = item.top - viewport.top;
+      const bottom = item.bottom - viewport.bottom;
+      if (top < 8) navigation.scrollTop += top - 8;
+      else if (bottom > -8) navigation.scrollTop += bottom + 8;
+    };
+    const frame = requestAnimationFrame(revealActiveItem);
+    const observer = new ResizeObserver(revealActiveItem);
+    observer.observe(navigation);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [currentView, isCollapsed]);
   const { data: users } = useUsersRepository();
   const [cachedProfile, setCachedProfile] = React.useState(() =>
     readCachedProfile(currentUserEmail)
@@ -102,38 +135,35 @@ export function AppSidebar({
 
   const mainItems = [
     ...(overviewSection?.items ?? []),
-    ...(patientSection?.items.slice(0, 4) ?? []),
+    ...(patientSection?.items.slice(0, 5) ?? []),
   ].map((item) => ({
     title: t(item.labelKey),
     icon: (
-      <SidebarIcon
-        className={isCollapsed ? "size-6!" : "size-[22px]!"}
-        view={item.view}
-      />
+      <NavigationIcon className={isCollapsed ? "size-6!" : "size-[22px]!"} view={item.view} />
     ),
     isActive: currentView === item.view,
     onClick: () => onNavigate(item.view),
   }));
 
   const documents = [
-    ...(patientSection?.items.slice(4) ?? []),
+    ...(patientSection?.items.slice(5) ?? []),
     ...(operationsSection?.items ?? []),
   ].map((item) => ({
     name: item.view === "notes" ? "Documents" : t(item.labelKey),
     icon: (
-      <SidebarIcon
+      <NavigationIcon
         className={isCollapsed ? "size-6!" : "size-[22px]!"}
         view={item.view}
       />
     ),
-    isActive: currentView === item.view,
+    isActive: currentView === item.view || (item.view === "finances" && currentView === "finances_analytics"),
     onClick: () => onNavigate(item.view),
   }));
 
   const secondaryItems = (configSection?.items ?? []).map((item) => ({
     title: t(item.labelKey),
     icon: (
-      <SidebarIcon className="size-[22px]!" view={item.view} />
+      <NavigationIcon className="size-[22px]!" view={item.view} />
     ),
     isActive: currentView === item.view,
     onClick: () => onNavigate(item.view),
@@ -178,38 +208,17 @@ export function AppSidebar({
             isCollapsed ? "justify-center" : "justify-between"
           )}
         >
-          <button
-            aria-label="Tableau de bord Baitari"
-            className={cn(
-              "group flex items-center rounded-xl outline-none transition-opacity duration-150 focus-visible:ring-2 focus-visible:ring-primary/40",
-              isCollapsed
-                ? "size-9 justify-center hover:bg-sidebar-accent/50"
-                : "gap-2.5 px-1 py-1 hover:opacity-85"
-            )}
-            onClick={() => onNavigate("dashboard")}
-            title="Baitari"
-            type="button"
-          >
-            <Logo
-              className="text-sidebar-foreground"
-              collapsed={isCollapsed}
-              size={isCollapsed ? "sm" : "lg"}
-              textSize="md"
-              variant="refined"
-            />
-          </button>
+          <SidebarBrand collapsed={isCollapsed} onHome={() => onNavigate("dashboard")} />
           {!isCollapsed && (
-            <SidebarTrigger className="sidebar-logo-toggle -mr-1 size-8 rounded-lg text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground" />
+            <SidebarTrigger aria-label="Réduire la barre latérale" className="sidebar-logo-toggle size-8 rounded-lg text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground" />
           )}
         </div>
-        {!isCollapsed && isDesktopRuntime && (
-          <SidebarTrigger className="sidebar-window-toggle absolute end-3 size-8 rounded-lg text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground" />
-        )}
-        {isCollapsed && isDesktopRuntime && (
+        {isCollapsed && (
           <SidebarTrigger aria-label="Déployer la barre latérale" title="Déployer la barre latérale" className="sidebar-icon-mode-toggle absolute size-8 text-sidebar-foreground/65 hover:text-sidebar-foreground" />
         )}
       </SidebarHeader>
       <SidebarContent
+        ref={navigationRef}
         className={cn(
           "relative z-10 overflow-y-auto",
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
@@ -220,11 +229,12 @@ export function AppSidebar({
       >
         <div
           className={cn(
-            "flex min-h-full flex-1 flex-col",
+            "flex min-h-full shrink-0 flex-col [&>[data-slot=sidebar-group]]:shrink-0",
             isCollapsed ? "w-full items-center gap-4" : "gap-4"
           )}
         >
-          <NavMain items={mainItems} title={t("nav.sections.patientJourney")} />
+
+          <NavMain items={mainItems} title={t("nav.sections.patientJourney")} premiumTitle="Espace de travail" />
 
           <NavDocuments
             items={documents.map((item) => ({
@@ -234,31 +244,42 @@ export function AppSidebar({
               onClick: item.onClick,
             }))}
             title={t("nav.sections.operations")}
+            premiumTitle="Gestion du cabinet"
           />
 
           {secondaryItems.length > 0 && (
             <NavSecondary className="mt-auto" items={secondaryItems} />
           )}
+          {!isCollapsed && (
+            <nav aria-label="Raccourcis rapides" className="premium-shortcuts">
+              <p className="premium-shortcuts-heading">Accès rapides</p>
+              {PREMIUM_SHORTCUTS.map((shortcut) => {
+                const Icon = (isPremium
+                  ? { appointment: PremiumCalendarPlus, consultation: PremiumStethoscope, patient: PremiumSearch, care: PremiumClipboardList }
+                  : { appointment: CalendarPlus, consultation: Stethoscope, patient: Search, care: ClipboardList })[shortcut.id];
+                return <button key={shortcut.id} type="button" data-tone={shortcut.tone}
+                  onClick={() => onQuickAction?.(shortcut.id)}>
+                  <Icon className="premium-shortcut-icon" aria-hidden="true" strokeWidth={1} />
+                  <span>{shortcut.label}</span>
+                  <span className="premium-shortcut-dot" aria-hidden="true" />
+                </button>;
+              })}
+            </nav>
+          )}
         </div>
       </SidebarContent>
       <SidebarFooter
         className={cn(
-          "relative z-10 shrink-0 border-sidebar-border/80 border-t transition-all duration-300 dark:border-white/10",
+          "relative z-10 shrink-0 transition-all duration-300",
           isCollapsed
             ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-2 px-0 py-3"
             : "mx-0 mt-auto mb-0 bg-transparent px-3 py-3"
         )}
       >
-        {isCollapsed ? (
-          <SidebarTrigger
-            aria-label="Déployer la barre latérale"
-            className="sidebar-footer-toggle size-11 rounded-xl text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-            title="Déployer la barre latérale"
-          />
-        ) : null}
         <div
           className={cn(
             "transition-all duration-300",
+            isPremium && "board-frame sidebar-account-frame",
             !isCollapsed && "w-full"
           )}
         >
@@ -286,7 +307,7 @@ export function AppSidebar({
             title="Paramètres"
             type="button"
           >
-            <SidebarIcon view="parametres" className="size-6" />
+            <NavigationIcon view="parametres" className="size-6" />
           </button>
         )}
       </SidebarFooter>

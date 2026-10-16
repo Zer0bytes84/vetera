@@ -1,6 +1,9 @@
 import { jsPDF } from "jspdf";
+import { formatPhone } from "@/utils/display-format";
 import { INVOICE_ACCENTS, type InvoiceSettings } from "@/services/invoiceSettingsService";
 import { savePdf } from "./save-pdf";
+
+export type { InvoiceSettings };
 
 /** All monetary fields use integer centimes, never display-unit amounts. */
 export interface InvoicePdfData {
@@ -53,7 +56,7 @@ export function buildInvoicePdf(data: InvoicePdfData, settings: InvoiceSettings)
     const nameLines = doc.splitTextToSize(settings.name, 105 - (nameX - left));
     nameLines.forEach((line: string, index: number) => text(line, nameX, 23 + index * 6, 15, true, accent));
     let infoY = 23 + nameLines.length * 6;
-    const identity = [settings.address, [settings.phone, settings.email].filter(Boolean).join(" · "), settings.registrationNumber].filter(Boolean);
+    const identity = [settings.address, [formatPhone(settings.phone), settings.email].filter(Boolean).join(" · "), settings.registrationNumber].filter(Boolean);
     doc.setFontSize(9); doc.setFont("helvetica", "normal");
     identity.forEach((value) => {
       const lines: string[] = doc.splitTextToSize(value, 105 - (nameX - left));

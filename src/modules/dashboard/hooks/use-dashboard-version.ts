@@ -1,12 +1,12 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { getSetting, setSetting } from "@/services/appSettingsService";
-export type DashboardVersion = "clinical" | "classic";
+export type DashboardVersion = "clinical" | "analytics";
 const KEY = "dashboard.version";
 const listeners = new Set<() => void>();
 let revision = 0;
 const read = (): DashboardVersion =>
-  localStorage.getItem(KEY) === "clinical" ? "clinical" : "classic";
+  localStorage.getItem(KEY) === "clinical" ? "clinical" : "analytics";
 const subscribe = (listener: () => void) => {
   listeners.add(listener);
   return () => {
@@ -21,7 +21,7 @@ export function useDashboardVersion() {
   const version = useSyncExternalStore(
     subscribe,
     read,
-    () => "classic" as const
+    () => "analytics" as const
   );
   useEffect(() => {
     let active = true;
@@ -31,9 +31,9 @@ export function useDashboardVersion() {
         if (
           active &&
           initialRevision === revision &&
-          (value === "clinical" || value === "classic")
+          (value === "clinical" || value === "analytics" || value === "classic")
         )
-          publish(value);
+          publish(value === "clinical" ? "clinical" : "analytics");
       })
       .catch(() => undefined);
     return () => {

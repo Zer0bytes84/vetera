@@ -143,5 +143,8 @@ export function normalizePatientDraft(
     allergies: trimOptional(patient.allergies),
     chronicConditions: trimOptional(patient.chronicConditions),
     generalNotes: trimOptional(patient.generalNotes),
+    chipNumber: trimOptional(patient.chipNumber),
+    tattooNumber: trimOptional(patient.tattooNumber),
+    sterilized: patient.sterilized ?? undefined,
   };
 }

@@ -107,7 +107,7 @@ export async function runSqliteMigrations(
 
   if (futureVersions.length > 0) {
     throw new Error(
-      `Database schema is newer than this application (${futureVersions.join(", ")})`
+      `Cette base a été utilisée par une version plus récente de Baitari (migrations ${futureVersions.join(", ")}). Installez la dernière version de l’application pour l’ouvrir. Vos données sont conservées ; aucune rétrogradation automatique ne sera effectuée.`
     );
   }
 
@@ -133,8 +133,17 @@ export async function runSqliteMigrations(
     await database.execute("BEGIN IMMEDIATE TRANSACTION");
 
     try {
-      for (const statement of statements) {
-        await database.execute(statement);
+      const guard = migration.skipIfColumnExists;
+      const existingColumns = guard
+        ? await database.select<Array<{ name: string }>>(
+            "SELECT name FROM pragma_table_info(?) WHERE name = ?",
+            [guard.table, guard.column]
+          )
+        : [];
+      if (existingColumns.length === 0) {
+        for (const statement of statements) {
+          await database.execute(statement);
+        }
       }
 
       if (migration.disableForeignKeys) {

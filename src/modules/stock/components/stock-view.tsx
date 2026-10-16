@@ -77,7 +77,7 @@ export function StockView(props: StockViewProps) {
           subtitle={`${totalProducts} référence${totalProducts > 1 ? "s" : ""} active${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`}
         />
         <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Button className="h-10 rounded-full px-5 text-sm" onClick={handleOpenAdd}>
+          <Button className="h-9 px-4" onClick={handleOpenAdd}>
             <HugeiconsIcon
               className="size-4"
               icon={Add01Icon}
@@ -209,10 +209,19 @@ export function StockView(props: StockViewProps) {
                 </Field>
               </div>
 
+              <div className="flex items-center justify-between gap-4 py-2">
+                <div>
+                  <label htmlFor="product-stock-tracked" className="text-sm font-medium">Suivre le stock</label>
+                  <p className="text-xs text-muted-foreground">Désactivez pour une prestation ou un acte sans produit physique.</p>
+                </div>
+                <Switch id="product-stock-tracked" checked={formData.stockTracked !== false}
+                  onCheckedChange={checked => setFormData({...formData, stockTracked: checked})} />
+              </div>
               <div className="grid grid-cols-3 gap-4">
                 <Field>
                   <FieldLabel>Quantité</FieldLabel>
                   <Input
+                    disabled={formData.stockTracked === false}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -580,3 +589,4 @@ export function StockView(props: StockViewProps) {
     </div>
   );
 }
+import { Switch } from "@/components/ui/switch";

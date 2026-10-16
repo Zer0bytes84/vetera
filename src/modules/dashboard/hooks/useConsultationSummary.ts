@@ -276,7 +276,7 @@ function bucketizeDaily(
 
 function truncateAssessment(value: string | null | undefined): string {
   if (!value) {
-    return "—";
+    return "-";
   }
   const cleaned = value.replace(/\s+/g, " ").trim();
   if (cleaned.length <= 40) {

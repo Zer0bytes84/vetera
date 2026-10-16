@@ -1,5 +1,11 @@
+import { isTauriRuntime } from "@/services/browser-store";
+import { generateId } from "@/services/sqlite/database";
+import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
+import { addCalendarMonths } from "@/modules/patient-reminders/domain";
+import { patientRemindersService } from "@/modules/patient-reminders/service";
+import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
 import { CheckCircle, Plus, Syringe } from "@/lib/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -28,26 +34,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useVaccinationsRepository } from "@/data/repositories";
 import type { Vaccination } from "@/types/db";
 import { getVaccinationStatus } from "../lib";
+import { toDateInputValue } from "./patients-shared";
 
 interface VaccinationDialogProps {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   patientId: string;
   vaccination?: Vaccination | null;
-}
-
-function toDateInputValue(iso: string) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return new Date().toISOString().slice(0, 10);
-  }
-  return date.toISOString().slice(0, 10);
-}
-
-function plusDays(date: Date, days: number) {
-  const next = new Date(date);
-  next.setDate(next.getDate() + days);
-  return next;
 }
 
 export function VaccinationDialog({
@@ -71,6 +64,12 @@ export function VaccinationDialog({
   const [manufacturer, setManufacturer] = useState("");
   const [notes, setNotes] = useState("");
   const [presetId, setPresetId] = useState("");
+  const vaccinationDraftId = useRef("");
+  const dueDateTouched = useRef(false);
+  const administeredDateRef = useRef(administeredAt);
+  const [reminderActive, setReminderActive] = useState(true);
+  const [reminderMonths, setReminderMonths] = useState(12);
+  const [dueOrigin, setDueOrigin] = useState<"auto" | "manuel">("auto");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,6 +78,22 @@ export function VaccinationDialog({
       return;
     }
     setError(null);
+    let cancelled = false;
+    vaccinationDraftId.current = vaccination?.id ?? generateId();
+    dueDateTouched.current = false;
+    administeredDateRef.current = vaccination ? toDateInputValue(vaccination.administeredAt) : toDateInputValue(new Date().toISOString());
+    if (isTauriRuntime()) {
+      void patientRemindersService.types().then((types) => {
+        if (cancelled) return;
+        const type = types.find((entry) => entry.id === "vaccination" && entry.active);
+        setReminderActive(!!type);
+        if (type) {
+          setReminderMonths(type.interval_months);
+          if (!vaccination && !dueDateTouched.current) setNextDueAt(addCalendarMonths(administeredDateRef.current, type.interval_months));
+        } else if (!vaccination && !dueDateTouched.current) setNextDueAt("");
+      }).catch(() => {if (!cancelled) setError("Les réglages des rappels n’ont pas pu être chargés. Vérifiez l’échéance avant d’enregistrer.");});
+    }
+    setDueOrigin(vaccination ? "manuel" : "auto");
     if (vaccination) {
       setVaccineName(vaccination.vaccineName ?? "");
       setVaccineType(vaccination.vaccineType ?? "");
@@ -94,12 +109,13 @@ export function VaccinationDialog({
       setVaccineName("");
       setVaccineType("");
       setAdministeredAt(toDateInputValue(new Date().toISOString()));
-      setNextDueAt("");
+      setNextDueAt(addCalendarMonths(toDateInputValue(new Date().toISOString()), 12));
       setBatchNumber("");
       setManufacturer("");
       setNotes("");
       setPresetId("");
     }
+    return () => { cancelled = true; };
   }, [open, vaccination]);
 
   const handlePresetChange = (value: string) => {
@@ -113,22 +129,17 @@ export function VaccinationDialog({
     }
     setVaccineName(preset.label);
     setVaccineType(preset.type);
-    if (preset.intervalDays && administeredAt) {
-      const next = plusDays(new Date(administeredAt), preset.intervalDays);
-      setNextDueAt(toDateInputValue(next.toISOString()));
-    }
+    if (reminderActive && administeredAt && dueOrigin === "auto") setNextDueAt(addCalendarMonths(administeredAt, reminderMonths));
   };
 
   const handleAdministeredChange = (value: string) => {
     setAdministeredAt(value);
-    const preset = COMMON_VACCINES.find((entry) => entry.type === presetId);
-    if (preset?.intervalDays && value) {
-      const next = plusDays(new Date(value), preset.intervalDays);
-      setNextDueAt(toDateInputValue(next.toISOString()));
-    }
+    administeredDateRef.current = value;
+    if (reminderActive && value && dueOrigin === "auto") setNextDueAt(addCalendarMonths(value, reminderMonths));
   };
 
   const handleSave = async () => {
+    if (isSubmitting) return;
     if (!vaccineName.trim()) {
       setError(t("patientDetail.vaccinations.invalidName"));
       return;
@@ -147,7 +158,18 @@ export function VaccinationDialog({
         notes: notes.trim() || undefined,
         vetId: currentUser?.id,
       };
-      if (vaccination?.id) {
+      if (isTauriRuntime()) {
+        await patientRemindersService.saveVaccination({
+          id: vaccinationDraftId.current, patientId, vaccineName: vaccineName.trim(),
+          vaccineType: vaccineType.trim() || undefined, administeredDate: administeredAt,
+          dueDate: nextDueAt || undefined, origin: dueOrigin,
+          batchNumber: batchNumber.trim() || undefined, manufacturer: manufacturer.trim() || undefined,
+          notes: notes.trim() || undefined,
+        }, currentUser?.id ?? "");
+        emitSQLiteDataChanged("vaccinations");
+        announcePatientRemindersChanged();
+        void repo.refresh().catch(() => { toast.warning("La vaccination est enregistrée. Actualisez le carnet si nécessaire."); });
+      } else if (vaccination?.id) {
         const ok = await repo.update(vaccination.id, payload);
         if (!ok) {
           throw new Error("Update failed");
@@ -273,7 +295,7 @@ export function VaccinationDialog({
               </label>
               <Input
                 id="vaccine-next-due"
-                onChange={(event) => setNextDueAt(event.target.value)}
+                onChange={(event) => { dueDateTouched.current = true; setNextDueAt(event.target.value); setDueOrigin("manuel"); }}
                 type="date"
                 value={nextDueAt}
               />

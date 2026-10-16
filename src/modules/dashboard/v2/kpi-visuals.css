@@ -1,0 +1,279 @@
+/* Visual presentations for the 4 distinct KPI dashboard widgets */
+
+.kpi-visual-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 50px;
+  height: 50px;
+  margin-top: 6px;
+  min-width: 0;
+}
+
+.kpi-visual-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.kpi-visual-caption {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5px;
+  padding: 2px 6.5px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.kpi-badge svg {
+  width: 9.5px !important;
+  height: 9.5px !important;
+  flex-shrink: 0;
+}
+
+.kpi-badge-positive {
+  background: color-mix(in srgb, #10b981 12%, transparent);
+  color: #059669;
+}
+.dark .kpi-badge-positive {
+  background: color-mix(in srgb, #10b981 18%, transparent);
+  color: #34d399;
+}
+
+.kpi-badge-negative {
+  background: color-mix(in srgb, #f43f5e 10%, transparent);
+  color: #e11d48;
+}
+.dark .kpi-badge-negative {
+  background: color-mix(in srgb, #f43f5e 16%, transparent);
+  color: #fb7185;
+}
+
+.kpi-badge-neutral {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+/* 1. Bar Cadence */
+.kpi-cadence-svg {
+  display: block;
+  width: 100%;
+  height: 32px;
+}
+
+.kpi-bar-slot {
+  cursor: crosshair;
+}
+
+.kpi-bar-rect {
+  transition: opacity 140ms ease-out, transform 140ms ease-out;
+}
+
+/* 2. Spline Wave */
+.kpi-spline-svg {
+  display: block;
+  width: 100%;
+  height: 32px;
+  cursor: crosshair;
+}
+
+/* 3. Species Track */
+.kpi-species-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  gap: 7px;
+}
+
+.kpi-species-track {
+  display: flex;
+  width: 100%;
+  height: 8px;
+  gap: 2.5px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--muted);
+  cursor: pointer;
+}
+
+.kpi-species-segment {
+  height: 100%;
+  min-width: 3px;
+  border-radius: 2px;
+  transition: opacity 140ms ease-out, filter 140ms ease-out;
+}
+
+.kpi-species-chips {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.kpi-species-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.kpi-species-chip strong {
+  font-weight: 600;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-species-chip svg {
+  width: 11.5px !important;
+  height: 11.5px !important;
+  flex-shrink: 0;
+}
+
+/* 4. Circular Gauge */
+.kpi-gauge-box {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 100%;
+  padding: 1px 2px;
+}
+
+.kpi-gauge-ring-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.kpi-gauge-ring-svg {
+  width: 34px;
+  height: 34px;
+  display: block;
+  transform: rotate(-90deg);
+}
+
+.kpi-gauge-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.kpi-gauge-center svg {
+  width: 14px !important;
+  height: 14px !important;
+  transform: none !important;
+  display: block;
+}
+
+.kpi-gauge-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.kpi-gauge-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-gauge-sub {
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Interactive Floating Tooltip */
+.kpi-interactive-tooltip {
+  position: absolute;
+  bottom: 54px;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: kpiTooltipIn 120ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.kpi-interactive-tooltip span {
+  color: var(--muted-foreground);
+}
+
+.kpi-interactive-tooltip strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes kpiTooltipIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 2px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-interactive-tooltip {
+    animation: none;
+  }
+  .kpi-bar-rect,
+  .kpi-species-segment {
+    transition: none;
+  }
+}

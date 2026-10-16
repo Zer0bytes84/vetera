@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   type AutomationDrilldownRow,
+  type AutomationItem,
   type AutomationMetrics,
   getAutomationDrilldown,
   getAutomationMetrics,
@@ -11,29 +12,7 @@ import {
   updateGlobalAutomation,
 } from "@/services/sqlite/automations";
 
-export type AutomationItem = {
-  id: string;
-  title: string;
-  description: string;
-  iconName: string;
-  iconColor: string;
-  active: boolean;
-  schedule: string;
-  time: string;
-  lastRunDate: string | null;
-  lastRunStatus: "Completed" | "Scheduled" | "Stopped";
-  nextRunDate: string | null;
-  nextRunISO: string | null;
-  nextRunRelative: string | null;
-  metricLabel: string;
-  metricIconName: string;
-  metricValue: string;
-  metricTrend: string;
-  metricTrendUp: boolean;
-  chartType: "discrete" | "area";
-  chartColor: string;
-  chartData: any[];
-};
+export type { AutomationItem };
 
 export type AutomationItemLive = AutomationItem & {
   liveMetrics: AutomationMetrics | null;

@@ -10,11 +10,10 @@ button.section-atlas-content:focus-visible { outline: 2px solid var(--ring); out
 button.section-atlas-content:hover .section-atlas-body { border-color: var(--muted-foreground); }
 .section-atlas-card-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 6px 11px; }
 .section-atlas-label { margin: 0; font-size: 13px; font-weight: 500; color: var(--foreground); }
-.section-atlas-body { display: flex; flex: 1; flex-direction: column; min-height: 154px; padding: 14px 12px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); transition: border-color 160ms ease-out; }
+.section-atlas-body { display: flex; flex: 1; flex-direction: column; min-height: 104px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); transition: border-color 160ms ease-out; }
 .section-atlas-value { margin: 0; padding: 0; font-weight: 500; line-height: 1.2; letter-spacing: -0.035em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--foreground); }
-.section-atlas-context { margin: 4px 0 0; color: var(--muted-foreground); font-size: 11px; line-height: 16px; }
-.section-atlas-detail { min-height: 32px; margin: 14px 0 7px; color: var(--muted-foreground); font-size: 12px; line-height: 16px; overflow-wrap: anywhere; }
-.section-atlas-status { margin-top: auto; }
+.section-atlas-context { margin: 8px 0 0; color: var(--muted-foreground); font-size: 12px; line-height: 16px; }
+.section-atlas-status { margin-top: 12px; }
 .section-atlas-action { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--foreground); font-size: 11px; line-height: 16px; }
 @container (max-width: 900px) { .section-atlas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @container (max-width: 600px) { .section-atlas-grid[data-card-count="3"] { grid-template-columns: 1fr; } }

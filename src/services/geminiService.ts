@@ -3,10 +3,8 @@ import { APP_NAME } from "@/lib/brand";
 import type { ChatMessage } from "../types";
 import {
   generateText,
-  initializeWebLLM,
-  isWebLLMReady,
   type LocalChatTurn,
-} from "./webLLMService";
+} from "./localTextService";
 
 const ASSISTANT_SYSTEM_PROMPT = `Tu es l'assistant officiel de ${APP_NAME}, logiciel de clinique veterinaire.
 Tu aides l'equipe sur l'organisation, les dossiers patients, les notes cliniques et les actions quotidiennes.
@@ -54,9 +52,6 @@ export const sendMessageToGemini = async (
   newMessage: string
 ): Promise<string> => {
   try {
-    if (!isWebLLMReady()) {
-      await initializeWebLLM();
-    }
 
     const response = await generateText(newMessage, "", {
       history: toLocalHistory(history),
@@ -80,9 +75,6 @@ export const assistWithNote = async (
   content: string,
   instruction: string
 ): Promise<string> => {
-  if (!isWebLLMReady()) {
-    await initializeWebLLM();
-  }
 
   const promptFn = NOTE_PROMPTS[instruction];
 

@@ -28,10 +28,10 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { assistWithNote } from "@/services/geminiService";
 import {
-  isWebLLMLoading,
-  isWebLLMReady,
+  isLocalTextLoading,
+  isLocalTextReady,
   subscribeToProgress,
-} from "@/services/webLLMService";
+} from "@/services/localTextService";
 import SelectionBubbleMenu from "./SelectionBubbleMenu";
 import { documentNoteTemplateOrder, documentNoteTemplates } from "./document-note-templates";
 import { insertDocumentTable } from "./document-table-presets";
@@ -166,10 +166,10 @@ const Editor: React.FC<EditorProps> = ({
   };
 
   useEffect(() => {
-    if (isWebLLMReady()) {
+    if (isLocalTextReady()) {
       setAiReady(true);
       setAiInitializing(false);
-    } else if (isWebLLMLoading()) {
+    } else if (isLocalTextLoading()) {
       setAiInitializing(true);
     }
 
@@ -249,7 +249,7 @@ const Editor: React.FC<EditorProps> = ({
   return (
     <div className="w-full">
       {!readOnly && (
-        <div className="sticky top-0 z-10 mb-5 flex items-center justify-between gap-2 border-foreground/15 border-b bg-white/95 py-2 backdrop-blur-sm dark:bg-[#1b241e]/95">
+        <div className="sticky top-0 z-10 mb-5 flex items-center justify-between gap-2 border-foreground/15 border-b bg-card/95 py-2 backdrop-blur-sm">
           <div className="flex items-center gap-1.5">
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button size="sm" variant="outline" className="h-8 gap-1.5 rounded-lg border-foreground/20 font-medium" />}>

@@ -113,16 +113,17 @@ jobs:
       - name: Validate frontend and database migrations
         run: |
           npm run typecheck
+          npm run lint -- --max-warnings=0
           npm test
           npm run test:licenses
 
       - name: Build Tauri app
         if: runner.os != 'Windows'
-        run: npm run tauri:build
+        run: npm run tauri:build -- --config src-tauri/tauri.release.conf.json
 
       - name: Build Tauri app (Windows)
         if: runner.os == 'Windows'
-        run: npm run tauri:build -- --target x86_64-pc-windows-msvc
+        run: npm run tauri:build -- --config src-tauri/tauri.release.conf.json --target x86_64-pc-windows-msvc
 
       - name: Upload release bundles
         uses: actions/upload-artifact@v7

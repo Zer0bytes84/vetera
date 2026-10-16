@@ -1,3 +1,4 @@
+import { formatNumber } from "@/utils/display-format";
 import {
   useCallback,
   useDeferredValue,
@@ -17,7 +18,7 @@ import {
   useUsersRepository,
 } from "@/data/repositories";
 
-import { useAudit } from "@/services/auditService";
+import { useAudit } from "@/services/use-audit";
 import type { Appointment, Owner, Patient } from "@/types/db";
 
 import {
@@ -57,6 +58,8 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const {
     data: patients,
     loading: loadingPatients,
+    error: patientsError,
+    refresh: refreshPatients,
     update: updatePatient,
     createWithOwner,
   } = usePatientsRepository();
@@ -278,45 +281,69 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       }
       return Date.now() - lastVisit.getTime() > 1000 * 60 * 60 * 24 * 90;
     }).length;
-    const recentAdmissions = patients.filter((patient) => {
-      const createdAt = normalizeDate(patient.createdAt);
-      if (!createdAt) {
-        return false;
-      }
-      return Date.now() - createdAt.getTime() <= 1000 * 60 * 60 * 24 * 30;
-    }).length;
+    const canine = patients.filter((p) =>
+      (p.species || "").toLowerCase().includes("chien")
+    ).length;
+    const feline = patients.filter((p) =>
+      (p.species || "").toLowerCase().includes("chat")
+    ).length;
+    const underTreatment = patients.filter(
+      (p) => p.status === "traitement"
+    ).length;
+    const hospitalized = patients.filter(
+      (p) => p.status === "hospitalise"
+    ).length;
+    const newInMonth = patients.filter(
+      (p) =>
+        p.createdAt &&
+        Date.now() - new Date(p.createdAt).getTime() <= 30 * 86400000
+    ).length;
+    const scheduledCount = appointments.filter(
+      (a) => a.status === "scheduled"
+    ).length;
 
     return [
       {
         title: "Patients actifs",
-        value: String(activePatients),
-        badge: `${hydratedOwners.length} foyers`,
-        trend: "neutral",
+        value: formatNumber(activePatients),
+        badge:
+          newInMonth > 0
+            ? `+${newInMonth} ce mois-ci`
+            : `${formatNumber(hydratedOwners.length)} foyers`,
+        trend: "up",
+        detailRow: `${formatNumber(hydratedOwners.length)} foyers · ${canine} chiens · ${feline} chats`,
         footerTitle: "Patients suivis",
         footerDescription: "Patients actifs enregistrés",
       },
       {
         title: "Suivi clinique",
-        value: String(monitoredPatients),
-        badge: monitoredPatients > 0 ? "a surveiller" : "stable",
+        value: formatNumber(monitoredPatients),
+        badge: monitoredPatients > 0 ? "Surveillance active" : "Tous stables",
+        tone: monitoredPatients > 0 ? "watch" : "positive",
         trend: monitoredPatients > 0 ? "up" : "neutral",
-        footerTitle: "Traitements en cours",
+        detailRow: `${underTreatment} sous traitement · ${hospitalized} hospitalisé${hospitalized > 1 ? "s" : ""}`,
+        footerTitle: "Sous traitement ou hospitalisés",
         footerDescription: "Patients sous traitement ou hospitalisés",
       },
       {
         title: "Rendez-vous à venir",
-        value: String(scheduledPatients),
-        badge: `${recentAdmissions} nouveaux`,
+        value: formatNumber(scheduledPatients),
+        badge: scheduledPatients > 0 ? `${scheduledPatients} planifiés` : "À planifier",
         trend: "up",
-        footerTitle: "Prochaines visites",
+        detailRow: `${scheduledCount} consultations prévues · Dossiers synchronisés`,
+        footerTitle: "Consultations planifiées",
         footerDescription: "Consultations planifiées",
       },
       {
         title: "Relances à prévoir",
-        value: String(stalePatients),
-        badge: "90+ jours",
+        value: formatNumber(stalePatients),
+        change: stalePatients > 0 ? stalePatients : 0,
+        changeLabel: stalePatients > 0 ? "sans visite > 90 j" : "dossiers à jour",
+        inverse: true,
+        tone: stalePatients > 0 ? "critical" : "positive",
         trend: stalePatients > 0 ? "down" : "neutral",
-        footerTitle: "Dossiers inactifs",
+        detailRow: `${stalePatients} relances automatiques · Rappels vaccins & soins`,
+        footerTitle: "Sans visite depuis 90 jours",
         footerDescription: "Patients sans visite depuis 90 jours",
       },
     ];
@@ -392,13 +419,15 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
         JSON.stringify(pendingAppointment)
       );
       window.location.hash = "#/agenda";
-      window.setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent("vetera:new-appointment", {
-            detail: pendingAppointment,
-          })
-        );
-      }, 180);
+      // La vue agenda consomme ce marqueur à son montage (useAgendaPageModel)
+      // ; l'événement synchrone couvre le cas où elle serait déjà montée.
+      // Pas de setTimeout : le délai arbitraire créait une course si la vue
+      // mettait plus de temps à monter.
+      window.dispatchEvent(
+        new CustomEvent("vetera:new-appointment", {
+          detail: pendingAppointment,
+        })
+      );
     }
 
     setCreatedPatientPrompt(null);
@@ -508,6 +537,8 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     pageStart,
     paginatedPatients,
     paginationRange,
+    patientsError,
+    refreshPatients,
     resetFilters,
     searchTerm,
     sectionCards,

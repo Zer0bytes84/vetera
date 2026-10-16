@@ -1,0 +1,35 @@
+.assistant-welcome-bubble {
+  transform-origin: top left;
+  animation: assistant-welcome-enter 180ms var(--ease-out) both;
+}
+.assistant-question-bubble {
+  transform-origin: bottom left;
+  animation: assistant-welcome-enter 220ms var(--ease-out) both;
+  animation-delay: var(--assistant-question-delay, 0ms);
+}
+.assistant-welcome-caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-inline-start: 2px;
+  background: currentColor;
+  vertical-align: -0.1em;
+  animation: assistant-welcome-caret 600ms steps(1, end) infinite;
+}
+@keyframes assistant-welcome-enter {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes assistant-welcome-caret {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .assistant-welcome-bubble,
+  .assistant-question-bubble { animation: assistant-welcome-fade 140ms var(--ease-out) both; }
+  .assistant-welcome-caret { display: none; }
+}
+@keyframes assistant-welcome-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

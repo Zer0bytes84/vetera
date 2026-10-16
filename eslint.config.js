@@ -10,6 +10,8 @@ export default defineConfig([
     "dist",
     "src-tauri",
     "output",
+    "outputs",
+    "scratch-*.tsx",
     ".playwright-cli",
     ".playwright-mcp",
     ".next",
@@ -31,7 +33,9 @@ export default defineConfig([
       "react-refresh/only-export-components": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "react-hooks/preserve-manual-memoization": "off",
+      "react-hooks/incompatible-library": "off",
       "no-empty": "off",
+
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {

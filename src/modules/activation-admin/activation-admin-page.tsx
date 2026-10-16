@@ -95,6 +95,8 @@ type ServerStatus = "checking" | "online" | "offline";
 type StatusFilter = "all" | "active" | "expiring" | "expired" | "revoked";
 type ExpiryPreset = "1m" | "1y" | "2y" | "forever" | "custom";
 
+const ACTIVATION_SERVER_HOST = (() => { try { return new URL(ACTIVATION_SERVER_URL).host; } catch { return "Serveur non configuré"; } })();
+
 const PLAN_LABELS: Record<string, string> = {
   clinic: "Cabinet Pro",
   trial: "Essai Démo",
@@ -195,7 +197,7 @@ function ServerStatusPill({
     styleClasses =
       "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-300";
     dotColor = "bg-emerald-500";
-    statusText = `127.0.0.1:8787 ${pingMs === null ? "" : `· ${pingMs}ms`}`;
+    statusText = `${ACTIVATION_SERVER_HOST} ${pingMs === null ? "" : `· ${pingMs}ms`}`;
   } else if (status === "offline") {
     styleClasses =
       "border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/15";
@@ -234,6 +236,7 @@ function ServerStatusPill({
 // SUBCOMPONENT: LICENSES TABLE VIEW
 // ---------------------------------------------------------------------------
 interface LicensesTableViewProps {
+  syncMessage: string | null;
   activeCount: number;
   expiringCount: number;
   isLoading: boolean;
@@ -252,6 +255,7 @@ interface LicensesTableViewProps {
 }
 
 function LicensesTableView({
+  syncMessage,
   licenses,
   isLoading,
   searchQuery,
@@ -343,7 +347,8 @@ function LicensesTableView({
         </div>
       )}
 
-      {!isLoading && licenses.length === 0 && (
+      {!isLoading && syncMessage && <div role="status" className="p-8 text-center text-sm text-muted-foreground">{syncMessage}</div>}
+      {!isLoading && !syncMessage && licenses.length === 0 && (
         <div className="flex min-h-56 flex-col items-center justify-center gap-3 p-8 text-center">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-muted/60 text-muted-foreground">
             <Clipboard className="size-6" />
@@ -901,6 +906,7 @@ export default function ActivationAdminPage() {
   // Licenses data state
   const [licenses, setLicenses] = useState<ActivationAdminLicense[]>([]);
   const [isLoadingLicenses, setIsLoadingLicenses] = useState(false);
+  const [licenseSyncMessage, setLicenseSyncMessage] = useState<string | null>("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
 
   // Filters & search
   const [searchQuery, setSearchQuery] = useState("");
@@ -960,6 +966,7 @@ export default function ActivationAdminPage() {
     async (tokenToUse?: string, silent = false) => {
       const token = (tokenToUse ?? adminToken).trim();
       if (!token) {
+        setLicenseSyncMessage("Renseignez le jeton administrateur pour synchroniser les licences du serveur.");
         if (!silent) {
           toast.error("Veuillez renseigner le jeton administrateur.");
         }
@@ -970,11 +977,13 @@ export default function ActivationAdminPage() {
       try {
         const next = await listActivationLicenses(token);
         setLicenses(next);
+        setLicenseSyncMessage(null);
         setServerStatus("online");
         if (!silent) {
           toast.success(`${next.length} licence(s) synchronisée(s).`);
         }
       } catch (err) {
+        setLicenseSyncMessage(err instanceof Error ? err.message : "La synchronisation a échoué. Réessayez.");
         setServerStatus("offline");
         if (!silent) {
           const msg =
@@ -1148,7 +1157,9 @@ export default function ActivationAdminPage() {
         clinicName: data.clinicName.trim(),
       };
       setCreatedResult(res);
-      setLicenses((current) => [created.license, ...current]);
+      setLicenses((current) => [created.license, ...current.filter(license => license.id !== created.license.id)]);
+      setLicenseSyncMessage(null);
+      setSearchQuery(""); setStatusFilter("all"); setPlanFilter("all");
       setServerStatus("online");
       toast.success("Licence générée avec succès !");
 
@@ -1468,6 +1479,7 @@ export default function ActivationAdminPage() {
             {/* TAB 1: LICENSES TABLE */}
             <TabsContent className="mt-4 space-y-4" value="licenses">
               <LicensesTableView
+                syncMessage={licenseSyncMessage}
                 activeCount={stats.active}
                 expiringCount={stats.expiring}
                 isLoading={isLoadingLicenses}
@@ -1523,10 +1535,10 @@ export default function ActivationAdminPage() {
                   <CardHeader className="border-border/50 border-b p-5">
                     <CardTitle className="flex items-center gap-2 text-base">
                       <Server className="size-4 text-primary" />
-                      État du serveur local
+                      État du serveur d’activation
                     </CardTitle>
                     <CardDescription className="text-xs">
-                      Instance locale d'activation Baitari
+                      Source des licences affichées : le serveur configuré ci-dessous.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 p-5 text-xs">
@@ -1568,7 +1580,7 @@ export default function ActivationAdminPage() {
                         Stockage des données
                       </span>
                       <span className="font-mono text-[11px]">
-                        activation-server/data/licenses.json
+                        {ACTIVATION_SERVER_HOST === "127.0.0.1:8787" ? "activation-server/data/licenses.json" : "Stockage du serveur configuré"}
                       </span>
                     </div>
 

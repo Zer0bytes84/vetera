@@ -2,9 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { buildInvoicePdf, type InvoicePdfData } from "@/lib/invoice-pdf";
+import { buildInvoicePdf, type InvoicePdfData, type InvoiceSettings } from "@/lib/invoice-pdf";
 import { savePdf } from "@/lib/save-pdf";
-import type { InvoiceSettings } from "@/services/invoiceSettingsService";
 
 export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
   data: InvoicePdfData; settings: InvoiceSettings; onClose: () => void; sample?: boolean;

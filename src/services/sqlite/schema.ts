@@ -278,6 +278,17 @@ ALTER TABLE notes ADD COLUMN patient_id TEXT REFERENCES patients(id) ON DELETE S
 CREATE INDEX IF NOT EXISTS idx_notes_patient_id ON notes(patient_id);
 `;
 
+export const MIGRATION_019_SQL = `
+CREATE TABLE document_templates (
+  id TEXT PRIMARY KEY,
+  kind TEXT NOT NULL CHECK(kind IN ('prescription', 'certificate', 'report')),
+  name TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
 export const MIGRATION_017_SQL = `
 ALTER TABLE products ADD COLUMN archived_at TEXT;
 
@@ -1935,5 +1946,145 @@ WHEN NEW.invoice_line_id IS NOT NULL
   )
 BEGIN
   SELECT RAISE(ABORT, 'Credit note invoice lines must belong to the credited invoice');
+END;
+`;
+
+export const MIGRATION_020_SQL = `
+-- Migration 020: identification du patient.
+-- Ajoute le numéro de puce électronique, le tatouage et le statut
+-- de stérilisation au dossier patient.
+ALTER TABLE patients ADD COLUMN chip_number TEXT;
+ALTER TABLE patients ADD COLUMN tattoo_number TEXT;
+ALTER TABLE patients ADD COLUMN sterilized INTEGER;
+`;
+
+export const MIGRATION_021_SQL = `
+-- Migration 021: protéger l'historique clinique à la suppression d'un utilisateur.
+-- La FK appointments.vet_id passe de ON DELETE CASCADE à ON DELETE RESTRICT :
+-- supprimer un véto ne vaporise plus ses RDV ni tout le sous-arbre clinique
+-- (notes SOAP, ordonnances, documents, rappels, hospitalisations).
+-- Un utilisateur avec des RDV ne peut plus être supprimé : il doit être
+-- désactivé via son statut. Reconstruction nécessaire pour changer la FK.
+
+DROP TRIGGER IF EXISTS update_appointments_timestamp;
+
+CREATE TABLE appointments_v3 (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    owner_id TEXT NOT NULL,
+    vet_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    status TEXT NOT NULL DEFAULT 'scheduled' CHECK(status IN (
+      'scheduled', 'confirmed', 'arrived', 'waiting',
+      'in_progress', 'completed', 'cancelled', 'no_show'
+    )),
+    type TEXT NOT NULL CHECK(type IN ('Consultation', 'Vaccin', 'Chirurgie', 'Urgence', 'Contrôle')),
+    reason TEXT,
+    diagnosis TEXT,
+    treatment TEXT,
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    room TEXT DEFAULT 'consult-1',
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE CASCADE,
+    FOREIGN KEY (vet_id) REFERENCES users(id) ON DELETE RESTRICT
+);
+
+INSERT INTO appointments_v3 (
+  id, patient_id, owner_id, vet_id, title, start_time, end_time, status,
+  type, reason, diagnosis, treatment, notes, created_at, updated_at, room
+)
+SELECT
+  id, patient_id, owner_id, vet_id, title, start_time, end_time, status,
+  type, reason, diagnosis, treatment, notes, created_at, updated_at, room
+FROM appointments;
+
+DROP TABLE appointments;
+ALTER TABLE appointments_v3 RENAME TO appointments;
+
+CREATE INDEX idx_appointments_patient_id ON appointments(patient_id);
+CREATE INDEX idx_appointments_vet_id ON appointments(vet_id);
+CREATE INDEX idx_appointments_start_time ON appointments(start_time);
+CREATE INDEX idx_appointments_status ON appointments(status);
+CREATE INDEX idx_appointments_room ON appointments(room);
+CREATE INDEX idx_appointments_room_time ON appointments(room, start_time, end_time);
+
+CREATE TRIGGER update_appointments_timestamp AFTER UPDATE ON appointments
+BEGIN
+    UPDATE appointments SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+`;
+
+// Derived search index: each row is bound to exactly one existing patient/source.
+export const MIGRATION_022_SQL = `
+CREATE TABLE IF NOT EXISTS embeddings (
+ id TEXT PRIMARY KEY,
+ patient_id TEXT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+ soap_id TEXT REFERENCES consultation_soaps(id) ON DELETE CASCADE,
+ note_id TEXT REFERENCES notes(id) ON DELETE CASCADE,
+ document_type TEXT NOT NULL CHECK(document_type IN ('consultation','prescription','certificate','report','laboratory','document')),
+ section TEXT NOT NULL CHECK(section IN ('subjective','objective','assessment','plan','document')),
+ chunk_index INTEGER NOT NULL CHECK(chunk_index >= 0),
+ chunk_text TEXT NOT NULL,
+ source_key TEXT NOT NULL,
+ model_key TEXT NOT NULL,
+ vector TEXT NOT NULL CHECK(json_valid(vector) AND json_type(vector) = 'array' AND json_array_length(vector) = 768),
+ CHECK((soap_id IS NOT NULL AND note_id IS NULL AND document_type = 'consultation' AND section != 'document') OR (soap_id IS NULL AND note_id IS NOT NULL AND section = 'document'))
+);
+CREATE INDEX IF NOT EXISTS idx_embeddings_patient_type ON embeddings(patient_id, document_type, model_key);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_embeddings_soap_chunk ON embeddings(soap_id, section, chunk_index, model_key) WHERE soap_id IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_embeddings_note_chunk ON embeddings(note_id, chunk_index, model_key) WHERE note_id IS NOT NULL;
+CREATE TRIGGER IF NOT EXISTS embeddings_patient_insert BEFORE INSERT ON embeddings BEGIN
+ SELECT CASE WHEN (NEW.soap_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM consultation_soaps WHERE id=NEW.soap_id AND patient_id=NEW.patient_id)) OR (NEW.note_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM notes WHERE id=NEW.note_id AND patient_id=NEW.patient_id)) THEN RAISE(ABORT, 'Patient de la source incompatible') END;
+END;
+CREATE TRIGGER IF NOT EXISTS embeddings_patient_update BEFORE UPDATE ON embeddings BEGIN
+ SELECT CASE WHEN (NEW.soap_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM consultation_soaps WHERE id=NEW.soap_id AND patient_id=NEW.patient_id)) OR (NEW.note_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM notes WHERE id=NEW.note_id AND patient_id=NEW.patient_id)) THEN RAISE(ABORT, 'Patient de la source incompatible') END;
+END;
+CREATE TRIGGER IF NOT EXISTS embeddings_soap_invalidate AFTER UPDATE OF subjective,objective,assessment,plan,content,ai_draft,patient_id ON consultation_soaps BEGIN
+ DELETE FROM embeddings WHERE soap_id=OLD.id;
+END;
+CREATE TRIGGER IF NOT EXISTS embeddings_document_invalidate AFTER UPDATE OF content,tags,patient_id ON notes BEGIN
+ DELETE FROM embeddings WHERE note_id=OLD.id;
+END;
+`;
+
+// Retain the previous derived JSON index for recovery; clinical sources stay intact.
+export const MIGRATION_023_SQL = `
+ALTER TABLE embeddings RENAME TO embeddings_legacy_json;
+CREATE TABLE embeddings (
+ id TEXT PRIMARY KEY,
+ source_type TEXT NOT NULL CHECK(source_type IN ('soap','document','protocol')),
+ source_id TEXT NOT NULL,
+ patient_id TEXT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+ section TEXT NOT NULL CHECK(section IN ('subjective','objective','assessment','plan','document','protocol')),
+ chunk_index INTEGER NOT NULL CHECK(chunk_index >= 0),
+ embedding BLOB NOT NULL CHECK(typeof(embedding)='blob' AND length(embedding)=3072),
+ created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+ updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+ chunk_text TEXT NOT NULL,
+ source_key TEXT NOT NULL,
+ model_key TEXT NOT NULL,
+ document_type TEXT NOT NULL,
+ soap_id TEXT REFERENCES consultation_soaps(id) ON DELETE CASCADE,
+ note_id TEXT REFERENCES notes(id) ON DELETE CASCADE,
+ CHECK((source_type='soap' AND soap_id=source_id AND soap_id IS NOT NULL AND note_id IS NULL AND section IN ('subjective','objective','assessment','plan') AND document_type='consultation') OR
+ (source_type IN ('document','protocol') AND note_id=source_id AND note_id IS NOT NULL AND soap_id IS NULL AND section=source_type AND document_type IN ('prescription','certificate','report','laboratory','document','protocol')))
+);
+CREATE UNIQUE INDEX idx_embeddings_v2_source_section ON embeddings(patient_id,source_type,source_id,section,chunk_index,model_key);
+CREATE INDEX idx_embeddings_v2_scope ON embeddings(patient_id,source_type,section,model_key);
+CREATE TRIGGER embeddings_v2_patient_insert BEFORE INSERT ON embeddings BEGIN
+ SELECT CASE WHEN (NEW.soap_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM consultation_soaps WHERE id=NEW.soap_id AND patient_id=NEW.patient_id)) OR (NEW.note_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM notes WHERE id=NEW.note_id AND patient_id=NEW.patient_id)) THEN RAISE(ABORT,'Patient de la source incompatible') END;
+END;
+CREATE TRIGGER embeddings_v2_patient_update BEFORE UPDATE ON embeddings BEGIN
+ SELECT CASE WHEN (NEW.soap_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM consultation_soaps WHERE id=NEW.soap_id AND patient_id=NEW.patient_id)) OR (NEW.note_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM notes WHERE id=NEW.note_id AND patient_id=NEW.patient_id)) THEN RAISE(ABORT,'Patient de la source incompatible') END;
+END;
+CREATE TRIGGER embeddings_v2_soap_invalidate AFTER UPDATE OF subjective,objective,assessment,plan,content,ai_draft,patient_id ON consultation_soaps BEGIN
+ DELETE FROM embeddings WHERE soap_id=OLD.id;
+END;
+CREATE TRIGGER embeddings_v2_document_invalidate AFTER UPDATE OF content,tags,patient_id ON notes BEGIN
+ DELETE FROM embeddings WHERE note_id=OLD.id;
 END;
 `;

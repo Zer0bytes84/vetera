@@ -1,0 +1,33 @@
+/* Moving text highlight for observable assistant activity only. */
+.assistant-thinking-text {
+  color: var(--muted-foreground);
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .assistant-thinking-text {
+    background-image: linear-gradient(
+      100deg,
+      var(--muted-foreground) 35%,
+      var(--foreground) 50%,
+      var(--muted-foreground) 65%
+    );
+    background-size: 250% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: assistant-thinking-shimmer 2s linear infinite;
+  }
+}
+
+@keyframes assistant-thinking-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0% 0; }
+}
+
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .assistant-thinking-text {
+    animation: none;
+    background-image: none;
+    color: var(--muted-foreground);
+  }
+}

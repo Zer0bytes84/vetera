@@ -1,0 +1,8 @@
+.hospitalisation-view {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+  color: #292929;
+}
+.dark .hospitalisation-view { color: var(--foreground); }
+.hospitalisation-view :is(h1, h2, h3, button, input, select, textarea) { font-family: inherit; }
+.hospitalisation-view button { min-height: 44px; }
+.hospitalisation-view [data-slot="tabs-list"] { height: auto; }

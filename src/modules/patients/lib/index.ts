@@ -1,4 +1,4 @@
-export { computeAge, formatAge } from "./age";
+export { computeAge, formatAge, formatAgeFr } from "./age";
 export {
   getNextDueVaccination,
   getOverallVaccinationStatus,

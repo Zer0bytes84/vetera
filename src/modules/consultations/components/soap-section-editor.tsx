@@ -46,8 +46,9 @@ export function SoapSectionEditor({
 
   return (
     <div
+      data-soap-section={sectionKey}
       className={cn(
-        "group relative overflow-hidden rounded-2xl border bg-card p-4 transition-[border-color,box-shadow] duration-200",
+        "soap-section-editor group relative overflow-hidden rounded-2xl border bg-card p-4 transition-[border-color,box-shadow] duration-200",
         status === "active"
           ? "border-foreground/25 shadow-[0_0_0_3px_color-mix(in_oklch,var(--foreground)_7%,transparent)]"
           : "border-border hover:border-foreground/15",

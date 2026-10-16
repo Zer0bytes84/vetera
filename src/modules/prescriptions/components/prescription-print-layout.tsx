@@ -1,12 +1,12 @@
+import { formatPhone } from "@/utils/display-format";
 import { Pill, Stethoscope } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import type { Patient } from "@/types/db";
-import type { PrescriptionVet } from "../types";
+import type { PrescriptionVet, PreviewItem } from "../types";
 
 import { formatNumber } from "../lib/dose-calculator";
-import type { PreviewItem } from "./prescription-preview";
 
 export interface PrescriptionPrintLayoutProps {
   className?: string;
@@ -63,7 +63,7 @@ export function PrescriptionPrintLayout({
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {vet?.specialty ?? "Vétérinaire"}
-              {vet?.phone ? ` · ${vet.phone}` : ""}
+              {vet?.phone ? ` · ${formatPhone(vet.phone)}` : ""}
             </p>
           </div>
         </div>

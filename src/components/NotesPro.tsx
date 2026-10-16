@@ -1,3 +1,5 @@
+import { formatDisplayText } from "@/utils/display-format";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Add01Icon,
   Bookmark01Icon,
@@ -18,7 +20,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Check, ChevronDown, ChevronRight, FileText, Folder, FolderOpen, Hash, Pin, Star, X } from "@/lib/icons";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "@/components/Editor";
 import { documentNoteTemplateOrder, documentNoteTemplates, type DocumentNoteTemplate } from "@/components/document-note-templates";
 import MotivationalHeader from "@/components/MotivationalHeader";
@@ -39,6 +41,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNotesRepository, usePatientsRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Note, Patient } from "@/types/db";
+
+const DocumentsWorkspace = lazy(() => import("@/modules/documents/components/documents-workspace"));
+const DocumentTemplateManager = lazy(() => import("@/modules/documents/components/document-template-manager"));
 
 // Utils
 const normalizeDate = (dateInput: any): Date =>
@@ -164,15 +169,16 @@ function PatientPicker({
 const NotesPro: React.FC = () => {
   const { currentUser } = useAuth();
   const {
-    data: notes,
+    data: notes = [],
     createEmptyNote,
     update: updateNote,
     remove: removeNote,
   } = useNotesRepository();
-  const { data: patients } = usePatientsRepository();
+  const { data: patients = [] } = usePatientsRepository();
 
   // State
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [workspaceMode, setWorkspaceMode] = useState<"library" | "assistant" | "templates">("library");
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [patientFilter, setPatientFilter] = useState(() => sessionStorage.getItem("documents:open-patient") ?? "");
@@ -440,19 +446,21 @@ const NotesPro: React.FC = () => {
   }, [content]);
 
   return (
-    <div className="dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pt-4 pb-0 md:pt-5 lg:px-6">
+    <div className="documents-workspace dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pt-4 pb-0 md:pt-5 lg:px-6">
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 flex-1">
           <MotivationalHeader section="notes" title="Documents" subtitle="Vos notes cliniques, reliées aux dossiers de vos patients." />
         </div>
         <div data-slot="page-header-actions" className="flex w-full shrink-0 flex-wrap items-center gap-2 lg:w-auto lg:flex-nowrap">
+          <Button size="sm" variant="outline" onClick={() => setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant")}>{workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"}</Button>
+          <Button size="sm" variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? "Bibliothèque" : "Modèles"}</Button>
           <div className="relative min-w-[160px] flex-1 lg:w-48 lg:flex-none">
             <HugeiconsIcon aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground dark:text-muted-foreground" icon={SearchIcon} strokeWidth={1.5} />
-            <Input aria-label="Rechercher dans les documents et dossiers" className="h-10 rounded-full border-border bg-card pr-9 pl-10 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-ring/40" onChange={(event) => setSearchTerm(event.target.value)} placeholder="Rechercher…" type="search" value={searchTerm} />
+            <Input aria-label="Rechercher dans les documents et dossiers" className="h-9 rounded-lg border-border bg-card pr-9 pl-10 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-ring/40" onChange={(event) => setSearchTerm(event.target.value)} placeholder="Rechercher…" type="search" value={searchTerm} />
             {searchTerm && <button aria-label="Effacer la recherche" className="absolute top-1/2 right-2.5 flex size-5 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 dark:text-muted-foreground dark:hover:bg-white/10" onClick={() => setSearchTerm("")} type="button"><X className="size-3.5" /></button>}
           </div>
           <DropdownMenu>
-              <DropdownMenuTrigger render={<Button className="h-10 gap-2 rounded-full px-5 text-sm" type="button" />}>
+              <DropdownMenuTrigger render={<Button className="h-9 gap-2 px-4 text-sm" type="button" />}>
                 <HugeiconsIcon className="size-4" icon={Add01Icon} strokeWidth={1.5} />
                 Nouveau document
                 <span aria-hidden="true" className="ml-1 flex h-4 items-center border-current/20 border-l pl-2"><ChevronDown className="size-3.5" /></span>
@@ -473,6 +481,13 @@ const NotesPro: React.FC = () => {
       </div>
 
       {/* Main workspace */}
+      {workspaceMode !== "library" ? (
+        <div className="min-h-0 flex-1 overflow-y-auto rounded-t-xl border border-b-0 border-border bg-card">
+          <Suspense fallback={<p role="status" className="p-6 text-sm text-muted-foreground">Ouverture des documents…</p>}>
+            {workspaceMode === "templates" ? <DocumentTemplateManager /> : <DocumentsWorkspace initialPatientId={patientFilter} />}
+          </Suspense>
+        </div>
+      ) : (
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-t-[22px] border border-b-0 border-foreground/10 bg-card md:flex-row">
         <aside
           className={cn(
@@ -489,15 +504,26 @@ const NotesPro: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center border-border border-b px-4 dark:border-white/10">
+          <div className="shrink-0 border-border border-b px-4 py-2 dark:border-white/10">
+            <ToggleGroup
+              aria-label="Filtrer les documents"
+              className="document-library-filters w-full gap-0 rounded-lg bg-muted/60 p-0.5"
+              multiple={false}
+              value={[filter]}
+              onValueChange={values => {
+                const next = values[0];
+                if (next === "all" || next === "recent" || next === "favorites" || next === "pinned") setFilter(next);
+              }}
+            >
             {([
               { id: "all", label: "Tous" },
               { id: "recent", label: "Récents" },
               { id: "favorites", label: "Favoris" },
               { id: "pinned", label: "Épinglés" },
             ] as const).map((option) => (
-              <button aria-pressed={filter === option.id} className={cn("-mb-px min-w-0 flex-1 border-b-2 border-transparent px-1 py-3 text-center font-medium text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50", filter === option.id ? "border-foreground text-foreground dark:border-foreground dark:text-foreground" : "text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-white")} key={option.id} onClick={() => setFilter(option.id)} type="button">{option.label}</button>
+              <ToggleGroupItem value={option.id} className="min-w-0 flex-1 rounded-md px-1 text-xs text-muted-foreground aria-pressed:bg-card aria-pressed:text-foreground aria-pressed:shadow-hairline" key={option.id}>{option.label}</ToggleGroupItem>
             ))}
+            </ToggleGroup>
           </div>
 
           {/* Notes list */}
@@ -550,7 +576,7 @@ const NotesPro: React.FC = () => {
                       >
                         <FileText aria-hidden="true" className={cn("size-4 shrink-0", isSelected ? "text-foreground dark:text-foreground" : "text-muted-foreground dark:text-muted-foreground")} strokeWidth={1.6} />
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13px] font-medium text-foreground" title={note.title || "Sans titre"}>{note.title || "Sans titre"}</span>
+                          <span className="block truncate text-[13px] font-medium text-foreground" title={formatDisplayText(note.title || "Sans titre")}>{formatDisplayText(note.title || "Sans titre")}</span>
                           <span className="mt-0.5 block text-[11px] text-muted-foreground tabular-nums">{formatDate(note.updatedAt)}</span>
                         </span>
                         {isPinned && <Pin aria-label="Épinglé" className="size-3 shrink-0 text-muted-foreground" />}
@@ -562,7 +588,7 @@ const NotesPro: React.FC = () => {
                           <DropdownMenuTrigger
                             render={
                               <Button
-                                aria-label={`Plus d’actions pour ${note.title || "ce document"}`}
+                                aria-label={`Plus d’actions pour ${formatDisplayText(note.title || "ce document")}`}
                                 className="size-7 rounded-md text-muted-foreground hover:bg-white hover:text-foreground dark:text-muted-foreground dark:hover:bg-white/10 dark:hover:text-white"
                                 size="icon-sm"
                                 variant="ghost"
@@ -638,7 +664,7 @@ const NotesPro: React.FC = () => {
               <HugeiconsIcon aria-hidden="true" className="size-4 shrink-0" icon={Folder01Icon} strokeWidth={1.5} />
               <span className="truncate">{activeNote?.patientId ? patientLookup.get(activeNote.patientId)?.name ?? "Dossier patient" : "Documents du cabinet"}</span>
             </span>
-            <div className="flex min-w-0 flex-wrap items-center gap-1">
+            <div className="document-patient-actions flex min-w-0 flex-wrap items-center gap-1">
               <PatientPicker
                 kind="filter"
                 onSelect={(patientId) => {
@@ -685,7 +711,7 @@ const NotesPro: React.FC = () => {
                   <div className="mx-0.5 h-4 w-px bg-foreground/15" />
 
                   {/* Edit / Preview toggle */}
-                  <div className="flex items-center gap-0.5 rounded-lg bg-muted/60 p-0.5 dark:bg-zinc-800/60">
+                  <div className="document-editor-modes flex items-center gap-0.5 rounded-lg bg-muted/60 p-0.5 dark:bg-zinc-800/60">
                     <button
                       className={cn(
                         "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium text-xs transition-colors duration-150",
@@ -902,7 +928,7 @@ const NotesPro: React.FC = () => {
                 }}
               >
                 <div
-                  className="mx-auto my-5 flex min-h-[calc(100%-40px)] w-[calc(100%-32px)] max-w-[820px] flex-col bg-card px-5 py-6 shadow-sm ring-1 ring-border md:my-5 md:w-[calc(100%-40px)] md:px-8 md:py-8"
+                  className="mx-auto my-5 flex min-h-[calc(100%-40px)] w-[calc(100%-32px)] max-w-[820px] flex-col rounded-2xl border border-border bg-card px-5 py-6 shadow-sm ring-1 ring-border md:my-5 md:w-[calc(100%-40px)] md:px-8 md:py-8"
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       editorInstance?.commands.focus("end");
@@ -911,8 +937,8 @@ const NotesPro: React.FC = () => {
                 >
                   {isPreviewMode ? (
                     <div className="document-rich-content prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
-                      <h1 className="font-heading text-[31px] font-semibold tracking-[-0.035em]">
-                        {title}
+                      <h1 className="font-heading text-2xl font-medium tracking-[-0.035em]">
+                        {formatDisplayText(title)}
                       </h1>
                       <p className="mt-1 mb-6 text-foreground/70 text-xs">
                         {formatFullDate(activeNote.updatedAt)}
@@ -924,11 +950,11 @@ const NotesPro: React.FC = () => {
                       {/* Note title */}
                       <input
                         aria-label="Titre du document"
-                        className="mb-2.5 w-full bg-transparent font-heading text-[31px] font-semibold leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
+                        className="mb-2.5 w-full bg-transparent font-heading text-2xl font-medium leading-tight tracking-[-0.035em] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30 dark:text-foreground dark:placeholder:text-muted-foreground"
                         onChange={(e) => handleTitleChange(e.target.value)}
                         placeholder="Sans titre"
                         type="text"
-                        value={title}
+                        value={formatDisplayText(title)}
                       />
 
                       {/* Meta line below title */}
@@ -980,9 +1006,9 @@ const NotesPro: React.FC = () => {
             </div>
           ) : (
             <div className="min-h-0 flex-1 overflow-y-auto bg-muted px-5 py-6 dark:bg-muted md:px-8 md:py-8">
-              <div className="mx-auto flex min-h-[440px] w-full max-w-[820px] flex-col bg-card px-5 py-6 shadow-sm ring-1 ring-border md:px-8 md:py-8">
+              <div className="mx-auto flex min-h-[440px] w-full max-w-[820px] flex-col rounded-2xl border border-border bg-card px-5 py-6 shadow-sm md:px-8 md:py-8">
                 <div className="flex flex-1 flex-col justify-center py-12">
-                  <h2 className="max-w-md font-heading text-[32px] font-semibold leading-tight tracking-[-0.035em] text-foreground dark:text-foreground">{activePatient ? `Le dossier de ${activePatient.name} commence ici.` : "Un espace pour chaque observation."}</h2>
+                  <h2 className="max-w-md font-heading text-2xl font-medium leading-tight tracking-[-0.035em] text-foreground dark:text-foreground">{activePatient ? `Le dossier de ${activePatient.name} commence ici.` : "Un espace pour chaque observation."}</h2>
                   <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground dark:text-muted-foreground">{activePatient ? `Les nouvelles notes seront directement rattachées au dossier de ${activePatient.name}. Vous pourrez changer ce rattachement depuis l’en-tête du document.` : "Rédigez librement, puis rattachez votre document au dossier d’un patient. Les notes sont enregistrées au fil de l’écriture."}</p>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
                     <Button className="h-10 rounded-full px-5" onClick={() => void handleCreateTemplate("consultation")}>
@@ -992,7 +1018,7 @@ const NotesPro: React.FC = () => {
                   </div>
                   {filteredNotes[0] && (
                     <button className="mt-10 flex max-w-md items-center justify-between gap-4 border-border border-t py-4 text-left hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 dark:border-white/10 dark:hover:text-foreground" onClick={() => handleSelectNote(filteredNotes[0].id)} type="button">
-                      <span className="min-w-0"><span className="block text-xs text-muted-foreground dark:text-muted-foreground">Reprendre la dernière note</span><span className="mt-1 block truncate text-sm font-medium text-foreground dark:text-foreground">{filteredNotes[0].title || "Sans titre"}</span></span>
+                      <span className="min-w-0"><span className="block text-xs text-muted-foreground dark:text-muted-foreground">Reprendre la dernière note</span><span className="mt-1 block truncate text-sm font-medium text-foreground dark:text-foreground">{formatDisplayText(filteredNotes[0].title || "Sans titre")}</span></span>
                       <span className="shrink-0 text-xs text-muted-foreground dark:text-muted-foreground">{formatDate(filteredNotes[0].updatedAt)}</span>
                     </button>
                   )}
@@ -1003,6 +1029,7 @@ const NotesPro: React.FC = () => {
           )}
         </main>
       </div>
+      )}
     </div>
   );
 };

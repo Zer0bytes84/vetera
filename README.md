@@ -1,6 +1,6 @@
-# Vetera
+# Baitari
 
-Application desktop Vetera construite avec React, TypeScript, Vite et Tauri.
+Application desktop Baitari construite avec React, TypeScript, Vite et Tauri.
 
 ## Development
 
@@ -42,3 +42,8 @@ To use the components in your app, import them as follows:
 ```tsx
 import { Button } from "@/components/ui/button"
 ```
+
+
+## Stockage et reprise du développement
+
+Les dépendances peuvent être réinstallées avec `npm ci`. Les sauvegardes et artefacts de développement restent conservés séparément du dépôt.

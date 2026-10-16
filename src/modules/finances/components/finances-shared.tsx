@@ -1,3 +1,4 @@
+import { createUuid } from "@/lib/uuid";
 import { Calendar01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
@@ -141,7 +142,7 @@ export function todayInputValue() {
 export function createInvoiceLine(): InvoiceLineDraft {
   return {
     description: "",
-    id: crypto.randomUUID(),
+    id: createUuid(),
     quantity: "1",
     unitAmount: "",
   };

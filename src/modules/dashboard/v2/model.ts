@@ -1,3 +1,4 @@
+import { formatDinars } from "@/utils/display-format";
 import type {
   Appointment,
   Owner,
@@ -60,16 +61,8 @@ export function isSameDay(left: Date, right: Date) {
   return startOfDay(left).getTime() === startOfDay(right).getTime();
 }
 
-const dashboardCurrencyFormatter = new Intl.NumberFormat("fr-DZ", {
-  maximumFractionDigits: 0,
-  style: "currency",
-  currency: "DZD",
-});
-
 export function formatCurrency(value: number) {
-  return dashboardCurrencyFormatter
-    .format(value)
-    .replace("DZD", "DA");
+  return formatDinars(value, 0);
 }
 
 /** Repository amounts are integer centimes; chart metrics already use dinars. */

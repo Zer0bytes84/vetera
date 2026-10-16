@@ -1,3 +1,4 @@
+import { formatDisplayText, formatNumber } from "@/utils/display-format";
 import { ListFilter, ListSearch } from "@/components/ui/list-controls";
 import { SectionCards } from "@/components/section-cards";
 import {
@@ -55,6 +56,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import type { Product, StockMovement } from "@/types/db";
 import { formatDZD } from "@/utils/currency";
+import { StockInvoiceLink } from "@/modules/stock/components/stock-invoice-link";
+import { StockLotsPanel } from "@/modules/stock/components/stock-lots-panel";
+import { PurchasingPanel } from "@/modules/stock/components/purchasing-panel";
+import { StockOperationsPanel } from "@/modules/stock/components/stock-operations-panel";
+import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
+import { restockNeed, stockAlert, stockExpiry } from "@/domain/stock-alerts";
 
 type StockFilter = "all" | "healthy" | "low" | "out" | "expiring" | "expired";
 
@@ -75,7 +82,7 @@ interface StockWorkspaceProps {
 const PAGE_SIZE = 8;
 
 const formatDate = (value?: string) => {
-  if (!value) return "—";
+  if (!value) return "Non renseignée";
   return new Intl.DateTimeFormat("fr-DZ", {
     day: "2-digit",
     month: "short",
@@ -83,23 +90,8 @@ const formatDate = (value?: string) => {
   }).format(new Date(`${value.slice(0, 10)}T12:00:00`));
 };
 
-const daysUntil = (value?: string) => {
-  if (!value) return Number.POSITIVE_INFINITY;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return Math.ceil(
-    (new Date(`${value.slice(0, 10)}T12:00:00`).getTime() - today.getTime()) /
-      86_400_000
-  );
-};
-
 const productStatus = (product: Product): Exclude<StockFilter, "all"> => {
-  const expiry = daysUntil(product.expiryDate);
-  if (expiry < 0) return "expired";
-  if (product.quantity <= 0) return "out";
-  if (expiry <= 90) return "expiring";
-  if (product.quantity <= product.minStock) return "low";
-  return "healthy";
+  return stockAlert(product);
 };
 
 const statusCopy: Record<
@@ -177,7 +169,7 @@ function ProductDetail({
               </span>
             </div>
             <DialogTitle className="font-semibold text-2xl tracking-[-0.04em]">
-              {product.name}
+              {formatDisplayText(product.name)}
             </DialogTitle>
             <DialogDescription>
               {product.subCategory || "Référence du catalogue"}
@@ -241,7 +233,7 @@ function ProductDetail({
                 Prochaine péremption
               </p>
               <p className="mt-1 font-medium">
-                {formatDate(product.expiryDate)}
+                {formatDate(stockExpiry(product))}
               </p>
             </div>
             <div>
@@ -287,6 +279,7 @@ export function StockWorkspace({
   products,
 }: StockWorkspaceProps) {
   const [query, setQuery] = useState("");
+  const [workspaceTab, setWorkspaceTab] = useState("catalogue");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState<StockFilter>("all");
   const [page, setPage] = useState(1);
@@ -306,14 +299,14 @@ export function StockWorkspace({
     [products]
   );
   const stockValue = products.reduce(
-    (sum, product) => sum + product.quantity * product.purchasePriceAmount,
+    (sum, product) => sum + (product.stockTracked === false ? 0 : product.quantity * product.purchasePriceAmount),
     0
   );
   const reorder = products.filter(
-    (product) => product.quantity <= product.minStock
+    (product) => restockNeed(product) > 0
   );
   const expiries = products.filter(
-    (product) => daysUntil(product.expiryDate) <= 90
+    (product) => ["expired", "expiring"].includes(stockAlert(product))
   );
 
   const filtered = useMemo(() => {
@@ -329,7 +322,7 @@ export function StockWorkspace({
       return (
         matchesQuery &&
         (category === "all" || product.category === category) &&
-        (status === "all" || productStatus(product) === status)
+        (status === "all" || productStatus(product) === status || (status === "expiring" && productStatus(product) === "expired"))
       );
     });
   }, [category, products, query, status]);
@@ -346,41 +339,69 @@ export function StockWorkspace({
       <SectionCards
         items={[
           {
+            title: "Valeur du stock",
+            icon: WalletCards,
+            value: formatDZD(stockValue),
+            badge: "Actif valorisé",
+            tone: "positive",
+            trend: "up",
+            detailRow: `${formatNumber(products.length)} références · ${formatNumber(categories.length)} catégories actives`,
+            onClick: () => { setStatus("all"); setCategory("all"); setWorkspaceTab("catalogue"); },
+            actionLabel: "Voir tout le catalogue",
+          },
+          {
             title: "À réapprovisionner",
             icon: PackageOpen,
-            value: String(reorder.length),
-            footerTitle: "références sous le seuil",
-            footerDescription: reorder[0]?.name || "Aucune commande urgente",
-            badge: reorder.length ? "Stock à suivre" : "À jour",
-            tone: reorder.length ? "watch" : "quiet",
-            trend: "neutral",
-            onClick: () => setStatus("low"),
+            value: formatNumber(reorder.length),
+            change: reorder.length > 0 ? reorder.length : 0,
+            changeLabel: reorder.length > 0 ? "sous le seuil" : "stock suffisant",
+            inverse: true,
+            tone: reorder.length ? "watch" : "positive",
+            trend: reorder.length ? "down" : "neutral",
+            detailRow: reorder.length > 0
+              ? (reorder[0]?.name ? `Priorité : ${reorder[0].name}` : `${reorder.length} commande${reorder.length > 1 ? "s" : ""} à passer`)
+              : "Aucune rupture imminente · Stocks au-dessus du seuil",
+            onClick: () => { setStatus("low"); setWorkspaceTab("catalogue"); },
             actionLabel: "Voir les produits concernés",
           },
           {
             title: "Péremptions à surveiller",
             icon: CalendarClock,
-            value: String(expiries.length),
-            footerTitle: "dans les 90 prochains jours",
-            footerDescription: expiries[0]?.name || "Aucune échéance proche",
-            badge: expiries.length ? "À vérifier" : "À jour",
-            tone: expiries.length ? "watch" : "quiet",
-            trend: "neutral",
-            onClick: () => setStatus("expiring"),
+            value: formatNumber(expiries.length),
+            change: expiries.length > 0 ? expiries.length : 0,
+            changeLabel: expiries.length > 0 ? "lots à risque" : "lots conformes",
+            inverse: true,
+            tone: expiries.length ? "watch" : "positive",
+            trend: expiries.length ? "down" : "neutral",
+            detailRow: expiries.length > 0
+              ? (expiries[0]?.name ? `Proche échéance : ${expiries[0].name}` : "Rotation FIFO requise sous 90 j")
+              : "Aucune date critique dans les 90 prochains jours",
+            onClick: () => { setStatus("expiring"); setWorkspaceTab("catalogue"); },
             actionLabel: "Voir les échéances",
+          },
+          {
+            title: "Catalogue actif",
+            icon: PackageCheck,
+            value: formatNumber(products.length),
+            badge: `${formatNumber(movements.length)} mouvements`,
+            tone: "quiet",
+            trend: "neutral",
+            detailRow: `${formatNumber(products.filter((p) => p.stockTracked !== false).length)} sous suivi physique · Traçabilité active`,
+            onClick: () => { setStatus("all"); setWorkspaceTab("mouvements"); },
+            actionLabel: "Voir l'historique des mouvements",
           },
         ]}
       />
 
       <Card className="overflow-hidden border-border/70 shadow-none">
-        <Tabs defaultValue="catalogue">
-          <div className="flex flex-col gap-3 border-b px-5 py-4 xl:flex-row xl:items-center xl:justify-between">
+        <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
+          <div className="flex flex-col gap-3 border-b px-5 py-4 xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
             <div>
               <h2 className="font-display font-medium text-xl tracking-[-0.035em]">
                 Catalogue & inventaire
               </h2>
             </div>
-            <TabsList className="h-10" variant="line">
+            <TabsList className="h-auto flex-wrap gap-1" variant="line">
               <TabsTrigger value="catalogue">
                 <PackageCheck /> Catalogue
               </TabsTrigger>
@@ -390,6 +411,9 @@ export function StockWorkspace({
               <TabsTrigger value="inventaire">
                 <ClipboardCheck /> Inventaire
               </TabsTrigger>
+              <TabsTrigger value="lots"><PackageOpen /> Lots</TabsTrigger>
+              <TabsTrigger value="purchasing">Approvisionnements</TabsTrigger>
+              <TabsTrigger value="operations">Opérations</TabsTrigger>
             </TabsList>
           </div>
 
@@ -467,7 +491,7 @@ export function StockWorkspace({
                         <TableCell>
                           <div className="max-w-[280px]">
                             <p className="truncate font-semibold">
-                              {product.name}
+                              {formatDisplayText(product.name)}
                             </p>
                             <p className="truncate text-muted-foreground text-xs">
                               {product.category}
@@ -496,14 +520,14 @@ export function StockWorkspace({
                           {formatDZD(product.salePriceAmount)}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {formatDate(product.expiryDate)}
+                          {formatDate(stockExpiry(product))}
                         </TableCell>
                         <TableCell onClick={(event) => event.stopPropagation()}>
                           <DropdownMenu>
                             <DropdownMenuTrigger
                               render={
                                 <Button
-                                  aria-label={`Actions pour ${product.name}`}
+                                  aria-label={`Actions pour ${formatDisplayText(product.name)}`}
                                   size="icon-sm"
                                   variant="ghost"
                                 />
@@ -546,7 +570,7 @@ export function StockWorkspace({
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="truncate font-semibold">
-                            {product.name}
+                            {formatDisplayText(product.name)}
                           </p>
                           <p className="truncate text-muted-foreground text-xs">
                             {product.category}
@@ -648,16 +672,20 @@ export function StockWorkspace({
                               {formatDate(movement.createdAt)}
                             </TableCell>
                             <TableCell className="font-medium">
-                              {product?.name || "Produit archivé"}
+                              {movement.productNameSnapshot || product?.name || "Produit archivé"}
                             </TableCell>
                             <TableCell>
                               <span className="inline-flex items-center gap-1.5">
-                                {positive ? (
+                                {movement.quantityDelta === 0 ? (
+                                  <RefreshCw className="size-4 text-muted-foreground" />
+                                ) : positive ? (
                                   <ArrowUpRight className="size-4 text-emerald-600" />
                                 ) : (
                                   <ArrowDownRight className="size-4 text-rose-600" />
                                 )}
-                                {movement.type === "restock"
+                                {movement.sourceType === "transfer"
+                                  ? "Transfert"
+                                  : movement.type === "restock"
                                   ? "Réception"
                                   : movement.type === "adjustment"
                                     ? "Ajustement"
@@ -668,20 +696,26 @@ export function StockWorkspace({
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "text-right font-semibold",
-                                positive
+                                "text-right font-semibold tabular-nums",
+                                movement.quantityDelta === 0
+                                  ? "text-muted-foreground"
+                                  : positive
                                   ? "text-emerald-700 dark:text-emerald-300"
                                   : "text-rose-700 dark:text-rose-300"
                               )}
                             >
                               {positive ? "+" : ""}
-                              {movement.quantityDelta}
+                              {movement.quantityDelta.toLocaleString("fr-FR", {maximumFractionDigits: 6})}
+                              <span className="ml-1 text-xs font-normal text-muted-foreground">{movement.unitSnapshot || product?.unit || "unité non renseignée"}</span>
                             </TableCell>
-                            <TableCell className="text-right">
-                              {movement.quantityAfter}
+                            <TableCell className="text-right tabular-nums">
+                              {movement.quantityAfter.toLocaleString("fr-FR", {maximumFractionDigits: 6})}
+                              <span className="ml-1 text-xs text-muted-foreground">{movement.unitSnapshot || product?.unit || "unité non renseignée"}</span>
                             </TableCell>
                             <TableCell className="text-muted-foreground">
-                              {movement.reason || "—"}
+                              <span className="block">{movement.sourceType === "care" ? "Soin" : movement.sourceType === "prescription" ? "Ordonnance" : movement.sourceType === "consultation" ? "Consultation" : movement.sourceType === "transfer" ? "Transfert" : movement.sourceType === "receipt" ? "Réception" : "Stock"} · {movement.sourceLabel || movement.reason || "Non renseigné"}</span>
+                              {movement.invoiceId && <StockInvoiceLink invoiceId={movement.invoiceId} />}
+                              <MovementAllocationDetails movementId={movement.id} unit={movement.unitSnapshot || product?.unit || "unité"} />
                             </TableCell>
                           </TableRow>
                         );
@@ -692,6 +726,9 @@ export function StockWorkspace({
             </CardContent>
           </TabsContent>
 
+          <TabsContent value="lots"><StockLotsPanel /></TabsContent>
+          <TabsContent value="purchasing"><PurchasingPanel /></TabsContent>
+          <TabsContent value="operations"><StockOperationsPanel onOpenMovements={() => setWorkspaceTab("mouvements")} /></TabsContent>
           <TabsContent value="inventaire">
             <CardContent className="grid gap-4 p-5 md:grid-cols-3">
               <div className="rounded-2xl border bg-muted/15 p-5">
@@ -787,7 +824,7 @@ export function StockWorkspace({
               >
                 {products.map((product) => (
                   <NativeSelectOption key={product.id} value={product.id}>
-                    {product.name} · {product.quantity} {product.unit}
+                    {formatDisplayText(product.name)} · {product.quantity} {product.unit}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>

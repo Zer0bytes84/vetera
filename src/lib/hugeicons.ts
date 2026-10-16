@@ -95,6 +95,8 @@ export { default as Menu01Icon } from "@hugeicons/core-free-icons/Menu01Icon";
 export { default as Money01Icon } from "@hugeicons/core-free-icons/Money01Icon";
 export { default as MoneyBag02Icon } from "@hugeicons/core-free-icons/MoneyBag02Icon";
 export { default as MonitorDotIcon } from "@hugeicons/core-free-icons/MonitorDotIcon";
+export { default as Mic01Icon } from "@hugeicons/core-free-icons/Mic01Icon";
+export { default as AudioWave01Icon } from "@hugeicons/core-free-icons/AudioWave01Icon";
 export { default as Moon01Icon } from "@hugeicons/core-free-icons/Moon01Icon";
 export { default as Moon02Icon } from "@hugeicons/core-free-icons/Moon02Icon";
 export { default as MoreHorizontalCircle01Icon } from "@hugeicons/core-free-icons/MoreHorizontalCircle01Icon";

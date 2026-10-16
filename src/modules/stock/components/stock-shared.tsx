@@ -178,5 +178,6 @@ export const CATEGORIES = [
   "Consommables",
   "Alimentation",
   "Hygiène",
+  "Services",
   "Autre",
 ];

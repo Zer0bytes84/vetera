@@ -18,7 +18,7 @@ const billingHarness = vi.hoisted(() => ({
 vi.mock("@/services/sqlite/database", () => ({
   generateId: () => `billing-test-${++billingHarness.nextId}`,
   runDbRead: async (
-    operation: (database: TestBillingDatabase) => Promise<unknown>
+    operation: (database: TestBillingDatabase) => Promise<unknown>,
   ) => {
     if (!billingHarness.database) {
       throw new Error("Billing test database is not initialized");
@@ -26,7 +26,7 @@ vi.mock("@/services/sqlite/database", () => ({
     return operation(billingHarness.database);
   },
   runDbTransaction: async (
-    operation: (database: TestBillingDatabase) => Promise<unknown>
+    operation: (database: TestBillingDatabase) => Promise<unknown>,
   ) => {
     const database = billingHarness.database;
     if (!database) {
@@ -51,6 +51,8 @@ vi.mock("@/services/sqlite/database", () => ({
 
 import {
   createInvoiceDraft,
+  billCompletedCareTask,
+  updateInvoiceDraft,
   getInvoice,
   issueCreditNote,
   issueInvoice,
@@ -70,11 +72,12 @@ class TestDatabase implements TestBillingDatabase {
       this.connection.exec(query);
       return undefined;
     }
-    return this.connection.prepare(query).run(...bindValues);
+    const result = this.connection.prepare(query.replace(/\$\d+/g, "?")).run(...bindValues);
+    return { rowsAffected: Number(result.changes) };
   }
 
   async select<T>(query: string, bindValues: unknown[] = []): Promise<T> {
-    return this.connection.prepare(query).all(...bindValues) as T;
+    return this.connection.prepare(query.replace(/\$\d+/g, "?")).all(...bindValues) as T;
   }
 
   close(): void {
@@ -419,4 +422,237 @@ describe("invoice branding snapshot", () => {
     await expect(issueInvoice({ invoiceId: draft.id, idempotencyKey: "invalid-brand", clinicSnapshot: { name: "Cabinet", logoDataUrl: "https://example.com/logo.png" } })).rejects.toMatchObject({ code: "CLINIC_SNAPSHOT_INVALID" });
     expect((await getInvoice(draft.id))?.documentStatus).toBe("draft");
   });
+});
+
+it("séjour sorti vers contrôle et brouillon de journées utilise les tables existantes sans double facture", async () => {
+  const { createStayStore } =
+    await import("@/modules/hospitalizations/stays/store");
+  const { prepareStayInvoice, stayInvoiceInput } =
+    await import("@/modules/hospitalizations/stays/billing");
+  await database.execute(
+    "INSERT INTO patients(id,owner_id,name,species) VALUES('stay-patient','owner-1','Patient test','chien')",
+  );
+  const adapter = {
+    select: <T>(query: string, args: unknown[] = []) =>
+      database.select<T>(query.replace(/\$\d+/g, "?"), args),
+    execute: async (query: string, args: unknown[] = []) => ({
+      rowsAffected: Number(
+        database.connection.prepare(query.replace(/\$\d+/g, "?")).run(...args)
+          .changes,
+      ),
+    }),
+  };
+  const store = createStayStore(
+    {
+      read: (fn) => fn(adapter),
+      transaction: async (fn) => {
+        database.connection.exec("BEGIN IMMEDIATE");
+        try {
+          const result = await fn(adapter);
+          database.connection.exec("COMMIT");
+          return result;
+        } catch (error) {
+          database.connection.exec("ROLLBACK");
+          throw error;
+        }
+      },
+    },
+    () => `stay-test-${++billingHarness.nextId}`,
+    () => new Date("2026-08-03T12:00:00Z"),
+  );
+  const stay = await store.admit(
+    {
+      patientId: "stay-patient",
+      admittedAt: new Date(2026, 7, 1, 10).toISOString(),
+      reason: "Observation",
+    },
+    "vet",
+  );
+  await store.transition(stay.id, "en_cours", "vet");
+  await store.transition(stay.id, "sortie_prevue", "vet", {
+    plannedAt: new Date(2026, 7, 3, 0).toISOString(),
+  });
+  const discharged = await store.transition(stay.id, "sorti", "vet", {
+    dischargedAt: new Date(2026, 7, 3, 0).toISOString(),
+    summary: "Contrôle de l’appétit",
+  });
+  await store.scheduleFollowUp(stay.id, "2026-08-05", "vet");
+  const input = stayInvoiceInput(
+    discharged,
+    { id: "stay-patient", ownerId: "owner-1" },
+    {
+      id: "tariff",
+      name: "Hospitalisation",
+      category: "Service",
+      createdAt: "",
+      quantity: 0,
+      minStock: 0,
+      salePriceAmount: 10000,
+      purchasePriceAmount: 0,
+      unit: "jour",
+    },
+    "vet",
+  );
+  const first = await prepareStayInvoice(input, {
+    getInvoice,
+    createInvoiceDraft,
+  });
+  const second = await prepareStayInvoice(input, {
+    getInvoice,
+    createInvoiceDraft,
+  });
+  expect(second.id).toBe(first.id);
+  expect(first.documentStatus).toBe("draft");
+  expect(first.lines).toHaveLength(1);
+  expect(first.lines[0].quantityMilli).toBe(2000);
+  expect(first.grossAmount).toBe(20000);
+  expect(billingAuditCount("create-invoice-draft")).toBe(1);
+  expect(
+    database.connection
+      .prepare("SELECT patient_id FROM tasks WHERE id=?")
+      .get(`stay-follow-up:${stay.id}`),
+  ).toEqual({ patient_id: "stay-patient" });
+  expect(
+    database.connection.prepare("SELECT count(*) AS n FROM payments").get(),
+  ).toEqual({ n: 0 });
+});
+
+async function seedCompletedCare(
+  id = "care-1",
+  productId: string | null = "care-product",
+) {
+  await database.execute(
+    "INSERT OR IGNORE INTO patients(id,owner_id,name,species) VALUES('care-patient','owner-1','Patient test','chien')",
+  );
+  await database.execute(
+    "INSERT OR IGNORE INTO products(id,name,category,unit,purchase_price_amount,sale_price_amount,quantity,created_at) VALUES('care-product','Soin','Service','acte',0,4500,9,'2026-01-01 00:00:00')",
+  );
+  await database.execute(
+    `INSERT INTO care_tasks(id,patient_id,label,type,heure_prevue,statut,execute_par,produit_id,completed_at,created_at,updated_at)
+    VALUES(?,'care-patient','Injection','medicament','2026-08-01T10:00:00Z','fait','vet',?,'2026-08-01T10:05:00Z','2026-08-01','2026-08-01')`,
+    [id, productId],
+  );
+}
+
+describe("facturation automatique des soins", () => {
+  it("crée une ligne au tarif réel, conserve patient et exécutant, sans émission ni stock", async () => {
+    await seedCompletedCare();
+    const invoice = await billCompletedCareTask("care-1");
+    expect(invoice).toMatchObject({
+      id: "care-invoice:care-1",
+      patientId: "care-patient",
+      ownerId: "owner-1",
+      documentStatus: "draft",
+      grossAmount: 4500,
+    });
+    expect(invoice.lines).toHaveLength(1);
+    expect(invoice.lines[0]).toMatchObject({
+      description: "Injection",
+      quantityMilli: 1000,
+      unitAmount: 4500,
+    });
+    expect(invoice.notes).toContain("vet");
+    expect(
+      database.connection
+        .prepare("SELECT quantity FROM products WHERE id='care-product'")
+        .get()?.quantity,
+    ).toBe(9);
+    await database.execute(
+      "UPDATE products SET sale_price_amount=9000 WHERE id='care-product'",
+    );
+    expect((await billCompletedCareTask("care-1")).grossAmount).toBe(4500);
+    expect(billingAuditCount("create-invoice-draft")).toBe(1);
+  });
+  it("distingue deux soins identiques et signale explicitement un tarif absent", async () => {
+    await seedCompletedCare();
+    await seedCompletedCare("care-2", null);
+    await billCompletedCareTask("care-1");
+    const invoice = await billCompletedCareTask("care-2");
+    expect(invoice.notes).toContain("Tarif à compléter avant émission");
+    expect(invoice.lines).toHaveLength(1);
+    expect(invoice.grossAmount).toBe(0);
+    expect(
+      database.connection.prepare("SELECT COUNT(*) AS n FROM invoices").get()
+        ?.n,
+    ).toBe(2);
+  });
+  it("refuse un soin non effectué et reprend après rollback d’une erreur de ligne", async () => {
+    await seedCompletedCare();
+    await database.execute(
+      "UPDATE care_tasks SET statut='a_faire' WHERE id='care-1'",
+    );
+    await expect(billCompletedCareTask("care-1")).rejects.toThrow(
+      "Seul un soin effectué",
+    );
+    await database.execute(
+      "UPDATE care_tasks SET statut='fait' WHERE id='care-1'",
+    );
+    await database.execute(
+      "CREATE TRIGGER fail_care_line BEFORE INSERT ON invoice_lines BEGIN SELECT RAISE(ABORT, 'line failure'); END",
+    );
+    await expect(billCompletedCareTask("care-1")).rejects.toThrow(
+      "line failure",
+    );
+    expect(await getInvoice("care-invoice:care-1")).toBeNull();
+    await database.execute("DROP TRIGGER fail_care_line");
+    expect((await billCompletedCareTask("care-1")).lines).toHaveLength(1);
+  });
+});
+
+
+it("consomme l’événement réel après commit et reprend un soin non facturé au rechargement", async () => {
+  const { careTasksService } = await import("@/modules/care-tasks/service");
+  await seedCompletedCare();
+  await database.execute("UPDATE care_tasks SET statut='a_faire', completed_at=NULL, execute_par=NULL WHERE id='care-1'");
+  await careTasksService.transition("care-1", "fait", "vet");
+  expect((await getInvoice("care-invoice:care-1"))?.lines).toHaveLength(1);
+  await seedCompletedCare("care-retry");
+  await careTasksService.list(new Date("2026-08-01"), new Date("2026-08-02"));
+  expect((await getInvoice("care-invoice:care-retry"))?.grossAmount).toBe(4500);
+});
+
+
+it("modifie le tarif d’un brouillon de soin à zéro, persiste son total puis le fige à l’émission", async () => {
+  const { draftPriceLines } = await import("@/modules/finances/lib/draft-prices");
+  await seedCompletedCare("care-zero", null);
+  const draft = await billCompletedCareTask("care-zero");
+  const lines = draftPriceLines(draft, { [draft.lines[0].id]: "1750,50" });
+  const saved = await updateInvoiceDraft({ invoiceId: draft.id, lines, actor: { userId: "vet" } });
+  expect(saved.grossAmount).toBe(175050);
+  expect(saved.lines[0]).toMatchObject({ quantityMilli: 1000, unitAmount: 175050, description: "Injection" });
+  expect((await getInvoice(draft.id))?.grossAmount).toBe(175050);
+  expect((await billCompletedCareTask("care-zero")).grossAmount).toBe(175050);
+  await issueInvoice({ invoiceId: draft.id, clinicSnapshot: CLINIC, idempotencyKey: "issue-care-edited" });
+  await expect(updateInvoiceDraft({ invoiceId: draft.id, lines })).rejects.toMatchObject({ code: "INVOICE_NOT_DRAFT" });
+});
+
+it("reprend après minuit la facturation d’un soin de la veille sans le déplacer dans la journée courante", async () => {
+  const { careTasksService } = await import("@/modules/care-tasks/service");
+  await seedCompletedCare("care-yesterday");
+  await database.execute(`CREATE TRIGGER fail_yesterday_billing BEFORE INSERT ON invoice_lines
+    BEGIN SELECT RAISE(ABORT, 'billing interrupted'); END;`);
+  await expect(billCompletedCareTask("care-yesterday")).rejects.toThrow("billing interrupted");
+  expect(await getInvoice("care-invoice:care-yesterday")).toBeNull();
+  await database.execute("DROP TRIGGER fail_yesterday_billing");
+  vi.setSystemTime(new Date("2026-08-02T00:01:00.000Z"));
+  const start = new Date("2026-08-02T00:00:00.000Z");
+  const end = new Date("2026-08-03T00:00:00.000Z");
+  expect(await careTasksService.list(start, end)).toEqual([]);
+  expect((await getInvoice("care-invoice:care-yesterday"))?.grossAmount).toBe(4500);
+  await careTasksService.list(start, end);
+  expect(database.connection.prepare("SELECT count(*) AS n FROM invoices WHERE id=?")
+    .get("care-invoice:care-yesterday")).toEqual({ n: 1 });
+});
+
+it("reprend la facturation de la nouvelle validation sans réutiliser la facture annulée", async () => {
+  const {careTasksService} = await import("@/modules/care-tasks/service");
+  await seedCompletedCare("care-revalidated");
+  const previous = await billCompletedCareTask("care-revalidated");
+  await voidInvoice({invoiceId: previous.id, reason: "Validation annulée"});
+  await database.execute("UPDATE care_tasks SET completion_revision=1 WHERE id='care-revalidated'");
+  await careTasksService.list(new Date("2026-08-01"), new Date("2026-08-02"));
+  expect((await getInvoice("care-invoice:care-revalidated:validation:1"))?.documentStatus).toBe("draft");
+  expect((await getInvoice(previous.id))?.documentStatus).toBe("void");
+  await careTasksService.list(new Date("2026-08-01"), new Date("2026-08-02"));
+  expect(database.connection.prepare("SELECT COUNT(*) AS n FROM invoices WHERE document_status='draft'").get()?.n).toBe(1);
 });

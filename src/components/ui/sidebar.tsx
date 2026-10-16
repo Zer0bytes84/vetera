@@ -315,21 +315,22 @@ function Sidebar({
   );
 }
 
-import { LayoutLeftIcon } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { SidebarSlideoutIcon } from "@/components/ui/sidebar-slideout-icon";
 
 function SidebarTrigger({
   className,
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
     <Button
-      className={cn("size-8 rounded-full", className)}
+      className={cn("size-8 rounded-lg", className)}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
+      data-state={state}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -337,10 +338,9 @@ function SidebarTrigger({
       variant="ghost"
       {...props}
     >
-      <HugeiconsIcon
-        className="size-[18px] text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground rtl:rotate-180"
-        icon={LayoutLeftIcon}
-        strokeWidth={1.5}
+      <SidebarSlideoutIcon
+        collapsed={isCollapsed}
+        className="size-[18px] text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground"
       />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>

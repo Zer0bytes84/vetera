@@ -30,13 +30,15 @@ import {
   buildDashboardMetrics,
   type DashboardMetrics,
   formatCompactInteger,
-  formatPercent,
   getCurrentLocale,
   percentageDelta,
 } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 import type { View } from "@/types";
 import { formatDZD } from "@/utils/currency";
+import { formatDinars } from "@/utils/display-format";
+import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
+import { PremiumFinancialAnalysis } from "./components/premium-financial-analysis";
 
 // ============================================================================
 // METRICS STRIP
@@ -67,34 +69,38 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
     {
       title: "Encaissements (30j)",
       value: formatDZD(metrics.summary.income30 * 100),
-      badge: `${incomeDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(incomeDelta))}`,
-      trend: incomeDelta >= 0 ? "up" : "down",
-      footerTitle: incomeDelta >= 0 ? "En hausse" : "En baisse",
-      footerDescription: "vs période précédente",
+      change: incomeDelta,
+      changeLabel: "vs période précédente",
+      tone: incomeDelta >= 0 ? "positive" : "watch",
+      detailRow: "Flux net encaissé sur les 30 derniers jours · Règlements reçus",
+      actionLabel: "Voir le détail des encaissements",
     },
     {
       title: "CA Annuel",
       value: formatDZD(yearlyRevenue * 100), // * 100 to convert to DZD since monthlyRevenue is already divided by 100 in metrics.ts
-      badge: "Année en cours",
+      badge: "Exercice en cours",
+      tone: "positive",
       trend: "up",
-      footerTitle: "Cumul",
-      footerDescription: "depuis janvier",
+      detailRow: "Volume d'activité cumulé depuis le 1er janvier",
+      actionLabel: "Consulter l'analyse annuelle",
     },
     {
       title: "Consultations facturées",
       value: formatCompactInteger(metrics.summary.todayAppointments),
-      badge: `${appointmentsDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(appointmentsDelta))}`,
-      trend: appointmentsDelta >= 0 ? "up" : "down",
-      footerTitle: appointmentsDelta >= 0 ? "Progression" : "Moins qu'hier",
-      footerDescription: "vs journée précédente",
+      change: appointmentsDelta,
+      changeLabel: "vs hier",
+      tone: appointmentsDelta >= 0 ? "positive" : "watch",
+      detailRow: "Volume d'actes cliniques et consultations comptabilisés",
+      actionLabel: "Voir les consultations",
     },
     {
       title: "Panier moyen",
       value: formatDZD(metrics.summary.averageBasket * 100),
-      badge: `${basketDelta >= 0 ? "+" : ""}${formatPercent(Math.abs(basketDelta))}`,
-      trend: basketDelta >= 0 ? "up" : "down",
-      footerTitle: basketDelta >= 0 ? "En hausse" : "En baisse",
-      footerDescription: "vs période précédente",
+      change: basketDelta,
+      changeLabel: "vs période précédente",
+      tone: basketDelta >= 0 ? "positive" : "watch",
+      detailRow: "Montant moyen par acte et consultation validée",
+      actionLabel: "Détail du panier moyen",
     },
   ];
 
@@ -151,7 +157,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                   </span>
                 </div>
                 <span className="mt-0.5 font-extrabold text-2xl text-zinc-900 tabular-nums tracking-tight dark:text-white">
-                  {new Intl.NumberFormat("fr-FR").format(totalRevenue)} DA
+                  {formatDinars(totalRevenue)}
                 </span>
               </div>
             ) : (
@@ -163,7 +169,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                   </span>
                 </div>
                 <span className="mt-0.5 font-extrabold text-2xl text-zinc-900 tabular-nums tracking-tight dark:text-white">
-                  {new Intl.NumberFormat("fr-FR").format(totalCashflow)} DA
+                  {formatDinars(totalCashflow)}
                 </span>
               </div>
             )}
@@ -291,10 +297,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                                 </span>
                               </div>
                               <span className="font-extrabold text-foreground tabular-nums">
-                                {new Intl.NumberFormat("fr-FR").format(
-                                  payload[0].payload.value
-                                )}{" "}
-                                DA
+                                {formatDinars(payload[0].payload.value)}
                               </span>
                             </div>
                           </div>
@@ -388,10 +391,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                                 </span>
                               </div>
                               <span className="font-bold text-zinc-900 tabular-nums dark:text-white">
-                                {new Intl.NumberFormat("fr-FR").format(
-                                  payload[0].payload.value
-                                )}{" "}
-                                DA
+                                {formatDinars(payload[0].payload.value)}
                               </span>
                             </div>
                           </div>
@@ -474,7 +474,7 @@ function FinancialSegmentation({ metrics }: { metrics: DashboardMetrics }) {
                 </div>
                 <div className="flex items-baseline gap-2">
                   <span className="font-bold text-foreground text-sm tabular-nums">
-                    {new Intl.NumberFormat("fr-FR").format(source.value)} DA
+                    {formatDinars(source.value)}
                   </span>
                   <span className="w-10 text-right font-mono text-muted-foreground text-xs">
                     {percentage.toFixed(1)}%
@@ -499,7 +499,7 @@ function FinancialSegmentation({ metrics }: { metrics: DashboardMetrics }) {
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground text-sm">Total Période</span>
           <span className="font-extrabold text-foreground text-xl tabular-nums tracking-tight">
-            {new Intl.NumberFormat("fr-FR").format(total)} DA
+            {formatDinars(total)}
           </span>
         </div>
       </div>
@@ -516,6 +516,7 @@ export function FinancialAnalyticsV2Page({
   onNavigate: (view: View) => void;
 }) {
   const { i18n } = useTranslation();
+  const isPremium = useIsPremium();
 
   const { data: appointments } = useAppointmentsRepository();
   const { data: owners } = useOwnersRepository();
@@ -536,6 +537,10 @@ export function FinancialAnalyticsV2Page({
       }),
     [appointments, owners, patients, tasks, transactions, locale]
   );
+
+  if (isPremium) {
+    return <PremiumFinancialAnalysis metrics={metrics} onNavigate={onNavigate} />;
+  }
 
   return (
     <div className="relative z-10 flex w-full flex-1 flex-col gap-8 px-4 py-6 lg:px-6">

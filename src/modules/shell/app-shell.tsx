@@ -13,23 +13,33 @@ import {
 } from "@/modules/patients/pages/patient-peek";
 import { prepareAppointment } from "./model/clinical-actions";
 import {
-  CheckmarkCircle01Icon,
   HelpCircleIcon,
   Logout01Icon,
-  Moon01Icon,
   Settings01Icon,
-  Sun01Icon,
   TranslateIcon,
   User02Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  ASSISTANT_TOGGLE_EVENT,
+  type AssistantOpenOptions,
+} from "@/modules/consultations/assistant-events";
+import { ConsultationAssistantPanel } from "@/modules/consultations/components/consultation-assistant-panel";
+
+const QuickConsultation = lazy(() => import("@/modules/clinique/components/quick-consultation"));
+
+const LocalConsultationAssistant = lazy(
+  () => import("@/modules/consultations/components/local-consultation-assistant")
+);
 
 import { renderView } from "@/app/config/view-registry";
 import { useThemeMode } from "@/app/hooks/use-theme-mode";
 import Avatar from "@/components/Avatar";
+import Logo from "@/components/Logo";
+import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import { AppSidebar } from "@/components/app-sidebar";
 import CommandPalette from "@/components/CommandPalette";
 import { SectionGarden } from "@/components/SectionGarden";
@@ -59,7 +69,8 @@ import {
   subscribeToCachedProfile,
 } from "@/lib/profile-cache";
 import { cn } from "@/lib/utils";
-// import { useNotificationToasts } from "@/services/notifications/useNotificationToasts";
+import { getViewTitle } from "@/app/config/navigation";
+import { useNotificationCenter } from "@/services/notifications/useNotificationCenter";
 import { NotificationCenter } from "@/modules/shell/notification-center";
 import type { View } from "@/types";
 import "./shell-toolbar.css";
@@ -76,6 +87,7 @@ const ALL_VIEWS: View[] = [
   "parametres",
   "equipe",
   "taches",
+  "soins",
   "aide",
   "patient_detail",
   "assistant",
@@ -138,6 +150,7 @@ function DocumentsSidebarMode({ active }: { active: boolean }) {
 
 function AppShellInner() {
   const { t, i18n } = useTranslation();
+  const isPremium = useIsPremium();
   const isRtl = i18n.dir() === "rtl";
 
   const [currentView, setCurrentView] = useState<View>(() => {
@@ -164,6 +177,7 @@ function AppShellInner() {
     }
     return parseRouteFromHash(window.location.hash).currentView === "assistant";
   });
+  const [isAssistantCollapsed, setIsAssistantCollapsed] = useState(false);
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
   const [peekPatientId, setPeekPatientId] = useState<string | null>(null);
   const saveState = useSaveIndicator();
@@ -173,6 +187,47 @@ function AppShellInner() {
       setPeekPatientId((event as CustomEvent<{ id: string }>).detail.id);
     window.addEventListener(PATIENT_PEEK_EVENT, open);
     return () => window.removeEventListener(PATIENT_PEEK_EVENT, open);
+  }, []);
+
+  const [assistantPatientId, setAssistantPatientId] = useState<string | undefined>(undefined);
+  const [assistantAppointmentId, setAssistantAppointmentId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const handleAssistantToggle = (event: Event) => {
+      const custom = event as CustomEvent<AssistantOpenOptions>;
+      if (custom.detail?.open !== undefined) {
+        setAiAssistantOpen(custom.detail.open);
+      } else {
+        setAiAssistantOpen((prev) => !prev);
+      }
+      if (custom.detail?.patientId) {
+        setAssistantPatientId(custom.detail.patientId);
+      } else {
+        setAssistantPatientId(undefined);
+      }
+      if (custom.detail?.appointmentId) {
+        setAssistantAppointmentId(custom.detail.appointmentId);
+      } else {
+        setAssistantAppointmentId(undefined);
+      }
+    };
+    window.addEventListener(ASSISTANT_TOGGLE_EVENT, handleAssistantToggle);
+    return () => window.removeEventListener(ASSISTANT_TOGGLE_EVENT, handleAssistantToggle);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "j") {
+        event.preventDefault();
+        setAiAssistantOpen((prev) => {
+          const next = !prev;
+          if (!next) setIsAssistantCollapsed(false);
+          return next;
+        });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -226,6 +281,7 @@ function AppShellInner() {
 
   const handleCloseAIAgent = useCallback(() => {
     setAiAssistantOpen(false);
+    setIsAssistantCollapsed(false);
     const hash =
       currentView === "patient_detail" && currentPatientId
         ? `#/patient/${currentPatientId}`
@@ -240,7 +296,15 @@ function AppShellInner() {
   const bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9]);
   const bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
 
+  const { unreadCount, criticalCount } = useNotificationCenter();
+  const notificationsButtonRef = useRef<HTMLButtonElement | null>(null);
+  const pageTitle =
+    currentView === "patient_detail"
+      ? "Dossier patient"
+      : getViewTitle(currentView, t);
+
   const { currentUser, logout } = useAuth();
+  const [consultationPickerOpen, setConsultationPickerOpen] = useState(false);
   const [cachedAvatarUrl, setCachedAvatarUrl] = useState(
     () => readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
   );
@@ -365,7 +429,7 @@ function AppShellInner() {
 
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "j") {
         event.preventDefault();
-        handleNavigate("notes");
+        setAiAssistantOpen((prev) => !prev);
         return;
       }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "n") {
@@ -418,7 +482,6 @@ function AppShellInner() {
       currentView,
       currentPatientId,
       handleNavigate,
-      handleNavigateToPatient,
       setThemeMode,
       themeMode,
       currentUser?.displayName,
@@ -440,17 +503,6 @@ function AppShellInner() {
     de: t("language.german"),
   };
 
-  const assistantModal = aiAssistantOpen
-    ? renderView("assistant", {
-        currentTheme: themeMode,
-        onNavigate: handleNavigate,
-        onThemeChange: setThemeMode,
-        onCloseAIAgent: handleCloseAIAgent,
-        patientId: currentPatientId,
-        userAvatarUrl: resolvedAvatarUrl,
-        userDisplayName,
-      })
-    : null;
 
   return (
     <SidebarProvider
@@ -475,12 +527,13 @@ function AppShellInner() {
       dir={isRtl ? "rtl" : "ltr"}
       style={
         {
-          "--header-height": "48px",
+          "--header-height": isPremium ? "60px" : "72px",
           "--titlebar-clearance": isDesktopRuntime ? "20px" : "0px",
         } as React.CSSProperties
       }
     >
       <DocumentsSidebarMode active={currentView === "notes"} />
+      {consultationPickerOpen && <Suspense fallback={null}><QuickConsultation open onOpenChange={setConsultationPickerOpen} onNavigate={handleNavigate}/></Suspense>}
       <AppSidebar
         collapsible={collapsible}
         currentUserAvatar={currentUser?.avatarUrl ?? null}
@@ -488,6 +541,15 @@ function AppShellInner() {
         currentUserName={userDisplayName}
         currentView={currentView}
         onNavigate={handleNavigate}
+        onQuickAction={(action) => {
+          if (action === "patient") { setPaletteOpen(true); return; }
+          if (action === "consultation") { setConsultationPickerOpen(true); return; }
+          if (action === "care") sessionStorage.setItem("vetera:pending-care-form", "true");
+          else prepareAppointment();
+          handleNavigate(action === "care" ? "soins" : "agenda");
+          const event = action === "care" ? "vetera:plan-care" : "vetera:new-appointment";
+          window.setTimeout(() => window.dispatchEvent(new Event(event)), 150);
+        }}
         side={isRtl ? "right" : "left"}
         variant={variant}
       />
@@ -513,7 +575,8 @@ function AppShellInner() {
             "!rounded-[24px] !bg-transparent p-0 shadow-sm ring-1 ring-black/5 dark:ring-white/8",
           variant === "glass" &&
             "!rounded-[22px] !bg-transparent p-0 shadow-none ring-0",
-          "transition-[background-color,border-color,border-radius,box-shadow,opacity] duration-[240ms] ease-[var(--ease-out)]",
+          "transition-[margin,background-color,border-color,border-radius,box-shadow,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          aiAssistantOpen && !isAssistantCollapsed && "sm:mr-[460px] lg:mr-[520px]",
           "md:peer-data-[variant=inset]:max-h-dvh",
           "md:peer-data-[variant=minimal]:max-h-[calc(100dvh-8px)]",
           "md:peer-data-[variant=floating]:max-h-dvh",
@@ -566,7 +629,11 @@ function AppShellInner() {
           <HeroPattern />
           <motion.header
             className={cn(
-              "sticky top-0 z-50 flex w-full shrink-0 items-center gap-2 bg-white/[var(--bg-opacity-light)] backdrop-blur-xs will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] dark:bg-zinc-900/[var(--bg-opacity-dark)] dark:backdrop-blur-sm",
+              "sticky top-0 z-40 flex w-full shrink-0 items-center",
+              !isPremium && "border-b border-black/[0.06] dark:border-white/[0.08]",
+              !isPremium && "bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl backdrop-saturate-150",
+              !isPremium && "shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_24px_-2px_rgba(0,0,0,0.4)]",
+              isPremium && "!border-none !shadow-none",
               variant === "minimal" && "rounded-t-[18px]",
               variant === "glass" && "rounded-t-[22px]",
               isDesktopRuntime && "cursor-default select-none"
@@ -578,213 +645,466 @@ function AppShellInner() {
               {
                 "--bg-opacity-light": bgOpacityLight,
                 "--bg-opacity-dark": bgOpacityDark,
-                height:
-                  "calc(var(--header-height) + var(--header-content-clearance))",
+                height: isPremium
+                  ? "60px"
+                  : "calc(var(--header-height) + var(--header-content-clearance))",
               } as React.CSSProperties
             }
           >
-            {/* Hairline border (replaces border-b) — Protocol-faithful */}
             <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-full h-px bg-zinc-900/7.5 dark:bg-white/7.5"
-              data-slot="app-header-separator"
-            />
-            <div
-              className="shell-toolbar relative flex min-w-0 w-full items-center gap-3 px-4 lg:px-6"
-              style={{ paddingTop: "var(--header-content-clearance)" }}
+              className="shell-toolbar relative flex min-w-0 w-full items-center justify-between gap-3 px-4 lg:px-6"
+              data-header-page={currentView}
+              style={{
+                alignSelf: "stretch",
+                minHeight: isPremium ? "60px" : "72px",
+                height: isPremium ? "60px" : undefined,
+                paddingBlock: isPremium ? "0px" : "12px",
+                boxSizing: "border-box",
+              }}
             >
-              {/* Mobile navigation toggle */}
-              <SidebarTrigger
-                aria-label="Menu"
-                className="shell-toolbar-control size-9 shrink-0 md:hidden"
-              />
+              {/* 1. GAUCHE : Logo & Titre classique de page OU fil d'Ariane minimal */}
+              {isPremium ? (
+                <div className="shell-toolbar-leading flex min-w-0 flex-1 sm:flex-initial items-center gap-2.5">
+                  <SidebarTrigger
+                    aria-label="Menu"
+                    className="shell-toolbar-control size-8 shrink-0 md:!hidden"
+                  />
+                  <div className="crumbs flex items-center gap-1.5 text-[13px] tracking-[-0.02em] text-[#8f8f8f] dark:text-[#8a8a8a]">
+                    <span>Cabinet</span>
+                    <span className="text-[#a3a3a3] dark:text-[#525252]">/</span>
+                    <strong className="font-medium text-[#191919] dark:text-[#f3f3f3]">
+                      {pageTitle}
+                    </strong>
+                  </div>
+                </div>
+              ) : (
+                <div className="shell-toolbar-leading flex min-w-0 flex-1 sm:flex-initial items-center gap-2.5">
+                  <SidebarTrigger
+                    aria-label="Menu"
+                    className="shell-toolbar-control size-9 shrink-0 md:hidden"
+                  />
+                  <div className="shell-toolbar-identity flex items-center gap-2.5 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("dashboard")}
+                      className="group hidden sm:flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg p-0.5"
+                      aria-label="Aller au tableau de bord Baitari"
+                    >
+                      <Logo collapsed variant="refined" size="sm" className="shrink-0 transition-transform group-hover:scale-105" />
+                    </button>
+                    <div className="hidden sm:block h-4 w-px bg-black/10 dark:bg-white/15 shrink-0" />
+                    <h1 className="truncate font-heading font-semibold text-[16px] md:text-[17px] tracking-[-0.02em] text-foreground">
+                      {pageTitle}
+                    </h1>
+                    <div data-slot="header-save-indicator" className="hidden sm:block">
+                      <SaveIndicator state={saveState} />
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              <div data-slot="header-save-indicator" className="hidden lg:block">
-                <SaveIndicator state={saveState} />
-              </div>
-
-              <div className="shell-toolbar-actions ms-auto flex shrink-0 items-center gap-2">
-                <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
+              {/* 2. CENTRE : Recherche au centre UNIQUEMENT en non-premium */}
+              {!isPremium && (
+                <div className="shell-toolbar-search-region hidden sm:flex flex-1 justify-start items-center pl-4 min-w-0">
                   <button
                     type="button"
-                    aria-label="Rechercher partout"
+                    aria-label="Rechercher ou exécuter une commande (⌘K)"
                     aria-haspopup="dialog"
                     aria-keyshortcuts="Meta+K Control+K"
                     onClick={() => setPaletteOpen(true)}
-                    className="shell-toolbar-control grid size-9 shrink-0 place-items-center"
+                    className="shell-header-search group flex h-9 w-full max-w-[300px] items-center gap-2.5 rounded-full border border-black/8 bg-black/[0.03] px-3.5 text-left shadow-2xs backdrop-blur-md transition-all duration-150 hover:border-black/15 hover:bg-black/[0.05] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-white/18 dark:hover:bg-white/[0.08]"
                   >
-                    <ToolbarIcon name="search" />
+                    <ToolbarIcon
+                      name="search"
+                      className="size-4 shrink-0 text-muted-foreground opacity-70 transition-opacity group-hover:opacity-100"
+                    />
+                    <span className="flex-1 truncate text-xs text-muted-foreground transition-colors group-hover:text-foreground md:text-[13px]">
+                      Rechercher dans le cabinet…
+                    </span>
+                    <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-md border border-black/8 bg-white/75 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/15 dark:border-white/10 dark:bg-white/[0.08] dark:group-hover:border-white/20 shadow-2xs">
+                      ⌘K
+                    </kbd>
                   </button>
-                </ShortcutTooltip>
-                <NotificationCenter
-                  hideTrigger
-                  open={notificationsOpen}
-                  onOpenChange={setNotificationsOpen}
-                  anchor={settingsButtonRef}
-                  onNavigate={handleNavigate}
-                  onNavigateToPatient={handleNavigateToPatient}
-                />
+                </div>
+              )}
 
-                {/* ── Theme button ────────────────────────────────────── */}
-                <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
+              {saveState !== "idle" && <div className="premium-header-save-indicator" data-slot="premium-header-save-indicator"><SaveIndicator state={saveState} /></div>}
 
-                {/* ── Settings + account dropdown ─────────────────────── */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    ref={settingsButtonRef}
-                    aria-label="Paramètres et compte"
-                    className="shell-toolbar-control flex size-9 items-center justify-center"
-                  >
-                    <ToolbarIcon name="settings" />
-                  </DropdownMenuTrigger>
+              {/* 3. DROITE : Actions */}
+              <div className="shell-toolbar-actions flex shrink-0 items-center justify-end gap-2">
+                {isPremium ? (
+                  <>
+                    {/* 1. Theme toggle */}
+                    <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
 
-                  <DropdownMenuContent
-                    align="end"
-                    className="w-64 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
-                    sideOffset={8}
-                  >
-                    {/* User info header */}
-                    <div className="mb-1 flex items-center gap-3 px-3 py-2.5">
-                      <Avatar
-                        className="size-10 shrink-0"
-                        name={userDisplayName}
-                        size="md"
-                        src={resolvedAvatarUrl}
-                      />
-                      <div className="min-w-0">
-                        <p className="truncate font-semibold text-sm text-zinc-900 dark:text-white">
-                          {userDisplayName}
-                        </p>
-                        <p className="truncate text-muted-foreground text-xs">
-                          {userEmail}
-                        </p>
-                      </div>
-                    </div>
-
-                    <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                    <DropdownMenuItem
-                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                      onClick={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
-                    >
-                      <ToolbarIcon name="notifications" />
-                      <span className="font-medium text-sm">Notifications</span>
-                    </DropdownMenuItem>
-
-                    {/* Language submenu */}
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-zinc-100/80 dark:hover:bg-white/5">
-                        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-500/20">
-                          <HugeiconsIcon
-                            className="size-4 text-sky-600 dark:text-sky-400"
-                            icon={TranslateIcon}
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                        <span className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
-                          Langue
-                        </span>
-                        <span className="ml-auto font-semibold text-muted-foreground text-xs uppercase">
-                          {i18n.language.slice(0, 2)}
-                        </span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent
-                        align="end"
-                        className="min-w-44 rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
-                        sideOffset={4}
+                    {/* 2. Search */}
+                    <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
+                      <button
+                        type="button"
+                        aria-label="Rechercher partout"
+                        aria-haspopup="dialog"
+                        aria-keyshortcuts="Meta+K Control+K"
+                        onClick={() => setPaletteOpen(true)}
+                        className="topIcon"
+                        title="Rechercher (⌘K)"
                       >
-                        {SUPPORTED_LANGUAGES.map((language) => {
-                          const active = i18n.language.startsWith(
-                            language.code
-                          );
-                          return (
-                            <DropdownMenuItem
-                              className="justify-between rounded-lg text-sm"
-                              key={language.code}
-                              onClick={() => {
-                                i18n
-                                  .changeLanguage(language.code)
-                                  .catch(() => undefined);
-                              }}
-                            >
-                              <span>{languageLabelByCode[language.code]}</span>
-                              {active && (
-                                <HugeiconsIcon
-                                  className="size-4 text-primary"
-                                  icon={CheckmarkCircle01Icon}
-                                  strokeWidth={1.5}
-                                />
-                              )}
-                            </DropdownMenuItem>
-                          );
-                        })}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
+                        <ToolbarIcon name="search" />
+                      </button>
+                    </ShortcutTooltip>
 
-                    <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+                    {/* 3. Assistant IA */}
+                    <ShortcutTooltip label="Assistant IA" shortcut="⌘ J">
+                      <button
+                        type="button"
+                        aria-label="Ouvrir l'Assistant IA (⌘J)"
+                        aria-haspopup="dialog"
+                        aria-keyshortcuts="Meta+J Control+J"
+                        onClick={() =>
+                          setAiAssistantOpen((prev) => {
+                            const next = !prev;
+                            if (!next) setIsAssistantCollapsed(false);
+                            return next;
+                          })
+                        }
+                        className={cn(
+                          "topIcon",
+                          aiAssistantOpen && "!bg-primary !text-primary-foreground"
+                        )}
+                        title="Assistant IA (⌘J)"
+                      >
+                        <ToolbarIcon name="assistant" />
+                      </button>
+                    </ShortcutTooltip>
 
-                    {/* Profile */}
-                    <DropdownMenuItem
-                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                      onClick={() => handleNavigate("parametres")}
-                    >
-                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
-                        <HugeiconsIcon
-                          className="size-4 text-zinc-600 dark:text-zinc-400"
-                          icon={User02Icon}
-                          strokeWidth={1.5}
-                        />
-                      </div>
-                      <span className="font-medium text-sm">Mon profil</span>
-                    </DropdownMenuItem>
+                    <ShortcutTooltip label="Notifications">
+                      <button ref={notificationsButtonRef} type="button" aria-label="Notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(current => !current)} className="topIcon relative">
+                        <ToolbarIcon name="notifications" />
+                        {unreadCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-[10px] text-primary-foreground">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                      </button>
+                    </ShortcutTooltip>
 
-                    {/* Settings */}
-                    <DropdownMenuItem
-                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                      onClick={() => handleNavigate("parametres")}
-                    >
-                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
-                        <HugeiconsIcon
-                          className="size-4 text-zinc-600 dark:text-zinc-400"
-                          icon={Settings01Icon}
-                          strokeWidth={1.5}
-                        />
-                      </div>
-                      <span className="font-medium text-sm">Paramètres</span>
-                    </DropdownMenuItem>
+                    {/* 4. Settings dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        ref={settingsButtonRef}
+                        aria-label="Paramètres et compte"
+                        className="topIcon"
+                        title="Paramètres et compte"
+                      >
+                        <ToolbarIcon name="settings" />
+                      </DropdownMenuTrigger>
 
-                    <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-64 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
+                        sideOffset={8}
+                      >
+                        {/* User info header */}
+                        <div className="mb-1 flex items-center gap-3 px-3 py-2.5">
+                          <Avatar
+                            className="size-10 shrink-0"
+                            name={userDisplayName}
+                            size="md"
+                            src={resolvedAvatarUrl}
+                          />
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-sm text-zinc-900 dark:text-white">
+                              {userDisplayName}
+                            </p>
+                            <p className="truncate text-muted-foreground text-xs">
+                              {userEmail}
+                            </p>
+                          </div>
+                        </div>
 
-                    <DropdownMenuItem
-                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                      onClick={() => handleNavigate("aide")}
-                    >
-                      <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted">
-                        <HugeiconsIcon icon={HelpCircleIcon} size={16} strokeWidth={1.5} />
-                      </div>
-                      <span className="font-medium text-sm">Aide et support</span>
-                    </DropdownMenuItem>
+                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
 
-                    <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                          onClick={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
+                        >
+                          <ToolbarIcon name="notifications" />
+                          <span className="font-medium text-sm">Notifications</span>
+                          {unreadCount > 0 && (
+                            <span className="ml-auto rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                              {unreadCount}
+                            </span>
+                          )}
+                        </DropdownMenuItem>
 
-                    {/* Logout */}
-                    <DropdownMenuItem
-                      className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-rose-600 focus:bg-rose-50 focus:text-rose-600 dark:text-rose-400 dark:focus:bg-rose-500/10"
-                      onClick={async () => {
-                        await logout();
-                      }}
-                    >
-                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/20">
-                        <HugeiconsIcon
-                          className="size-4 text-rose-600 dark:text-rose-400"
-                          icon={Logout01Icon}
-                          strokeWidth={1.5}
-                        />
-                      </div>
-                      <span className="font-medium text-sm">Déconnexion</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                          onClick={() => handleNavigate("parametres")}
+                        >
+                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
+                            <HugeiconsIcon
+                              className="size-4 text-zinc-600 dark:text-zinc-400"
+                              icon={Settings01Icon}
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          <span className="font-medium text-sm">Paramètres</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-rose-600 focus:bg-rose-50 focus:text-rose-600 dark:text-rose-400 dark:focus:bg-rose-500/10"
+                          onClick={async () => {
+                            await logout();
+                          }}
+                        >
+                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/20">
+                            <HugeiconsIcon
+                              className="size-4 text-rose-600 dark:text-rose-400"
+                              icon={Logout01Icon}
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          <span className="font-medium text-sm">Déconnexion</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <NotificationCenter
+                      hideTrigger
+                      open={notificationsOpen}
+                      onOpenChange={setNotificationsOpen}
+                      anchor={notificationsButtonRef}
+                      onNavigate={handleNavigate}
+                      onNavigateToPatient={handleNavigateToPatient}
+                    />
+                  </>
+                ) : (
+                  <>
+                    {/* Mobile search button */}
+                    <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
+                      <button
+                        type="button"
+                        aria-label="Rechercher partout"
+                        aria-haspopup="dialog"
+                        aria-keyshortcuts="Meta+K Control+K"
+                        onClick={() => setPaletteOpen(true)}
+                        className="shell-toolbar-control grid size-9 shrink-0 place-items-center sm:!hidden"
+                      >
+                        <ToolbarIcon name="search" />
+                      </button>
+                    </ShortcutTooltip>
+
+                    {/* Assistant IA button (unique) */}
+                    <ShortcutTooltip label="Assistant IA" shortcut="⌘ J">
+                      <button
+                        type="button"
+                        aria-label="Ouvrir l'Assistant IA (⌘J)"
+                        aria-haspopup="dialog"
+                        aria-keyshortcuts="Meta+J Control+J"
+                        onClick={() =>
+                          setAiAssistantOpen((prev) => {
+                            const next = !prev;
+                            if (!next) setIsAssistantCollapsed(false);
+                            return next;
+                          })
+                        }
+                        className={cn(
+                          "shell-toolbar-control flex size-9 items-center justify-center rounded-full transition-all",
+                          aiAssistantOpen && "!bg-primary !text-primary-foreground shadow-xs"
+                        )}
+                      >
+                        <ToolbarIcon name="assistant" className="size-4 shrink-0" />
+                      </button>
+                    </ShortcutTooltip>
+
+                    {/* Notifications button with unread count badge */}
+                    <ShortcutTooltip label="Notifications">
+                      <button
+                        ref={notificationsButtonRef}
+                        type="button"
+                        aria-label="Notifications"
+                        onClick={() => setNotificationsOpen((prev) => !prev)}
+                        className={cn(
+                          "shell-toolbar-control relative flex size-9 items-center justify-center rounded-full transition-all",
+                          notificationsOpen && "!bg-accent !text-accent-foreground"
+                        )}
+                      >
+                        <ToolbarIcon name="notifications" className="size-4 shrink-0" />
+                        {unreadCount > 0 && (
+                          <span
+                            aria-label={`${unreadCount} notifications`}
+                            className={cn(
+                              "absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white shadow-xs",
+                              criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
+                            )}
+                          >
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
+                        )}
+                      </button>
+                    </ShortcutTooltip>
+
+                    <NotificationCenter
+                      hideTrigger
+                      open={notificationsOpen}
+                      onOpenChange={setNotificationsOpen}
+                      anchor={notificationsButtonRef}
+                      onNavigate={handleNavigate}
+                      onNavigateToPatient={handleNavigateToPatient}
+                    />
+
+                    {/* ── Theme button ────────────────────────────────────── */}
+                    <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
+
+                    {/* ── Settings + account dropdown ─────────────────────── */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        ref={settingsButtonRef}
+                        aria-label="Paramètres et compte"
+                        className="shell-toolbar-control flex size-9 items-center justify-center rounded-full"
+                      >
+                        <ToolbarIcon name="settings" />
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-64 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
+                        sideOffset={8}
+                      >
+                        {/* User info header */}
+                        <div className="mb-1 flex items-center gap-3 px-3 py-2.5">
+                          <Avatar
+                            className="size-10 shrink-0"
+                            name={userDisplayName}
+                            size="md"
+                            src={resolvedAvatarUrl}
+                          />
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-sm text-zinc-900 dark:text-white">
+                              {userDisplayName}
+                            </p>
+                            <p className="truncate text-muted-foreground text-xs">
+                              {userEmail}
+                            </p>
+                          </div>
+                        </div>
+
+                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                          onClick={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
+                        >
+                          <ToolbarIcon name="notifications" />
+                          <span className="font-medium text-sm">Notifications</span>
+                        </DropdownMenuItem>
+
+                        {/* Language submenu */}
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-zinc-100/80 dark:hover:bg-white/5">
+                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-500/20">
+                              <HugeiconsIcon
+                                className="size-4 text-sky-600 dark:text-sky-400"
+                                icon={TranslateIcon}
+                                strokeWidth={1.5}
+                              />
+                            </div>
+                            <span className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
+                              Langue
+                            </span>
+                            <span className="ml-auto font-semibold text-muted-foreground text-xs uppercase">
+                              {i18n.language.slice(0, 2)}
+                            </span>
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="w-48 rounded-xl border border-zinc-200/80 bg-white/95 p-1 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95">
+                            {SUPPORTED_LANGUAGES.map(({ code: lang }) => {
+                              const isSelected = i18n.language === lang;
+                              return (
+                                <DropdownMenuItem
+                                  key={lang}
+                                  className={cn(
+                                    "flex cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 text-sm",
+                                    isSelected && "font-semibold text-primary"
+                                  )}
+                                  onClick={async () => {
+                                    await i18n.changeLanguage(lang);
+                                  }}
+                                >
+                                  <span>{languageLabelByCode[lang]}</span>
+                                  {isSelected && (
+                                    <div className="size-1.5 rounded-full bg-primary" />
+                                  )}
+                                </DropdownMenuItem>
+                              );
+                            })}
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+
+                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
+                        {/* Profile */}
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                          onClick={() => handleNavigate("parametres")}
+                        >
+                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
+                            <HugeiconsIcon
+                              className="size-4 text-zinc-600 dark:text-zinc-400"
+                              icon={User02Icon}
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          <span className="font-medium text-sm">Mon profil</span>
+                        </DropdownMenuItem>
+
+                        {/* Settings */}
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                          onClick={() => handleNavigate("parametres")}
+                        >
+                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
+                            <HugeiconsIcon
+                              className="size-4 text-zinc-600 dark:text-zinc-400"
+                              icon={Settings01Icon}
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          <span className="font-medium text-sm">Paramètres</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
+                          onClick={() => handleNavigate("aide")}
+                        >
+                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted">
+                            <HugeiconsIcon icon={HelpCircleIcon} size={16} strokeWidth={1.5} />
+                          </div>
+                          <span className="font-medium text-sm">Aide et support</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
+
+                        {/* Logout */}
+                        <DropdownMenuItem
+                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-rose-600 focus:bg-rose-50 focus:text-rose-600 dark:text-rose-400 dark:focus:bg-rose-500/10"
+                          onClick={async () => {
+                            await logout();
+                          }}
+                        >
+                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/20">
+                            <HugeiconsIcon
+                              className="size-4 text-rose-600 dark:text-rose-400"
+                              icon={Logout01Icon}
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          <span className="font-medium text-sm">Déconnexion</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </>
+                )}
               </div>
             </div>
           </motion.header>
@@ -799,6 +1119,7 @@ function AppShellInner() {
                 [
                   "dashboard",
                   "patients",
+                  "patient_detail",
                   "agenda",
                   "clinique",
                   "stock",
@@ -807,6 +1128,7 @@ function AppShellInner() {
                   "equipe",
                   "notes",
                   "taches",
+                  "soins",
                   "parametres",
                 ] as View[]
               ).includes(currentView) && (
@@ -834,23 +1156,28 @@ function AppShellInner() {
         isOpen={paletteOpen}
         onClose={() => setPaletteOpen(false)}
         onNavigate={handleNavigate}
-        onNavigateToPatient={openPatientPeek}
+        onNavigateToPatient={handleNavigateToPatient}
       />
-      {aiAssistantOpen && (
-        <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-2 backdrop-blur-sm sm:p-4 md:p-6">
-          <motion.div
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            aria-label="Coworker Studio IA"
-            className="pointer-events-auto relative h-[min(880px,calc(100dvh-24px))] w-[min(1140px,calc(100vw-24px))] overflow-hidden rounded-[28px] border border-white/20 bg-background/96 text-foreground shadow-2xl shadow-black/40 ring-1 ring-black/10 backdrop-blur-3xl dark:border-white/10 dark:ring-white/15"
-            exit={{ opacity: 0, y: 16, scale: 0.97 }}
-            initial={{ opacity: 0, y: 16, scale: 0.97 }}
-            role="region"
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      <ConsultationAssistantPanel
+        open={aiAssistantOpen}
+        onCollapsedChange={setIsAssistantCollapsed}
+      >
+        {aiAssistantOpen && (
+          <Suspense
+            fallback={
+              <div className="flex h-full items-center justify-center p-6 text-xs text-muted-foreground">
+                Ouverture de l’assistant…
+              </div>
+            }
           >
-            {assistantModal}
-          </motion.div>
-        </div>
-      )}
+            <LocalConsultationAssistant
+              patientId={assistantPatientId ?? currentPatientId ?? undefined}
+              appointmentId={assistantAppointmentId}
+              onClose={handleCloseAIAgent}
+            />
+          </Suspense>
+        )}
+      </ConsultationAssistantPanel>
     </SidebarProvider>
   );
 }

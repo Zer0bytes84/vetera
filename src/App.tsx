@@ -1,5 +1,7 @@
+import { ActivationOwnerUnlock } from "@/components/activation-owner-unlock";
 import { lazy, Suspense, useEffect, useState } from "react";
 
+import { requireActivationOwner } from "@/services/adminAccess";
 import Logo from "@/components/Logo";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +18,8 @@ import {
 import { createInitialAdmin } from "@/services/sqlite/auth";
 import { startAppUpdateCheck } from "@/services/updateService";
 import { isActivationAdminRoute } from "@/services/activationAdminWindowService";
+
+import { AIModelInstallPrompt } from "@/modules/consultations/components/ai-model-install-prompt";
 
 const AppShell = lazy(async () => {
   const module = await import("@/modules/shell/app-shell");
@@ -210,16 +214,36 @@ function MainApp() {
 
   return (
     <Suspense fallback={<AppLoadingState />}>
-      <LicenseGate><AppShell /></LicenseGate>
+      <LicenseGate>
+        <AppShell />
+        <AIModelInstallPrompt />
+      </LicenseGate>
     </Suspense>
   );
+}
+
+function ActivationAdminAccess() {
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [sessionKey, setSessionKey] = useState("");
+  useEffect(() => {
+    let active = true;
+    const check = () => { void requireActivationOwner().then(() => { if (active) { setAllowed(true); setSessionKey(localStorage.getItem("auth_token") ?? ""); } }).catch(() => { if (active) setAllowed(false); }); };
+    check();
+    window.addEventListener("storage", check);
+    window.addEventListener("focus", check);
+    window.addEventListener("sqlite-data-changed", check);
+    return () => { active = false; window.removeEventListener("storage", check); window.removeEventListener("focus", check); window.removeEventListener("sqlite-data-changed", check); };
+  }, []);
+  if (allowed === null) return <AppLoadingState />;
+  if (!allowed) return <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground"><h1 className="text-xl font-medium">Accès réservé au propriétaire</h1><p>Ce compte ne peut pas accéder à la gestion des licences.</p><a href="/">Revenir à Baitari</a></main>;
+  return <ActivationOwnerUnlock key={sessionKey}><ActivationAdminPage /></ActivationOwnerUnlock>;
 }
 
 export function App() {
   if (isActivationAdminRoute()) {
     return (
       <Suspense fallback={<AppLoadingState />}>
-        <ActivationAdminPage />
+        <ActivationAdminAccess />
       </Suspense>
     );
   }
@@ -262,8 +286,8 @@ function AppStartupRecoveryState({ error }: { error: Error }) {
           Baitari n&apos;a pas pu démarrer
         </h1>
         <p className="mt-3 text-sm text-zinc-600 leading-6">
-          La base locale ne répond pas encore. Vos données ne sont pas
-          supprimées. Relancez simplement l&apos;initialisation de la fenêtre.
+          Vos données sont conservées. Si cette base provient d’une version plus récente,
+          installez la dernière version de Baitari. Sinon, réessayez l’initialisation.
         </p>
         <p className="mt-3 rounded-xl bg-zinc-100 px-3 py-2 text-left text-xs text-zinc-500">
           {error.message}

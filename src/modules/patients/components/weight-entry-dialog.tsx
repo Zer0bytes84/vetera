@@ -4,6 +4,16 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Dialog } from "@/components/ui/dialog";
 import {
   Field,
@@ -27,6 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeightEntriesRepository } from "@/data/repositories";
 import type { WeightEntry } from "@/types/db";
+import { toDateInputValue } from "./patients-shared";
 
 interface WeightEntryDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -49,14 +60,6 @@ const BCS_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "9", label: "9 — Obésité morbide" },
 ];
 
-function toDateInputValue(iso: string) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return new Date().toISOString().slice(0, 10);
-  }
-  return date.toISOString().slice(0, 10);
-}
-
 export function WeightEntryDialog({
   onOpenChange,
   open,
@@ -76,6 +79,7 @@ export function WeightEntryDialog({
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -118,7 +122,11 @@ export function WeightEntryDialog({
         if (!ok) {
           throw new Error("Update failed");
         }
-        toast.success(t("patientDetail.weight.dialogTitle"));
+        toast.success(
+          t("patientDetail.weight.saved", {
+            defaultValue: "Poids enregistré.",
+          })
+        );
       } else {
         const created = await repo.add(
           payload as unknown as Omit<
@@ -129,7 +137,11 @@ export function WeightEntryDialog({
         if (!created) {
           throw new Error("Insert failed");
         }
-        toast.success(t("patientDetail.weight.dialogTitle"));
+        toast.success(
+          t("patientDetail.weight.saved", {
+            defaultValue: "Poids enregistré.",
+          })
+        );
       }
       onOpenChange(false);
     } catch (err) {
@@ -140,18 +152,20 @@ export function WeightEntryDialog({
     }
   };
 
-  const handleDelete = async () => {
+  const confirmDelete = async () => {
     if (!weightEntry?.id) {
-      return;
-    }
-    if (!window.confirm(t("patientDetail.weight.confirmDelete"))) {
       return;
     }
     setIsDeleting(true);
     try {
       const ok = await repo.remove(weightEntry.id);
       if (ok) {
-        toast.success(t("patientDetail.weight.delete"));
+        toast.success(
+          t("patientDetail.weight.deleted", {
+            defaultValue: "Mesure supprimée.",
+          })
+        );
+        setConfirmDeleteOpen(false);
         onOpenChange(false);
       }
     } finally {
@@ -160,6 +174,7 @@ export function WeightEntryDialog({
   };
 
   return (
+    <>
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
@@ -256,7 +271,7 @@ export function WeightEntryDialog({
             <Button
               className="cursor-pointer text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
               disabled={isDeleting || isSubmitting}
-              onClick={handleDelete}
+              onClick={() => setConfirmDeleteOpen(true)}
               type="button"
               variant="ghost"
             >
@@ -298,5 +313,37 @@ export function WeightEntryDialog({
         </FormDialogFooter>
       </FormDialogContent>
     </Dialog>
+    <AlertDialog
+      open={confirmDeleteOpen}
+      onOpenChange={setConfirmDeleteOpen}
+    >
+      <AlertDialogContent size="sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {t("patientDetail.weight.confirmDeleteTitle", {
+              defaultValue: "Supprimer cette mesure ?",
+            })}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("patientDetail.weight.confirmDeleteMessage", {
+              defaultValue:
+                "Cette mesure de poids sera définitivement supprimée du dossier. Cette action est irréversible.",
+            })}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            {t("common.cancel", { defaultValue: "Annuler" })}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => void confirmDelete()}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {t("common.delete", { defaultValue: "Supprimer" })}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

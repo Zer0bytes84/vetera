@@ -209,10 +209,11 @@ export function useNotificationCenter() {
 
     // 4) Stock bas (rupture ou sous le seuil)
     for (const product of productsStore.data) {
-      if (product.quantity > product.minStock) {
+      const quantity = product.availableQuantity ?? product.quantity;
+      if (product.archivedAt || product.stockTracked === false || (quantity >= product.minStock && quantity > 0)) {
         continue;
       }
-      const isOutOfStock = product.quantity === 0;
+      const isOutOfStock = quantity <= 0;
       list.push({
         id: buildNotificationId("stock", product.id),
         source: "stock",
@@ -220,7 +221,7 @@ export function useNotificationCenter() {
         title: product.name,
         description: isOutOfStock
           ? "Rupture de stock"
-          : `Stock bas : ${product.quantity} ${product.unit} (seuil ${product.minStock})`,
+          : `Stock bas : ${quantity.toLocaleString("fr-FR", {maximumFractionDigits: 6})} ${product.unit} utilisables (seuil ${product.minStock.toLocaleString("fr-FR", {maximumFractionDigits: 6})})`,
         clickHint: "Voir le produit",
         target: { view: "stock", productId: product.id },
         createdAt: now.toISOString(),

@@ -1,20 +1,13 @@
-const dinarFormatter = new Intl.NumberFormat("fr-DZ", {
-  style: "currency",
-  currency: "DZD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
+import { formatDinars } from "./display-format";
 
 export const formatDZD = (amountInCentimes: number): string => {
   if (amountInCentimes === undefined || amountInCentimes === null) {
-    return "0 DA";
+    return formatDinars(0);
   }
   // Repository amounts are stored as integer centimes.
   const amount = amountInCentimes / 100;
 
-  return dinarFormatter
-    .format(amount)
-    .replace("DZD", "DA"); // Replace ISO code with local symbol if needed
+  return formatDinars(amount);
 };
 
 export const toCentimes = (amount: number): number => Math.round(amount * 100);

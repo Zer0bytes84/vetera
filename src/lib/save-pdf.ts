@@ -16,7 +16,7 @@ export async function savePdf(
   }
   const { save } = await import("@tauri-apps/plugin-dialog");
   const path = await save({
-    title: "Enregistrer la facture PDF",
+    title: "Enregistrer le document PDF",
     defaultPath: filename,
     filters: [{ name: "Document PDF", extensions: ["pdf"] }],
   });

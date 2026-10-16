@@ -1,5 +1,6 @@
 import {
   getBrowserTable,
+  getBrowserSetting,
   isTauriRuntime,
   replaceBrowserTable,
   setBrowserRow,
@@ -257,7 +258,7 @@ function buildDemoProducts(baseDate: Date): Product[] {
     },
     {
       id: "demo_product_02",
-      name: "Vaccin trivalent felin",
+      name: "Vaccin trivalent félin",
       category: "Vaccins",
       subCategory: "Felin",
       quantity: 3,
@@ -390,6 +391,45 @@ function buildDemoAppointments(baseDate: Date): Appointment[] {
       notes: "Pre-op a confirmer 24h avant.",
       createdAt: today.toISOString(),
     },
+    {
+      id: "demo_appt_06",
+      patientId: "demo_patient_02",
+      ownerId: "demo_owner_01",
+      vetId: "demo_vet_02",
+      title: "Milo - Contrôle",
+      startTime: withTime(addDays(today, -8), 10, 0).toISOString(),
+      endTime: withTime(addDays(today, -8), 10, 30).toISOString(),
+      status: "completed",
+      type: "Contrôle",
+      reason: "Bilan sanguin",
+      createdAt: addDays(today, -9).toISOString(),
+    },
+    {
+      id: "demo_appt_07",
+      patientId: "demo_patient_05",
+      ownerId: "demo_owner_04",
+      vetId: "demo_vet_01",
+      title: "Rex - Consultation",
+      startTime: withTime(addDays(today, -11), 14, 0).toISOString(),
+      endTime: withTime(addDays(today, -11), 14, 45).toISOString(),
+      status: "completed",
+      type: "Consultation",
+      reason: "Suivi post-opératoire",
+      createdAt: addDays(today, -12).toISOString(),
+    },
+    {
+      id: "demo_appt_08",
+      patientId: "demo_patient_03",
+      ownerId: "demo_owner_02",
+      vetId: "demo_vet_01",
+      title: "Bella - Vaccin",
+      startTime: withTime(addDays(today, -35), 11, 0).toISOString(),
+      endTime: withTime(addDays(today, -35), 11, 30).toISOString(),
+      status: "completed",
+      type: "Vaccin",
+      reason: "Rappel",
+      createdAt: addDays(today, -36).toISOString(),
+    },
   ];
 }
 
@@ -422,6 +462,17 @@ function buildDemoTransactions(baseDate: Date): Transaction[] {
       createdAt: withTime(today, 10, 0).toISOString(),
     },
     {
+      id: "demo_tx_yesterday",
+      date: withTime(addDays(today, -1), 11, 30).toISOString(),
+      amount: 620_000,
+      type: "income",
+      category: "Consultation",
+      description: "Consultation et soins Milo",
+      method: "card",
+      status: "paid",
+      createdAt: withTime(addDays(today, -1), 11, 30).toISOString(),
+    },
+    {
       id: "demo_tx_03",
       date: addDays(today, -7).toISOString(),
       amount: 295_000,
@@ -431,6 +482,17 @@ function buildDemoTransactions(baseDate: Date): Transaction[] {
       method: "card",
       status: "paid",
       createdAt: addDays(today, -7).toISOString(),
+    },
+    {
+      id: "demo_tx_05",
+      date: withTime(addDays(today, -9), 14, 0).toISOString(),
+      amount: 540_000,
+      type: "income",
+      category: "Consultation",
+      description: "Soins dentaires et détartrage",
+      method: "card",
+      status: "paid",
+      createdAt: withTime(addDays(today, -9), 14, 0).toISOString(),
     },
     {
       id: "demo_tx_04",
@@ -443,6 +505,28 @@ function buildDemoTransactions(baseDate: Date): Transaction[] {
       status: "paid",
       createdAt: addDays(today, -14).toISOString(),
     },
+    {
+      id: "demo_tx_06",
+      date: withTime(addDays(today, -35), 10, 0).toISOString(),
+      amount: 880_000,
+      type: "income",
+      category: "Chirurgie",
+      description: "Interventions et hospitalisations antérieures",
+      method: "card",
+      status: "paid",
+      createdAt: withTime(addDays(today, -35), 10, 0).toISOString(),
+    },
+    {
+      id: "demo_tx_07",
+      date: withTime(addDays(today, -120), 10, 0).toISOString(),
+      amount: 1_250_000,
+      type: "income",
+      category: "Consultation",
+      description: "Actes réguliers trimestre précédent",
+      method: "card",
+      status: "paid",
+      createdAt: withTime(addDays(today, -120), 10, 0).toISOString(),
+    },
   ];
 }
 
@@ -453,7 +537,7 @@ function buildDemoTasks(baseDate: Date): Task[] {
   return [
     {
       id: "demo_task_01",
-      title: "Appeler le proprietaire de Simba",
+      title: "Appeler le propriétaire de Simba",
       description: "Confirmer l'evolution apres mise sous perfusion.",
       status: "todo",
       priority: "high",
@@ -500,7 +584,7 @@ function buildDemoNotes(baseDate: Date, currentUser: CurrentUser): Note[] {
     {
       id: "demo_note_01",
       userId: currentUser.id,
-      title: "Brief equipe - aujourd'hui",
+      title: "Brief équipe - aujourd'hui",
       content:
         "<h2>Points du jour</h2><ul><li>Surveillance de Simba en hospitalisation</li><li>Preparer la chirurgie de Rex</li><li>Reassort vaccins felins</li></ul>",
       isFavorite: true,
@@ -523,7 +607,7 @@ function buildDemoNotes(baseDate: Date, currentUser: CurrentUser): Note[] {
 }
 
 export async function seedDemoDataIfNeeded(currentUser: CurrentUser | null) {
-  if (!currentUser || isTauriRuntime()) {
+  if (!currentUser || isTauriRuntime() || getBrowserSetting("demo_data_disabled") === "true") {
     return;
   }
 

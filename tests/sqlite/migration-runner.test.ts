@@ -118,7 +118,7 @@ describe("runSqliteMigrations", () => {
     expect(noteColumns).toContain("patient_id");
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(18);
+    ).toBe(35);
   });
 
   it("rolls back an entire migration when one statement fails", async () => {
@@ -154,6 +154,23 @@ describe("runSqliteMigrations", () => {
     expect(migration).toBeUndefined();
   });
 
+  it("rolls back a guarded column repair when a later statement fails", async () => {
+    const database = createDatabase();
+    await database.execute("CREATE TABLE products (id TEXT PRIMARY KEY)");
+    const migration: SqliteMigration = {
+      version: "001",
+      name: "failed-column-repair",
+      skipIfColumnExists: { table: "products", column: "archived_at" },
+      sql: "ALTER TABLE products ADD COLUMN archived_at TEXT;\nINSERT INTO missing_table VALUES (1);",
+    };
+
+    await expect(runSqliteMigrations(database, [migration])).rejects.toMatchObject({version: "001"});
+    expect(database.connection.prepare("PRAGMA table_info(products)").all().map(row => row.name)).toEqual(["id"]);
+    expect(database.connection.prepare("SELECT * FROM migrations").all()).toEqual([]);
+    expect(database.connection.prepare("PRAGMA user_version").get()?.user_version).toBe(0);
+    await expect(runSqliteMigrations(database, [{...migration, sql: "ALTER TABLE products ADD COLUMN archived_at TEXT;"}])).resolves.toEqual(["001"]);
+  });
+
   it("preserves notification state while upgrading migration 012", async () => {
     const database = createDatabase();
     const migrationsThrough011 = SQLITE_MIGRATIONS.filter(
@@ -172,7 +189,32 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["012", "013", "014", "015", "016", "017", "018"]);
+    ).resolves.toEqual([
+      "012",
+      "013",
+      "014",
+      "015",
+      "016",
+      "017",
+      "018",
+      "019",
+      "020",
+      "021",
+      "022",
+      "023",
+      "024",
+      "025",
+      "026",
+      "027",
+      "028",
+      "029",
+      "030",
+      "031",
+      "032",
+      "033",
+      "034",
+      "035",
+    ]);
 
     const state = database.connection
       .prepare(
@@ -239,12 +281,16 @@ describe("runSqliteMigrations", () => {
     ).toEqual({ appointment_id: "appointment-1" });
     expect(() =>
       database.connection
-        .prepare("UPDATE appointments SET status = 'arrived' WHERE id = 'appointment-1'")
+        .prepare(
+          "UPDATE appointments SET status = 'arrived' WHERE id = 'appointment-1'"
+        )
         .run()
     ).not.toThrow();
     expect(() =>
       database.connection
-        .prepare("UPDATE appointments SET status = 'invalid' WHERE id = 'appointment-1'")
+        .prepare(
+          "UPDATE appointments SET status = 'invalid' WHERE id = 'appointment-1'"
+        )
         .run()
     ).toThrow();
     expect(
@@ -266,7 +312,30 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["014", "015", "016", "017", "018"]);
+    ).resolves.toEqual([
+      "014",
+      "015",
+      "016",
+      "017",
+      "018",
+      "019",
+      "020",
+      "021",
+      "022",
+      "023",
+      "024",
+      "025",
+      "026",
+      "027",
+      "028",
+      "029",
+      "030",
+      "031",
+      "032",
+      "033",
+      "034",
+      "035",
+    ]);
     await database.execute(
       `UPDATE owners
        SET preferred_contact = 'sms',
@@ -335,10 +404,32 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["015", "016", "017", "018"]);
+    ).resolves.toEqual([
+      "015",
+      "016",
+      "017",
+      "018",
+      "019",
+      "020",
+      "021",
+      "022",
+      "023",
+      "024",
+      "025",
+      "026",
+      "027",
+      "028",
+      "029",
+      "030",
+      "031",
+      "032",
+      "033",
+      "034",
+      "035",
+    ]);
     expect(
       database.connection.prepare("PRAGMA user_version").get()?.user_version
-    ).toBe(18);
+    ).toBe(35);
 
     expect(
       database.connection
@@ -419,7 +510,9 @@ describe("runSqliteMigrations", () => {
     ).toEqual({ count: 0 });
     expect(() =>
       database.connection
-        .prepare("UPDATE transactions SET amount = 1 WHERE id = 'matched-income'")
+        .prepare(
+          "UPDATE transactions SET amount = 1 WHERE id = 'matched-income'"
+        )
         .run()
     ).toThrow(/Locked billing journal transactions are immutable/);
 
@@ -563,13 +656,36 @@ describe("runSqliteMigrations", () => {
 
     expect(
       database.connection
-        .prepare("SELECT invoice_line_id FROM credit_note_lines WHERE id = 'credit-cross-line'")
+        .prepare(
+          "SELECT invoice_line_id FROM credit_note_lines WHERE id = 'credit-cross-line'"
+        )
         .get()
     ).toEqual({ invoice_line_id: "invoice-b-line" });
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).resolves.toEqual(["016", "017", "018"]);
+    ).resolves.toEqual([
+      "016",
+      "017",
+      "018",
+      "019",
+      "020",
+      "021",
+      "022",
+      "023",
+      "024",
+      "025",
+      "026",
+      "027",
+      "028",
+      "029",
+      "030",
+      "031",
+      "032",
+      "033",
+      "034",
+      "035",
+    ]);
 
     expect(
       database.connection
@@ -684,7 +800,9 @@ describe("runSqliteMigrations", () => {
 
     expect(() =>
       database.connection
-        .prepare("UPDATE credit_notes SET reason = 'tampered' WHERE id = 'credit-a'")
+        .prepare(
+          "UPDATE credit_notes SET reason = 'tampered' WHERE id = 'credit-a'"
+        )
         .run()
     ).toThrow(/immutable/);
     expect(() =>
@@ -723,7 +841,9 @@ describe("runSqliteMigrations", () => {
     });
     expect(() =>
       database.connection
-        .prepare("UPDATE credit_notes SET gross_amount = 99 WHERE id = 'credit-a'")
+        .prepare(
+          "UPDATE credit_notes SET gross_amount = 99 WHERE id = 'credit-a'"
+        )
         .run()
     ).toThrow(/immutable/);
 
@@ -776,7 +896,7 @@ describe("runSqliteMigrations", () => {
     await database.execute(
       `INSERT INTO products (
         id, name, category, quantity, unit, min_stock, purchase_price_amount, sale_price_amount
-      ) VALUES ('product-1', 'Vaccin', 'Pharmacie', 1, 'dose', 0, 50, 100)`
+      ) VALUES ('product-1', 'Vaccin', 'Pharmacie', 0, 'dose', 0, 50, 100)`
     );
     await database.execute(
       `INSERT INTO invoices (
@@ -825,12 +945,25 @@ describe("runSqliteMigrations", () => {
     });
     expect(
       database.connection
-        .prepare("SELECT product_id, description, gross_amount FROM invoice_lines WHERE id = 'line-1'")
+        .prepare(
+          "SELECT product_id, description, gross_amount FROM invoice_lines WHERE id = 'line-1'"
+        )
         .get()
     ).toEqual({ product_id: null, description: "Vaccin", gross_amount: 100 });
     expect(() =>
-      database.connection.prepare("DELETE FROM invoices WHERE id = 'invoice-1'").run()
+      database.connection
+        .prepare("DELETE FROM invoices WHERE id = 'invoice-1'")
+        .run()
     ).toThrow(/cannot be deleted/);
+  });
+
+  it("opens schemas 031 through 035 and preserves existing clinic rows", async () => {
+    const database = createDatabase();
+    await runSqliteMigrations(database, SQLITE_MIGRATIONS.filter(migration => Number(migration.version) <= 30));
+    await database.execute("INSERT INTO owners (id, first_name, last_name, phone) VALUES ('existing', 'Patient', 'Owner', '000')");
+    expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual(["031", "032", "033", "034", "035"]);
+    expect(await runSqliteMigrations(database, SQLITE_MIGRATIONS)).toEqual([]);
+    expect(await database.select("SELECT id FROM owners")).toEqual([{ id: "existing" }]);
   });
 
   it("refuses a database created by a newer application", async () => {
@@ -846,6 +979,6 @@ describe("runSqliteMigrations", () => {
 
     await expect(
       runSqliteMigrations(database, SQLITE_MIGRATIONS)
-    ).rejects.toThrow("newer than this application");
+    ).rejects.toThrow("Installez la dernière version");
   });
 });

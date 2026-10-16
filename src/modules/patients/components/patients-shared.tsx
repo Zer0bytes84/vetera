@@ -1,3 +1,4 @@
+import { formatPhone } from "@/utils/display-format";
 import {
   Add01Icon,
   BirdIcon,
@@ -10,8 +11,10 @@ import {
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Bird, Cat, Dog, PawPrint, Rabbit, UserRound } from "@/lib/icons";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+
+import { computeAge, formatAgeFr } from "../lib";
 
 import { FormDialogHeader } from "@/components/ui/form-dialog";
 import { ModalBanner } from "@/components/ui/modal-banner";
@@ -141,7 +144,18 @@ export function normalizeDate(value?: string | Date | null) {
     return null;
   }
   if (value instanceof Date) {
-    return value;
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+  // Dates calendrier (YYYY-MM-DD) sans fuseau : les parser en heure locale
+  // pour éviter le décalage d'un jour vers l'ouest de Greenwich.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+      ? date
+      : null;
   }
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
@@ -196,6 +210,19 @@ export function formatPatientLongDate(value?: string) {
   });
 }
 
+/**
+ * Convertit une date ISO en valeur pour <input type="date"> (YYYY-MM-DD).
+ * Utilise la date locale, pas toISOString (UTC), pour éviter un décalage
+ * d'un jour selon le fuseau horaire.
+ */
+export function toDateInputValue(iso?: string) {
+  const date = normalizeDate(iso) ?? new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function formatVisitTimeRange(start?: string, end?: string) {
   const startDate = normalizeDate(start);
   const endDate = normalizeDate(end);
@@ -221,33 +248,7 @@ export function formatVisitTimeRange(start?: string, end?: string) {
 }
 
 export function getAgeLabel(value?: string) {
-  const date = normalizeDate(value);
-  if (!date) {
-    return "Âge non renseigné";
-  }
-
-  const now = new Date();
-  let years = now.getFullYear() - date.getFullYear();
-  let months = now.getMonth() - date.getMonth();
-
-  if (months < 0 || (months === 0 && now.getDate() < date.getDate())) {
-    years -= 1;
-    months += 12;
-  }
-
-  if (years > 0) {
-    return `${years} an${years > 1 ? "s" : ""}`;
-  }
-  if (months > 0) {
-    return `${months} mois`;
-  }
-
-  const days = Math.max(
-    1,
-    Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-  );
-
-  return `${days} jour${days > 1 ? "s" : ""}`;
+  return formatAgeFr(computeAge(value));
 }
 
 export function getStatusMeta(status: Patient["status"]) {
@@ -275,6 +276,41 @@ export function getBreedSuggestions(species?: string) {
     return CAT_BREEDS;
   }
   return [];
+}
+
+/**
+ * Validation unique de l'identité du patient, utilisée à la création
+ * comme en édition. Renvoie le message d'erreur ou null si valide.
+ */
+export function validatePatientIdentity(input: {
+  name?: string;
+  species?: string;
+  dateOfBirth?: string;
+  ownerFirstName?: string;
+  ownerLastName?: string;
+  /** true quand le propriétaire existe déjà (nom déjà validé). */
+  skipOwnerName?: boolean;
+}): string | null {
+  if (!input.name?.trim()) {
+    return "Le nom du patient est obligatoire.";
+  }
+  if (!input.species?.trim()) {
+    return "L'espèce du patient est obligatoire.";
+  }
+  if (input.dateOfBirth) {
+    const birth = normalizeDate(input.dateOfBirth);
+    if (birth && birth.getTime() > Date.now()) {
+      return "La date de naissance ne peut pas être dans le futur.";
+    }
+  }
+  if (
+    !input.skipOwnerName &&
+    !input.ownerFirstName?.trim() &&
+    !input.ownerLastName?.trim()
+  ) {
+    return "Le nom du propriétaire est obligatoire.";
+  }
+  return null;
 }
 
 export function PatientStatusBadge({ status }: { status: Patient["status"] }) {
@@ -392,7 +428,15 @@ export function PatientDetailsDialog({
     setActiveTab(initialTab);
   }, [initialTab, patient.id]);
 
+  // Ne réinitialise le formulaire que lorsque le dossier affiché change
+  // vraiment (nouveau patient.id), pas à chaque nouvelle identité d'objet
+  // fournie par le parent, pour ne pas effacer la saisie en cours.
+  const lastLoadedPatientId = useRef(patient.id);
   useEffect(() => {
+    if (lastLoadedPatientId.current === patient.id) {
+      return;
+    }
+    lastLoadedPatientId.current = patient.id;
     setIsEditing(false);
     setPatientData({
       name: patient.name,
@@ -407,7 +451,7 @@ export function PatientDetailsDialog({
     });
     setSelectedOwnerId(patient.ownerId);
     setOwnerData(owner ? { ...owner } : {});
-  }, [owner, patient]);
+  }, [patient, owner]);
 
   useEffect(() => {
     const linkedOwner = allOwners.find((entry) => entry.id === selectedOwnerId);
@@ -506,8 +550,15 @@ export function PatientDetailsDialog({
   };
 
   const handleSaveAll = useCallback(async () => {
-    if (!patientData.name.trim()) {
-      toast.error("Le nom du patient est obligatoire.");
+    const validationError = validatePatientIdentity({
+      name: patientData.name,
+      species: patientData.species,
+      dateOfBirth: patientData.dateOfBirth,
+      ownerFirstName: ownerData.firstName,
+      ownerLastName: ownerData.lastName,
+    });
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
 
@@ -530,7 +581,7 @@ export function PatientDetailsDialog({
       });
 
       if (!patientUpdated) {
-        throw new Error("La mise à jour du patient a échoué.");
+        throw new Error("PATIENT_UPDATE_FAILED");
       }
 
       const ownerUpdated = await onUpdateOwner(selectedOwnerId, {
@@ -547,7 +598,13 @@ export function PatientDetailsDialog({
       });
 
       if (!ownerUpdated) {
-        throw new Error("La mise à jour du propriétaire a échoué.");
+        // Le patient est déjà enregistré : on le dit explicitement au lieu
+        // de laisser croire que rien n'a été sauvegardé. L'édition reste
+        // ouverte pour réessayer la partie propriétaire.
+        toast.error(
+          "Le patient a été enregistré, mais la mise à jour du propriétaire a échoué. Vérifiez puis réessayez."
+        );
+        return;
       }
 
       toast.success("Le dossier patient a été mis à jour.");
@@ -798,7 +855,7 @@ export function PatientDetailsDialog({
                   #{patient.id.slice(0, 8)}
                 </p>
                 <p className="mt-3 line-clamp-2 text-muted-foreground text-xs leading-5">
-                  {currentOwner?.phone || "Téléphone non renseigné"}
+                  {formatPhone(currentOwner?.phone) || "Téléphone non renseigné"}
                 </p>
               </div>
             </aside>
@@ -998,7 +1055,7 @@ export function PatientDetailsDialog({
                                     key={entry.id}
                                     value={entry.id}
                                   >
-                                    {formatOwnerName(entry)} · {entry.phone}
+                                    {formatOwnerName(entry)} · {formatPhone(entry.phone)}
                                   </NativeSelectOption>
                                 ))}
                               </NativeSelect>
@@ -1167,7 +1224,7 @@ export function PatientDetailsDialog({
                             />
                             <ReadOnlyDetail
                               label="Téléphone"
-                              value={currentOwner?.phone || "Non renseigné"}
+                              value={formatPhone(currentOwner?.phone) || "Non renseigné"}
                             />
                             <ReadOnlyDetail
                               label="Email"
@@ -1196,7 +1253,7 @@ export function PatientDetailsDialog({
                               value={
                                 [
                                   currentOwner?.secondaryContactName,
-                                  currentOwner?.secondaryContactPhone,
+                                  formatPhone(currentOwner?.secondaryContactPhone),
                                 ]
                                   .filter(Boolean)
                                   .join(" · ") || "Non renseigné"
@@ -1494,7 +1551,7 @@ export function PatientCreateDialog({
     phone: "",
     email: "",
     address: "",
-    city: "Alger",
+    city: "",
   });
   const [newPatient, setNewPatient] = useState<Partial<Patient>>({
     name: "",
@@ -1546,31 +1603,27 @@ export function PatientCreateDialog({
   const handleCreate = useCallback(async () => {
     setFormError("");
 
-    if (!newPatient.name?.trim()) {
-      const message = "Le nom du patient est obligatoire.";
+    const fail = (message: string) => {
       setFormError(message);
       toast.error(message);
+    };
+
+    const isNewOwner = selectedOwnerId === "new";
+    const identityError = validatePatientIdentity({
+      name: newPatient.name,
+      species: newPatient.species,
+      dateOfBirth: newPatient.dateOfBirth,
+      ownerFirstName: newOwner.firstName,
+      ownerLastName: newOwner.lastName,
+      skipOwnerName: !isNewOwner,
+    });
+    if (identityError) {
+      fail(identityError);
       return;
     }
 
-    if (!newPatient.species?.trim()) {
-      const message = "L'espèce du patient est obligatoire.";
-      setFormError(message);
-      toast.error(message);
-      return;
-    }
-
-    if (selectedOwnerId === "new" && !newOwner.lastName?.trim()) {
-      const message = "Le nom du propriétaire est obligatoire.";
-      setFormError(message);
-      toast.error(message);
-      return;
-    }
-
-    if (selectedOwnerId === "new" && !newOwner.phone?.trim()) {
-      const message = "Le téléphone du propriétaire est obligatoire.";
-      setFormError(message);
-      toast.error(message);
+    if (isNewOwner && !newOwner.phone?.trim()) {
+      fail("Le téléphone du propriétaire est obligatoire.");
       return;
     }
 
@@ -1674,7 +1727,7 @@ export function PatientCreateDialog({
                     </NativeSelectOption>
                     {ownerOptions.map((owner) => (
                       <NativeSelectOption key={owner.id} value={owner.id}>
-                        {formatOwnerName(owner)} · {owner.phone}
+                        {formatOwnerName(owner)} · {formatPhone(owner.phone)}
                       </NativeSelectOption>
                     ))}
                   </NativeSelect>
@@ -1693,7 +1746,7 @@ export function PatientCreateDialog({
                           {formatOwnerName(selectedOwner)}
                         </p>
                         <p className="text-muted-foreground text-xs">
-                          {selectedOwner.phone || "Sans téléphone"}
+                          {formatPhone(selectedOwner.phone) || "Sans téléphone"}
                           {selectedOwner.email
                             ? ` · ${selectedOwner.email}`
                             : ""}

@@ -1,6 +1,20 @@
-import { DashboardSquareEditIcon, StethoscopeIcon } from "@/lib/hugeicons";
+import {
+  Calendar01Icon,
+  CheckListIcon,
+  DashboardSquareEditIcon,
+  File01Icon,
+  Hospital01Icon,
+  PackageIcon,
+  Settings02Icon,
+  StethoscopeIcon,
+  UserGroupIcon,
+  Wallet01Icon,
+} from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Stethoscope } from "lucide-react";
+import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import React from "react";
+import "./dashboard-greeting.css";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { useTranslation } from "react-i18next";
@@ -37,6 +51,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   onCustomize,
   onNavigate,
 }) => {
+  const isPremium = useIsPremium();
   const { t, i18n } = useTranslation();
   const { currentUser } = useAuth();
   const userName = currentUser?.displayName?.split(" ")[0] || "Docteur";
@@ -147,36 +162,99 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   const heading = title || (isDashboard ? headerCopy.text : headerCopy.eyebrow);
   const resolvedSubtitle = subtitle || headerCopy.subtitle;
 
-  const renderTitle = (titleText: string, emoji: string) => {
-    if (!isDashboard) {
-      return (
-        <div className="space-y-1">
-          <PageDate />
-          <h1 className="font-display font-medium text-2xl text-foreground tracking-tight md:text-3xl">
-            {titleText}
-          </h1>
-        </div>
-      );
-    }
-
+  const renderTitle = (titleText: string) => {
+    const cleanTitle = titleText.replace(/\s*👋\s*$/, "");
     return (
       <div className="space-y-1">
         <PageDate />
-        <h1 className="flex flex-wrap items-center gap-2.5 font-display font-medium text-2xl text-foreground tracking-tight md:text-3xl">
-          <span>{titleText}</span>
-          <span aria-hidden="true" className="shrink-0 text-[1em]">
-            {emoji}
-          </span>
+        <h1 className="flex flex-wrap items-center gap-2.5 font-display font-semibold text-2xl text-foreground tracking-tight leading-tight">
+          <span>{isDashboard && cleanTitle.includes(userName) ? <>{cleanTitle.slice(0, cleanTitle.indexOf(userName))}<span className="dashboard-greeting-name">{userName}</span>{cleanTitle.slice(cleanTitle.indexOf(userName) + userName.length)}</> : cleanTitle}</span>
+          {isDashboard && <span className="dashboard-greeting-wave" aria-hidden="true">👋</span>}
+
         </h1>
       </div>
     );
   };
 
+  if (isPremium && !isDashboard) {
+    const iconBySection: Record<string, any> = {
+      patients: StethoscopeIcon,
+      agenda: Calendar01Icon,
+      clinique: Hospital01Icon,
+      stock: PackageIcon,
+      finances: Wallet01Icon,
+      equipe: UserGroupIcon,
+      notes: File01Icon,
+      taches: CheckListIcon,
+      parametres: Settings02Icon,
+    };
+    const defaultMeta: Record<string, { title: string; note: string }> = {
+      patients: {
+        title: "Patients",
+        note: "Dossiers médicaux, fiches cliniques et suivi des propriétaires.",
+      },
+      agenda: {
+        title: "Agenda",
+        note: "Planning des consultations, chirurgies et rendez-vous du cabinet.",
+      },
+      clinique: {
+        title: "Espace Clinique",
+        note: "Actes médicaux, prescriptions, examens et hospitalisations.",
+      },
+      stock: {
+        title: "Pharmacie & Stock",
+        note: "Gestion des médicaments, consommables et seuils d'alerte.",
+      },
+      finances: {
+        title: "Finances & Facturation",
+        note: "Encaissements, factures, devis et suivi des règlements.",
+      },
+      equipe: {
+        title: "Équipe & Praticiens",
+        note: "Gestion des vétérinaires, ASV et plannings du cabinet.",
+      },
+      notes: {
+        title: "Documents & Notes",
+        note: "Comptes-rendus, ordonnances types et modèles de documents.",
+      },
+      taches: {
+        title: "Rappels & Tâches",
+        note: "Vaccinations à échéance et actions de suivi clinique.",
+      },
+      parametres: {
+        title: "Paramètres",
+        note: "Configuration générale, préférences et personnalisation.",
+      },
+    };
+
+    const sectionMeta = defaultMeta[section] ?? {
+      title: heading,
+      note: resolvedSubtitle || "",
+    };
+    const pageTitle = title || sectionMeta.title;
+    const pageNote = subtitle || sectionMeta.note;
+    const IconGlyph = iconBySection[section] ?? StethoscopeIcon;
+
+    return (
+      <div className="premium-page-head motivational-header-root">
+        <div className="premium-page-head-main">
+          <div className="premium-page-icon">
+            <HugeiconsIcon icon={IconGlyph} size={20} strokeWidth={1.5} />
+          </div>
+          <div>
+            <h1 className="premium-page-title">{pageTitle}</h1>
+            {pageNote && <p className="premium-page-note">{pageNote}</p>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex w-full flex-col gap-1">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="min-w-0 flex-[1_1_320px] space-y-1">
-          {renderTitle(heading, headerCopy.emoji)}
+          {renderTitle(heading)}
           {resolvedSubtitle && (
             <p className="max-w-[70ch] text-muted-foreground text-sm leading-relaxed">
               {resolvedSubtitle}
@@ -206,8 +284,9 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
             ) : null}
             <ShortcutTooltip label="Nouvelle consultation" shortcut="N">
               <Button
+                data-primary-action="true"
                 aria-keyshortcuts="N"
-                className="h-10 w-auto min-w-0 flex-none rounded-full px-5 text-sm"
+                className={isPremium ? "dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 text-[13px] font-medium" : "h-10 w-auto min-w-0 flex-none rounded-full px-5 text-sm"}
                 onClick={() => {
                   prepareAppointment();
                   onNavigate("agenda");
@@ -220,11 +299,19 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
                   );
                 }}
               >
-                <HugeiconsIcon
-                  data-icon="inline-start"
-                  icon={StethoscopeIcon}
-                  strokeWidth={1.5}
-                />
+                {isPremium ? (
+                  <Stethoscope
+                    className="mr-1.5 size-4"
+                    strokeWidth={1}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <HugeiconsIcon
+                    data-icon="inline-start"
+                    icon={StethoscopeIcon}
+                    strokeWidth={1.5}
+                  />
+                )}
                 Nouvelle consultation
               </Button>
             </ShortcutTooltip>

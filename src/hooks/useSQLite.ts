@@ -45,6 +45,7 @@ const ALLOWED_TABLES = new Set([
   "transactions",
   "notes",
   "consultation_documents",
+  "document_templates",
   "tasks",
   "app_settings",
   "migrations",
@@ -65,8 +66,10 @@ const ALLOWED_TABLES = new Set([
 ]);
 
 const BOOLEAN_FIELDS_BY_TABLE: Record<string, string[]> = {
+  products: ["stockTracked"],
   notes: ["isFavorite"],
   tasks: ["isReminder"],
+  patients: ["sterilized"],
 };
 
 const DATA_CHANGED_EVENT = "sqlite-data-changed";

@@ -1,3 +1,4 @@
+import { formatNumber } from "@/utils/display-format";
 import {
   useDeferredValue,
   useEffect,
@@ -20,7 +21,7 @@ import {
   useUsersRepository,
 } from "@/data/repositories";
 
-import { useAudit } from "@/services/auditService";
+import { useAudit } from "@/services/use-audit";
 import { generateId } from "@/services/sqlite/database";
 import type {
   Appointment,
@@ -410,13 +411,27 @@ export function useAgendaPageModel() {
     const occupancyTarget = Math.max(1, vets.length) * 8 * 60;
     const occupancy = Math.round((totalPlannedMinutes / occupancyTarget) * 100);
 
+    const patientName = nextAppointment
+      ? patientsById.get(nextAppointment.patientId)?.name ||
+        nextAppointment.title
+      : "";
+    const remainingSlots = Math.max(
+      0,
+      dailyAppointments.length - closedCount
+    );
+    const capacityHours = Math.max(1, vets.length) * 8;
+
     return [
       {
         title: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux" }),
-        value: String(dailyAppointments.length),
-        badge: delta === 0 ? "stable" : `${deltaPrefix}${delta}`,
+        value: formatNumber(dailyAppointments.length),
+        badge:
+          delta === 0
+            ? undefined
+            : `${deltaPrefix}${formatNumber(delta)} vs hier`,
         trend: delta > 0 ? "up" : delta < 0 ? "down" : "neutral",
-        footerTitle: `${closedCount} clôturée${closedCount > 1 ? "s" : ""}`,
+        detailRow: `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""} · ${remainingSlots} restant${remainingSlots > 1 ? "s" : ""}`,
+        footerTitle: `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""}`,
         footerDescription: t("agenda.overview.closedConsultations", {
           count: closedCount,
           defaultValue_one: "{{count}} consultation clôturée",
@@ -427,16 +442,17 @@ export function useAgendaPageModel() {
         title: t("agenda.overview.openEmergencies", {
           defaultValue: "Urgences ouvertes",
         }),
-        value: String(urgentOpenCount),
-        badge:
-          urgentOpenCount === 0
-            ? "stable"
-            : t("agenda.overview.alerts", {
-                count: urgentOpenCount,
-                defaultValue_one: "{{count}} alerte",
-                defaultValue_other: "{{count}} alertes",
-              }),
-        trend: urgentOpenCount > 0 ? "up" : "neutral",
+        value: formatNumber(urgentOpenCount),
+        change: urgentOpenCount > 0 ? urgentOpenCount : 0,
+        changeLabel:
+          urgentOpenCount > 0 ? "cas prioritaires" : "aucun cas critique",
+        inverse: true,
+        tone: urgentOpenCount > 0 ? "critical" : "positive",
+        trend: urgentOpenCount > 0 ? "down" : "neutral",
+        detailRow:
+          urgentOpenCount > 0
+            ? `${urgentOpenCount} patient prioritaire · Surveillance requise`
+            : "Planning régulier · Aucun cas critique",
         footerTitle: "Cas à surveiller",
         footerDescription: t("agenda.overview.priorityCases", {
           defaultValue: "Cas à surveiller en priorité",
@@ -447,11 +463,10 @@ export function useAgendaPageModel() {
           defaultValue: "Temps planifié",
         }),
         value: formatDuration(totalPlannedMinutes),
-        badge:
-          totalPlannedMinutes === 0
-            ? "0%"
-            : `${Number.isFinite(occupancy) ? occupancy : 0}%`,
-        trend: "neutral",
+        change: Number.isFinite(occupancy) ? occupancy : 0,
+        changeLabel: "% d'occupation",
+        trend: occupancy > 85 ? "down" : "neutral",
+        detailRow: `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""} · Capacité max ${capacityHours}h`,
         footerTitle: t("agenda.overview.engagedVets", {
           count: engagedVetsCount,
           defaultValue_one: "{{count}} praticien mobilisé",
@@ -466,14 +481,19 @@ export function useAgendaPageModel() {
         value: nextAppointment
           ? formatTimeCompact(nextAppointment.startTime)
           : t("agenda.overview.free", { defaultValue: "Libre" }),
-        badge: nextAppointment ? nextAppointment.type : "aucun",
+        badge: nextAppointment
+          ? nextAppointment.type || "Rendez-vous"
+          : "Disponible",
+        tone: nextAppointment ? "quiet" : "positive",
         trend: "neutral",
-        footerTitle: nextAppointment
-          ? patientsById.get(nextAppointment.patientId)?.name ||
-            nextAppointment.title
-          : t("agenda.overview.noUpcomingSlot", {
-              defaultValue: "Aucun créneau imminent",
-            }),
+        detailRow: nextAppointment
+          ? `${patientName} · ${nextAppointment.title || "Consultation standard"}`
+          : "Aucun créneau imminent dans la demi-heure",
+        footerTitle:
+          patientName ||
+          t("agenda.overview.noUpcomingSlot", {
+            defaultValue: "Aucun créneau imminent",
+          }),
         footerDescription: "Prochain passage",
       },
     ];

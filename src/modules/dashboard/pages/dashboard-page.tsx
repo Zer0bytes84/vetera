@@ -1,7 +1,6 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
-import MotivationalHeader from "@/components/MotivationalHeader";
 import {
   useAppointmentsRepository,
   useOwnersRepository,
@@ -12,7 +11,6 @@ import {
   useVaccinationsRepository,
   useHospitalizationsRepository,
 } from "@/data/repositories";
-import { buildDashboardMetrics } from "@/lib/metrics";
 import { useNowTick } from "@/hooks/useNowTick";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { usePatientIntentPrefetch } from "@/hooks/usePatientIntentPrefetch";
@@ -44,11 +42,10 @@ import type { ActionFilter } from "../components/clinical/actions-module";
 import { useDashboardVersion } from "../hooks/use-dashboard-version";
 import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
 import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
+import { PremiumAnalytics } from "../components/premium-analytics";
+import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod } from "../model/premium-analytics";
+import "../components/premium-analytics.css";
 
-const ClassicDashboard = lazy(async () => {
-  const module = await import("../v2/studio-dashboard");
-  return { default: module.StudioDashboard };
-});
 const ENTRY_KEY = "baitari:clinical-dashboard-entered";
 export interface DashboardPageProps {
   onNavigate?: (view: View) => void;
@@ -65,7 +62,6 @@ function useWidgetState(
 }
 export function DashboardPage({
   onNavigate,
-  onNavigateToPatient,
 }: DashboardPageProps) {
   const appointments = useAppointmentsRepository();
   const owners = useOwnersRepository();
@@ -76,12 +72,18 @@ export function DashboardPage({
   const vaccinations = useVaccinationsRepository();
   const stays = useHospitalizationsRepository();
   const invoices = useDashboardFinancials();
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<AnalyticsPeriod>("30d");
+  const presentation = useMemo(() => dashboardPresentationData({
+    appointments: appointments.data, owners: owners.data, patients: patients.data,
+    products: products.data, tasks: tasks.data, transactions: transactions.data,
+    vaccinations: vaccinations.data, invoices: invoices.invoices,
+  }), [appointments.data, owners.data, patients.data, products.data, tasks.data, transactions.data, vaccinations.data, invoices.invoices]);
   const { version, setVersion } = useDashboardVersion();
   const [isCustomizing, setIsCustomizing] = useState(false);
   useEffect(() => {
     if (window.sessionStorage.getItem("baitari:customize-dashboard") !== "true") return;
     window.sessionStorage.removeItem("baitari:customize-dashboard");
-    void setVersion("classic");
+    void setVersion("clinical");
     setIsCustomizing(true);
   }, [setVersion]);
 
@@ -105,67 +107,67 @@ export function DashboardPage({
   const today = useMemo(
     () =>
       buildTodaySchedule({
-        appointments: appointments.data.filter(
+        appointments: presentation.appointments.filter(
           (row) => row.status !== "cancelled"
         ),
-        owners: owners.data,
-        patients: patients.data,
+        owners: presentation.owners,
+        patients: presentation.patients,
         referenceDate: now,
       }),
-    [appointments.data, owners.data, patients.data, now]
+    [presentation.appointments, presentation.owners, presentation.patients, now]
   );
   const dayDate = selectedDay ?? now;
   const day = useMemo(
     () =>
       selectedDay
         ? buildTodaySchedule({
-            appointments: appointments.data.filter(
+            appointments: presentation.appointments.filter(
               (row) => row.status !== "cancelled"
             ),
-            owners: owners.data,
-            patients: patients.data,
+            owners: presentation.owners,
+            patients: presentation.patients,
             referenceDate: selectedDay,
           })
         : today,
-    [appointments.data, owners.data, patients.data, selectedDay, today]
+    [presentation.appointments, presentation.owners, presentation.patients, selectedDay, today]
   );
   const context = useMemo(
     () =>
-      buildDayContext(appointments.data, owners.data, patients.data, dayDate),
-    [appointments.data, owners.data, patients.data, dayDate]
+      buildDayContext(presentation.appointments, presentation.owners, presentation.patients, dayDate),
+    [presentation.appointments, presentation.owners, presentation.patients, dayDate]
   );
   const alerts = useMemo(
     () =>
       buildClinicalAlerts({
-        appointments: appointments.data,
-        patients: patients.data,
-        products: products.data.filter((product) => !product.archivedAt),
-        tasks: tasks.data,
-        vaccinations: vaccinations.data,
+        appointments: presentation.appointments,
+        patients: presentation.patients,
+        products: presentation.products.filter((product) => !product.archivedAt),
+        tasks: presentation.tasks,
+        vaccinations: presentation.vaccinations,
         referenceDate: now,
       }),
     [
-      appointments.data,
-      patients.data,
-      products.data,
-      tasks.data,
-      vaccinations.data,
+      presentation.appointments,
+      presentation.patients,
+      presentation.products,
+      presentation.tasks,
+      presentation.vaccinations,
       now,
     ]
   );
   const financials = useMemo(
     () =>
       buildFinancialOverview(
-        invoices.invoices,
-        transactions.data,
+        presentation.invoices,
+        presentation.transactions,
         { from: "", to: "" },
         "all"
       ),
-    [invoices.invoices, transactions.data]
+    [presentation.invoices, presentation.transactions]
   );
   const cash = useMemo(
-    () => buildClinicalCash(transactions.data, now, cashPeriod),
-    [transactions.data, now, cashPeriod]
+    () => buildClinicalCash(presentation.transactions, now, cashPeriod),
+    [presentation.transactions, now, cashPeriod]
   );
   const cashPending = Math.round(
     financials.categories.reduce((sum, row) => sum + row.riskValue, 0) * 100
@@ -227,28 +229,6 @@ export function DashboardPage({
       void appointments.refresh();
     }
   );
-  const paymentsState = useWidgetState(
-    transactions.loading,
-    transactions.error,
-    () => {
-      void transactions.refresh();
-    }
-  );
-  const populationState = useWidgetState(
-    patients.loading,
-    patients.error,
-    () => {
-      void patients.refresh();
-    }
-  );
-  const activityState = useWidgetState(
-    appointments.loading || transactions.loading,
-    appointments.error || transactions.error,
-    () => {
-      void appointments.refresh();
-      void transactions.refresh();
-    }
-  );
   const navigate = (view: View) => onNavigate?.(view);
   const openConsultation = (id: string) => {
     sessionStorage.setItem("vetera:pending-consultation-start", id);
@@ -277,7 +257,7 @@ export function DashboardPage({
     }
   };
   const start = (id: string) => {
-    const row = appointments.data.find((row) => row.id === id);
+    const row = presentation.appointments.find((row) => row.id === id);
     if (row?.status === "in_progress") {
       openConsultation(id);
       return;
@@ -285,7 +265,7 @@ export function DashboardPage({
     void advance(id, "in_progress", () => openConsultation(id));
   };
   const completeTask = async (id: string) => {
-    const row = tasks.data.find(task => task.id === id);
+    const row = presentation.tasks.find(task => task.id === id);
     if (!row || row.status === "done" || pending.current.has(id)) return;
     pending.current.add(id);
     setBusyIds([...pending.current]);
@@ -304,7 +284,7 @@ export function DashboardPage({
     );
   };
   const bill = (id: string) => {
-    const row = appointments.data.find((row) => row.id === id);
+    const row = presentation.appointments.find((row) => row.id === id);
     if (!row) return;
     prepareInvoice(row.ownerId, row.patientId, row.id);
     navigate("finances");
@@ -313,152 +293,124 @@ export function DashboardPage({
       150
     );
   };
-  const metrics = useMemo(
-    () =>
-      buildDashboardMetrics({
-        appointments: appointments.data,
-        owners: owners.data,
-        patients: patients.data,
-        tasks: tasks.data,
-        transactions: transactions.data,
-      }),
-    [
-      appointments.data,
-      owners.data,
-      patients.data,
-      tasks.data,
-      transactions.data,
-    ]
-  );
-  return (
-    <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <MotivationalHeader
-        section="dashboard"
-        isCustomizing={isCustomizing}
-        onNavigate={onNavigate}
-        dashboardViewControl={
-          <DashboardModeToggle
-            value={version}
-            reducedMotion={Boolean(reduced)}
-            onChange={(next) => {
-              setIsCustomizing(false);
-              void setVersion(next);
-            }}
-          />
-        }
-      />
-      {version === "classic" ? (
-        <Suspense fallback={<div className="min-h-[180px]" />}>
-          <ClassicDashboard
-            appointments={appointments.data}
-            owners={owners.data}
-            patients={patients.data}
-            products={products.data}
-            tasks={tasks.data}
-            transactions={transactions.data}
-            vaccinations={vaccinations.data}
-            metrics={metrics}
-            isCustomizing={isCustomizing}
-            onCustomizingChange={setIsCustomizing}
-            onNavigate={onNavigate}
-            onNavigateToPatient={onNavigateToPatient}
-            onStatusChange={appointments.transitionStatus}
-            widgetStates={{
-              schedule: nowState,
-              patients: populationState,
-              payments: paymentsState,
-              appointments: trendsState,
-              activity: activityState,
-              priorities: actionsState,
-            }}
-          />
-        </Suspense>
-      ) : (
-        <ClinicalDashboardView
-          now={buildNowSnapshot(today, patients.data, now)}
-          day={day}
-          dayDate={dayDate}
-          context={context}
-          alerts={alerts}
-          followUp={buildClinicalFollowUp(patients.data, stays.data)}
-          patientRows={buildPatientFollowUpRows(
-            patients.data,
-            owners.data,
-            stays.data
-          )}
-          cash={cash}
-          pending={cashPending}
-          cashPeriod={cashPeriod}
-          onCashPeriod={setCashPeriod}
-          receivables={financials.receivables}
-          trends={buildClinicalTrends(appointments.data, now, trendDays)}
-          onTrendsPeriod={setTrendDays}
-          actionFilter={actionFilter}
-          onActionFilter={setActionFilter}
-          reducedMotion={Boolean(reduced)}
-          onShiftDay={(days) => setSelectedDay(addDays(dayDate, days))}
-          onToday={() => setSelectedDay(null)}
-          onBill={bill}
-          onPlan={plan}
-          onReminders={() => navigate("taches")}
-          states={{
-            now: nowState,
-            day: dayState,
-            actions: actionsState,
-            patients: patientsState,
-            cash: cashState,
-            trends: trendsState,
-          }}
-          busyIds={busyIds}
-          isCustomizing={isCustomizing}
-          onCustomizingChange={setIsCustomizing}
-          trendsOpen={trendsOpen}
-          onTrendsOpen={setTrendsOpen}
-          onAdvance={(id, status) => {
-            void advance(id, status);
-          }}
-          onStart={start}
-          onOpenPatient={openPatientPeek}
-          onPatientIntent={intent.onPointerEnter}
-          onPatientIntentCancel={intent.onPointerLeave}
-          onCompleteTask={(id) => {
-            void completeTask(id);
-          }}
-          onOpenAlert={(alert) =>
-            alert.patientId
-              ? openPatientPeek(alert.patientId)
-              : navigate(alert.source === "stock" ? "stock" : "taches")
-          }
-          onAgenda={() => navigate("agenda")}
-          onPatients={() => navigate("patients")}
-          onFinances={() => navigate("finances")}
-          renderRow={(id, index, content) => (
-            <motion.div
-              key={id}
-              variants={
-                reduced
-                  ? reducedRowMotion
-                  : {
-                      ...rowMotion,
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                          duration: 0.22,
-                          ease: [0.2, 0, 0, 1],
-                          delay: entrance ? index * 0.1 : 0,
-                        },
-                      },
-                    }
-              }
-              initial={entrance ? "hidden" : false}
-              animate="visible"
-            >
-              {content}
-            </motion.div>
-          )}
-        />
+  const clinicalView = (
+    <ClinicalDashboardView
+      now={buildNowSnapshot(today, presentation.patients, now)}
+      day={day}
+      dayDate={dayDate}
+      context={context}
+      alerts={alerts}
+      followUp={buildClinicalFollowUp(presentation.patients, stays.data)}
+      patientRows={buildPatientFollowUpRows(
+        presentation.patients,
+        presentation.owners,
+        stays.data
       )}
-    </div>
+      cash={cash}
+      pending={cashPending}
+      cashPeriod={cashPeriod}
+      onCashPeriod={setCashPeriod}
+      receivables={financials.receivables}
+      trends={buildClinicalTrends(presentation.appointments, now, trendDays)}
+      onTrendsPeriod={setTrendDays}
+      actionFilter={actionFilter}
+      onActionFilter={setActionFilter}
+      reducedMotion={Boolean(reduced)}
+      onShiftDay={(days) => setSelectedDay(addDays(dayDate, days))}
+      onToday={() => setSelectedDay(null)}
+      onBill={bill}
+      onPlan={plan}
+      onReminders={() => navigate("taches")}
+      states={{
+        now: nowState,
+        day: dayState,
+        actions: actionsState,
+        patients: patientsState,
+        cash: cashState,
+        trends: trendsState,
+      }}
+      busyIds={busyIds}
+      isCustomizing={isCustomizing}
+      onCustomizingChange={setIsCustomizing}
+      trendsOpen={trendsOpen}
+      onTrendsOpen={setTrendsOpen}
+      onAdvance={(id, status) => {
+        void advance(id, status);
+      }}
+      onStart={start}
+      onOpenPatient={openPatientPeek}
+      onPatientIntent={intent.onPointerEnter}
+      onPatientIntentCancel={intent.onPointerLeave}
+      onCompleteTask={(id) => {
+        void completeTask(id);
+      }}
+      onOpenAlert={(alert) =>
+        alert.patientId
+          ? openPatientPeek(alert.patientId)
+          : navigate(alert.source === "stock" ? "stock" : "taches")
+      }
+      onAgenda={() => navigate("agenda")}
+      onPatients={() => navigate("patients")}
+      onFinances={() => navigate("finances")}
+      renderRow={(id, index, content) => (
+        <motion.div
+          key={id}
+          variants={
+            reduced
+              ? reducedRowMotion
+              : {
+                  ...rowMotion,
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.22,
+                      ease: [0.2, 0, 0, 1],
+                      delay: entrance ? index * 0.1 : 0,
+                    },
+                  },
+                }
+          }
+          initial={entrance ? "hidden" : false}
+          animate="visible"
+        >
+          {content}
+        </motion.div>
+      )}
+    />
   );
+    return (
+      <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-6 pb-12 lg:px-8 premium-analytics-dashboard">
+        <PremiumAnalytics
+          clinicalView={version === "clinical" ? clinicalView : undefined}
+          model={buildPremiumAnalytics({ ...presentation, alerts }, analyticsPeriod, now)}
+          period={analyticsPeriod}
+          onPeriod={setAnalyticsPeriod}
+          states={{ cash: cashState, patients: nowState, actions: actionsState }}
+          onFinances={() => navigate("finances")}
+          onPatients={() => navigate("patients")}
+          onActions={() => navigate("taches")}
+          onNavigate={navigate}
+          nextAppointment={today[0]}
+          dashboardViewControl={
+            <DashboardModeToggle
+              value={version}
+              reducedMotion={Boolean(reduced)}
+              onChange={(next) => {
+                setIsCustomizing(false);
+                void setVersion(next);
+              }}
+            />
+          }
+          presentation={presentation}
+          today={today}
+          financials={{
+            income: cash.income,
+            pending: cashPending,
+            receivables: financials.receivables,
+          }}
+          onStartConsultation={start}
+        />
+      </div>
+    );
 }

@@ -13,7 +13,7 @@ import {
  * ou un widget cliquable. La vue cible lit cette valeur pour scroller
  * jusqu'à l'élément et le highlight brièvement.
  */
-export type FocusEntityKind = "appointment" | "task" | "product" | "patient";
+export type FocusEntityKind = "appointment" | "task" | "product" | "patient" | "care_patient" | "care_task" | "stay" | "invoice";
 
 export interface FocusRequest {
   id: string;

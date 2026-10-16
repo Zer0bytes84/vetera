@@ -34,6 +34,7 @@ export type View =
   | "finances_analytics"
   | "parametres"
   | "equipe"
+  | "soins"
   | "taches"
   | "aide"
   | "patient_detail"

@@ -1,6 +1,15 @@
+import type React from "react";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { cn } from "@/lib/utils";
-import type { SlashCommandItem } from "./SlashCommandsExtension";
+
+export interface SlashCommandItem {
+  command: (editor: any) => void;
+  description: string;
+  group?: string;
+  icon: React.ReactNode;
+  keywords?: string[];
+  title: string;
+}
 
 interface SlashCommandMenuProps {
   command: (item: SlashCommandItem) => void;

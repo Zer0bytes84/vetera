@@ -44,6 +44,7 @@ import {
   PatientDetailsDialog,
   PatientCreateDialog,
 } from "@/modules/patients/components/patients-shared";
+import { getSpeciesTheme } from "@/lib/species-theme";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 
 export function PatientsView(props: PatientsViewProps) {
@@ -67,6 +68,8 @@ export function PatientsView(props: PatientsViewProps) {
     pageStart,
     paginatedPatients,
     paginationRange,
+    patientsError,
+    refreshPatients,
     resetFilters,
     searchTerm,
     sectionCards,
@@ -95,14 +98,14 @@ export function PatientsView(props: PatientsViewProps) {
         <MotivationalHeader section="patients" />
         <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button
-            className="h-10 rounded-full px-5 text-sm"
+            className="h-9 px-4"
             onClick={resetFilters}
             variant="outline"
           >
             Réinitialiser
           </Button>
           <Button
-            className="h-10 rounded-full px-5 text-sm"
+            className="h-9 px-4"
             onClick={() => setIsCreateOpen(true)}
           >
             <HugeiconsIcon
@@ -130,6 +133,26 @@ export function PatientsView(props: PatientsViewProps) {
             {loadingPatients ? (
               <div className="flex flex-1 items-center justify-center py-16">
                 <Spinner className="size-6 text-muted-foreground" />
+              </div>
+            ) : patientsError ? (
+              <div className="flex flex-1 px-6 pb-6">
+                <Empty className="border border-border/80 border-dashed bg-muted/20">
+                  <EmptyHeader>
+                    <EmptyTitle>Les dossiers sont indisponibles</EmptyTitle>
+                    <EmptyDescription>
+                      La base de données n'a pas pu être lue. Vérifiez
+                      l'application puis réessayez.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent className="sm:flex-row">
+                    <Button
+                      onClick={() => void refreshPatients()}
+                      variant="outline"
+                    >
+                      Réessayer
+                    </Button>
+                  </EmptyContent>
+                </Empty>
               </div>
             ) : visiblePatients.length === 0 ? (
               <div className="flex flex-1 px-6 pb-6">
@@ -242,17 +265,25 @@ export function PatientsView(props: PatientsViewProps) {
                               )}
                             >
                               <div className="flex items-center gap-3">
-                                <div
-                                  className={cn(
-                                    "flex size-10 shrink-0 items-center justify-center rounded-body bg-frame text-ink-muted"
-                                  )}
-                                >
-                                  <HugeiconsIcon
-                                    icon={getSpeciesIcon(entry.patient.species)}
-                                    size={22}
-                                    strokeWidth={1.5}
-                                  />
-                                </div>
+                                {(() => {
+                                  const spTheme = getSpeciesTheme(entry.patient.species);
+                                  return (
+                                    <div
+                                      className={cn(
+                                        "flex size-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 group-hover:scale-105 shadow-2xs",
+                                        spTheme.avatarBg,
+                                        spTheme.avatarBorder,
+                                        spTheme.avatarIconColor
+                                      )}
+                                    >
+                                      <HugeiconsIcon
+                                        icon={getSpeciesIcon(entry.patient.species)}
+                                        size={22}
+                                        strokeWidth={1.5}
+                                      />
+                                    </div>
+                                  );
+                                })()}
                                 <span className="font-semibold text-sm text-zinc-950 capitalize tracking-tight dark:text-white">
                                   {entry.patient.name}{" "}
                                   <span className="mt-0.5 block font-normal text-xs text-zinc-500 normal-case dark:text-zinc-400">
@@ -294,10 +325,9 @@ export function PatientsView(props: PatientsViewProps) {
                                 borderClass
                               )}
                             >
-                              {formatPatientDate(entry.lastVisit) ===
-                              "Date indisponible"
-                                ? "-"
-                                : formatPatientDate(entry.lastVisit)}
+                              {entry.lastVisit
+                                ? formatPatientDate(entry.lastVisit)
+                                : "-"}
                             </td>
 
                             {/* Col 5: Actions */}

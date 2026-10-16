@@ -14,6 +14,7 @@ import type { PrescriptionVet } from "../types";
 
 import { formatNumber } from "../lib/dose-calculator";
 import { PrescriptionPreview, type PreviewItem } from "./prescription-preview";
+import { PrescriptionDispensing } from "./prescription-dispensing";
 
 export interface PrescriptionListProps {
   /** Si fourni, limite l'affichage à cette consultation. */
@@ -90,6 +91,7 @@ export function PrescriptionList({
               const pItems = items.forPrescription(p.id);
               return (
                 <PrescriptionRow
+                  prescriptionId={p.id}
                   diagnosis={p.diagnosis}
                   items={pItems.map<PreviewItem>((it) => ({
                     id: it.id,
@@ -128,6 +130,7 @@ export function PrescriptionList({
 }
 
 function PrescriptionRow({
+  prescriptionId,
   diagnosis,
   items,
   patient,
@@ -135,6 +138,7 @@ function PrescriptionRow({
   status,
   vet,
 }: {
+  prescriptionId: string;
   diagnosis?: string;
   items: PreviewItem[];
   patient: Patient;
@@ -203,6 +207,7 @@ function PrescriptionRow({
           ) : null}
         </ul>
       </div>
+      <PrescriptionDispensing prescriptionId={prescriptionId} status={status} items={items} />
     </div>
   );
 }

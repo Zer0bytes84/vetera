@@ -1,0 +1,7 @@
+.patient-reminders-panel {font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",sans-serif;color:#292929;}
+.patient-reminders-panel :is(button,input,select) {font-family:inherit;}
+.patient-reminders-panel .border-border {border-color:#F2F2F2;}
+.patient-reminders-panel .text-muted-foreground {color:#7F7F7F;}
+.dark .patient-reminders-panel {color:var(--foreground);}
+.dark .patient-reminders-panel .border-border {border-color:var(--border);}
+.dark .patient-reminders-panel .text-muted-foreground {color:var(--muted-foreground);}

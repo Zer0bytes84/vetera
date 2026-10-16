@@ -26,6 +26,7 @@ export const viewTitleKeys: Record<View, string> = {
   equipe: "views.equipe",
   parametres: "views.parametres",
   taches: "views.taches",
+  soins: "Soins du jour",
   aide: "views.aide",
   patient_detail: "views.patient_detail",
   assistant: "Assistant IA",

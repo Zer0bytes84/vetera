@@ -1,7 +1,6 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ToolbarIcon } from "./toolbar-icon";
-import { MOTION } from "@/design-system/motion";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
+import { useCircularTransition } from "@/hooks/use-circular-transition";
 
 export function ThemeControl({
   dark,
@@ -10,41 +9,23 @@ export function ThemeControl({
   dark: boolean;
   onToggle: () => void;
 }) {
-  const reduced = useReducedMotion();
+  const { startTransition } = useCircularTransition();
   return (
     <ShortcutTooltip label="Changer le thème" shortcut="D">
       <button
         aria-label="Changer le thème"
         aria-keyshortcuts="D"
         type="button"
-        onClick={onToggle}
+        onClick={(event) => {
+          if (event.detail === 0) {
+            onToggle();
+            return;
+          }
+          startTransition({ x: event.clientX, y: event.clientY }, onToggle);
+        }}
         className="shell-toolbar-control relative grid size-9 shrink-0 place-items-center overflow-hidden"
       >
-        <AnimatePresence initial={false} mode="sync">
-          <motion.span
-            key={dark ? "dark" : "light"}
-            aria-hidden="true"
-            className="absolute inset-0 grid place-items-center"
-            initial={
-              reduced
-                ? { opacity: 0 }
-                : { opacity: 0, scale: 0.25, filter: "blur(4px)" }
-            }
-            animate={
-              reduced
-                ? { opacity: 1 }
-                : { opacity: 1, scale: 1, filter: "blur(0px)" }
-            }
-            exit={
-              reduced
-                ? { opacity: 0 }
-                : { opacity: 0, scale: 0.25, filter: "blur(4px)" }
-            }
-            transition={reduced ? { duration: MOTION.fast } : MOTION.icon}
-          >
-            <ToolbarIcon name={dark ? "moon" : "sun"} />
-          </motion.span>
-        </AnimatePresence>
+        <ToolbarIcon name={dark ? "moon" : "sun"} />
       </button>
     </ShortcutTooltip>
   );

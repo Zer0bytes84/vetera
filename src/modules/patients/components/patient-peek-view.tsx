@@ -110,7 +110,7 @@ export function PatientPeekView({
         if (!open) onClose();
       }}
     >
-      <SheetContent className="w-full! gap-0 bg-card sm:max-w-[620px]">
+      <SheetContent className="patient-peek-panel w-full! gap-0 bg-card sm:max-w-[620px]">
         <SheetHeader className="border-b border-border px-6 py-5 pr-14">
           <SheetTitle className="text-base">Dossier médical</SheetTitle>
           <SheetDescription>
@@ -141,7 +141,7 @@ export function PatientPeekView({
             />
           ) : (
             <>
-              <div className="px-6 py-6">
+              <div className="patient-peek-identity px-6 py-6">
                 <PatientIdentity patient={patient} compact />
               </div>
               <ClinicalAlerts patient={patient} />
@@ -343,7 +343,7 @@ export function PatientPeekView({
             </>
           )}
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">
+        <div className="patient-peek-footer flex flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">
           <ActionButton quiet onClick={onClose}>
             Fermer
           </ActionButton>

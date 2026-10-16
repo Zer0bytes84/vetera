@@ -1,0 +1,24 @@
+/* First installation uses opaque, theme-aware surfaces in both appearances. */
+.setup-welcome { color: var(--foreground); background: var(--background); }
+.setup-welcome .setup-intro { background: var(--surface); border-right: 1px solid var(--border); }
+.setup-welcome h1, .setup-welcome h2 { color: var(--foreground); font-weight: 500; }
+.setup-welcome .setup-intro h1 { font-size: clamp(2rem, 3.7vw, 3.5rem); line-height: 1.1; letter-spacing: -.04em; }
+.setup-welcome .setup-intro [class*="text-white"],
+.setup-welcome [class*="text-zinc-600"] { color: var(--muted-foreground); }
+.setup-welcome .setup-intro [class*="text-emerald"],
+.setup-welcome [class*="text-emerald-700"] { color: var(--primary); }
+.setup-welcome .setup-intro [class*="border-white"] { border-color: var(--border); }
+.setup-welcome .setup-intro [class*="bg-white"] { background: var(--background); }
+.setup-welcome .setup-form { color: var(--foreground); background: var(--surface); box-shadow: 0 12px 36px rgb(0 0 0 / .07); }
+.setup-welcome .setup-form label { color: var(--foreground); }
+.setup-welcome .setup-form button[type="submit"] { background: var(--primary); color: var(--primary-foreground); }
+.setup-welcome .setup-form button[type="submit"]:hover { filter: brightness(1.1); }
+.setup-welcome .setup-form [class*="text-zinc-500"],
+.setup-welcome .setup-form [class*="text-zinc-400"] { color: var(--muted-foreground); }
+.setup-welcome .setup-form a { color: var(--foreground); }
+.setup-welcome .setup-input { color-scheme: inherit; }
+
+.setup-welcome .setup-step { background: var(--surface); border-color: var(--border); color: var(--muted-foreground); }
+.setup-welcome .setup-step[data-active="true"] { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+.dark .setup-welcome .setup-intro [class*="text-emerald"],
+.dark .setup-welcome [class*="text-emerald-700"] { color: #93b5ff; }

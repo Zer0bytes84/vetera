@@ -1,17 +1,27 @@
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, loadEnv } from "vite";
+import { loadEnv } from "vite";
+import { defineConfig, configDefaults } from "vitest/config";
+// @ts-expect-error Shared Node build helper.
+import { localAiRuntimePlugin } from "./scripts/local-ai-runtime-plugin.mjs";
 // @ts-expect-error Build helper is shared with Node integration tests.
 import { licenseBuildConfig } from "./scripts/license-build-config.mjs";
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => ({
+  test: {
+    exclude: [...configDefaults.exclude, "tests/activation-server.test.mjs"],
+  },
   define: licenseBuildConfig(command, { ...loadEnv(mode, process.cwd(), ""), ...process.env }, process.cwd()),
   // Tauri desktop bundles should resolve assets relative to index.html.
   // Keeping "/" here breaks packaged builds with "Importing a module script failed".
   base: process.env.TAURI_ENV_PLATFORM ? "./" : "/",
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), localAiRuntimePlugin()],
+  worker: { format: "es" },
+  // Warm worker-only dependencies before the first consultation. Lazy discovery
+  // during an inference otherwise invalidates the desktop window's module cache.
+  optimizeDeps: { include: ["@huggingface/transformers", "@mediapipe/tasks-genai"] },
   server: {
     port: 5180,
     host: "0.0.0.0",
@@ -62,10 +72,6 @@ export default defineConfig(({ command, mode }) => ({
             return;
           }
 
-          if (id.includes("@mlc-ai/web-llm")) {
-            return "vendor-llm";
-          }
-
           if (id.includes("jspdf") || id.includes("html2canvas")) {
             return "vendor-pdf";
           }
@@ -74,9 +80,9 @@ export default defineConfig(({ command, mode }) => ({
             return "vendor-charts";
           }
 
-          if (id.includes("@tiptap")) {
-            return "vendor-editor";
-          }
+          // Let Rollup keep Tiptap and ProseMirror in the same dependency
+          // graph. Splitting only @tiptap creates NotesPro -> vendor-editor
+          // -> NotesPro and a temporal-dead-zone error in packaged builds.
 
           return;
         },

@@ -22,6 +22,7 @@ import {
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
+import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
 
@@ -46,11 +47,12 @@ const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
 };
 
 const KIND_COLOR: Record<TimelineKind, string> = {
-  consultation: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
+  consultation:
+    "bg-sky-50 text-sky-700 border border-sky-200/80 shadow-xs dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40",
   vaccination:
-    "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300",
+    "bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40",
   weight:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+    "bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/40",
 };
 
 interface PatientTimelineProps {
@@ -59,52 +61,6 @@ interface PatientTimelineProps {
   onJumpToAppointment?: (appointmentId: string) => void;
   patientId: string;
 }
-
-const APPOINTMENT_STATUS_META: Record<
-  Appointment["status"],
-  { label: string; className: string }
-> = {
-  scheduled: {
-    label: "Planifié",
-    className:
-      "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
-  },
-  confirmed: {
-    label: "Confirmé",
-    className:
-      "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300",
-  },
-  arrived: {
-    label: "Arrivé",
-    className:
-      "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300",
-  },
-  waiting: {
-    label: "En attente",
-    className:
-      "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300",
-  },
-  in_progress: {
-    label: "En cours",
-    className:
-      "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
-  },
-  completed: {
-    label: "Terminé",
-    className:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
-  },
-  cancelled: {
-    label: "Annulé",
-    className:
-      "bg-zinc-200 text-zinc-700 dark:bg-zinc-700/40 dark:text-zinc-300",
-  },
-  no_show: {
-    label: "Absent",
-    className:
-      "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300",
-  },
-};
 
 const TYPE_LABEL: Record<Appointment["type"], string> = {
   Consultation: "Consultation",
@@ -119,7 +75,9 @@ function formatDateParts(iso: string, includeTime: boolean) {
     const civilDate = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
     if (civilDate) {
       const [, year, month, day] = civilDate;
-      const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+      const date = new Date(
+        Date.UTC(Number(year), Number(month) - 1, Number(day))
+      );
       return {
         date: date.toLocaleDateString("fr-FR", {
           day: "2-digit",
@@ -242,7 +200,7 @@ export function PatientTimeline({
   );
 
   return (
-    <div className={cn("flex flex-col", className)}>
+    <div className={cn("flex min-w-0 flex-col", className)}>
       <div className="flex flex-1 flex-col">
         {entries.length === 0 ? (
           <Empty>
@@ -260,104 +218,157 @@ export function PatientTimeline({
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-border/70 bg-card">
-          <table className="w-full min-w-[900px] table-fixed text-left text-sm">
-            <caption className="sr-only">Historique clinique complet du patient</caption>
-            <thead className="border-border/70 border-b bg-muted/30 text-muted-foreground">
-              <tr>
-                <th className="w-[15%] px-5 py-3.5 font-medium">Date</th>
-                <th className="w-[22%] px-5 py-3.5 font-medium">Événement</th>
-                <th className="w-[35%] px-5 py-3.5 font-medium">Résumé clinique</th>
-                <th className="w-[12%] px-5 py-3.5 font-medium">Statut</th>
-                <th className="w-[16%] px-5 py-3.5 text-right font-medium">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-            {entries.map((entry) => {
-              const Icon = KIND_ICON[entry.kind];
-              const dateParts = formatDateParts(
-                entry.at,
-                entry.kind === "consultation"
-              );
-              return (
-                <tr className="group align-middle transition-colors hover:bg-muted/20" key={entry.id}>
-                  <td className="px-5 py-4">
-                    <time className="block text-xs leading-5" dateTime={entry.at}>
-                      <span className="block font-medium text-foreground/80">{dateParts.date}</span>
-                      {dateParts.time ? (
-                        <span className="block text-muted-foreground">{dateParts.time}</span>
-                      ) : null}
-                    </time>
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", KIND_COLOR[entry.kind])}>
-                        <Icon className="size-4" weight="duotone" />
-                      </span>
-                      <div className="min-w-0">
-                        <span className="block break-words font-semibold text-sm leading-5">
-                          {entry.label}
-                        </span>
-                        {entry.context ? (
-                          <span className="mt-0.5 block line-clamp-2 text-muted-foreground text-xs leading-4">
-                            {entry.context}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className={cn(
-                      "break-words text-sm leading-5",
-                      entry.summary === "Compte rendu non renseigné"
-                        ? "text-muted-foreground"
-                        : "font-medium text-foreground/85"
-                    )}>
-                      {entry.summary}
-                    </p>
-                    {entry.summaryDetail ? (
-                      <p className="mt-1 line-clamp-2 break-words text-muted-foreground text-xs leading-4">
-                        {entry.summaryDetail}
-                      </p>
-                    ) : null}
-                  </td>
-                  <td className="px-5 py-4">
-                    {entry.statusBadge ? (
-                        <Badge
-                          className={cn("rounded-full px-2 py-0.5 font-medium text-[10px]", entry.statusBadge.className)}
-                          variant="secondary"
-                        >
-                          {entry.statusBadge.label}
-                        </Badge>
-                      ) : <span className="text-muted-foreground text-xs">—</span>}
-                  </td>
-                  <td className="px-5 py-3 text-right">
-                    {entry.kind === "consultation" && onJumpToAppointment ? (
-                      <Button
-                        className="h-9 gap-1.5 rounded-lg px-2.5 text-xs"
-                        onClick={() => onJumpToAppointment(entry.id.replace(/^apt-/, ""))}
-                        size="sm"
-                        variant="ghost"
-                      >
-                        Note clinique
-                        <Notebook className="size-3.5" weight="duotone" />
-                      </Button>
-                    ) : entry.kind === "weight" && entry.weightEntry && onEditWeight ? (
-                      <Button
-                        className="h-9 rounded-lg px-2.5 text-xs"
-                        onClick={() => onEditWeight(entry.weightEntry!)}
-                        size="sm"
-                        variant="ghost"
-                      >
-                        Modifier
-                      </Button>
-                    ) : <span className="text-muted-foreground text-xs">—</span>}
-                  </td>
+          <div
+            className="patient-timeline-scroll rounded-xl border border-border/70 bg-card"
+            role="region"
+            aria-label="Chronologie du patient"
+            tabIndex={0}
+          >
+            <table className="patient-timeline-table w-full table-fixed text-left text-sm">
+              <caption className="sr-only">
+                Historique clinique complet du patient
+              </caption>
+              <thead className="border-border/70 border-b">
+                <tr>
+                  <th scope="col" className="w-[16%] font-medium">
+                    Date
+                  </th>
+                  <th scope="col" className="w-[22%] font-medium">
+                    Événement
+                  </th>
+                  <th scope="col" className="w-[32%] font-medium">
+                    Résumé clinique
+                  </th>
+                  <th scope="col" className="w-[15%] font-medium">
+                    Statut
+                  </th>
+                  <th scope="col" className="w-[15%] text-right font-medium">
+                    Action
+                  </th>
                 </tr>
-              );
-            })}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {entries.map((entry) => {
+                  const Icon = KIND_ICON[entry.kind];
+                  const dateParts = formatDateParts(
+                    entry.at,
+                    entry.kind === "consultation"
+                  );
+                  return (
+                    <tr
+                      className="group align-middle transition-colors hover:bg-muted/20"
+                      key={entry.id}
+                    >
+                      <td className="px-3 py-3">
+                        <time
+                          className="block text-xs leading-5"
+                          dateTime={entry.at}
+                        >
+                          <span className="block font-medium text-foreground/80">
+                            {dateParts.date}
+                          </span>
+                          {dateParts.time ? (
+                            <span className="block text-muted-foreground">
+                              {dateParts.time}
+                            </span>
+                          ) : null}
+                        </time>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex min-w-0 items-start gap-2.5">
+                          <span
+                            className={cn(
+                              "patient-timeline-kind-icon flex size-8 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105",
+                              KIND_COLOR[entry.kind]
+                            )}
+                          >
+                            <Icon className="size-4.5" weight="duotone" />
+                          </span>
+                          <div className="min-w-0">
+                            <span className="block break-words font-semibold text-sm leading-5">
+                              {entry.label}
+                            </span>
+                            {entry.context ? (
+                              <span className="mt-0.5 block text-muted-foreground text-xs leading-4">
+                                {entry.context}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">
+                        <p
+                          className={cn(
+                            "break-words text-sm leading-5",
+                            entry.summary === "Compte rendu non renseigné"
+                              ? "text-muted-foreground"
+                              : "font-medium text-foreground/85"
+                          )}
+                        >
+                          {entry.summary}
+                        </p>
+                        {entry.summaryDetail ? (
+                          <p className="mt-1 break-words text-muted-foreground text-xs leading-4">
+                            {entry.summaryDetail}
+                          </p>
+                        ) : null}
+                      </td>
+                      <td className="px-3 py-3">
+                        {entry.statusBadge ? (
+                          <Badge
+                            className={cn(
+                              "max-w-full !whitespace-normal rounded-full px-2 py-0.5 text-center font-medium text-[10px]",
+                              entry.statusBadge.className
+                            )}
+                            variant="secondary"
+                          >
+                            {entry.statusBadge.label}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">
+                            —
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3 text-right">
+                        {entry.kind === "consultation" &&
+                        onJumpToAppointment ? (
+                          <Button
+                            className="min-h-8 h-auto max-w-full !whitespace-normal gap-1 rounded-lg px-1 py-1.5 text-xs"
+                            onClick={() =>
+                              onJumpToAppointment(entry.id.replace(/^apt-/, ""))
+                            }
+                            size="sm"
+                            variant="ghost"
+                          >
+                            Note clinique
+                            <Notebook
+                              className="patient-timeline-kind-icon size-3.5"
+                              weight="duotone"
+                            />
+                          </Button>
+                        ) : entry.kind === "weight" &&
+                          entry.weightEntry &&
+                          onEditWeight ? (
+                          <Button
+                            className="min-h-8 h-auto max-w-full !whitespace-normal rounded-lg px-1 py-1.5 text-xs"
+                            onClick={() => onEditWeight(entry.weightEntry!)}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            Modifier
+                          </Button>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">
+                            —
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

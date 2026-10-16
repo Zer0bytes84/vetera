@@ -93,8 +93,6 @@ function SortableDashboardBlock({
       )}
       ref={setNodeRef}
       style={{
-        containIntrinsicSize: isEditing ? undefined : "auto 420px",
-        contentVisibility: isEditing ? "visible" : "auto",
         transform: CSS.Transform.toString(transform),
         transition,
       }}

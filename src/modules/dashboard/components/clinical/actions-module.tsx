@@ -148,6 +148,11 @@ export function ActionsModule({
           }
         />
       )}
+        <dl className="premium-widget-metrics" aria-label="Bilan des actions">
+          <div><dt><i className="finder-dot finder-dot-red" aria-hidden="true" />Prioritaires</dt><dd>{critical}</dd></div>
+          <div><dt><i className="finder-dot finder-dot-orange" aria-hidden="true" />À suivre</dt><dd>{alerts.length - critical}</dd></div>
+          <div><dt><i className="finder-dot finder-dot-blue" aria-hidden="true" />Total</dt><dd>{alerts.length}</dd></div>
+        </dl>
       <div className="mt-2 flex items-center justify-between gap-3 border-t border-hairline pt-3">
         <span className="text-[11px] text-ink-muted">
           {filtered.length > 4

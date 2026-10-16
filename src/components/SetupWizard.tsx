@@ -25,6 +25,7 @@ import {
   createLicenseRequestMailto,
 } from "@/services/licenseActivationService";
 import Logo from "./Logo";
+import "./setup-wizard.css";
 
 interface SetupWizardProps {
   onComplete: (userData: {
@@ -37,7 +38,7 @@ interface SetupWizardProps {
 }
 
 const fieldClassName =
-  "block h-12 w-full rounded-xl border border-zinc-200 bg-white pr-4 pl-11 text-[15px] text-zinc-950 shadow-[0_1px_2px_rgba(24,24,27,0.04)] outline-none transition duration-200 placeholder:text-zinc-400 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
+  "setup-input block h-12 w-full rounded-xl border border-border bg-background pr-4 pl-11 text-[15px] text-foreground outline-none transition duration-200 placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 const setupBenefits: Array<{
   description: string;
@@ -151,11 +152,10 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
 
   return (
     <main
-      className="welcome-shell setup-welcome relative min-h-dvh overflow-auto bg-[#f4f5f1] text-zinc-950"
+      className="welcome-shell setup-welcome relative min-h-dvh overflow-auto bg-background text-foreground"
       data-window-drag-region={isDesktopRuntime ? "true" : undefined}
       onMouseDown={handleWindowMouseDown}
       ref={windowDragRef}
-      style={{ colorScheme: "light" }}
     >
 
       <div className="relative mx-auto grid min-h-dvh w-full max-w-[1600px] lg:grid-cols-[minmax(340px,0.82fr)_minmax(560px,1.18fr)]">
@@ -216,8 +216,9 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                       <span className="h-px w-6 bg-zinc-300 sm:w-9" />
                     )}
                     <span
+                      data-active={step >= item}
                       className={cn(
-                        "flex size-8 items-center justify-center rounded-full border font-semibold text-xs transition-all duration-300",
+                        "setup-step flex size-8 items-center justify-center rounded-full border font-semibold text-xs transition-all duration-300",
                         step >= item
                           ? "border-[#17231f] bg-[#17231f] text-white"
                           : "border-zinc-300 bg-white/60 text-zinc-400"
@@ -255,7 +256,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             </div>
 
             <form
-              className="rounded-[1.75rem] border border-white/80 bg-white/88 p-5 shadow-[0_24px_80px_rgba(24,35,31,0.10),0_2px_10px_rgba(24,35,31,0.04)] ring-1 ring-zinc-950/5 backdrop-blur-xl sm:p-7"
+              className="setup-form rounded-2xl border border-border p-5 sm:p-7"
               onSubmit={submitStep}
             >
               {error && (

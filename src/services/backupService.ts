@@ -1,3 +1,4 @@
+import { version as APPLICATION_VERSION } from "../../package.json";
 /**
  * Backup service for Baitari
  * Handles automatic and manual backup/restore of SQLite database
@@ -147,7 +148,7 @@ async function saveMetadata(metadata: BackupMetadata): Promise<void> {
  * Get current app version
  */
 export function getAppVersion(): string {
-  return import.meta.env.VITE_APP_VERSION || "3.3.0";
+  return APPLICATION_VERSION;
 }
 
 /**

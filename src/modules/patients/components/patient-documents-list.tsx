@@ -11,6 +11,16 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Empty,
@@ -89,6 +99,8 @@ export function PatientDocumentsList({
   const { currentUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [deleteTarget, setDeleteTarget] =
+    useState<ConsultationDocument | null>(null);
 
   const docs = repo.data
     .filter((doc) => doc.patientId === patientId)
@@ -96,8 +108,10 @@ export function PatientDocumentsList({
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
+  // Les écrits du dossier sont visibles par toute l'équipe soignante,
+  // pas seulement leur auteur.
   const clinicalNotes = notesRepo.data
-    .filter((note) => note.patientId === patientId && note.userId === currentUser?.uid)
+    .filter((note) => note.patientId === patientId)
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
   const openNotes = (noteId?: string) => {
@@ -168,13 +182,15 @@ export function PatientDocumentsList({
     }
   };
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await repo.remove(id);
+      await repo.remove(deleteTarget.id);
       toast.success("Document supprimé avec succès.");
     } catch (_err) {
       toast.error("Erreur lors de la suppression.");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -302,7 +318,10 @@ export function PatientDocumentsList({
                     <Button
                       aria-label="Supprimer le document"
                       className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
-                      onClick={(e) => void handleDelete(doc.id, e)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTarget(doc);
+                      }}
                       size="icon"
                       variant="ghost"
                     >
@@ -315,6 +334,32 @@ export function PatientDocumentsList({
           </ul>
         )}
       </div>
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce document ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget
+                ? `« ${deleteTarget.fileName} » sera définitivement supprimé du dossier. Cette action est irréversible.`
+                : "Ce document sera définitivement supprimé du dossier."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void confirmDelete()}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

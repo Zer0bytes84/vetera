@@ -1,3 +1,5 @@
+import { createUuid } from "@/lib/uuid";
+import { requireActivationOwner } from "./adminAccess";
 import { isTauriRuntime } from "./browser-store";
 import { verifyLicenseLease } from "./licenseLease";
 
@@ -26,6 +28,8 @@ export interface LicenseActivationResult {
 
 export const ADMIN_TOKEN_STORAGE_KEY = "baitari_activation_admin_token";
 let sessionAdminToken = "";
+let tokenSession = "";
+let tokenExpiresAt = 0;
 // Never ship credentials or recover the old persistent administrator secret.
 export function getStoredAdminToken(): string {
   try {
@@ -33,10 +37,15 @@ export function getStoredAdminToken(): string {
   } catch {
     /* Storage unavailable. */
   }
+  if (tokenSession !== localStorage.getItem("auth_token") || Date.now() >= tokenExpiresAt) {
+    sessionAdminToken = "";
+  }
   return sessionAdminToken;
 }
 export function setStoredAdminToken(token: string): void {
   sessionAdminToken = token.trim();
+  tokenSession = localStorage.getItem("auth_token") ?? "";
+  tokenExpiresAt = Date.now() + 30 * 60 * 1000;
   try {
     localStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
   } catch {
@@ -81,12 +90,12 @@ export function getDeviceId(): Promise<string> {
       if (isTauriRuntime()) {
         const { invoke } = await import("@tauri-apps/api/core");
         return invoke<string>("license_installation_id", {
-          candidate: crypto.randomUUID(),
+          candidate: createUuid(),
         });
       }
       const stored = localStorage.getItem(DEVICE_ID_SETTING);
       if (stored) return stored;
-      const id = crypto.randomUUID();
+      const id = createUuid();
       localStorage.setItem(DEVICE_ID_SETTING, id);
       return id;
     })().catch((error) => {
@@ -106,6 +115,15 @@ async function licenseRequest(
       "Le serveur d’activation n’est pas configuré pour cette version. Contactez l’administrateur.",
       0,
       "CONFIGURATION"
+    );
+  }
+  if (!globalThis.crypto?.subtle) {
+    throw new LicenseActivationError(
+      import.meta.env.DEV
+        ? "Pour activer Baitari sur ce Mac, ouvrez http://localhost:5180. Depuis un autre appareil, utilisez une adresse HTTPS. Le navigateur bloque la vérification sécurisée sur une adresse IP en HTTP."
+        : "L’activation nécessite une adresse HTTPS ou localhost pour vérifier la licence de manière sécurisée.",
+      0,
+      "SECURE_CONTEXT_REQUIRED"
     );
   }
   const deviceId = await getDeviceId();
@@ -200,6 +218,7 @@ export async function checkActivationServer(): Promise<void> {
 export async function listActivationLicenses(
   adminToken: string
 ): Promise<ActivationAdminLicense[]> {
+  await requireActivationOwner();
   const response = await fetchAdminResponse(
     `${ACTIVATION_SERVER_URL}/v1/admin/licenses`,
     {
@@ -222,6 +241,7 @@ export async function createActivationLicense(
     plan: string;
   }
 ): Promise<CreatedActivationLicense> {
+  await requireActivationOwner();
   const response = await fetchAdminResponse(
     `${ACTIVATION_SERVER_URL}/v1/admin/licenses`,
     {
@@ -240,6 +260,7 @@ export async function revokeActivationLicense(
   adminToken: string,
   licenseId: string
 ): Promise<ActivationAdminLicense> {
+  await requireActivationOwner();
   const response = await fetchAdminResponse(
     `${ACTIVATION_SERVER_URL}/v1/admin/licenses/${encodeURIComponent(licenseId)}/revoke`,
     {
@@ -258,6 +279,7 @@ export async function releaseActivationDevice(
   licenseId: string,
   deviceId: string
 ): Promise<ActivationAdminLicense> {
+  await requireActivationOwner();
   const response = await fetchAdminResponse(
     `${ACTIVATION_SERVER_URL}/v1/admin/licenses/${encodeURIComponent(licenseId)}/release-device`,
     {
@@ -276,6 +298,7 @@ export async function releaseActivationDevice(
 
 export async function verifyAdminToken(adminToken: string): Promise<boolean> {
   try {
+    await requireActivationOwner();
     const response = await fetchAdminResponse(
       `${ACTIVATION_SERVER_URL}/v1/admin/verify`,
       {

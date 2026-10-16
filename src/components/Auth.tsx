@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { APP_NAME } from "@/lib/brand";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import Logo from "./Logo";
+import "./auth-clinic.css";
 
 const Auth: React.FC = () => {
   const [view, setView] = useState<"login" | "register">("login");
@@ -64,7 +65,7 @@ const Auth: React.FC = () => {
 
   return (
     <main
-      className="auth-shell welcome-shell relative min-h-screen overflow-x-hidden bg-[#f7f8f6] text-zinc-950 dark:bg-[#0b0c0d] dark:text-white"
+      className="auth-shell auth-clinic relative min-h-screen overflow-x-hidden bg-background text-foreground"
       data-window-drag-region={isDesktopRuntime ? "true" : undefined}
       onMouseDown={handleWindowMouseDown}
       ref={windowDragRef}
@@ -82,9 +83,9 @@ const Auth: React.FC = () => {
             initial={{ opacity: 0, y: 22 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="auth-editorial-title">
-              Au rythme
-              <em>du soin.</em>
+            <h1 className="auth-clinic-title">
+              Votre cabinet,
+              <em>à portée de main.</em>
             </h1>
             <p className="mt-7 max-w-lg text-pretty text-base text-zinc-600 leading-relaxed dark:text-zinc-300">
               Vos patients, vos consultations et votre équipe. Tout commence
@@ -107,7 +108,7 @@ const Auth: React.FC = () => {
             <form className="p-6 sm:p-8" onSubmit={handleSubmit}>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="auth-welcome-title">
+                  <h2 className="auth-clinic-welcome">
                     {view === "login"
                       ? "Bon retour"
                       : `Bienvenue sur ${APP_NAME}`}
@@ -219,7 +220,7 @@ const Auth: React.FC = () => {
                       id="password"
                       minLength={6}
                       onChange={(event) => setPassword(event.target.value)}
-                      placeholder="6 caractères minimum"
+                      placeholder={view === "login" ? "Votre mot de passe" : "6 caractères minimum"}
                       required
                       type={showPassword ? "text" : "password"}
                       value={password}
@@ -255,7 +256,7 @@ const Auth: React.FC = () => {
               </div>
 
               <button
-                className="group mt-5 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-zinc-950 px-4 font-semibold text-sm text-white shadow-[0_10px_28px_-15px_rgba(9,9,11,0.7)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-zinc-800 hover:shadow-[0_14px_32px_-16px_rgba(9,9,11,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100"
+                className="group mt-5 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-sm text-white shadow-[0_10px_28px_-15px_rgba(9,9,11,0.7)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_14px_32px_-16px_rgba(9,9,11,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
                 disabled={loading}
                 type="submit"
               >

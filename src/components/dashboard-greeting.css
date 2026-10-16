@@ -1,0 +1,5 @@
+ .dashboard-greeting-name { display:inline-block; animation:baitari-name-arrive 650ms cubic-bezier(.22,1,.36,1) both; }
+.dashboard-greeting-wave { display:inline-block; transform-origin:70% 75%; animation:baitari-greeting-wave 1.6s ease-in-out 200ms both; }
+@keyframes baitari-name-arrive { from { opacity:0; transform:translateY(5px); filter:blur(3px); } to { opacity:1; transform:translateY(0); filter:blur(0); } }
+@keyframes baitari-greeting-wave { 0%,100% { transform:rotate(0); } 15%,45% { transform:rotate(16deg); } 30%,60% { transform:rotate(-8deg); } 75% { transform:rotate(8deg); } }
+@media (prefers-reduced-motion:reduce) { .dashboard-greeting-name,.dashboard-greeting-wave { animation:none; } }

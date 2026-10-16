@@ -1,3 +1,5 @@
+import { createUuid } from "@/lib/uuid";
+import { draftPriceLines, priceInput } from "../lib/draft-prices";
 import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -6,6 +8,7 @@ import { toast } from "sonner";
 import { type SectionCardItem } from "@/components/section-cards";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useFocus } from "@/contexts/focus-provider";
 import {
   useOwnersRepository,
   usePatientsRepository,
@@ -70,6 +73,9 @@ export function useFinancesPageModel({
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceDetail | null>(
     null
   );
+  const [editingInvoicePrices, setEditingInvoicePrices] = useState(false);
+  const [invoicePrices, setInvoicePrices] = useState<Record<string, string>>({});
+  useEffect(() => { if (!selectedInvoice) { setEditingInvoicePrices(false); setInvoicePrices({}); } }, [selectedInvoice]);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [paymentInvoice, setPaymentInvoice] = useState<Invoice | null>(null);
   const [paymentDraft, setPaymentDraft] = useState<PaymentDraft>({
@@ -79,6 +85,14 @@ export function useFinancesPageModel({
   });
   const [paymentOperationId, setPaymentOperationId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [issueConfirmTarget, setIssueConfirmTarget] = useState<Invoice | null>(
+    null
+  );
+  const [voidTarget, setVoidTarget] = useState<Invoice | null>(null);
+  const [voidReason, setVoidReason] = useState("");
+  const [deleteDraftTarget, setDeleteDraftTarget] = useState<Invoice | null>(
+    null
+  );
   const [journalQuery, setJournalQuery] = useState("");
   const [journalFilter, setJournalFilter] = useState<TransactionFilter>("all");
   const [invoiceFrom, setInvoiceFrom] = useState("");
@@ -111,6 +125,20 @@ export function useFinancesPageModel({
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
+
+  const {focus, clearFocus} = useFocus();
+  useEffect(() => {
+    if (focus?.kind !== "invoice") return;
+    let alive = true;
+    setIsDetailLoading(true);
+    void billingService.getInvoice(focus.id).then(invoice => {
+      if (!alive) return;
+      if (!invoice) {toast.error("Cette facture est introuvable."); return;}
+      setActiveTab("invoices"); setEditingInvoicePrices(false); setInvoicePrices({}); setSelectedInvoice(invoice);
+    }).catch(() => {if (alive) toast.error("Impossible d’ouvrir cette facture. Réessayez depuis la liste.");})
+      .finally(() => {if (alive) {setIsDetailLoading(false); clearFocus();}});
+    return () => {alive = false;};
+  }, [focus, clearFocus]);
 
   const actor = useMemo<BillingActor>(
     () => ({
@@ -210,45 +238,61 @@ export function useFinancesPageModel({
     );
   }, [invoices]);
 
-  const financeSectionCards = useMemo<SectionCardItem[]>(
-    () => [
+  const financeSectionCards = useMemo<SectionCardItem[]>(() => {
+    const recoveryRate =
+      invoiceStats.gross > 0
+        ? Math.round((invoiceStats.collected / invoiceStats.gross) * 100)
+        : 100;
+    return [
       {
         title: "Facturé",
         value: formatDZD(invoiceStats.gross),
-        badge: "documents émis",
+        change: recoveryRate,
+        changeLabel: "% taux de recouvrement",
         trend: "neutral",
-        footerTitle: "Montant facturé",
+        detailRow: `${invoices.length} document${invoices.length > 1 ? "s" : ""} émis · Période en cours`,
+        footerTitle: "Montant des factures",
         footerDescription: "Documents émis",
       },
       {
         title: "Encaissé",
         value: formatDZD(invoiceStats.collected),
-        badge: "confirmé",
+        change: invoiceStats.collected > 0 ? 100 : 0,
+        changeLabel: "recettes confirmées",
+        tone: "positive",
         trend: "up",
-        footerTitle: "Paiements confirmés",
+        detailRow: "Règlements reçus · Reçus sans litige",
+        footerTitle: "Paiements reçus",
         footerDescription: "Règlements reçus",
       },
       {
         title: "Solde ouvert",
         value: formatDZD(invoiceStats.balance),
-        badge: invoiceStats.balance > 0 ? "à recouvrer" : "soldé",
-        tone: invoiceStats.balance > 0 ? "watch" : "quiet",
+        badge: invoiceStats.balance > 0 ? "À recouvrer" : "Soldé",
+        tone: invoiceStats.balance > 0 ? "watch" : "positive",
         trend: invoiceStats.balance > 0 ? "down" : "neutral",
+        detailRow:
+          invoiceStats.balance > 0
+            ? "Créances ouvertes · Règlements attendus"
+            : "Toutes les factures sont acquittées",
         footerTitle: "Reste à recouvrer",
         footerDescription: "Créances ouvertes",
       },
       {
         title: "En retard",
         value: formatDZD(invoiceStats.overdue),
-        badge: invoiceStats.overdue > 0 ? "à traiter" : "aucune",
-        tone: invoiceStats.overdue > 0 ? "critical" : "quiet",
+        badge: invoiceStats.overdue > 0 ? "Impayés" : "0 retard",
+        tone: invoiceStats.overdue > 0 ? "critical" : "positive",
         trend: invoiceStats.overdue > 0 ? "down" : "neutral",
+        detailRow:
+          invoiceStats.overdue > 0
+            ? "Échéances dépassées · Relance propriétaire requise"
+            : "Aucun retard de paiement à déplorer",
         footerTitle: "Échéances dépassées",
         footerDescription: "Retards de paiement",
       },
-    ],
-    [invoiceStats]
-  );
+    ];
+  }, [invoiceStats, invoices.length]);
 
   const filteredInvoices = useMemo(() => {
     const query = invoiceQuery.trim().toLocaleLowerCase("fr");
@@ -470,7 +514,9 @@ export function useFinancesPageModel({
     setJournalPage((page) => Math.min(page, journalPageCount));
   }, [journalPageCount]);
 
-  const openInvoiceDetail = async (invoice: Invoice) => {
+  const openInvoiceDetail = async (invoice: Invoice, editPrices = false) => {
+    setEditingInvoicePrices(false);
+    setInvoicePrices({});
     setIsDetailLoading(true);
     try {
       const detail = await billingService.getInvoice(invoice.id);
@@ -479,6 +525,10 @@ export function useFinancesPageModel({
         return;
       }
       setSelectedInvoice(detail);
+      if (editPrices && detail.documentStatus === "draft") {
+        setInvoicePrices(Object.fromEntries(detail.lines.map((line) => [line.id, priceInput(line.unitAmount)])));
+        setEditingInvoicePrices(true);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Impossible d’ouvrir cette facture.");
@@ -596,6 +646,26 @@ export function useFinancesPageModel({
     }
   };
 
+  const startEditingInvoicePrices = () => {
+    if (!selectedInvoice || selectedInvoice.documentStatus !== "draft" || isSubmitting) return;
+    setInvoicePrices(Object.fromEntries(selectedInvoice.lines.map((line) => [line.id, priceInput(line.unitAmount)])));
+    setEditingInvoicePrices(true);
+  };
+  const saveInvoicePrices = async () => {
+    if (!selectedInvoice || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const lines = draftPriceLines(selectedInvoice, invoicePrices);
+      const saved = await billingService.updateInvoiceDraft({ invoiceId: selectedInvoice.id, lines, actor });
+      setSelectedInvoice((current) => current?.id === saved.id ? saved : current);
+      setEditingInvoicePrices(false);
+      toast.success("Tarifs enregistrés. Le total de la facture a été recalculé.");
+      await loadInvoices();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Les tarifs n’ont pas pu être enregistrés.");
+    } finally { setIsSubmitting(false); }
+  };
+
   const issueExistingInvoice = async (invoice: Invoice) => {
     setIsSubmitting(true);
     try {
@@ -623,9 +693,94 @@ export function useFinancesPageModel({
     }
   };
 
+  /** I1 : l'émission fige la facture et lui attribue un numéro officiel. */
+  const requestIssueInvoice = (invoice: Invoice) => {
+    if (editingInvoicePrices && selectedInvoice?.id === invoice.id) {
+      toast.error("Enregistrez ou annulez vos modifications avant d’émettre la facture.");
+      return;
+    }
+    setIssueConfirmTarget(invoice);
+  };
+  const confirmIssueInvoice = async () => {
+    if (!issueConfirmTarget) {
+      return;
+    }
+    setIssueConfirmTarget(null);
+    await issueExistingInvoice(issueConfirmTarget);
+  };
+
+  /** B2 : annuler une facture émise par erreur (sans paiements). */
+  const requestVoidInvoice = (invoice: Invoice) => {
+    setVoidReason("");
+    setVoidTarget(invoice);
+  };
+  const confirmVoidInvoice = async () => {
+    if (!voidTarget) {
+      return;
+    }
+    if (!voidReason.trim()) {
+      toast.error("Indiquez le motif de l'annulation.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await billingService.voidInvoice({
+        actor,
+        invoiceId: voidTarget.id,
+        reason: voidReason.trim(),
+      });
+      toast.success("Facture annulée.");
+      setVoidTarget(null);
+      setVoidReason("");
+      await loadInvoices();
+      if (selectedInvoice?.id === voidTarget.id) {
+        const detail = await billingService.getInvoice(voidTarget.id);
+        setSelectedInvoice(detail);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible d’annuler la facture."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  /** I11 : supprimer un brouillon abandonné (jamais émis). */
+  const requestDeleteInvoiceDraft = (invoice: Invoice) => {
+    setDeleteDraftTarget(invoice);
+  };
+  const confirmDeleteInvoiceDraft = async () => {
+    if (!deleteDraftTarget) {
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await billingService.deleteInvoiceDraft({
+        actor,
+        invoiceId: deleteDraftTarget.id,
+      });
+      toast.success("Brouillon de facture supprimé.");
+      setDeleteDraftTarget(null);
+      await loadInvoices();
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible de supprimer le brouillon."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const openPaymentDialog = (invoice: Invoice) => {
     setPaymentInvoice(invoice);
-    setPaymentOperationId(crypto.randomUUID());
+    setPaymentOperationId(createUuid());
     setPaymentDraft({
       amount: (invoice.balanceAmount / 100).toFixed(2),
       method: "cash",
@@ -792,7 +947,21 @@ export function useFinancesPageModel({
     isInvoiceDialogOpen,
     isSubmitting,
     isTransactionDialogOpen,
+    issueConfirmTarget,
     issueExistingInvoice,
+    confirmDeleteInvoiceDraft,
+    confirmIssueInvoice,
+    confirmVoidInvoice,
+    deleteDraftTarget,
+    requestDeleteInvoiceDraft,
+    requestIssueInvoice,
+    requestVoidInvoice,
+    setDeleteDraftTarget,
+    setIssueConfirmTarget,
+    setVoidReason,
+    setVoidTarget,
+    voidReason,
+    voidTarget,
     journalAdvancedOpen,
     journalCategory,
     journalFilter,
@@ -823,6 +992,12 @@ export function useFinancesPageModel({
     resetInvoiceFilters,
     resetJournalFilters,
     selectedInvoice,
+    editingInvoicePrices,
+    invoicePrices,
+    setInvoicePrices,
+    setEditingInvoicePrices,
+    startEditingInvoicePrices,
+    saveInvoicePrices,
     setActiveTab,
     setInvoiceAdvancedOpen,
     setInvoiceDocumentFilter,

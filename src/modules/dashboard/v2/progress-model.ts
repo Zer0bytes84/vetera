@@ -52,7 +52,7 @@ export function buildClinicProgress({
       done: visits.filter((item) => item.status === "completed").length,
       total: visits.length,
       route: "agenda",
-      color: "#a17be8",
+      color: "#2563eb",
     },
     {
       id: "tasks",
@@ -61,7 +61,7 @@ export function buildClinicProgress({
       done: actions.filter((item) => item.status === "done").length,
       total: actions.length,
       route: "taches",
-      color: "#e5a443",
+      color: "#3b82f6",
     },
     {
       id: "payments",
@@ -70,7 +70,7 @@ export function buildClinicProgress({
       done: payments.filter((item) => item.status === "paid").length,
       total: payments.length,
       route: "finances",
-      color: "#58a9e9",
+      color: "#93c5fd",
     },
   ] as const;
 }

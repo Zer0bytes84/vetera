@@ -1,4 +1,5 @@
 import { ListSearch } from "@/components/ui/list-controls";
+import { formatNumber, formatPhone } from "@/utils/display-format";
 import {
   Add01Icon,
   Briefcase01Icon,
@@ -156,7 +157,7 @@ const Team: React.FC = () => {
 
   // Form State
   const [formData, setFormData] = useState<Partial<User>>({
-    role: "stagiaire",
+    role: undefined,
     status: "active",
   });
 
@@ -194,7 +195,7 @@ const Team: React.FC = () => {
     } else {
       setEditingId(null);
       setFormData({
-        role: "stagiaire",
+        role: undefined,
         status: "active",
         displayName: "",
         email: "",
@@ -206,7 +207,7 @@ const Team: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!(formData.displayName && formData.email)) {
+    if (!(formData.displayName && formData.email && formData.role)) {
       return;
     }
 
@@ -240,7 +241,7 @@ const Team: React.FC = () => {
           displayName: formData.displayName.trim(),
           email: normalizedEmail,
           phone: formData.phone || "",
-          role: (formData.role as UserRole) || "stagiaire",
+          role: formData.role as UserRole,
           status: "active",
           specialty: formData.specialty || "",
           passwordHash: await hashPassword(initialPassword),
@@ -286,7 +287,7 @@ const Team: React.FC = () => {
 
   const handleResetPassword = async (
     email: string,
-    name: string,
+    _name: string,
     userId: string
   ) => {
     if (!(email && userId)) {
@@ -336,35 +337,41 @@ const Team: React.FC = () => {
     return [
       {
         title: "Équipe active",
-        value: String(activeUsers),
-        badge: `${users.length} compte${users.length > 1 ? "s" : ""}`,
-        trend: "neutral",
-        footerTitle: "Effectif actif",
-        footerDescription: "Présence",
+        value: formatNumber(activeUsers),
+        badge: activeUsers === users.length ? "Effectif complet" : `${activeUsers}/${users.length} en poste`,
+        tone: "positive",
+        trend: "up",
+        detailRow: `${vets} praticien${vets > 1 ? "s" : ""} · ${support} soignant${support > 1 ? "s" : ""} · Coordination active`,
+        actionLabel: "Voir l'équipe active",
       },
       {
         title: "Vétérinaires",
-        value: String(vets),
-        badge: "pratique clinique",
+        value: formatNumber(vets),
+        badge: `${Math.round(users.length > 0 ? (vets / users.length) * 100 : 0)} % effectif`,
+        tone: "quiet",
         trend: "neutral",
-        footerTitle: "Praticiens disponibles",
-        footerDescription: "Capacité",
+        detailRow: "Praticiens titulaires et remplaçants · Actes & soins",
+        actionLabel: "Voir les praticiens",
       },
       {
-        title: "Support & relève",
-        value: String(support),
-        badge: "assistant·e·s et stagiaires",
+        title: "Support & soignants",
+        value: formatNumber(support),
+        badge: "ASV & internes",
+        tone: "quiet",
         trend: "neutral",
-        footerTitle: "Personnel de support",
-        footerDescription: "Couverture",
+        detailRow: "Assistants, infirmiers vétérinaires et stagiaires",
+        actionLabel: "Voir le support clinique",
       },
       {
-        title: "Accès à revoir",
-        value: String(accessReview),
-        badge: accessReview > 0 ? "statut inactif" : "tout est OK",
+        title: "Accès & statut",
+        value: formatNumber(accessReview),
+        change: accessReview > 0 ? accessReview : 0,
+        changeLabel: accessReview > 0 ? "comptes inactifs" : "droits conformes",
+        inverse: true,
+        tone: accessReview > 0 ? "critical" : "positive",
         trend: accessReview > 0 ? "down" : "neutral",
-        footerTitle: "Comptes à vérifier",
-        footerDescription: "Permissions",
+        detailRow: accessReview > 0 ? `${accessReview} compte${accessReview > 1 ? "s" : ""} inactif${accessReview > 1 ? "s" : ""} ou permissions en attente` : "Tous les profils et habilitations sont conformes",
+        actionLabel: "Vérifier les accès",
       },
     ];
   }, [users]);
@@ -376,7 +383,7 @@ const Team: React.FC = () => {
         <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
           {canManageTeam ? (
             <Button
-              className="h-10 rounded-full px-5"
+              className="h-9 px-4"
               onClick={() => handleOpenModal()}
             >
               <HugeiconsIcon
@@ -384,7 +391,7 @@ const Team: React.FC = () => {
                 icon={Add01Icon}
                 strokeWidth={1.5}
               />
-              <span>Nouveau Membre</span>
+              <span>Nouveau membre</span>
             </Button>
           ) : null}
         </div>
@@ -421,7 +428,7 @@ const Team: React.FC = () => {
         </div>
 
         {/* Users List */}
-        <CardContent className="flex-1 overflow-auto">
+        <CardContent className="flex-1 overflow-auto p-4 sm:p-6">
           {loading ? (
             <div className="flex items-center justify-center p-6">
               <Spinner />
@@ -569,7 +576,7 @@ const Team: React.FC = () => {
                           icon={SmartPhone01Icon}
                           strokeWidth={1.5}
                         />
-                        <span>{user.phone || "Non renseigné"}</span>
+                        <span>{formatPhone(user.phone) || "Non renseigné"}</span>
                       </div>
                     </div>
 
@@ -779,8 +786,9 @@ const Team: React.FC = () => {
                       role: e.target.value as UserRole,
                     })
                   }
-                  value={formData.role}
+                  value={formData.role || ""}
                 >
+                  <NativeSelectOption value="" disabled>Choisir un rôle</NativeSelectOption>
                   <NativeSelectOption value="vet_principal">
                     Vétérinaire Principal
                   </NativeSelectOption>
@@ -842,7 +850,7 @@ const Team: React.FC = () => {
             </Button>
             <Button
               className="cursor-pointer"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !formData.role || !formData.displayName?.trim() || !formData.email?.trim()}
               onClick={handleSave}
             >
               {isSubmitting && <Spinner className="size-4" />}

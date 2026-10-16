@@ -27,6 +27,8 @@ export interface Patient {
   allergies?: string;
   avatarUrl?: string;
   breed?: string;
+  /** N° d'identification électronique (puce) */
+  chipNumber?: string;
   chronicConditions?: string; // Maladies chroniques
 
   createdAt: string;
@@ -41,6 +43,10 @@ export interface Patient {
   sex: "M" | "F";
   species: "Chien" | "Chat" | "NAC" | "Cheval" | string;
   status: "sante" | "traitement" | "hospitalise" | "decede";
+  /** Animal stérilisé / castré */
+  sterilized?: boolean;
+  /** Tatouage d'identification */
+  tattooNumber?: string;
   weightHistory?: string; // JSON string
 }
 
@@ -66,6 +72,16 @@ export interface Product {
   name: string;
   purchasePriceAmount: number; // In centimes
   quantity: number;
+  /** False for services/acts that have a tariff but no physical stock. */
+  stockTracked?: boolean;
+  /** Derived availability, never written as catalogue quantities. */
+  availableQuantity?: number;
+  expiredQuantity?: number;
+  expiringQuantity?: number;
+  lotsCount?: number;
+  nearestExpiryDate?: string | null;
+  availabilityPending?: boolean;
+  inventoryInvalid?: boolean;
   salePriceAmount: number; // In centimes
   subCategory?: string;
   unit: string;
@@ -87,6 +103,16 @@ export interface StockMovement {
   unitCostAmount?: number;
   reason?: string;
   referenceId?: string;
+  sourceType?: "manual" | "care" | "consultation" | "prescription" | "receipt" | "transfer";
+  sourceId?: string;
+  sourceLineId?: string;
+  sourceLabel?: string;
+  patientId?: string;
+  authorId?: string;
+  invoiceId?: string;
+  invoiceLineId?: string;
+  unitSnapshot?: string;
+  productNameSnapshot?: string;
   createdAt: string;
 }
 
@@ -269,6 +295,8 @@ export interface BillingClinicSnapshot {
 }
 
 export interface BillingLineInput {
+  /** Existing draft line identity, preserved when editing its price. */
+  id?: string;
   description: string;
   discountBps?: number;
   productId?: string | null;
@@ -425,6 +453,7 @@ export interface ConsultationDocument {
 }
 
 export interface Task {
+  reminderTypeId?: string | null;
   assignedTo?: string;
   createdAt: string;
   description?: string;

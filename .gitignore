@@ -37,3 +37,13 @@ activation-server/node_modules/
 *.njsproj
 *.sln
 *.sw?
+
+# Exports et caches de travail régénérables
+outputs/
+pet-runs/
+preview/
+.next/
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/hook.cache.json
+*.tsbuildinfo

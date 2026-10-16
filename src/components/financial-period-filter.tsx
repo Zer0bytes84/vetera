@@ -20,7 +20,7 @@ export function FinancialPeriodFilter({ from, to, onChange }: { from: string; to
   const display = (value: string) => format(parse(value)!, "d MMM yyyy", { locale: fr });
   const label = from && to ? (from === to ? display(from) : `${display(from)} – ${display(to)}`) : from ? `Depuis le ${display(from)}` : to ? `Jusqu’au ${display(to)}` : "Toutes les dates";
   const apply = (start: string, end: string) => { onChange(start, end); setOpen(false); };
-  return <div className="py-2">
+  return <div className="flex items-center">
     <Popover open={open} onOpenChange={(next) => { if (next) setDraft({ from: parse(from), to: parse(to) }); setOpen(next); }}>
       <PopoverTrigger render={<Button variant="outline" className="list-filter-control h-[30px] gap-1.5 rounded-full bg-background px-2.5 text-xs font-medium" aria-label={`Choisir la période : ${label}`}><CalendarDays className="size-3.5 text-muted-foreground" /><span>{label}</span><ChevronDown className="ml-1 size-3 text-muted-foreground" /></Button>} />
       <PopoverContent align="start" sideOffset={8} className="w-auto max-w-[calc(100vw-24px)] gap-0 rounded-2xl p-0 overflow-hidden">

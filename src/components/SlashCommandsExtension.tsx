@@ -4,16 +4,9 @@ import Suggestion from "@tiptap/suggestion";
 import tippy, { type Instance } from "tippy.js";
 import { documentNoteTemplateOrder, documentNoteTemplates } from "./document-note-templates";
 import { insertDocumentTable } from "./document-table-presets";
-import SlashCommandMenu from "./SlashCommandMenu";
+import SlashCommandMenu, { type SlashCommandItem } from "./SlashCommandMenu";
 
-export interface SlashCommandItem {
-  command: (editor: any) => void;
-  description: string;
-  group?: string;
-  icon: React.ReactNode;
-  keywords?: string[];
-  title: string;
-}
+export type { SlashCommandItem };
 
 const SlashCommands = Extension.create({
   name: "slashCommands",

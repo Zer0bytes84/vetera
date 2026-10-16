@@ -1,3 +1,4 @@
+import { formatDinars, formatPhone } from "@/utils/display-format";
 import {
   Add01Icon,
   AttachmentIcon,
@@ -9,7 +10,6 @@ import {
   File01Icon,
   HourglassIcon,
   Mail01Icon,
-  NoteIcon,
   PrinterIcon,
   StethoscopeIcon,
   TimerIcon,
@@ -22,18 +22,11 @@ import React, { useEffect, useEffectEvent, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { FormDialogHeader } from "@/components/ui/form-dialog";
-import { ModalBanner } from "@/components/ui/modal-banner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import {
   Field,
@@ -58,6 +51,8 @@ import {
 } from "@/components/ui/table";
 
 import { Textarea } from "@/components/ui/textarea";
+import { SoapPanel } from "@/modules/consultations/components/soap-panel";
+import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
 import {
   CLINIQUE_STATUS_META,
   PATIENT_STATUS_META,
@@ -116,7 +111,7 @@ export const LIST_TABS: Array<{
   { value: "all", label: "Planning", icon: Calendar01Icon },
   { value: "scheduled", label: "À venir", icon: HourglassIcon },
   { value: "in_progress", label: "En cours", icon: TimerIcon },
-  { value: "completed", label: "Terminés", icon: CheckmarkCircle01Icon },
+  { value: "completed", label: "Terminées", icon: CheckmarkCircle01Icon },
 ];
 
 export function normalizeDate(value?: string | Date | null) {
@@ -416,7 +411,6 @@ export function ConsultationSessionDialog({
   documents,
   historyAppointments,
   onClose,
-  onOpenSoap,
   onOpenPrescription,
   onOpenHospitalization,
   onOpenAnesthesia,
@@ -432,7 +426,6 @@ export function ConsultationSessionDialog({
   documents: ConsultationDocument[];
   historyAppointments: Appointment[];
   onClose: () => void;
-  onOpenSoap?: () => void;
   onOpenPrescription?: () => void;
   onOpenHospitalization?: () => void;
   onOpenAnesthesia?: () => void;
@@ -670,82 +663,82 @@ export function ConsultationSessionDialog({
   };
 
   return (
-    <Dialog onOpenChange={(open) => !open && onClose()} open>
-      <DialogContent className="modal-medical-shell max-h-[calc(100dvh-2rem)] max-w-[min(1180px,calc(100%-2rem))] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[min(1180px,calc(100%-2rem))]">
-        <DialogHeader className="modal-medical-header gap-0">
-          <ModalBanner
-            artwork="consultation"
-            className="modal-banner-compact modal-banner-record"
-            icon={<HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />}
-          >
-            <div className="flex min-w-0 flex-1 flex-col gap-3">
-              <div className="space-y-1.5">
-                <DialogTitle className="text-xl tracking-[-0.04em]">
-                  Consultation active
-                </DialogTitle>
-                <DialogDescription>
-                  Examen et suivi du patient.
-                </DialogDescription>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  className="h-8 gap-1.5"
-                  onClick={() => onOpenSoap?.()}
-                  size="sm"
-                  type="button"
-                  variant="outline"
-                >
-                  <HugeiconsIcon icon={NoteIcon} size={14} strokeWidth={1.5} />
-                  Note SOAP
-                </Button>
-                <Button
-                  className="h-8 gap-1.5"
-                  onClick={() => onOpenPrescription?.()}
-                  size="sm"
-                  type="button"
-                  variant="outline"
-                >
-                  <Pill size={14} weight="duotone" />
-                  Ordonnance
-                </Button>
-                <Button
-                  className="h-8 gap-1.5"
-                  onClick={() => onOpenHospitalization?.()}
-                  size="sm"
-                  type="button"
-                  variant="outline"
-                >
-                  <Hospital size={14} weight="duotone" />
-                  Hospitaliser
-                </Button>
-                <Button
-                  className="h-8 gap-1.5"
-                  onClick={() => onOpenAnesthesia?.()}
-                  size="sm"
-                  type="button"
-                  variant="outline"
-                >
-                  <Syringe size={14} weight="duotone" />
-                  Anesthésie
-                </Button>
-                <Badge className="bg-background/90" variant="outline">
-                  <HugeiconsIcon
-                    className="mr-1 size-3.5"
-                    icon={Clock01Icon}
-                    strokeWidth={1.5}
-                  />
-                  {formatElapsedDuration(elapsedMs)}
-                </Badge>
-                <AppointmentStatusBadge
-                  className="min-w-[92px] bg-blue-500/12 px-3 font-semibold text-blue-700 text-sm dark:bg-blue-500/18 dark:text-blue-200"
-                  status="in_progress"
-                />
-              </div>
-            </div>
-          </ModalBanner>
-        </DialogHeader>
+    <section
+      aria-label={`Consultation de ${patientName}`}
+      className="flex min-w-0 flex-col gap-6"
+    >
+      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <div className="space-y-1.5">
+            <h2 className="text-xl font-semibold tracking-[-0.04em]">
+              Consultation · {patientName}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Examen et suivi du patient.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              className="h-8 gap-1.5"
+              onClick={() => onOpenPrescription?.()}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <Pill size={14} weight="duotone" />
+              Ordonnance
+            </Button>
+            <Button
+              className="h-8 gap-1.5"
+              onClick={() => onOpenHospitalization?.()}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <Hospital size={14} weight="duotone" />
+              Hospitaliser
+            </Button>
+            <Button
+              className="h-8 gap-1.5"
+              onClick={() => onOpenAnesthesia?.()}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <Syringe size={14} weight="duotone" />
+              Anesthésie
+            </Button>
+            <Badge className="bg-background/90" variant="outline">
+              <HugeiconsIcon
+                className="mr-1 size-3.5"
+                icon={Clock01Icon}
+                strokeWidth={1.5}
+              />
+              {formatElapsedDuration(elapsedMs)}
+            </Badge>
+            <AppointmentStatusBadge
+              className="min-w-[92px] bg-blue-500/12 px-3 font-semibold text-blue-700 text-sm dark:bg-blue-500/18 dark:text-blue-200"
+              status="in_progress"
+            />
+          </div>
+        </div>
+        <Button onClick={onClose} size="sm" variant="ghost">
+          Retour aux consultations
+        </Button>
+      </header>
 
-        <div className="modal-medical-body min-h-0 overflow-y-auto p-6">
+      <SoapPanel
+        appointmentId={appointment.id}
+        key={appointment.id}
+        patientId={patient.id}
+      />
+      <ConsultationProducts key={`products:${appointment.id}`} appointmentId={appointment.id} patientId={patient.id} />
+
+      <details className="rounded-xl border border-border bg-card">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-medium">
+          Informations du patient et dossier de consultation
+        </summary>
+        <div className="min-w-0 p-4 sm:p-6">
           <div className="grid gap-8 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)]">
             {/* Left Column: Patient File & Metadata */}
             <div className="flex flex-col gap-6">
@@ -790,7 +783,7 @@ export function ConsultationSessionDialog({
                       Téléphone
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
-                      {owner?.phone || "Non renseigné"}
+                      {formatPhone(owner?.phone) || "Non renseigné"}
                     </p>
                   </div>
                 </div>
@@ -1096,70 +1089,70 @@ export function ConsultationSessionDialog({
             </div>
           </div>
         </div>
+      </details>
 
-        <div className="modal-medical-footer flex flex-col gap-2 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-h-5 text-muted-foreground text-sm">
-            {autosaveStatus === "saving" ? (
-              <span className="inline-flex items-center gap-2">
-                <Spinner className="size-3.5" />
-                Sauvegarde automatique...
-              </span>
-            ) : autosaveStatus === "saved" ? (
-              <span>
-                Sauvegardé automatiquement
-                {lastAutoSavedAt
-                  ? ` à ${lastAutoSavedAt.toLocaleTimeString("fr-FR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}`
-                  : ""}
-              </span>
-            ) : autosaveStatus === "error" ? (
-              <span className="text-destructive">
-                Sauvegarde automatique à vérifier.
-              </span>
-            ) : (
-              <span>Les changements sont sauvegardés automatiquement.</span>
-            )}
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button
-              className="min-w-[120px]"
-              disabled={isSavingDraft || isCompleting}
-              onClick={onClose}
-              variant="outline"
-            >
-              Fermer
-            </Button>
-            <Button
-              className="min-w-[130px]"
-              disabled={isSavingDraft || isCompleting}
-              onClick={() => void handleSaveDraftClick()}
-              variant="outline"
-            >
-              {isSavingDraft ? <Spinner className="size-4" /> : null}
-              {isSavingDraft ? "Sauvegarde..." : "Sauvegarder"}
-            </Button>
-            <Button
-              className="min-w-[188px]"
-              disabled={isSavingDraft || isCompleting}
-              onClick={() => void handleCompleteClick()}
-            >
-              {isCompleting ? (
-                <Spinner className="size-4" />
-              ) : (
-                <HugeiconsIcon
-                  data-icon="inline-start"
-                  icon={Dollar01Icon}
-                  strokeWidth={1.5}
-                />
-              )}
-              {isCompleting ? "Traitement..." : "Clôturer et facturer"}
-            </Button>
-          </div>
+      <div className="flex flex-col gap-3 border-t border-border py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-h-5 text-muted-foreground text-sm">
+          {autosaveStatus === "saving" ? (
+            <span className="inline-flex items-center gap-2">
+              <Spinner className="size-3.5" />
+              Sauvegarde automatique...
+            </span>
+          ) : autosaveStatus === "saved" ? (
+            <span>
+              Sauvegardé automatiquement
+              {lastAutoSavedAt
+                ? ` à ${lastAutoSavedAt.toLocaleTimeString("fr-FR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}`
+                : ""}
+            </span>
+          ) : autosaveStatus === "error" ? (
+            <span className="text-destructive">
+              Sauvegarde automatique à vérifier.
+            </span>
+          ) : (
+            <span>Les changements sont sauvegardés automatiquement.</span>
+          )}
         </div>
-      </DialogContent>
-    </Dialog>
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button
+            className="min-w-[120px]"
+            disabled={isSavingDraft || isCompleting}
+            onClick={onClose}
+            variant="outline"
+          >
+            Fermer
+          </Button>
+          <Button
+            className="min-w-[130px]"
+            disabled={isSavingDraft || isCompleting}
+            onClick={() => void handleSaveDraftClick()}
+            variant="outline"
+          >
+            {isSavingDraft ? <Spinner className="size-4" /> : null}
+            {isSavingDraft ? "Sauvegarde..." : "Sauvegarder"}
+          </Button>
+          <Button
+            className="min-w-[188px]"
+            disabled={isSavingDraft || isCompleting}
+            onClick={() => void handleCompleteClick()}
+          >
+            {isCompleting ? (
+              <Spinner className="size-4" />
+            ) : (
+              <HugeiconsIcon
+                data-icon="inline-start"
+                icon={Dollar01Icon}
+                strokeWidth={1.5}
+              />
+            )}
+            {isCompleting ? "Traitement..." : "Clôturer et facturer"}
+          </Button>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1256,10 +1249,10 @@ export function BillingDialog({
 
     const subject = encodeURIComponent(`Facture vétérinaire - ${patientName}`);
     const itemList = items
-      .map((item) => `- ${item.desc}: ${item.amount} DA`)
+      .map((item) => `- ${item.desc}: ${formatDinars(item.amount)}`)
       .join("\n");
     const body = encodeURIComponent(
-      `Bonjour,\n\nVeuillez trouver le détail de la consultation pour ${patientName}.\n\n${itemList}\n\nTOTAL: ${total} DA\n\nCordialement,\nL'équipe ${APP_NAME}`
+      `Bonjour,\n\nVeuillez trouver le détail de la consultation pour ${patientName}.\n\n${itemList}\n\nTOTAL: ${formatDinars(total)}\n\nCordialement,\nL'équipe ${APP_NAME}`
     );
 
     window.open(`mailto:${ownerEmail}?subject=${subject}&body=${body}`);
@@ -1331,7 +1324,7 @@ export function BillingDialog({
                     Total provisoire
                   </p>
                   <p className="mt-1.5 font-extrabold text-base tracking-tight">
-                    {total} DA
+                    {formatDinars(total)}
                   </p>
                 </div>
               </div>
@@ -1432,7 +1425,7 @@ export function BillingDialog({
                   Total à encaisser
                 </span>
                 <span className="font-semibold text-2xl text-foreground tracking-[-0.04em]">
-                  {total} DA
+                  {formatDinars(total)}
                 </span>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_180px] sm:items-end">
@@ -1458,7 +1451,7 @@ export function BillingDialog({
                     balance > 0 ? "text-amber-700" : "text-emerald-700"
                   )}
                 >
-                  {balance} DA
+                  {formatDinars(balance)}
                 </span>
               </div>
             </div>

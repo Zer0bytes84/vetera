@@ -25,9 +25,11 @@ import {
 
 export function NavDocuments({
   title,
+  premiumTitle,
   items,
 }: {
   title?: string;
+  premiumTitle?: string;
   items: {
     name: string;
     icon: React.ReactNode;
@@ -40,7 +42,7 @@ export function NavDocuments({
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:p-0">
       <SidebarGroupLabel className="mb-1.5 px-2.5 font-medium text-[10px] text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden">
-        {title ?? t("nav.sections.operations")}
+        {premiumTitle ? <><span className="classic-sidebar-label">{title ?? t("nav.sections.operations")}</span><span className="premium-sidebar-label">{premiumTitle}</span></> : title ?? t("nav.sections.operations")}
       </SidebarGroupLabel>
       <SidebarMenu className="gap-1 group-data-[collapsible=icon]:gap-2">
         {items.map((item) => (

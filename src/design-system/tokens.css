@@ -39,7 +39,7 @@
   --signal-watch: #f59e0b;
   --signal-positive: #10b981;
   --signal-quiet: #696b71;
-  --primary: #4124fb;
+  --primary: #191919;
   --primary-foreground: #ffffff;
   --secondary: #ffffff;
   --secondary-foreground: #202124;
@@ -51,9 +51,9 @@
     0 24px 48px -24px rgb(9 9 11 / 0.22);
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --app-font-sans: "Geist Variable", "Inter Variable", sans-serif;
-  --app-font-heading: "Geist Variable", "Inter Variable", sans-serif;
-  --app-font-display: "Geist Variable", "Inter Variable", sans-serif;
+  --app-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --app-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --app-font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Public shadcn/legacy variables remain aliases, not a second palette. */
   --background: var(--canvas);
@@ -78,8 +78,9 @@
   --ink-muted: #a4a4a4;
   --ink-faint: #989898;
   --hairline: #303030;
-  --primary: #4124fb;
-  --primary-foreground: #f9fbff;
+  --primary: #3b1fe5;
+  --primary-foreground: #ffffff;
+  --on-primary: #ffffff;
   --secondary: #1e1e1e;
   --secondary-foreground: #f9fbff;
   --signal-critical: #fb7185;

@@ -11,7 +11,7 @@ export function ShortcutTooltip({
   children,
 }: {
   label: string;
-  shortcut: string;
+  shortcut?: string;
   children: ReactElement;
 }) {
   return (
@@ -19,9 +19,11 @@ export function ShortcutTooltip({
       <TooltipTrigger render={children} />
       <TooltipContent>
         {label}
-        <kbd className="ml-2 rounded border border-current/25 px-1 font-mono text-[10px]">
-          {shortcut}
-        </kbd>
+        {shortcut && (
+          <kbd className="ml-2 rounded border border-current/25 px-1 font-mono text-[10px]">
+            {shortcut}
+          </kbd>
+        )}
       </TooltipContent>
     </Tooltip>
   );

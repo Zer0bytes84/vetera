@@ -9,8 +9,12 @@ import {
 import { COMMON_VET_PRODUCTS } from "@/modules/stock/components/stock-shared";
 import type { Product, Transaction } from "@/types/db";
 import { toCentimes } from "@/utils/currency";
+import { StockError } from "@/domain/stock";
+import { isTauriRuntime } from "@/services/browser-store";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function useStockPageModel() {
+  const {currentUser} = useAuth();
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -26,11 +30,13 @@ export function useStockPageModel() {
     movements,
     recordStockMovement,
     adjustProductStock,
+    saveProduct,
   } = useProductsRepository();
   const { add: addTransaction } = useTransactionsRepository();
 
   const [formData, setFormData] = useState<Partial<Product>>({
     category: "Médicaments",
+    stockTracked: true,
     minStock: 10,
     unit: "boite",
     quantity: 0,
@@ -47,7 +53,7 @@ export function useStockPageModel() {
 
   const totalProducts = activeProducts.length;
   const stockValue = activeProducts.reduce(
-    (sum, product) => sum + product.quantity * product.purchasePriceAmount,
+    (sum, product) => sum + (product.stockTracked === false ? 0 : product.quantity * product.purchasePriceAmount),
     0
   );
   // --- Handlers ---
@@ -55,6 +61,7 @@ export function useStockPageModel() {
     setSelectedProduct(null);
     setFormData({
       category: "Médicaments",
+      stockTracked: true,
       minStock: 5,
       unit: "boite",
       quantity: 0,
@@ -126,7 +133,8 @@ export function useStockPageModel() {
         name: formData.name,
         category: formData.category || "Autre",
         subCategory: formData.subCategory || "",
-        quantity: Math.max(0, Number(formData.quantity) || 0),
+        quantity: Number(formData.quantity ?? 0),
+        stockTracked: formData.stockTracked !== false,
         unit: formData.unit || "unité",
         minStock: Math.max(0, Number(formData.minStock) || 0),
         purchasePriceAmount: toCentimes(Number(formData.purchasePriceAmount)),
@@ -136,10 +144,19 @@ export function useStockPageModel() {
 
       let productId = selectedProduct?.id;
 
-      if (selectedProduct) {
-        await updateProduct(selectedProduct.id, productData);
+      if (isTauriRuntime()) {
+        const {quantity, ...details} = productData;
+        const saved = await saveProduct(selectedProduct?.id, {...details, ...(!selectedProduct || quantity !== selectedProduct.quantity ? {quantity} : {})}, currentUser?.id);
+        productId = saved.id;
+      } else if (selectedProduct) {
+        const {quantity, ...details} = productData;
+        if (!(await updateProduct(selectedProduct.id, details))) throw new Error("Le produit n’a pas pu être enregistré.");
+        if (quantity !== selectedProduct.quantity) {
+          await adjustProductStock({productId: selectedProduct.id, quantity, reason: "Comptage depuis la fiche produit"});
+        }
       } else {
         const added = await addProduct(productData as any);
+        if (!added) throw new Error("Le produit n’a pas pu être enregistré.");
         if (added) {
           productId = added.id;
           if (productData.quantity > 0) {
@@ -150,6 +167,8 @@ export function useStockPageModel() {
               quantityAfter: productData.quantity,
               unitCostAmount: productData.purchasePriceAmount,
               reason: "Stock initial",
+              unitSnapshot: productData.unit,
+              productNameSnapshot: productData.name,
             });
           }
         }
@@ -199,7 +218,7 @@ export function useStockPageModel() {
       });
     } catch (e) {
       console.error("Error saving product:", e);
-      toast.error("Erreur lors de l'enregistrement. Veuillez réessayer.");
+      toast.error(e instanceof StockError ? e.message : "Erreur lors de l'enregistrement. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }

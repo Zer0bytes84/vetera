@@ -1,3 +1,4 @@
+import { getBrowserPasswordHash } from "../browserCredentials";
 import bcrypt from "bcryptjs";
 import {
   clearBrowserRows,
@@ -54,7 +55,8 @@ async function getRegistrationRole(): Promise<string> {
 type BrowserUserRecord = {
   id: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
+  password_hash?: string;
   displayName: string;
   role: string;
   status: "active" | "inactive";
@@ -103,10 +105,10 @@ function legacySha256(value: string): string {
     const j = message.charCodeAt(i);
     words[i >> 2] |= j << (((3 - i) % 4) * 8);
   }
-  words[(((message[lengthProperty] + 8) >> 6) << 4) + 15] =
+  words[(((ascii[lengthProperty] + 8) >> 6) << 4) + 15] =
     ascii[lengthProperty] * 8;
 
-  const workingHash = hash.slice();
+  const workingHash = hash.slice(0, 8);
   for (let j = 0; j < words[lengthProperty]; ) {
     const w = words.slice(j, (j += 16));
     const oldHash = workingHash.slice();
@@ -122,7 +124,7 @@ function legacySha256(value: string): string {
         k[i] +
         (w[i] =
           i < 16
-            ? w[i]
+            ? w[i] | 0
             : (w[i - 16] +
                 (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) +
                 w[i - 7] +
@@ -157,18 +159,18 @@ legacySha256.h = undefined as number[] | undefined;
 legacySha256.k = undefined as number[] | undefined;
 
 /**
- * Hash un mot de passe (à implémenter côté Rust pour bcrypt)
- * Pour l'instant: hash simple (À REMPLACER en production)
+ * Hash a password with bcrypt and a fresh salt.
  */
 export async function hashPassword(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(12);
   return bcrypt.hash(password, salt);
 }
 
-async function verifyPassword(
+export async function verifyPassword(
   password: string,
-  hash: string
+  hash: unknown
 ): Promise<boolean> {
+  if (typeof password !== "string" || typeof hash !== "string" || !hash) return false;
   if (
     hash.startsWith("$2") ||
     hash.startsWith("$2a") ||
@@ -198,10 +200,11 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
       throw new Error("Email ou mot de passe incorrect");
     }
 
-    const isValid = await verifyPassword(
-      credentials.password,
-      user.passwordHash
-    );
+    const storedHash = getBrowserPasswordHash(user);
+    if (!storedHash) {
+      throw new Error("Ce profil ne possède pas de mot de passe enregistré dans ce navigateur. Les comptes de l’application Tauri ne sont pas partagés avec le navigateur.");
+    }
+    const isValid = await verifyPassword(credentials.password, storedHash);
     if (!isValid) {
       throw new Error("Email ou mot de passe incorrect");
     }
@@ -383,38 +386,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       );
     }
 
-    // Auto-connexion au démarrage si aucun jeton actif n'est présent
-    if (!user) {
-      const users = getBrowserTable<BrowserUserRecord>("users");
-      user = users.find((u) => u.status === "active") || users[0];
-      if (user) {
-        const newToken = generateId() + generateId();
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 30);
-        insertBrowserRow("sessions", {
-          id: generateId(),
-          userId: user.id,
-          token: newToken,
-          expiresAt: expiresAt.toISOString(),
-        } satisfies BrowserSessionRecord);
-        localStorage.setItem("auth_token", newToken);
-      }
-    }
-
-    if (!user) {
-      try {
-        const createdUser = await createInitialAdmin({
-          email: "veto@baitari.app",
-          password: "Password123!",
-          displayName: "Dr Vétérinaire",
-        });
-        const newToken = generateId() + generateId();
-        localStorage.setItem("auth_token", newToken);
-        return createdUser;
-      } catch {
-        return null;
-      }
-    }
+    if (!user || user.status !== "active") return null;
 
     return {
       id: user.id,
@@ -440,46 +412,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     );
   }
 
-  // Si pas de session active, connecter automatiquement le premier utilisateur actif
-  if (users.length === 0) {
-    users = await runDbRead((db) =>
-      db.select<DbUserRecord[]>(
-        "SELECT * FROM users WHERE status = 'active' LIMIT 1"
-      )
-    );
-
-    if (users.length > 0) {
-      const user = users[0];
-      const sessionId = generateId();
-      const newToken = generateId() + generateId();
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 30);
-
-      await runDbOperation((db) =>
-        db.execute(
-          `INSERT INTO sessions (id, user_id, token, expires_at, created_at)
-           VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-          [sessionId, user.id, newToken, expiresAt.toISOString()]
-        )
-      );
-      localStorage.setItem("auth_token", newToken);
-    }
-  }
-
-  if (users.length === 0) {
-    try {
-      const defaultUser = await createInitialAdmin({
-        email: "veto@baitari.app",
-        password: "Password123!",
-        displayName: "Dr Vétérinaire",
-      });
-      const newToken = generateId() + generateId();
-      localStorage.setItem("auth_token", newToken);
-      return defaultUser;
-    } catch {
-      return null;
-    }
-  }
+  if (users.length === 0 || users[0].status !== "active") return null;
 
   const user = users[0];
 

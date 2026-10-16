@@ -1,3 +1,4 @@
+import { normalizeVisualStyle, type VisualStyle } from "./visual-style";
 export type AccentColor =
   | "mist"
   | "blue"
@@ -53,6 +54,7 @@ export const HEADER_PATTERNS: Record<
 };
 
 export interface ThemeConfig {
+  visualStyle?: VisualStyle;
   chromeStyle: "classic" | "liquid-glass";
   accent: AccentColor;
   density: "compact" | "comfortable" | "spacious";
@@ -315,11 +317,12 @@ export const DENSITY_MAP: Record<
 };
 
 export const DEFAULT_THEME: ThemeConfig = {
+  visualStyle: "premium",
   chromeStyle: "liquid-glass",
-  accent: "noir",
+  accent: "blue",
   radius: "md",
   density: "comfortable",
-  font: "geist",
+  font: "system",
   headerPattern: "opaline",
   sidebarStyle: "classic",
 };
@@ -328,9 +331,16 @@ const ORIGINAL_HEADER_RESTORE_KEY = "baitari_original_header_restored_v2";
 
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const root = document.documentElement;
+  root.dataset.visualStyle = normalizeVisualStyle(config.visualStyle);
   root.dataset.chromeStyle = config.chromeStyle === "liquid-glass" ? "liquid-glass" : "classic";
   const accent = ACCENT_THEMES[config.accent];
-  const mode = isDark ? accent.dark : accent.light;
+  const baseMode = isDark ? accent.dark : accent.light;
+  const premium = normalizeVisualStyle(config.visualStyle) === "premium";
+  const mode = premium ? { ...baseMode,
+    primary: isDark ? "#3b1fe5" : "#191919",
+    primaryForeground: "#ffffff",
+    ring: isDark ? "#3b1fe5" : "#191919",
+  } : baseMode;
 
   const darkDashboardMuted = "var(--frame)";
   const darkDashboardMutedForeground = "var(--ink-muted)";
@@ -349,6 +359,10 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
     mode.primaryForeground,
     "important"
   );
+  root.style.setProperty("--on-primary", "#ffffff", "important");
+  root.style.setProperty("--btn-primary-bg", mode.primary, "important");
+  root.style.setProperty("--btn-primary-hover", isDark ? "#4b33f0" : "#000000", "important");
+  root.style.setProperty("--btn-primary-fg", "#ffffff", "important");
   root.style.setProperty("--ring", mode.ring, "important");
   // Navigation stays neutral like the CRM; primary color belongs to actions.
   root.style.setProperty("--sidebar-primary", "var(--frame)", "important");
@@ -414,10 +428,10 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   }
 
   root.style.setProperty("--app-font-sans", FONT_MAP[config.font].css);
-  root.style.setProperty("--app-font-heading", FONT_MAP.geist.css);
-  root.style.setProperty("--app-font-display", FONT_MAP.geist.css);
+  root.style.setProperty("--app-font-heading", FONT_MAP[config.font].css);
+  root.style.setProperty("--app-font-display", FONT_MAP[config.font].css);
   root.style.setProperty("--font-sans", FONT_MAP[config.font].css);
-  root.style.setProperty("--font-heading", FONT_MAP.geist.css);
+  root.style.setProperty("--font-heading", FONT_MAP[config.font].css);
   root.dataset.font = config.font;
   root.dataset.headerPattern = config.headerPattern || "opaline";
   root.dataset.radius = config.radius;
@@ -428,12 +442,21 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.style.setProperty("--density-gap", density.gap);
 }
 
+const PREMIUM_DEFAULT_MIGRATION_KEY = "baitari-premium-default-v1";
+
 export function getThemeConfig(): ThemeConfig {
   try {
     const stored = localStorage.getItem("theme-config");
     if (stored) {
       const parsed = JSON.parse(stored) as ThemeConfig;
-      const config = { ...DEFAULT_THEME, ...parsed };
+      const config = { ...DEFAULT_THEME, ...parsed, visualStyle: normalizeVisualStyle(parsed.visualStyle) };
+      // Older versions persisted Classic automatically, before Premium became the default.
+      // Migrate once; explicit appearance changes made afterwards remain respected.
+      if (localStorage.getItem(PREMIUM_DEFAULT_MIGRATION_KEY) !== "true") {
+        config.visualStyle = "premium";
+        localStorage.setItem("theme-config", JSON.stringify(config));
+        localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
+      }
       // Apply the requested CRM visual trial once; later appearance choices persist.
       if (localStorage.getItem("baitari-crm-geist-trial-v1") !== "true") {
         config.accent = "noir";
@@ -453,15 +476,26 @@ export function getThemeConfig(): ThemeConfig {
         localStorage.setItem("theme-config", JSON.stringify(config));
         localStorage.setItem("baitari-neutral-controls-v1", "true");
       }
+      // Apply the approved blue / native SF Pro direction once, then keep
+      // subsequent choices made in Appearance.
+      if (localStorage.getItem("baitari-blue-system-polish-v1") !== "true") {
+        config.accent = "blue";
+        config.font = "system";
+        localStorage.setItem("theme-config", JSON.stringify(config));
+        localStorage.setItem("baitari-blue-system-polish-v1", "true");
+      }
       return config;
     }
   } catch {}
   localStorage.setItem("baitari-crm-geist-trial-v1", "true");
   localStorage.setItem("baitari-neutral-controls-v1", "true");
+  localStorage.setItem("baitari-blue-system-polish-v1", "true");
+  localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
   return { ...DEFAULT_THEME };
 }
 
 export function saveThemeConfig(config: ThemeConfig) {
+  localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
   localStorage.setItem("theme-config", JSON.stringify(config));
   window.dispatchEvent(new Event("baitari-theme-config-changed"));
 }

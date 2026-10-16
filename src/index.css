@@ -3,7 +3,10 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/space-grotesk";
 @import "./design-system/tokens.css";
+@import "./design-system/premium.css";
+@import "./design-system/premium-workspace.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -729,6 +732,30 @@ html[dir="rtl"] .priority-bar-low {
   50% {
     transform: scale(1.3);
     opacity: 0.7;
+  }
+}
+
+@keyframes greeting-wave {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.greeting-wave {
+  display: inline-block;
+  transform-origin: 70% 70%;
+  animation: greeting-wave 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .greeting-wave {
+    animation: none !important;
   }
 }
 .status-dot-alive {
@@ -3344,15 +3371,7 @@ html[data-header-pattern="quiet"] .header-pattern-live {
   background: color-mix(in srgb, var(--sidebar-foreground) 12%, transparent);
 }
 .restored-sidebar [data-slot="sidebar-footer"] { border-top: 0; }
-.restored-sidebar [data-slot="sidebar-footer"]::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  inset-inline: 12px;
-  height: 1px;
-  background: color-mix(in srgb, var(--sidebar-foreground) 12%, transparent);
-  pointer-events: none;
-}
+
 
 .apple-sidebar-glow {
   position: absolute;

@@ -9,7 +9,10 @@ export function parseActionQuery(value: string): PaletteIntent | null {
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
   const rules = [
-    ["consultation", /^(?:nouvelle\s+)?consultation(?:\s+pour)?(?:\s+(.*))?$/],
+    [
+      "consultation",
+      /^(?:nouvelle?\s+)?(?:consultation|rdv|rendez-vous)(?:\s+pour)?(?:\s+(.*))?$/,
+    ],
     ["invoice", /^(?:facturer|facture)(?:\s+pour)?(?:\s+(.*))?$/],
     ["vaccination", /^(?:vaccination|vaccin)(?:\s+(?:pour|de))?(?:\s+(.*))?$/],
   ] as const;

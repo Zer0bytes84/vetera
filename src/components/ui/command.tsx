@@ -67,22 +67,30 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  endAddon,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & {
+  endAddon?: React.ReactNode;
+}) {
   return (
     <div className="relative p-2 pb-1" data-slot="command-input-wrapper">
-      <InputGroup className="h-14 rounded-xl border border-transparent bg-muted/60 shadow-none transition-[border-color,background-color] duration-200 ease-out focus-within:border-ring/50 focus-within:ring-2 focus-within:ring-ring/15 focus-within:bg-muted *:data-[slot=input-group-addon]:ps-4!">
+      <InputGroup className="h-12 rounded-xl border border-black/8 bg-black/[0.03] shadow-none transition-all duration-150 ease-out focus-within:border-zinc-900/35 focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(25,25,25,0.08)] dark:border-white/10 dark:bg-white/[0.05] dark:focus-within:border-white/35 dark:focus-within:bg-zinc-800/90 dark:focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] *:data-[slot=input-group-addon]:ps-3.5!">
         <CommandPrimitive.Input
           className={cn(
-            "w-full font-medium text-base outline-hidden placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
+            "w-full font-medium text-[15px] outline-none border-none bg-transparent placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
           data-slot="command-input"
           {...props}
         />
-        <InputGroupAddon>
-          <SearchIcon className="size-5 shrink-0 text-muted-foreground/50 transition-colors group-focus-within:text-primary" />
+        <InputGroupAddon align="inline-start">
+          <SearchIcon className="size-4.5 shrink-0 text-muted-foreground/50 transition-colors group-focus-within/input-group:text-zinc-900 dark:group-focus-within/input-group:text-zinc-100" />
         </InputGroupAddon>
+        {endAddon && (
+          <InputGroupAddon align="inline-end" className="pe-3">
+            {endAddon}
+          </InputGroupAddon>
+        )}
       </InputGroup>
     </div>
   );
