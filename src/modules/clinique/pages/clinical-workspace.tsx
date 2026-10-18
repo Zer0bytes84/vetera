@@ -1,5 +1,6 @@
 import StaysPage from "@/modules/hospitalizations/stays/stays-page";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { PageSubnavContext } from "@/design-system/patterns/page-header";
 import CliniquePage from "./clinique-page";
 import CarePage from "@/modules/care-tasks/care-page";
 import { careDisplayStatus } from "@/modules/care-tasks/domain";
@@ -21,21 +22,30 @@ export default function ClinicalWorkspace({
 }) {
   const { focus, clearFocus, registerHandler } = useFocus();
   const [tab, setTab] = useState(() =>
-    typeof sessionStorage !== "undefined" && sessionStorage.getItem("vetera:pending-clinical-tab") === "consultations" ? "consultations" : focus?.kind === "stay" ? "hospitalisation" : focus?.kind === "care_patient" || focus?.kind === "care_task"
-      ? "soins"
-      : initialTab
+    typeof sessionStorage !== "undefined" &&
+    sessionStorage.getItem("vetera:pending-clinical-tab") === "consultations"
+      ? "consultations"
+      : focus?.kind === "stay"
+        ? "hospitalisation"
+        : focus?.kind === "care_patient" || focus?.kind === "care_task"
+          ? "soins"
+          : initialTab,
   );
   useEffect(() => {
     const openConsultation = () => {
       setTab("consultations");
       sessionStorage.removeItem("vetera:pending-clinical-tab");
     };
-    if (sessionStorage.getItem("vetera:pending-clinical-tab") === "consultations") openConsultation();
+    if (
+      sessionStorage.getItem("vetera:pending-clinical-tab") === "consultations"
+    )
+      openConsultation();
     window.addEventListener("vetera:open-consultation", openConsultation);
-    return () => window.removeEventListener("vetera:open-consultation", openConsultation);
+    return () =>
+      window.removeEventListener("vetera:open-consultation", openConsultation);
   }, []);
   const [patientId, setPatientId] = useState<string | undefined>(() =>
-    focus?.kind === "care_patient" ? focus.id : undefined
+    focus?.kind === "care_patient" ? focus.id : undefined,
   );
   const { tasks, now } = useCareTasks();
   const overdueCount = tasks.filter(
@@ -44,13 +54,20 @@ export default function ClinicalWorkspace({
       careDisplayStatus(task, now) === "en_retard",
   ).length;
   const overdueLabel = `${overdueCount} soin${overdueCount > 1 ? "s" : ""} en retard`;
-  const [stayId,setStayId]=useState<string | undefined>(() => focus?.kind === "stay" ? focus.id : undefined);
+  const [stayId, setStayId] = useState<string | undefined>(() =>
+    focus?.kind === "stay" ? focus.id : undefined,
+  );
   const [taskId, setTaskId] = useState<string | undefined>(() =>
-    focus?.kind === "care_task" ? focus.id : undefined
+    focus?.kind === "care_task" ? focus.id : undefined,
   );
   useEffect(() => {
     const handleFocus = (request: FocusRequest) => {
-      if (request.kind === "stay") {setTab("hospitalisation");setStayId(request.id);clearFocus();return;}
+      if (request.kind === "stay") {
+        setTab("hospitalisation");
+        setStayId(request.id);
+        clearFocus();
+        return;
+      }
       if (request.kind !== "care_patient" && request.kind !== "care_task")
         return;
       setTab("soins");
@@ -63,57 +80,80 @@ export default function ClinicalWorkspace({
     if (focus) handleFocus(focus);
     return () => registerHandler(null);
   }, [registerHandler, clearFocus, focus]);
-  return (
-    <div className="clinical-workspace min-w-0">
-      <Tabs value={tab} onValueChange={setTab} className="clinical-workspace-navigation w-full px-4 pt-4 lg:px-6">
-        <TabsList aria-label="Sections de la clinique" className="w-full justify-start" tabsStyle="nav">
-          <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
-          <TabsTrigger value="consultations">Consultations</TabsTrigger>
-          <TabsTrigger
-            value="soins"
-            className="gap-2"
-            aria-label={overdueCount ? `Soins, ${overdueLabel}` : "Soins"}
-          >
-            Soins
-            {overdueCount > 0 && (
-              <Badge
-                variant="outline"
-                aria-hidden="true"
-                title={overdueLabel}
-                className="care-nav-badge min-w-5 border-rose-200 bg-rose-50 px-1.5 t-12 text-rose-700 tabular-nums dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
-              >
-                {overdueCount}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="hospitalisation">Hospitalisation</TabsTrigger>
-        </TabsList>
-      </Tabs>
-      {tab === "dossiers" ? (
-        <PatientsPage onNavigateToPatient={onNavigateToPatient} />
-      ) : tab === "hospitalisation" ? (
-        <StaysPage key={stayId || "all"} initialStayId={stayId} />
-      ) : tab === "soins" ? (
-        <>
-          {patientId && (
-            <Button
-              variant="ghost"
-              className="mx-6 mt-4"
-              onClick={() => setPatientId(undefined)}
+  // The section tabs sit right under each page's common header; the workspace
+  // only draws them itself when the shown page has no common header.
+  const [claims, setClaims] = useState(0);
+  const claim = useCallback(
+    (claimed: boolean) =>
+      setClaims((count) => Math.max(0, count + (claimed ? 1 : -1))),
+    [],
+  );
+  const tabsList = useMemo(
+    () => (
+      <TabsList
+        aria-label="Sections de la clinique"
+        className="w-full justify-start"
+        tabsStyle="nav"
+      >
+        <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
+        <TabsTrigger value="consultations">Consultations</TabsTrigger>
+        <TabsTrigger
+          value="soins"
+          className="gap-2"
+          aria-label={overdueCount ? `Soins, ${overdueLabel}` : "Soins"}
+        >
+          Soins
+          {overdueCount > 0 && (
+            <Badge
+              variant="outline"
+              aria-hidden="true"
+              title={overdueLabel}
+              className="care-nav-badge min-w-5 border-rose-200 bg-rose-50 px-1.5 t-12 text-rose-700 tabular-nums dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
             >
-              Afficher tous les patients
-            </Button>
+              {overdueCount}
+            </Badge>
           )}
-          <CarePage
-            key={`${patientId ?? "all"}-${taskId ?? ""}`}
-            patientId={patientId}
-            initialTaskId={taskId}
-            onNavigateToPatient={onNavigateToPatient}
-          />
-        </>
-      ) : (
-        <CliniquePage onNavigate={onNavigate} />
-      )}
-    </div>
+        </TabsTrigger>
+        <TabsTrigger value="hospitalisation">Hospitalisation</TabsTrigger>
+      </TabsList>
+    ),
+    [overdueCount, overdueLabel],
+  );
+  const subnav = useMemo(() => ({ node: tabsList, claim }), [tabsList, claim]);
+  return (
+    <Tabs
+      value={tab}
+      onValueChange={setTab}
+      className="clinical-workspace clinical-workspace-navigation min-w-0 gap-0"
+    >
+      <PageSubnavContext.Provider value={subnav}>
+        {claims === 0 && <div className="px-4 pt-4 lg:px-6">{tabsList}</div>}
+        {tab === "dossiers" ? (
+          <PatientsPage onNavigateToPatient={onNavigateToPatient} />
+        ) : tab === "hospitalisation" ? (
+          <StaysPage key={stayId || "all"} initialStayId={stayId} />
+        ) : tab === "soins" ? (
+          <>
+            {patientId && (
+              <Button
+                variant="ghost"
+                className="mx-6 mt-4"
+                onClick={() => setPatientId(undefined)}
+              >
+                Afficher tous les patients
+              </Button>
+            )}
+            <CarePage
+              key={`${patientId ?? "all"}-${taskId ?? ""}`}
+              patientId={patientId}
+              initialTaskId={taskId}
+              onNavigateToPatient={onNavigateToPatient}
+            />
+          </>
+        ) : (
+          <CliniquePage onNavigate={onNavigate} />
+        )}
+      </PageSubnavContext.Provider>
+    </Tabs>
   );
 }

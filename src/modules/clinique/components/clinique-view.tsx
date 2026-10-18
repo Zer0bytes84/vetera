@@ -21,7 +21,7 @@ import { ClipboardList } from "lucide-react";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import { MedicalRemindersModule } from "@/modules/patient-reminders/medical-reminders-widget";
 
-import Avatar from "@/components/Avatar";
+import { InitialsAvatar } from "@/design-system/patterns/initials-avatar";
 
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { QuickPatientPicker } from "@/components/QuickPatientPicker";
@@ -548,7 +548,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                                       appointment.status
                                     ) ? (
                                       <Button
-                                        className="min-w-[96px] rounded-body"
+                                        className="min-w-[108px] justify-center rounded-body"
                                         onClick={() =>
                                           handleStatusAction(appointment)
                                         }
@@ -563,7 +563,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                                       </Button>
                                     ) : appointment.status === "in_progress" ? (
                                       <Button
-                                        className="min-w-[96px] rounded-body"
+                                        className="min-w-[108px] justify-center rounded-body"
                                         onClick={() =>
                                           handleStatusAction(appointment)
                                         }
@@ -578,7 +578,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                                       </Button>
                                     ) : (
                                       <Button
-                                        className="rounded-body bg-muted/40 text-muted-foreground"
+                                        className="min-w-[108px] justify-center rounded-body bg-muted/40 text-muted-foreground"
                                         disabled
                                         size="xs"
                                         variant="outline"
@@ -649,19 +649,15 @@ export function CliniqueView(props: CliniqueViewProps) {
             </Card>
 
             <Card className="clinical-selected-record surface-card relative overflow-hidden">
-              <CardHeader className="relative border-border/35 border-b bg-transparent">
-                <CardDescription>Dossier sélectionné</CardDescription>
-                <CardTitle className="t-18 tracking-[-0.04em]">
-                  {selectedPatient?.name || "Sélectionnez une consultation"}
-                </CardTitle>
-                {selectedAppointment ? (
-                  <CardAction>
-                    <AppointmentStatusBadge
-                      status={selectedAppointment.status}
-                    />
-                  </CardAction>
-                ) : null}
-              </CardHeader>
+              {/* With a selection the identity block below carries the title and the state. */}
+              {selectedAppointment && selectedPatient ? null : (
+                <CardHeader className="relative border-border/35 border-b bg-transparent">
+                  <CardDescription>Dossier sélectionné</CardDescription>
+                  <CardTitle className="t-18 tracking-[-0.04em]">
+                    Sélectionnez une consultation
+                  </CardTitle>
+                </CardHeader>
+              )}
 
               <CardContent className="flex min-h-0 flex-1 flex-col gap-4">
                 {selectedAppointment && selectedPatient ? (
@@ -686,6 +682,9 @@ export function CliniqueView(props: CliniqueViewProps) {
                           />
                         </div>
                         <div className="min-w-0 flex-1">
+                          <p className="t-12 text-muted-foreground">
+                            Dossier sélectionné
+                          </p>
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="truncate font-medium text-foreground t-18 tracking-[-0.04em]">
                               {selectedPatient.name}
@@ -708,6 +707,9 @@ export function CliniqueView(props: CliniqueViewProps) {
                             {formatDateLabel(selectedAppointment.startTime)}
                           </p>
                         </div>
+                        <AppointmentStatusBadge
+                          status={selectedAppointment.status}
+                        />
                       </div>
                     </div>
 
@@ -807,15 +809,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                           </CardHeader>
                           <CardContent className="grid gap-5">
                             <div className="flex items-center gap-3">
-                              <Avatar
-                                name={formatOwnerName(selectedOwner)}
-                                size="md"
-                                src={
-                                  selectedOwner?.email
-                                    ? undefined
-                                    : "gradient:from-blue-500 to-cyan-500"
-                                }
-                              />
+                              <InitialsAvatar name={formatOwnerName(selectedOwner)} />
                               <div className="min-w-0 flex-1">
                                 <p className="truncate font-medium text-foreground">
                                   {formatOwnerName(selectedOwner)}

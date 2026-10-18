@@ -7,6 +7,7 @@ import {
   Add01Icon,
   ArrowDown01Icon,
   ArrowRight01Icon,
+  ChartLineData01Icon,
   ArrowUp01Icon,
   CheckmarkCircle02Icon,
   Clock01Icon,
@@ -255,7 +256,7 @@ export function FinancesView(props: FinancesViewProps) {
           >
             <HugeiconsIcon
               className="size-4"
-              icon={ArrowRight01Icon}
+              icon={ChartLineData01Icon}
               strokeWidth={1.5}
             />
             Analyse
@@ -310,8 +311,8 @@ export function FinancesView(props: FinancesViewProps) {
                   <CardTitle className="t-18 tracking-[-0.025em]">Registre des factures</CardTitle>
                   <CardDescription className="mt-1">Suivez l’émission, l’échéance et le recouvrement de chaque dossier.</CardDescription>
                 </div>}
-                <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-                  <ListSearch className="w-full sm:w-64" label="Rechercher les factures" placeholder="Numéro ou propriétaire…" value={invoiceQuery} onValueChange={setInvoiceQuery} />
+                <div className="flex w-full flex-wrap items-center gap-2">
+                  <ListSearch className="w-full sm:min-w-56 sm:flex-1" label="Rechercher les factures" placeholder="Numéro ou propriétaire…" value={invoiceQuery} onValueChange={setInvoiceQuery} />
                   <Button
                     aria-expanded={invoiceAdvancedOpen}
                     className="list-filter-control h-[30px] rounded-full text-xs"
@@ -329,17 +330,17 @@ export function FinancesView(props: FinancesViewProps) {
                       </Badge>
                     ) : null}
                   </Button>
+                      <FinancialPeriodFilter
+                        from={invoiceFrom}
+                        to={invoiceTo}
+                        onChange={(from, to) => {
+                          setInvoiceFrom(from);
+                          setInvoiceTo(to);
+                          setInvoicePage(1);
+                        }}
+                      />
                 </div>
               </div>
-              <FinancialPeriodFilter
-                from={invoiceFrom}
-                to={invoiceTo}
-                onChange={(from, to) => {
-                  setInvoiceFrom(from);
-                  setInvoiceTo(to);
-                  setInvoicePage(1);
-                }}
-              />
               {invoiceAdvancedOpen ? (
                 <div className="flex flex-wrap items-end gap-2 rounded-xl bg-muted/35 p-3">
                   <DateFilter

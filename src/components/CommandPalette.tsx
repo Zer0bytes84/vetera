@@ -916,7 +916,7 @@ export default function CommandPalette({
                   <div className="ml-1 min-w-0 flex-1">
                     <p className="t-13 font-semibold text-foreground">
                       {intent.kind === "vaccination"
-                        ? "Enregistrer un vaccin"
+                        ? "Ajouter un vaccin"
                         : "Nouvelle consultation"}{" "}
                       · {patient.name}
                     </p>
@@ -1218,7 +1218,7 @@ export default function CommandPalette({
                         pushRecent({
                           kind: "view",
                           id: "stock",
-                          label: result.text.split("—")[0].trim() || "Pharmacie & Stock",
+                          label: result.text.split("—")[0].trim() || "Produits",
                           sub: "Stock & Pharmacie",
                           at: Date.now(),
                         });

@@ -312,7 +312,7 @@ export function PatientDocumentSearch({
       case "patient":
         return "Fiche Patient";
       case "product":
-        return "Pharmacie & Stock";
+        return "Produits";
       case "document":
         return "Document clinique";
       case "protocol":
@@ -470,7 +470,7 @@ export function PatientDocumentSearch({
                             : type === "protocol"
                               ? "Protocoles validés"
                               : type === "product"
-                                ? "Pharmacie & Stock"
+                                ? "Produits"
                                 : "Documents validés"}
                   </SelectValue>
                 </SelectTrigger>
@@ -481,7 +481,7 @@ export function PatientDocumentSearch({
                   <SelectItem value="patient">Fiches Patients</SelectItem>
                   <SelectItem value="document">Documents validés</SelectItem>
                   <SelectItem value="protocol">Protocoles validés</SelectItem>
-                  <SelectItem value="product">Pharmacie & Stock</SelectItem>
+                  <SelectItem value="product">Produits</SelectItem>
                 </SelectContent>
               </Select>
 

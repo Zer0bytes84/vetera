@@ -251,7 +251,7 @@ export function AgendaListView({
       <section className="min-w-0 p-5 sm:p-6">
         <div className="flex flex-col gap-3 border-border/60 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="font-semibold t-18 tracking-[-0.03em]">
+            <h3 className="font-medium t-18 !tracking-[-0.02em]">
               {selectedAppointments.length > 0
                 ? `${selectedAppointments.length} rendez-vous à coordonner`
                 : "Journée disponible"}

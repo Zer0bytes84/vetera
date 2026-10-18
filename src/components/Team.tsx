@@ -1,4 +1,6 @@
 import { ListSearch } from "@/components/ui/list-controls";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { InitialsAvatar } from "@/design-system/patterns/initials-avatar";
 import { formatNumber, formatPersonName, formatPhone } from "@/utils/display-format";
 import {
   Add01Icon,
@@ -10,6 +12,7 @@ import {
   GraduationScrollIcon,
   Key01Icon,
   MailIcon,
+  MoreHorizontalIcon,
   Shield01Icon,
   SmartPhone01Icon,
   StethoscopeIcon,
@@ -34,7 +37,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -408,23 +410,14 @@ const Team: React.FC = () => {
           <CardTitle className="font-normal t-18 tracking-[-0.04em]">
             Coordination de l'équipe
           </CardTitle>
-          <CardAction>
-            <Badge className="rounded-full px-3 py-1" variant="outline">
-              {filteredUsers.length} visible
-              {filteredUsers.length > 1 ? "s" : ""}
-            </Badge>
-          </CardAction>
         </CardHeader>
         {/* Toolbar */}
         <div className="flex flex-col items-center justify-between gap-4 border-border border-b px-6 py-4 md:flex-row">
           <ListSearch className="w-full md:w-72" label="Rechercher un membre" placeholder="Rechercher un membre…" value={searchTerm} onValueChange={setSearchTerm} />
 
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-green-500" />
-              {users.filter((u) => u.status === "active").length} Actifs
-            </span>
-          </div>
+          <p className="text-muted-foreground t-13 tabular-nums">
+            {filteredUsers.length} membre{filteredUsers.length > 1 ? "s" : ""}
+          </p>
         </div>
 
         {/* Users List */}
@@ -468,11 +461,15 @@ const Team: React.FC = () => {
                     {/* Top Row: Info */}
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-4">
-                        <Avatar
-                          name={user.displayName}
-                          size="lg"
-                          src={resolvedAvatar}
-                        />
+                        {/^(https?:|data:|blob:|\/)/.test(resolvedAvatar) ? (
+                          <Avatar
+                            name={user.displayName}
+                            size="lg"
+                            src={resolvedAvatar}
+                          />
+                        ) : (
+                          <InitialsAvatar className="size-12" name={user.displayName} />
+                        )}
                         <div>
                           <h3 className="font-bold text-base text-foreground leading-tight">
                             {formatPersonName(user.displayName) || "Utilisateur inconnu"}
@@ -486,57 +483,51 @@ const Team: React.FC = () => {
                       </div>
 
                       {canManageTeam && (
-                        <div className="flex items-center gap-1">
-                          <Button
-                            className="text-muted-foreground hover:bg-amber-50 hover:text-amber-500 dark:hover:bg-amber-900/20"
-                            disabled={isResetting}
-                            aria-label={`Réinitialiser le mot de passe de ${user.displayName}`}
-                            onClick={() => setPasswordResetTarget(user)}
-                            size="icon-sm"
-                            title="Réinitialiser le mot de passe"
-                            variant="ghost"
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                aria-label={`Actions pour ${user.displayName}`}
+                                className="text-muted-foreground"
+                                size="icon-sm"
+                                title="Actions"
+                                variant="ghost"
+                              />
+                            }
                           >
                             {isResetting ? (
                               <Spinner className="size-4" />
                             ) : (
                               <HugeiconsIcon
                                 className="size-4"
-                                icon={Key01Icon}
+                                icon={MoreHorizontalIcon}
                                 strokeWidth={1.5}
                               />
                             )}
-                          </Button>
-                          <Button
-                            aria-label={`Modifier ${user.displayName}`}
-                            className="text-muted-foreground hover:bg-blue-50 hover:text-primary dark:hover:bg-blue-900/20"
-                            onClick={() => handleOpenModal(user)}
-                            size="icon-sm"
-                            title="Modifier le rôle / statut"
-                            variant="ghost"
-                          >
-                            <HugeiconsIcon
-                              className="size-4"
-                              icon={Edit01Icon}
-                              strokeWidth={1.5}
-                            />
-                          </Button>
-                          {user.email !== "zohir.kh@gmail.com" && (
-                            <Button
-                              aria-label={`Supprimer ${user.displayName}`}
-                              className="text-muted-foreground hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
-                              onClick={() => setMemberPendingDelete(user)}
-                              size="icon-sm"
-                              title="Supprimer définitivement"
-                              variant="ghost"
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              disabled={isResetting}
+                              onClick={() => setPasswordResetTarget(user)}
                             >
-                              <HugeiconsIcon
-                                className="size-4"
-                                icon={Delete01Icon}
-                                strokeWidth={1.5}
-                              />
-                            </Button>
-                          )}
-                        </div>
+                              <HugeiconsIcon icon={Key01Icon} strokeWidth={1.5} />
+                              Réinitialiser le mot de passe
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleOpenModal(user)}>
+                              <HugeiconsIcon icon={Edit01Icon} strokeWidth={1.5} />
+                              Modifier le rôle / statut
+                            </DropdownMenuItem>
+                            {user.email !== "zohir.kh@gmail.com" && (
+                              <DropdownMenuItem
+                                onClick={() => setMemberPendingDelete(user)}
+                                variant="destructive"
+                              >
+                                <HugeiconsIcon icon={Delete01Icon} strokeWidth={1.5} />
+                                Supprimer définitivement
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
                     </div>
 

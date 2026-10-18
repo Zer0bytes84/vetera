@@ -207,7 +207,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
         note: "Actes médicaux, prescriptions, examens et hospitalisations.",
       },
       stock: {
-        title: "Pharmacie & Stock",
+        title: "Produits",
         note: "Gestion des médicaments, consommables et seuils d'alerte.",
       },
       finances: {

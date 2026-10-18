@@ -44,7 +44,7 @@ export const APPOINTMENT_TYPE_META: Record<
       "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
   },
   Contrôle: {
-    badgeClassName: "bg-frame text-ink-muted",
+    badgeClassName: "premium-status-neutral bg-frame text-ink-muted",
     surfaceClassName: "border-hairline bg-frame",
     dotClassName: "bg-signal-quiet",
     iconClassName: "bg-frame text-ink-muted",

@@ -497,15 +497,9 @@
   :root[data-visual-style="premium"] .agenda-selected-date { min-width: 0; }
 }
 
-/* Restored clinical sections share one frame; controls and touch targets remain intact. */
-:root[data-visual-style="premium"] .clinical-workspace-navigation {
-  padding-block: 20px 0;
-  margin-bottom: 24px;
-}
-:root[data-visual-style="premium"] .clinical-workspace-navigation > [data-slot="tabs-list"] {
-  flex-wrap: wrap !important;
-  height: auto !important;
-  min-height: 44px !important;
+/* The section tabs sit right under the common page header, one frame for all sections. */
+:root[data-visual-style="premium"] .clinical-workspace [data-slot="page-header"] + [data-slot="tabs-list"] {
+  margin-top: 4px;
 }
 :root[data-visual-style="premium"] .clinical-workspace :is(.care-page, .hospitalisation-view) > header {
   padding-block: 0 20px;
@@ -726,27 +720,21 @@
 :root[data-visual-style="premium"] .patient-record-page .medical-tab-content { padding: 24px; }
 :root[data-visual-style="premium"] .patient-record-page .medical-rail { padding: 24px; }
 
-/* All eight record sections remain visible; wrap whole labels, never hide tabs. */
+/* All eight record sections stay reachable on one line: the row scrolls sideways,
+   with edge fades and arrow buttons (medical-record.css) showing what is hidden. */
 :root[data-visual-style="premium"] .patient-record-page .medical-tabs {
-  height: auto !important;
-  min-height: 44px !important;
-  flex-wrap: wrap !important;
-  overflow: visible !important;
-  padding: 0 !important;
-  scroll-padding-inline: 0;
+  scroll-padding-inline: 48px;
 }
 :root[data-visual-style="premium"] .patient-record-page .medical-tabs [role="tab"] {
   height: 44px !important;
-  flex: 1 0 auto !important;
   white-space: nowrap;
-  font-size: 12px !important;
-  padding-inline: 12px !important;
+  font-size: 13px !important;
 }
 :root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame { background: transparent; }
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs-scroll,
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs::after,
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame::before,
-:root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame::after { display: none; }
+:root[data-visual-style="premium"] .patient-record-page .medical-tabs::after { display: none; }
+:root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame::before { background: linear-gradient(to right, var(--surface) 55%, transparent); }
+:root[data-visual-style="premium"] .patient-record-page .medical-tabs-frame::after { background: linear-gradient(to left, var(--surface) 55%, transparent); }
+:root[data-visual-style="premium"] .patient-record-page .medical-tabs-scroll { background: var(--surface); }
 :root[data-visual-style="premium"] .patient-timeline-table th:nth-child(1) { width: 16%; }
 :root[data-visual-style="premium"] .patient-timeline-table th:nth-child(2) { width: 21%; }
 :root[data-visual-style="premium"] .patient-timeline-table th:nth-child(3) { width: 28%; }
@@ -828,18 +816,19 @@
   background: transparent;
   box-shadow: var(--hair-b);
 }
-:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) :is(.medical-note, .medical-health-action) {
+:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-note {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+:root[data-visual-style="premium"] :is(.patient-record-page, .patient-peek-panel) .medical-health-action {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
 
-:root[data-visual-style="premium"] .patient-record-actions > [data-slot="button"] {
-  height: 36px !important;
-  min-height: 36px !important;
-  margin: 0 !important;
-  padding-inline: 12px !important;
-}
 :root[data-visual-style="premium"] .patient-peek-panel { font-family: var(--app-font-sans); }
 :root[data-visual-style="premium"] .patient-peek-panel > [data-slot="sheet-header"],
 :root[data-visual-style="premium"] .patient-peek-identity {

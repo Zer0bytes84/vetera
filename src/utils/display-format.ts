@@ -73,6 +73,15 @@ export function formatElapsed(date: Date, now = new Date()) {
   return `Il y a ${Math.floor(hours / 24)}\u00a0j`;
 }
 
+const PERSON_TITLES = /^(dr|pr|mme|mlle|m|me|mr)\.?$/i;
+
+/** First name for a greeting: titles (Dr, Pr, Mme…) are skipped, "Dr Lina Ait Salem" gives "Lina". */
+export function firstNameOf(name?: string | null, fallback = "") {
+  const words = (name ?? "").split(/\s+/).filter(Boolean);
+  const first = words.find((word) => !PERSON_TITLES.test(word));
+  return first ?? fallback;
+}
+
 /** French titles without a period ("Dr", "Pr"), for display only. Stored names are unchanged. */
 export function formatPersonName(name?: string | null) {
   return (name ?? "").replace(/\b(Dr|Pr|Mme|Mlle)\.(?=\s)/g, "$1");

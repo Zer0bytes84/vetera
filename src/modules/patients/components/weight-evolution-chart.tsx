@@ -83,10 +83,10 @@ export function WeightEvolutionChart({
           </div>
           {onAdd ? (
             <Button
-              className="h-8 gap-1.5 rounded-lg"
+              className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
               onClick={onAdd}
               size="sm"
-              variant="default"
+              variant="outline"
             >
               <Plus className="size-3.5" weight="bold" />
               {t("patientDetail.overview.newWeight")}
@@ -118,10 +118,10 @@ export function WeightEvolutionChart({
         </div>
         {onAdd ? (
           <Button
-            className="h-8 gap-1.5 rounded-lg"
+            className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
             onClick={onAdd}
             size="sm"
-            variant="default"
+            variant="outline"
           >
             <Plus className="size-3.5" weight="bold" />
             {t("patientDetail.overview.newWeight")}

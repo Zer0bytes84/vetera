@@ -306,11 +306,19 @@ export const WEEK_HOUR_HEIGHT = 64;
 export const APPOINTMENT_VERTICAL_GAP = 2;
 
 export const TABLE_TABS = [
-  { label: "Planning", value: "planning" },
+  { label: "Autres jours", value: "planning" },
   { label: "Journée", value: "selection" },
   { label: "Terminés", value: "termine" },
   { label: "Attention", value: "attention" },
 ] as const;
+
+/** What each tab of the appointment table lists, tied to the day chosen above. */
+export const TABLE_SCOPES = (day: string): Record<TableTab, string> => ({
+  planning: `Rendez-vous des autres jours, hors journée du ${day}.`,
+  selection: `Rendez-vous de la journée du ${day}.`,
+  termine: "Rendez-vous terminés, tous jours confondus.",
+  attention: "Rendez-vous à surveiller, tous jours confondus.",
+});
 
 export type ViewMode = "list" | "day" | "week" | "month";
 

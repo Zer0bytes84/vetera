@@ -101,10 +101,10 @@ export function VaccinationList({
         </div>
         {onNew ? (
           <Button
-            className="h-8 shrink-0 gap-1.5 rounded-lg"
+            className="medical-action medical-action-outline h-8 shrink-0 gap-1.5 t-12 font-medium cursor-pointer"
             onClick={onNew}
             size="sm"
-            variant="default"
+            variant="outline"
           >
             <Plus className="size-3.5" weight="bold" />
             {t("patientDetail.vaccinations.newVaccine")}

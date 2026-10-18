@@ -11,11 +11,14 @@ import { usePatientReminders } from "@/modules/patient-reminders/use-patient-rem
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
 import {
   Alert02Icon,
+  Building01Icon,
   CheckmarkCircle02Icon,
   DatabaseIcon,
   Delete01Icon,
-  InformationSquareIcon,
+  File02Icon,
+  InformationCircleIcon,
   LaptopIcon,
+  Notification01Icon,
   Refresh01Icon,
   SaveIcon,
   Shield01Icon,
@@ -77,7 +80,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { updatePassword } from "@/services/sqlite/auth";
 import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
-import { AI_ONBOARDING_OPEN_EVENT, AI_SETTINGS_PENDING_KEY } from "@/modules/consultations/services/ai-model-provisioning";
+import {
+  AI_ONBOARDING_OPEN_EVENT,
+  AI_SETTINGS_PENDING_KEY,
+} from "@/modules/consultations/services/ai-model-provisioning";
 import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
@@ -145,7 +151,7 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         id: "cabinet",
         label: "Cabinet & factures",
         description: "Coordonnées, logo et présentation des PDF",
-        icon: InformationSquareIcon,
+        icon: Building01Icon,
       },
       {
         id: "apparence",
@@ -184,15 +190,22 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         id: "rappels-medicaux",
         label: "Rappels médicaux",
         description: "Types et intervalles préventifs",
-        icon: InformationSquareIcon,
+        icon: Notification01Icon,
         keywords: ["vaccin", "vermifuge", "contrôle", "dentaire", "échéance"],
       },
       {
         id: "modeles-documents",
         label: "Modèles de documents",
         description: "Formulations et champs des documents du cabinet",
-        icon: PencilEdit01Icon,
-        keywords: ["ordonnance", "certificat", "compte-rendu", "lettre", "document", "modèle"],
+        icon: File02Icon,
+        keywords: [
+          "ordonnance",
+          "certificat",
+          "compte-rendu",
+          "lettre",
+          "document",
+          "modèle",
+        ],
       },
     ],
   },
@@ -218,7 +231,7 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         id: "apropos",
         label: "À propos",
         description: "Version et activation",
-        icon: InformationSquareIcon,
+        icon: InformationCircleIcon,
         keywords: ["version", "équipe", "crédits", "support", "aide"],
       },
     ],
@@ -266,7 +279,7 @@ const BackupSettings: React.FC = () => {
   const run = async (
     operation: () => Promise<boolean | BackupInfo | null>,
     success: string,
-    restart = false
+    restart = false,
   ) => {
     setBusy(true);
     try {
@@ -290,7 +303,7 @@ const BackupSettings: React.FC = () => {
       toast.error(
         error instanceof Error
           ? error.message
-          : "L’opération a échoué. Réessayez."
+          : "L’opération a échoué. Réessayez.",
       );
     } finally {
       setBusy(false);
@@ -307,7 +320,7 @@ const BackupSettings: React.FC = () => {
       void run(
         () => restoreBackup(action.filename!, password),
         "Sauvegarde restaurée. Redémarrage…",
-        true
+        true,
       );
     } else if (action.kind === "delete" && action.filename) {
       void run(() => deleteBackup(action.filename!), "Sauvegarde supprimée.");
@@ -315,7 +328,7 @@ const BackupSettings: React.FC = () => {
       void run(
         () => importDatabase(password),
         "Base importée. Redémarrage…",
-        true
+        true,
       );
     }
   };
@@ -516,6 +529,8 @@ interface ParametresProps {
   onThemeChange?: (theme: "light" | "dark" | "system") => void;
 }
 
+const LOOKALIKE_ACCENTS: string[] = ["cyan", "teal"];
+
 const Parametres: React.FC<ParametresProps> = ({
   currentTheme = "light",
   onNavigate,
@@ -536,16 +551,21 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   const [activeTab, setActiveTab] = useState<SettingsTab>(() =>
-    typeof window !== "undefined" && window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true" ? "ia" : "profil"
+    typeof window !== "undefined" &&
+    window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true"
+      ? "ia"
+      : "profil",
   );
   useEffect(() => {
     const openAISettings = () => {
       window.sessionStorage.removeItem(AI_SETTINGS_PENDING_KEY);
       setActiveTab("ia");
     };
-    if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true") openAISettings();
+    if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true")
+      openAISettings();
     window.addEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
-    return () => window.removeEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
+    return () =>
+      window.removeEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
   }, []);
   const { currentUser, refreshCurrentUser } = useAuth();
   const medicalReminders = usePatientReminders();
@@ -564,7 +584,7 @@ const Parametres: React.FC<ParametresProps> = ({
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() =>
-    getThemeConfig()
+    getThemeConfig(),
   );
 
   useEffect(() => {
@@ -626,7 +646,7 @@ const Parametres: React.FC<ParametresProps> = ({
 
     try {
       const dbUser = users.find(
-        (u) => u.id === currentUser.id || u.email === currentUser.email
+        (u) => u.id === currentUser.id || u.email === currentUser.email,
       );
 
       if (!dbUser) {
@@ -735,7 +755,12 @@ const Parametres: React.FC<ParametresProps> = ({
   const renderContent = () => {
     switch (activeTab) {
       case "modeles-documents":
-        return <DocumentTemplateManager embedded onConfigureClinic={() => setActiveTab("cabinet")} />;
+        return (
+          <DocumentTemplateManager
+            embedded
+            onConfigureClinic={() => setActiveTab("cabinet")}
+          />
+        );
       case "profil":
         return (
           <div className="settings-section-stack">
@@ -745,7 +770,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   "rounded-lg border px-4 py-3 text-sm",
                   message.type === "success"
                     ? "border-emerald-500/25 text-emerald-700 dark:text-emerald-300"
-                    : "border-destructive/25 text-destructive"
+                    : "border-destructive/25 text-destructive",
                 )}
                 role="status"
               >
@@ -778,7 +803,8 @@ const Parametres: React.FC<ParametresProps> = ({
                         aria-pressed={avatarUrl === value}
                         className={cn(
                           "settings-avatar-choice",
-                          avatarUrl === value && "settings-avatar-choice-active"
+                          avatarUrl === value &&
+                            "settings-avatar-choice-active",
                         )}
                         key={emoji}
                         onClick={() => setAvatarUrl(value)}
@@ -801,7 +827,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   <label
                     className={cn(
                       buttonVariants({ size: "sm", variant: "outline" }),
-                      "cursor-pointer"
+                      "cursor-pointer",
                     )}
                     htmlFor="profile-photo-upload"
                   >
@@ -866,14 +892,32 @@ const Parametres: React.FC<ParametresProps> = ({
               </div>
               <div className="settings-row">
                 <div>
-                  <label htmlFor="premium-visual-style" className="settings-row-title cursor-pointer">Style Premium</label>
-                  <p id="premium-style-description" className="settings-row-detail">
-                    {themeConfig.visualStyle === "premium" ? "Premium : surfaces douces et espace aéré." : "Classique : votre apparence actuelle."}
+                  <label
+                    htmlFor="premium-visual-style"
+                    className="settings-row-title cursor-pointer"
+                  >
+                    Style Premium
+                  </label>
+                  <p
+                    id="premium-style-description"
+                    className="settings-row-detail"
+                  >
+                    {themeConfig.visualStyle === "premium"
+                      ? "Premium : surfaces douces et espace aéré."
+                      : "Classique : votre apparence actuelle."}
                   </p>
                 </div>
-                <Switch id="premium-visual-style" aria-describedby="premium-style-description"
+                <Switch
+                  id="premium-visual-style"
+                  aria-describedby="premium-style-description"
                   checked={themeConfig.visualStyle === "premium"}
-                  onCheckedChange={(checked) => handleThemeConfigChange({ ...themeConfig, visualStyle: checked ? "premium" : "classic" })} />
+                  onCheckedChange={(checked) =>
+                    handleThemeConfigChange({
+                      ...themeConfig,
+                      visualStyle: checked ? "premium" : "classic",
+                    })
+                  }
+                />
               </div>
               <div className="settings-row">
                 <div>
@@ -928,29 +972,41 @@ const Parametres: React.FC<ParametresProps> = ({
                       keyof typeof ACCENT_THEMES,
                       typeof ACCENT_THEMES.blue,
                     ][]
-                  ).map(([key, theme]) => (
-                    <button
-                      aria-label={`Couleur ${theme.label}`}
-                      aria-pressed={themeConfig.accent === key}
-                      className={cn(
-                        "settings-swatch",
-                        themeConfig.accent === key && "settings-swatch-active"
-                      )}
-                      key={key}
-                      onClick={() =>
-                        handleThemeConfigChange({ ...themeConfig, accent: key })
-                      }
-                      title={theme.label}
-                      type="button"
-                    >
-                      <span
+                  )
+                    // Eight distinct hues: cyan and teal stay valid for saved settings
+                    // but are only listed while one of them is the current choice.
+                    .filter(
+                      ([key]) =>
+                        !LOOKALIKE_ACCENTS.includes(key) ||
+                        themeConfig.accent === key,
+                    )
+                    .map(([key, theme]) => (
+                      <button
+                        aria-label={`Couleur ${theme.label}`}
+                        aria-pressed={themeConfig.accent === key}
                         className={cn(
-                          "size-5 rounded-full bg-gradient-to-br",
-                          theme.previewGradient
+                          "settings-swatch",
+                          themeConfig.accent === key &&
+                            "settings-swatch-active",
                         )}
-                      />
-                    </button>
-                  ))}
+                        key={key}
+                        onClick={() =>
+                          handleThemeConfigChange({
+                            ...themeConfig,
+                            accent: key,
+                          })
+                        }
+                        title={theme.label}
+                        type="button"
+                      >
+                        <span
+                          className={cn(
+                            "size-5 rounded-full bg-gradient-to-br",
+                            theme.previewGradient,
+                          )}
+                        />
+                      </button>
+                    ))}
                 </div>
               </div>
             </section>
@@ -969,7 +1025,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   onClick={() => {
                     window.sessionStorage.setItem(
                       "baitari:customize-dashboard",
-                      "true"
+                      "true",
                     );
                     onNavigate?.("dashboard");
                   }}
@@ -992,7 +1048,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   "xl:col-span-2",
                   message.type === "success"
                     ? "border-green-200 bg-green-500/5"
-                    : "border-red-200 bg-red-500/5"
+                    : "border-red-200 bg-red-500/5",
                 )}
                 size="sm"
               >
@@ -1015,7 +1071,7 @@ const Parametres: React.FC<ParametresProps> = ({
                       "font-medium text-sm",
                       message.type === "success"
                         ? "text-green-700"
-                        : "text-red-700"
+                        : "text-red-700",
                     )}
                   >
                     {message.text}
@@ -1089,7 +1145,12 @@ const Parametres: React.FC<ParametresProps> = ({
           />
         );
       case "sauvegarde":
-        return <div className="settings-section-stack"><BackupSettings /><LocalDataResetSettings /></div>;
+        return (
+          <div className="settings-section-stack">
+            <BackupSettings />
+            <LocalDataResetSettings />
+          </div>
+        );
       case "apropos":
         return (
           <div className="settings-section-stack">
@@ -1106,31 +1167,33 @@ const Parametres: React.FC<ParametresProps> = ({
             </section>
             <AboutTeam />
             <LicenseStatusCard />
-            {isActivationOwner(currentUser?.email) && <section className="settings-panel">
-              <div className="settings-row">
-                <div>
-                  <p className="settings-row-title">Centre d’activation</p>
-                  <p className="settings-row-detail">
-                    Gérer les accès accordés aux testeurs.
-                  </p>
+            {isActivationOwner(currentUser?.email) && (
+              <section className="settings-panel">
+                <div className="settings-row">
+                  <div>
+                    <p className="settings-row-title">Centre d’activation</p>
+                    <p className="settings-row-detail">
+                      Gérer les accès accordés aux testeurs.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      openActivationAdminWindow().catch((error) => {
+                        toast.error(
+                          error instanceof Error
+                            ? error.message
+                            : "Impossible d’ouvrir le centre d’activation.",
+                        );
+                      });
+                    }}
+                    type="button"
+                    variant="outline"
+                  >
+                    Ouvrir
+                  </Button>
                 </div>
-                <Button
-                  onClick={() => {
-                    openActivationAdminWindow().catch((error) => {
-                      toast.error(
-                        error instanceof Error
-                          ? error.message
-                          : "Impossible d’ouvrir le centre d’activation."
-                      );
-                    });
-                  }}
-                  type="button"
-                  variant="outline"
-                >
-                  Ouvrir
-                </Button>
-              </div>
-            </section>}
+              </section>
+            )}
           </div>
         );
       default:
@@ -1142,7 +1205,9 @@ const Parametres: React.FC<ParametresProps> = ({
     <div className="settings-page">
       <PageHeader
         className="settings-page-header"
-        icon={<HugeiconsIcon icon={Settings02Icon} size={20} strokeWidth={1.5} />}
+        icon={
+          <HugeiconsIcon icon={Settings02Icon} size={20} strokeWidth={1.5} />
+        }
         kicker={<PageDate />}
         subtitle="Votre compte, votre espace et les données du cabinet."
         title="Paramètres"
@@ -1157,16 +1222,19 @@ const Parametres: React.FC<ParametresProps> = ({
                   aria-current={activeTab === item.id ? "page" : undefined}
                   className={cn(
                     "settings-nav-item",
-                    activeTab === item.id && "settings-nav-item-active"
+                    activeTab === item.id && "settings-nav-item-active",
                   )}
                   key={item.id}
                   onClick={(event) => {
                     const scrollContainer = event.currentTarget.closest(
-                      '[data-slot="sidebar-inset"]'
+                      '[data-slot="sidebar-inset"]',
                     );
                     setActiveTab(item.id);
                     requestAnimationFrame(() =>
-                      scrollContainer?.scrollTo({ top: 0, behavior: "instant" })
+                      scrollContainer?.scrollTo({
+                        top: 0,
+                        behavior: "instant",
+                      }),
                     );
                   }}
                   type="button"
@@ -1180,7 +1248,8 @@ const Parametres: React.FC<ParametresProps> = ({
         </nav>
         <section
           aria-labelledby="settings-section-title"
-          className="settings-page-main" data-settings-section={activeTab}
+          className="settings-page-main"
+          data-settings-section={activeTab}
         >
           <div className="settings-content-heading">
             <h2 id="settings-section-title">{activeNavItem.label}</h2>
@@ -1267,7 +1336,7 @@ function SidebarLayoutSettings() {
             <button
               aria-pressed={collapsible === value}
               className={cn(
-                collapsible === value && "settings-segmented-active"
+                collapsible === value && "settings-segmented-active",
               )}
               key={value}
               onClick={() => setCollapsible(value)}

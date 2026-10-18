@@ -72,6 +72,7 @@ export { default as Hospital01Icon } from "@hugeicons/core-free-icons/Hospital01
 export { default as HospitalBed01Icon } from "@hugeicons/core-free-icons/HospitalBed01Icon";
 export { default as HourglassIcon } from "@hugeicons/core-free-icons/HourglassIcon";
 export { default as InformationCircleIcon } from "@hugeicons/core-free-icons/InformationCircleIcon";
+export { default as File02Icon } from "@hugeicons/core-free-icons/File02Icon";
 export { default as InformationSquareIcon } from "@hugeicons/core-free-icons/InformationSquareIcon";
 export { default as InjectionIcon } from "@hugeicons/core-free-icons/InjectionIcon";
 export { default as Key01Icon } from "@hugeicons/core-free-icons/Key01Icon";
@@ -99,6 +100,7 @@ export { default as Mic01Icon } from "@hugeicons/core-free-icons/Mic01Icon";
 export { default as AudioWave01Icon } from "@hugeicons/core-free-icons/AudioWave01Icon";
 export { default as Moon01Icon } from "@hugeicons/core-free-icons/Moon01Icon";
 export { default as Moon02Icon } from "@hugeicons/core-free-icons/Moon02Icon";
+export { default as MoreHorizontalIcon } from "@hugeicons/core-free-icons/MoreHorizontalIcon";
 export { default as MoreHorizontalCircle01Icon } from "@hugeicons/core-free-icons/MoreHorizontalCircle01Icon";
 export { default as MoreVerticalCircle01Icon } from "@hugeicons/core-free-icons/MoreVerticalCircle01Icon";
 export { default as MoreVerticalIcon } from "@hugeicons/core-free-icons/MoreVerticalIcon";

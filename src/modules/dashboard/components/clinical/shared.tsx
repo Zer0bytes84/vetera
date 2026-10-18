@@ -81,7 +81,7 @@ export function ModuleTotals({
       {values.map((row, index) => (
         <div key={row.label} className="module-totals-item flex items-baseline gap-2">
           <dd
-            className={`font-display t-18 font-medium tabular-nums ${row.tone === "positive" ? "text-emerald-700 dark:text-emerald-300" : row.tone === "watch" ? "text-amber-800 dark:text-amber-300" : "text-ink"}`}
+            className={`font-display t-18 font-medium tabular-nums ${row.tone === "positive" ? "text-[color:var(--premium-green,var(--signal-positive))]" : row.tone === "watch" ? "text-[color:var(--premium-orange,var(--signal-watch))]" : "text-ink"}`}
           >
             {row.value}
           </dd>

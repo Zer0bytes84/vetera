@@ -88,7 +88,7 @@ function SortableDashboardBlock({
       className={cn(
         "relative min-w-0",
         isEditing &&
-          "rounded-[26px] pt-8 outline outline-dashed outline-sky-500/20 transition-[outline-color,background-color] duration-200 hover:bg-sky-500/[0.025] hover:outline-sky-500/40 dark:outline-sky-300/20 dark:hover:bg-sky-300/[0.035]",
+          "rounded-[26px] pt-8 outline outline-dashed outline-primary/20 transition-[outline-color,background-color] duration-200 hover:bg-primary/[0.025] hover:outline-primary/40",
         isDragging && "z-20 opacity-30"
       )}
       ref={setNodeRef}
@@ -109,7 +109,7 @@ function SortableDashboardBlock({
             {...listeners}
             aria-keyshortcuts="ArrowUp ArrowDown"
             aria-label={`Déplacer ${block.label}`}
-            className="flex h-6 cursor-grab touch-none items-center gap-1.5 rounded-full border border-border/70 bg-background/95 px-2.5 font-medium t-12 text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow] hover:border-sky-500/30 hover:bg-sky-50 hover:text-sky-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40 active:cursor-grabbing dark:bg-zinc-900/90 dark:hover:bg-sky-950/60 dark:hover:text-sky-300"
+            className="flex h-6 cursor-grab touch-none items-center gap-1.5 rounded-full border border-border/70 bg-background/95 px-2.5 font-medium t-12 text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow] hover:border-primary/30 hover:bg-primary/10 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:cursor-grabbing"
             data-no-drag
             onKeyDown={(event) => {
               if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -134,9 +134,9 @@ function SortableDashboardBlock({
 
 function DragPreview({ block }: { block: DashboardLayoutBlock }) {
   return (
-    <div className="w-[min(420px,calc(100vw-32px))] rounded-2xl border border-sky-500/25 bg-background/95 p-3 shadow-2xl shadow-sky-950/15 backdrop-blur-xl dark:bg-zinc-900/95">
+    <div className="w-[min(420px,calc(100vw-32px))] rounded-2xl border border-primary/25 bg-background/95 p-3 shadow-2xl shadow-primary/15 backdrop-blur-xl">
       <div className="flex items-center gap-3">
-        <span className="grid size-9 place-items-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-300">
+        <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
           <HugeiconsIcon
             className="size-4"
             icon={DragDropVerticalIcon}
@@ -325,9 +325,9 @@ export function DashboardLayoutManager({
   return (
     <>
       {isEditing ? (
-        <div className="flex w-full flex-wrap items-center gap-2 rounded-2xl border border-sky-500/15 bg-sky-500/[0.045] p-2 pl-3 dark:bg-sky-300/[0.04]">
+        <div className="flex w-full flex-wrap items-center gap-2 rounded-2xl border border-primary/15 bg-primary/[0.045] p-2 pl-3">
           <div className="mr-auto flex min-w-0 items-center gap-2">
-            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-300">
+            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
               <HugeiconsIcon
                 className="size-3.5"
                 icon={DashboardSquareEditIcon}
@@ -350,7 +350,7 @@ export function DashboardLayoutManager({
           </div>
           <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
             <Button
-              className="bg-background/80 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+              className="bg-background/80 hover:bg-muted hover:text-foreground"
               onClick={handleReset}
               size="sm"
               type="button"

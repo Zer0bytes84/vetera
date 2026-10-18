@@ -142,7 +142,7 @@ export function CashModule({
                 </p>
               </div>
               <span
-                className={`shrink-0 font-display tabular-nums ${row.type === "income" ? "text-emerald-700 dark:text-emerald-300" : "text-ink-muted"}`}
+                className={`shrink-0 font-display tabular-nums ${row.type === "income" ? "text-[color:var(--ok)]" : "text-ink-muted"}`}
               >
                 {row.type === "income" ? "+" : "−"}
                 {formatCentimes(row.amount)}

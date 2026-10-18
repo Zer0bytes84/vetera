@@ -490,15 +490,6 @@ const Tasks: React.FC = () => {
           if (!type) { toast.error("Activez un type de rappel dans les paramètres."); return; }
           setMedicalDraft({ acteSourceId: "", clientId: null, dateActe: localToday(), echeance: addCalendarMonths(localToday(), type.interval_months), intervalleMois: type.interval_months, patientId: "", type: type.id, typeLabel: type.name });
         }}><Plus className="size-4" />Rappel médical</Button>
-        <NativeSelect
-          aria-label="Périmètre des rappels"
-          className="w-full md:w-44"
-          onChange={(event) => setScope(event.target.value as Scope)}
-          value={scope}
-        >
-          <NativeSelectOption value="mine">Mes rappels</NativeSelectOption>
-          <NativeSelectOption value="team">Toute l'équipe</NativeSelectOption>
-        </NativeSelect>
         </>}
       />
 
@@ -684,28 +675,37 @@ const Tasks: React.FC = () => {
         {patientRemindersModel.error && !auxiliaryView && (
           <ErrorState message={patientRemindersModel.error} onRetry={() => void patientRemindersModel.refresh()} />
         )}
-        <div className="flex flex-col gap-3 border-border/70 border-b pb-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="reminder-segments" data-tabs-style="segmented" role="group" aria-label="Origine des rappels">
-              {([['all','Tous'],['manual','Manuels'],['medical','Médicaux']] as const).map(([value,label]) => (
-                <button key={value} type="button" className="reminder-segment" aria-pressed={sourceFilter === value} onClick={() => { setSourceFilter(value); setAuxiliaryView(null); }}>{label}</button>
-              ))}
-            </div>
-            <Tabs value={auxiliaryView ?? activeView} onValueChange={value => {
-              if (value === "calls" || value === "types") {
-                setAuxiliaryView(value);
-                if (value === "calls") setSourceFilter("medical");
-              }
-              else { setAuxiliaryView(null); setActiveView(value as ReminderView); }
-            }}>
-              <TabsList aria-label="Vues des rappels" tabsStyle="nav">
-                {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id}>{tab.label}<span className="tabular-nums">{tab.count}</span></TabsTrigger>)}
-                <TabsTrigger value="calls">Rappels du jour</TabsTrigger>
-                <TabsTrigger value="types">Types</TabsTrigger>
-              </TabsList>
-            </Tabs>
+        <div className="reminders-filter-bar flex flex-wrap items-center gap-x-3 gap-y-2 border-border/70 border-b pb-3">
+          <div className="reminder-segments" data-tabs-style="segmented" role="group" aria-label="Origine des rappels">
+            {([['all','Tous'],['manual','Manuels'],['medical','Médicaux']] as const).map(([value,label]) => (
+              <button key={value} type="button" className="reminder-segment" aria-pressed={sourceFilter === value} onClick={() => { setSourceFilter(value); setAuxiliaryView(null); }}>{label}</button>
+            ))}
           </div>
-          <ListSearch className="w-full lg:w-64" label="Rechercher dans les rappels" placeholder="Rechercher…" value={query} onValueChange={setQuery} />
+          <Tabs value={auxiliaryView ?? activeView} onValueChange={value => {
+            if (value === "calls") {
+              setAuxiliaryView(value);
+              setSourceFilter("medical");
+            }
+            else { setAuxiliaryView(null); setActiveView(value as ReminderView); }
+          }}>
+            <TabsList aria-label="Vues des rappels" data-tabs-inline="" tabsStyle="nav">
+              {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id}>{tab.label}<span className="tabular-nums">{tab.count}</span></TabsTrigger>)}
+              <TabsTrigger value="calls">Rappels du jour</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button className="h-8 t-13" onClick={() => setAuxiliaryView("types")} type="button" variant="outline">Gérer les types</Button>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <NativeSelect
+              aria-label="Périmètre des rappels"
+              className="w-32"
+              onChange={(event) => setScope(event.target.value as Scope)}
+              value={scope}
+            >
+              <NativeSelectOption value="mine">Mes rappels</NativeSelectOption>
+              <NativeSelectOption value="team">Toute l'équipe</NativeSelectOption>
+            </NativeSelect>
+            <ListSearch className="w-full lg:w-44" label="Rechercher dans les rappels" placeholder="Rechercher…" value={query} onValueChange={setQuery} />
+          </div>
         </div>
 
         {auxiliaryView ? <PatientRemindersContent key={auxiliaryView} model={patientRemindersModel} view={auxiliaryView} includeManualTypes={auxiliaryView === "types"} embedded/> : visibleItems.length === 0 ? (

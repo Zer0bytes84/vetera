@@ -114,6 +114,7 @@ import {
   APPOINTMENT_ROOMS,
   RECURRENCE_FREQUENCIES,
   DAY_OF_WEEK_LABELS,
+  TABLE_SCOPES,
   TABLE_TABS,
   ViewMode,
   TableTab,
@@ -267,7 +268,7 @@ export function AgendaView(props: AgendaViewProps) {
       <div className="grid gap-4">
         <Card className="agenda-planner surface-card min-h-[480px] border-0">
           <CardHeader className="agenda-planner-heading border-border border-b px-5 py-5 sm:px-6">
-            <CardTitle className="font-semibold t-18 tracking-[-0.03em]">
+            <CardTitle className="font-medium t-18 tracking-[-0.02em]">
               {t("agenda.consultationsAgenda")}
             </CardTitle>
             <CardAction>
@@ -569,6 +570,7 @@ export function AgendaView(props: AgendaViewProps) {
               <Button
                 className="mt-6 h-10 gap-2 rounded-full px-5"
                 onClick={() => handleOpenCreate()}
+                variant="outline"
               >
                 <HugeiconsIcon
                   className="size-4"
@@ -687,11 +689,11 @@ export function AgendaView(props: AgendaViewProps) {
 
       <Card className="overflow-hidden rounded-2xl border-border/70 shadow-none">
         <CardHeader className="gap-1 border-b border-border/50 px-6 py-5">
-          <CardTitle className="t-18 font-semibold tracking-tight">
+          <CardTitle className="font-medium t-18 tracking-[-0.02em]">
             Planning des rendez-vous
           </CardTitle>
           <CardDescription className="text-sm">
-            Patients, créneaux et suivi des visites.
+            {TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]}
           </CardDescription>
           <CardAction>
             <Badge
@@ -815,7 +817,7 @@ export function AgendaView(props: AgendaViewProps) {
                         >
                           Réinitialiser
                         </Button>
-                        <Button onClick={() => handleOpenCreate()}>
+                        <Button onClick={() => handleOpenCreate()} variant="outline">
                           <HugeiconsIcon
                             data-icon="inline-start"
                             icon={Add01Icon}

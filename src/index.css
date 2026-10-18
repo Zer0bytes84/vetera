@@ -4474,7 +4474,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 
 .settings-page-layout {
   display: grid;
-  grid-template-columns: 212px minmax(0, 1fr);
+  grid-template-columns: 200px minmax(0, 1fr);
   max-width: 1180px;
   margin-inline: auto;
 }
@@ -4485,12 +4485,12 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   top: 72px;
   display: grid;
   gap: 26px;
-  padding: 36px 16px 36px 24px;
+  padding: 36px 2px 36px 10px;
   border-right: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
 }
 
 .settings-nav-group > p {
-  padding: 0 11px 8px;
+  padding: 0 8px 8px;
   color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 600;
@@ -4500,10 +4500,10 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 .settings-nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   min-height: 40px;
-  padding: 0 11px;
+  padding: 0 8px;
   border-radius: 9px;
   color: var(--muted-foreground);
   font-size: 13px;
@@ -4514,7 +4514,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 
 .settings-nav-item svg { width: 18px; height: 18px; flex: none; }
 .settings-nav-item:hover { background: var(--muted); color: var(--foreground); }
-.settings-nav-item-active { background: var(--muted); color: var(--foreground); font-weight: 620; }
+.settings-nav-item-active { background: var(--muted); color: var(--foreground); font-weight: 560; }
 .settings-nav-item:focus-visible, .settings-segmented button:focus-visible, .settings-swatch:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
 .settings-page-main { min-width: 0; padding: 36px clamp(24px, 4vw, 58px) 80px; }

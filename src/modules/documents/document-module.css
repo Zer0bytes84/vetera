@@ -53,6 +53,8 @@
 .document-templates-status[data-active="true"] { color: var(--foreground); background: var(--muted); }
 .document-templates-status::before { width: 5px; height: 5px; border-radius: 50%; background: currentColor; content: ""; }
 .document-templates-date-column { color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.document-templates-status-column { width: 80px; }
+.document-templates-actions-column { text-align: end; }
 .document-templates-row-actions { display: flex; flex-wrap: nowrap; align-items: center; justify-content: end; gap: 2px; }
 .document-templates-row-actions [data-slot="button"] { width: 40px; min-width: 40px; padding: 0 !important; }
 .document-templates-row-actions [data-slot="switch"] { margin-inline: 8px; }

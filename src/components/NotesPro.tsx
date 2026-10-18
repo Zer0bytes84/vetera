@@ -118,7 +118,7 @@ function PatientPicker({
         render={
           <Button
             aria-label={isFilter ? "Afficher les documents d’un patient" : "Rattacher la note à un dossier patient"}
-            className="h-8 max-w-[210px] gap-1.5 rounded-lg border-0 bg-transparent px-2 text-xs font-medium text-foreground shadow-none hover:bg-muted dark:text-foreground dark:hover:bg-white/10"
+            className="h-8 min-w-[160px] max-w-[260px] gap-1.5 rounded-lg border-0 bg-transparent px-2 text-xs font-medium text-foreground shadow-none hover:bg-muted dark:text-foreground dark:hover:bg-white/10"
             size="sm"
             type="button"
             variant="ghost"

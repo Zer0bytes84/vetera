@@ -107,16 +107,6 @@ export function PatientIdentity({
               {patient.sex === "F" ? "Stérilisée" : "Stérilisé"}
             </span>
           ) : null}
-          {patient.chipNumber?.trim() ? (
-            <span className="medical-id-chip font-mono t-12 bg-muted/60" title="Puce d'identification">
-              Puce {patient.chipNumber.trim()}
-            </span>
-          ) : null}
-          {patient.tattooNumber?.trim() ? (
-            <span className="medical-id-chip font-mono t-12 bg-muted/60" title="Tatouage">
-              Tatouage {patient.tattooNumber.trim()}
-            </span>
-          ) : null}
         </div>
 
         <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground my-2 font-normal">
@@ -131,11 +121,23 @@ export function PatientIdentity({
           ) : null}
         </p>
 
-        <div className="medical-record-id flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="font-mono px-1.5 py-0.5 rounded bg-muted/70 text-foreground/70">
-            #{patient.id.slice(0, 8)}
-          </span>
-          <span aria-hidden="true" className="text-muted-foreground/40">·</span>
+        <div className="medical-record-id flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          {patient.chipNumber?.trim() ? (
+            <>
+              <span className="font-mono tabular-nums text-foreground/70" title="Puce d’identification">
+                Puce {patient.chipNumber.trim()}
+              </span>
+              <span aria-hidden="true" className="text-muted-foreground/40">·</span>
+            </>
+          ) : null}
+          {patient.tattooNumber?.trim() ? (
+            <>
+              <span className="font-mono tabular-nums text-foreground/70" title="Tatouage">
+                Tatouage {patient.tattooNumber.trim()}
+              </span>
+              <span aria-hidden="true" className="text-muted-foreground/40">·</span>
+            </>
+          ) : null}
           <span>Enregistré le {recordDate(patient.createdAt)}</span>
         </div>
       </div>

@@ -48,7 +48,7 @@ export function PatientRecordHealth({
     {
       complete: vaccinations.length > 0,
       label: "Vaccination",
-      action: "Enregistrer un vaccin",
+      action: "Ajouter un vaccin",
     },
   ];
   const completed = checks.filter((check) => check.complete).length;

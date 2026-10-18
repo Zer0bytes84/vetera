@@ -1295,12 +1295,13 @@
   font-size: 12px;
   font-weight: 500;
 }
+/* Plain text, no frame: the "Modifier" button below is the way to edit it. */
 .medical-note {
   margin: 0;
-  padding: 12px;
-  border: 1px solid var(--medical-border);
-  border-radius: 8px;
-  background: var(--medical-soft);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;

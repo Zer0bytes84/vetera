@@ -180,3 +180,10 @@
   min-width: 0 !important;
   padding-inline: 6px !important;
 }
+
+/* Inline variant: a navigation bar that shares a row with other controls. */
+:root:root:root [data-tabs-style="nav"][data-tabs-inline] {
+  width: auto !important;
+  flex: 0 1 auto;
+  box-shadow: none !important;
+}

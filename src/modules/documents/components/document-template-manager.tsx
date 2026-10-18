@@ -191,7 +191,7 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
           <div className="document-templates-table-wrap">
             <table className="document-templates-table">
               <caption className="sr-only">Modèles disponibles pour la génération de documents</caption>
-              <thead><tr><th scope="col">Modèle</th><th className="document-templates-type-column" scope="col">Type</th><th scope="col">Statut</th><th className="document-templates-date-column" scope="col">Modifié le</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
+              <thead><tr><th scope="col">Modèle</th><th className="document-templates-type-column" scope="col">Type</th><th scope="col">Statut</th><th className="document-templates-date-column" scope="col">Modifié le</th><th className="document-templates-actions-column" scope="col">Actions</th></tr></thead>
               <tbody>
                 {templates.map((template) => (
                   <tr key={template.id}>
@@ -201,14 +201,15 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
                       {template.usageCount > 0 && <span className="document-templates-usage">Utilisé pour {template.usageCount} document{template.usageCount > 1 ? "s" : ""}</span>}
                     </td>
                     <td className="document-templates-type-column">{DOCUMENT_TYPES[template.kind]}</td>
-                    <td><span className="document-templates-status" data-active={template.active}>{template.active ? "Actif" : "Inactif"}</span></td>
+                    <td className="document-templates-status-column">{canEdit
+                      ? <Switch aria-label={`${template.active ? "Désactiver" : "Activer"} ${template.name}`} checked={template.active} disabled={busy} onCheckedChange={() => void setTemplateActive(template)} />
+                      : <span className="document-templates-status" data-active={template.active}>{template.active ? "Actif" : "Inactif"}</span>}</td>
                     <td className="document-templates-date-column"><time dateTime={template.updatedAt}>{modificationDate(template.updatedAt)}</time></td>
                     <td>
                       <div className="document-templates-row-actions">
                         <Button aria-label={`${canEdit ? "Modifier" : "Consulter"} ${template.name}`} disabled={busy} onClick={() => openEditor(template)} size="icon-sm" title={canEdit ? "Modifier le modèle" : "Consulter le modèle"} variant="ghost"><Pencil aria-hidden="true" /></Button>
                         {canEdit && <>
                           <Button aria-label={`Dupliquer ${template.name}`} disabled={busy} onClick={() => openEditor(template, true)} size="icon-sm" title="Dupliquer le modèle" variant="ghost"><Copy aria-hidden="true" /></Button>
-                          <Switch aria-label={`${template.active ? "Désactiver" : "Activer"} ${template.name}`} checked={template.active} disabled={busy} onCheckedChange={() => void setTemplateActive(template)} />
                           <Button aria-label={`Supprimer ${template.name}`} disabled={busy || template.usageCount > 0} onClick={() => { setError(""); setPendingDelete(template); }} size="icon-sm" title={template.usageCount > 0 ? "Ce modèle est utilisé. Vous pouvez le désactiver." : "Supprimer le modèle"} variant="ghost"><Trash2 aria-hidden="true" /></Button>
                         </>}
                       </div>

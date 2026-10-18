@@ -484,6 +484,9 @@
 [data-visual-style="premium"] :is([data-premium-status="en_cours"], .premium-status-progress) { --premium-tag-color: var(--premium-orange); }
 [data-visual-style="premium"] :is([data-premium-status="en_retard"], .premium-status-urgent) { --premium-tag-color: var(--premium-red); }
 [data-visual-style="premium"] [data-premium-status="fait"] { --premium-tag-color: var(--premium-green); }
+/* A neutral type (Contrôle) gets the same dot chip as the coloured types. */
+[data-visual-style="premium"] [data-slot="badge"].premium-status-neutral { --premium-tag-color: var(--ink-muted); }
+[data-visual-style="premium"] [data-slot="badge"].premium-status-neutral::before { content: ""; }
 [data-visual-style="premium"] [data-slot="badge"][class*="bg-sky-"] { --premium-tag-color: var(--premium-blue); }
 /* Match Tailwind's important utility layer so the original pill utility only
    yields in Premium. Removing the root attribute restores it immediately. */
@@ -817,14 +820,10 @@
 }
 
 /* ------------------------------------------------------------ Unified 4-Column Ruled Lattice KPIs */
+/* Good / bad are the charter green and red, one value per theme. */
 [data-visual-style="premium"] {
-  --ok: #15803d;
-  --bad: #b91c1c;
-}
-
-:root.dark[data-visual-style="premium"] {
-  --ok: #4ade80;
-  --bad: #f87171;
+  --ok: var(--premium-green);
+  --bad: var(--premium-red);
 }
 
 [data-visual-style="premium"] .frame {

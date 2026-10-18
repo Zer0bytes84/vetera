@@ -19,7 +19,7 @@ import {
   Wallet,
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { formatNumber } from "@/utils/display-format";
+import { firstNameOf, formatNumber } from "@/utils/display-format";
 import { formatCentimes, type ScheduleEntry } from "../v2/model";
 import {
   ANALYTICS_PERIODS,
@@ -28,6 +28,9 @@ import {
 } from "../model/premium-analytics";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
+import { getAppointmentTypeMeta } from "@/config/status-meta";
+import { cn } from "@/lib/utils";
 import { PageDate } from "@/components/PageDate";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { WidgetState } from "./clinical/shared";
@@ -176,7 +179,18 @@ function TrendChartCurve({
     ? `${lineReceipts} L${x(n - 1).toFixed(1)},${yReceipts(0)} L${x(0).toFixed(1)},${yReceipts(0)} Z`
     : "";
 
-  const every = Math.max(1, Math.ceil(n / 6));
+  // Labels keep at least 76 px between them (a label is ~45 px wide, the first one is start-aligned): thin them
+  // at a fixed interval, and let the last one replace a neighbour that is too close.
+  const minGap = 76;
+  const step = n > 1 ? plotW / (n - 1) : plotW;
+  const every = Math.max(1, Math.ceil(minGap / Math.max(step, 1)));
+  const shownLabels = new Set<number>();
+  for (let k = 0; k < n; k += every) shownLabels.add(k);
+  if (n > 1 && !shownLabels.has(n - 1)) {
+    const lastShown = Math.max(...shownLabels);
+    if (lastShown > 0 && (n - 1 - lastShown) * step < minGap) shownLabels.delete(lastShown);
+    shownLabels.add(n - 1);
+  }
 
   const handlePointer = (e: React.PointerEvent<SVGSVGElement>) => {
     if (plotW <= 0 || n <= 1) return;
@@ -241,7 +255,7 @@ function TrendChartCurve({
 
             {/* X-axis labels */}
             {points.map((p, k) =>
-              k % every === 0 || k === n - 1 ? (
+              shownLabels.has(k) ? (
                 <text
                   key={k}
                   x={x(k)}
@@ -357,7 +371,7 @@ export function PremiumAnalytics({
   clinicalView,
 }: PremiumAnalyticsProps) {
   const { currentUser } = useAuth();
-  const userName = currentUser?.displayName?.split(" ")[0] || "Docteur";
+  const userName = firstNameOf(currentUser?.displayName, "Docteur");
   const { cash, patients, actions, ranges } = model;
 
   const dateOptions = { day: "numeric", month: "short" } as const;
@@ -535,7 +549,7 @@ export function PremiumAnalytics({
       },
       {
         id: "stock",
-        title: "Pharmacie & Stock",
+        title: "Produits",
         description: "Médicaments, lots FIFO et seuils de réapprovisionnement",
         count: `${presentation?.products.length ?? 48} références`,
         icon: Package,
@@ -553,7 +567,6 @@ export function PremiumAnalytics({
         id: "hospitalisations",
         title: "Hospitalisations",
         description: "Animaux admis en clinique et feuilles de soins",
-        count: "Séjours actifs",
         icon: BedDouble,
         action: () => onNavigate?.("soins"),
       },
@@ -569,7 +582,6 @@ export function PremiumAnalytics({
         id: "analyses",
         title: "Bilan & Analyses",
         description: "Indicateurs de performance et synthèse comptable",
-        count: "Bilan en direct",
         icon: BarChart3,
         action: onFinances,
       },
@@ -899,12 +911,15 @@ export function PremiumAnalytics({
                             </div>
                           </td>
                           <td>
-                            <span
-                              className="statusPill"
-                              data-status={row.appointment.status}
+                            <Badge
+                              className={cn(
+                                "border-transparent",
+                                getAppointmentTypeMeta(row.appointment.type).badgeClassName
+                              )}
+                              variant="outline"
                             >
-                              {row.appointment.title || "Consultation"}
-                            </span>
+                              {row.appointment.type || "Consultation"}
+                            </Badge>
                           </td>
                           <td style={{ textAlign: "right" }}>
                             <button
@@ -960,7 +975,7 @@ export function PremiumAnalytics({
             >
               <div className="tileTop">
                 <tile.icon size={18} strokeWidth={1} aria-hidden="true" />
-                <span className="tileCount">{tile.count}</span>
+                {"count" in tile && tile.count ? <span className="tileCount">{tile.count}</span> : null}
                 <ArrowRight
                   size={14}
                   strokeWidth={1}

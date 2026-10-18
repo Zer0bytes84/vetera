@@ -290,7 +290,7 @@ export function PatientKpiStrip({
               onClick={onVaccinationClick}
             >
               <Plus className="size-3.5 mr-1" aria-hidden="true" />
-              Enregistrer un vaccin
+              Ajouter un vaccin
             </Button>
             <p className="text-xs text-muted-foreground mt-1">Tenir le carnet vaccinal à jour.</p>
           </div>

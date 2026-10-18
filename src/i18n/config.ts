@@ -739,8 +739,8 @@ const resources = {
         overview: {
           weightChart: "Évolution du poids",
           weightEmpty:
-            "Aucune pesée enregistrée. Cliquez sur « Nouvelle pesée » pour commencer.",
-          newWeight: "Nouvelle pesée",
+            "Aucune pesée enregistrée. Cliquez sur « Ajouter une pesée » pour commencer.",
+          newWeight: "Ajouter une pesée",
           quickInfo: "Informations rapides",
           allergies: "Allergies",
           chronicConditions: "Maladies chroniques",
@@ -770,7 +770,7 @@ const resources = {
         },
         vaccinations: {
           title: "Carnet de vaccination",
-          newVaccine: "Nouveau vaccin",
+          newVaccine: "Ajouter un vaccin",
           editVaccine: "Modifier le vaccin",
           dialogTitle: "Ajouter un vaccin",
           editTitle: "Modifier le vaccin",

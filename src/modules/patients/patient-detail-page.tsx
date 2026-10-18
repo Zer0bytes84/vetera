@@ -1,6 +1,7 @@
 import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
 import {
   ArrowLeft,
+  Plus,
   Check,
   ChevronRight,
   Clock,
@@ -502,6 +503,20 @@ export function PatientDetailPage({
         <PageHeader
           className="patient-record-heading"
           icon={<HugeiconsIcon icon={MedicalFileIcon} size={20} strokeWidth={1.5} />}
+          actions={
+            <Button variant="outline" onClick={() => { requestFocus("care_patient", patientId); onNavigate("clinique"); }}>Ouvrir les soins de ce patient</Button>
+          }
+          back={
+            <Button
+              className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+              onClick={() => onNavigate("patients")}
+              size="sm"
+              variant="ghost"
+            >
+              <ArrowLeft className="size-4" weight="duotone" />
+              {t("patientDetail.back")}
+            </Button>
+          }
           subtitle={`${patient.name} · consultations, traitements et suivi`}
           title="Dossier patient"
         />
@@ -543,19 +558,6 @@ export function PatientDetailPage({
           }}
           onRetryTasks={() => void tasksRepo.refresh()}
         />
-        <div className="patient-record-actions flex flex-wrap items-center gap-2">
-          <Button
-            className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
-            onClick={() => onNavigate("patients")}
-            size="sm"
-            variant="ghost"
-          >
-            <ArrowLeft className="size-4" weight="duotone" />
-            {t("patientDetail.back")}
-          </Button>
-          <Button variant="outline" onClick={() => { requestFocus("care_patient", patientId); onNavigate("clinique"); }}>Ouvrir les soins de ce patient</Button>
-        </div>
-
         {soapAppointmentId && (
           <section id="patient-consultation-note" aria-label={`Note de consultation de ${patient.name}`} className="space-y-4 border-b border-border pb-6">
             <div className="flex items-center justify-between gap-3">
@@ -1015,18 +1017,20 @@ export function PatientDetailPage({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-8 t-12 border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                        className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
                         onClick={openNewWeight}
                       >
-                        + Pesée
+                        <Plus className="size-3.5" aria-hidden="true" />
+                        Ajouter une pesée
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-8 t-12 border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                        className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
                         onClick={openNewVaccination}
                       >
-                        + Vaccin
+                        <Plus className="size-3.5" aria-hidden="true" />
+                        Ajouter un vaccin
                       </Button>
                     </div>
                   </section>

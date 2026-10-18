@@ -98,13 +98,6 @@ export function PatientsView(props: PatientsViewProps) {
         actions={<>
           <Button
             className="h-9 px-4"
-            onClick={resetFilters}
-            variant="outline"
-          >
-            Réinitialiser
-          </Button>
-          <Button
-            className="h-9 px-4"
             onClick={() => setIsCreateOpen(true)}
           >
             <HugeiconsIcon
@@ -126,7 +119,7 @@ export function PatientsView(props: PatientsViewProps) {
               <ListSearch className="w-full sm:w-72" label="Rechercher les patients" placeholder="Nom ou propriétaire…" value={searchTerm} onValueChange={setSearchTerm} />
               <ListFilter label="Espèce" value={speciesFilter} onValueChange={setSpeciesFilter} options={[{ value: "all", label: "Toutes" }, ...speciesOptions.map(value => ({ value, label: value }))]} />
               <ListFilter label="Statut" value={statusFilter} onValueChange={setStatusFilter} options={[{ value: "all", label: "Tous" }, ...Object.entries(PATIENT_STATUS_META).map(([value, option]) => ({ value, label: option.label }))]} />
-              {(searchTerm || speciesFilter !== "all" || statusFilter !== "all") && <Button variant="ghost" className="h-[30px] text-xs text-muted-foreground" onClick={resetFilters}>Réinitialiser</Button>}
+              <Button variant="outline" className="ml-auto h-[30px] t-12" onClick={resetFilters}>Réinitialiser les filtres</Button>
             </div>
 
             {loadingPatients ? (
@@ -185,7 +178,7 @@ export function PatientsView(props: PatientsViewProps) {
               </div>
             ) : (
               <div className="flex min-h-0 flex-1 flex-col px-6 pt-2 pb-6">
-                <div className="flex-1 overflow-auto rounded-2xl border border-zinc-200/60 bg-surface dark:border-white/[0.04]">
+                <div className="patients-table-wrap flex-1 overflow-auto bg-surface">
                   <table className="medical-data-table min-w-full border-separate border-spacing-0 text-left">
                     <thead className="bg-zinc-50/50 dark:bg-zinc-900/30">
                       <tr className="font-medium text-xs text-muted-foreground">
