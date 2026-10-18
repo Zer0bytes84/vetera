@@ -18,9 +18,10 @@ import {
   UsersRound,
   Wallet,
 } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { firstNameOf, formatNumber } from "@/utils/display-format";
 import { formatCentimes, type ScheduleEntry } from "../v2/model";
+import { monotonePath, splitUnit } from "./chart-path";
 import {
   ANALYTICS_PERIODS,
   type AnalyticsPeriod,
@@ -66,6 +67,10 @@ interface PremiumAnalyticsProps {
   };
   onStartConsultation?: (appointmentId: string) => void;
   clinicalView?: React.ReactNode;
+  /** Rangée « À surveiller » (rappels, stock, hospitalisés), insérée avant « Gestion du cabinet ». */
+  watch?: React.ReactNode;
+  /** Heure courante (horloge de la page), pour repérer le prochain rendez-vous. */
+  now?: Date;
 }
 
 function DeltaBadge({
@@ -167,17 +172,24 @@ function TrendChartCurve({
   const yReceipts = (v: number) => T_CHART.top + plotH - (v / topReceipts) * plotH;
   const yVisits = (v: number) => T_CHART.top + plotH - (v / topVisits) * plotH;
 
-  const lineReceipts = points
-    .map((p, k) => `${k ? "L" : "M"}${x(k).toFixed(1)},${yReceipts(p.receipts).toFixed(1)}`)
-    .join(" ");
+  const gradientId = useId().replace(/:/g, "");
+  const lineReceipts = monotonePath(points.map((p, k) => [x(k), yReceipts(p.receipts)]));
+  const lineVisits = monotonePath(points.map((p, k) => [x(k), yVisits(p.visits)]));
+  const closeArea = (line: string) =>
+    n ? `${line} L${x(n - 1).toFixed(1)},${yReceipts(0)} L${x(0).toFixed(1)},${yReceipts(0)} Z` : "";
+  const areaReceipts = closeArea(lineReceipts);
+  const areaVisits = closeArea(lineVisits);
 
-  const lineVisits = points
-    .map((p, k) => `${k ? "L" : "M"}${x(k).toFixed(1)},${yVisits(p.visits).toFixed(1)}`)
-    .join(" ");
-
-  const areaReceipts = n
-    ? `${lineReceipts} L${x(n - 1).toFixed(1)},${yReceipts(0)} L${x(0).toFixed(1)},${yReceipts(0)} Z`
-    : "";
+  // Points de données : discrets, seulement quand la période reste lisible.
+  const showPoints = n > 1 && n <= 45;
+  const peakIdx = points.reduce(
+    (best, p, k) => (p.receipts > (points[best]?.receipts ?? 0) ? k : best),
+    0
+  );
+  const peak = points[peakIdx];
+  const hasPeak = Boolean(peak && peak.receipts > 0);
+  const peakAnchor = x(peakIdx) > width - 90 ? "end" : x(peakIdx) < T_CHART.left + 60 ? "start" : "middle";
+  const columnW = n > 1 ? plotW / (n - 1) : plotW;
 
   // Labels keep at least 76 px between them (a label is ~45 px wide, the first one is start-aligned): thin them
   // at a fixed interval, and let the last one replace a neighbour that is too close.
@@ -274,13 +286,42 @@ function TrendChartCurve({
               ) : null
             )}
 
-            {/* Gradient wash fill under receipts */}
-            <path d={areaReceipts} fill="var(--series-1-wash)" />
+            <defs>
+              <linearGradient id={`${gradientId}-receipts`} x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" style={{ stopColor: "var(--series-1)", stopOpacity: 0.26 }} />
+                <stop offset="65%" style={{ stopColor: "var(--series-1)", stopOpacity: 0.06 }} />
+                <stop offset="100%" style={{ stopColor: "var(--series-1)", stopOpacity: 0 }} />
+              </linearGradient>
+              <linearGradient id={`${gradientId}-visits`} x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" style={{ stopColor: "var(--series-2)", stopOpacity: 0.14 }} />
+                <stop offset="100%" style={{ stopColor: "var(--series-2)", stopOpacity: 0 }} />
+              </linearGradient>
+            </defs>
+
+            {/* Colonne survolée */}
+            {activeIdx !== null && n > 1 ? (
+              <rect
+                className="chartColumn"
+                height={plotH}
+                width={Math.max(6, columnW)}
+                x={x(activeIdx) - Math.max(6, columnW) / 2}
+                y={T_CHART.top}
+              />
+            ) : null}
+
+            {/* Aires en dégradé, recettes au premier plan */}
+            <path className="chartArea chartAreaVisits" d={areaVisits} fill={`url(#${gradientId}-visits)`} />
+            <path className="chartArea" d={areaReceipts} fill={`url(#${gradientId}-receipts)`} />
+
+            {/* Halo doux sous les courbes, pour la profondeur */}
+            <path className="chartGlow" d={lineVisits} stroke="var(--series-2)" />
+            <path className="chartGlow" d={lineReceipts} stroke="var(--series-1)" />
 
             {/* Series 2: Consultations curve (Orange) */}
             <path
               d={lineVisits}
-              className="chartLine"
+              className="chartLine chartLineDraw"
+              pathLength={1}
               stroke="var(--series-2)"
               opacity={0.9}
             />
@@ -288,9 +329,43 @@ function TrendChartCurve({
             {/* Series 1: Recettes curve (Blue) */}
             <path
               d={lineReceipts}
-              className="chartLine"
+              className="chartLine chartLineDraw"
+              pathLength={1}
               stroke="var(--series-1)"
             />
+
+            {/* Points de données */}
+            {showPoints
+              ? points.map((p, k) =>
+                  p.receipts > 0 ? (
+                    <circle
+                      className="chartPoint"
+                      cx={x(k)}
+                      cy={yReceipts(p.receipts)}
+                      data-active={activeIdx === k || undefined}
+                      fill="var(--series-1)"
+                      key={`r${k}`}
+                      r={2.5}
+                    />
+                  ) : null
+                )
+              : null}
+
+            {/* Pic de la période */}
+            {hasPeak && activeIdx === null ? (
+              <g className="chartPeak">
+                <circle cx={x(peakIdx)} cy={yReceipts(peak.receipts)} r={8} className="chartPeakHalo" />
+                <circle cx={x(peakIdx)} cy={yReceipts(peak.receipts)} r={3.5} fill="var(--series-1)" className="chartDot" />
+                <text
+                  className="chartPeakLabel"
+                  textAnchor={peakAnchor}
+                  x={x(peakIdx)}
+                  y={Math.max(12, yReceipts(peak.receipts) - 14)}
+                >
+                  {formatNumber(peak.receipts)} DA
+                </text>
+              </g>
+            ) : null}
 
             {/* Interactive hover crosshair and dots */}
             {activeIdx !== null && hot && (
@@ -302,20 +377,14 @@ function TrendChartCurve({
                   y2={yReceipts(0)}
                   className="chartCrosshair"
                 />
-                <circle
-                  cx={x(activeIdx)}
-                  cy={yVisits(hot.visits)}
-                  r={4.5}
-                  fill="var(--series-2)"
-                  className="chartDot"
-                />
-                <circle
-                  cx={x(activeIdx)}
-                  cy={yReceipts(hot.receipts)}
-                  r={4.5}
-                  fill="var(--series-1)"
-                  className="chartDot"
-                />
+                <g className="chartHot" style={{ transform: `translate(${x(activeIdx)}px, ${yVisits(hot.visits)}px)` }}>
+                  <circle r={10} fill="var(--series-2)" className="chartHalo" />
+                  <circle r={4.5} fill="var(--series-2)" className="chartDot" />
+                </g>
+                <g className="chartHot" style={{ transform: `translate(${x(activeIdx)}px, ${yReceipts(hot.receipts)}px)` }}>
+                  <circle r={10} fill="var(--series-1)" className="chartHalo" />
+                  <circle r={4.5} fill="var(--series-1)" className="chartDot" />
+                </g>
               </g>
             )}
           </svg>
@@ -325,13 +394,13 @@ function TrendChartCurve({
         {hot && (
           <div
             className="chartTip"
-            style={{ left: tipLeft, top: 10 }}
+            style={{ left: 0, top: 10, transform: `translateX(${tipLeft}px)` }}
             aria-hidden="true"
           >
             <div className="chartTipHead">{hot.long}</div>
             <div className="chartTipRow">
               <i
-                className="chartLegendKey"
+                className="chartTipKey"
                 style={{ background: "var(--series-1)" }}
               />
               <span>
@@ -340,7 +409,7 @@ function TrendChartCurve({
             </div>
             <div className="chartTipRow">
               <i
-                className="chartLegendKey"
+                className="chartTipKey"
                 style={{ background: "var(--series-2)" }}
               />
               <span>
@@ -351,6 +420,22 @@ function TrendChartCurve({
         )}
       </div>
     </div>
+  );
+}
+
+/** Chiffre principal avec son unité en retrait (« 13 900 » + « DA »). */
+function FactValue({ text }: { text: string }) {
+  const [value, unit] = splitUnit(text);
+  return (
+    <dd>
+      <span className="factValue">{value}</span>
+      {unit ? (
+        <>
+          {" "}
+          <span className="factUnit">{unit}</span>
+        </>
+      ) : null}
+    </dd>
   );
 }
 
@@ -369,6 +454,8 @@ export function PremiumAnalytics({
   financials,
   onStartConsultation,
   clinicalView,
+  watch,
+  now,
 }: PremiumAnalyticsProps) {
   const { currentUser } = useAuth();
   const userName = firstNameOf(currentUser?.displayName, "Docteur");
@@ -480,6 +567,17 @@ export function PremiumAnalytics({
   }, [ranges, presentation?.transactions, presentation?.appointments]);
 
   // Compute "Cette semaine" stats
+  // Premier rendez-vous du jour encore à venir ou en cours : simple repère visuel.
+  const nextUpId = useMemo(() => {
+    const nowMs = now?.getTime();
+    return today?.slice(0, 3).find((row) => {
+      if (["completed", "cancelled", "no_show"].includes(row.appointment.status)) return false;
+      if (nowMs === undefined) return true;
+      const end = new Date(row.appointment.endTime ?? row.appointment.startTime).getTime();
+      return Number.isNaN(end) || end >= nowMs;
+    })?.appointment.id;
+  }, [today, now]);
+
   const weekStats = useMemo(() => {
     const now = new Date();
     const startOfWeek = new Date(now);
@@ -508,9 +606,9 @@ export function PremiumAnalytics({
     const paidCount = invoices.filter((i) => i.documentStatus === "paid").length;
     const rate = issuedCount + paidCount > 0
       ? Math.round((paidCount / (issuedCount + paidCount)) * 1000) / 10
-      : 96.5;
+      : null; // Sans facture émise ou réglée, il n'y a pas de taux à afficher.
 
-    const pending = financials?.pending ?? 1450000;
+    const pending = financials?.pending ?? 0;
 
     return {
       income: weekIncome,
@@ -857,19 +955,28 @@ export function PremiumAnalytics({
             <dl className="facts">
               <div>
                 <dt>Recettes encaissées</dt>
-                <dd>{formatCentimes(weekStats.income)}</dd>
+                <FactValue text={formatCentimes(weekStats.income)} />
               </div>
               <div>
                 <dt>Consultations</dt>
-                <dd>{weekStats.visits}</dd>
+                <FactValue text={String(weekStats.visits)} />
               </div>
               <div>
                 <dt>Taux de règlement</dt>
-                <dd>{formatNumber(weekStats.rate, { maximumFractionDigits: 1 })} %</dd>
+                {weekStats.rate === null ? (
+                  <dd className="factEmpty">Aucune facture</dd>
+                ) : (
+                  <>
+                    <FactValue text={`${formatNumber(weekStats.rate, { maximumFractionDigits: 1 })} %`} />
+                    <span aria-hidden="true" className="factMeter">
+                      <i style={{ width: `${Math.min(100, Math.max(0, weekStats.rate))}%` }} />
+                    </span>
+                  </>
+                )}
               </div>
-              <div>
+              <div data-attention={weekStats.pending > 0 || undefined}>
                 <dt>Reste à recouvrer</dt>
-                <dd>{formatCentimes(weekStats.pending)}</dd>
+                <FactValue text={formatCentimes(weekStats.pending)} />
               </div>
             </dl>
 
@@ -887,6 +994,7 @@ export function PremiumAnalytics({
                   </thead>
                   <tbody>
                     {today.slice(0, 3).map((row) => {
+                      const isNext = row.appointment.id === nextUpId;
                       const timeStr = row.appointment.startTime
                         ? new Date(row.appointment.startTime).toLocaleTimeString("fr-FR", {
                             hour: "2-digit",
@@ -894,9 +1002,10 @@ export function PremiumAnalytics({
                           })
                         : "Aujourd'hui";
                       return (
-                        <tr key={row.appointment.id}>
+                        <tr data-next={isNext || undefined} key={row.appointment.id}>
                           <td>
-                            <strong>{timeStr}</strong>
+                            <strong className="whenTime">{timeStr}</strong>
+                            {isNext ? <span className="whenNext">À suivre</span> : null}
                           </td>
                           <td>
                             <div className="flex flex-col">
@@ -956,6 +1065,9 @@ export function PremiumAnalytics({
           </div>
         </div>
       </div>
+
+      {/* 4b. À surveiller : rappels, stock, hospitalisés */}
+      {watch}
 
       {/* 5. Ruled Lattice Quick Modules: Gestion du cabinet (Reference .tiles.frame) */}
       <div className="card frame">

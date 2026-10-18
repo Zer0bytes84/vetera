@@ -1,0 +1,167 @@
+/* Rangée « À surveiller » du tableau de bord. Jetons de la charte uniquement. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchGrid {
+  --watch-critical: var(--bad, var(--signal-critical));
+  --watch-warning: var(--premium-orange, var(--signal-watch));
+  --watch-neutral: var(--faint);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1100px) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .watchGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchIcon {
+  display: inline-flex;
+  color: var(--soft);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchSummary {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--soft);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchSummary[data-tone="critical"] {
+  color: var(--watch-critical);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchList > li + li {
+  box-shadow: var(--hair-t);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 22px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 180ms var(--ease-out-quint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow:hover {
+  background: var(--lift, var(--muted));
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow:focus-visible,
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMore button:focus-visible,
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRetry:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--watch-neutral);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchDot[data-tone="critical"] {
+  background: var(--watch-critical);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchDot[data-tone="warning"] {
+  background: var(--watch-warning);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchText strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchText span {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--soft);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMeta {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--soft);
+  white-space: nowrap;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMeta[data-tone="critical"] {
+  color: var(--watch-critical);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMore button {
+  width: 100%;
+  padding: 10px 22px;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  color: var(--soft);
+  text-align: left;
+  cursor: pointer;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMore button:hover {
+  color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchEmpty {
+  flex: 1;
+  margin: 0;
+  padding: 24px 22px;
+  background: var(--band);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--faint);
+  text-align: center;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRetry {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchCard .cardHead {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchCard .moreLink {
+  flex-shrink: 0;
+  margin-top: 2px;
+}

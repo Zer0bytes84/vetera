@@ -45,6 +45,13 @@ import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
 import { PremiumAnalytics } from "../components/premium-analytics";
 import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod } from "../model/premium-analytics";
 import "../components/premium-analytics.css";
+import { DashboardWatch } from "../components/dashboard-watch";
+import {
+  buildHospitalizedWatch,
+  buildStockWatch,
+  buildUpcomingReminders,
+} from "../model/dashboard-watch";
+import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 
 const ENTRY_KEY = "baitari:clinical-dashboard-entered";
 export interface DashboardPageProps {
@@ -72,6 +79,7 @@ export function DashboardPage({
   const vaccinations = useVaccinationsRepository();
   const stays = useHospitalizationsRepository();
   const invoices = useDashboardFinancials();
+  const medicalReminders = usePatientReminders();
   const [analyticsPeriod, setAnalyticsPeriod] = useState<AnalyticsPeriod>("30d");
   const presentation = useMemo(() => dashboardPresentationData({
     appointments: appointments.data, owners: owners.data, patients: patients.data,
@@ -402,7 +410,34 @@ export function DashboardPage({
               }}
             />
           }
+          now={now}
           presentation={presentation}
+          watch={
+            <DashboardWatch
+              hospitalized={buildHospitalizedWatch({
+                now,
+                patients: presentation.patients,
+                stays: stays.data,
+              })}
+              onOpenPatient={openPatientPeek}
+              onReminders={() => {
+                window.sessionStorage.setItem("baitari:reminders-source", "medical");
+                navigate("taches");
+              }}
+              onRemindersRetry={() => void medicalReminders.refresh()}
+              onStays={() => navigate("soins")}
+              onStock={() => navigate("stock")}
+              reminders={buildUpcomingReminders({
+                now,
+                patients: presentation.patients,
+                reminders: medicalReminders.reminders,
+                types: medicalReminders.types,
+              })}
+              remindersError={medicalReminders.error}
+              remindersLoading={medicalReminders.loading}
+              stock={buildStockWatch({ now, products: presentation.products })}
+            />
+          }
           today={today}
           financials={{
             income: cash.income,

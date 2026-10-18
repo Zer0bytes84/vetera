@@ -58,7 +58,6 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { FocusProvider } from "@/contexts/focus-provider";
@@ -127,26 +126,6 @@ export function AppShell() {
       </FocusProvider>
     </LayoutProvider>
   );
-}
-
-function DocumentsSidebarMode({ active }: { active: boolean }) {
-  const { isMobile, open, setOpen } = useSidebar();
-  const previousOpen = useRef<boolean | null>(null);
-  const setOpenRef = useRef(setOpen);
-  useEffect(() => {
-    setOpenRef.current = setOpen;
-  }, [setOpen]);
-  useEffect(() => {
-    if (isMobile) return;
-    if (active) {
-      if (previousOpen.current === null) previousOpen.current = open;
-      setOpenRef.current(false);
-    } else if (previousOpen.current !== null) {
-      setOpenRef.current(previousOpen.current);
-      previousOpen.current = null;
-    }
-  }, [active, isMobile, open]);
-  return null;
 }
 
 function AppShellInner() {
@@ -533,7 +512,6 @@ function AppShellInner() {
         } as React.CSSProperties
       }
     >
-      <DocumentsSidebarMode active={currentView === "notes"} />
       {consultationPickerOpen && <Suspense fallback={null}><QuickConsultation open onOpenChange={setConsultationPickerOpen} onNavigate={handleNavigate}/></Suspense>}
       <AppSidebar
         collapsible={collapsible}

@@ -3,6 +3,8 @@ import {
   ArrowsDownUp,
   ArrowUp,
   ChevronDown,
+  Copy,
+  FloppyDisk,
   Pill,
   Trash,
   X,
@@ -34,6 +36,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   usePrescriptionItemsRepository,
   usePrescriptionsRepository,
+  useWeightEntriesRepository,
 } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import { useAudit } from "@/services/use-audit";
@@ -57,6 +60,11 @@ import {
   collectActiveTreatments,
   type SafetyAlert,
 } from "../lib/prescription-safety";
+import {
+  checkTemplateSafety,
+  instantiateTemplateItems,
+  type PrescriptionTemplate,
+} from "../lib/prescription-templates";
 import { DoseCalculatorCard } from "./dose-calculator-card";
 import { MedicationPicker } from "./medication-picker";
 import { PrescriptionPreview } from "./prescription-preview";
@@ -64,6 +72,11 @@ import {
   PrescriptionSafetyBadges,
   PrescriptionSafetyBanner,
 } from "./prescription-safety-alerts";
+import {
+  PrescriptionTemplateQuickList,
+  PrescriptionTemplatesDialog,
+  usePrescriptionTemplates,
+} from "./prescription-templates";
 
 export interface PrescriptionBuilderProps {
   appointmentId: string;
@@ -207,7 +220,12 @@ export function PrescriptionBuilder({
 
   const prescriptionsRepo = usePrescriptionsRepository();
   const itemsRepo = usePrescriptionItemsRepository();
+  const weightEntriesRepo = useWeightEntriesRepository();
   const audit = useAudit();
+  const templates = usePrescriptionTemplates();
+  const [templatesDialog, setTemplatesDialog] = useState<
+    "manage" | "save" | null
+  >(null);
 
   // Init : si une prescription existe pour cette consultation, on hydrate
   useEffect(() => {
@@ -359,6 +377,93 @@ export function PrescriptionBuilder({
     [activeTreatments, items, patient]
   );
 
+  // Modèles d'ordonnance : même contrôle de sécurité, pour le patient courant.
+  const templateAlerts = useCallback(
+    (template: PrescriptionTemplate) =>
+      checkTemplateSafety({
+        active: activeTreatments,
+        draft: items.map((it) => ({
+          key: it.id,
+          name: it.medicationName,
+          className: it.medicationClass,
+          aliases: catalogAliases(it.medicationId),
+        })),
+        patient,
+        resolveAliases: catalogAliases,
+        template,
+      }),
+    [activeTreatments, items, patient]
+  );
+
+  const templateAlertCount = useCallback(
+    (template: PrescriptionTemplate) => templateAlerts(template).length,
+    [templateAlerts]
+  );
+
+  const applyTemplate = useCallback(
+    (template: PrescriptionTemplate) => {
+      // Poids de l'ordonnance, sinon dernière pesée du dossier.
+      const latestWeight = weightEntriesRepo.latestFor(patient.id);
+      const usedLatestWeight =
+        weightKg == null && latestWeight != null && latestWeight.weightKg > 0;
+      const effectiveWeight = usedLatestWeight
+        ? latestWeight.weightKg
+        : weightKg;
+      const alerts = templateAlerts(template);
+
+      setItems((prev) => [
+        ...prev,
+        ...instantiateTemplateItems(template, prev.length, (item, sortOrder) => {
+          const line: DraftItem = { ...item, id: makeId(), sortOrder };
+          const computation = computeItemDose(line, effectiveWeight);
+          return {
+            ...line,
+            computedDoseMg: computation?.computedMg,
+            computedVolumeMl: computation?.computedMl,
+          };
+        }),
+      ]);
+      if (usedLatestWeight) {
+        setWeightKg(latestWeight.weightKg);
+      }
+      // Les champs déjà saisis par le vétérinaire ne sont jamais écrasés.
+      if (template.diagnosis) {
+        setDiagnosis((current) => current.trim() ? current : template.diagnosis ?? "");
+      }
+      if (template.generalInstructions) {
+        setGeneralInstructions((current) =>
+          current.trim() ? current : template.generalInstructions ?? ""
+        );
+      }
+
+      const count = template.items.length;
+      const added = count > 1 ? `${count} médicaments ajoutés` : "1 médicament ajouté";
+      const weightNote = effectiveWeight
+        ? `Doses calculées pour ${effectiveWeight} kg${usedLatestWeight ? " (dernière pesée)" : ""}.`
+        : "Renseignez le poids pour calculer les doses.";
+      if (alerts.length > 0) {
+        toast.warning(
+          `Modèle « ${template.name} » appliqué : ${
+            alerts.length > 1
+              ? `${alerts.length} alertes de sécurité`
+              : "1 alerte de sécurité"
+          } à vérifier.`,
+          { description: `${added}. ${weightNote}` }
+        );
+      } else {
+        toast.success(`Modèle « ${template.name} » appliqué.`, {
+          description: `${added}. ${weightNote}`,
+        });
+      }
+    },
+    [patient.id, templateAlerts, weightEntriesRepo, weightKg]
+  );
+
+  const currentAsTemplate = useCallback(
+    () => ({ diagnosis, generalInstructions, items }),
+    [diagnosis, generalInstructions, items]
+  );
+
   const handleSave = useCallback(
     async (newStatus: "draft" | "signed") => {
       const now = new Date().toISOString();
@@ -496,6 +601,7 @@ export function PrescriptionBuilder({
           onPreviewChange?.(true);
         }}
         onSaveDraft={() => void saveWithFeedback("draft")}
+        onOpenTemplates={() => setTemplatesDialog("manage")}
         onSign={() => setSignConfirmOpen(true)}
         savedAt={savedAt}
         status={status}
@@ -545,6 +651,14 @@ export function PrescriptionBuilder({
                   speciesKey={speciesKey}
                 />
               }
+              footer={
+                <PrescriptionTemplateQuickList
+                  alertCountFor={templateAlertCount}
+                  onApply={applyTemplate}
+                  onManage={() => setTemplatesDialog("manage")}
+                  state={templates}
+                />
+              }
             />
           ) : (
             <>
@@ -573,6 +687,19 @@ export function PrescriptionBuilder({
                 onSelect={handleAddMedication}
                 speciesKey={speciesKey}
               />
+              <div className="flex justify-end">
+                <Button
+                  className="h-8 gap-1.5 text-muted-foreground"
+                  data-testid="prescription-save-as-template"
+                  onClick={() => setTemplatesDialog("save")}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  <FloppyDisk className="size-3.5" weight="duotone" />
+                  Enregistrer comme modèle
+                </Button>
+              </div>
             </>
           )}
         </div>
@@ -604,6 +731,22 @@ export function PrescriptionBuilder({
           vet={vet ?? currentUser ?? null}
         />
       ) : null}
+
+      <PrescriptionTemplatesDialog
+        alertCountFor={templateAlertCount}
+        canSaveCurrent={items.some((it) => it.medicationName.trim() !== "")}
+        currentItemCount={items.length}
+        getCurrent={currentAsTemplate}
+        initialMode={templatesDialog ?? "manage"}
+        onApply={applyTemplate}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTemplatesDialog(null);
+          }
+        }}
+        open={templatesDialog !== null}
+        state={templates}
+      />
 
       <AlertDialog onOpenChange={setSignConfirmOpen} open={signConfirmOpen}>
         <AlertDialogContent>
@@ -647,12 +790,14 @@ export function PrescriptionBuilder({
 // =====================================================================================
 
 function BuilderHeader({
+  onOpenTemplates,
   onSaveDraft,
   onSign,
   onPreview,
   savedAt,
   status,
 }: {
+  onOpenTemplates: () => void;
   onPreview: () => void;
   onSaveDraft: () => void;
   onSign: () => void;
@@ -689,6 +834,17 @@ function BuilderHeader({
             {t("prescriptions.status.draft")}
           </Badge>
         )}
+        <Button
+          className="h-8 gap-1.5"
+          data-testid="prescription-templates-open"
+          onClick={onOpenTemplates}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
+          <Copy className="size-3.5" weight="duotone" />
+          Modèles
+        </Button>
         <Button
           className="h-8 gap-1.5"
           onClick={onPreview}
@@ -786,7 +942,13 @@ function PatientInfoCard({ patient }: { patient: Patient }) {
   );
 }
 
-function EmptyState({ action }: { action: React.ReactNode }) {
+function EmptyState({
+  action,
+  footer,
+}: {
+  action: React.ReactNode;
+  footer?: React.ReactNode;
+}) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center rounded-lg border border-border/60 border-dashed bg-muted/20 px-6 py-12 text-center">
@@ -800,6 +962,7 @@ function EmptyState({ action }: { action: React.ReactNode }) {
         {t("prescriptions.empty.description")}
       </p>
       <div className="mt-4 w-full max-w-sm">{action}</div>
+      {footer}
     </div>
   );
 }

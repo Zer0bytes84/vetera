@@ -1478,3 +1478,268 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
  --ok: var(--signal-positive); --bad: var(--signal-critical); --analytics-font: var(--font-sans);
  --hair-t: inset 0 1px 0 var(--border); --hair-b: inset 0 -1px 0 var(--border); --hair-l: inset 1px 0 0 var(--border); --hair-r: inset -1px 0 0 var(--border);
 }
+
+/* ------------------------------------------------------------ Chart : profondeur, points, survol */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartLine {
+  stroke-width: 2.25;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartGlow {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.1;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartArea {
+  transition: opacity 220ms var(--ease-out-quint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartAreaVisits {
+  opacity: 0.85;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPlot:hover .chartArea:not(.chartAreaVisits) {
+  filter: saturate(1.25);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartColumn {
+  fill: var(--lift-2, var(--lift));
+  pointer-events: none;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPoint {
+  stroke: var(--surface);
+  stroke-width: 1.5;
+  opacity: 0.75;
+  transition: opacity 160ms var(--ease-out-quint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPoint[data-active] {
+  opacity: 0;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPeakHalo {
+  fill: color-mix(in srgb, var(--series-1) 16%, transparent);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: chartPulse 2.6s var(--ease-out-quint) infinite;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPeakLabel {
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartHot {
+  transition: transform 160ms var(--ease-out-quint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartHalo {
+  opacity: 0.16;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartCrosshair {
+  animation: chartFade 160ms var(--ease-out-quint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTip {
+  min-width: 168px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: transform 160ms var(--ease-out-quint);
+  animation: chartFade 160ms var(--ease-out-quint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTipHead {
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  box-shadow: var(--hair-b);
+  font-size: 12px;
+  color: var(--soft);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTipRow strong {
+  font-size: 13px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTipKey {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px var(--lift-2, var(--lift));
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartLineDraw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: chartDraw 900ms var(--ease-out-quint) both;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartArea {
+  animation: chartFade 700ms var(--ease-out-quint) 200ms both;
+}
+
+@keyframes chartDraw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes chartFade {
+  from { opacity: 0; }
+}
+
+@keyframes chartPulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.chartLineDraw, .chartArea, .chartPeakHalo, .chartCrosshair, .chartTip) {
+    animation: none;
+  }
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.chartHot, .chartTip) {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------ Panneau « Cette semaine » */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts > div {
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 20px 22px 22px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: var(--soft);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts dt::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--line-strong);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts > div[data-attention] dt::before {
+  background: var(--premium-orange, var(--signal-watch));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--premium-orange, var(--signal-watch)) 18%, transparent);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts dd {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-top: auto;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .factValue {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .factUnit {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--faint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .factMeter {
+  position: relative;
+  display: block;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .factMeter > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ok) 55%, transparent), var(--ok));
+  transform-origin: left;
+  animation: factGrow 900ms var(--ease-out-quint) both;
+}
+
+@keyframes factGrow {
+  from { transform: scaleX(0); }
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .whenTime {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .whenNext {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--series-1);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr[data-next] td:first-child {
+  box-shadow: inset 2px 0 0 var(--series-1);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr[data-next] td {
+  background: color-mix(in srgb, var(--series-1) 4%, transparent);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr:hover .iconBtn {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .factMeter > i {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------ Respiration entre les rangées (vue Analyse) */
+.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) {
+  row-gap: 48px;
+}
+
+/* Les filtres de période restent attachés aux indicateurs qu'ils pilotent. */
+.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .filters {
+  margin-top: 0;
+  margin-bottom: -32px;
+}
+
+.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .split {
+  margin-top: 0;
+  gap: 24px;
+}
+
+.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .watchGrid {
+  gap: 24px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts dd.factEmpty {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--faint);
+}
