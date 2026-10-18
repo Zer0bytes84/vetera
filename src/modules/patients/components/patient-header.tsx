@@ -1,5 +1,5 @@
 import { CalendarPlus, FirstAid, Notebook, PencilSimple } from "@/lib/icons";
-import { Download } from "lucide-react";
+import { Download, HeartPulse } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,8 @@ interface PatientHeaderProps {
   onOpenCare?: () => void;
   onOpenClinicalNote?: () => void;
   onExportPdf?: () => void;
+  /** Ouvre le carnet de santé (une page à remettre au propriétaire). */
+  onHealthCard?: () => void;
   owner?: Owner;
   patient: Patient;
 }
@@ -28,6 +30,7 @@ export function PatientHeader({
   onOpenCare,
   onOpenClinicalNote,
   onExportPdf,
+  onHealthCard,
   patient,
 }: PatientHeaderProps) {
   const speciesTheme = getSpeciesTheme(patient.species);
@@ -89,6 +92,10 @@ export function PatientHeader({
           {onExportPdf && <Button variant="outline" size="sm" className="medical-action medical-action-outline" onClick={onExportPdf}>
             <Download className="size-4" strokeWidth={1} aria-hidden="true" />
             Exporter en PDF
+          </Button>}
+          {onHealthCard && <Button variant="outline" size="sm" className="medical-action medical-action-outline" onClick={onHealthCard} data-testid="patient-health-card">
+            <HeartPulse className="size-4" strokeWidth={1} aria-hidden="true" />
+            Carnet de santé
           </Button>}
         </div>
       </div>

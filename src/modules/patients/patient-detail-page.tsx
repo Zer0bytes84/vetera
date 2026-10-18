@@ -76,6 +76,7 @@ import { getVaccinationStatus } from "./lib/vaccination-status";
 import { DatePicker } from "@/components/ui/date-picker";
 import { PageHeader } from "@/design-system/patterns/page-header";
 
+const HealthCardDialog = lazy(() => import("./health-card/health-card-dialog").then(module => ({ default: module.HealthCardDialog })));
 const PatientRecordExportDialog = lazy(() => import("./export/patient-record-export-dialog").then(module => ({ default: module.PatientRecordExportDialog })));
 
 interface PatientDetailPageProps {
@@ -204,6 +205,7 @@ export function PatientDetailPage({
 
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
   const [pdfExportOpen, setPdfExportOpen] = useState(false);
+  const [healthCardOpen, setHealthCardOpen] = useState(false);
   const [editingWeight, setEditingWeight] = useState<WeightEntry | null>(null);
   const [vaccinationDialogOpen, setVaccinationDialogOpen] = useState(false);
   const [editingVaccination, setEditingVaccination] =
@@ -536,6 +538,7 @@ export function PatientDetailPage({
         <PatientHeader
           onEditProfile={openProfileEditor}
           onExportPdf={() => setPdfExportOpen(true)}
+          onHealthCard={() => setHealthCardOpen(true)}
           onNewAppointment={() => {
             prepareAppointment(patient.id);
             onNavigate("agenda");
@@ -554,6 +557,9 @@ export function PatientDetailPage({
         />
         {pdfExportOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture de l’export PDF…</p>}>
           <PatientRecordExportDialog key={patientId} patientId={patientId} patientName={patient.name} onClose={() => setPdfExportOpen(false)} />
+        </Suspense>}
+        {healthCardOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture du carnet de santé…</p>}>
+          <HealthCardDialog key={patientId} owner={owner} patient={patient} onClose={() => setHealthCardOpen(false)} />
         </Suspense>}
         <section className="patient-record-indicators" aria-label={`Indicateurs de ${patient.name}`}>
           <PatientContextWidgets

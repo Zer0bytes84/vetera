@@ -13,7 +13,10 @@ export async function requirePatientRecordSession(artifact: PatientRecordPdf): P
 }
 
 /** Save the exact artifact that was previewed. A cancelled picker writes nothing. */
-export async function savePatientRecordPdf(artifact: PatientRecordPdf): Promise<{ path: string; downloaded: boolean } | null> {
+export async function savePatientRecordPdf(
+  artifact: PatientRecordPdf,
+  labels: { title?: string; filterName?: string } = {},
+): Promise<{ path: string; downloaded: boolean } | null> {
   await requirePatientRecordSession(artifact);
   if (!isTauriRuntime()) {
     const data = new Blob([Uint8Array.from(artifact.bytes).buffer], { type: "application/pdf" });
@@ -33,9 +36,9 @@ export async function savePatientRecordPdf(artifact: PatientRecordPdf): Promise<
   try { directory = await getSetting(DIRECTORY_KEY); } catch { /* A preference must not prevent saving. */ }
   const defaultPath = await join(directory || await desktopDir(), artifact.filename);
   const path = await save({
-    title: "Enregistrer le dossier patient",
+    title: labels.title ?? "Enregistrer le dossier patient",
     defaultPath,
-    filters: [{ name: "Dossier PDF", extensions: ["pdf"] }],
+    filters: [{ name: labels.filterName ?? "Dossier PDF", extensions: ["pdf"] }],
   });
   if (!path) return null;
   await requirePatientRecordSession(artifact);
