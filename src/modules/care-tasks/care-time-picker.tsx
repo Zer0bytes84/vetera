@@ -35,9 +35,10 @@ export function CareTimePicker({
         aria-label={`Choisir l’${label.toLocaleLowerCase("fr-FR")}`}
         render={
           <Button
+            data-field="time"
             type="button"
             variant="outline"
-            className="h-11 w-[115px] shrink-0 justify-start gap-2 rounded-xl px-3 text-[13px]"
+            className="h-11 w-[115px] shrink-0 justify-start gap-2 rounded-xl px-3 t-13"
           />
         }
       >

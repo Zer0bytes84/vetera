@@ -1,0 +1,160 @@
+/*
+ * One form field style for every field type: text, number, date, time,
+ * search, select, native select, combobox, input group and textarea.
+ *   1 px #F2F2F2 border, darker on hover, white background, 8 px radius,
+ *   36 px high in pages and toolbars, 40 px in dialogs and forms.
+ * Inline title editors (transparent inputs) and choice controls
+ * (checkbox, radio, switch, file) are left alone.
+ * ":root:root:root" lifts these rules above older Premium and modal rules.
+ */
+:root {
+  --field-border: var(--line, #f2f2f2);
+  --field-border-hover: #d9d9d9;
+  --field-border-focus: var(--ink-soft, #5d5d5d);
+  --field-bg: var(--surface, #ffffff);
+  --field-text: var(--ink, #292929);
+  --field-placeholder: var(--ink-muted, #7f7f7f);
+  --field-height: 36px;
+}
+:root.dark {
+  --field-border: rgb(255 255 255 / 10%);
+  --field-border-hover: rgb(255 255 255 / 22%);
+  --field-border-focus: rgb(255 255 255 / 45%);
+}
+
+/* Dialogs, sheets and forms get the taller field. */
+:is([data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="sheet-content"], [data-slot="drawer-content"], form) {
+  --field-height: 40px;
+}
+
+:root:root:root :is(
+  [data-slot="input"]:not([type="checkbox"], [type="radio"], [type="file"], [type="range"], [type="color"]),
+  [data-slot="native-select"],
+  [data-slot="select-trigger"],
+  [data-slot="input-group"],
+  [data-slot="textarea"],
+  [data-field],
+  select:not([data-slot]),
+  textarea:not([data-slot]),
+  input:not([data-slot]):is([type="time"], [type="date"], [type="datetime-local"], [type="number"], [type="email"], [type="tel"], [type="password"])
+):not([data-slot="input-group"] *, [data-slot="command"] *, [cmdk-root] *) {
+  border: 1px solid var(--field-border) !important;
+  border-radius: 8px !important;
+  background-color: var(--field-bg) !important;
+  color: var(--field-text) !important;
+  box-shadow: none !important;
+  font-family: var(--app-font-sans) !important;
+  font-size: 13px !important;
+  transition: border-color 160ms ease-out, box-shadow 160ms ease-out !important;
+}
+
+/* Single-line fields share one height; textareas keep their rows. */
+:root:root:root :is(
+  [data-slot="input"]:not([type="checkbox"], [type="radio"], [type="file"], [type="range"], [type="color"]),
+  [data-slot="native-select"],
+  [data-slot="select-trigger"],
+  [data-slot="input-group"]:not(:has(> textarea, > [data-align="block-start"], > [data-align="block-end"])),
+  [data-field],
+  select:not([data-slot]),
+  input:not([data-slot]):is([type="time"], [type="date"], [type="datetime-local"], [type="number"], [type="email"], [type="tel"], [type="password"])
+):not([data-slot="input-group"] *, [data-slot="command"] *, [cmdk-root] *) {
+  height: var(--field-height) !important;
+  min-height: var(--field-height) !important;
+}
+
+/* Placeholders read as hints, never as typed values. */
+:root:root:root :is([data-slot="input"], [data-slot="textarea"], [data-slot="input-group-control"], textarea, input)::placeholder {
+  color: var(--field-placeholder) !important;
+  opacity: 1 !important;
+}
+:root:root:root :is([data-slot="select-trigger"], [data-slot="native-select"])[data-placeholder] {
+  color: var(--field-placeholder) !important;
+}
+
+:root:root:root :is(
+  [data-slot="input"],
+  [data-slot="native-select"],
+  [data-slot="select-trigger"],
+  [data-slot="input-group"],
+  [data-slot="textarea"],
+  [data-field],
+  select:not([data-slot]),
+  textarea:not([data-slot]),
+  input:not([data-slot]):is([type="time"], [type="date"], [type="datetime-local"], [type="number"], [type="email"], [type="tel"], [type="password"])
+):not([data-slot="input-group"] *, :disabled, [aria-invalid="true"]):hover {
+  border-color: var(--field-border-hover) !important;
+}
+
+:root:root:root :is(
+  [data-slot="input"],
+  [data-slot="native-select"],
+  [data-slot="select-trigger"],
+  [data-slot="textarea"],
+  [data-field],
+  select:not([data-slot]),
+  textarea:not([data-slot]),
+  input:not([data-slot]):is([type="time"], [type="date"], [type="datetime-local"], [type="number"], [type="email"], [type="tel"], [type="password"])
+):not([data-slot="input-group"] *, [aria-invalid="true"]):focus-visible,
+:root:root:root [data-slot="input-group"]:focus-within:not(:has([aria-invalid="true"])) {
+  border-color: var(--field-border-focus) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgb(0 0 0 / 6%) !important;
+}
+
+:root:root:root :is([data-slot="input"], [data-slot="native-select"], [data-slot="select-trigger"], [data-slot="textarea"], select, textarea)[aria-invalid="true"],
+:root:root:root [data-slot="input-group"]:has([aria-invalid="true"]) {
+  border-color: var(--destructive, #c62828) !important;
+}
+
+:root:root:root :is([data-slot="input"], [data-slot="native-select"], [data-slot="select-trigger"], [data-slot="textarea"], select, textarea):disabled,
+:root:root:root [data-slot="input-group"]:has(:disabled) {
+  background-color: var(--lift-2, #f5f5f5) !important;
+  opacity: 0.7 !important;
+}
+
+/* The control inside an input group is bare: the group draws the frame. */
+:root:root:root [data-slot="input-group"] :is(input, [data-slot="input-group-control"]:not(textarea)) {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+:root:root:root [data-slot="input-group"] :is([data-slot="input-group-control"], input, textarea) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+}
+
+/* Toolbar search fields keep room for their magnifier icon. */
+:root:root:root .list-search-control [data-slot="input"] {
+  padding-inline: 32px !important;
+}
+
+/* Picker fields (date, time, patient) read like the other fields: value on the left. */
+:root:root:root [data-field] {
+  justify-content: flex-start !important;
+  padding-inline: 12px !important;
+  font-weight: 400 !important;
+  text-align: left !important;
+}
+
+/* Choice controls stay visible on light surfaces: #F2F2F2 alone disappears. */
+:root:root:root :is([data-slot="checkbox"], [data-slot="radio-group-item"]):not([data-checked]) {
+  border-color: var(--line-strong, rgb(0 0 0 / 16%)) !important;
+}
+
+/* Buttons inside a field (open list, clear) belong to the field: no second frame. */
+:root:root:root [data-slot="input-group"] :is([data-slot="input-group-button"], [data-slot="combobox-trigger"], [data-slot="combobox-clear"]) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:root:root:root [data-field="picker"] {
+  justify-content: space-between !important;
+}
+
+/* A grouped control without a leading icon keeps the field's inner spacing. */
+:root:root:root [data-slot="input-group"] > :is(input, [data-slot="input-group-control"]):first-child {
+  padding-left: 12px !important;
+}

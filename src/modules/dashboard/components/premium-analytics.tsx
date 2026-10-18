@@ -76,15 +76,16 @@ function DeltaBadge({
   current?: number;
   inverse?: boolean;
 }) {
-  let computed = value;
-  if (computed === null) {
-    if (previous === 0) {
-      computed = current > 0 ? 100 : 0;
-    } else {
-      computed =
-        Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10;
-    }
+  // A percentage of a zero base says nothing: show the label only.
+  if (value === null && previous === 0) {
+    return (
+      <span className="delta" data-sense="neutral">
+        <span className="delta-label">Pas de période précédente comparable</span>
+      </span>
+    );
   }
+  const computed =
+    value ?? Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10;
 
   const positive = computed !== 0 && (inverse ? computed < 0 : computed > 0);
   const negative = computed !== 0 && !positive;
@@ -94,7 +95,7 @@ function DeltaBadge({
   return (
     <span
       className="delta"
-      data-dir={positive ? "up" : negative ? "down" : "flat"}
+      data-sense={positive ? "good" : negative ? "bad" : "neutral"}
     >
       {computed !== 0 && <Icon size={13} strokeWidth={1.5} aria-hidden="true" />}
       <span>{formattedPercent}</span>
@@ -676,7 +677,8 @@ export function PremiumAnalytics({
 
       {clinicalView ? <div className="premium-clinical-overview">{clinicalView}</div> : <>
       {/* 2. Contiguous Period Filters Ribbon (Reference .filters) */}
-      <div className="filters" role="group" aria-label="Période du tableau de bord">
+      <div className="filters">
+        <div aria-label="Période du tableau de bord" className="filter-segments" data-tabs-style="segmented" role="group">
         {ANALYTICS_PERIODS.map((opt) => (
           <button
             key={opt.value}
@@ -689,6 +691,7 @@ export function PremiumAnalytics({
             {opt.label}
           </button>
         ))}
+        </div>
         <div className="filterGap" />
         <div className="filterRange">
           <CalendarDays size={14} strokeWidth={1} aria-hidden="true" />
@@ -850,7 +853,7 @@ export function PremiumAnalytics({
               </div>
               <div>
                 <dt>Taux de règlement</dt>
-                <dd>{weekStats.rate} %</dd>
+                <dd>{formatNumber(weekStats.rate, { maximumFractionDigits: 1 })} %</dd>
               </div>
               <div>
                 <dt>Reste à recouvrer</dt>
@@ -889,7 +892,7 @@ export function PremiumAnalytics({
                                 {row.patientName || "Patient"}
                               </span>
                               {row.ownerName && (
-                                <span style={{ fontSize: 11, color: "var(--faint)" }}>
+                                <span style={{ fontSize: 12, color: "var(--faint)" }}>
                                   {row.ownerName}
                                 </span>
                               )}

@@ -450,7 +450,7 @@ export function PrescriptionBuilder({
           <div className="grid gap-3 sm:grid-cols-2">
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+                <Label className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.diagnosis")}
                 </Label>
                 <Textarea
@@ -463,7 +463,7 @@ export function PrescriptionBuilder({
             </Card>
             <Card>
               <CardContent className="space-y-2 px-3 py-3">
-                <Label className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+                <Label className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                   {t("prescriptions.builder.generalInstructions")}
                 </Label>
                 <Textarea
@@ -596,19 +596,19 @@ function BuilderHeader({
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {savedAt ? (
-          <Badge className="text-[10px]" variant="outline">
+          <Badge className="t-12" variant="outline">
             ✓ {new Date(savedAt).toLocaleString()}
           </Badge>
         ) : null}
         {status === "signed" ? (
           <Badge
-            className="bg-emerald-500/10 text-[10px] text-emerald-700 dark:text-emerald-300"
+            className="bg-emerald-500/10 t-12 text-emerald-700 dark:text-emerald-300"
             variant="secondary"
           >
             {t("prescriptions.builder.signed")}
           </Badge>
         ) : (
-          <Badge className="text-[10px]" variant="secondary">
+          <Badge className="t-12" variant="secondary">
             {t("prescriptions.status.draft")}
           </Badge>
         )}
@@ -657,7 +657,7 @@ function WeightCard({
     <Card className="border-primary/15 bg-gradient-to-br from-primary/5 via-background to-background">
       <CardContent className="space-y-2 px-3 py-3">
         <Label
-          className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider"
+          className="font-semibold t-12 text-muted-foreground uppercase tracking-wider"
           htmlFor="weight-input"
         >
           {t("prescriptions.builder.weightLabel")}
@@ -682,7 +682,7 @@ function WeightCard({
           />
           <span className="font-medium text-muted-foreground text-sm">kg</span>
         </div>
-        <p className="text-[10px] text-muted-foreground">
+        <p className="t-12 text-muted-foreground">
           {t("prescriptions.builder.weightHelper")}
         </p>
       </CardContent>
@@ -694,7 +694,7 @@ function PatientInfoCard({ patient }: { patient: Patient }) {
   return (
     <Card>
       <CardContent className="space-y-1 px-3 py-3 text-xs">
-        <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
           {patient.name}
         </p>
         <p className="text-muted-foreground">
@@ -767,7 +767,7 @@ function ItemRow({
                   {item.medicationName}
                 </p>
                 {item.medicationClass ? (
-                  <p className="truncate text-[11px] text-muted-foreground">
+                  <p className="truncate t-12 text-muted-foreground">
                     {item.medicationClass}
                   </p>
                 ) : null}
@@ -913,7 +913,7 @@ function ItemRow({
             concentrationMgPerMl={item.concentrationMgPerMl}
             weightKg={weightKg}
           />
-          <p className="text-center text-[10px] text-muted-foreground">
+          <p className="text-center t-12 text-muted-foreground">
             <ArrowsDownUp className="mr-1 inline size-3" weight="duotone" />
             {t("prescriptions.calculator.perKg")}
           </p>
@@ -932,7 +932,7 @@ function FieldShell({
 }) {
   return (
     <div className="space-y-1">
-      <Label className="font-medium text-[10px] text-muted-foreground uppercase tracking-wider">
+      <Label className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
         {label}
       </Label>
       {children}

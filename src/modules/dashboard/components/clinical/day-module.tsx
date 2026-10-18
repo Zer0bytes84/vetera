@@ -97,7 +97,7 @@ export function DayModule({
             <HugeiconsIcon icon={ArrowLeft01Icon} size={16} strokeWidth={1.5} />
           </IconButton>
           <button
-            className={`rounded-control px-2 py-1.5 text-[11px] text-ink-muted hover:bg-frame ${focusRing}`}
+            className={`rounded-control px-2 py-1.5 t-12 text-ink-muted hover:bg-frame ${focusRing}`}
             type="button"
             onClick={onToday}
           >
@@ -135,6 +135,7 @@ export function DayModule({
       />
       <div
         className="clinical-filter-tabs"
+        data-tabs-style="segmented"
         role="group"
         aria-label="Filtrer les visites"
       >
@@ -178,10 +179,10 @@ export function DayModule({
                 onBlur={onIntentCancel}
               >
                 <div className="w-12 shrink-0 border-r border-hairline">
-                  <time className="text-[13px] font-medium tabular-nums">
+                  <time className="t-13 font-medium tabular-nums">
                     {formatTime(row.start)}
                   </time>
-                  <p className="mt-1 text-[10px] text-ink-muted">
+                  <p className="mt-1 t-12 text-ink-muted">
                     {Math.max(
                       0,
                       Math.round(
@@ -195,12 +196,12 @@ export function DayModule({
                 <div className="min-w-0 flex-1">
                   <button
                     type="button"
-                    className={`max-w-full truncate rounded text-left text-[13px] font-medium hover:text-primary ${focusRing}`}
+                    className={`max-w-full truncate rounded text-left t-13 font-medium hover:text-primary ${focusRing}`}
                     onClick={() => onPatient(row.appointment.patientId)}
                   >
                     {row.patientName}
                   </button>
-                  <p className="mt-1 truncate text-[11px] text-ink-muted">
+                  <p className="mt-1 truncate t-12 text-ink-muted">
                     {row.appointment.type} · {row.ownerName}
                   </p>
                 </div>
@@ -241,7 +242,7 @@ export function DayModule({
       )}
       {rows.length < 3 && context.rows.length > 0 && (
         <div className="mt-2 border-t border-hairline pt-3">
-          <h3 className="mb-1 text-[11px] font-medium text-ink-muted">
+          <h3 className="mb-1 t-12 font-medium text-ink-muted">
             {context.label}
           </h3>
           {context.rows.slice(0, 2).map((row) => (
@@ -249,7 +250,7 @@ export function DayModule({
               type="button"
               key={row.appointment.id}
               onClick={() => onPatient(row.appointment.patientId)}
-              className={`flex w-full items-center justify-between gap-3 rounded-control py-2 text-left text-[12px] hover:text-primary ${focusRing}`}
+              className={`flex w-full items-center justify-between gap-3 rounded-control py-2 text-left t-12 hover:text-primary ${focusRing}`}
             >
               <span className="truncate">
                 {row.patientName}
@@ -257,7 +258,7 @@ export function DayModule({
                   {row.appointment.type}
                 </span>
               </span>
-              <time className="shrink-0 text-[11px] text-ink-muted">
+              <time className="shrink-0 t-12 text-ink-muted">
                 {row.start.toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "short",
@@ -268,7 +269,7 @@ export function DayModule({
         </div>
       )}
       <div className="mt-3 flex items-center justify-between border-t border-hairline pt-3">
-        <span className="text-[11px] text-ink-muted">
+        <span className="t-12 text-ink-muted">
           {filtered.length
             ? `${activePage * 5 + 1}–${Math.min(filtered.length, activePage * 5 + 5)} sur ${filtered.length} visites`
             : "Chaque visite reste reliée au dossier"}

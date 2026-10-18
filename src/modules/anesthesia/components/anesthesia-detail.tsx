@@ -107,7 +107,7 @@ export function AnesthesiaDetail({
                 <Syringe className="size-5 text-violet-600" weight="duotone" />
               </div>
               <div className="grid flex-1 gap-0.5">
-                <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+                <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
                   {patient.name} · {patient.species}
                 </CardDescription>
                 <CardTitle className="text-lg tracking-tight">
@@ -205,7 +205,7 @@ export function AnesthesiaDetail({
             <Separator />
 
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
+              <span className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
                 {t("modules.anesthesia.fields.changeStatus", "Statut")}
               </span>
               {(
@@ -242,7 +242,7 @@ export function AnesthesiaDetail({
         <Card className="h-fit">
           <CardHeader className="flex-row items-center justify-between border-border/40 border-b">
             <div className="grid gap-0.5">
-              <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+              <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
                 {t("modules.anesthesia.drugLog.title", "Log médicaments")}
               </CardDescription>
               <CardTitle className="text-base">
@@ -314,7 +314,7 @@ export function AnesthesiaDetail({
                       >
                         {ANESTHESIA_PHASE_LABELS[d.phase]}
                       </Badge>
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="t-12 text-muted-foreground">
                         {new Date(d.administeredAt).toLocaleTimeString(
                           "fr-FR",
                           {
@@ -328,7 +328,7 @@ export function AnesthesiaDetail({
                 ))}
               </ul>
             )}
-            <div className="flex flex-wrap items-center gap-2 border-border/40 border-t bg-muted/20 px-6 py-2 text-[11px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 border-border/40 border-t bg-muted/20 px-6 py-2 t-12 text-muted-foreground">
               <span className="font-mono uppercase tracking-[0.06em]">
                 Par phase :
               </span>
@@ -351,7 +351,7 @@ export function AnesthesiaDetail({
       <Card>
         <CardHeader className="flex-row items-center justify-between border-border/40 border-b">
           <div className="grid gap-0.5">
-            <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+            <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
               {t("modules.anesthesia.monitoring.title", "Monitoring perop")}
             </CardDescription>
             <CardTitle className="text-base">
@@ -450,7 +450,7 @@ export function AnesthesiaDetail({
 function InfoBlock({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
-      <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
+      <p className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
         {label}
       </p>
       <p className="mt-1 whitespace-pre-wrap text-sm">{value}</p>

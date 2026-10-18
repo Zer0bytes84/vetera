@@ -471,7 +471,7 @@ function SaveStatusPill({ status }: { status: SaveStatus }) {
     idle: "notSaved",
   }[status];
   return (
-    <Badge variant="outline" className="gap-1 text-[10px]">
+    <Badge variant="outline" className="gap-1 t-12">
       {status === "saving" && (
         <CircleNotch className="size-3 animate-spin motion-reduce:animate-none" />
       )}

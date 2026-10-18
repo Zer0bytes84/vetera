@@ -281,7 +281,7 @@ function LicensesTableView({
           <Input
             className="h-8 ps-9 text-xs"
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Filtrer par clinique, email..."
+            placeholder="Filtrer par clinique, email…"
             value={searchQuery}
           />
         </div>
@@ -399,7 +399,7 @@ function LicensesTableView({
                           <p className="truncate font-medium text-xs">
                             {license.email}
                           </p>
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="t-12 text-muted-foreground">
                             Créé le {formatDate(license.createdAt)}
                           </p>
                         </div>
@@ -408,7 +408,7 @@ function LicensesTableView({
 
                     <TableCell>
                       <Badge
-                        className="text-[11px]"
+                        className="t-12"
                         variant={
                           license.plan === "clinic" ? "outline" : "secondary"
                         }
@@ -436,7 +436,7 @@ function LicensesTableView({
                         <p>{formatDate(license.expiresAt)}</p>
                         <p
                           className={cn(
-                            "text-[10px]",
+                            "t-12",
                             expiring
                               ? "font-medium text-amber-600 dark:text-amber-400"
                               : "text-muted-foreground"
@@ -479,7 +479,7 @@ function LicensesTableView({
                         </Button>
 
                         {isRevoked ? (
-                          <span className="px-2 text-[11px] text-muted-foreground">
+                          <span className="px-2 t-12 text-muted-foreground">
                             Fermée
                           </span>
                         ) : (
@@ -593,7 +593,7 @@ function GeneratorTabView({
         <CardContent className="p-5">
           <form className="space-y-4" onSubmit={handleFormSubmit}>
             <div className="space-y-1.5">
-              <Label htmlFor="gen-email">Adresse email du cabinet *</Label>
+              <Label htmlFor="gen-email">Adresse email du cabinet <span className="modal-required">requis</span></Label>
               <Input
                 autoFocus
                 className="h-9 text-xs"
@@ -604,7 +604,7 @@ function GeneratorTabView({
                 type="email"
                 value={email}
               />
-              <p className="text-[11px] text-muted-foreground">
+              <p className="t-12 text-muted-foreground">
                 Cette adresse sera requise par le cabinet pour activer l'app.
               </p>
             </div>
@@ -620,7 +620,7 @@ function GeneratorTabView({
                 placeholder="Clinique Vétérinaire du Parc · Dr. Martin"
                 value={clinicName}
               />
-              <p className="text-[11px] text-muted-foreground">
+              <p className="t-12 text-muted-foreground">
                 Utilisé pour personnaliser le courriel de transmission.
               </p>
             </div>
@@ -767,7 +767,7 @@ function GeneratorTabView({
                   <Check className="size-3" />
                   Clé active sur le serveur
                 </Badge>
-                <span className="text-[11px] text-muted-foreground">
+                <span className="t-12 text-muted-foreground">
                   ID: {createdResult.license.id.slice(0, 8)}
                 </span>
               </div>
@@ -777,7 +777,7 @@ function GeneratorTabView({
             </CardHeader>
             <CardContent className="space-y-4 p-5">
               <div>
-                <Label className="text-[11px] text-muted-foreground">
+                <Label className="t-12 text-muted-foreground">
                   Clé d'activation unique
                 </Label>
                 <div className="mt-1.5 flex items-center justify-between gap-2 rounded-xl border border-emerald-500/30 bg-background/90 p-3 shadow-inner">
@@ -823,7 +823,7 @@ function GeneratorTabView({
                   <Mail className="size-4" />
                   Envoyer la clé par courriel
                 </Button>
-                <p className="text-center text-[11px] text-muted-foreground">
+                <p className="text-center t-12 text-muted-foreground">
                   Ouvre le client Mail ou copie le texte prêt à l'emploi.
                 </p>
               </div>
@@ -838,7 +838,7 @@ function GeneratorTabView({
             </CardHeader>
             <CardContent className="space-y-3.5 text-muted-foreground text-xs leading-relaxed">
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-[10px] text-primary">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
                   1
                 </span>
                 <p>
@@ -847,7 +847,7 @@ function GeneratorTabView({
                 </p>
               </div>
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-[10px] text-primary">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
                   2
                 </span>
                 <p>
@@ -856,7 +856,7 @@ function GeneratorTabView({
                 </p>
               </div>
               <div className="flex gap-2.5">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-[10px] text-primary">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold t-12 text-primary">
                   3
                 </span>
                 <p>
@@ -868,7 +868,7 @@ function GeneratorTabView({
 
               <Separator className="my-3" />
 
-              <div className="rounded-lg bg-muted/40 p-3 text-[11px]">
+              <div className="rounded-lg bg-muted/40 p-3 t-12">
                 <p className="font-medium text-foreground">
                   🔒 Sécurité cryptographique locale
                 </p>
@@ -1281,7 +1281,7 @@ export default function ActivationAdminPage() {
               Baitari
             </span>
             <Badge
-              className="h-5 px-1.5 font-normal text-[11px]"
+              className="h-5 px-1.5 font-normal t-12"
               variant="outline"
             >
               Centre d'Activation
@@ -1346,7 +1346,7 @@ export default function ActivationAdminPage() {
                   </p>
                   <p className="text-destructive/90 text-xs">
                     Démarrez le serveur avec{" "}
-                    <code className="rounded bg-black/10 px-1 py-0.5 font-mono text-[11px] dark:bg-white/10">
+                    <code className="rounded bg-black/10 px-1 py-0.5 font-mono t-12 dark:bg-white/10">
                       npm run activation-server
                     </code>{" "}
                     ou vérifiez que le port 8787 est disponible.
@@ -1375,7 +1375,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.active}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  <p className="mt-0.5 t-12 text-muted-foreground">
                     Cabinets validés
                   </p>
                 </div>
@@ -1394,7 +1394,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.devices}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  <p className="mt-0.5 t-12 text-muted-foreground">
                     Appareils déployés
                   </p>
                 </div>
@@ -1411,7 +1411,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.expiring}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  <p className="mt-0.5 t-12 text-muted-foreground">
                     Sous les 30 jours
                   </p>
                 </div>
@@ -1428,7 +1428,7 @@ export default function ActivationAdminPage() {
                   <p className="mt-1 font-heading font-semibold text-2xl tracking-tight">
                     {stats.total}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  <p className="mt-0.5 t-12 text-muted-foreground">
                     Historique local
                   </p>
                 </div>
@@ -1442,7 +1442,7 @@ export default function ActivationAdminPage() {
           {/* Main Tabs Navigation */}
           <Tabs onValueChange={setActiveTab} value={activeTab}>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <TabsList className="h-9">
+              <TabsList tabsStyle="nav">
                 <TabsTrigger className="text-xs" value="licenses">
                   <Clipboard className="me-1.5 size-3.5" />
                   Licences & Cabinets ({licenses.length})
@@ -1579,7 +1579,7 @@ export default function ActivationAdminPage() {
                       <span className="text-muted-foreground">
                         Stockage des données
                       </span>
-                      <span className="font-mono text-[11px]">
+                      <span className="font-mono t-12">
                         {ACTIVATION_SERVER_HOST === "127.0.0.1:8787" ? "activation-server/data/licenses.json" : "Stockage du serveur configuré"}
                       </span>
                     </div>
@@ -1632,7 +1632,7 @@ export default function ActivationAdminPage() {
                           )}
                         </button>
                       </div>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="t-12 text-muted-foreground">
                         Ce jeton est automatiquement sauvegardé dans votre
                         espace local.
                       </p>
@@ -1660,7 +1660,7 @@ export default function ActivationAdminPage() {
                       </Button>
                     </div>
 
-                    <div className="rounded-lg bg-muted/40 p-3 text-[11px] text-muted-foreground">
+                    <div className="rounded-lg bg-muted/40 p-3 t-12 text-muted-foreground">
                       <p className="font-medium text-foreground">
                         💡 Fichier source :
                       </p>
@@ -1720,7 +1720,7 @@ export default function ActivationAdminPage() {
                   className="h-8 text-xs"
                   id="modal-clinic-name"
                   onChange={(e) => setEmailClinicName(e.target.value)}
-                  placeholder="Clinique Vétérinaire..."
+                  placeholder="Clinique Vétérinaire…"
                   value={emailClinicName}
                 />
               </div>
@@ -1757,10 +1757,10 @@ export default function ActivationAdminPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[11px] text-muted-foreground">
+              <Label className="t-12 text-muted-foreground">
                 Aperçu du message formaté
               </Label>
-              <div className="max-h-48 select-text overflow-y-auto whitespace-pre-wrap rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-[11px] text-foreground/90 leading-relaxed">
+              <div className="max-h-48 select-text overflow-y-auto whitespace-pre-wrap rounded-lg border border-border/60 bg-muted/30 p-3 font-mono t-12 text-foreground/90 leading-relaxed">
                 {computedEmailTemplate.body}
               </div>
             </div>
@@ -1842,7 +1842,7 @@ export default function ActivationAdminPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base">
+            <DialogTitle className="flex items-center gap-2">
               <Info className="size-4 text-primary" />
               Détails de la licence
             </DialogTitle>
@@ -1888,11 +1888,11 @@ export default function ActivationAdminPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-[11px] text-muted-foreground">
+                <Label className="t-12 text-muted-foreground">
                   Postes enregistrés (identifiants d’installation)
                 </Label>
                 {detailLicense.devices && detailLicense.devices.length > 0 ? (
-                  <div className="max-h-28 overflow-y-auto rounded-lg border border-border/60 bg-background p-2 font-mono text-[10px]">
+                  <div className="max-h-28 overflow-y-auto rounded-lg border border-border/60 bg-background p-2 font-mono t-12">
                     {detailLicense.devices.map((dev, idx) => (
                       <div
                         className="flex items-center justify-between border-border/30 border-b py-1 last:border-0"
@@ -1917,7 +1917,7 @@ export default function ActivationAdminPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="rounded-lg border border-border/60 border-dashed p-2.5 text-center text-[11px] text-muted-foreground">
+                  <p className="rounded-lg border border-border/60 border-dashed p-2.5 text-center t-12 text-muted-foreground">
                     Aucun appareil n'a encore validé sa première connexion.
                   </p>
                 )}
@@ -1954,7 +1954,7 @@ export default function ActivationAdminPage() {
       <Dialog onOpenChange={setIsSettingsOpen} open={isSettingsOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base">
+            <DialogTitle className="flex items-center gap-2">
               <Settings2 className="size-4 text-primary" />
               Configuration du serveur d'activation
             </DialogTitle>
@@ -1976,7 +1976,7 @@ export default function ActivationAdminPage() {
                 type="text"
                 value={tempToken}
               />
-              <p className="text-[11px] text-muted-foreground">
+              <p className="t-12 text-muted-foreground">
                 Généré lors du premier lancement dans{" "}
                 <code className="font-mono">
                   activation-server/data/admin-token

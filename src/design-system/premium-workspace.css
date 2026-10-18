@@ -516,21 +516,7 @@
   font-family: var(--app-font-sans);
 }
 
-/* Soins: one metric strip and one toolbar, with clear selected states. */
-:root[data-visual-style="premium"] .care-summary {
-  gap: 0;
-  box-shadow: var(--hair-t), var(--hair-b);
-}
-:root[data-visual-style="premium"] .care-summary-item {
-  border: 0 !important;
-  border-radius: 0 !important;
-  padding: 20px 24px !important;
-  background: transparent !important;
-  box-shadow: var(--hair-r) !important;
-}
-:root[data-visual-style="premium"] .care-summary-item:last-child { box-shadow: none !important; }
-:root[data-visual-style="premium"] .care-summary-item > p:last-child { font-size: 24px; font-variant-numeric: tabular-nums; }
-:root[data-visual-style="premium"] .care-summary-item[data-care-alert="true"] > p:last-child { color: var(--premium-red); }
+/* Soins: one toolbar with clear selected states (metrics use SectionCards). */
 :root[data-visual-style="premium"] .care-toolbar {
   justify-content: flex-start;
   gap: 16px;
@@ -611,7 +597,6 @@
   box-shadow: var(--hair-b);
 }
 @media (max-width: 639px) {
-  :root[data-visual-style="premium"] .care-summary-item { box-shadow: var(--hair-b) !important; }
   :root[data-visual-style="premium"] .care-toolbar-controls { margin-left: 0; width: 100%; }
   :root[data-visual-style="premium"] .care-task-row { flex-wrap: wrap; }
 }
@@ -733,7 +718,7 @@
   box-shadow: var(--hair-r) !important;
 }
 :root[data-visual-style="premium"] .patient-record-page .medical-tabs [aria-selected="true"] {
-  background: var(--lift-2) !important;
+  background: var(--frame) !important;
   color: var(--ink) !important;
   box-shadow: var(--hair-r), inset 0 -2px 0 var(--ink) !important;
 }

@@ -60,7 +60,7 @@ export function ChartAreaInteractive({
   return (
     <Card className="surface-card @container/card">
       <CardHeader>
-        <CardTitle className="text-xl">Activité clinique</CardTitle>
+        <CardTitle className="t-18">Activité clinique</CardTitle>
         <CardDescription className="text-sm">
           <span className="@[540px]/card:block hidden">
             Consultations et interventions sur la période
@@ -69,7 +69,8 @@ export function ChartAreaInteractive({
         </CardDescription>
         <CardAction>
           <ToggleGroup
-            className="*:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex hidden"
+            className="@[767px]/card:flex hidden"
+            data-tabs-style="segmented"
             onValueChange={setTimeRange}
             value={timeRange}
             variant="outline"

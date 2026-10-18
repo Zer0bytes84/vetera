@@ -23,6 +23,7 @@ import {
 import { PRE_CONSULTATION_STATUSES } from "@/domain/clinical/scheduling";
 import { cn } from "@/lib/utils";
 import type { Appointment, AppointmentStatus, Patient } from "@/types/db";
+import { formatLongDay } from "@/utils/display-format";
 
 interface AgendaListViewProps {
   formatTime: (date?: string | Date | null) => string;
@@ -167,7 +168,7 @@ export function AgendaListView({
             >
               <ChevronLeft className="size-4" />
             </button>
-            <p className="font-semibold text-sm capitalize tracking-[-0.01em]">
+            <p className="font-semibold text-sm tracking-[-0.01em]">
               {selectedDate.toLocaleDateString("fr-FR", {
                 month: "long",
                 year: "numeric",
@@ -183,7 +184,7 @@ export function AgendaListView({
             </button>
           </div>
 
-          <div className="mt-5 grid grid-cols-7 text-center font-medium text-[10px] text-muted-foreground">
+          <div className="mt-5 grid grid-cols-7 text-center font-medium t-12 text-muted-foreground">
             {DAY_NAMES.map((day, index) => (
               <span key={`${day}-${index}`}>{day}</span>
             ))}
@@ -231,16 +232,12 @@ export function AgendaListView({
           <div className="agenda-day-summary mt-6 rounded-2xl p-4">
             <div className="flex items-center gap-2 text-muted-foreground">
               <CalendarDays className="size-4" />
-              <span className="font-semibold text-[10px] uppercase tracking-[0.08em]">
+              <span className="font-semibold t-12 uppercase tracking-[0.08em]">
                 Journée sélectionnée
               </span>
             </div>
-            <p className="mt-3 font-semibold text-lg capitalize tracking-[-0.025em]">
-              {selectedDate.toLocaleDateString("fr-FR", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-              })}
+            <p className="mt-3 font-semibold text-lg tracking-[-0.025em]">
+              {formatLongDay(selectedDate)}
             </p>
             <div className="mt-4 grid grid-cols-3 divide-x divide-border/60 border-border/60 border-t pt-4 text-center">
               <DayMetric label="Prévus" value={selectedAppointments.length} />
@@ -254,7 +251,7 @@ export function AgendaListView({
       <section className="min-w-0 p-5 sm:p-6">
         <div className="flex flex-col gap-3 border-border/60 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="font-semibold text-xl tracking-[-0.03em]">
+            <h3 className="font-semibold t-18 tracking-[-0.03em]">
               {selectedAppointments.length > 0
                 ? `${selectedAppointments.length} rendez-vous à coordonner`
                 : "Journée disponible"}
@@ -346,7 +343,7 @@ function DayMetric({ label, value }: { label: string; value: number }) {
   return (
     <div>
       <p className="font-semibold text-base tabular-nums">{value}</p>
-      <p className="mt-0.5 text-[9px] text-muted-foreground uppercase tracking-wide">
+      <p className="mt-0.5 t-12 text-muted-foreground uppercase tracking-wide">
         {label}
       </p>
     </div>
@@ -409,11 +406,11 @@ function AppointmentListItem({
           <p className="font-semibold text-sm tabular-nums">
             {formatTime(appointment.startTime)}
           </p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground tabular-nums">
+          <p className="mt-0.5 t-12 text-muted-foreground tabular-nums">
             {formatTime(appointment.endTime)}
           </p>
           {duration ? (
-            <p className="mt-1 text-[9px] text-muted-foreground">{duration}</p>
+            <p className="mt-1 t-12 text-muted-foreground">{duration}</p>
           ) : null}
         </div>
 
@@ -433,7 +430,7 @@ function AppointmentListItem({
             </button>
             <span
               className={cn(
-                "rounded-full px-2 py-0.5 font-medium text-[10px]",
+                "rounded-full px-2 py-0.5 font-medium t-12",
                 typeMeta.badgeClassName
               )}
             >
@@ -441,7 +438,7 @@ function AppointmentListItem({
             </span>
             <span
               className={cn(
-                "rounded-full px-2 py-0.5 font-medium text-[10px]",
+                "rounded-full px-2 py-0.5 font-medium t-12",
                 statusMeta?.className
               )}
             >
@@ -451,7 +448,7 @@ function AppointmentListItem({
           <p className="mt-1 truncate text-muted-foreground text-xs">
             {appointment.reason || appointment.title || "Consultation"}
           </p>
-          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
+          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 t-12 text-muted-foreground">
             <span className="inline-flex min-w-0 items-center gap-1.5">
               <UserRound className="size-3" />
               <span className="truncate">{ownerName}</span>

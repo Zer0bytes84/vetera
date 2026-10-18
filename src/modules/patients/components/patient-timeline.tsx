@@ -317,7 +317,7 @@ export function PatientTimeline({
                         {entry.statusBadge ? (
                           <Badge
                             className={cn(
-                              "max-w-full !whitespace-normal rounded-full px-2 py-0.5 text-center font-medium text-[10px]",
+                              "max-w-full !whitespace-normal rounded-full px-2 py-0.5 text-center font-medium t-12",
                               entry.statusBadge.className
                             )}
                             variant="secondary"

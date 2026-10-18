@@ -242,8 +242,8 @@ export function VaccinationDialog({
           )}
 
           <Field>
-            <label className="font-medium text-sm" htmlFor="vaccine-name">
-              {t("patientDetail.vaccinations.nameLabel")}
+            <label className="flex items-center justify-between font-medium text-sm" htmlFor="vaccine-name">
+              {t("patientDetail.vaccinations.nameLabel")} <span className="modal-required">requis</span>
             </label>
             <Input
               autoFocus={!isEditing}
@@ -269,10 +269,10 @@ export function VaccinationDialog({
           <div className="grid grid-cols-1 gap-3">
             <Field>
               <label
-                className="font-medium text-sm"
+                className="flex items-center justify-between font-medium text-sm"
                 htmlFor="vaccine-administered"
               >
-                {t("patientDetail.vaccinations.administeredLabel")}
+                {t("patientDetail.vaccinations.administeredLabel")} <span className="modal-required">requis</span>
               </label>
               <DatePicker
                 id="vaccine-administered"
@@ -290,6 +290,7 @@ export function VaccinationDialog({
               <Input
                 id="vaccine-batch"
                 onChange={(event) => setBatchNumber(event.target.value)}
+                placeholder="Ex. A1234"
                 value={batchNumber}
               />
             </Field>
@@ -303,6 +304,7 @@ export function VaccinationDialog({
               <Input
                 id="vaccine-manufacturer"
                 onChange={(event) => setManufacturer(event.target.value)}
+                placeholder="Ex. MSD, Zoetis"
                 value={manufacturer}
               />
             </Field>

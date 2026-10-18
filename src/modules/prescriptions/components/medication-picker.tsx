@@ -86,7 +86,7 @@ export function MedicationPicker({
               {t("prescriptions.builder.noResults")}
             </CommandEmpty>
             {speciesKey ? (
-              <div className="border-border/50 border-b bg-muted/30 px-2 py-1.5 font-medium text-[10px] text-muted-foreground uppercase tracking-wider">
+              <div className="border-border/50 border-b bg-muted/30 px-2 py-1.5 font-medium t-12 text-muted-foreground uppercase tracking-wider">
                 {speciesLabel(speciesKey, language)}
               </div>
             ) : null}
@@ -130,12 +130,12 @@ function MedicationRow({
         <div className="flex items-center gap-2">
           <span className="truncate font-medium text-sm">{med.nom}</span>
           {med.nomCommercial?.[0] ? (
-            <span className="truncate text-[11px] text-muted-foreground">
+            <span className="truncate t-12 text-muted-foreground">
               ({med.nomCommercial[0]})
             </span>
           ) : null}
         </div>
-        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 t-12 text-muted-foreground">
           <span>{med.classe}</span>
           {med.posologyForSpecies ? (
             <>
@@ -153,7 +153,7 @@ function MedicationRow({
         </div>
       </div>
       {med.hasComputableDose ? (
-        <Badge className="shrink-0 text-[10px]" variant="secondary">
+        <Badge className="shrink-0 t-12" variant="secondary">
           ✓
         </Badge>
       ) : null}

@@ -1,3 +1,4 @@
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -131,7 +132,7 @@ export function PurchasingPanel() {
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4"><Tabs value={view} onValueChange={value=>{setView(value);setSelected(null);setOrderEdit(null);setReceiving(false);}}><TabsList aria-label="Vue des approvisionnements"><TabsTrigger value="orders">Commandes</TabsTrigger><TabsTrigger value="suppliers">Fournisseurs</TabsTrigger></TabsList></Tabs>
       <div className="flex flex-wrap gap-2">{view==="orders"?<><Button variant="outline" disabled={!purchasing.ready||!activeSuppliers.length||!needs.length||products.data.some(item=>item.availabilityPending)} onClick={()=>{setOrderEdit({fromAlerts:true});setSelected(null);}}>Depuis les alertes ({needs.length})</Button><Button disabled={!purchasing.ready||!activeSuppliers.length} onClick={()=>{setOrderEdit({fromAlerts:false});setSelected(null);}}><Plus className="size-4"/>Nouvelle commande</Button></>:<Button disabled={!purchasing.ready} onClick={()=>setSupplierEdit("new")}><Plus className="size-4"/>Nouveau fournisseur</Button>}</div>
     </div>
-    {(purchasing.error||error)&&<div role="alert" className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-destructive">{purchasing.error||error}{purchasing.error&&<Button variant="outline" onClick={purchasing.refresh}>Actualiser</Button>}</div>}
+    {purchasing.error ? <ErrorState className="p-4" message={purchasing.error} onRetry={() => void purchasing.refresh()} /> : error && <p role="alert" className="p-4 text-sm text-destructive">{error}</p>}
     {!purchasing.ready&&!purchasing.error&&<p role="status" className="p-4 text-sm text-muted-foreground">Chargement des approvisionnements…</p>}
     {view==="suppliers"?<>
       {supplierEdit&&<SupplierForm key={supplierEdit==="new"?"new":supplierEdit.id} supplier={supplierEdit==="new"?undefined:supplierEdit} onClose={()=>setSupplierEdit(null)}/>}

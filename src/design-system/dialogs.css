@@ -1,0 +1,20 @@
+/*
+ * Every dialog, confirmation and side sheet opens with the same heading:
+ * 24 px title in the heading font, 13 px #5D5D5D description.
+ * ":root:root:root" lifts these rules above caller overrides and older
+ * modal banner rules, so a dialog cannot drift back to 16 or 18 px.
+ */
+:root:root:root :is([data-slot="dialog-title"], [data-slot="alert-dialog-title"], [data-slot="sheet-title"], [data-slot="drawer-title"]) {
+  font-family: var(--app-font-heading, var(--app-font-sans)) !important;
+  font-size: 24px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--ink, var(--foreground)) !important;
+}
+
+:root:root:root :is([data-slot="dialog-description"], [data-slot="alert-dialog-description"], [data-slot="sheet-description"], [data-slot="drawer-description"]) {
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  color: var(--ink-soft, var(--muted-foreground)) !important;
+}

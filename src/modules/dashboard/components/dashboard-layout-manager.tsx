@@ -99,7 +99,7 @@ function SortableDashboardBlock({
     >
       {isEditing ? (
         <div className="absolute inset-x-2 top-1 flex h-6 items-center justify-between">
-          <span className="pl-1 font-medium text-[11px] text-muted-foreground">
+          <span className="pl-1 font-medium t-12 text-muted-foreground">
             {index + 1}. {block.label}
           </span>
           <button
@@ -109,7 +109,7 @@ function SortableDashboardBlock({
             {...listeners}
             aria-keyshortcuts="ArrowUp ArrowDown"
             aria-label={`Déplacer ${block.label}`}
-            className="flex h-6 cursor-grab touch-none items-center gap-1.5 rounded-full border border-border/70 bg-background/95 px-2.5 font-medium text-[11px] text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow] hover:border-sky-500/30 hover:bg-sky-50 hover:text-sky-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40 active:cursor-grabbing dark:bg-zinc-900/90 dark:hover:bg-sky-950/60 dark:hover:text-sky-300"
+            className="flex h-6 cursor-grab touch-none items-center gap-1.5 rounded-full border border-border/70 bg-background/95 px-2.5 font-medium t-12 text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow] hover:border-sky-500/30 hover:bg-sky-50 hover:text-sky-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40 active:cursor-grabbing dark:bg-zinc-900/90 dark:hover:bg-sky-950/60 dark:hover:text-sky-300"
             data-no-drag
             onKeyDown={(event) => {
               if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -336,13 +336,13 @@ export function DashboardLayoutManager({
             </span>
             <div className="min-w-0">
               <p className="font-semibold text-xs">Disposition du tableau</p>
-              <p className="hidden text-[11px] text-muted-foreground sm:block">
+              <p className="hidden t-12 text-muted-foreground sm:block">
                 Saisissez une poignée puis déplacez le bloc.
               </p>
             </div>
             <span
               aria-live="polite"
-              className="hidden font-medium text-[11px] text-muted-foreground lg:inline"
+              className="hidden font-medium t-12 text-muted-foreground lg:inline"
             >
               {saveStatus === "saving" ? "Enregistrement…" : null}
               {saveStatus === "saved" ? "Enregistré" : null}

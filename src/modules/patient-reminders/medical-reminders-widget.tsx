@@ -32,10 +32,13 @@ export function MedicalRemindersWidgetContent({ model, patients, onAll, today = 
     <WidgetShell
       actions={
         <div className="flex items-center gap-3">
-          <SignalBadge tone={overdue.length ? "critical" : dueToday.length ? "info" : "quiet"}>
-            {overdue.length ? `${overdue.length} en retard` : dueToday.length ? `${dueToday.length} aujourd’hui` : "À jour"}
-          </SignalBadge>
-          <button className="inline-flex min-h-11 items-center gap-2 rounded-md px-2 text-[12px] font-medium text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ring" onClick={onAll} type="button">
+          {/* The status badge would contradict a loading error, so it waits for real data. */}
+          {!model.error && !model.loading && (
+            <SignalBadge tone={overdue.length ? "critical" : dueToday.length ? "info" : "quiet"}>
+              {overdue.length ? `${overdue.length} en retard` : dueToday.length ? `${dueToday.length} aujourd’hui` : "À jour"}
+            </SignalBadge>
+          )}
+          <button className="inline-flex min-h-11 items-center gap-2 rounded-md px-2 t-12 font-medium text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ring" onClick={onAll} type="button">
             Voir les rappels<ArrowRight aria-hidden="true" className="size-4" strokeWidth={1} />
           </button>
         </div>
@@ -54,15 +57,15 @@ export function MedicalRemindersWidgetContent({ model, patients, onAll, today = 
           <h3 className="medical-reminders-widget-label" id="medical-reminders-status-title">Situation</h3>
           <dl className="medical-reminders-widget-totals">
             <div>
-              <dt className="text-[12px] text-ink-muted">En retard</dt>
+              <dt className="t-12 text-ink-muted">En retard</dt>
               <dd className={`mt-1 font-heading text-2xl font-medium tabular-nums ${overdue.length ? "text-destructive" : ""}`}>{overdue.length}</dd>
             </div>
             <div>
-              <dt className="text-[12px] text-ink-muted">Aujourd’hui</dt>
+              <dt className="t-12 text-ink-muted">Aujourd’hui</dt>
               <dd className={`mt-1 font-heading text-2xl font-medium tabular-nums ${dueToday.length ? "text-[var(--premium-blue,var(--interactive-blue))]" : ""}`}>{dueToday.length}</dd>
             </div>
             <div>
-              <dt className="text-[12px] text-ink-muted">À venir</dt>
+              <dt className="t-12 text-ink-muted">À venir</dt>
               <dd className="mt-1 font-heading text-2xl font-medium tabular-nums">{upcomingCount}</dd>
             </div>
           </dl>
@@ -76,11 +79,11 @@ export function MedicalRemindersWidgetContent({ model, patients, onAll, today = 
                 const type = model.types.find((row) => row.id === reminder.type);
                 return (
                   <li key={reminder.id}>
-                    <time className="font-mono text-[12px] text-ink-muted tabular-nums" dateTime={reminder.echeance}>
+                    <time className="font-mono t-12 text-ink-muted tabular-nums" dateTime={reminder.echeance}>
                       {new Date(`${reminder.echeance}T12:00:00`).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: reminder.echeance.slice(0, 4) !== today.slice(0, 4) ? "numeric" : undefined })}
                     </time>
-                    <span className="truncate text-[14px] font-medium">{patient?.name ?? "Patient indisponible"}</span>
-                    <span className="truncate text-[12px] text-ink-muted">{type?.name ?? "Rappel médical"}</span>
+                    <span className="truncate t-14 font-medium">{patient?.name ?? "Patient indisponible"}</span>
+                    <span className="truncate t-12 text-ink-muted">{type?.name ?? "Rappel médical"}</span>
                   </li>
                 );
               })}

@@ -70,6 +70,7 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
       title: "Encaissements (30j)",
       value: formatDZD(metrics.summary.income30 * 100),
       change: incomeDelta,
+      changeBase: metrics.summary.previousIncome30,
       changeLabel: "vs période précédente",
       tone: incomeDelta >= 0 ? "positive" : "watch",
       detailRow: "Flux net encaissé sur les 30 derniers jours · Règlements reçus",
@@ -88,6 +89,7 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
       title: "Consultations facturées",
       value: formatCompactInteger(metrics.summary.todayAppointments),
       change: appointmentsDelta,
+      changeBase: metrics.summary.yesterdayAppointments,
       changeLabel: "vs hier",
       tone: appointmentsDelta >= 0 ? "positive" : "watch",
       detailRow: "Volume d'actes cliniques et consultations comptabilisés",
@@ -97,6 +99,7 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
       title: "Panier moyen",
       value: formatDZD(metrics.summary.averageBasket * 100),
       change: basketDelta,
+      changeBase: metrics.summary.previousIncome30,
       changeLabel: "vs période précédente",
       tone: basketDelta >= 0 ? "positive" : "watch",
       detailRow: "Montant moyen par acte et consultation validée",
@@ -152,7 +155,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-                  <span className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <span className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
                     Chiffre d'Affaires Cumulé
                   </span>
                 </div>
@@ -164,7 +167,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                  <span className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <span className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
                     Flux de Trésorerie (14j)
                   </span>
                 </div>
@@ -263,7 +266,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                       dataKey="month"
                       tick={{
                         fill: "var(--muted-foreground)",
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: 600,
                       }}
                       tickLine={false}
@@ -273,7 +276,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                       axisLine={false}
                       tick={{
                         fill: "var(--muted-foreground)",
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: 600,
                       }}
                       tickFormatter={(value) => `${Math.round(value / 1000)}k`}
@@ -357,7 +360,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                       dataKey="name"
                       tick={{
                         fill: "var(--muted-foreground)",
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: 600,
                       }}
                       tickFormatter={(value) => String(value).slice(0, 3)}
@@ -368,7 +371,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                       axisLine={false}
                       tick={{
                         fill: "var(--muted-foreground)",
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: 600,
                       }}
                       tickLine={false}
@@ -380,7 +383,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                         }
                         return (
                           <div className="rounded-xl border border-zinc-200/80 bg-white/90 p-3 shadow-lg backdrop-blur-md dark:border-white/5 dark:bg-zinc-900/90">
-                            <p className="font-bold text-[10px] text-muted-foreground">
+                            <p className="font-bold t-12 text-muted-foreground">
                               {payload[0].payload.name}
                             </p>
                             <div className="mt-2 flex items-center justify-between gap-6 font-semibold text-xs">
@@ -498,7 +501,7 @@ function FinancialSegmentation({ metrics }: { metrics: DashboardMetrics }) {
       <div className="mt-8 border-border/40 border-t pt-6">
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground text-sm">Total Période</span>
-          <span className="font-extrabold text-foreground text-xl tabular-nums tracking-tight">
+          <span className="font-extrabold text-foreground t-18 tabular-nums tracking-tight">
             {formatDinars(total)}
           </span>
         </div>
@@ -550,7 +553,7 @@ export function FinancialAnalyticsV2Page({
           <span className="mb-2 block font-semibold text-sm text-violet-600 uppercase tracking-wider dark:text-violet-400">
             ANALYSE FINANCIÈRE
           </span>
-          <h2 className="mt-1.5 font-display font-semibold text-4xl text-foreground tracking-tight sm:text-5xl">
+          <h2 className="mt-1.5 font-display font-semibold t-24 text-foreground tracking-tight">
             Performance Financière
           </h2>
           <p className="mt-3 max-w-[62ch] text-muted-foreground text-sm leading-relaxed">

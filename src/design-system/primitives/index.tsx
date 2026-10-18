@@ -38,27 +38,27 @@ export function Stat({
   label,
   value,
   detail,
-  compact,
   className,
 }: {
   label: string;
   value: ReactNode;
   detail?: ReactNode;
+  /** Kept for callers; both densities now use the charte's 24 px figure size. */
   compact?: boolean;
   className?: string;
 }) {
   return (
     <div className={cn("min-w-0", className)}>
-      <p className="text-[12px] text-ink-muted">{label}</p>
+      <p className="t-12 text-ink-muted">{label}</p>
       <p
         className={cn(
           "mt-1.5 font-display font-medium leading-tight tabular-nums tracking-[-0.035em]",
-          compact ? "text-[28px]" : "text-[34px]"
+          "t-24"
         )}
       >
         {value}
       </p>
-      {detail && <p className="mt-1.5 text-[12px] text-ink-muted">{detail}</p>}
+      {detail && <p className="mt-1.5 t-12 text-ink-muted">{detail}</p>}
     </div>
   );
 }
@@ -82,7 +82,7 @@ export function SignalBadge({
   return (
     <span
       className={cn(
-        "inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium leading-none",
+        "inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 t-12 font-medium leading-none",
         signals[tone]
       )}
     >
@@ -140,9 +140,9 @@ export function EmptyState({
         </span>
       )}
       <div>
-        <p className="font-display font-medium text-[14px] text-ink">{title}</p>
+        <p className="font-display font-medium t-14 text-ink">{title}</p>
         {description && (
-          <p className="mt-1 max-w-[60ch] text-[13px] leading-relaxed text-ink-muted">
+          <p className="mt-1 max-w-[60ch] t-13 leading-relaxed text-ink-muted">
             {description}
           </p>
         )}
@@ -171,7 +171,7 @@ export function SkeletonBlock({
 }
 export function KeyHint({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex min-w-5 items-center justify-center rounded border border-hairline bg-surface-raised px-1 py-0.5 font-sans text-[10px] text-ink-muted">
+    <kbd className="inline-flex min-w-5 items-center justify-center rounded border border-hairline bg-surface-raised px-1 py-0.5 font-sans t-12 text-ink-muted">
       {children}
     </kbd>
   );

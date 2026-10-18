@@ -10,6 +10,9 @@ import { percentageDelta, type DashboardMetrics } from "@/lib/metrics";
 import type { View } from "@/types";
 import { formatDinars } from "@/utils/display-format";
 import "../finances-premium.css";
+import { ChartLineData01Icon } from "@/lib/hugeicons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { PageHeader } from "@/design-system/patterns/page-header";
 
 function Variation({ current, previous }: { current: number; previous: number }) {
   if (previous === 0) {
@@ -42,16 +45,17 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate }: {
 
   return (
     <div className="finance-analysis">
-      <header className="finance-analysis-heading board-frame">
-        <div>
-          <h1>Analyse financière</h1>
-          <p>Vos encaissements et votre trésorerie, à partir des écritures du journal.</p>
-        </div>
-        <Button variant="outline" onClick={() => onNavigate("finances")}>
-          <ArrowLeft size={16} strokeWidth={1} aria-hidden="true" />
-          Retour aux finances
-        </Button>
-      </header>
+      <PageHeader
+        actions={
+          <Button variant="outline" onClick={() => onNavigate("finances")}>
+            <ArrowLeft size={16} strokeWidth={1} aria-hidden="true" />
+            Retour aux finances
+          </Button>
+        }
+        icon={<HugeiconsIcon icon={ChartLineData01Icon} size={20} strokeWidth={1.5} />}
+        subtitle="Vos encaissements et votre trésorerie, à partir des écritures du journal."
+        title="Analyse financière"
+      />
 
       <section className="finance-analysis-metrics board-frame" aria-label="Indicateurs financiers">
         <div className="finance-analysis-metric">
@@ -85,7 +89,7 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate }: {
               <h2>{revenue ? "Évolution des encaissements" : "Flux de trésorerie"}</h2>
               <p>{revenue ? `Mois par mois, en ${new Date().getFullYear()}` : "Entrées moins sorties, sur les 14 derniers jours"}</p>
             </div>
-            <ToggleGroup aria-label="Graphique financier" className="finance-view-toggle" multiple={false} value={[chart]} onValueChange={value => setChart((value[0] as "revenue" | "cashflow" | undefined) ?? chart)}>
+            <ToggleGroup aria-label="Graphique financier" data-tabs-style="segmented" multiple={false} value={[chart]} onValueChange={value => setChart((value[0] as "revenue" | "cashflow" | undefined) ?? chart)}>
               <ToggleGroupItem value="revenue">Encaissements</ToggleGroupItem>
               <ToggleGroupItem value="cashflow">Trésorerie</ToggleGroupItem>
             </ToggleGroup>

@@ -197,7 +197,7 @@ export function EvilRadarChart<
         {!(hideRadiusAxis || isLoading) && (
           <PolarRadiusAxis
             axisLine={false}
-            tick={{ fill: "currentColor", fontSize: 10 }}
+            tick={{ fill: "currentColor", fontSize: 12 }}
             tickLine={false}
           />
         )}

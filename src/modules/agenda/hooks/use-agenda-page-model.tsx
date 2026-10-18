@@ -1,4 +1,5 @@
-import { formatNumber } from "@/utils/display-format";
+import { formatNumber, formatPersonName } from "@/utils/display-format";
+import { matchesEveryWord } from "../quick-search";
 import {
   useDeferredValue,
   useEffect,
@@ -237,8 +238,7 @@ export function useAgendaPageModel() {
   }, [ownersById, patientSearchTerm, patientsForSelectedOwner]);
 
   const unifiedAppointmentMatches = useMemo(() => {
-    const query = personSearchTerm.trim().toLowerCase();
-    if (!query) {
+    if (!personSearchTerm.trim()) {
       return [];
     }
 
@@ -260,7 +260,7 @@ export function useAgendaPageModel() {
 
         return { owner, patient, searchIndex };
       })
-      .filter((entry) => entry.searchIndex.includes(query))
+      .filter((entry) => matchesEveryWord(entry.searchIndex, personSearchTerm))
       .slice(0, 8);
   }, [ownersById, patients, personSearchTerm]);
 
@@ -404,7 +404,6 @@ export function useAgendaPageModel() {
 
   const sectionCards = useMemo<SectionCardItem[]>(() => {
     const delta = dailyAppointments.length - previousDayAppointments.length;
-    const deltaPrefix = delta > 0 ? "+" : "";
     const closedCount = dailyAppointments.filter(
       (item) => item.status === "completed"
     ).length;
@@ -425,10 +424,9 @@ export function useAgendaPageModel() {
       {
         title: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux" }),
         value: formatNumber(dailyAppointments.length),
-        badge:
-          delta === 0
-            ? undefined
-            : `${deltaPrefix}${formatNumber(delta)} vs hier`,
+        change: delta,
+        changeKind: "difference",
+        changeLabel: "vs hier",
         trend: delta > 0 ? "up" : delta < 0 ? "down" : "neutral",
         detailRow: `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""} · ${remainingSlots} restant${remainingSlots > 1 ? "s" : ""}`,
         footerTitle: `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""}`,
@@ -443,7 +441,8 @@ export function useAgendaPageModel() {
           defaultValue: "Urgences ouvertes",
         }),
         value: formatNumber(urgentOpenCount),
-        change: urgentOpenCount > 0 ? urgentOpenCount : 0,
+        change: urgentOpenCount,
+        changeKind: "count",
         changeLabel:
           urgentOpenCount > 0 ? "cas prioritaires" : "aucun cas critique",
         inverse: true,
@@ -464,7 +463,9 @@ export function useAgendaPageModel() {
         }),
         value: formatDuration(totalPlannedMinutes),
         change: Number.isFinite(occupancy) ? occupancy : 0,
-        changeLabel: "% d'occupation",
+        changeKind: "rate",
+        changeBase: occupancyTarget,
+        changeLabel: "d'occupation",
         trend: occupancy > 85 ? "down" : "neutral",
         detailRow: `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""} · Capacité max ${capacityHours}h`,
         footerTitle: t("agenda.overview.engagedVets", {
@@ -958,7 +959,7 @@ export function useAgendaPageModel() {
           vet,
           patientName: patient?.name || appointment.title,
           ownerName: formatOwnerName(owner),
-          vetName: vet?.displayName || "Vétérinaire local",
+          vetName: formatPersonName(vet?.displayName) || "Vétérinaire local",
           appointmentAt: formatDateTimeLabel(appointment.startTime),
           statusLabel: presentation.label,
           statusClassName: presentation.className,

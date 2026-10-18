@@ -30,7 +30,7 @@ export function NavSecondary({
       {...props}
     >
       {title ? (
-        <SidebarGroupLabel className="mb-1.5 px-2.5 font-semibold text-[10px] text-zinc-500 uppercase tracking-widest antialiased group-data-[collapsible=icon]:hidden">
+        <SidebarGroupLabel className="mb-1.5 px-2.5 font-semibold t-12 text-zinc-500 uppercase tracking-widest antialiased group-data-[collapsible=icon]:hidden">
           {title}
         </SidebarGroupLabel>
       ) : null}

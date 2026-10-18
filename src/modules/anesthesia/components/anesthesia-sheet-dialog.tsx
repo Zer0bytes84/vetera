@@ -170,7 +170,7 @@ export function AnesthesiaSheetDialog({
                 id="anes-weight"
                 inputMode="decimal"
                 onChange={(e) => setWeightKg(e.target.value)}
-                placeholder="0.0"
+                placeholder="Ex. 12,5"
                 value={weightKg}
               />
             </div>

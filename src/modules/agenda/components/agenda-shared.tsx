@@ -36,6 +36,7 @@ import type {
   Patient,
   RecurrenceFrequency,
 } from "@/types/db";
+import { formatClockTime, formatPersonName } from "@/utils/display-format";
 
 export const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
@@ -166,7 +167,7 @@ export function AppointmentTimePicker({
             type="time"
             value={value}
           />
-          <span className="mt-0.5 text-[10px] text-muted-foreground/80">
+          <span className="mt-0.5 t-12 text-muted-foreground/80">
             {t("appointment.time.endsAt", {
               defaultValue: "Fin",
             })}{" "}
@@ -211,18 +212,22 @@ export function AppointmentTimePicker({
         </div>
       </div>
 
-      {TIME_PERIODS.map((period) => {
-        const slots = QUICK_TIMES.filter(
-          (time) =>
-            timeToMinutes(time) >= timeToMinutes(period.from) &&
-            timeToMinutes(time) <= timeToMinutes(period.to)
-        );
+      {TIME_PERIODS.map((period, index) => {
+        // A boundary time (12:00, 18:00) opens the next period; only the last keeps its end.
+        const isLast = index === TIME_PERIODS.length - 1;
+        const slots = QUICK_TIMES.filter((time) => {
+          const minutes = timeToMinutes(time);
+          return (
+            minutes >= timeToMinutes(period.from) &&
+            (isLast ? minutes <= timeToMinutes(period.to) : minutes < timeToMinutes(period.to))
+          );
+        });
         if (slots.length === 0) {
           return null;
         }
         return (
           <div className="space-y-1.5" key={period.id}>
-            <p className="font-bold text-[10px] text-muted-foreground/80 uppercase tracking-wider">
+            <p className="font-bold t-12 text-muted-foreground/80 uppercase tracking-wider">
               {period.label}
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -417,11 +422,9 @@ export function formatTime(value?: string | Date | null) {
 export function formatTimeCompact(value?: string | Date | null) {
   const date = normalizeDate(value);
   if (!date) {
-    return "--h--";
+    return "--:--";
   }
-  const hours = `${date.getHours()}`.padStart(2, "0");
-  const minutes = `${date.getMinutes()}`.padStart(2, "0");
-  return `${hours}h${minutes}`;
+  return formatClockTime(date);
 }
 
 export function formatDateLabel(
@@ -820,7 +823,7 @@ export function CalendarAppointmentContent({
 }) {
   if (isTiny) {
     return (
-      <div className="flex min-w-0 items-center gap-1.5 pl-1 font-medium text-[10px] leading-[12px]">
+      <div className="flex min-w-0 items-center gap-1.5 pl-1 font-medium t-12 leading-[12px]">
         <span className="shrink-0 tabular-nums">{formatTime(start)}</span>
         <span className="truncate">{patientName}</span>
       </div>
@@ -833,7 +836,7 @@ export function CalendarAppointmentContent({
         <p
           className={cn(
             "truncate font-semibold text-foreground",
-            isDense ? "text-[11px] leading-4" : "text-xs leading-4"
+            isDense ? "t-12 leading-4" : "text-xs leading-4"
           )}
         >
           {patientName}
@@ -847,7 +850,7 @@ export function CalendarAppointmentContent({
         <p
           className={cn(
             "truncate text-muted-foreground tabular-nums",
-            isDense ? "text-[9px] leading-3" : "text-[10px] leading-4"
+            isDense ? "t-12 leading-3" : "t-12 leading-4"
           )}
         >
           {timeRange}
@@ -856,7 +859,7 @@ export function CalendarAppointmentContent({
       ) : null}
 
       {showReason ? (
-        <p className="mt-0.5 line-clamp-2 text-[10px] text-muted-foreground leading-3.5">
+        <p className="mt-0.5 line-clamp-2 t-12 text-muted-foreground leading-3.5">
           {appointment.reason}
         </p>
       ) : null}
@@ -1016,7 +1019,7 @@ export function AgendaDayView({
                     </div>
                     <div className="min-w-0">
                       <p className="truncate font-medium text-foreground">
-                        {vet.displayName}
+                        {formatPersonName(vet.displayName)}
                       </p>
                       <p className="text-muted-foreground text-sm">
                         {vetAppointments.length} rendez-vous
@@ -1040,7 +1043,7 @@ export function AgendaDayView({
                       className="pointer-events-none absolute inset-x-0 z-20 flex items-center"
                       style={{ top: `${currentTimePosition}px` }}
                     >
-                      <div className="rounded-full bg-primary px-2 py-1 font-medium text-[11px] text-primary-foreground shadow-sm">
+                      <div className="rounded-full bg-primary px-2 py-1 font-medium t-12 text-primary-foreground shadow-sm">
                         {currentTimeLabel}
                       </div>
                       <div className="h-px flex-1 bg-primary/70" />

@@ -52,7 +52,7 @@ export function WidgetShell({
             <Icon aria-hidden="true" className="size-4.5" strokeWidth={1.8} />
           </span>
           <div className="min-w-0">
-            <CardTitle className="font-semibold text-[15px] tracking-[-0.015em]">
+            <CardTitle className="font-semibold t-16 tracking-[-0.015em]">
               {title}
             </CardTitle>
             {description ? (

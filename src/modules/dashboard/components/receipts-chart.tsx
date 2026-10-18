@@ -70,14 +70,14 @@ export function ReceiptsChart({
         {/* Légende interactive Settle & Taux d’encaissement */}
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="inline-flex h-6 items-center gap-1.5 rounded-[7px] px-2 text-[11.5px] bg-black/[0.04] dark:bg-white/[0.06]">
+            <div className="inline-flex h-6 items-center gap-1.5 rounded-[7px] px-2 t-13 bg-black/[0.04] dark:bg-white/[0.06]">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <span className="text-neutral-600 dark:text-neutral-300">Factures encaissées</span>
               <span className="font-semibold tabular-nums text-neutral-900 dark:text-neutral-100 ml-1">
                 {unavailable ? "-" : money(invoicesTotal)}
               </span>
             </div>
-            <div className="inline-flex h-6 items-center gap-1.5 rounded-[7px] px-2 text-[11.5px] bg-black/[0.04] dark:bg-white/[0.06]">
+            <div className="inline-flex h-6 items-center gap-1.5 rounded-[7px] px-2 t-13 bg-black/[0.04] dark:bg-white/[0.06]">
               <span className="h-2 w-2 rounded-full bg-rose-500" />
               <span className="text-neutral-600 dark:text-neutral-300">Hors facture</span>
               <span className="font-semibold tabular-nums text-neutral-900 dark:text-neutral-100 ml-1">
@@ -86,7 +86,7 @@ export function ReceiptsChart({
             </div>
           </div>
           {rate !== null && !unavailable && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[7px] text-[11.5px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/[0.12] dark:text-emerald-300 tabular-nums">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[7px] t-13 font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/[0.12] dark:text-emerald-300 tabular-nums">
               {rate} % encaissé
             </span>
           )}
@@ -132,7 +132,7 @@ export function ReceiptsChart({
                 />
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: "currentColor", fontSize: 11, opacity: 0.55 }}
+                  tick={{ fill: "currentColor", fontSize: 12, opacity: 0.55 }}
                   axisLine={false}
                   tickLine={false}
                   tickMargin={8}
@@ -140,7 +140,7 @@ export function ReceiptsChart({
                   height={26}
                 />
                 <YAxis
-                  tick={{ fill: "currentColor", fontSize: 11, opacity: 0.55 }}
+                  tick={{ fill: "currentColor", fontSize: 12, opacity: 0.55 }}
                   axisLine={false}
                   tickLine={false}
                   tickMargin={6}
@@ -326,7 +326,7 @@ export function ReceiptsChart({
               />
               <XAxis
                 dataKey="label"
-                tick={{ fill: "var(--analysis-muted, #737373)", fontSize: 11 }}
+                tick={{ fill: "var(--analysis-muted, #737373)", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={8}
@@ -334,7 +334,7 @@ export function ReceiptsChart({
                 height={26}
               />
               <YAxis
-                tick={{ fill: "var(--analysis-muted, #737373)", fontSize: 11 }}
+                tick={{ fill: "var(--analysis-muted, #737373)", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={6}
@@ -425,7 +425,7 @@ export function ReceiptsChart({
                 height={30}
               />
               <YAxis
-                tick={{ fill: "var(--analysis-muted)", fontSize: 11 }}
+                tick={{ fill: "var(--analysis-muted)", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={6}

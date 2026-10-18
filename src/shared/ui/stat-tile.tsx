@@ -32,7 +32,7 @@ export function StatTile({
           <div className="space-y-4">
             <div className="space-y-1">
               <p className="font-medium text-sm text-text-secondary">{title}</p>
-              <p className="font-semibold text-3xl tracking-[-0.04em]">
+              <p className="font-semibold t-24 tracking-[-0.04em]">
                 {value}
               </p>
             </div>

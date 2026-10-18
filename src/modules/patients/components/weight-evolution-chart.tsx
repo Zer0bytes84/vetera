@@ -77,7 +77,7 @@ export function WeightEvolutionChart({
             <span className="flex size-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300">
               <Scales className="size-4" weight="duotone" />
             </span>
-            <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+            <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
               {title}
             </div>
           </div>
@@ -108,7 +108,7 @@ export function WeightEvolutionChart({
             <Scales className="size-4" weight="duotone" />
           </span>
           <div>
-            <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+            <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
               {title}
             </div>
             <div className="mt-0.5 text-muted-foreground text-xs">

@@ -151,7 +151,7 @@ function KanbanCardBody({
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <Badge
               className={cn(
-                "rounded-full px-2 py-0.5 font-medium text-[10px]",
+                "rounded-full px-2 py-0.5 font-medium t-12",
                 PRIORITY_META[task.priority].badgeClassName
               )}
               variant="secondary"
@@ -162,7 +162,7 @@ function KanbanCardBody({
             {task.dueDate ? (
               <span
                 className={cn(
-                  "flex items-center gap-1 text-[10px]",
+                  "flex items-center gap-1 t-12",
                   isOverdue
                     ? "font-medium text-red-600"
                     : "text-muted-foreground"
@@ -178,7 +178,7 @@ function KanbanCardBody({
             ) : null}
 
             {task.startTime ? (
-              <span className="text-[10px] text-muted-foreground">
+              <span className="t-12 text-muted-foreground">
                 {task.startTime}
                 {task.endTime ? ` - ${task.endTime}` : ""}
               </span>

@@ -82,6 +82,9 @@ import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
+import { formatPersonName } from "@/utils/display-format";
+import { PageHeader } from "@/design-system/patterns/page-header";
+import { Settings02Icon } from "@/lib/hugeicons";
 
 type SettingsTab =
   | "cabinet"
@@ -754,7 +757,7 @@ const Parametres: React.FC<ParametresProps> = ({
                 <Avatar name={displayName} size="xl" src={avatarUrl} />
                 <div className="min-w-0">
                   <h3 className="truncate text-lg font-semibold">
-                    {displayName || "Votre profil"}
+                    {formatPersonName(displayName) || "Votre profil"}
                   </h3>
                   <p className="mt-0.5 truncate text-sm text-muted-foreground">
                     {currentUser?.email}
@@ -835,7 +838,7 @@ const Parametres: React.FC<ParametresProps> = ({
                     id="settings-phone"
                     autoComplete="tel"
                     onChange={(event) => setPhone(event.target.value)}
-                    placeholder="+213…"
+                    placeholder="Numéro de téléphone"
                     type="tel"
                     value={phone}
                   />
@@ -1037,7 +1040,7 @@ const Parametres: React.FC<ParametresProps> = ({
                     id="settings-password"
                     autoComplete="new-password"
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Au moins 6 caractères"
                     type="password"
                     value={newPassword}
                   />
@@ -1050,7 +1053,7 @@ const Parametres: React.FC<ParametresProps> = ({
                     id="settings-confirm"
                     autoComplete="new-password"
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Saisir à nouveau"
                     type="password"
                     value={confirmPassword}
                   />
@@ -1137,15 +1140,13 @@ const Parametres: React.FC<ParametresProps> = ({
 
   return (
     <div className="settings-page">
-      <div className="settings-page-header">
-        <div>
-          <div className="mb-1">
-            <PageDate />
-          </div>
-          <h1>Paramètres</h1>
-          <p>Votre compte, votre espace et les données du cabinet.</p>
-        </div>
-      </div>
+      <PageHeader
+        className="settings-page-header"
+        icon={<HugeiconsIcon icon={Settings02Icon} size={20} strokeWidth={1.5} />}
+        kicker={<PageDate />}
+        subtitle="Votre compte, votre espace et les données du cabinet."
+        title="Paramètres"
+      />
       <div className="settings-page-layout">
         <nav aria-label="Sections des paramètres" className="settings-page-nav">
           {SETTINGS_NAV_GROUPS.map((group) => (

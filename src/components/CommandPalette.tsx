@@ -739,7 +739,7 @@ export default function CommandPalette({
       overlayClassName="data-closed:!animate-none data-open:!animate-none bg-black/40 backdrop-blur-sm dark:bg-black/60"
     >
       <Command
-        className="max-h-[min(720px,calc(100dvh-4rem))] rounded-3xl! bg-transparent text-popover-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:text-muted-foreground/70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-1 [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5"
+        className="max-h-[min(720px,calc(100dvh-4rem))] rounded-3xl! bg-transparent text-popover-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:t-12 [&_[cmdk-group-heading]]:text-muted-foreground/70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-1 [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5"
         filter={scoreCommandMatch}
         label={t("commandPalette.title", {
           defaultValue: "Recherche globale",
@@ -769,7 +769,7 @@ export default function CommandPalette({
                 </button>
               ) : (
                 <div className="flex items-center gap-1">
-                  <Kbd className="h-5 px-1.5 text-[10px]">esc</Kbd>
+                  <Kbd className="h-5 px-1.5 t-12">esc</Kbd>
                 </div>
               )
             }
@@ -787,6 +787,7 @@ export default function CommandPalette({
               className="w-full"
             >
               <TabsList
+                tabsStyle="segmented"
                 variant="line"
                 aria-label="Catégorie de commandes"
                 className="h-8 gap-4 border-none bg-transparent p-0"
@@ -803,7 +804,7 @@ export default function CommandPalette({
                 >
                   Patients
                   {matchedPatients.length > 0 && (
-                    <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">
+                    <Badge variant="secondary" className="ml-1.5 h-4 px-1 t-12">
                       {matchedPatients.length}
                     </Badge>
                   )}
@@ -814,7 +815,7 @@ export default function CommandPalette({
                 >
                   Cas similaires
                   {semanticResults.length > 0 && (
-                    <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">
+                    <Badge variant="secondary" className="ml-1.5 h-4 px-1 t-12">
                       {semanticResults.length}
                     </Badge>
                   )}
@@ -913,18 +914,18 @@ export default function CommandPalette({
                     />
                   </div>
                   <div className="ml-1 min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground">
+                    <p className="t-13 font-semibold text-foreground">
                       {intent.kind === "vaccination"
                         ? "Enregistrer un vaccin"
                         : "Nouvelle consultation"}{" "}
                       · {patient.name}
                     </p>
-                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                    <p className="mt-0.5 truncate t-12 text-muted-foreground">
                       {patient.species}
                       {patient.breed ? ` · ${patient.breed}` : ""} · Dossier existant
                     </p>
                   </div>
-                  <Kbd className="ml-auto text-[10px]">↵ Exécuter</Kbd>
+                  <Kbd className="ml-auto t-12">↵ Exécuter</Kbd>
                 </CommandItem>
               ))}
 
@@ -946,14 +947,14 @@ export default function CommandPalette({
                     />
                   </div>
                   <div className="ml-1 min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground">
+                    <p className="t-13 font-semibold text-foreground">
                       Nouvelle facture · {owner.firstName} {owner.lastName}
                     </p>
-                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                    <p className="mt-0.5 truncate t-12 text-muted-foreground">
                       Propriétaire existant · Établir un devis ou une facture
                     </p>
                   </div>
-                  <Kbd className="ml-auto text-[10px]">↵ Facturer</Kbd>
+                  <Kbd className="ml-auto t-12">↵ Facturer</Kbd>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -994,12 +995,12 @@ export default function CommandPalette({
                           {entry.label}
                         </span>
                         {entry.sub && (
-                          <span className="font-normal text-[11px] text-muted-foreground leading-none">
+                          <span className="font-normal t-12 text-muted-foreground leading-none">
                             {entry.sub}
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-muted-foreground/60">
+                      <span className="t-12 text-muted-foreground/60">
                         Récemment ouvert
                       </span>
                     </CommandItem>
@@ -1034,7 +1035,7 @@ export default function CommandPalette({
                         {patient.status && (
                           <Badge
                             variant="outline"
-                            className={`h-4 px-1 text-[9px] font-normal ${statusMeta.className}`}
+                            className={`h-4 px-1 t-12 font-normal ${statusMeta.className}`}
                           >
                             {statusMeta.label}
                           </Badge>
@@ -1046,7 +1047,7 @@ export default function CommandPalette({
                         {ownerName ? ` · ${ownerName}` : ""}
                       </span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground/60">
+                    <span className="t-12 text-muted-foreground/60">
                       Ouvrir ↵
                     </span>
                   </CommandItem>
@@ -1092,13 +1093,13 @@ export default function CommandPalette({
                         {patient.status && (
                           <Badge
                             variant="outline"
-                            className={`h-4 px-1.5 text-[9px] font-normal ${statusMeta.className}`}
+                            className={`h-4 px-1.5 t-12 font-normal ${statusMeta.className}`}
                           >
                             {statusMeta.label}
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 truncate text-[11px] text-muted-foreground">
+                      <div className="flex items-center gap-1.5 truncate t-12 text-muted-foreground">
                         <span>{patient.species}</span>
                         {patient.breed && <span>· {patient.breed}</span>}
                         {ownerName && (
@@ -1106,7 +1107,7 @@ export default function CommandPalette({
                         )}
                       </div>
                     </div>
-                    <Kbd className="ml-auto text-[10px]">↵ Ouvrir</Kbd>
+                    <Kbd className="ml-auto t-12">↵ Ouvrir</Kbd>
                   </CommandItem>
                 );
               })}
@@ -1174,7 +1175,7 @@ export default function CommandPalette({
                       </span>
                       <Badge
                         variant="outline"
-                        className="h-4 px-1.5 text-[9px] font-medium border-amber-500/30 text-amber-800 dark:text-amber-300 bg-amber-500/5"
+                        className="h-4 px-1.5 t-12 font-medium border-amber-500/30 text-amber-800 dark:text-amber-300 bg-amber-500/5"
                       >
                         {sug.badge}
                       </Badge>
@@ -1183,7 +1184,7 @@ export default function CommandPalette({
                       {sug.sub}
                     </span>
                   </div>
-                  <Kbd className="text-[10px]">Rechercher ↵</Kbd>
+                  <Kbd className="t-12">Rechercher ↵</Kbd>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -1285,7 +1286,7 @@ export default function CommandPalette({
                             </span>
                             <Badge
                               variant="outline"
-                              className={`h-4 px-1.5 text-[9px] font-medium ${
+                              className={`h-4 px-1.5 t-12 font-medium ${
                                 isProduct
                                   ? "border-emerald-500/30 text-emerald-800 dark:text-emerald-300 bg-emerald-500/5"
                                   : isPatient
@@ -1297,7 +1298,7 @@ export default function CommandPalette({
                             </Badge>
                             <Badge
                               variant="secondary"
-                              className="h-4 px-1.5 text-[9px] font-normal text-muted-foreground"
+                              className="h-4 px-1.5 t-12 font-normal text-muted-foreground"
                             >
                               {result.match === "text"
                                 ? "Correspondance clinique"
@@ -1309,7 +1310,7 @@ export default function CommandPalette({
                           </p>
                         </div>
                         <div className="ml-2 flex flex-col items-end justify-center shrink-0">
-                          <Kbd className="text-[10px]">
+                          <Kbd className="t-12">
                             {isProduct ? "↵ Voir en stock" : "↵ Ouvrir le dossier"}
                           </Kbd>
                         </div>
@@ -1348,7 +1349,7 @@ export default function CommandPalette({
                       <span className="font-semibold text-foreground text-sm leading-none">
                         {appt.title}
                       </span>
-                      <span className="font-normal text-[11px] text-muted-foreground leading-none">
+                      <span className="font-normal t-12 text-muted-foreground leading-none">
                         {patient?.name ?? t("commandPalette.unlinkedPatient", { defaultValue: "Patient" })}
                         {" · "}
                         {format(new Date(appt.startTime), "PPP HH:mm", {
@@ -1356,7 +1357,7 @@ export default function CommandPalette({
                         })}
                       </span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground/60">
+                    <span className="t-12 text-muted-foreground/60">
                       Agenda ↵
                     </span>
                   </CommandItem>
@@ -1387,11 +1388,11 @@ export default function CommandPalette({
                     <span className="font-medium text-foreground text-sm leading-none">
                       {action.label}
                     </span>
-                    <span className="font-normal text-[11px] text-muted-foreground leading-none">
+                    <span className="font-normal t-12 text-muted-foreground leading-none">
                       {action.sub}
                     </span>
                   </div>
-                  <span className="text-[10px] text-muted-foreground/60">
+                  <span className="t-12 text-muted-foreground/60">
                     Naviguer ↵
                   </span>
                 </CommandItem>
@@ -1432,7 +1433,7 @@ export default function CommandPalette({
                     <span className="font-medium text-foreground text-sm">
                       Ouvrir l'Assistant IA
                     </span>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="t-12 text-muted-foreground">
                       Dictée guidée SOAP & recherche clinique
                     </span>
                   </div>
@@ -1621,23 +1622,23 @@ export default function CommandPalette({
         </CommandList>
 
         {/* Pied de page avec raccourcis clavier */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border/60 px-4 py-2.5 text-[11px] text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border/60 px-4 py-2.5 t-12 text-muted-foreground">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="flex items-center gap-1.5">
-              <Kbd className="h-4 px-1 text-[9px]">↑</Kbd>
-              <Kbd className="h-4 px-1 text-[9px]">↓</Kbd>
+              <Kbd className="h-4 px-1 t-12">↑</Kbd>
+              <Kbd className="h-4 px-1 t-12">↓</Kbd>
               {t("commandPalette.footer.navigate", { defaultValue: "Naviguer" })}
             </span>
             <span className="flex items-center gap-1.5">
-              <Kbd className="h-4 px-1 text-[9px]">↵</Kbd>
+              <Kbd className="h-4 px-1 t-12">↵</Kbd>
               {t("commandPalette.footer.select", { defaultValue: "Sélectionner" })}
             </span>
             <span className="hidden items-center gap-1.5 sm:flex">
-              <Kbd className="h-4 px-1 text-[9px]">esc</Kbd>
+              <Kbd className="h-4 px-1 t-12">esc</Kbd>
               {t("commandPalette.footer.close", { defaultValue: "Fermer" })}
             </span>
           </div>
-          <span className="hidden font-mono tracking-wide text-muted-foreground/70 sm:inline text-[10px]">
+          <span className="hidden font-mono tracking-wide text-muted-foreground/70 sm:inline t-12">
             Baitari ⌘K
           </span>
         </div>

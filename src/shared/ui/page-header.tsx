@@ -18,7 +18,7 @@ export function PageHeader({
       <div className="space-y-4">
         {eyebrow ? <Badge variant="info">{eyebrow}</Badge> : null}
         <div className="space-y-2">
-          <h1 className="font-semibold text-3xl text-foreground tracking-[-0.04em] lg:text-4xl">
+          <h1 className="font-semibold t-24 text-foreground tracking-[-0.04em]">
             {title}
           </h1>
           <p className="max-w-2xl text-[var(--text-secondary)] text-sm leading-6">

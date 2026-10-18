@@ -63,7 +63,7 @@ export function HospitalizationSheet({
               <Hospital className="size-5" weight="duotone" />
             </span>
             <div>
-              <SheetTitle className="flex items-center gap-2 font-semibold text-foreground/90 text-lg tracking-tight">
+              <SheetTitle className="flex items-center gap-2">
                 {t("modules.hospitalizations.title", "Hospitalisation")}
                 <span className="ml-1 font-normal text-muted-foreground">
                   · {patient.name}

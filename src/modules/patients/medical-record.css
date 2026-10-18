@@ -27,9 +27,7 @@
   --medical-danger: #b42318;
   --medical-danger-bg: #fff4f2;
   --medical-danger-border: #fee4e2;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
-    system-ui, sans-serif;
+  font-family: var(--app-font-sans);
   font-size: 14px;
   font-weight: 400;
   color: var(--medical-ink);

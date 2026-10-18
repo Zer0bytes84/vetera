@@ -171,7 +171,7 @@ export function HospitalizationDialog({
               <Input
                 id="hosp-cage"
                 onChange={(e) => setCage(e.target.value)}
-                placeholder="A-12"
+                placeholder="Ex. A-12"
                 value={cage}
               />
             </div>
@@ -183,7 +183,7 @@ export function HospitalizationDialog({
                 id="hosp-weight"
                 inputMode="decimal"
                 onChange={(e) => setWeight(e.target.value)}
-                placeholder="0.0"
+                placeholder="Ex. 12,5"
                 value={weight}
               />
             </div>
@@ -201,7 +201,7 @@ export function HospitalizationDialog({
                 id="hosp-temp"
                 inputMode="decimal"
                 onChange={(e) => setTemp(e.target.value)}
-                placeholder="38.5"
+                placeholder="Ex. 38,5"
                 value={temp}
               />
             </div>
@@ -212,7 +212,7 @@ export function HospitalizationDialog({
               <Input
                 id="hosp-iv"
                 onChange={(e) => setIvFluids(e.target.value)}
-                placeholder="NaCl 0,9% — 50 mL/h"
+                placeholder="Ex. NaCl 0,9 %, 50 mL/h"
                 value={ivFluids}
               />
             </div>
@@ -225,7 +225,7 @@ export function HospitalizationDialog({
             <Input
               id="hosp-feeding"
               onChange={(e) => setFeeding(e.target.value)}
-              placeholder="RC gastro 3×/j + eau ad lib"
+              placeholder="Ex. RC gastro 3×/j, eau à volonté"
               value={feeding}
             />
           </div>

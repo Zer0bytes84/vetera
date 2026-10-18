@@ -94,10 +94,10 @@ export function PatientsModule({
             >
               <PatientPortrait patient={patient} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-medium">
+                <span className="block truncate t-13 font-medium">
                   {patient.name}
                 </span>
-                <span className="mt-1 block truncate text-[11px] text-ink-muted">
+                <span className="mt-1 block truncate t-12 text-ink-muted">
                   {patient.species} · {ownerName}
                 </span>
               </span>
@@ -128,7 +128,7 @@ export function PatientsModule({
         />
       )}
       {rows.length > 3 && (
-        <div className="mt-1 border-t border-hairline pt-3 text-[11px] text-ink-muted">
+        <div className="mt-1 border-t border-hairline pt-3 t-12 text-ink-muted">
           {rows.length - 3} autre{rows.length - 3 > 1 ? "s" : ""} dossier
           {rows.length - 3 > 1 ? "s" : ""} dans la bibliothèque patients
         </div>

@@ -54,7 +54,7 @@ export function PrescriptionSheet({
               <Pill className="size-5" weight="duotone" />
             </span>
             <div>
-              <SheetTitle className="flex items-center gap-2 font-semibold text-foreground/90 text-lg tracking-tight">
+              <SheetTitle className="flex items-center gap-2">
                 {t("prescriptions.title")}
                 <span className="ml-1 font-normal text-muted-foreground">
                   · {patient.name}

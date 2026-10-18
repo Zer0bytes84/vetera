@@ -337,7 +337,8 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
       {
         title: "Relances à prévoir",
         value: formatNumber(stalePatients),
-        change: stalePatients > 0 ? stalePatients : 0,
+        change: stalePatients,
+        changeKind: "count",
         changeLabel: stalePatients > 0 ? "sans visite > 90 j" : "dossiers à jour",
         inverse: true,
         tone: stalePatients > 0 ? "critical" : "positive",

@@ -101,7 +101,7 @@ export function AssistantActivity({
           typeof progress.characters === "number" && (
             <span
               aria-live="off"
-              className="shrink-0 text-[10px] tabular-nums text-muted-foreground"
+              className="shrink-0 t-12 tabular-nums text-muted-foreground"
             >
               {progress.characters.toLocaleString("fr-FR")} caractères
             </span>

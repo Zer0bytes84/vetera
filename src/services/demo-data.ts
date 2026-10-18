@@ -67,7 +67,7 @@ function buildDemoUsers(currentUser: CurrentUser): User[] {
     },
     {
       id: "demo_vet_01",
-      displayName: "Dr. Lina Ait Salem",
+      displayName: "Dr Lina Ait Salem",
       email: "lina@luma.vet",
       role: "vet_principal",
       status: "active",
@@ -78,7 +78,7 @@ function buildDemoUsers(currentUser: CurrentUser): User[] {
     },
     {
       id: "demo_vet_02",
-      displayName: "Dr. Karim Messaoud",
+      displayName: "Dr Karim Messaoud",
       email: "karim@luma.vet",
       role: "vet_adjoint",
       status: "active",

@@ -110,7 +110,7 @@ export function QuickPatientPicker({
                       <span className="truncate font-medium text-sm">
                         {patient.name}
                       </span>
-                      <span className="truncate text-[11px] text-muted-foreground/70">
+                      <span className="truncate t-12 text-muted-foreground/70">
                         {patient.species}
                         {patient.breed ? ` · ${patient.breed}` : ""}
                       </span>
@@ -121,14 +121,14 @@ export function QuickPatientPicker({
             </ul>
           )}
         </div>
-        <div className="flex items-center justify-between border-black/5 border-t px-4 py-2.5 text-[11px] text-muted-foreground/70 dark:border-white/5">
+        <div className="flex items-center justify-between border-black/5 border-t px-4 py-2.5 t-12 text-muted-foreground/70 dark:border-white/5">
           <span>
             {t("quickPatientPicker.hint", {
               defaultValue: "Sélectionnez pour continuer",
             })}
           </span>
           <span className="flex items-center gap-1.5">
-            <Kbd className="h-4 px-1 text-[9px]">esc</Kbd>
+            <Kbd className="h-4 px-1 t-12">esc</Kbd>
             {t("common.close")}
           </span>
         </div>

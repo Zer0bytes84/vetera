@@ -135,7 +135,7 @@ export function AnesthesiaMonitoringEntryDialog({
               id="mon-fc"
               label={t("modules.anesthesia.monitoring.heartRate", "FC (bpm)")}
               onChange={setHeartRateBpm}
-              placeholder="120"
+              placeholder="Ex. 120"
               value={heartRateBpm}
             />
             <Field
@@ -145,49 +145,49 @@ export function AnesthesiaMonitoringEntryDialog({
                 "FR (/min)"
               )}
               onChange={setRespiratoryRateBpm}
-              placeholder="12"
+              placeholder="Ex. 12"
               value={respiratoryRateBpm}
             />
             <Field
               id="mon-spo2"
               label={t("modules.anesthesia.monitoring.spo2", "SpO2 (%)")}
               onChange={setSpo2Percent}
-              placeholder="98"
+              placeholder="Ex. 98"
               value={spo2Percent}
             />
             <Field
               id="mon-etco2"
               label={t("modules.anesthesia.monitoring.etco2", "ETCO2 (mmHg)")}
               onChange={setEtco2Mmhg}
-              placeholder="38"
+              placeholder="Ex. 38"
               value={etco2Mmhg}
             />
             <Field
               id="mon-pam"
               label={t("modules.anesthesia.monitoring.map", "PAM (mmHg)")}
               onChange={setMapMmhg}
-              placeholder="80"
+              placeholder="Ex. 80"
               value={mapMmhg}
             />
             <Field
               id="mon-temp"
               label={t("modules.anesthesia.monitoring.temperature", "T° (°C)")}
               onChange={setTemperatureC}
-              placeholder="37.5"
+              placeholder="Ex. 37,5"
               value={temperatureC}
             />
             <Field
               id="mon-iso"
               label={t("modules.anesthesia.monitoring.isoflurane", "Iso (%)")}
               onChange={setIsofluranePct}
-              placeholder="1.5"
+              placeholder="Ex. 1,5"
               value={isofluranePct}
             />
             <Field
               id="mon-o2"
               label={t("modules.anesthesia.monitoring.oxygen", "O2 (L/min)")}
               onChange={setOxygenFlowLMin}
-              placeholder="1"
+              placeholder="Ex. 1"
               value={oxygenFlowLMin}
             />
           </div>

@@ -85,7 +85,7 @@ export function AnesthesiaList({
             <Syringe className="size-5 text-violet-600" weight="duotone" />
           </div>
           <div className="grid flex-1 gap-0.5">
-            <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
+            <div className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
               {t(
                 "modules.anesthesia.subtitle",
                 "Induction · Maintenance · Réveil"
@@ -108,7 +108,7 @@ export function AnesthesiaList({
           {filters.map((f) => (
             <button
               className={cn(
-                "rounded-full border px-3 py-1 font-medium text-[11px] transition-all",
+                "rounded-full border px-3 py-1 font-medium t-12 transition-all",
                 filter === f.value
                   ? "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-200"
                   : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"
@@ -188,7 +188,7 @@ export function AnesthesiaList({
                       {s.procedureName}
                     </p>
                     {s.scheduledAt ? (
-                      <p className="text-[11px] text-muted-foreground/80">
+                      <p className="t-12 text-muted-foreground/80">
                         {t(
                           "modules.anesthesia.fields.scheduledAt",
                           "Planifiée"

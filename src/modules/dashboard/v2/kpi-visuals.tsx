@@ -506,12 +506,12 @@ export function KpiSpeciesDistribution({
                     <strong>{formatNumber(count)}</strong>{" "}
                     {name.toLocaleLowerCase("fr-FR")}{count > 1 ? "s" : ""}
                   </span>
-                  <span className="text-[11px] opacity-65">({pct}%)</span>
+                  <span className="t-12 opacity-65">({pct}%)</span>
                 </span>
               );
             })
           ) : (
-            <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <span className="t-12 text-muted-foreground flex items-center gap-1.5">
               <PawPrint size={11} className="opacity-50" />
               <span>Aucun patient enregistré</span>
             </span>
@@ -597,7 +597,7 @@ export function KpiReceivablesGauge({
                 aria-hidden="true"
               />
             ) : (
-              <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+              <span className="t-12 font-bold text-amber-600 dark:text-amber-400 tabular-nums">
                 {recoveryRate}%
               </span>
             )}

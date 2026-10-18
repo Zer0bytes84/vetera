@@ -71,12 +71,10 @@ export function StockView(props: StockViewProps) {
   } = props;
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <MotivationalHeader
+      <MotivationalHeader
           section="stock"
           subtitle={`${totalProducts} référence${totalProducts > 1 ? "s" : ""} active${totalProducts > 1 ? "s" : ""} · ${formatDZD(stockValue)} en stock`}
-        />
-        <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        actions={<>
           <Button className="h-9 px-4" onClick={handleOpenAdd}>
             <HugeiconsIcon
               className="size-4"
@@ -85,8 +83,8 @@ export function StockView(props: StockViewProps) {
             />
             Nouveau produit
           </Button>
-        </div>
-      </div>
+        </>}
+      />
 
       <StockWorkspace
         loading={loading}
@@ -159,12 +157,12 @@ export function StockView(props: StockViewProps) {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field>
-                  <FieldLabel>Nom du produit *</FieldLabel>
+                  <FieldLabel>Nom du produit <span className="modal-required">requis</span></FieldLabel>
                   <Input
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="Ex: Amoxicilline"
+                    placeholder="Ex. amoxicilline"
                     value={formData.name || ""}
                   />
                 </Field>
@@ -202,7 +200,7 @@ export function StockView(props: StockViewProps) {
                       onChange={(e) =>
                         setFormData({ ...formData, category: e.target.value })
                       }
-                      placeholder="Entrez votre catégorie..."
+                      placeholder="Entrez votre catégorie…"
                       value={formData.category || ""}
                     />
                   )}
@@ -243,7 +241,7 @@ export function StockView(props: StockViewProps) {
                   />
                 </Field>
                 <Field>
-                  <FieldLabel>Stock Min</FieldLabel>
+                  <FieldLabel>Stock minimum</FieldLabel>
                   <Input
                     onChange={(e) =>
                       setFormData({
@@ -259,7 +257,7 @@ export function StockView(props: StockViewProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Prix Achat (DA)</FieldLabel>
+                  <FieldLabel>Prix d’achat (DA)</FieldLabel>
                   <Input
                     onChange={(e) =>
                       setFormData({
@@ -272,7 +270,7 @@ export function StockView(props: StockViewProps) {
                   />
                 </Field>
                 <Field>
-                  <FieldLabel>Prix Vente (DA)</FieldLabel>
+                  <FieldLabel>Prix de vente (DA)</FieldLabel>
                   <Input
                     onChange={(e) =>
                       setFormData({
@@ -287,7 +285,7 @@ export function StockView(props: StockViewProps) {
               </div>
 
               <Field>
-                <FieldLabel>Date d'expiration (optionnel)</FieldLabel>
+                <FieldLabel>Date d’expiration (facultatif)</FieldLabel>
                 <div className="grid grid-cols-3 gap-3">
                   <NativeSelect
                     className="w-full cursor-pointer"

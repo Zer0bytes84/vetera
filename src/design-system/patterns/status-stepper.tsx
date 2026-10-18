@@ -55,13 +55,13 @@ export function StatusStepper({
           quiet
           disabled={busy}
           onClick={() => onAdvance(next)}
-          className="h-7 px-2 text-[11px] transition-[background-color,scale]"
+          className="h-7 px-2 t-12 transition-[background-color,scale]"
         >
           {busy ? "Enregistrement…" : nextLabel}
           <HugeiconsIcon icon={ArrowRight01Icon} size={12} strokeWidth={1.5} />
         </ActionButton>
       ) : status === "completed" && onBill ? (
-        <ActionButton quiet disabled={busy} onClick={onBill} className="h-7 px-2 text-[11px]">
+        <ActionButton quiet disabled={busy} onClick={onBill} className="h-7 px-2 t-12">
           Facturer
         </ActionButton>
       ) : null}

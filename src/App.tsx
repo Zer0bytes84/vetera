@@ -235,7 +235,7 @@ function ActivationAdminAccess() {
     return () => { active = false; window.removeEventListener("storage", check); window.removeEventListener("focus", check); window.removeEventListener("sqlite-data-changed", check); };
   }, []);
   if (allowed === null) return <AppLoadingState />;
-  if (!allowed) return <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground"><h1 className="text-xl font-medium">Accès réservé au propriétaire</h1><p>Ce compte ne peut pas accéder à la gestion des licences.</p><a href="/">Revenir à Baitari</a></main>;
+  if (!allowed) return <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background p-8 text-foreground"><h1 className="t-18 font-medium">Accès réservé au propriétaire</h1><p>Ce compte ne peut pas accéder à la gestion des licences.</p><a href="/">Revenir à Baitari</a></main>;
   return <ActivationOwnerUnlock key={sessionKey}><ActivationAdminPage /></ActivationOwnerUnlock>;
 }
 

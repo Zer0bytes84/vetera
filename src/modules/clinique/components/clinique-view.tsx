@@ -158,12 +158,8 @@ export function CliniqueView(props: CliniqueViewProps) {
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
       {!(activeConsultation && activeConsultationPatient) && (
         <>
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <MotivationalHeader section="clinique" />
-            <div
-              data-slot="page-header-actions"
-              className="flex flex-col gap-2 sm:flex-row sm:items-center"
-            >
+          <MotivationalHeader section="clinique"
+            actions={<>
               <Button
                 className="h-9 px-4"
                 variant="outline"
@@ -214,8 +210,8 @@ export function CliniqueView(props: CliniqueViewProps) {
                   )}
                 </Button>
               ) : null}
-            </div>
-          </div>
+            </>}
+          />
 
           <SectionCards items={sectionCards} />
 
@@ -238,7 +234,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                     />}
                   </div>
                   <div className="grid flex-1 gap-0.5">
-                    <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
+                    <CardTitle className="font-normal t-18 tracking-[-0.04em]">
                       Activité des dossiers
                     </CardTitle>
                   </div>
@@ -261,7 +257,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                     onValueChange={(value) => setListTab(value as ListTab)}
                     value={listTab}
                   >
-                    <TabsList className="engraved-view-tabs bg-muted/50 p-1" aria-label="État des consultations">
+                    <TabsList aria-label="État des consultations" tabsStyle="segmented">
                       {LIST_TABS.map((tab) => {
                         const count =
                           tab.value === "all"
@@ -304,7 +300,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                     <Input
                       className="h-11 rounded-body bg-input/50 pl-11"
                       onChange={(event) => setSearchQuery(event.target.value)}
-                      placeholder="Rechercher un patient, un motif ou un type d’acte..."
+                      placeholder="Rechercher un patient, un motif ou un type d’acte…"
                       value={searchQuery}
                     />
                   </div>
@@ -655,7 +651,7 @@ export function CliniqueView(props: CliniqueViewProps) {
             <Card className="clinical-selected-record surface-card relative overflow-hidden">
               <CardHeader className="relative border-border/35 border-b bg-transparent">
                 <CardDescription>Dossier sélectionné</CardDescription>
-                <CardTitle className="text-xl tracking-[-0.04em]">
+                <CardTitle className="t-18 tracking-[-0.04em]">
                   {selectedPatient?.name || "Sélectionnez une consultation"}
                 </CardTitle>
                 {selectedAppointment ? (
@@ -691,7 +687,7 @@ export function CliniqueView(props: CliniqueViewProps) {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate font-medium text-foreground text-xl tracking-[-0.04em]">
+                            <p className="truncate font-medium text-foreground t-18 tracking-[-0.04em]">
                               {selectedPatient.name}
                             </p>
                             <AppointmentTypeBadge
@@ -716,7 +712,8 @@ export function CliniqueView(props: CliniqueViewProps) {
                     </div>
 
                     <TabsList
-                      className="engraved-view-tabs w-full justify-start rounded-none p-0"
+                      className="w-full justify-start rounded-none p-0"
+                      tabsStyle="nav"
                       variant="line"
                     >
                       <TabsTrigger value="overview">Dossier</TabsTrigger>

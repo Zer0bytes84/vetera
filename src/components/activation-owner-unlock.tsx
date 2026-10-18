@@ -26,7 +26,7 @@ export function ActivationOwnerUnlock({ children }: { children: ReactNode }) {
         setError(cause instanceof Error ? cause.message : "Accès impossible.");
       } finally { setBusy(false); }
     }}>
-      <h1 className="text-xl font-medium">Déverrouiller le Centre d’Activation</h1>
+      <h1 className="t-18 font-medium">Déverrouiller le Centre d’Activation</h1>
       <p className="text-sm text-muted-foreground">Accès propriétaire. Le jeton de gestion est vérifié par le serveur et conservé uniquement pour cette session.</p>
       <label className="grid gap-2 text-sm">Jeton de sécurité<input type="password" autoComplete="off" value={token} onChange={event => setToken(event.target.value)} required className="h-11 rounded-lg border border-border bg-background px-3" /></label>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}

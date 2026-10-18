@@ -94,9 +94,8 @@ export function PatientsView(props: PatientsViewProps) {
   } = props;
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <MotivationalHeader section="patients" />
-        <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <MotivationalHeader section="patients"
+        actions={<>
           <Button
             className="h-9 px-4"
             onClick={resetFilters}
@@ -115,8 +114,8 @@ export function PatientsView(props: PatientsViewProps) {
             />
             Nouveau patient
           </Button>
-        </div>
-      </div>
+        </>}
+      />
 
       <SectionCards items={sectionCards} />
 

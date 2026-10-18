@@ -36,11 +36,11 @@
   display: block;
   margin-bottom: 8px;
   color: var(--muted-foreground);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 550;
   letter-spacing: .09em;
 }
-.mascot-settings-intro h3 { font-size: 17px; font-weight: 600; letter-spacing: -.025em; }
+.mascot-settings-intro h3 { font-size: 18px; font-weight: 600; letter-spacing: -.025em; }
 .mascot-settings-intro p { max-width: 360px; margin-top: 6px; color: var(--muted-foreground); font-size: 12px; line-height: 1.6; }
 .mascot-settings-preview {
   display: grid;
@@ -93,7 +93,7 @@
   height: 16px;
   border-radius: 50%;
   color: var(--primary-foreground);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
   place-items: center;
 }
@@ -189,14 +189,14 @@
 .mascot-picker-heading [data-slot="popover-title"] { font-size: 14px; font-weight: 600; letter-spacing: -.02em; }
 .mascot-picker-heading [data-slot="popover-description"] { margin-top: 4px; font-size: 12px; }
 .mascot-choices[data-compact="true"] { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 0 16px 14px; }
-.mascot-choices[data-compact="true"] .mascot-choice { min-height: 97px; font-size: 11px; }
+.mascot-choices[data-compact="true"] .mascot-choice { min-height: 97px; font-size: 12px; }
 .mascot-choices[data-compact="true"] .mascot-choice-logo {
   grid-column: auto;
   flex-direction: column;
   min-height: 97px;
   gap: 7px;
   margin-top: 0;
-  font-size: 11px;
+  font-size: 12px;
 }
 .mascot-choices[data-compact="true"] .mascot-choice-logo .mascot-classic-mark {
   width: 44px;
@@ -339,7 +339,7 @@
   flex: 1;
   padding: 5px 8px;
   border-radius: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   text-align: center;
   color: var(--muted-foreground);

@@ -1,5 +1,5 @@
 import { ListSearch } from "@/components/ui/list-controls";
-import { formatNumber, formatPhone } from "@/utils/display-format";
+import { formatNumber, formatPersonName, formatPhone } from "@/utils/display-format";
 import {
   Add01Icon,
   Briefcase01Icon,
@@ -365,7 +365,8 @@ const Team: React.FC = () => {
       {
         title: "Accès & statut",
         value: formatNumber(accessReview),
-        change: accessReview > 0 ? accessReview : 0,
+        change: accessReview,
+        changeKind: "count",
         changeLabel: accessReview > 0 ? "comptes inactifs" : "droits conformes",
         inverse: true,
         tone: accessReview > 0 ? "critical" : "positive",
@@ -378,9 +379,8 @@ const Team: React.FC = () => {
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <MotivationalHeader section="equipe" />
-        <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <MotivationalHeader section="equipe"
+        actions={<>
           {canManageTeam ? (
             <Button
               className="h-9 px-4"
@@ -394,18 +394,18 @@ const Team: React.FC = () => {
               <span>Nouveau membre</span>
             </Button>
           ) : null}
-        </div>
-      </div>
+        </>}
+      />
 
       <SectionCards items={sectionCards} />
 
       {/* Main Card */}
       <Card className="card-vibrant card-hover-lift flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
         <CardHeader className="border-border border-b px-6 py-5">
-          <CardDescription className="font-mono text-[10px] uppercase tracking-[0.06em]">
+          <CardDescription className="font-mono t-12 uppercase tracking-[0.06em]">
             Annuaire interne
           </CardDescription>
-          <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
+          <CardTitle className="font-normal t-18 tracking-[-0.04em]">
             Coordination de l'équipe
           </CardTitle>
           <CardAction>
@@ -475,7 +475,7 @@ const Team: React.FC = () => {
                         />
                         <div>
                           <h3 className="font-bold text-base text-foreground leading-tight">
-                            {user.displayName || "Utilisateur inconnu"}
+                            {formatPersonName(user.displayName) || "Utilisateur inconnu"}
                           </h3>
                           {user.specialty && (
                             <p className="mt-0.5 text-muted-foreground text-xs">
@@ -584,7 +584,7 @@ const Team: React.FC = () => {
                     <div className="absolute right-5 bottom-5">
                       <Badge
                         className={cn(
-                          "gap-1 text-[10px]",
+                          "gap-1 t-12",
                           TEAM_STATUS_META[
                             user.status === "active" ? "active" : "inactive"
                           ].className
@@ -740,24 +740,24 @@ const Team: React.FC = () => {
           <FormDialogBody>
             <FieldGroup>
             <Field>
-              <FieldLabel>Nom complet</FieldLabel>
+              <FieldLabel>Nom complet <span className="modal-required">requis</span></FieldLabel>
               <Input
                 onChange={(e) =>
                   setFormData({ ...formData, displayName: e.target.value })
                 }
-                placeholder="Ex: Dr. Aissa Zeghouini"
+                placeholder="Prénom et nom"
                 type="text"
                 value={formData.displayName || ""}
               />
             </Field>
 
             <Field>
-              <FieldLabel>Email</FieldLabel>
+              <FieldLabel>Email <span className="modal-required">requis</span></FieldLabel>
               <Input
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                placeholder="email@clinique.com"
+                placeholder="Adresse e-mail"
                 type="email"
                 value={formData.email || ""}
               />
@@ -769,7 +769,7 @@ const Team: React.FC = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, phone: e.target.value })
                 }
-                placeholder="+213..."
+                placeholder="Numéro de téléphone"
                 type="tel"
                 value={formData.phone || ""}
               />
@@ -777,7 +777,7 @@ const Team: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <Field>
-                <FieldLabel>Rôle</FieldLabel>
+                <FieldLabel>Rôle <span className="modal-required">requis</span></FieldLabel>
                 <NativeSelect
                   className="w-full cursor-pointer"
                   onChange={(e) =>
@@ -827,12 +827,12 @@ const Team: React.FC = () => {
             </div>
 
             <Field>
-              <FieldLabel>Spécialité (Opt.)</FieldLabel>
+              <FieldLabel>Spécialité</FieldLabel>
               <Input
                 onChange={(e) =>
                   setFormData({ ...formData, specialty: e.target.value })
                 }
-                placeholder="Ex: Chirurgie"
+                placeholder="Ex. chirurgie"
                 type="text"
                 value={formData.specialty || ""}
               />

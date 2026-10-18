@@ -150,20 +150,20 @@ function NotificationItemRow({
             <div className="flex items-center gap-2">
               <span
                 className={cn(
-                  "truncate font-semibold text-[13px] tracking-tight",
+                  "truncate font-semibold t-13 tracking-tight",
                   item.isRead ? "text-foreground/70" : "text-foreground"
                 )}
               >
                 {item.title}
               </span>
-              <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-foreground/5 px-2 py-0.5 font-medium text-[9px] text-foreground/60 uppercase tracking-widest">
+              <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-foreground/5 px-2 py-0.5 font-medium t-12 text-foreground/60 uppercase tracking-widest">
                 {accent.label}
               </span>
             </div>
 
             <span
               className={cn(
-                "mt-1 line-clamp-2 block text-[12px] leading-relaxed",
+                "mt-1 line-clamp-2 block t-12 leading-relaxed",
                 item.isRead
                   ? "text-muted-foreground/70"
                   : "text-muted-foreground/90"
@@ -174,7 +174,7 @@ function NotificationItemRow({
 
             <div
               className={cn(
-                "mt-2.5 flex items-center gap-1.5 font-semibold text-[10px] uppercase tracking-wider transition-all duration-300",
+                "mt-2.5 flex items-center gap-1.5 font-semibold t-12 uppercase tracking-wider transition-all duration-300",
                 item.isRead
                   ? "text-muted-foreground/40"
                   : "text-primary/70 group-hover/row:text-primary"
@@ -341,7 +341,7 @@ export function NotificationCenter({
           <span
             aria-label={`${unreadCount} non lues`}
             className={cn(
-              "absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-semibold text-[10px] text-white ring-2 ring-background",
+              "absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-semibold t-12 text-white ring-2 ring-background",
               criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
             )}
           >
@@ -370,7 +370,7 @@ export function NotificationCenter({
           </div>
           {unreadCount > 0 ? (
             <Button
-              className="h-7 shrink-0 rounded-md px-2 text-[11px]"
+              className="h-7 shrink-0 rounded-md px-2 t-12"
               onClick={() => markAllRead()}
               size="sm"
               variant="ghost"
@@ -387,7 +387,7 @@ export function NotificationCenter({
 
         {topItems.length > 0 ? (
           <div className="border-foreground/5 border-b bg-gradient-to-b from-muted/30 to-background/50 px-4 py-3">
-            <p className="font-semibold text-[10px] text-primary uppercase tracking-wider">
+            <p className="font-semibold t-12 text-primary uppercase tracking-wider">
               Priorité absolue
             </p>
             <ul className="mt-3 flex flex-col gap-2">
@@ -427,14 +427,14 @@ export function NotificationCenter({
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="truncate font-semibold text-[12px] text-foreground tracking-tight">
+                          <span className="truncate font-semibold t-12 text-foreground tracking-tight">
                             {item.title}
                           </span>
-                          <span className="ml-auto shrink-0 rounded-full bg-foreground/5 px-1.5 py-0.5 font-medium text-[8.5px] text-foreground/60 uppercase tracking-widest">
+                          <span className="ml-auto shrink-0 rounded-full bg-foreground/5 px-1.5 py-0.5 font-medium t-12 text-foreground/60 uppercase tracking-widest">
                             {accent.label}
                           </span>
                         </div>
-                        <span className="mt-0.5 block truncate text-[11px] text-muted-foreground/90">
+                        <span className="mt-0.5 block truncate t-12 text-muted-foreground/90">
                           {item.description}
                         </span>
                       </div>
@@ -446,7 +446,8 @@ export function NotificationCenter({
           </div>
         ) : null}
 
-        <div className="flex items-center gap-1 border-foreground/10 border-b bg-muted/20 px-3 py-1.5">
+        <div className="flex items-center border-foreground/10 border-b px-3 py-1.5">
+          <div aria-label="Filtrer les notifications" data-tabs-style="segmented" role="group">
           {NOTIFICATION_FILTERS.map((option) => {
             const active = filter === option;
             const label =
@@ -459,7 +460,7 @@ export function NotificationCenter({
               <button
                 aria-pressed={active}
                 className={cn(
-                  "cursor-pointer rounded-full px-2.5 py-1 font-medium text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
+                  "cursor-pointer rounded-full px-2.5 py-1 font-medium t-12 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30",
                   active
                     ? "bg-foreground text-background"
                     : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
@@ -472,6 +473,7 @@ export function NotificationCenter({
               </button>
             );
           })}
+          </div>
         </div>
 
         <div className="max-h-[420px] overflow-y-auto p-2">

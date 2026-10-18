@@ -145,7 +145,7 @@ export function SettleStatTile({
       <div>
         <div className="flex items-start justify-between gap-4">
           <p
-            className="settle-stat-label m-0 min-w-0 truncate text-[11.5px] font-medium uppercase tracking-[0.06em] text-neutral-500 dark:text-neutral-400"
+            className="settle-stat-label m-0 min-w-0 truncate t-13 font-medium uppercase tracking-[0.06em] text-neutral-500 dark:text-neutral-400"
             title={tip}
           >
             {label}
@@ -156,7 +156,7 @@ export function SettleStatTile({
             </span>
           ) : null}
         </div>
-        <p className="settle-stat-value m-0 mt-3 tabular-nums text-[28px] font-semibold tracking-[-0.03em] text-neutral-900 dark:text-neutral-100">
+        <p className="settle-stat-value m-0 mt-3 tabular-nums t-24 font-semibold tracking-[-0.03em] text-neutral-900 dark:text-neutral-100">
           {value}
         </p>
       </div>
@@ -164,7 +164,7 @@ export function SettleStatTile({
         {delta ? (
           <span
             className={cn(
-              "badge whitespace-nowrap inline-flex items-center gap-1 h-[22px] px-2 rounded-[7px] text-[11px] font-medium tabular-nums",
+              "badge whitespace-nowrap inline-flex items-center gap-1 h-[22px] px-2 rounded-[7px] t-12 font-medium tabular-nums",
               delta.good ? TONE_BADGE.emerald : TONE_BADGE.rose
             )}
           >
@@ -178,7 +178,7 @@ export function SettleStatTile({
         ) : badge ? (
           <span
             className={cn(
-              "badge whitespace-nowrap inline-flex items-center gap-1 h-[22px] px-2 rounded-[7px] text-[11px] font-medium tabular-nums",
+              "badge whitespace-nowrap inline-flex items-center gap-1 h-[22px] px-2 rounded-[7px] t-12 font-medium tabular-nums",
               TONE_BADGE[badge.tone] || TONE_BADGE.neutral
             )}
           >
@@ -186,7 +186,7 @@ export function SettleStatTile({
           </span>
         ) : null}
         {caption ? (
-          <span className="text-[11.5px] text-neutral-500 dark:text-neutral-400">
+          <span className="t-13 text-neutral-500 dark:text-neutral-400">
             {caption}
           </span>
         ) : null}
@@ -263,11 +263,11 @@ export function SettleCard({
       {title ? (
         <div className="premium-card-heading flex flex-wrap items-start justify-between gap-4 px-4 pt-4">
           <div className="min-w-0">
-            <h2 className="m-0 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+            <h2 className="m-0 t-16 font-semibold text-neutral-900 dark:text-neutral-100">
               {title}
             </h2>
             {subtitle ? (
-              <p className="m-0 mt-0.5 text-[11.5px] text-neutral-500 dark:text-neutral-400">
+              <p className="m-0 mt-0.5 t-13 text-neutral-500 dark:text-neutral-400">
                 {subtitle}
               </p>
             ) : null}
@@ -301,14 +301,14 @@ export function SettleMetricFooter({
       <div className="settle-metric-footer grid grid-cols-2 divide-x divide-black/[0.06] sm:grid-cols-4 dark:divide-white/[0.08]">
         {metrics.map((m, idx) => (
           <div key={idx} className="settle-metric-cell px-4 py-3.5" title={m.tip}>
-            <p className="m-0 text-[11px] font-medium uppercase tracking-[0.04em] text-neutral-500 dark:text-neutral-400">
+            <p className="m-0 t-12 font-medium uppercase tracking-[0.04em] text-neutral-500 dark:text-neutral-400">
               {m.label}
             </p>
-            <p className="m-0 mt-1 text-[15px] font-semibold tabular-nums text-neutral-900 dark:text-neutral-100">
+            <p className="m-0 mt-1 t-16 font-semibold tabular-nums text-neutral-900 dark:text-neutral-100">
               {m.value}
             </p>
             {m.caption ? (
-              <p className="m-0 mt-0.5 text-[11px] text-neutral-500 dark:text-neutral-400">
+              <p className="m-0 mt-0.5 t-12 text-neutral-500 dark:text-neutral-400">
                 {m.caption}
               </p>
             ) : null}
@@ -366,11 +366,11 @@ export function SettleQueueItem({
         </span>
       ) : null}
       <div className="min-w-0 flex-1">
-        <p className="m-0 text-[13px] font-medium text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        <p className="m-0 t-13 font-medium text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
           {title}
         </p>
         {subtitle ? (
-          <p className="m-0 mt-0.5 text-[11.5px] text-neutral-500 dark:text-neutral-400">
+          <p className="m-0 mt-0.5 t-13 text-neutral-500 dark:text-neutral-400">
             {subtitle}
           </p>
         ) : null}
@@ -378,12 +378,12 @@ export function SettleQueueItem({
       {(amount || meta) ? (
         <div className="shrink-0 text-right">
           {amount ? (
-            <p className="m-0 text-[12.5px] font-medium tabular-nums text-neutral-900 dark:text-neutral-100">
+            <p className="m-0 t-13 font-medium tabular-nums text-neutral-900 dark:text-neutral-100">
               {amount}
             </p>
           ) : null}
           {meta ? (
-            <p className="m-0 mt-0.5 text-[11px] tabular-nums text-neutral-400 dark:text-neutral-500">
+            <p className="m-0 mt-0.5 t-12 tabular-nums text-neutral-400 dark:text-neutral-500">
               {meta}
             </p>
           ) : null}

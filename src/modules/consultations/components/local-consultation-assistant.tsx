@@ -576,7 +576,7 @@ export default function LocalConsultationAssistant({
           />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="text-[14px] font-semibold tracking-tight text-foreground">
+              <h3 className="t-14 font-semibold tracking-tight text-foreground">
                 Assistant Baitari
               </h3>
               {!patientId && patients.data.length > 0 && (
@@ -584,7 +584,7 @@ export default function LocalConsultationAssistant({
                   value={effectivePatientId || "none"}
                   onValueChange={(val) => setSelectedPatientId(val === "none" || !val ? undefined : val)}
                 >
-                  <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 text-[11px]">
+                  <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 t-12">
                     <SelectValue placeholder="Patient…" />
                   </SelectTrigger>
                   <SelectContent>
@@ -598,7 +598,7 @@ export default function LocalConsultationAssistant({
                 </Select>
               )}
             </div>
-            <p className="truncate text-[12px] text-muted-foreground">
+            <p className="truncate t-12 text-muted-foreground">
               {patient?.name ? `${patient.name} · ` : ""}Traitement local
             </p>
           </div>
@@ -675,7 +675,7 @@ export default function LocalConsultationAssistant({
           type="button"
           onClick={() => setActiveTab("dictation")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[12px] font-medium transition-all",
+            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition-all",
             activeTab === "dictation"
               ? "bg-background text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
@@ -689,7 +689,7 @@ export default function LocalConsultationAssistant({
           type="button"
           onClick={() => setActiveTab("soap")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[12px] font-medium transition-all",
+            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition-all",
             activeTab === "soap"
               ? "bg-background text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
@@ -706,7 +706,7 @@ export default function LocalConsultationAssistant({
           type="button"
           onClick={() => setActiveTab("search")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-[12px] font-medium transition-all",
+            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition-all",
             activeTab === "search"
               ? "bg-background text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
@@ -721,7 +721,7 @@ export default function LocalConsultationAssistant({
       {setupOpen && (
         <div className="mt-3 shrink-0 rounded-xl border border-border/80 bg-card p-3 shadow-sm">
           <div className="flex items-center justify-between pb-2">
-            <h4 className="text-[13px] font-semibold text-foreground">
+            <h4 className="t-13 font-semibold text-foreground">
               Modèles IA sur cet ordinateur
             </h4>
             <Button
@@ -733,15 +733,15 @@ export default function LocalConsultationAssistant({
               <X className="size-3.5" />
             </Button>
           </div>
-          <p className="text-[12px] leading-relaxed text-muted-foreground">
+          <p className="t-12 leading-relaxed text-muted-foreground">
             Vos dictées et notes restent exclusivement sur votre appareil. Aucun flux n’est envoyé sur internet.
           </p>
 
           <div className="mt-3 flex flex-col gap-2">
-            <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 text-[12px]">
+            <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
               <div>
                 <span className="font-medium text-foreground">Dictée vocale</span>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="t-12 text-muted-foreground">
                   {models.whisperReady ? "Modèle actif et disponible" : "Fichiers à initialiser"}
                 </p>
               </div>
@@ -750,17 +750,17 @@ export default function LocalConsultationAssistant({
                 variant={models.whisperReady ? "secondary" : "outline"}
                 disabled={ai.busy || importing || saving}
                 onClick={() => void importModel("whisper")}
-                className="gap-1 text-[11px]"
+                className="gap-1 t-12"
               >
                 {models.whisperReady ? <Check className="size-3 text-emerald-500" /> : null}
                 {models.whisperReady ? "Prêt" : "Installer"}
               </Button>
             </div>
 
-            <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 text-[12px]">
+            <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
               <div>
                 <span className="font-medium text-foreground">Assistant de rédaction</span>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="t-12 text-muted-foreground">
                   {models.generatorReady ? "Modèle actif et disponible" : "Fichiers à initialiser"}
                 </p>
               </div>
@@ -769,7 +769,7 @@ export default function LocalConsultationAssistant({
                 variant={models.generatorReady ? "secondary" : "outline"}
                 disabled={ai.busy || importing || saving}
                 onClick={() => void importModel("generator")}
-                className="gap-1 text-[11px]"
+                className="gap-1 t-12"
               >
                 {models.generatorReady ? <Check className="size-3 text-emerald-500" /> : null}
                 {models.generatorReady ? "Prêt" : "Installer"}
@@ -788,14 +788,14 @@ export default function LocalConsultationAssistant({
               <AssistantBrandAvatar size={36} mood={assistantMood} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[13px] font-semibold text-foreground">
+                  <span className="t-13 font-semibold text-foreground">
                     Dictée de consultation
                   </span>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="t-12 text-muted-foreground">
                     Confidentiel & Local
                   </span>
                 </div>
-                <div className="mt-1 text-[12.5px] leading-relaxed text-muted-foreground">
+                <div className="mt-1 t-13 leading-relaxed text-muted-foreground">
                   Nous allons parcourir quatre rubriques. Dictez ou écrivez vos observations, puis relisez la note. Rien n’est enregistré sans votre validation.
                 </div>
               </div>
@@ -817,7 +817,7 @@ export default function LocalConsultationAssistant({
 
             {/* Whisper Live Listening Banner */}
             {ai.phase === "listening" && (
-              <div className="flex items-center justify-between rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-[12.5px] text-destructive shadow-xs animate-in fade-in">
+              <div className="flex items-center justify-between rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 t-13 text-destructive shadow-xs animate-in fade-in">
                 <div className="flex items-center gap-2.5">
                   <span className="relative flex size-2.5">
                     <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-75" />
@@ -827,7 +827,7 @@ export default function LocalConsultationAssistant({
                     Écoute en cours · {Math.floor(ai.seconds / 60)}:
                     {String(ai.seconds % 60).padStart(2, "0")}
                   </span>
-                  <span className="hidden text-[11.5px] text-destructive/80 sm:inline">
+                  <span className="hidden t-13 text-destructive/80 sm:inline">
                     Parlez naturellement, puis relisez votre transcription.
                   </span>
                 </div>
@@ -835,7 +835,7 @@ export default function LocalConsultationAssistant({
                   size="xs"
                   variant="destructive"
                   onClick={() => void stopDictation()}
-                  className="h-7 gap-1 px-2.5 text-[11px] font-medium"
+                  className="h-7 gap-1 px-2.5 t-12 font-medium"
                 >
                   <Stop className="size-3 text-white" />
                   Arrêter
@@ -859,7 +859,7 @@ export default function LocalConsultationAssistant({
             {visibleError && (
               <div
                 role="alert"
-                className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-[12px] text-destructive"
+                className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
               >
                 <XCircle className="size-4 shrink-0" />
                 <span>{visibleError}</span>
@@ -870,7 +870,7 @@ export default function LocalConsultationAssistant({
             <div className="flex min-h-0 flex-1 flex-col gap-2 rounded-2xl border border-border/80 bg-card p-3 shadow-xs">
               {/* Mentions tags & patient autocomplete */}
               <div className="flex items-center justify-between gap-2 px-0.5">
-                <span className="text-[12px] font-medium text-foreground">
+                <span className="t-12 font-medium text-foreground">
                   Section {sectionIndex + 1}/4 · {sectionPrompts[sectionIndex].title}
                 </span>
                 {mentions.length > 0 && (
@@ -879,7 +879,7 @@ export default function LocalConsultationAssistant({
                       <span
                         key={mention.key}
                         className={cn(
-                          "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px]",
+                          "inline-flex items-center gap-1 rounded-md px-2 py-0.5 t-12",
                           mention.patient
                             ? "bg-primary/10 font-medium text-primary"
                             : "bg-destructive/10 font-medium text-destructive"
@@ -910,7 +910,7 @@ export default function LocalConsultationAssistant({
                       role="option"
                       aria-selected={suggestionIndex === idx}
                       className={cn(
-                        "flex w-full flex-col gap-0.5 rounded-lg px-2.5 py-1.5 text-left text-[12px]",
+                        "flex w-full flex-col gap-0.5 rounded-lg px-2.5 py-1.5 text-left t-12",
                         suggestionIndex === idx
                           ? "bg-muted text-foreground"
                           : "text-muted-foreground hover:bg-muted"
@@ -921,7 +921,7 @@ export default function LocalConsultationAssistant({
                       <span className="font-medium text-foreground">
                         {entry.name}
                       </span>
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="t-12 text-muted-foreground">
                         {patientLabel(entry)}
                       </span>
                     </button>
@@ -937,7 +937,7 @@ export default function LocalConsultationAssistant({
                 maxLength={MAX_TRANSCRIPT_LENGTH}
                 disabled={ai.busy && ai.phase !== "listening" || importing}
                 placeholder={`Vos observations · ${sectionPrompts[sectionIndex].title}…`}
-                className="min-h-[170px] flex-1 resize-y bg-background px-3 py-2.5 text-[13px] leading-relaxed"
+                className="min-h-[170px] flex-1 resize-y bg-background px-3 py-2.5 t-13 leading-relaxed"
                 onChange={(e) => {
                   setTranscript(e.target.value);
                   setCaret(e.target.selectionStart);
@@ -979,7 +979,7 @@ export default function LocalConsultationAssistant({
                   <Button
                     size="sm"
                     variant={ai.phase === "listening" ? "destructive" : "default"}
-                    className="h-8 gap-1.5 px-3 text-[12px]"
+                    className="h-8 gap-1.5 px-3 t-12"
                     disabled={
                       ai.busy && ai.phase !== "listening" ||
                       importing ||
@@ -1020,7 +1020,7 @@ export default function LocalConsultationAssistant({
                       saveDictationLanguage(next);
                     }}
                   >
-                    <SelectTrigger className="h-8 text-[12px]">
+                    <SelectTrigger className="h-8 t-12">
                       <SelectValue>
                         {dictationLanguage === "fr" ? "Français" : "Auto"}
                       </SelectValue>
@@ -1046,7 +1046,7 @@ export default function LocalConsultationAssistant({
                   )}
                 </div>
 
-                <div className="text-[11px] text-muted-foreground tabular-nums">
+                <div className="t-12 text-muted-foreground tabular-nums">
                   {transcript.length} car. ·{" "}
                   {transcript.trim()
                     ? transcript.trim().split(/\s+/).length
@@ -1064,9 +1064,9 @@ export default function LocalConsultationAssistant({
           {/* Dictation Bottom Action Bar */}
           <div className="shrink-0 border-t border-border/80 pt-3">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+              <div className="flex items-center gap-1.5 t-13 text-muted-foreground">
                 {hasExistingNote && (
-                  <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                  <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 t-12 font-medium text-foreground/80">
                     Note existante
                   </span>
                 )}
@@ -1088,7 +1088,7 @@ export default function LocalConsultationAssistant({
                 }
                 onClick={() => void generate()}
                 title="Structurer la consultation en note SOAP (⌘+Entrée)"
-                className="h-9 gap-1.5 px-4 text-[13px] font-semibold tracking-[-0.01em] shadow-sm hover:shadow active:scale-[0.98] transition-all"
+                className="h-9 gap-1.5 px-4 t-13 font-semibold tracking-[-0.01em] shadow-sm hover:shadow active:scale-[0.98] transition-all"
               >
                 <Sparkle className="size-3.5 stroke-[2.2]" />
                 <span>{sectionIndex < 3 ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}` : "Relire la note SOAP"}</span>
@@ -1107,17 +1107,17 @@ export default function LocalConsultationAssistant({
             <div className="rounded-xl border border-border/80 bg-card p-3 shadow-xs">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h4 className="text-[14px] font-semibold text-foreground">
+                  <h4 className="t-14 font-semibold text-foreground">
                     Relecture & Validation SOAP
                   </h4>
-                  <p className="mt-0.5 text-[12px] text-muted-foreground">
+                  <p className="mt-0.5 t-12 text-muted-foreground">
                     {hasExistingNote ? "Note existante intégrée. " : ""}
                     Relisez les 4 rubriques ci-dessous et validez la note en un clic unique.
                   </p>
                 </div>
                 <Badge
                   variant="outline"
-                  className="shrink-0 gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/5"
+                  className="shrink-0 gap-1 t-12 font-medium text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/5"
                 >
                   <CheckCircle className="size-3" />
                   Validation unique
@@ -1126,7 +1126,7 @@ export default function LocalConsultationAssistant({
 
               {models.generatorReady && !assistantProposal && fullTranscript.trim() && (
                 <div className="mt-3 flex items-center justify-between gap-2 border-t border-border/60 pt-2.5">
-                  <span className="text-[12px] text-muted-foreground">
+                  <span className="t-12 text-muted-foreground">
                     Améliorer la formulation avec l’assistant ?
                   </span>
                   <Button
@@ -1134,7 +1134,7 @@ export default function LocalConsultationAssistant({
                     variant="outline"
                     disabled={ai.busy}
                     onClick={() => void generate()}
-                    className="gap-1.5 text-[11px]"
+                    className="gap-1.5 t-12"
                   >
                     <Sparkle className="size-3" />
                     Structurer avec l’IA
@@ -1144,7 +1144,7 @@ export default function LocalConsultationAssistant({
             </div>
 
             {notice && (
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-[12px] leading-relaxed text-foreground">
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 t-12 leading-relaxed text-foreground">
                 <div className="flex items-start gap-2">
                   <Sparkle className="mt-0.5 size-3.5 text-primary" />
                   <p className="whitespace-pre-line">{notice}</p>
@@ -1155,7 +1155,7 @@ export default function LocalConsultationAssistant({
             {visibleError && (
               <div
                 role="alert"
-                className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-[12px] text-destructive"
+                className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
               >
                 {visibleError}
               </div>
@@ -1173,11 +1173,11 @@ export default function LocalConsultationAssistant({
                   <div className="flex items-center justify-between gap-2">
                     <label
                       htmlFor={`soap-field-${key}`}
-                      className="text-[13px] font-semibold text-foreground"
+                      className="t-13 font-semibold text-foreground"
                     >
                       {title}
                     </label>
-                    <span className="text-[11px] text-muted-foreground tabular-nums">
+                    <span className="t-12 text-muted-foreground tabular-nums">
                       {currentValue.length} / 6 000
                     </span>
                   </div>
@@ -1202,12 +1202,12 @@ export default function LocalConsultationAssistant({
                       }));
                     }}
                     placeholder="Aucune observation saisie pour cette rubrique."
-                    className="min-h-20 resize-y bg-background text-[13px] leading-relaxed"
+                    className="min-h-20 resize-y bg-background t-13 leading-relaxed"
                   />
 
                   {/* Comparative diff if assistant generated proposal */}
                   {reviewSource && assistantProposal && (
-                    <div className="rounded-lg border border-border/60 bg-muted/30 p-2.5 text-[12px] leading-relaxed">
+                    <div className="rounded-lg border border-border/60 bg-muted/30 p-2.5 t-12 leading-relaxed">
                       {reviewSource[key] === assistantProposal[key] ? (
                         <p className="text-muted-foreground">
                           Aucune modification proposée par l’assistant.
@@ -1243,7 +1243,7 @@ export default function LocalConsultationAssistant({
                 size="sm"
                 onClick={editTranscript}
                 disabled={saving}
-                className="h-9 text-[12px]"
+                className="h-9 t-12"
               >
                 Revoir la dictée
               </Button>
@@ -1253,7 +1253,7 @@ export default function LocalConsultationAssistant({
                 size="sm"
                 disabled={saving || !!mentionError || dataUnavailable}
                 onClick={() => void save()}
-                className="h-9 flex-1 gap-1.5 text-[12px] font-medium"
+                className="h-9 flex-1 gap-1.5 t-12 font-medium"
               >
                 {saving ? (
                   <CircleNotch className="size-3.5 animate-spin" />
@@ -1286,10 +1286,10 @@ export default function LocalConsultationAssistant({
           role="alert"
           className="fixed inset-x-4 bottom-4 z-50 rounded-xl border border-border bg-card p-4 shadow-xl"
         >
-          <p className="text-[13px] font-medium text-foreground">
+          <p className="t-13 font-medium text-foreground">
             Abandonner cette session d’assistant ?
           </p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="mt-1 t-12 text-muted-foreground">
             Vos modifications non validées seront perdues.
           </p>
           <div className="mt-3 flex items-center justify-end gap-2">
@@ -1297,7 +1297,7 @@ export default function LocalConsultationAssistant({
               size="sm"
               variant="outline"
               onClick={() => setDiscardOpen(false)}
-              className="text-[12px]"
+              className="t-12"
             >
               Poursuivre
             </Button>
@@ -1308,7 +1308,7 @@ export default function LocalConsultationAssistant({
                 ai.cancel();
                 onClose();
               }}
-              className="text-[12px]"
+              className="t-12"
             >
               Abandonner
             </Button>

@@ -158,7 +158,7 @@ export function PatientDocumentsList({
             <FileText className="size-4" weight="duotone" />
           </span>
           <div>
-            <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+            <div className="font-bold t-12 text-muted-foreground uppercase tracking-wider">
               Pièces jointes antérieures
             </div>
             <div className="mt-0.5 text-muted-foreground text-xs">
@@ -174,7 +174,7 @@ export function PatientDocumentsList({
         <div className="mb-2 flex items-center justify-between gap-2">
           <div>
             <p className="font-semibold text-xs">Écrits du dossier</p>
-            <p className="text-[11px] text-muted-foreground">Notes cliniques rédigées dans Documents</p>
+            <p className="t-12 text-muted-foreground">Notes cliniques rédigées dans Documents</p>
           </div>
           <Button className="h-7 rounded-lg text-xs" onClick={() => void createClinicalNote()} size="sm" variant="outline">Rédiger</Button>
         </div>
@@ -231,13 +231,13 @@ export function PatientDocumentsList({
                           {doc.fileName}
                         </span>
                         <Badge
-                          className="rounded-full px-1.5 py-0 font-medium text-[10px]"
+                          className="rounded-full px-1.5 py-0 font-medium t-12"
                           variant="outline"
                         >
                           {meta.label}
                         </Badge>
                       </div>
-                      <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                      <div className="mt-0.5 flex items-center gap-2 t-12 text-muted-foreground">
                         <span>{formatDate(doc.createdAt)}</span>
                         <span aria-hidden>·</span>
                         <span>{formatBytes(doc.sizeBytes)}</span>

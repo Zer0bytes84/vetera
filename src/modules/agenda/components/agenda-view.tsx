@@ -1,10 +1,11 @@
 import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
 import { AgendaCareSchedule } from "@/modules/care-tasks/agenda-care-schedule";
-import { formatPhone } from "@/utils/display-format";
+import { formatPhone, formatPersonName } from "@/utils/display-format";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import {
   Add01Icon,
   Alert02Icon,
+  ArrowDown01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
   Calendar01Icon,
@@ -91,6 +92,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -233,9 +239,8 @@ export function AgendaView(props: AgendaViewProps) {
   } = props;
   return (
     <div className="agenda-workspace dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <MotivationalHeader section="agenda" />
-        <div data-slot="page-header-actions" className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <MotivationalHeader section="agenda"
+        actions={<>
           <Button
             className="h-9 px-4"
             onClick={() => setSelectedDate(new Date())}
@@ -254,15 +259,15 @@ export function AgendaView(props: AgendaViewProps) {
             />
             {t("agenda.newAppointment")}
           </Button>
-        </div>
-      </div>
+        </>}
+      />
 
       <SectionCards items={sectionCards} />
 
       <div className="grid gap-4">
         <Card className="agenda-planner surface-card min-h-[480px] border-0">
           <CardHeader className="agenda-planner-heading border-border border-b px-5 py-5 sm:px-6">
-            <CardTitle className="font-semibold text-[22px] tracking-[-0.03em]">
+            <CardTitle className="font-semibold t-18 tracking-[-0.03em]">
               {t("agenda.consultationsAgenda")}
             </CardTitle>
             <CardAction>
@@ -345,7 +350,7 @@ export function AgendaView(props: AgendaViewProps) {
                   ) : null}
                 </div>
 
-                <TabsList className="engraved-view-tabs h-10 w-full justify-start rounded-xl p-1 sm:w-auto" aria-label="Vue de l’agenda">
+                <TabsList aria-label="Vue de l’agenda" tabsStyle="segmented">
                   <TabsTrigger className="flex-1 rounded-lg" value="list">
                     {t("agenda.list", { defaultValue: "Vue liste" })}
                   </TabsTrigger>
@@ -429,7 +434,7 @@ export function AgendaView(props: AgendaViewProps) {
             <Card className="min-h-[420px]">
               <CardHeader className="border-border border-b px-6 py-5">
                 <CardDescription>Détail de la sélection</CardDescription>
-                <CardTitle className="text-xl tracking-[-0.04em]">
+                <CardTitle className="t-18 tracking-[-0.04em]">
                   {patientsById.get(selectedAppointment.patientId)?.name ||
                     selectedAppointment.title}
                 </CardTitle>
@@ -488,7 +493,7 @@ export function AgendaView(props: AgendaViewProps) {
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-muted-foreground">Vétérinaire</span>
                     <span className="text-right font-medium text-foreground">
-                      {selectedVet?.displayName || "Vétérinaire local"}
+                      {formatPersonName(selectedVet?.displayName) || "Vétérinaire local"}
                     </span>
                   </div>
                   <div className="flex items-start justify-between gap-3">
@@ -580,7 +585,7 @@ export function AgendaView(props: AgendaViewProps) {
             <div>
               <CardHeader className="border-border border-b px-6 py-5">
                 <CardDescription>Cadence de la journée</CardDescription>
-                <CardTitle className="font-normal text-[22px] tracking-[-0.04em]">
+                <CardTitle className="font-normal t-18 tracking-[-0.04em]">
                   {formatDateLabel(selectedDate)}
                 </CardTitle>
               </CardHeader>
@@ -632,7 +637,7 @@ export function AgendaView(props: AgendaViewProps) {
                       >
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">
-                            {entry.vet.displayName}
+                            {formatPersonName(entry.vet.displayName)}
                           </p>
                           <p className="text-muted-foreground text-xs">
                             {entry.vet.specialty || "Consultation générale"}
@@ -651,7 +656,7 @@ export function AgendaView(props: AgendaViewProps) {
             <CardContent className="mt-auto px-6 pt-0 pb-5">
               <div className="grid grid-cols-3 gap-3 border-border/40 border-t pt-5">
                 <div className="text-center">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                     Charge
                   </p>
                   <p className="mt-1 font-semibold text-base text-foreground tracking-tight">
@@ -659,7 +664,7 @@ export function AgendaView(props: AgendaViewProps) {
                   </p>
                 </div>
                 <div className="border-border/40 border-x px-1 text-center">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                     Urgences
                   </p>
                   <p className="mt-1 font-semibold text-base text-foreground">
@@ -667,7 +672,7 @@ export function AgendaView(props: AgendaViewProps) {
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                     Mobilisés
                   </p>
                   <p className="mt-1 font-semibold text-base text-foreground">
@@ -682,7 +687,7 @@ export function AgendaView(props: AgendaViewProps) {
 
       <Card className="overflow-hidden rounded-2xl border-border/70 shadow-none">
         <CardHeader className="gap-1 border-b border-border/50 px-6 py-5">
-          <CardTitle className="text-xl font-semibold tracking-tight">
+          <CardTitle className="t-18 font-semibold tracking-tight">
             Planning des rendez-vous
           </CardTitle>
           <CardDescription className="text-sm">
@@ -705,7 +710,7 @@ export function AgendaView(props: AgendaViewProps) {
             value={tableTab}
           >
             <div className="flex flex-col gap-3 border-b px-6 py-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
-              <TabsList className="group-data-horizontal/tabs:!h-9 rounded-xl">
+              <TabsList tabsStyle="segmented">
                 {TABLE_TABS.map((tab) => (
                   <TabsTrigger
                     className="rounded-lg"
@@ -727,7 +732,7 @@ export function AgendaView(props: AgendaViewProps) {
                   <Input
                     className="h-9 rounded-xl border-border/60 bg-muted/40 pl-10 text-sm focus-visible:border-ring focus-visible:ring-ring/20"
                     onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Rechercher un patient, un motif..."
+                    placeholder="Rechercher un patient, un motif…"
                     value={searchTerm}
                   />
                 </div>
@@ -742,7 +747,7 @@ export function AgendaView(props: AgendaViewProps) {
                   </NativeSelectOption>
                   {vets.map((vet) => (
                     <NativeSelectOption key={vet.id} value={vet.id}>
-                      {vet.displayName}
+                      {formatPersonName(vet.displayName)}
                     </NativeSelectOption>
                   ))}
                 </NativeSelect>
@@ -907,7 +912,7 @@ export function AgendaView(props: AgendaViewProps) {
                                     {row.ownerName}
                                   </p>
                                   <p className="mt-0.5 flex items-center gap-1 truncate font-medium text-muted-foreground text-xs">
-                                    <span className="text-[10px] opacity-60">
+                                    <span className="t-12 opacity-60">
                                       📞
                                     </span>{" "}
                                     {formatPhone(row.owner?.phone) || "Non renseigné"}
@@ -960,7 +965,7 @@ export function AgendaView(props: AgendaViewProps) {
                               <TableCell className="w-[12%] min-w-[100px]">
                                 <div className="min-w-0">
                                   <p className="flex items-center gap-1.5 truncate font-semibold text-foreground text-sm tracking-tight">
-                                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted font-bold text-[10px] text-muted-foreground">
+                                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted font-bold t-12 text-muted-foreground">
                                       {row.vetName
                                         .split(" ")
                                         .pop()
@@ -1081,7 +1086,7 @@ export function AgendaView(props: AgendaViewProps) {
                     onChange={(event) =>
                       setPersonSearchTerm(event.target.value)
                     }
-                    placeholder="Tapez Lisa, Hadji, un téléphone, une espèce..."
+                    placeholder="Nom de l’animal ou du propriétaire, téléphone, espèce…"
                     value={personSearchTerm}
                   />
                   <FieldDescription>
@@ -1123,85 +1128,104 @@ export function AgendaView(props: AgendaViewProps) {
                   ) : null}
                 </Field>
 
-                <Field className="lg:col-span-2">
-                  <FieldLabel>Client existant</FieldLabel>
-                  <Input
-                    onChange={(event) => {
-                      setOwnerSearchTerm(event.target.value);
-                      if (!event.target.value.trim()) {
-                        setSelectedOwnerId("");
-                      }
-                    }}
-                    placeholder="Rechercher un propriétaire par nom, téléphone ou email..."
-                    value={ownerSearchTerm}
-                  />
-                  <FieldDescription>
-                    Sélectionnez d’abord le client pour filtrer automatiquement
-                    ses dossiers patients.
-                  </FieldDescription>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {filteredOwners.length > 0 ? (
-                      filteredOwners.map((owner) => (
-                        <Button
-                          key={owner.id}
-                          onClick={() => handleOwnerSelect(owner.id)}
-                          size="sm"
-                          type="button"
-                          variant={
-                            normalizeEntityId(selectedOwnerId) ===
-                            normalizeEntityId(owner.id)
-                              ? "default"
-                              : "outline"
-                          }
-                        >
-                          {formatOwnerName(owner)}
-                        </Button>
-                      ))
-                    ) : (
-                      <div className="text-muted-foreground text-sm">
-                        Aucun client existant ne correspond à cette recherche.
-                      </div>
-                    )}
-                  </div>
-                </Field>
-
-                <Field>
-                  <FieldLabel>Patient</FieldLabel>
-                  <Input
-                    onChange={(event) =>
-                      setPatientSearchTerm(event.target.value)
-                    }
-                    placeholder="Rechercher un patient par nom, espèce ou propriétaire..."
-                    value={patientSearchTerm}
-                  />
-                  <NativeSelect
-                    className="w-full cursor-pointer"
-                    onChange={(event) =>
-                      handlePatientSelect(event.target.value)
-                    }
-                    value={selectedPatientId}
+                {/* Second path, folded: pick the owner first, then one of their dossiers. */}
+                <Collapsible className="lg:col-span-2" key={isDialogOpen ? "open" : "closed"}>
+                  <CollapsibleTrigger
+                    className="group/owner-path inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 t-13 font-medium text-[color:var(--ink-soft,#5d5d5d)] outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <NativeSelectOption disabled value="">
-                      {selectedOwnerId
-                        ? "Sélectionner un dossier du client"
-                        : "Sélectionner un dossier"}
-                    </NativeSelectOption>
-                    {filteredPatientsForForm.map((patient) => {
-                      const owner = ownersById.get(patient.ownerId);
-                      return (
-                        <NativeSelectOption key={patient.id} value={patient.id}>
-                          {patient.name} · {patient.species} ·{" "}
-                          {formatOwnerName(owner)}
+                    <HugeiconsIcon
+                      aria-hidden="true"
+                      className="transition-transform group-data-[panel-open]/owner-path:rotate-180"
+                      icon={ArrowDown01Icon}
+                      size={16}
+                      strokeWidth={1.5}
+                    />
+                    Rechercher par propriétaire
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-3">
+                    <div className="grid gap-5 lg:grid-cols-2">
+                    <Field className="lg:col-span-2">
+                      <FieldLabel>Client existant</FieldLabel>
+                      <Input
+                        onChange={(event) => {
+                          setOwnerSearchTerm(event.target.value);
+                          if (!event.target.value.trim()) {
+                            setSelectedOwnerId("");
+                          }
+                        }}
+                        placeholder="Rechercher un propriétaire par nom, téléphone ou email…"
+                        value={ownerSearchTerm}
+                      />
+                      <FieldDescription>
+                        Sélectionnez d’abord le client pour filtrer automatiquement
+                        ses dossiers patients.
+                      </FieldDescription>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {filteredOwners.length > 0 ? (
+                          filteredOwners.map((owner) => (
+                            <Button
+                              key={owner.id}
+                              onClick={() => handleOwnerSelect(owner.id)}
+                              size="sm"
+                              type="button"
+                              variant={
+                                normalizeEntityId(selectedOwnerId) ===
+                                normalizeEntityId(owner.id)
+                                  ? "default"
+                                  : "outline"
+                              }
+                            >
+                              {formatOwnerName(owner)}
+                            </Button>
+                          ))
+                        ) : (
+                          <div className="text-muted-foreground text-sm">
+                            Aucun client existant ne correspond à cette recherche.
+                          </div>
+                        )}
+                      </div>
+                    </Field>
+
+                    <Field className="lg:col-span-2">
+                      <FieldLabel>Patient</FieldLabel>
+                      <Input
+                        onChange={(event) =>
+                          setPatientSearchTerm(event.target.value)
+                        }
+                        placeholder="Rechercher un patient par nom, espèce ou propriétaire…"
+                        value={patientSearchTerm}
+                      />
+                      <NativeSelect
+                        className="w-full cursor-pointer"
+                        onChange={(event) =>
+                          handlePatientSelect(event.target.value)
+                        }
+                        value={selectedPatientId}
+                      >
+                        <NativeSelectOption disabled value="">
+                          {selectedOwnerId
+                            ? "Sélectionner un dossier du client"
+                            : "Sélectionner un dossier"}
                         </NativeSelectOption>
-                      );
-                    })}
-                  </NativeSelect>
-                  <FieldDescription>
-                    {selectedOwnerId
-                      ? "Seuls les patients liés au client choisi sont affichés."
-                      : "Le propriétaire sera lié automatiquement depuis le dossier choisi."}
-                  </FieldDescription>
-                </Field>
+                        {filteredPatientsForForm.map((patient) => {
+                          const owner = ownersById.get(patient.ownerId);
+                          return (
+                            <NativeSelectOption key={patient.id} value={patient.id}>
+                              {patient.name} · {patient.species} ·{" "}
+                              {formatOwnerName(owner)}
+                            </NativeSelectOption>
+                          );
+                        })}
+                      </NativeSelect>
+                      <FieldDescription>
+                        {selectedOwnerId
+                          ? "Seuls les patients liés au client choisi sont affichés."
+                          : "Le propriétaire sera lié automatiquement depuis le dossier choisi."}
+                      </FieldDescription>
+                    </Field>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
                 <Field>
                   <FieldLabel>Vétérinaire</FieldLabel>
@@ -1215,7 +1239,7 @@ export function AgendaView(props: AgendaViewProps) {
                     </NativeSelectOption>
                     {vets.map((vet) => (
                       <NativeSelectOption key={vet.id} value={vet.id}>
-                        {vet.displayName}
+                        {formatPersonName(vet.displayName)}
                       </NativeSelectOption>
                     ))}
                   </NativeSelect>
@@ -1412,12 +1436,13 @@ export function AgendaView(props: AgendaViewProps) {
                     <PopoverTrigger
                       render={
                         <Button
-                          className="w-full justify-between"
+                          className="w-full justify-between font-normal"
+                          data-field="date"
                           variant="outline"
                         />
                       }
                     >
-                      <span>{formDate.split("-").reverse().join("/")}</span>
+                      <span className="tabular-nums">{formDate.split("-").reverse().join("/")}</span>
                       <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
                     </PopoverTrigger>
                     <PopoverContent
@@ -1439,7 +1464,7 @@ export function AgendaView(props: AgendaViewProps) {
                     </PopoverContent>
                   </Popover>
                   <FieldDescription>
-                    Format français : JJ/MM/AAAA.
+                    Choisissez le jour dans le calendrier.
                   </FieldDescription>
                 </Field>
 
@@ -1559,7 +1584,7 @@ export function AgendaView(props: AgendaViewProps) {
                       ? "Enregistrer"
                       : "Ajouter au planning"}
                   </span>
-                  <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px] sm:inline-block">
+                  <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono t-12 sm:inline-block">
                     ⌘↵
                   </kbd>
                 </Button>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { formatLongDay } from "@/utils/display-format";
 
 /** Shared local date above workspace titles, refreshed when the day changes. */
 export function PageDate() {
@@ -20,15 +21,15 @@ export function PageDate() {
     };
   }, [today]);
 
-  const label = new Intl.DateTimeFormat(i18n.language || "fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  }).format(today);
+  // French typography keeps weekday and month in lowercase ("samedi 17 octobre").
+  const language = i18n.language || "fr-FR";
+  const label = language.startsWith("fr")
+    ? formatLongDay(today)
+    : new Intl.DateTimeFormat(language, { weekday: "long", day: "numeric", month: "long" }).format(today);
   const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   return (
-    <time data-slot="page-date" dateTime={localDate} className="block text-xs capitalize leading-4 text-muted-foreground">
+    <time data-slot="page-date" dateTime={localDate} className="block text-xs normal-case leading-4 text-muted-foreground">
       {label}
     </time>
   );

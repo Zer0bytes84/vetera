@@ -420,7 +420,7 @@ const Notes: React.FC = () => {
             <Input
               className="h-9 rounded-lg border-border/50 bg-muted/40 pl-9 text-sm placeholder:text-muted-foreground/50 focus:bg-background"
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher..."
+              placeholder="Rechercher…"
               value={searchTerm}
             />
           </div>
@@ -508,7 +508,7 @@ const Notes: React.FC = () => {
 
                     {/* Meta */}
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-muted-foreground/60">
+                      <span className="t-12 text-muted-foreground/60">
                         {formatDate(note.updatedAt)}
                       </span>
 
@@ -681,7 +681,7 @@ const Notes: React.FC = () => {
                   className="mt-4 min-h-[calc(100vh-300px)] w-full resize-none bg-transparent font-mono text-base leading-relaxed outline-none placeholder:text-muted-foreground/30"
                   onChange={(e) => handleContentChange(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Commencez à écrire... (Markdown supporté)"
+                  placeholder="Commencez à écrire… (Markdown supporté)"
                   ref={textareaRef}
                   spellCheck={false}
                   value={content}

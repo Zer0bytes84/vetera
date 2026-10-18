@@ -670,7 +670,7 @@ export function ConsultationSessionDialog({
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <div className="space-y-1.5">
-            <h2 className="text-xl font-semibold tracking-[-0.04em]">
+            <h2 className="t-18 font-semibold tracking-[-0.04em]">
               Consultation · {patientName}
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -745,7 +745,7 @@ export function ConsultationSessionDialog({
               {/* Section 1: Résumé du créneau */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Résumé du créneau
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -755,7 +755,7 @@ export function ConsultationSessionDialog({
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                       Patient
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -763,7 +763,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                       Propriétaire
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -771,7 +771,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                       Heure de début
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -779,7 +779,7 @@ export function ConsultationSessionDialog({
                     </p>
                   </div>
                   <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                    <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                    <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                       Téléphone
                     </p>
                     <p className="mt-1 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -792,7 +792,7 @@ export function ConsultationSessionDialog({
               {/* Section 2: Historique récent */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Historique récent
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -834,7 +834,7 @@ export function ConsultationSessionDialog({
               {/* Section 3: Mise à jour du patient */}
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Mise à jour du patient
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -921,7 +921,7 @@ export function ConsultationSessionDialog({
                       onChange={(event) =>
                         setChronicConditions(event.target.value)
                       }
-                      placeholder="Arthrose, insuffisance rénale, diabète..."
+                      placeholder="Arthrose, insuffisance rénale, diabète…"
                       value={chronicConditions}
                     />
                   </Field>
@@ -930,7 +930,7 @@ export function ConsultationSessionDialog({
                     <Textarea
                       className="min-h-28"
                       onChange={(event) => setGeneralNotes(event.target.value)}
-                      placeholder="Comportement, sensibilité, consignes particulières..."
+                      placeholder="Comportement, sensibilité, consignes particulières…"
                       value={generalNotes}
                     />
                   </Field>
@@ -942,7 +942,7 @@ export function ConsultationSessionDialog({
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
                 <div className="border-zinc-100 border-b pb-2 dark:border-zinc-800/80">
-                  <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                  <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                     Conduite de consultation
                   </h3>
                   <p className="mt-0.5 text-muted-foreground text-xs">
@@ -956,7 +956,7 @@ export function ConsultationSessionDialog({
                     <Textarea
                       className="min-h-24"
                       onChange={(event) => setReason(event.target.value)}
-                      placeholder="Motif de visite, contexte, symptômes observés..."
+                      placeholder="Motif de visite, contexte, symptômes observés…"
                       value={reason}
                     />
                   </Field>
@@ -968,7 +968,7 @@ export function ConsultationSessionDialog({
                       onChange={(event) =>
                         setConsultationNotes(event.target.value)
                       }
-                      placeholder="Constantes, examen clinique, réactions du patient, points à surveiller..."
+                      placeholder="Constantes, examen clinique, réactions du patient, points à surveiller…"
                       value={consultationNotes}
                     />
                     <FieldDescription>
@@ -1070,7 +1070,7 @@ export function ConsultationSessionDialog({
                     <Textarea
                       className="min-h-28"
                       onChange={(event) => setDiagnosis(event.target.value)}
-                      placeholder="Ex: gastro-entérite aiguë, syndrome respiratoire, contrôle post-opératoire..."
+                      placeholder="Ex. gastro-entérite aiguë, syndrome respiratoire, contrôle post-opératoire…"
                       value={diagnosis}
                     />
                   </Field>
@@ -1080,7 +1080,7 @@ export function ConsultationSessionDialog({
                     <Textarea
                       className="min-h-32"
                       onChange={(event) => setTreatment(event.target.value)}
-                      placeholder="Ex: injection anti-vomitive, antibiothérapie 5 jours, alimentation fractionnée..."
+                      placeholder="Ex. injection anti-vomitive, antibiothérapie 5 jours, alimentation fractionnée…"
                       value={treatment}
                     />
                   </Field>
@@ -1285,7 +1285,7 @@ export function BillingDialog({
           <div className="grid gap-6">
             <div>
               <div className="mb-4 border-zinc-100 border-b pb-3 dark:border-zinc-800/80">
-                <h3 className="font-bold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+                <h3 className="font-bold t-12 text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
                   Résumé avant facturation
                 </h3>
                 <p className="mt-1 text-muted-foreground text-xs">
@@ -1296,7 +1296,7 @@ export function BillingDialog({
 
               <div className="grid gap-3 sm:grid-cols-4">
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                     Patient
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1304,7 +1304,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                     Client
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1312,7 +1312,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/30">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                     Acte
                   </p>
                   <p className="mt-1.5 font-bold text-sm text-zinc-800 dark:text-zinc-200">
@@ -1320,7 +1320,7 @@ export function BillingDialog({
                   </p>
                 </div>
                 <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                  <p className="font-semibold text-[10px] uppercase tracking-wider">
+                  <p className="font-semibold t-12 uppercase tracking-wider">
                     Total provisoire
                   </p>
                   <p className="mt-1.5 font-extrabold text-base tracking-tight">
@@ -1335,7 +1335,7 @@ export function BillingDialog({
                 <FieldLabel>Nouvelle ligne</FieldLabel>
                 <Input
                   onChange={(event) => setNewItemDesc(event.target.value)}
-                  placeholder="Ex: injection, pansement, examen complémentaire..."
+                  placeholder="Ex. injection, pansement, examen complémentaire…"
                   value={newItemDesc}
                 />
               </Field>
@@ -1344,7 +1344,7 @@ export function BillingDialog({
                 <FieldLabel>Montant (DA)</FieldLabel>
                 <Input
                   onChange={(event) => setNewItemAmount(event.target.value)}
-                  placeholder="0"
+                  placeholder="Ex. 2 500"
                   type="number"
                   value={newItemAmount}
                 />

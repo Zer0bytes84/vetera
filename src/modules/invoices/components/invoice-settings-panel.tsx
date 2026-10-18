@@ -1,3 +1,4 @@
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export function InvoiceSettingsPanel() {
     finally { setSaving(false); }
   };
   if (loading) return <div className="flex justify-center p-8"><Spinner /></div>;
-  if (error) return <div role="alert"><p className="mb-3 text-destructive">{error}</p><Button onClick={() => void load()} variant="outline">Réessayer</Button></div>;
+  if (error) return <ErrorState message={error} onRetry={() => void load()} />;
   const dirty = JSON.stringify(settings) !== saved;
   return (
     <div className="settings-section-stack">

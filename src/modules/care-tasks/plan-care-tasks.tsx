@@ -67,7 +67,7 @@ export function PlanCareTasks({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-[640px] sm:p-7">
           <DialogHeader>
-            <DialogTitle className="font-medium text-[18px]">
+            <DialogTitle>
               Tâches de suivi
             </DialogTitle>
             <DialogDescription>
@@ -80,28 +80,28 @@ export function PlanCareTasks({
               <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-100">
                 <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0" strokeWidth={1.5} />
                 <div className="min-w-0 space-y-1">
-                  <p className="font-medium text-[14px]">Soin planifié</p>
-                  <p className="break-words text-[13px]">
+                  <p className="font-medium t-14">Soin planifié</p>
+                  <p className="break-words t-13">
                     « {confirmation.label} » est prévu le {scheduleLabel(confirmation.scheduledAt)}. Il figure maintenant dans la liste des soins du patient.
                   </p>
                 </div>
               </div>
-              <p className="text-[13px] text-muted-foreground">
+              <p className="t-13 text-muted-foreground">
                 {remaining
                   ? `${remaining} proposition${remaining > 1 ? "s restent" : " reste"} à planifier.`
                   : "Toutes les propositions de ce Plan sont planifiées."}
               </p>
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 {remaining ? (
-                  <Button className="h-11 rounded-xl text-[13px]" onClick={() => setConfirmation(null)} variant="outline">
+                  <Button className="h-11 rounded-xl t-13" onClick={() => setConfirmation(null)} variant="outline">
                     Planifier un autre soin
                   </Button>
                 ) : (
-                  <Button className="h-11 rounded-xl text-[13px]" onClick={() => setOpen(false)} variant="outline">
+                  <Button className="h-11 rounded-xl t-13" onClick={() => setOpen(false)} variant="outline">
                     Fermer
                   </Button>
                 )}
-                <Button className="h-11 rounded-xl text-[13px]" onClick={openCareList}>
+                <Button className="h-11 rounded-xl t-13" onClick={openCareList}>
                   Voir les soins du patient
                 </Button>
               </div>
@@ -117,9 +117,9 @@ export function PlanCareTasks({
                       key={`${i}:${s.label}`}
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="break-words text-[13px]">{s.label}</p>
+                        <p className="break-words t-13">{s.label}</p>
                         {done && (
-                          <p className="mt-1 flex items-center gap-1.5 text-[12px] text-emerald-700 dark:text-emerald-300">
+                          <p className="mt-1 flex items-center gap-1.5 t-12 text-emerald-700 dark:text-emerald-300">
                             <CheckCircle2 aria-hidden="true" className="size-3.5" strokeWidth={1.5} />
                             Planifié le {scheduleLabel(done.scheduledAt)}
                           </p>
@@ -138,7 +138,7 @@ export function PlanCareTasks({
               )}
               {created.length > 0 && (
                 <div className="flex justify-end pt-1">
-                  <Button className="h-11 rounded-xl text-[13px]" onClick={openCareList} variant="outline">
+                  <Button className="h-11 rounded-xl t-13" onClick={openCareList} variant="outline">
                     Voir les soins du patient
                   </Button>
                 </div>

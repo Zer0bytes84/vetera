@@ -165,7 +165,7 @@ export function MetricOverviewStrip({
             <CardContent className="flex flex-1 flex-col gap-5 px-5 pt-5 pb-4">
               {/* Header: title + bordered circular icon */}
               <div className="flex items-start justify-between">
-                <span className="font-semibold text-[14px] text-foreground tracking-tight">
+                <span className="font-semibold t-14 text-foreground tracking-tight">
                   {item.label}
                 </span>
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-card">
@@ -180,19 +180,19 @@ export function MetricOverviewStrip({
               {/* Value + inline delta pill */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-baseline gap-2">
-                  <span className="font-bold text-[28px] text-foreground tabular-nums leading-none tracking-[-0.025em]">
+                  <span className="font-bold t-24 text-foreground tabular-nums leading-none tracking-[-0.025em]">
                     {item.value}
                   </span>
                   <span
                     className={cn(
-                      "inline-flex items-center rounded-full px-2 py-0.5 font-semibold text-[11px] tabular-nums",
+                      "inline-flex items-center rounded-full px-2 py-0.5 font-semibold t-12 tabular-nums",
                       deltaIntentClass[intent]
                     )}
                   >
                     {item.meta}
                   </span>
                 </div>
-                <p className="truncate text-[12px] text-muted-foreground">
+                <p className="truncate t-12 text-muted-foreground">
                   {item.note}
                 </p>
               </div>
@@ -203,7 +203,7 @@ export function MetricOverviewStrip({
                   <button
                     className={cn(
                       "inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5",
-                      "font-medium text-[12px] text-foreground",
+                      "font-medium t-12 text-foreground",
                       "transition-colors hover:bg-muted/60 hover:text-foreground",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     )}
@@ -221,7 +221,7 @@ export function MetricOverviewStrip({
                   <span
                     className={cn(
                       "inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5",
-                      "font-medium text-[12px] text-muted-foreground"
+                      "font-medium t-12 text-muted-foreground"
                     )}
                   >
                     Voir le détail

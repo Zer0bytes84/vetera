@@ -35,7 +35,7 @@ export function ModuleLink({
   return (
     <button
       type="button"
-      className={`inline-flex shrink-0 items-center gap-1.5 rounded-md text-[12px] font-medium text-ink-muted transition-colors duration-150 hover:text-ink ${focusRing}`}
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-md t-12 font-medium text-ink-muted transition-colors duration-150 hover:text-ink ${focusRing}`}
       onClick={onClick}
     >
       {children}
@@ -59,7 +59,7 @@ export function PatientPortrait({
   ) : (
     <span
       aria-hidden="true"
-      className="grid size-9 shrink-0 place-items-center rounded-control bg-frame font-display text-[14px] text-ink-muted"
+      className="grid size-9 shrink-0 place-items-center rounded-control bg-frame font-display t-14 text-ink-muted"
     >
       {(patient?.name ?? name ?? "P").slice(0, 1).toLocaleUpperCase()}
     </span>
@@ -81,11 +81,11 @@ export function ModuleTotals({
       {values.map((row, index) => (
         <div key={row.label} className="module-totals-item flex items-baseline gap-2">
           <dd
-            className={`font-display text-[20px] font-medium tabular-nums ${row.tone === "positive" ? "text-emerald-700 dark:text-emerald-300" : row.tone === "watch" ? "text-amber-800 dark:text-amber-300" : "text-ink"}`}
+            className={`font-display t-18 font-medium tabular-nums ${row.tone === "positive" ? "text-emerald-700 dark:text-emerald-300" : row.tone === "watch" ? "text-amber-800 dark:text-amber-300" : "text-ink"}`}
           >
             {row.value}
           </dd>
-          <dt className="flex items-center gap-1.5 text-[11px] text-ink-muted">
+          <dt className="flex items-center gap-1.5 t-12 text-ink-muted">
             <i className={`finder-dot ${dotColor(index)}`} aria-hidden="true" />
             {row.label}
           </dt>

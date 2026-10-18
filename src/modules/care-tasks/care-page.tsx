@@ -1,3 +1,4 @@
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { careErrorMessage } from "./feedback";
 import "./care-page.css";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
@@ -38,6 +39,11 @@ import { announceCareTasksChanged, CARE_LIST_DAY_KEY, useCareTasks } from "./use
 import { insufficientStockMessage, stockQuantityLabel, parseStockQuantityInput } from "@/domain/stock";
 import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
 import { DatePicker } from "@/components/ui/date-picker";
+import { PageHeader } from "@/design-system/patterns/page-header";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { InjectionIcon } from "@/lib/hugeicons";
+import { formatLongDay } from "@/utils/display-format";
+import { SectionCards } from "@/components/section-cards";
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",
@@ -273,7 +279,7 @@ export default function CarePage({
           {mode === "heure" && (
             <button
               type="button"
-              className="mb-1 rounded text-[13px] font-medium hover:underline focus-visible:outline-2 focus-visible:outline-primary"
+              className="mb-1 rounded t-13 font-medium hover:underline focus-visible:outline-2 focus-visible:outline-primary"
               onClick={() => onNavigateToPatient?.(task.patient_id)}
             >
               {patientName(task.patient_id)}
@@ -288,21 +294,21 @@ export default function CarePage({
               setReason("");
             }}
           >
-            <time className="shrink-0 text-[16px] font-medium tabular-nums">
+            <time className="shrink-0 t-16 font-medium tabular-nums">
               {time(task.heure_prevue)}
             </time>
             <span className="min-w-0 flex-1">
-              <span className="block break-words text-[14px] font-medium">
+              <span className="block break-words t-14 font-medium">
                 {task.label}
               </span>
-              <span className="block text-[12px] text-muted-foreground">
+              <span className="block t-12 text-muted-foreground">
                 {careTypeLabels[task.type]}{task.produit_id && products.data.find(p => p.id === task.produit_id)?.stockTracked !== false
                   ? ` · ${stockQuantityLabel(task.produit_quantite ?? 1, products.data.find(p => p.id === task.produit_id)?.unit ?? "unité")}` : ""}
               </span>
-              {stockWarning(task) && <span className="block text-[12px] text-destructive">Stock insuffisant, ouvrez le soin pour vérifier.</span>}
+              {stockWarning(task) && <span className="block t-12 text-destructive">Stock insuffisant, ouvrez le soin pour vérifier.</span>}
             </span>
             <span data-premium-status={status}
-              className={`shrink-0 rounded-lg px-2.5 py-1 text-[12px] font-medium ${tones[status]}`}
+              className={`shrink-0 rounded-lg px-2.5 py-1 t-12 font-medium ${tones[status]}`}
             >
               {labels[status]}
             </span>
@@ -338,65 +344,54 @@ export default function CarePage({
       aria-label="Soins"
       className={
         patientId
-          ? "care-page min-w-0 space-y-4 text-[13px]"
-          : "care-page dashboard-stage min-w-0 px-4 pb-8 lg:px-6 space-y-6 font-sans text-[13px] font-normal"
+          ? "care-page min-w-0 space-y-4 t-13"
+          : "care-page dashboard-stage min-w-0 px-4 pb-8 lg:px-6 space-y-6 font-sans t-13 font-normal"
       }
     >
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          {!patientId && (
-            <p className="text-[12px] text-muted-foreground">
-              {careDate.toLocaleDateString("fr-FR", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-              })}
+      {patientId ? (
+        <header className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="t-18 font-medium tracking-tight">Soins</h2>
+            <p className="mt-1 text-muted-foreground">
+              Les soins planifiés, suivis par votre équipe.
             </p>
-          )}
-          <h2
-            className={
-              patientId
-                ? "text-[18px] font-medium tracking-tight"
-                : "mt-1 text-[24px] font-medium tracking-tight"
-            }
-          >
-            Soins
-          </h2>
-          <p className="mt-1 text-muted-foreground">
-            Les soins planifiés, suivis par votre équipe.
-          </p>
-        </div>
-        <Button className="min-h-11" onClick={() => setCreating(true)}>
-          Planifier un soin
-        </Button>
-      </header>
+          </div>
+          <Button className="min-h-11" onClick={() => setCreating(true)}>
+            Planifier un soin
+          </Button>
+        </header>
+      ) : (
+        <PageHeader
+          actions={
+            <Button className="min-h-11" onClick={() => setCreating(true)}>
+              Planifier un soin
+            </Button>
+          }
+          icon={<HugeiconsIcon icon={InjectionIcon} size={20} strokeWidth={1.5} />}
+          kicker={formatLongDay(careDate)}
+          subtitle="Les soins planifiés, suivis par votre équipe."
+          title="Soins"
+        />
+      )}
       {!patientId && (
         <>
-          <div className="care-summary grid gap-3 sm:grid-cols-3">
-            {[
-              ["Soins prévus", tasks.length],
-              [
-                "À terminer",
-                tasks.filter((t) => ["a_faire", "en_cours"].includes(t.statut))
-                  .length,
-              ],
-              ["En retard", overdueCount],
-            ].map(([title, value]) => (
-              <div
-                key={title}
-                data-care-alert={title === "En retard" && overdueCount > 0 ? "true" : undefined}
-                className={`care-summary-item rounded-2xl border p-4 ${title === "En retard" && overdueCount ? "border-rose-200 bg-rose-50 dark:border-rose-900 dark:bg-rose-950/20" : "border-border bg-card"}`}
-              >
-                <p className="text-muted-foreground">{title}</p>
-                <p className="mt-1 text-[24px] font-medium tabular-nums">
-                  {value}
-                </p>
-              </div>
-            ))}
-          </div>
+          <SectionCards
+            className="care-summary"
+            items={[
+              { title: "Soins prévus", value: tasks.length, footerTitle: "Planifiés pour la date choisie" },
+              { title: "À terminer", value: tasks.filter((t) => ["a_faire", "en_cours"].includes(t.statut)).length, footerTitle: "À faire ou en cours" },
+              {
+                title: "En retard",
+                value: overdueCount,
+                badge: overdueCount ? "À traiter en priorité" : "Aucun retard",
+                tone: overdueCount ? "critical" : "quiet",
+              },
+            ]}
+          />
           <div className="care-toolbar flex flex-wrap items-center justify-between gap-3">
             <div
               className="flex flex-wrap gap-1"
+              data-tabs-style="segmented"
               role="group"
               aria-label="Filtrer les soins"
             >
@@ -425,7 +420,8 @@ export default function CarePage({
                 className="w-56"
               />
               <div
-                className="flex rounded-xl border border-border p-1"
+                className="flex"
+                data-tabs-style="segmented"
                 role="group"
                 aria-label="Mode d’affichage"
               >
@@ -457,21 +453,12 @@ export default function CarePage({
       )}
 
       {error ? (
-        <div role="alert" className="rounded-xl border border-border p-5">
-          {error}
-          <Button
-            variant="outline"
-            className="ml-3"
-            onClick={() => void refresh()}
-          >
-            Réessayer
-          </Button>
-        </div>
+        <ErrorState message={error} onRetry={() => void refresh()} />
       ) : loading ? (
         <p role="status">Chargement des soins…</p>
       ) : !visible.length ? (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <p className="text-[16px] font-medium">Aucun soin pour cette date</p>
+          <p className="t-16 font-medium">Aucun soin pour cette date</p>
           <p className="mt-2 text-muted-foreground">
             {tasks.length
               ? "Adaptez les filtres ou la recherche."
@@ -493,7 +480,7 @@ export default function CarePage({
               key={group}
               className="care-task-group space-y-3 rounded-2xl border border-border bg-card p-4"
             >
-              <h2 className="text-[16px] font-medium">
+              <h2 className="t-16 font-medium">
                 {mode === "patient" ? (
                   onNavigateToPatient ? (
                     <button
@@ -530,7 +517,7 @@ export default function CarePage({
       <Dialog open={creating} onOpenChange={setCreating}>
         <DialogContent className="sm:max-w-[600px] sm:p-7">
           <DialogHeader>
-            <DialogTitle className="font-medium text-[18px]">
+            <DialogTitle>
               Planifier un soin
             </DialogTitle>
             <DialogDescription>
@@ -574,7 +561,7 @@ export default function CarePage({
             Fermer
           </Button>
           <SheetHeader>
-            <SheetTitle className="font-medium text-[18px]">
+            <SheetTitle>
               Détail du soin
             </SheetTitle>
             <SheetDescription>
@@ -583,8 +570,8 @@ export default function CarePage({
           </SheetHeader>
           {detail && (
             <div className="mt-6 space-y-5">
-              <h2 className="text-[18px] font-medium">{detail.label}</h2>
-              <dl className="grid grid-cols-2 gap-3 text-[13px]">
+              <h2 className="t-18 font-medium">{detail.label}</h2>
+              <dl className="grid grid-cols-2 gap-3 t-13">
                 {[
                   ["Heure prévue", time(detail.heure_prevue)],
                   ["Type", careTypeLabels[detail.type]],
@@ -626,7 +613,7 @@ export default function CarePage({
                       quantity={usageDrafts[detail.id]?.quantity ?? String(detail.produit_quantite ?? 1)}
                       onProductChange={productId => setUsageDrafts(rows => ({...rows, [detail.id]: {productId, quantity: "1"}}))}
                       onQuantityChange={quantity => setUsageDrafts(rows => ({...rows, [detail.id]: {productId: rows[detail.id]?.productId ?? detail.produit_id ?? "", quantity}}))} />
-                    {hasUnsavedProductUsage(detail) && <p role="status" className="text-[13px] text-muted-foreground">Enregistrez la modification du produit ou de la quantité avant de valider le soin.</p>}
+                    {hasUnsavedProductUsage(detail) && <p role="status" className="t-13 text-muted-foreground">Enregistrez la modification du produit ou de la quantité avant de valider le soin.</p>}
                     <Button variant="outline" disabled={!!busy || !currentUser || !usageDrafts[detail.id]} onClick={async () => {
                       const draft = usageDrafts[detail.id]; if (!draft || busy) return;
                       setBusy(detail.id); setActionError(null);
@@ -639,7 +626,7 @@ export default function CarePage({
                       finally {setBusy(null);}
                     }}>Mettre à jour le produit</Button>
                   </div>
-                  {stockWarning(detail) && <p role="alert" className="text-[13px] text-destructive">{stockWarning(detail)}</p>}
+                  {stockWarning(detail) && <p role="alert" className="t-13 text-destructive">{stockWarning(detail)}</p>}
                   <div className="flex flex-wrap gap-2">
                     {detail.statut === "a_faire" && (
                       <Button
@@ -688,7 +675,7 @@ export default function CarePage({
                             : "Création · "}
                           {labels[h.to_status]}
                         </p>
-                        <p className="text-[12px] text-muted-foreground">
+                        <p className="t-12 text-muted-foreground">
                           {time(h.changed_at)} · {userName(h.author_id)}
                           {h.reason ? ` · ${h.reason}` : ""}
                         </p>

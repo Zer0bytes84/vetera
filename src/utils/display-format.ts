@@ -49,3 +49,31 @@ export function formatDisplayText(value: string) {
       "Appeler le propriétaire de Simba"
     );
 }
+
+const clockFormatter = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
+const longDayFormatter = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+
+/** Clock time as "09:30", whatever the browser locale. */
+export function formatClockTime(date: Date) {
+  return clockFormatter.format(date);
+}
+
+/** Long civil day in French typography: "samedi 17 octobre", all lowercase. */
+export function formatLongDay(date: Date) {
+  return longDayFormatter.format(date).toLocaleLowerCase("fr-FR");
+}
+
+/** "Il y a 2 min", "Il y a 3 h", "Il y a 2 j": units separated by a non-breaking space. */
+export function formatElapsed(date: Date, now = new Date()) {
+  const minutes = Math.floor((now.getTime() - date.getTime()) / 60_000);
+  if (minutes < 1) return "À l’instant";
+  if (minutes < 60) return `Il y a ${minutes}\u00a0min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `Il y a ${hours}\u00a0h`;
+  return `Il y a ${Math.floor(hours / 24)}\u00a0j`;
+}
+
+/** French titles without a period ("Dr", "Pr"), for display only. Stored names are unchanged. */
+export function formatPersonName(name?: string | null) {
+  return (name ?? "").replace(/\b(Dr|Pr|Mme|Mlle)\.(?=\s)/g, "$1");
+}

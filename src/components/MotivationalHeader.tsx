@@ -21,8 +21,11 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { PageDate } from "@/components/PageDate";
+import { PageHeader } from "@/design-system/patterns/page-header";
 
 interface MotivationalHeaderProps {
+  /** Page actions shown on the right of the shared PageHeader. */
+  actions?: React.ReactNode;
   dashboardViewControl?: React.ReactNode;
   isCustomizing?: boolean;
   onCustomize?: () => void;
@@ -46,6 +49,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
   section,
   title,
   subtitle,
+  actions,
   isCustomizing = false,
   dashboardViewControl,
   onCustomize,
@@ -176,7 +180,8 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
     );
   };
 
-  if (isPremium && !isDashboard) {
+  // Every section page uses the shared PageHeader, in both visual styles.
+  if (!isDashboard) {
     const iconBySection: Record<string, any> = {
       patients: StethoscopeIcon,
       agenda: Calendar01Icon,
@@ -236,17 +241,13 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
     const IconGlyph = iconBySection[section] ?? StethoscopeIcon;
 
     return (
-      <div className="premium-page-head motivational-header-root">
-        <div className="premium-page-head-main">
-          <div className="premium-page-icon">
-            <HugeiconsIcon icon={IconGlyph} size={20} strokeWidth={1.5} />
-          </div>
-          <div>
-            <h1 className="premium-page-title">{pageTitle}</h1>
-            {pageNote && <p className="premium-page-note">{pageNote}</p>}
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        actions={actions}
+        className="motivational-header-root"
+        icon={<HugeiconsIcon icon={IconGlyph} size={20} strokeWidth={1.5} />}
+        subtitle={pageNote || undefined}
+        title={pageTitle}
+      />
     );
   }
 
@@ -286,7 +287,7 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
               <Button
                 data-primary-action="true"
                 aria-keyshortcuts="N"
-                className={isPremium ? "dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 text-[13px] font-medium" : "h-10 w-auto min-w-0 flex-none rounded-full px-5 text-sm"}
+                className={isPremium ? "dashboard-primary-action h-9 w-auto min-w-0 flex-none rounded-lg px-3.5 t-13 font-medium" : "h-10 w-auto min-w-0 flex-none rounded-full px-5 text-sm"}
                 onClick={() => {
                   prepareAppointment();
                   onNavigate("agenda");

@@ -308,7 +308,7 @@ const Editor: React.FC<EditorProps> = ({
               </DropdownMenu>
             </div>
           ) : (
-            <span className="hidden text-[12px] leading-snug text-foreground/65 xl:inline">Tapez <kbd className="rounded border border-foreground/15 px-1 font-mono">/</kbd> pour rechercher une commande.</span>
+            <span className="hidden t-12 leading-snug text-foreground/65 xl:inline">Tapez <kbd className="rounded border border-foreground/15 px-1 font-mono">/</kbd> pour rechercher une commande.</span>
           )}
         </div>
       )}
@@ -363,7 +363,7 @@ const Editor: React.FC<EditorProps> = ({
               autoFocus
               onChange={(e) => setWriteTopicInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleWriteSubmit()}
-              placeholder="Ex: note médicale sur la vaccination"
+              placeholder="Ex. note médicale sur la vaccination"
               type="text"
               value={writeTopicInput}
             />

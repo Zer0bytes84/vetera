@@ -36,15 +36,22 @@ const tabsListVariants = cva(
   }
 );
 
+/**
+ * Two looks only: "nav" moves between sections, "segmented" filters or
+ * switches a view. The line variant reads as nav, the default as segmented.
+ */
 function TabsList({
   className,
   variant = "default",
+  tabsStyle,
   ...props
-}: TabsPrimitive.List.Props & VariantProps<typeof tabsListVariants>) {
+}: TabsPrimitive.List.Props &
+  VariantProps<typeof tabsListVariants> & { tabsStyle?: "nav" | "segmented" }) {
   return (
     <TabsPrimitive.List
       className={cn(tabsListVariants({ variant }), className)}
       data-slot="tabs-list"
+      data-tabs-style={tabsStyle ?? (variant === "line" ? "nav" : "segmented")}
       data-variant={variant}
       {...props}
     />

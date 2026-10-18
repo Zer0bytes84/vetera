@@ -67,6 +67,7 @@ export function DatePicker({
         id={id}
         render={
           <Button
+            data-field="date"
             type="button"
             variant="outline"
             className={cn("h-9 w-full min-w-0 justify-start gap-2 px-3 font-normal", !selected && "text-muted-foreground", className)}

@@ -670,7 +670,7 @@ function AppShellInner() {
                     aria-label="Menu"
                     className="shell-toolbar-control size-8 shrink-0 md:!hidden"
                   />
-                  <div className="crumbs flex items-center gap-1.5 text-[13px] tracking-[-0.02em] text-[#8f8f8f] dark:text-[#8a8a8a]">
+                  <div className="crumbs flex items-center gap-1.5 t-13 tracking-[-0.02em] text-[#8f8f8f] dark:text-[#8a8a8a]">
                     <span>Cabinet</span>
                     <span className="text-[#a3a3a3] dark:text-[#525252]">/</span>
                     <strong className="font-medium text-[#191919] dark:text-[#f3f3f3]">
@@ -694,7 +694,7 @@ function AppShellInner() {
                       <Logo collapsed variant="refined" size="sm" className="shrink-0 transition-transform group-hover:scale-105" />
                     </button>
                     <div className="hidden sm:block h-4 w-px bg-black/10 dark:bg-white/15 shrink-0" />
-                    <h1 className="truncate font-heading font-semibold text-[16px] md:text-[17px] tracking-[-0.02em] text-foreground">
+                    <h1 className="truncate font-heading font-semibold t-16 md:t-18 tracking-[-0.02em] text-foreground">
                       {pageTitle}
                     </h1>
                     <div data-slot="header-save-indicator" className="hidden sm:block">
@@ -719,10 +719,10 @@ function AppShellInner() {
                       name="search"
                       className="size-4 shrink-0 text-muted-foreground opacity-70 transition-opacity group-hover:opacity-100"
                     />
-                    <span className="flex-1 truncate text-xs text-muted-foreground transition-colors group-hover:text-foreground md:text-[13px]">
+                    <span className="flex-1 truncate text-xs text-muted-foreground transition-colors group-hover:text-foreground md:t-13">
                       Rechercher dans le cabinet…
                     </span>
-                    <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-md border border-black/8 bg-white/75 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/15 dark:border-white/10 dark:bg-white/[0.08] dark:group-hover:border-white/20 shadow-2xs">
+                    <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-md border border-black/8 bg-white/75 px-1.5 py-0.5 font-mono t-12 font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/15 dark:border-white/10 dark:bg-white/[0.08] dark:group-hover:border-white/20 shadow-2xs">
                       ⌘K
                     </kbd>
                   </button>
@@ -780,7 +780,7 @@ function AppShellInner() {
                     <ShortcutTooltip label="Notifications">
                       <button ref={notificationsButtonRef} type="button" aria-label="Notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(current => !current)} className="topIcon relative">
                         <ToolbarIcon name="notifications" />
-                        {unreadCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-[10px] text-primary-foreground">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                        {unreadCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 t-12 text-primary-foreground">{unreadCount > 9 ? "9+" : unreadCount}</span>}
                       </button>
                     </ShortcutTooltip>
 
@@ -827,7 +827,7 @@ function AppShellInner() {
                           <ToolbarIcon name="notifications" />
                           <span className="font-medium text-sm">Notifications</span>
                           {unreadCount > 0 && (
-                            <span className="ml-auto rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                            <span className="ml-auto rounded-full bg-primary px-1.5 py-0.5 t-12 font-semibold text-primary-foreground">
                               {unreadCount}
                             </span>
                           )}
@@ -934,7 +934,7 @@ function AppShellInner() {
                           <span
                             aria-label={`${unreadCount} notifications`}
                             className={cn(
-                              "absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white shadow-xs",
+                              "absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full t-12 font-bold text-white shadow-xs",
                               criticalCount > 0 ? "bg-rose-500" : "bg-amber-500"
                             )}
                           >

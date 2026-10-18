@@ -38,7 +38,7 @@ interface SetupWizardProps {
 }
 
 const fieldClassName =
-  "setup-input block h-12 w-full rounded-xl border border-border bg-background pr-4 pl-11 text-[15px] text-foreground outline-none transition duration-200 placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "setup-input block h-12 w-full rounded-xl border border-border bg-background pr-4 pl-11 t-16 text-foreground outline-none transition duration-200 placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 const setupBenefits: Array<{
   description: string;
@@ -162,7 +162,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
         <section className="setup-intro relative hidden flex-col justify-between overflow-hidden px-10 py-9 lg:flex xl:px-14 xl:py-12">
           <div className="relative flex items-center justify-between gap-4">
             <Logo size="xl" />
-            <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-medium text-[11px] text-white/75 uppercase tracking-[0.12em]">
+            <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-medium t-12 text-white/75 uppercase tracking-[0.12em]">
               Configuration locale
             </span>
           </div>
@@ -174,7 +174,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
             <h1 className="max-w-[28rem] font-heading font-semibold text-[clamp(2.5rem,4vw,4.6rem)] leading-[0.98] tracking-[-0.055em]">
               Un démarrage calme. Un suivi précis.
             </h1>
-            <p className="mt-6 max-w-md text-[15px] text-white/62 leading-7">
+            <p className="mt-6 max-w-md t-16 text-white/62 leading-7">
               Deux étapes suffisent pour sécuriser votre espace et commencer à
               gérer les patients de la clinique.
             </p>
@@ -248,7 +248,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               <h2 className="mt-3 font-heading font-semibold text-3xl leading-tight tracking-[-0.035em] sm:text-[2.5rem]">
                 {step === 1 ? `Activez ${APP_NAME}` : "Créez votre accès"}
               </h2>
-              <p className="mt-2.5 max-w-md text-[15px] text-zinc-600 leading-6">
+              <p className="mt-2.5 max-w-md t-16 text-zinc-600 leading-6">
                 {step === 1
                   ? "Associez votre licence à l’adresse email utilisée lors de l’achat."
                   : "Définissez le compte administrateur de cette clinique."}
@@ -311,7 +311,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                   </SetupField>
 
                   <button
-                    className="group mt-1 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold text-[15px] text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] focus-visible:outline-2 focus-visible:outline-emerald-700 focus-visible:outline-offset-2 disabled:cursor-wait disabled:opacity-60"
+                    className="group mt-1 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold t-16 text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] focus-visible:outline-2 focus-visible:outline-emerald-700 focus-visible:outline-offset-2 disabled:cursor-wait disabled:opacity-60"
                     disabled={isActivating}
                     type="submit"
                   >
@@ -418,7 +418,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                   </label>
 
                   <button
-                    className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold text-[15px] text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold t-16 text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={isLoading}
                     type="submit"
                   >
@@ -480,7 +480,7 @@ interface SetupFieldProps {
 function SetupField({ children, icon, id, label }: SetupFieldProps) {
   return (
     <div className="space-y-2">
-      <label className="font-semibold text-[13px] text-zinc-800" htmlFor={id}>
+      <label className="font-semibold t-13 text-zinc-800" htmlFor={id}>
         {label}
       </label>
       <div className="group relative">

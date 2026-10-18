@@ -39,14 +39,14 @@ export function TrendsModule({
         onClick={() => onOpen(!open)}
       >
         <div>
-          <h2 className="font-display text-[16px] font-medium tracking-[-0.02em]">
+          <h2 className="font-display t-16 font-medium tracking-[-0.02em]">
             Tendances
           </h2>
-          <p className="mt-1 text-[12px] text-ink-muted">
+          <p className="mt-1 t-12 text-ink-muted">
             Activité et actes sur les {model.days} derniers jours
           </p>
         </div>
-        <span className="inline-flex items-center gap-2 text-[12px] text-ink-muted">
+        <span className="inline-flex items-center gap-2 t-12 text-ink-muted">
           {open ? "Réduire" : "Explorer"}
           <HugeiconsIcon
             icon={open ? ArrowDown01Icon : ArrowRight01Icon}
@@ -64,7 +64,8 @@ export function TrendsModule({
           <div
             role="group"
             aria-label="Période des tendances"
-            className="mb-5 inline-flex rounded-control bg-frame p-1"
+            className="mb-5"
+            data-tabs-style="segmented"
           >
             {([30, 90] as const).map((days) => (
               <button
@@ -72,7 +73,7 @@ export function TrendsModule({
                 type="button"
                 aria-pressed={model.days === days}
                 onClick={() => onPeriod(days)}
-                className={`rounded-[7px] px-3 py-1.5 text-[11px] font-medium ${model.days === days ? "bg-surface shadow-card" : "text-ink-muted hover:text-ink"} ${focusRing}`}
+                className={`rounded-[7px] px-3 py-1.5 t-12 font-medium ${model.days === days ? "bg-surface shadow-card" : "text-ink-muted hover:text-ink"} ${focusRing}`}
               >
                 {days} jours
               </button>
@@ -97,11 +98,11 @@ export function TrendsModule({
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
               <section>
                 <div className="flex items-baseline justify-between">
-                  <h3 className="font-display text-[14px] font-medium">
+                  <h3 className="font-display t-14 font-medium">
                     Consultations terminées
                   </h3>
-                  <span className="text-[12px] text-ink-muted">
-                    <strong className="font-display text-[20px] font-medium text-ink tabular-nums">
+                  <span className="t-12 text-ink-muted">
+                    <strong className="font-display t-18 font-medium text-ink tabular-nums">
                       {model.total}
                     </strong>{" "}
                     au total
@@ -118,13 +119,13 @@ export function TrendsModule({
                 </div>
               </section>
               <section className="lg:border-l lg:border-hairline lg:pl-6">
-                <h3 className="font-display text-[14px] font-medium">
+                <h3 className="font-display t-14 font-medium">
                   Répartition des actes
                 </h3>
                 <div className="mt-4 space-y-4">
                   {model.specialties.slice(0, 5).map((row) => (
                     <div key={row.label}>
-                      <div className="mb-1.5 flex justify-between gap-3 text-[12px]">
+                      <div className="mb-1.5 flex justify-between gap-3 t-12">
                         <span>{row.label}</span>
                         <span className="text-ink-muted tabular-nums">
                           {row.count} ·{" "}

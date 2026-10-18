@@ -139,7 +139,7 @@ export function AppHeader({
           </Button>
           <div className="min-w-0">
             <h1
-              className="truncate font-heading font-semibold text-[1.25rem] tracking-[-0.03em] md:text-[1.35rem]"
+              className="truncate font-heading font-semibold t-18 tracking-[-0.03em]"
               style={{
                 background:
                   "linear-gradient(135deg, #ea580c 0%, #f97316 52%, #fb923c 100%)",
@@ -181,10 +181,10 @@ export function AppHeader({
               icon={SearchIcon}
               strokeWidth={1.5}
             />
-            <span className="flex-1 truncate text-xs font-normal text-muted-foreground transition-colors group-hover:text-foreground md:text-[13px]">
+            <span className="flex-1 truncate text-xs font-normal text-muted-foreground transition-colors group-hover:text-foreground md:t-13">
               Rechercher un patient, une page…
             </span>
-            <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-lg border border-black/6 bg-white/80 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/12 dark:border-white/8 dark:bg-white/8 dark:group-hover:border-white/15">
+            <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-lg border border-black/6 bg-white/80 px-1.5 py-0.5 font-mono t-12 font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/12 dark:border-white/8 dark:bg-white/8 dark:group-hover:border-white/15">
               ⌘K
             </kbd>
           </button>
@@ -213,7 +213,7 @@ export function AppHeader({
                 strokeWidth={1.5}
               />
               {notifications > 0 ? (
-                <span className="glow-ring absolute -top-0.5 -right-0.5 flex size-[18px] items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-pink-500 font-bold text-[9px] text-white shadow-lg shadow-rose-500/30">
+                <span className="glow-ring absolute -top-0.5 -right-0.5 flex size-[18px] items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-pink-500 font-bold t-12 text-white shadow-lg shadow-rose-500/30">
                   {notifications}
                 </span>
               ) : null}
@@ -231,7 +231,7 @@ export function AppHeader({
                     </p>
                   </div>
                   {notifications > 0 ? (
-                    <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-[11px] text-muted-foreground">
+                    <span className="rounded-full bg-muted px-2 py-0.5 font-medium t-12 text-muted-foreground">
                       {notifications}
                     </span>
                   ) : null}

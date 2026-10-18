@@ -1,4 +1,4 @@
-import { formatPhone } from "@/utils/display-format";
+import { formatPhone, formatPersonName } from "@/utils/display-format";
 import { Pill, Stethoscope } from "@/lib/icons";
 import { useTranslation } from "react-i18next";
 
@@ -59,7 +59,7 @@ export function PrescriptionPrintLayout({
               {t("prescriptions.preview.clinicName")}
             </h1>
             <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-              {vet?.displayName ?? vet?.email ?? "—"}
+              {(vet?.displayName && formatPersonName(vet.displayName)) || vet?.email || "—"}
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {vet?.specialty ?? "Vétérinaire"}
@@ -214,7 +214,7 @@ export function PrescriptionPrintLayout({
           </p>
           <div className="mt-6 border-foreground/40 border-b" />
           <p className="mt-1 font-medium text-foreground/80">
-            {vet?.displayName ?? "—"}
+            {(vet?.displayName && formatPersonName(vet.displayName)) || "—"}
           </p>
         </div>
       </footer>

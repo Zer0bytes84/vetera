@@ -54,7 +54,7 @@ export function PrescriptionPreview({
           >
             <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
               <div>
-                <DialogTitle className="text-base">
+                <DialogTitle>
                   {t("prescriptions.builder.preview")}
                 </DialogTitle>
                 <DialogDescription>

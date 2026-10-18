@@ -21,7 +21,7 @@ export function SaveIndicator({
         : "Enregistré";
   return (
     <span
-      className="inline-flex w-[112px] items-center gap-1.5 text-[11px] text-ink-muted"
+      className="inline-flex w-[112px] items-center gap-1.5 t-12 text-ink-muted"
       role="status"
       aria-live="polite"
     >

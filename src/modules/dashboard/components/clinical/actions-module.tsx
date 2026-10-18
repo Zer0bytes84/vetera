@@ -69,6 +69,7 @@ export function ActionsModule({
           role="group"
           aria-label="Filtrer les actions"
           className="clinical-filter-tabs"
+          data-tabs-style="segmented"
         >
           {filters.map((value) => (
             <button
@@ -76,7 +77,7 @@ export function ActionsModule({
               type="button"
               aria-pressed={filter === value}
               onClick={() => onFilter(value)}
-              className={`rounded-md px-2 py-1.5 text-[11px] font-medium transition-colors duration-150 ${filter === value ? "bg-frame text-ink" : "text-ink-muted hover:bg-frame"} ${focusRing}`}
+              className={`rounded-md px-2 py-1.5 t-12 font-medium transition-colors duration-150 ${filter === value ? "bg-frame text-ink" : "text-ink-muted hover:bg-frame"} ${focusRing}`}
             >
               {labels[value]}
             </button>
@@ -107,10 +108,10 @@ export function ActionsModule({
                 className={`min-w-0 flex-1 rounded text-left ${focusRing}`}
                 onClick={() => onOpen(alert)}
               >
-                <span className="block text-[12px] font-medium leading-5 hover:text-primary">
+                <span className="block t-12 font-medium leading-5 hover:text-primary">
                   {alert.title}
                 </span>
-                <span className="mt-0.5 block text-[11px] leading-4 text-ink-muted">
+                <span className="mt-0.5 block t-12 leading-4 text-ink-muted">
                   {alert.detail}
                 </span>
               </button>
@@ -154,7 +155,7 @@ export function ActionsModule({
           <div><dt><i className="finder-dot finder-dot-blue" aria-hidden="true" />Total</dt><dd>{alerts.length}</dd></div>
         </dl>
       <div className="mt-2 flex items-center justify-between gap-3 border-t border-hairline pt-3">
-        <span className="text-[11px] text-ink-muted">
+        <span className="t-12 text-ink-muted">
           {filtered.length > 4
             ? `+ ${filtered.length - 4} à consulter`
             : "Priorités cliniques en premier"}

@@ -32,7 +32,7 @@ export function PrescriptionDispensing({prescriptionId, status, items}: {prescri
     void clinicalStockService.dispensation(prescriptionId).then(value => {if (alive) setSaved(value);}).catch(() => {if (alive) setError("La trace de dispensation n’a pas pu être chargée.");});
     return () => {alive = false;};
   }, [prescriptionId, status, desktop]);
-  if (!desktop) return <p className="mt-3 text-[12px] text-muted-foreground">La dispensation et sa facturation sont disponibles dans l’application de bureau.</p>;
+  if (!desktop) return <p className="mt-3 t-12 text-muted-foreground">La dispensation et sa facturation sont disponibles dans l’application de bureau.</p>;
   const payload: DispensingLineInput[] = items.map(item => ({prescriptionItemId: item.id, productId: lines[item.id]?.productId ?? "", quantity: parseStockQuantityInput(lines[item.id]?.quantity ?? "1"),
     ...(lines[item.id]?.lot === "unassigned" ? {lotId: null} : lines[item.id]?.lot && lines[item.id]?.lot !== "fifo" ? {lotId: lines[item.id].lot} : {})}));
   const valid = payload.length > 0 && payload.every(line => {
@@ -57,10 +57,10 @@ export function PrescriptionDispensing({prescriptionId, status, items}: {prescri
     const available = stockBalance(inventory.balances.filter(row => row.productId === productId && row.lotId === lotId && row.locationActive && row.quantity > 0 && (!row.expiryDate || row.expiryDate >= stockDay())).reduce((sum, row) => sum + row.quantity, 0));
     if (product && total > available) shortage = `Lot choisi : ${insufficientStockMessage(product.name, available, total, product.unit)}`;
   }
-  if (saved || status === "dispensed") return <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 text-[12px]">
+  if (saved || status === "dispensed") return <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 t-12">
     <span>Dispensation enregistrée, stock déduit.</span>{saved && <StockInvoiceLink invoiceId={saved.invoice_id} />}{error && <p role="alert" className="text-destructive">{error}</p>}
   </div>;
-  if (status !== "signed") return <p className="mt-3 text-[12px] text-muted-foreground">Signez l’ordonnance pour accéder à la dispensation.</p>;
+  if (status !== "signed") return <p className="mt-3 t-12 text-muted-foreground">Signez l’ordonnance pour accéder à la dispensation.</p>;
   if (!open) return <div className="mt-3 flex justify-end"><Button variant="outline" onClick={() => setOpen(true)}>Dispenser</Button></div>;
   return <form noValidate aria-label="Dispenser l’ordonnance" className="mt-4 space-y-4 border-t border-border pt-4" onSubmit={async event => {
     event.preventDefault(); if (!valid || shortage || !currentUser || busy) return;
@@ -69,16 +69,16 @@ export function PrescriptionDispensing({prescriptionId, status, items}: {prescri
     catch (error) {setError(error instanceof StockError ? error.message : "La dispensation n’a pas pu être enregistrée. Aucun stock ni facture n’a été modifié. Réessayez.");}
     finally {setBusy(false);}
   }}>
-    <p className="text-[12px] text-muted-foreground">Choisissez le produit remis et sa quantité physique. Les instructions de l’ordonnance restent inchangées.</p>
+    <p className="t-12 text-muted-foreground">Choisissez le produit remis et sa quantité physique. Les instructions de l’ordonnance restent inchangées.</p>
     {items.map(item => <div key={item.id} className="space-y-2">
-      <h4 className="text-[13px] font-medium">{item.medicationName}</h4>
+      <h4 className="t-13 font-medium">{item.medicationName}</h4>
       <ProductStockFields products={products.data.filter(p => p.stockTracked !== false)} productId={lines[item.id]?.productId ?? ""} quantity={lines[item.id]?.quantity ?? "1"} disabled={busy}
         onProductChange={productId => {setLines(rows => ({...rows, [item.id]: {quantity: rows[item.id]?.quantity ?? "1", productId, lot: "fifo"}})); setRequestId(generateId());}}
         onQuantityChange={quantity => {setLines(rows => ({...rows, [item.id]: {...rows[item.id], productId: rows[item.id]?.productId ?? "", quantity}})); setRequestId(generateId());}} />
       <StockLotSelect productId={lines[item.id]?.productId ?? ""} unit={products.data.find(row => row.id === lines[item.id]?.productId)?.unit ?? "unité"} value={lines[item.id]?.lot ?? "fifo"} disabled={busy}
         onChange={lot => {setLines(rows => ({...rows, [item.id]: {...rows[item.id], productId: rows[item.id]?.productId ?? "", quantity: rows[item.id]?.quantity ?? "1", lot}})); setRequestId(generateId());}} />
     </div>)}
-    {(shortage || error) && <p role="alert" className="text-[13px] text-destructive">{shortage || error}</p>}
+    {(shortage || error) && <p role="alert" className="t-13 text-destructive">{shortage || error}</p>}
     <div className="flex flex-wrap justify-end gap-2"><Button type="button" variant="outline" disabled={busy} onClick={() => setOpen(false)}>Annuler</Button><Button type="submit" disabled={busy || !valid || !!shortage || !currentUser}>{busy ? "Dispensation…" : "Confirmer la dispensation"}</Button></div>
   </form>;
 }

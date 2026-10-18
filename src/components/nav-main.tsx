@@ -27,7 +27,7 @@ export function NavMain({
       <SidebarGroupContent>
         <SidebarMenu className="gap-1 group-data-[collapsible=icon]:gap-2">
           {title ? (
-            <SidebarGroupLabel className="mb-1.5 px-2.5 font-medium text-[10px] text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden">
+            <SidebarGroupLabel className="mb-1.5 px-2.5 font-medium t-12 text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden">
               {premiumTitle ? <><span className="classic-sidebar-label">{title}</span><span className="premium-sidebar-label">{premiumTitle}</span></> : title}
             </SidebarGroupLabel>
           ) : null}
@@ -48,7 +48,7 @@ export function NavMain({
                 <span className="min-w-0 whitespace-normal break-words font-sans leading-5 group-data-[collapsible=icon]:hidden">
                   {item.title}
                 </span>
-                {!!item.badge && <span className="ml-auto grid min-w-5 shrink-0 place-items-center rounded-full bg-rose-600 px-1 text-[12px] font-medium text-white group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:top-0" aria-hidden="true">{item.badge}</span>}
+                {!!item.badge && <span className="ml-auto grid min-w-5 shrink-0 place-items-center rounded-full bg-rose-600 px-1 t-12 font-medium text-white group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:top-0" aria-hidden="true">{item.badge}</span>}
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

@@ -244,7 +244,7 @@ export function PatientContextWidgets({
           <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Dernière consultation</span>
           <ArrowUpRight size={14} className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
         </span>
-        <span className="patient-context-value patient-context-date text-xl font-bold tracking-tight text-foreground">
+        <span className="patient-context-value patient-context-date t-18 font-bold tracking-tight text-foreground">
           {appointmentsLoading
             ? "…"
             : appointmentsError

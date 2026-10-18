@@ -1,0 +1,182 @@
+/*
+ * The two tab styles of the app, chosen with data-tabs-style on the bar.
+ *   nav        moves between sections: 2 px underline, 13 px text, selected #292929.
+ *   segmented  filters or switches a view: #F5F5F5 track, white active item.
+ * Bars keep their own markup and behaviour (Base UI tabs, role="tab",
+ * aria-pressed buttons, toggle groups); only the look is shared.
+ * ":root:root:root" lifts these rules above the older Premium tab rules.
+ */
+:root {
+  --tabs-ink: var(--ink, #292929);
+  --tabs-text: var(--ink-soft, #5d5d5d);
+  --tabs-rule: var(--line, #f2f2f2);
+  --tabs-track: rgb(0 0 0 / 4%);
+  --tabs-active-bg: var(--surface, #ffffff);
+  --tabs-badge: rgb(0 0 0 / 6%);
+}
+:root.dark {
+  --tabs-track: rgb(255 255 255 / 6%);
+  --tabs-badge: rgb(255 255 255 / 8%);
+}
+
+/* ---------------------------------------------------------------- nav */
+:root:root:root [data-tabs-style="nav"] {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 4px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: inset 0 -1px 0 var(--tabs-rule) !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+}
+:root:root:root [data-tabs-style="nav"]::-webkit-scrollbar { display: none !important; }
+
+:root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button) {
+  position: relative !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: var(--app-font-sans) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  color: var(--tabs-text) !important;
+  cursor: pointer;
+}
+:root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button):hover {
+  background: transparent !important;
+  color: var(--tabs-ink) !important;
+}
+:root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button):is([data-active=""], [data-active="true"], [data-state="active"], [aria-selected="true"], [aria-pressed="true"], [aria-current="page"]) {
+  background: transparent !important;
+  color: var(--tabs-ink) !important;
+  box-shadow: inset 0 -2px 0 var(--tabs-ink) !important;
+}
+:root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button)::after,
+:root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button)::before {
+  display: none !important;
+}
+:root:root:root [data-tabs-style="nav"] > * svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ---------------------------------------------------------- segmented */
+:root:root:root [data-tabs-style="segmented"] {
+  display: inline-flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 2px !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 3px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--tabs-track) !important;
+  box-shadow: none !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+}
+:root:root:root [data-tabs-style="segmented"]::-webkit-scrollbar { display: none !important; }
+
+:root:root:root [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button) {
+  position: relative !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: var(--app-font-sans) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  color: var(--tabs-text) !important;
+  cursor: pointer;
+}
+:root:root:root [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button):hover {
+  background: transparent !important;
+  color: var(--tabs-ink) !important;
+}
+:root:root:root [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button):is([data-active=""], [data-active="true"], [data-state="active"], [data-state="on"], [data-pressed=""], [data-pressed="true"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"], [aria-current="page"]) {
+  background: var(--tabs-active-bg) !important;
+  color: var(--tabs-ink) !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 0 0 1px rgb(0 0 0 / 3%) !important;
+}
+:root:root:root [data-tabs-style="segmented"] > *::after,
+:root:root:root [data-tabs-style="segmented"] > *::before {
+  display: none !important;
+}
+:root:root:root [data-tabs-style="segmented"] > * svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* Counts inside either style read as quiet numbers. */
+:root:root:root [data-tabs-style] > * :is([data-slot="badge"], .tabCount) {
+  min-width: 20px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  padding: 0 6px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--tabs-badge) !important;
+  color: inherit !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+:root:root:root [data-tabs-style] > :focus-visible {
+  outline: 2px solid var(--ring, #292929) !important;
+  outline-offset: -2px !important;
+}
+:root:root:root [data-tabs-style] > :is(:disabled, [aria-disabled="true"], [data-disabled]) {
+  opacity: 0.5 !important;
+  cursor: not-allowed;
+}
+
+/* Fill variant: a segmented control that shares a narrow column equally. */
+:root:root:root [data-tabs-style="segmented"][data-tabs-fill] {
+  display: flex !important;
+  width: 100% !important;
+}
+:root:root:root [data-tabs-style="segmented"][data-tabs-fill] > * {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  padding-inline: 6px !important;
+}

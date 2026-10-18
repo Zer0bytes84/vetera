@@ -121,7 +121,7 @@ export function KpiPeriodFilter({
         render={
           <Button
             variant="ghost"
-            className="h-6 shrink-0 gap-1 rounded-full px-2 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-background/80 transition-colors shadow-none active:scale-[0.96] !outline-none !ring-0 focus:!ring-0 focus-visible:!ring-0 !border-transparent data-[state=open]:bg-background/90"
+            className="h-6 shrink-0 gap-1 rounded-full px-2 t-12 font-medium text-muted-foreground hover:text-foreground hover:bg-background/80 transition-colors shadow-none active:scale-[0.96] !outline-none !ring-0 focus:!ring-0 focus-visible:!ring-0 !border-transparent data-[state=open]:bg-background/90"
             aria-label={`Période ${label} : ${KPI_PERIOD_LABELS[value]}`}
           >
             {KPI_PERIOD_LABELS[value]}

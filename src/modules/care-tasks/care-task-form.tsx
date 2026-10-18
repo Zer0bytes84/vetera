@@ -35,7 +35,7 @@ export const careTypeLabels: Record<CareType, string> = {
   autre: "Autre",
 };
 const field =
-  "h-11 min-h-11 appearance-none w-full rounded-xl border border-border bg-background px-3 text-[13px] focus-visible:outline-2 focus-visible:outline-primary";
+  "h-11 min-h-11 appearance-none w-full rounded-xl border border-border bg-background px-3 t-13 focus-visible:outline-2 focus-visible:outline-primary";
 export function CareTaskForm({
   patientId,
   suggestion,
@@ -123,17 +123,18 @@ export function CareTaskForm({
         }
       }}
     >
-      <div className="space-y-1.5 text-[13px]">
-        <span>Patient</span>
+      <div className="space-y-1.5 t-13">
+        <span className="flex items-center justify-between">Patient <span className="modal-required">requis</span></span>
         <Popover open={patientPickerOpen} onOpenChange={setPatientPickerOpen}>
           <PopoverTrigger
             disabled={!!patientId}
             aria-label="Choisir un patient"
             render={
               <Button
+                data-field="picker"
                 type="button"
                 variant="outline"
-                className="h-11 w-full justify-between rounded-xl px-3 text-[13px]"
+                className="h-11 w-full justify-between rounded-xl px-3 t-13"
               />
             }
           >
@@ -188,17 +189,18 @@ export function CareTaskForm({
           </PopoverContent>
         </Popover>
       </div>
-      <label className="block space-y-1.5 text-[13px]">
-        Soin
+      <label className="block space-y-1.5 t-13">
+        <span className="flex items-center justify-between">Soin <span className="modal-required">requis</span></span>
         <Input
-          className="h-11 w-full rounded-xl text-[13px]"
+          className="h-11 w-full rounded-xl t-13"
+          placeholder="Ex. pansement, injection, contrôle de plaie"
           required
           value={label}
           onChange={(e) => setLabel(e.target.value)}
         />
       </label>
       <div className="grid gap-4 sm:grid-cols-[minmax(170px,0.8fr)_minmax(0,1.2fr)]">
-        <label className="block min-w-0 space-y-1.5 text-[13px]">
+        <label className="block min-w-0 space-y-1.5 t-13">
           Type
           <select
             aria-label="Type de soin"
@@ -213,12 +215,12 @@ export function CareTaskForm({
             ))}
           </select>
         </label>
-        <div className="min-w-0 space-y-1.5 text-[13px]">
-          <span>Date et heure prévues</span>
+        <div className="min-w-0 space-y-1.5 t-13">
+          <span className="flex items-center justify-between">Date et heure prévues <span className="modal-required">requis</span></span>
           <div className="flex gap-2">
             <DatePicker
               aria-label="Choisir la date du soin"
-              className="h-11 flex-1 rounded-xl text-[13px]"
+              className="h-11 flex-1 rounded-xl t-13"
               onChange={setScheduledDate}
               placeholder="Choisir la date"
               value={scheduledDate}
@@ -229,20 +231,21 @@ export function CareTaskForm({
       </div>
       <ProductStockFields products={products.data} productId={product} quantity={productQuantity}
         onProductChange={id => { setProduct(id); setProductQuantity("1"); }} onQuantityChange={setProductQuantity} disabled={busy} optional />
-      <label className="block space-y-1.5 text-[13px]">
+      <label className="block space-y-1.5 t-13">
         Note
         <textarea
           className={`${field} h-auto min-h-24 resize-y py-3`}
+          placeholder="Consigne utile pour l’équipe"
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
       </label>
-      <p className="text-[12px] text-muted-foreground">
+      <p className="t-12 text-muted-foreground">
         Une seule occurrence. Vérifiez le soin et son horaire avant
         confirmation.
       </p>
       {error && (
-        <p role="alert" className="text-[13px] text-destructive">
+        <p role="alert" className="t-13 text-destructive">
           {error}
         </p>
       )}
@@ -251,7 +254,7 @@ export function CareTaskForm({
           type="button"
           variant="outline"
           onClick={onCancel}
-          className="h-11 w-full rounded-xl text-[13px]"
+          className="h-11 w-full rounded-xl t-13"
         >
           Annuler
         </Button>
@@ -260,7 +263,7 @@ export function CareTaskForm({
           disabled={
             busy || !currentUser || !patient || !label.trim() || !scheduled
           }
-          className="h-11 w-full rounded-xl text-[13px]"
+          className="h-11 w-full rounded-xl t-13"
         >
           {busy ? "Enregistrement…" : "Confirmer le soin"}
         </Button>

@@ -1,0 +1,13 @@
+/*
+ * Baitari type scale (charte): 12 / 13 / 14 / 16 / 18 / 24 px.
+ * Use these utilities instead of free pixel sizes.
+ * Declared with @utility so variants work (md:t-18) and tailwind-merge
+ * resolves them as font sizes (see src/lib/utils.ts).
+ * Font size only: line height stays with the surrounding component.
+ */
+@utility t-12 { font-size: 12px; }
+@utility t-13 { font-size: 13px; }
+@utility t-14 { font-size: 14px; }
+@utility t-16 { font-size: 16px; }
+@utility t-18 { font-size: 18px; }
+@utility t-24 { font-size: 24px; }

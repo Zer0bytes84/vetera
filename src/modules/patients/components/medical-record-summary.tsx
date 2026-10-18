@@ -108,12 +108,12 @@ export function PatientIdentity({
             </span>
           ) : null}
           {patient.chipNumber?.trim() ? (
-            <span className="medical-id-chip font-mono text-[11px] bg-muted/60" title="Puce d'identification">
+            <span className="medical-id-chip font-mono t-12 bg-muted/60" title="Puce d'identification">
               Puce {patient.chipNumber.trim()}
             </span>
           ) : null}
           {patient.tattooNumber?.trim() ? (
-            <span className="medical-id-chip font-mono text-[11px] bg-muted/60" title="Tatouage">
+            <span className="medical-id-chip font-mono t-12 bg-muted/60" title="Tatouage">
               Tatouage {patient.tattooNumber.trim()}
             </span>
           ) : null}

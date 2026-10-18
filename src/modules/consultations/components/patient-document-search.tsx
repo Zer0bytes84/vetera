@@ -338,10 +338,10 @@ export function PatientDocumentSearch({
           className="w-full"
         >
           <TabsList aria-label="Périmètre de recherche" className="grid w-full grid-cols-2">
-            <TabsTrigger value="patient" disabled={locked || !patientId} className="text-[12px]">
+            <TabsTrigger value="patient" disabled={locked || !patientId} className="t-12">
               Ce dossier patient
             </TabsTrigger>
-            <TabsTrigger value="all" disabled={locked} className="text-[12px]">
+            <TabsTrigger value="all" disabled={locked} className="t-12">
               Tous les patients
             </TabsTrigger>
           </TabsList>
@@ -354,8 +354,8 @@ export function PatientDocumentSearch({
             <Sparkle className="size-5" />
           </div>
           <div className="space-y-1">
-            <h4 className="text-[14px] font-medium">Recherche sémantique locale</h4>
-            <p className="text-[12px] text-muted-foreground">
+            <h4 className="t-14 font-medium">Recherche sémantique locale</h4>
+            <p className="t-12 text-muted-foreground">
               EmbeddingGemma fonctionne à 100% sur cet ordinateur sans connexion internet.
             </p>
           </div>
@@ -394,7 +394,7 @@ export function PatientDocumentSearch({
                   }
                 }}
                 disabled={locked}
-                className="h-9 pl-9 pr-8 text-[13px]"
+                className="h-9 pl-9 pr-8 t-13"
               />
               {query && !locked && (
                 <button
@@ -415,7 +415,7 @@ export function PatientDocumentSearch({
               type="button"
               size="sm"
               variant={dictation.phase === "listening" ? "destructive" : "outline"}
-              className="h-9 shrink-0 gap-1.5 px-2.5 text-[12px]"
+              className="h-9 shrink-0 gap-1.5 px-2.5 t-12"
               disabled={busy || (dictation.busy && dictation.phase !== "listening")}
               onClick={() => void dictate()}
               aria-label={dictation.phase === "listening" ? "Arrêter la dictée" : "Dicter la recherche"}
@@ -438,7 +438,7 @@ export function PatientDocumentSearch({
               size="sm"
               disabled={locked || !query.trim()}
               onClick={() => void run(false)}
-              className="h-9 shrink-0 px-3 text-[12px]"
+              className="h-9 shrink-0 px-3 t-12"
             >
               Rechercher
             </Button>
@@ -457,7 +457,7 @@ export function PatientDocumentSearch({
                 }}
                 disabled={locked}
               >
-                <SelectTrigger className="h-7 w-auto text-[12px]" aria-label="Source">
+                <SelectTrigger className="h-7 w-auto t-12" aria-label="Source">
                   <SelectValue>
                     {type === "all"
                       ? "Toutes les sources"
@@ -494,7 +494,7 @@ export function PatientDocumentSearch({
                   }}
                   disabled={locked}
                 >
-                  <SelectTrigger className="h-7 w-auto text-[12px]" aria-label="Rubrique SOAP">
+                  <SelectTrigger className="h-7 w-auto t-12" aria-label="Rubrique SOAP">
                     <SelectValue>
                       {SECTIONS.find((item) => item.key === section)?.label}
                     </SelectValue>
@@ -515,7 +515,7 @@ export function PatientDocumentSearch({
               variant="ghost"
               disabled={locked}
               onClick={() => void run(true)}
-              className="h-7 gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+              className="h-7 gap-1 t-12 text-muted-foreground hover:text-foreground"
               title="Réindexer les extraits validés dans SQLite"
             >
               <RefreshCw className="size-3" />
@@ -525,7 +525,7 @@ export function PatientDocumentSearch({
 
           {/* Status & Feedback */}
           {dictation.busy && (
-            <Marker role="status" className="shrink-0 text-[12px]">
+            <Marker role="status" className="shrink-0 t-12">
               <MarkerIcon>
                 <CircleNotch className="size-3.5 animate-spin" />
               </MarkerIcon>
@@ -538,7 +538,7 @@ export function PatientDocumentSearch({
           )}
 
           {busy && (
-            <Marker role="status" className="shrink-0 text-[12px]">
+            <Marker role="status" className="shrink-0 t-12">
               <MarkerIcon>
                 <CircleNotch className="size-3.5 animate-spin" />
               </MarkerIcon>
@@ -551,14 +551,14 @@ export function PatientDocumentSearch({
           {error && (
             <div
               role="alert"
-              className="shrink-0 rounded-lg border border-destructive/30 bg-destructive/10 p-2.5 text-[12px] text-destructive"
+              className="shrink-0 rounded-lg border border-destructive/30 bg-destructive/10 p-2.5 t-12 text-destructive"
             >
               {error}
             </div>
           )}
 
           {!busy && message && !error && (
-            <p role="status" className="shrink-0 text-[12px] text-muted-foreground">
+            <p role="status" className="shrink-0 t-12 text-muted-foreground">
               {message}
             </p>
           )}
@@ -571,12 +571,12 @@ export function PatientDocumentSearch({
                   <Search className="size-4" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[13px] font-medium text-foreground">
+                  <p className="t-13 font-medium text-foreground">
                     {query.trim()
                       ? "Aucun résultat trouvé"
                       : "Recherche clinique intelligente"}
                   </p>
-                  <p className="max-w-[320px] text-[12px] text-muted-foreground">
+                  <p className="max-w-[320px] t-12 text-muted-foreground">
                     {query.trim()
                       ? "Essayez une reformulation, un synonyme ou élargissez le filtre de rubrique."
                       : "Retrouvez des cas similaires par similarité sémantique, synonymes DCI ou symptômes."}
@@ -593,7 +593,7 @@ export function PatientDocumentSearch({
                           setQuery(suggested);
                           void run(false, suggested);
                         }}
-                        className="rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground"
+                        className="rounded-full border border-border bg-muted/40 px-2.5 py-1 t-12 font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground"
                       >
                         {suggested}
                       </button>
@@ -615,26 +615,26 @@ export function PatientDocumentSearch({
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex min-w-0 items-center gap-1.5">
                       {audience === "all" && result.patientName && (
-                        <span className="truncate rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-semibold text-foreground">
+                        <span className="truncate rounded-md bg-muted px-1.5 py-0.5 t-12 font-semibold text-foreground">
                           {result.patientName}
                         </span>
                       )}
                       <Badge
                         variant="secondary"
-                        className="h-5 px-1.5 text-[10px] font-medium text-muted-foreground"
+                        className="h-5 px-1.5 t-12 font-medium text-muted-foreground"
                       >
                         {getSectionLabel(result.section)}
                       </Badge>
                     </div>
 
                     <div className="flex items-center gap-1">
-                      <span className="text-[11px] font-medium text-muted-foreground tabular-nums">
+                      <span className="t-12 font-medium text-muted-foreground tabular-nums">
                         {result.match === "text" ? "Terme retrouvé" : `${scorePercent} % de proximité`}
                       </span>
                     </div>
                   </div>
 
-                  <p className="border-l-2 border-primary/40 pl-2.5 text-[12px] leading-relaxed text-foreground whitespace-pre-wrap">
+                  <p className="border-l-2 border-primary/40 pl-2.5 t-12 leading-relaxed text-foreground whitespace-pre-wrap">
                     {result.text}
                   </p>
 
@@ -643,7 +643,7 @@ export function PatientDocumentSearch({
                       size="xs"
                       variant="ghost"
                       onClick={() => handleCopy(result.text, uniqueKey)}
-                      className="h-6 gap-1 px-2 text-[11px]"
+                      className="h-6 gap-1 px-2 t-12"
                     >
                       {copiedId === uniqueKey ? (
                         <>
@@ -666,7 +666,7 @@ export function PatientDocumentSearch({
                           onInsertExcerpt(result.text, result.section);
                           toast.success("Extrait inséré dans le dossier");
                         }}
-                        className="h-6 gap-1 px-2 text-[11px]"
+                        className="h-6 gap-1 px-2 t-12"
                       >
                         <Plus className="size-3" />
                         <span>Insérer</span>

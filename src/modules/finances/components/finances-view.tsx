@@ -232,7 +232,7 @@ export function FinancesView(props: FinancesViewProps) {
     transactionsLoading,
   } = props;
   const viewToggle = (
-    <TabsList aria-label="Vue des finances" className={cn("h-10 rounded-xl", isPremium && "finance-view-toggle ml-auto shrink-0")} variant="default">
+    <TabsList aria-label="Vue des finances" className={cn(isPremium && "ml-auto shrink-0")} tabsStyle="segmented">
       <TabsTrigger className="px-4" value="invoices">
         <HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />
         Factures
@@ -246,9 +246,8 @@ export function FinancesView(props: FinancesViewProps) {
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <MotivationalHeader section="finances" />
-        <div data-slot="page-header-actions" className="flex w-full shrink-0 flex-wrap items-center justify-end gap-2 md:w-auto">
+      <MotivationalHeader section="finances"
+        actions={<>
           <Button
             className="h-9 min-w-24 whitespace-nowrap px-4"
             onClick={() => onNavigate?.("finances_analytics")}
@@ -279,8 +278,8 @@ export function FinancesView(props: FinancesViewProps) {
               ? "Nouvelle facture"
               : "Nouvelle écriture"}
           </Button>
-        </div>
-      </div>
+        </>}
+      />
 
       <SectionCards items={financeSectionCards} />
 
@@ -308,7 +307,7 @@ export function FinancesView(props: FinancesViewProps) {
             <CardHeader className="border-b px-5 py-4">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 {!isPremium && <div>
-                  <CardTitle className="text-[22px] tracking-[-0.025em]">Registre des factures</CardTitle>
+                  <CardTitle className="t-18 tracking-[-0.025em]">Registre des factures</CardTitle>
                   <CardDescription className="mt-1">Suivez l’émission, l’échéance et le recouvrement de chaque dossier.</CardDescription>
                 </div>}
                 <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
@@ -408,22 +407,22 @@ export function FinancesView(props: FinancesViewProps) {
                     <Table className="min-w-[980px]">
                       <TableHeader className="bg-muted/25">
                         <TableRow className="hover:bg-transparent">
-                          <TableHead className="h-11 pl-5 text-[11px] text-muted-foreground uppercase tracking-[0.06em]">
+                          <TableHead className="h-11 pl-5 t-12 text-muted-foreground uppercase tracking-[0.06em]">
                             Facture
                           </TableHead>
-                          <TableHead className="text-[11px] text-muted-foreground uppercase tracking-[0.06em]">
+                          <TableHead className="t-12 text-muted-foreground uppercase tracking-[0.06em]">
                             Dossier
                           </TableHead>
-                          <TableHead className="text-[11px] text-muted-foreground uppercase tracking-[0.06em]">
+                          <TableHead className="t-12 text-muted-foreground uppercase tracking-[0.06em]">
                             Situation
                           </TableHead>
-                          <TableHead className="text-[11px] text-muted-foreground uppercase tracking-[0.06em]">
+                          <TableHead className="t-12 text-muted-foreground uppercase tracking-[0.06em]">
                             Échéance
                           </TableHead>
-                          <TableHead className="text-right text-[11px] text-muted-foreground uppercase tracking-[0.06em]">
+                          <TableHead className="text-right t-12 text-muted-foreground uppercase tracking-[0.06em]">
                             Montant
                           </TableHead>
-                          <TableHead className="text-right text-[11px] text-muted-foreground uppercase tracking-[0.06em]">
+                          <TableHead className="text-right t-12 text-muted-foreground uppercase tracking-[0.06em]">
                             À recouvrer
                           </TableHead>
                           <TableHead className="w-[1%] pr-5">
@@ -629,7 +628,7 @@ export function FinancesView(props: FinancesViewProps) {
 
                           <div className="grid grid-cols-2 gap-3 rounded-xl bg-muted/30 p-3">
                             <div>
-                              <p className="text-[11px] text-muted-foreground">
+                              <p className="t-12 text-muted-foreground">
                                 Total
                               </p>
                               <p className="mt-1 font-medium text-sm tabular-nums">
@@ -637,7 +636,7 @@ export function FinancesView(props: FinancesViewProps) {
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-[11px] text-muted-foreground">
+                              <p className="t-12 text-muted-foreground">
                                 À recouvrer
                               </p>
                               <p
@@ -806,12 +805,13 @@ export function FinancesView(props: FinancesViewProps) {
             <CardHeader className="border-b px-6 py-5">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 {!isPremium && <div>
-                  <CardTitle className="text-xl tracking-[-0.03em]">Journal de trésorerie</CardTitle>
+                  <CardTitle className="t-18 tracking-[-0.03em]">Journal de trésorerie</CardTitle>
                   <CardDescription className="mt-1">Les lignes issues des règlements sont verrouillées</CardDescription>
                 </div>}
                 <div className="flex flex-wrap items-center gap-2">
                   <ListSearch className="w-full sm:w-64" label="Rechercher le journal" placeholder="Rechercher une écriture…" value={journalQuery} onValueChange={setJournalQuery} />
                   <ToggleGroup
+                    data-tabs-style="segmented"
                     multiple={false}
                     onValueChange={(value) =>
                       setJournalFilter(
@@ -1228,7 +1228,7 @@ export function FinancesView(props: FinancesViewProps) {
                           ),
                         }))
                       }
-                      placeholder="Consultation, vaccin..."
+                      placeholder="Consultation, vaccin…"
                       value={line.description}
                     />
                     <Input
@@ -1296,7 +1296,7 @@ export function FinancesView(props: FinancesViewProps) {
                       notes: event.target.value,
                     }))
                   }
-                  placeholder="Contexte ou précision utile..."
+                  placeholder="Contexte ou précision utile…"
                   value={invoiceDraft.notes}
                 />
                 <FieldDescription>
@@ -1615,7 +1615,7 @@ export function FinancesView(props: FinancesViewProps) {
                       reference: event.target.value,
                     }))
                   }
-                  placeholder="N° de chèque, terminal, virement..."
+                  placeholder="N° de chèque, terminal, virement…"
                   value={paymentDraft.reference}
                 />
               </Field>
@@ -1671,6 +1671,7 @@ export function FinancesView(props: FinancesViewProps) {
               <Field>
                 <FieldLabel>Type</FieldLabel>
                 <ToggleGroup
+                  data-tabs-style="segmented"
                   multiple={false}
                   onValueChange={(value) => {
                     const type = value[0] as Transaction["type"] | undefined;
@@ -1854,11 +1855,11 @@ export function FinancesView(props: FinancesViewProps) {
           </AlertDialogHeader>
           <div className="px-6 pb-2">
             <Field>
-              <FieldLabel htmlFor="void-reason">Motif (obligatoire)</FieldLabel>
+              <FieldLabel htmlFor="void-reason">Motif <span className="modal-required">requis</span></FieldLabel>
               <Input
                 id="void-reason"
                 onChange={(event) => setVoidReason(event.target.value)}
-                placeholder="Erreur de saisie, doublon..."
+                placeholder="Erreur de saisie, doublon…"
                 value={voidReason}
               />
             </Field>

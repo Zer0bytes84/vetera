@@ -71,6 +71,9 @@ import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
 import { getNextDueVaccination } from "./lib";
 import { DatePicker } from "@/components/ui/date-picker";
+import { PageHeader } from "@/design-system/patterns/page-header";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { MedicalFileIcon } from "@/lib/hugeicons";
 
 const PatientRecordExportDialog = lazy(() => import("./export/patient-record-export-dialog").then(module => ({ default: module.PatientRecordExportDialog })));
 
@@ -95,64 +98,59 @@ const PATIENT_RECORD_SECTIONS = [
     label: "Synthèse",
     icon: FirstAid,
     color: "text-rose-600 dark:text-rose-400",
-    activeClass: "!bg-rose-50 !text-rose-700 !border-rose-200/80 dark:!bg-rose-950/50 dark:!text-rose-300 dark:!border-rose-800/40 shadow-xs",
   },
   {
     value: "timeline",
     label: "Chronologie",
     icon: Clock,
     color: "text-sky-600 dark:text-sky-400",
-    activeClass: "!bg-sky-50 !text-sky-700 !border-sky-200/80 dark:!bg-sky-950/50 dark:!text-sky-300 dark:!border-sky-800/40 shadow-xs",
   },
   {
     value: "prescriptions",
     label: "Ordonnances",
     icon: Pill,
     color: "text-violet-600 dark:text-violet-400",
-    activeClass: "!bg-violet-50 !text-violet-700 !border-violet-200/80 dark:!bg-violet-950/50 dark:!text-violet-300 dark:!border-violet-800/40 shadow-xs",
   },
   {
     value: "hospitalizations",
     label: "Hospitalisations",
     icon: Hospital,
     color: "text-amber-600 dark:text-amber-400",
-    activeClass: "!bg-amber-50 !text-amber-700 !border-amber-200/80 dark:!bg-amber-950/50 dark:!text-amber-300 dark:!border-amber-800/40 shadow-xs",
   },
   {
     value: "anesthesia",
     label: "Anesthésies",
     icon: Syringe,
     color: "text-teal-600 dark:text-teal-400",
-    activeClass: "!bg-teal-50 !text-teal-700 !border-teal-200/80 dark:!bg-teal-950/50 dark:!text-teal-300 dark:!border-teal-800/40 shadow-xs",
   },
   {
     value: "vaccinations",
     label: "Vaccinations",
     icon: Syringe,
     color: "text-emerald-600 dark:text-emerald-400",
-    activeClass: "!bg-emerald-50 !text-emerald-700 !border-emerald-200/80 dark:!bg-emerald-950/50 dark:!text-emerald-300 dark:!border-emerald-800/40 shadow-xs",
   },
   {
     value: "weight",
     label: "Poids",
     icon: Scales,
     color: "text-indigo-600 dark:text-indigo-400",
-    activeClass: "!bg-indigo-50 !text-indigo-700 !border-indigo-200/80 dark:!bg-indigo-950/50 dark:!text-indigo-300 dark:!border-indigo-800/40 shadow-xs",
   },
   {
     value: "documents",
     label: "Documents",
     icon: FileText,
     color: "text-slate-600 dark:text-slate-300",
-    activeClass: "!bg-slate-100 !text-slate-800 !border-slate-300/80 dark:!bg-slate-800/60 dark:!text-slate-200 dark:!border-slate-700/60 shadow-xs",
   },
 ] satisfies Array<{
   value: PatientRecordSection;
   label: string;
   icon: typeof FirstAid;
   color: string;
-  activeClass: string;
 }>;
+
+/** One neutral selected state for every record section (charte: #F5F5F5, #292929, 2 px underline). */
+const ACTIVE_RECORD_TAB_CLASS =
+  "!bg-[#F5F5F5] !text-[#292929] !border-[#F2F2F2] shadow-[inset_0_-2px_0_#292929] dark:!bg-white/5 dark:!text-white dark:!border-white/10 dark:shadow-[inset_0_-2px_0_#ffffff]";
 
 type PatientProfileDraft = Pick<
   Patient,
@@ -501,9 +499,12 @@ export function PatientDetailPage({
   return (
     <div ref={pageRef} className="patient-record-page dashboard-stage flex w-full min-w-0 flex-col gap-5 px-4 pb-8 lg:px-6">
       <div className="mx-auto w-full max-w-7xl space-y-4">
-        <header className="patient-record-heading">
-          <h2>Dossier patient</h2>
-        </header>
+        <PageHeader
+          className="patient-record-heading"
+          icon={<HugeiconsIcon icon={MedicalFileIcon} size={20} strokeWidth={1.5} />}
+          subtitle={`${patient.name} · consultations, traitements et suivi`}
+          title="Dossier patient"
+        />
         <PatientContextWidgets
           patientName={patient.name}
           appointments={appointments}
@@ -692,7 +693,7 @@ export function PatientDetailPage({
                         : current
                     )
                   }
-                  placeholder="Chien, chat, NAC..."
+                  placeholder="Chien, chat, NAC…"
                   value={profileDraft.species}
                 />
               </label>
@@ -806,7 +807,7 @@ export function PatientDetailPage({
                         : current
                     )
                   }
-                  placeholder="Informations utiles pour le suivi de ce patient..."
+                  placeholder="Informations utiles pour le suivi de ce patient…"
                   value={profileDraft.generalNotes}
                 />
               </label>
@@ -820,7 +821,7 @@ export function PatientDetailPage({
                         : current
                     )
                   }
-                  placeholder="15 chiffres..."
+                  placeholder="15 chiffres…"
                   value={profileDraft.chipNumber}
                 />
               </label>
@@ -834,7 +835,7 @@ export function PatientDetailPage({
                         : current
                     )
                   }
-                  placeholder="N° de tatouage..."
+                  placeholder="N° de tatouage…"
                   value={profileDraft.tattooNumber}
                 />
               </label>
@@ -883,7 +884,7 @@ export function PatientDetailPage({
                     aria-controls="record-tab-content"
                     className={cn(
                       "group cursor-pointer transition-all",
-                      isSelected && section.activeClass
+                      isSelected && ACTIVE_RECORD_TAB_CLASS
                     )}
                     onClick={() => handleTabChange(section.value)}
                   >
@@ -915,7 +916,7 @@ export function PatientDetailPage({
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-7 text-[12px] text-[#5D5D5D] hover:text-[#292929] cursor-pointer"
+                        className="h-7 t-12 text-[#5D5D5D] hover:text-[#292929] cursor-pointer"
                         onClick={() => handleTabChange("timeline")}
                       >
                         Voir tout l’historique
@@ -969,7 +970,7 @@ export function PatientDetailPage({
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-2">
                                     <strong>{appointment.type}</strong>
-                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${currentStatus.className}`}>
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full t-12 font-medium ${currentStatus.className}`}>
                                       {currentStatus.label}
                                     </span>
                                   </div>
@@ -982,12 +983,12 @@ export function PatientDetailPage({
                         })}
                       </div>
                     ) : (
-                      <div className="p-4 rounded-lg bg-[#F5F5F5] dark:bg-white/[0.04] text-center text-[13px] text-[#5D5D5D]">
+                      <div className="p-4 rounded-lg bg-[#F5F5F5] dark:bg-white/[0.04] text-center t-13 text-[#5D5D5D]">
                         <p>Aucune visite enregistrée pour {patient.name}.</p>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="mt-2.5 h-8 text-[12px] cursor-pointer"
+                          className="mt-2.5 h-8 t-12 cursor-pointer"
                           onClick={() => {
                             prepareAppointment(patient.id);
                             onNavigate("agenda");
@@ -1003,7 +1004,7 @@ export function PatientDetailPage({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-8 text-[12px] border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                          className="h-8 t-12 border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
                           onClick={() =>
                             openSoapForAppointment(clinicalNoteAppointment.id)
                           }
@@ -1014,7 +1015,7 @@ export function PatientDetailPage({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-8 text-[12px] border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                        className="h-8 t-12 border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
                         onClick={openNewWeight}
                       >
                         + Pesée
@@ -1022,7 +1023,7 @@ export function PatientDetailPage({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-8 text-[12px] border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
+                        className="h-8 t-12 border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
                         onClick={openNewVaccination}
                       >
                         + Vaccin

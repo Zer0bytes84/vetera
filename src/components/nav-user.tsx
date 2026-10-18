@@ -73,7 +73,7 @@ export function NavUser({
             />
             <div className="grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
               <span
-                className="sidebar-user-name whitespace-normal break-words font-medium text-[13px] text-sidebar-foreground leading-5 tracking-[-0.01em] antialiased"
+                className="sidebar-user-name whitespace-normal break-words font-medium t-13 text-sidebar-foreground leading-5 tracking-[-0.01em] antialiased"
                 title={user.name}
               >
                 {user.name}
@@ -102,7 +102,7 @@ export function NavUser({
                     src={normalizedAvatar}
                   />
                   <div className="grid flex-1 text-start text-sm leading-tight">
-                    <span className="whitespace-normal break-words font-medium text-[15px] tracking-tight antialiased">
+                    <span className="whitespace-normal break-words font-medium t-16 tracking-tight antialiased">
                       {user.name}
                     </span>
                     <span className="truncate text-muted-foreground/80 text-xs">
@@ -113,7 +113,7 @@ export function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Votre espace clinique</div>
+            <div className="px-3 pt-2 pb-1 t-12 font-semibold uppercase tracking-widest text-muted-foreground">Votre espace clinique</div>
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="h-11 rounded-[12px]"

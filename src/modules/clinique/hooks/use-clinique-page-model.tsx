@@ -407,8 +407,10 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       {
         title: "Consultations",
         value: formatNumber(stats.total),
-        change: stats.total > 0 ? completionRate : null,
-        changeLabel: "% d'avancement jour",
+        change: completionRate,
+        changeKind: "rate",
+        changeBase: stats.total,
+        changeLabel: "d'avancement du jour",
         trend: "neutral",
         detailRow: `${stats.completed} clôturée${stats.completed > 1 ? "s" : ""} · ${stats.inProgress} en cours · ${stats.pending} en attente`,
         footerTitle: "Consultations du jour",
@@ -428,7 +430,8 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       {
         title: "Terminées",
         value: formatNumber(stats.completed),
-        change: stats.completed > 0 ? 100 : 0,
+        change: stats.completed,
+        changeKind: "count",
         changeLabel: "clôturées",
         tone: "positive",
         trend: "up",

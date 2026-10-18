@@ -1,3 +1,4 @@
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
@@ -481,9 +482,8 @@ const Tasks: React.FC = () => {
 
   return (
     <div className="reminders-page dashboard-stage flex w-full min-w-0 flex-col gap-3 px-4 pb-8 lg:px-6">
-      <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <MotivationalHeader section="taches" title="Rappels" subtitle="Retrouvez les actions à suivre et les rappels du planning." />
-        <div data-slot="page-header-actions" className="flex flex-wrap items-center gap-3">
+      <MotivationalHeader section="taches" title="Rappels" subtitle="Retrouvez les actions à suivre et les rappels du planning."
+        actions={<>
         <Button onClick={() => {
           const type = patientRemindersModel.types.find((entry) => entry.active && entry.id === "vaccin")
             ?? patientRemindersModel.types.find((entry) => entry.active && isMedicalReminderType(entry));
@@ -499,8 +499,8 @@ const Tasks: React.FC = () => {
           <NativeSelectOption value="mine">Mes rappels</NativeSelectOption>
           <NativeSelectOption value="team">Toute l'équipe</NativeSelectOption>
         </NativeSelect>
-        </div>
-      </header>
+        </>}
+      />
 
       <SectionCards items={[
         {
@@ -672,7 +672,7 @@ const Tasks: React.FC = () => {
                     description: event.target.value,
                   }))
                 }
-                placeholder="Une instruction courte pour l'équipe..."
+                placeholder="Une instruction courte pour l'équipe…"
                 value={draft.description}
               />
             </div>
@@ -682,14 +682,11 @@ const Tasks: React.FC = () => {
 
       <section className="space-y-4">
         {patientRemindersModel.error && !auxiliaryView && (
-          <div role="alert" className="flex items-center gap-3 text-sm">
-            {patientRemindersModel.error}
-            <Button variant="outline" onClick={() => void patientRemindersModel.refresh()}>Réessayer</Button>
-          </div>
+          <ErrorState message={patientRemindersModel.error} onRetry={() => void patientRemindersModel.refresh()} />
         )}
         <div className="flex flex-col gap-3 border-border/70 border-b pb-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-2">
-            <div className="reminder-segments" role="group" aria-label="Origine des rappels">
+            <div className="reminder-segments" data-tabs-style="segmented" role="group" aria-label="Origine des rappels">
               {([['all','Tous'],['manual','Manuels'],['medical','Médicaux']] as const).map(([value,label]) => (
                 <button key={value} type="button" className="reminder-segment" aria-pressed={sourceFilter === value} onClick={() => { setSourceFilter(value); setAuxiliaryView(null); }}>{label}</button>
               ))}
@@ -701,7 +698,7 @@ const Tasks: React.FC = () => {
               }
               else { setAuxiliaryView(null); setActiveView(value as ReminderView); }
             }}>
-              <TabsList aria-label="Vues des rappels">
+              <TabsList aria-label="Vues des rappels" tabsStyle="nav">
                 {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id}>{tab.label}<span className="tabular-nums">{tab.count}</span></TabsTrigger>)}
                 <TabsTrigger value="calls">Rappels du jour</TabsTrigger>
                 <TabsTrigger value="types">Types</TabsTrigger>

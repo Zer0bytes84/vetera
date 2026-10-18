@@ -1,3 +1,4 @@
+import { ErrorState } from "@/design-system/patterns/error-state";
 import "./patient-reminders.css";
 
 import { useMemo, useState } from "react";
@@ -22,7 +23,7 @@ import {
   ShieldAlert,
   XCircle,
 } from "lucide-react";
-import { formatPhone } from "@/utils/display-format";
+import { formatPhone, formatPersonName } from "@/utils/display-format";
 import { isMedicalReminderType, isReminderOverdue, localToday } from "./domain";
 import { callsCsv, callsPrintHtml, type CallRow } from "./export";
 import { patientRemindersService } from "./service";
@@ -38,7 +39,7 @@ import {
 } from "./use-patient-reminders";
 import { DatePicker } from "@/components/ui/date-picker";
 
-const field = "min-h-11 rounded-xl border border-border bg-background px-3 text-[13px]";
+const field = "min-h-11 rounded-xl border border-border bg-background px-3 t-13";
 
 type PanelView = "active" | "completed" | "calls" | "types";
 type ActionKind = "Annuler" | "Reporter" | "Traiter";
@@ -190,22 +191,22 @@ export function PatientRemindersContent({
         <>
           <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="font-heading text-[18px] font-medium">
+              <h2 className="font-heading t-18 font-medium">
                 Rappels médicaux
               </h2>
-              <p className="mt-1 text-[13px] text-muted-foreground">
+              <p className="mt-1 t-13 text-muted-foreground">
                 Échéances préventives liées aux actes des patients.
               </p>
             </div>
-            <div className="flex gap-6 text-[12px]">
+            <div className="flex gap-6 t-12">
               <span>
-                <strong className="block text-xl text-destructive tabular-nums">
+                <strong className="block t-18 text-destructive tabular-nums">
                   {overdueCount}
                 </strong>
                 en retard
               </span>
               <span>
-                <strong className="block text-xl text-primary tabular-nums">
+                <strong className="block t-18 text-primary tabular-nums">
                   {todayCount}
                 </strong>
                 dus aujourd’hui
@@ -215,6 +216,7 @@ export function PatientRemindersContent({
           <div
             aria-label="Vues des rappels médicaux"
             className="reminder-segments"
+            data-tabs-style="nav"
             role="tablist"
           >
             {[
@@ -243,15 +245,10 @@ export function PatientRemindersContent({
       )}
 
       {error && (
-        <div className="flex items-center gap-3 text-[13px]" role="alert">
-          {error}
-          <Button className="min-h-11" onClick={() => void refresh()} variant="outline">
-            Réessayer
-          </Button>
-        </div>
+        <ErrorState message={error} onRetry={() => void refresh()} />
       )}
       {notice && !action && (
-        <p className="text-[13px] text-destructive" role="alert">
+        <p className="t-13 text-destructive" role="alert">
           {notice}
         </p>
       )}
@@ -287,7 +284,7 @@ export function PatientRemindersContent({
           )}
 
           {!rows.length && (
-            <p className="py-8 text-center text-[13px] text-muted-foreground">
+            <p className="py-8 text-center t-13 text-muted-foreground">
               {loading ? "Chargement des rappels…" : "Aucun rappel médical dans cette vue."}
             </p>
           )}
@@ -312,13 +309,13 @@ export function PatientRemindersContent({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-medium text-[14px]">{contact.patient}</h3>
+                      <h3 className="font-medium t-14">{contact.patient}</h3>
                       <Badge variant="outline">Médical</Badge>
                       <Badge variant={overdue ? "destructive" : "secondary"}>
                         {contact.type}
                       </Badge>
                     </div>
-                    <p className="mt-1 text-[13px] text-muted-foreground">
+                    <p className="mt-1 t-13 text-muted-foreground">
                       {overdue
                         ? "En retard"
                         : dueToday
@@ -330,7 +327,7 @@ export function PatientRemindersContent({
                               : `Échéance le ${new Date(`${reminder.echeance}T12:00:00`).toLocaleDateString("fr-FR")}`}
                     </p>
                     {(
-                      <p className="mt-2 flex flex-wrap items-center gap-2 text-[13px]">
+                      <p className="mt-2 flex flex-wrap items-center gap-2 t-13">
                         <span>{contact.owner}</span>
                         {contact.phone !== "Non renseigné" ? (
                           <a className="medical-phone-link" href={`tel:${contact.phone.replace(/\s/g, "")}`}>
@@ -377,10 +374,10 @@ export function PatientRemindersContent({
                     </Button>
                   </div>
                   {history?.id === reminder.id && (
-                    <ol className="col-span-full mt-1 space-y-2 border-border/70 border-t pt-3 text-[12px] text-muted-foreground">
+                    <ol className="col-span-full mt-1 space-y-2 border-border/70 border-t pt-3 t-12 text-muted-foreground">
                       {history.rows.map((entry) => (
                         <li key={String(entry.id)}>
-                          {new Date(String(entry.created_at)).toLocaleString("fr-FR")} · {users.data.find((user) => user.id === entry.author_id)?.displayName || "Auteur enregistré"} · {({ creation: "Création", migration: "Import du carnet vaccinal", traitement_acte: "Acte enregistré", traitement_manuel: "Rappel traité", annulation: "Annulation", report: "Report" } as Record<string, string>)[String(entry.action)] ?? "Mise à jour"}{entry.reason ? ` · ${String(entry.reason)}` : ""}
+                          {new Date(String(entry.created_at)).toLocaleString("fr-FR")} · {formatPersonName(users.data.find((user) => user.id === entry.author_id)?.displayName) || "Auteur enregistré"} · {({ creation: "Création", migration: "Import du carnet vaccinal", traitement_acte: "Acte enregistré", traitement_manuel: "Rappel traité", annulation: "Annulation", report: "Report" } as Record<string, string>)[String(entry.action)] ?? "Mise à jour"}{entry.reason ? ` · ${String(entry.reason)}` : ""}
                         </li>
                       ))}
                     </ol>
@@ -416,20 +413,20 @@ export function PatientRemindersContent({
           }}
         >
           <FormDialogBody className="space-y-4">
-          {notice && <p className="text-[13px] text-destructive" role="alert">{notice}</p>}
+          {notice && <p className="t-13 text-destructive" role="alert">{notice}</p>}
           {action.kind === "Traiter" && (
-            <p className="text-[13px] text-muted-foreground">
+            <p className="t-13 text-muted-foreground">
               Le rappel sera terminé. Vous pourrez ensuite planifier le suivant.
             </p>
           )}
           {action.kind === "Reporter" && (
-            <label className="block text-[13px]">
+            <label className="block t-13">
               Nouvelle échéance
               <DatePicker className="mt-1 min-h-11" onChange={(value) => setDate(value)} required value={date} />
             </label>
           )}
           {action.kind !== "Traiter" && (
-            <label className="block text-[13px]">
+            <label className="block t-13">
               Motif
               <Input className="mt-1 min-h-11" onChange={(event) => setReason(event.target.value)} required value={reason} />
             </label>
@@ -450,8 +447,8 @@ export function PatientRemindersContent({
             {types.map((entry) => (
               <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 py-3" key={entry.id}>
                 <div>
-                  <p className="font-medium text-[14px]">{entry.name}</p>
-                  <p className="text-[13px] text-muted-foreground">{entry.interval_months} mois · {entry.active ? "Actif" : "Inactif"}</p>
+                  <p className="font-medium t-14">{entry.name}</p>
+                  <p className="t-13 text-muted-foreground">{entry.interval_months} mois · {entry.active ? "Actif" : "Inactif"}</p>
                 </div>
                 <Button className="min-h-11" onClick={() => {
                   setEditingType(entry.id);
@@ -473,9 +470,9 @@ export function PatientRemindersContent({
               event.preventDefault();
               void perform(() => patientRemindersService.saveType({ active, id: editingType || undefined, intervalMonths: Number(months), name }, currentUser?.id || ""));
             }}>
-              <label className="block text-[13px]">Nom<Input className="mt-1 min-h-11" onChange={(event) => setName(event.target.value)} required value={name} /></label>
-              <label className="block text-[13px]">Intervalle en mois<Input className="mt-1 min-h-11" max="120" min="1" onChange={(event) => setMonths(event.target.value)} required step="1" type="number" value={months} /></label>
-              <label className="flex min-h-11 items-center gap-2 text-[13px]"><input checked={active} onChange={(event) => setActive(event.target.checked)} type="checkbox" />Actif</label>
+              <label className="block t-13">Nom<Input className="mt-1 min-h-11" onChange={(event) => setName(event.target.value)} required value={name} /></label>
+              <label className="block t-13">Intervalle en mois<Input className="mt-1 min-h-11" max="120" min="1" onChange={(event) => setMonths(event.target.value)} required step="1" type="number" value={months} /></label>
+              <label className="flex min-h-11 items-center gap-2 t-13"><input checked={active} onChange={(event) => setActive(event.target.checked)} type="checkbox" />Actif</label>
               <Button className="min-h-11" disabled={busy || !currentUser} type="submit">Enregistrer le type</Button>
             </form>
           )}

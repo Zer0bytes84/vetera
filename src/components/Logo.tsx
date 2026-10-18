@@ -32,7 +32,7 @@ const Logo: FC<LogoProps> = ({ className = "", collapsed = false, showWordmark =
           <path d="M12 7v21a10 10 0 1 0 10-10 10 10 0 0 0-10 10" fill="none" stroke={`url(#${gradientId})`} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
           <path d="M29 5v12M23 11h12" fill="none" stroke="#63cfc0" strokeWidth="5" strokeLinecap="round" />
         </svg>
-        {!compact && <span className="text-[18px] leading-none font-semibold tracking-[-0.035em] text-sidebar-foreground">Baitari</span>}
+        {!compact && <span className="t-18 leading-none font-semibold tracking-[-0.035em] text-sidebar-foreground">Baitari</span>}
       </div>
     );
   }

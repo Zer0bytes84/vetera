@@ -168,7 +168,7 @@ function ProductDetail({
                 {product.category}
               </span>
             </div>
-            <DialogTitle className="font-semibold text-2xl tracking-[-0.04em]">
+            <DialogTitle>
               {formatDisplayText(product.name)}
             </DialogTitle>
             <DialogDescription>
@@ -353,7 +353,8 @@ export function StockWorkspace({
             title: "À réapprovisionner",
             icon: PackageOpen,
             value: formatNumber(reorder.length),
-            change: reorder.length > 0 ? reorder.length : 0,
+            change: reorder.length,
+            changeKind: "count",
             changeLabel: reorder.length > 0 ? "sous le seuil" : "stock suffisant",
             inverse: true,
             tone: reorder.length ? "watch" : "positive",
@@ -368,7 +369,8 @@ export function StockWorkspace({
             title: "Péremptions à surveiller",
             icon: CalendarClock,
             value: formatNumber(expiries.length),
-            change: expiries.length > 0 ? expiries.length : 0,
+            change: expiries.length,
+            changeKind: "count",
             changeLabel: expiries.length > 0 ? "lots à risque" : "lots conformes",
             inverse: true,
             tone: expiries.length ? "watch" : "positive",
@@ -397,11 +399,11 @@ export function StockWorkspace({
         <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
           <div className="flex flex-col gap-3 border-b px-5 py-4 xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
             <div>
-              <h2 className="font-display font-medium text-xl tracking-[-0.035em]">
+              <h2 className="font-display font-medium t-18 tracking-[-0.035em]">
                 Catalogue & inventaire
               </h2>
             </div>
-            <TabsList className="h-auto flex-wrap gap-1" variant="line">
+            <TabsList tabsStyle="nav" variant="line">
               <TabsTrigger value="catalogue">
                 <PackageCheck /> Catalogue
               </TabsTrigger>

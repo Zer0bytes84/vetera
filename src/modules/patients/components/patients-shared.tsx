@@ -1,4 +1,4 @@
-import { formatPhone } from "@/utils/display-format";
+import { formatPhone, formatPersonName } from "@/utils/display-format";
 import {
   Add01Icon,
   BirdIcon,
@@ -640,7 +640,7 @@ export function PatientDetailsDialog({
               <div className="flex min-w-0 items-center gap-3.5">
                 <div className="min-w-0 space-y-0.5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <DialogTitle className="truncate text-xl tracking-[-0.04em] sm:text-2xl">
+                    <DialogTitle className="truncate">
                       {patient.name}
                     </DialogTitle>
                     <PatientStatusBadge status={patientData.status} />
@@ -705,7 +705,7 @@ export function PatientDetailsDialog({
                   <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
                     Dernière visite
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -735,7 +735,7 @@ export function PatientDetailsDialog({
                   <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={1.5} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
                     Prochain créneau
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -761,7 +761,7 @@ export function PatientDetailsDialog({
                   <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
                     Repère clinique
                   </p>
                   <p className="mt-0.5 truncate font-semibold text-sm tracking-[-0.02em]">
@@ -785,7 +785,7 @@ export function PatientDetailsDialog({
         <div className="record-workspace min-h-0 overflow-y-auto bg-card">
           <div className="grid min-h-full md:grid-cols-[180px_minmax(0,1fr)]">
             <aside className="border-border/40 border-b bg-card px-4 py-3 md:sticky md:top-0 md:h-full md:border-r md:border-b-0 md:px-4 md:py-5">
-              <p className="mb-2 hidden px-3 font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.14em] md:block">
+              <p className="mb-2 hidden px-3 font-semibold t-12 text-muted-foreground uppercase tracking-[0.14em] md:block">
                 Dossier patient
               </p>
               <nav
@@ -849,7 +849,7 @@ export function PatientDetailsDialog({
               </nav>
 
               <div className="mt-5 hidden border-border/60 border-t px-3 pt-4 md:block">
-                <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
                   Dossier
                 </p>
                 <p className="mt-1 font-mono text-foreground text-xs">
@@ -868,7 +868,7 @@ export function PatientDetailsDialog({
                     <span className="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-900">
                       <HugeiconsIcon icon={BirdIcon} strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-semibold text-xl tracking-[-0.03em]">
+                    <h2 className="font-semibold t-18 tracking-[-0.03em]">
                       Identité & contacts
                     </h2>
                   </div>
@@ -907,7 +907,7 @@ export function PatientDetailsDialog({
                                       species: event.target.value,
                                     }))
                                   }
-                                  placeholder="Chien, Chat..."
+                                  placeholder="Chien, chat…"
                                   value={patientData.species}
                                 />
                                 <datalist id="patient-species-options">
@@ -1279,7 +1279,7 @@ export function PatientDetailsDialog({
                     <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
                       <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-semibold text-xl tracking-[-0.03em]">
+                    <h2 className="font-semibold t-18 tracking-[-0.03em]">
                       Suivi médical
                     </h2>
                   </div>
@@ -1330,7 +1330,7 @@ export function PatientDetailsDialog({
                                     generalNotes: event.target.value,
                                   }))
                                 }
-                                placeholder="Observations, habitudes, précautions..."
+                                placeholder="Observations, habitudes, précautions…"
                                 value={patientData.generalNotes}
                               />
                             </Field>
@@ -1369,7 +1369,7 @@ export function PatientDetailsDialog({
                       <HugeiconsIcon icon={WorkHistoryIcon} strokeWidth={1.5} />
                     </span>
                     <div>
-                      <h2 className="font-semibold text-xl tracking-[-0.03em]">
+                      <h2 className="font-semibold t-18 tracking-[-0.03em]">
                         Historique des visites
                       </h2>
                       <p className="text-muted-foreground text-xs">
@@ -1380,7 +1380,7 @@ export function PatientDetailsDialog({
                   <Card className="rounded-2xl shadow-none" size="sm">
                     <CardContent className="grid gap-0 p-0 sm:grid-cols-3">
                       <div className="px-4 py-3.5 sm:border-border/70 sm:border-r">
-                        <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
                           Réglé par le foyer
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1388,7 +1388,7 @@ export function PatientDetailsDialog({
                         </p>
                       </div>
                       <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0 sm:border-r">
-                        <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
                           En attente
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1396,7 +1396,7 @@ export function PatientDetailsDialog({
                         </p>
                       </div>
                       <div className="border-border/70 border-t px-4 py-3.5 sm:border-t-0">
-                        <p className="font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
+                        <p className="font-semibold t-12 text-muted-foreground uppercase tracking-[0.12em]">
                           Écritures liées
                         </p>
                         <p className="mt-1 font-semibold text-lg tracking-[-0.03em]">
@@ -1451,7 +1451,7 @@ export function PatientDetailsDialog({
                                   {appointment.type}
                                 </p>
                                 <p className="truncate text-muted-foreground text-xs">
-                                  {veterinarian?.displayName || "Non assigné"}
+                                  {formatPersonName(veterinarian?.displayName) || "Non assigné"}
                                 </p>
                               </div>
                               <Badge
@@ -1696,7 +1696,7 @@ export function PatientCreateDialog({
                     <UserRound className="size-[18px]" strokeWidth={1.9} />
                   </span>
                   <div>
-                    <h3 className="font-semibold text-[15px] text-foreground">
+                    <h3 className="font-semibold t-16 text-foreground">
                       Propriétaire
                     </h3>
                     <p className="mt-0.5 text-muted-foreground text-xs">
@@ -1776,7 +1776,7 @@ export function PatientCreateDialog({
                       <Field>
                         <FieldLabel>
                           Nom{" "}
-                          <span className="modal-required">Obligatoire</span>
+                          <span className="modal-required">requis</span>
                         </FieldLabel>
                         <Input
                           aria-invalid={Boolean(
@@ -1790,7 +1790,7 @@ export function PatientCreateDialog({
                               lastName: event.target.value,
                             }))
                           }
-                          placeholder="Benali"
+                          placeholder="Nom de famille"
                           value={newOwner.lastName || ""}
                         />
                       </Field>
@@ -1804,7 +1804,7 @@ export function PatientCreateDialog({
                               firstName: event.target.value,
                             }))
                           }
-                          placeholder="Nadia"
+                          placeholder="Prénom"
                           value={newOwner.firstName || ""}
                         />
                       </Field>
@@ -1812,7 +1812,7 @@ export function PatientCreateDialog({
                       <Field>
                         <FieldLabel>
                           Téléphone
-                          <span className="modal-required">Obligatoire</span>
+                          <span className="modal-required">requis</span>
                         </FieldLabel>
                         <Input
                           aria-invalid={Boolean(
@@ -1826,7 +1826,7 @@ export function PatientCreateDialog({
                               phone: event.target.value,
                             }))
                           }
-                          placeholder="0550 00 00 00"
+                          placeholder="Numéro de mobile"
                           value={newOwner.phone || ""}
                         />
                       </Field>
@@ -1840,7 +1840,7 @@ export function PatientCreateDialog({
                               email: event.target.value,
                             }))
                           }
-                          placeholder="nom@exemple.com"
+                          placeholder="Adresse e-mail"
                           type="email"
                           value={newOwner.email || ""}
                         />
@@ -1889,7 +1889,7 @@ export function PatientCreateDialog({
                     <SpeciesIcon className="size-[18px]" strokeWidth={1.9} />
                   </span>
                   <div>
-                    <h3 className="font-semibold text-[15px] text-foreground">
+                    <h3 className="font-semibold t-16 text-foreground">
                       Patient
                     </h3>
                     <p className="mt-0.5 text-muted-foreground text-xs">
@@ -1907,7 +1907,7 @@ export function PatientCreateDialog({
                 <Field className="modal-patient-name-field">
                   <FieldLabel>
                     Nom du patient
-                    <span className="modal-required">Obligatoire</span>
+                    <span className="modal-required">requis</span>
                   </FieldLabel>
                   <Input
                     aria-invalid={Boolean(
@@ -1921,7 +1921,7 @@ export function PatientCreateDialog({
                         name: event.target.value,
                       }))
                     }
-                    placeholder="Simba"
+                    placeholder="Nom de l’animal"
                     value={newPatient.name || ""}
                   />
                 </Field>
@@ -1929,7 +1929,7 @@ export function PatientCreateDialog({
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field>
                     <FieldLabel>
-                      Espèce <span className="modal-required">Obligatoire</span>
+                      Espèce <span className="modal-required">requis</span>
                     </FieldLabel>
                     <Input
                       aria-invalid={Boolean(
@@ -1942,7 +1942,7 @@ export function PatientCreateDialog({
                           species: event.target.value,
                         }))
                       }
-                      placeholder="Chien, Chat..."
+                      placeholder="Chien, chat…"
                       value={newPatient.species || ""}
                     />
                     <datalist id="new-patient-species-options">
@@ -2063,7 +2063,7 @@ export function PatientCreateDialog({
                 />
               )}
               <span>Créer le dossier</span>
-              <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px] sm:inline-block">
+              <kbd className="hidden rounded bg-primary-foreground/20 px-1.5 py-0.5 font-mono t-12 sm:inline-block">
                 ⌘↵
               </kbd>
             </Button>

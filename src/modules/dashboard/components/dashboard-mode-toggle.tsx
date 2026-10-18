@@ -41,7 +41,7 @@ export function DashboardModeToggle({
                   aria-pressed={isSelected}
                   onClick={() => onChange(mode.value)}
                   className={cn(
-                    "relative inline-flex size-7 items-center justify-center rounded-md text-[12px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                    "relative inline-flex size-7 items-center justify-center rounded-md t-12 font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                     isSelected
                       ? "bg-white text-zinc-900 shadow-2xs dark:bg-zinc-800 dark:text-zinc-100 font-semibold"
                       : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent"

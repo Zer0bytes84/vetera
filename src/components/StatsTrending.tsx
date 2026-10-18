@@ -57,12 +57,12 @@ export function StatsTrending({ items, className }: StatsTrendingProps) {
                 <div className="absolute top-0 -right-3 bottom-0 hidden w-px bg-zinc-200 lg:block dark:bg-border/60" />
               )}
 
-              <div className="mb-3 flex select-none items-center gap-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+              <div className="mb-3 flex select-none items-center gap-2 font-semibold t-12 text-muted-foreground uppercase tracking-wider">
                 <Icon className={cn("h-4 w-4 drop-shadow-sm", colorClass)} />
                 {item.title}
               </div>
 
-              <div className="mb-2 font-semibold text-3xl text-foreground leading-none tracking-tight">
+              <div className="mb-2 font-semibold t-24 text-foreground leading-none tracking-tight">
                 {item.value}
               </div>
 
@@ -83,7 +83,7 @@ export function StatsTrending({ items, className }: StatsTrendingProps) {
                     <TrendingDown className="h-3.5 w-3.5 stroke-[3]" />
                   )}
                 </div>
-                <div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wider">
+                <div className="font-medium t-12 text-muted-foreground uppercase tracking-wider">
                   Stats Notes
                 </div>
               </div>

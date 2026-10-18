@@ -86,7 +86,7 @@ export function VitalsChart({
         }}
       />
 
-      <div className="relative z-10 mb-4 flex flex-wrap items-center gap-4 text-[10px]">
+      <div className="relative z-10 mb-4 flex flex-wrap items-center gap-4 t-12">
         {series.map((s) => (
           <div
             className="flex items-center gap-2 rounded-md border border-black/5 bg-white/50 px-2 py-1 shadow-sm dark:border-white/5 dark:bg-white/5"

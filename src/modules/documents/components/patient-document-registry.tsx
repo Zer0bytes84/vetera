@@ -1,5 +1,6 @@
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { useImperativeHandle, useRef, useState, type Ref } from "react";
-import { FileText, Search, Upload, BookOpen, Eye, RefreshCw, X } from "lucide-react";
+import { FileText, Search, Upload, BookOpen, Eye, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,7 +70,7 @@ export function PatientDocumentRegistry({ patientId, onUpload, uploadControl }: 
       <label className="block text-xs text-muted-foreground">Au<DatePicker clearable className="mt-1" aria-label="Documents jusqu’au" value={filters.to} min={filters.from || undefined} onChange={(value) => changeFilter("to", value)} /></label>
     </div>
     {importing && <p className="text-sm text-muted-foreground" role="status">{progress}</p>}
-    {registry.error ? <div className="flex flex-wrap items-center justify-between gap-3 py-6"><p role="alert" className="text-sm text-destructive">{registry.error}</p><Button size="sm" variant="outline" onClick={() => void registry.refresh()}><RefreshCw className="size-4" strokeWidth={1} />Réessayer</Button></div>
+    {registry.error ? <ErrorState className="py-6" message={registry.error} onRetry={() => void registry.refresh()} />
       : registry.loading ? <p role="status" className="py-8 text-center text-sm text-muted-foreground">Chargement des documents…</p>
         : !visible.length ? <div className="py-8 text-center"><p className="text-sm font-medium">{registry.documents.length ? "Aucun document ne correspond aux filtres." : "Aucun document généré ou importé pour ce patient."}</p><p className="mt-1 text-sm text-muted-foreground">Générez un document depuis une note validée, ou importez un PDF ou une image.</p></div>
           : <ul className="divide-y divide-border border-y border-border">

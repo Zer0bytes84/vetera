@@ -36,7 +36,7 @@ export function AboutTeam() {
         <div className="min-w-0"><h4 className="text-sm font-medium leading-5">{person.name}</h4><p className="mt-1 text-xs text-muted-foreground leading-5">{person.role}</p></div>
         <p className="flex-1 text-xs text-muted-foreground leading-6">{person.description}</p>
         <ul className="flex flex-wrap gap-1.5" aria-label={`Contributions de ${person.name}`}>
-          {person.skills.map(skill => <li className="rounded-full border border-border px-2 py-1 text-[11px] text-muted-foreground" key={skill}>{skill}</li>)}
+          {person.skills.map(skill => <li className="rounded-full border border-border px-2 py-1 t-12 text-muted-foreground" key={skill}>{skill}</li>)}
         </ul>
       </article>)}
     </div>

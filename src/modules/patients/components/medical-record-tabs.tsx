@@ -92,6 +92,7 @@ export function MedicalRecordTabs({
         aria-label={label}
         aria-orientation="horizontal"
         className="medical-tabs"
+        data-tabs-style="nav"
         onKeyDown={handleRecordTabKeys}
         onFocusCapture={(event) => {
           const tab = (event.target as HTMLElement).closest('[role="tab"]');

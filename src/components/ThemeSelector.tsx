@@ -57,7 +57,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                   )}
                 />
               )}
-              <span className="font-medium text-[10px] text-muted-foreground">
+              <span className="font-medium t-12 text-muted-foreground">
                 {theme.label}
               </span>
               {config.accent === key && (
@@ -105,10 +105,10 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                   Aa
                 </span>
                 <div className="text-center">
-                  <div className="font-medium text-[10px] text-foreground">
+                  <div className="font-medium t-12 text-foreground">
                     {font.label}
                   </div>
-                  <div className="text-[9px] text-muted-foreground">
+                  <div className="t-12 text-muted-foreground">
                     {font.description}
                   </div>
                 </div>
@@ -158,7 +158,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                         : "var(--border)",
                   }}
                 />
-                <span className="font-medium text-[10px] text-muted-foreground uppercase">
+                <span className="font-medium t-12 text-muted-foreground uppercase">
                   {key}
                 </span>
               </button>
@@ -208,7 +208,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                   </>
                 )}
               </div>
-              <span className="font-medium text-[10px] text-muted-foreground capitalize">
+              <span className="font-medium t-12 text-muted-foreground capitalize">
                 {density === "compact"
                   ? "Compact"
                   : density === "comfortable"

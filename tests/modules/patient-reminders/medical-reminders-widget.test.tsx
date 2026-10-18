@@ -42,3 +42,17 @@ it("garde la zone d’échéances libellée quand aucun rappel futur n’existe"
   expect(html).toContain("Prochaines échéances");
   expect(html).toContain("Suivi à jour");
 });
+
+it("masque le badge d’état tant qu’une erreur de chargement est affichée", () => {
+  const html = renderToStaticMarkup(
+    <MedicalRemindersWidgetContent
+      model={{ reminders: [], types, error: "Les rappels patients n’ont pas pu être chargés.", loading: false, refresh: async () => {} } as never}
+      onAll={() => {}}
+      patients={[]}
+      today="2026-10-17"
+    />,
+  );
+  expect(html).toContain("Les rappels patients n’ont pas pu être chargés.");
+  expect(html).not.toContain("À jour");
+  expect(html).toContain("Voir les rappels");
+});

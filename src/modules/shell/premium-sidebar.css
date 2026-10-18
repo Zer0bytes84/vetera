@@ -1,15 +1,15 @@
 /* Engraved navigation inspired by admin-panel visual language. Clean, artifact-free backgrounds and strict SF Pro typographic hierarchy. */
 :root[data-visual-style="premium"] {
-  --nav-ink: #191919;
-  --nav-text: #4c4c4c;
-  --nav-muted: #8f8f8f;
+  --nav-ink: var(--ink);
+  --nav-text: var(--ink-soft);
+  --nav-muted: var(--ink-muted);
   --nav-bg: #efefef;
   --nav-surface: #ffffff;
   --rule-highlight: #ffffff;
   --rule-shadow: #dcdcdc;
   --nav-engrave: #dcdcdc;
   --nav-light: #ffffff;
-  --nav-border: #f2f2f2;
+  --nav-border: var(--line);
   --nav-line: rgba(0, 0, 0, 0.07);
   --nav-hover: rgba(0, 0, 0, 0.05);
   --premium-nav-row: 34px;
@@ -179,7 +179,7 @@
   background: var(--fill) !important;
   border: none !important;
   box-shadow: inset 0 -1px 0 var(--rule-shadow) !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   font-weight: 500 !important;
   color: var(--soft) !important;
 }
@@ -211,7 +211,7 @@
   margin: 0 0 4px;
   padding: 0 10px;
   color: var(--nav-muted) !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   line-height: 16px !important;
   font-weight: 500 !important;
   letter-spacing: 0.06em !important;

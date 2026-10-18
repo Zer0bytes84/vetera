@@ -7,6 +7,10 @@
 @import "./design-system/tokens.css";
 @import "./design-system/premium.css";
 @import "./design-system/premium-workspace.css";
+@import "./design-system/type-scale.css";
+@import "./design-system/tabs.css";
+@import "./design-system/fields.css";
+@import "./design-system/dialogs.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -235,7 +239,7 @@
 .tiptap-editor .ProseMirror {
   min-height: 250px;
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--foreground);
   outline: none !important;
 }
@@ -260,7 +264,7 @@
   padding-left: 1.25rem;
   margin: 1.5rem 0;
   font-family: var(--font-heading);
-  font-size: 1.15rem;
+  font-size: 18px;
   font-style: italic;
   color: var(--muted-foreground);
   border-left: 3px solid var(--primary);
@@ -283,11 +287,11 @@
 }
 
 .tiptap-editor .ProseMirror h2 {
-  font-size: 1.25rem;
+  font-size: 18px;
 }
 
 .tiptap-editor .ProseMirror h3 {
-  font-size: 1.1rem;
+  font-size: 16px;
 }
 
 /* List Formatting */
@@ -847,7 +851,7 @@ button:focus-visible,
 }
 
 .clinical-eyebrow {
-  font-size: 0.6875rem;
+  font-size: 12px;
   font-weight: 700;
   color: var(--muted-foreground);
   text-transform: uppercase;
@@ -1154,7 +1158,7 @@ button:focus-visible,
 
 .modal-record-link > div > small {
   color: var(--muted-foreground);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .modal-patient-grid {
@@ -1185,17 +1189,14 @@ button:focus-visible,
   border-bottom: 1px solid color-mix(in oklch, var(--border) 78%, transparent);
 }
 
+/* Required fields: a quiet grey word, never an alert colour. */
 .modal-required {
   display: inline-flex;
   align-items: center;
-  min-height: 18px;
-  padding: 0 6px;
-  color: #be123c;
-  background: rgb(244 63 94 / 0.08);
-  border-radius: 5px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.015em;
+  color: var(--ink-muted, #7f7f7f);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .modal-section-state {
@@ -1206,19 +1207,17 @@ button:focus-visible,
   min-height: 26px;
   padding: 0 9px;
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
   white-space: nowrap;
 }
 
-.modal-section-state-owner {
-  color: #9a3412;
-  background: rgb(251 146 60 / 0.1);
-}
-
+/* Section states are information, not alerts: one neutral chip for both. */
+.modal-section-state-owner,
 .modal-section-state-patient {
-  color: #0369a1;
-  background: rgb(56 189 248 / 0.1);
+  color: var(--ink-soft, #5d5d5d);
+  background: rgb(0 0 0 / 4%);
+  font-weight: 500;
 }
 
 .modal-form-fields [data-slot="field"] {
@@ -1269,7 +1268,7 @@ button:focus-visible,
 
 .modal-patient-name-input {
   height: 48px !important;
-  font-size: 15px !important;
+  font-size: 16px !important;
   font-weight: 600;
 }
 
@@ -1302,19 +1301,10 @@ button:focus-visible,
   background: var(--card);
 }
 
-.dark .modal-required {
-  color: #fda4af;
-  background: rgb(244 63 94 / 0.14);
-}
-
-.dark .modal-section-state-owner {
-  color: #fdba74;
-  background: rgb(251 146 60 / 0.14);
-}
-
+.dark .modal-section-state-owner,
 .dark .modal-section-state-patient {
-  color: #7dd3fc;
-  background: rgb(56 189 248 / 0.14);
+  color: var(--ink-soft);
+  background: rgb(255 255 255 / 6%);
 }
 
 .dark .modal-form-fields [data-slot="input"],
@@ -1521,7 +1511,7 @@ button:focus-visible,
 .dashboard-eyebrow {
   width: fit-content;
   padding: 0;
-  font-size: 0.68rem;
+  font-size: 12px;
   font-weight: 600;
   color: oklch(0.552 0.016 286); /* zinc-500 */
   text-transform: uppercase;
@@ -1592,7 +1582,7 @@ button:focus-visible,
 }
 
 .dashboard-kpi-value {
-  font-size: clamp(1.75rem, 2.5vw, 2.5rem) !important;
+  font-size: 24px !important;
   font-weight: 600 !important;
   color: oklch(0.141 0.005 286); /* zinc-900 */
   letter-spacing: -0.03em !important;
@@ -2901,7 +2891,7 @@ html[data-header-pattern="quiet"] .header-pattern-live {
 .modal-banner [data-slot="dialog-description"] {
   max-width: 50ch;
   font-family: var(--app-font-sans);
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 1.5;
   color: var(--muted-foreground);
@@ -2968,7 +2958,7 @@ html[data-header-pattern="quiet"] .header-pattern-live {
     gap: 6px;
   }
   .modal-banner [data-slot="dialog-title"] {
-    font-size: 25px;
+    font-size: 24px;
   }
   .modal-banner-compact {
     min-height: 156px;
@@ -3820,7 +3810,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   background: transparent;
 }
 [data-widget-accent] > [data-slot="card-header"] [data-slot="card-title"] {
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: -0.02em;
 }
 [data-widget-accent]
@@ -3851,7 +3841,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   background: transparent;
 }
 .widget-metrics > div:first-child > p.tabular-nums {
-  font-size: 26px;
+  font-size: 24px;
 }
 .widget-metrics {
   font-variant-numeric: tabular-nums;
@@ -4005,7 +3995,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   text-align: start;
 }
 .modal-workflow-banner [data-slot="dialog-title"] {
-  font-size: 27px;
+  font-size: 24px;
   font-weight: 600;
   text-wrap: pretty;
 }
@@ -4099,7 +4089,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
     border-radius: 15px;
   }
   .modal-workflow-banner [data-slot="dialog-title"] {
-    font-size: 22px;
+    font-size: 18px;
   }
   .modal-workflow-banner [data-slot="dialog-description"] {
     font-size: 13px;
@@ -4188,7 +4178,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
   padding: 4px 10px;
   border-radius: 6px;
   color: var(--muted-foreground);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
 }
@@ -4346,7 +4336,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 }
 .patient-record-page .patient-clinical-metrics button > div { width: 100%; }
 .patient-record-page .record-register table th {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--foreground);
   background: color-mix(in oklab, var(--card) 95%, #14b8a6);
@@ -4439,7 +4429,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 
 /* Compact data panels: raised controls and measured, color-coded progress. */
 .dashboard-v2-widget .widget-heading { padding: 14px 18px; }
-.dashboard-v2-widget .widget-heading [data-slot="card-description"] { font-size: 11px; }
+.dashboard-v2-widget .widget-heading [data-slot="card-description"] { font-size: 12px; }
 .dashboard-v2-widget .widget-metrics { padding-top: 18px; padding-bottom: 16px; }
 .dashboard-v2-widget .widget-metrics > div + div { border-inline-start: 1px solid var(--border); padding-inline-start: 14px; }
 .dashboard-v2-widget .widget-insight-footer {
@@ -4470,7 +4460,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 
 .settings-page-header h1 {
   font-family: var(--app-font-heading);
-  font-size: clamp(28px, 3vw, 36px);
+  font-size: 24px;
   font-weight: 620;
   letter-spacing: -0.035em;
   line-height: 1.12;
@@ -4502,7 +4492,7 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 .settings-nav-group > p {
   padding: 0 11px 8px;
   color: var(--muted-foreground);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: .06em;
 }
@@ -4529,13 +4519,13 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 
 .settings-page-main { min-width: 0; padding: 36px clamp(24px, 4vw, 58px) 80px; }
 .settings-content-heading { margin-bottom: 28px; }
-.settings-content-heading h2 { font-size: 23px; font-weight: 640; letter-spacing: -.025em; }
+.settings-content-heading h2 { font-size: 18px; font-weight: 640; letter-spacing: -.025em; }
 .settings-content-heading p { margin-top: 5px; color: var(--muted-foreground); font-size: 13px; }
 .settings-content { max-width: 800px; }
 .settings-section-stack { display: grid; gap: 16px; }
 .settings-panel { overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
 .settings-panel-heading { padding: 21px 24px 15px; }
-.settings-panel-heading h3 { font-size: 15px; font-weight: 620; }
+.settings-panel-heading h3 { font-size: 16px; font-weight: 620; }
 .settings-panel-heading p { margin-top: 4px; color: var(--muted-foreground); font-size: 12px; }
 .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 74px; padding: 15px 24px; border-top: 1px solid var(--border); }
 .settings-row-title { font-size: 13px; font-weight: 580; }

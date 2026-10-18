@@ -1,3 +1,4 @@
+import { ErrorState } from "@/design-system/patterns/error-state";
 import { useCareTasks } from "./use-care-tasks";
 import { useFocus } from "@/contexts/focus-provider";
 import { Clipboard } from "./care-icons";
@@ -16,14 +17,10 @@ export function AgendaCareSchedule({
   const start = days[0] ?? selectedDate;
   const end = new Date(days.at(-1) ?? selectedDate);
   end.setDate(end.getDate() + 1);
-  const { tasks, error, loading } = useCareTasks(start, end);
+  const { tasks, error, loading, refresh } = useCareTasks(start, end);
   const { requestFocus } = useFocus();
   if (error)
-    return (
-      <p role="alert" className="px-6 py-3 text-destructive">
-        {error}
-      </p>
-    );
+    return <ErrorState className="px-6" message={error} onRetry={() => void refresh()} />;
   if (loading)
     return (
       <p role="status" className="px-6 py-3 text-muted-foreground">
@@ -88,7 +85,7 @@ export function AgendaCareSchedule({
                           {patientName(task.patient_id)}
                         </span>
                         {task.label}
-                        <span className="mt-1 block text-[11px]">
+                        <span className="mt-1 block t-12">
                           {task.statut === "fait"
                             ? "Fait"
                             : task.statut === "annule"

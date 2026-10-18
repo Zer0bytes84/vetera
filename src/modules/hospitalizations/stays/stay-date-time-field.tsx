@@ -11,7 +11,7 @@ export function StayDateTimeField({ value, onChange, label, timeLabel }: {
     <div className="flex min-w-0 gap-2">
       <DatePicker
         aria-label={label}
-        className="h-11 flex-1 rounded-xl text-[13px]"
+        className="h-11 flex-1 rounded-xl t-13"
         onChange={(next) => onChange(next ? `${next}T${time || "08:00"}` : "")}
         value={day}
       />

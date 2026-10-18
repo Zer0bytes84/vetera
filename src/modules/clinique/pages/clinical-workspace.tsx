@@ -66,7 +66,7 @@ export default function ClinicalWorkspace({
   return (
     <div className="clinical-workspace min-w-0">
       <Tabs value={tab} onValueChange={setTab} className="clinical-workspace-navigation w-full px-4 pt-4 lg:px-6">
-        <TabsList aria-label="Sections de la clinique" className="engraved-view-tabs w-full justify-start">
+        <TabsList aria-label="Sections de la clinique" className="w-full justify-start" tabsStyle="nav">
           <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
           <TabsTrigger
@@ -80,7 +80,7 @@ export default function ClinicalWorkspace({
                 variant="outline"
                 aria-hidden="true"
                 title={overdueLabel}
-                className="care-nav-badge min-w-5 border-rose-200 bg-rose-50 px-1.5 text-[12px] text-rose-700 tabular-nums dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+                className="care-nav-badge min-w-5 border-rose-200 bg-rose-50 px-1.5 t-12 text-rose-700 tabular-nums dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
               >
                 {overdueCount}
               </Badge>

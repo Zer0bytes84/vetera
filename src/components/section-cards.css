@@ -14,7 +14,7 @@ button.section-atlas-content:hover .section-atlas-body { border-color: var(--mut
 .section-atlas-value { margin: 0; padding: 0; font-weight: 500; line-height: 1.2; letter-spacing: -0.035em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--foreground); }
 .section-atlas-context { margin: 8px 0 0; color: var(--muted-foreground); font-size: 12px; line-height: 16px; }
 .section-atlas-status { margin-top: 12px; }
-.section-atlas-action { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--foreground); font-size: 11px; line-height: 16px; }
+.section-atlas-action { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--foreground); font-size: 12px; line-height: 16px; }
 @container (max-width: 900px) { .section-atlas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @container (max-width: 600px) { .section-atlas-grid[data-card-count="3"] { grid-template-columns: 1fr; } }
 @container (max-width: 400px) { .section-atlas-grid, .section-atlas-grid[data-card-count="2"] { grid-template-columns: 1fr; } }
@@ -24,3 +24,9 @@ button.section-atlas-content:hover .section-atlas-body { border-color: var(--mut
 .section-atlas-label { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .section-atlas-title-icon { width: 14px; height: 14px; flex-shrink: 0; color: var(--muted-foreground); }
 .section-atlas-label > span { min-width: 0; }
+
+/* Classic style: the same meaning-based colours as Premium. */
+.delta[data-sense="good"] { color: var(--signal-positive); }
+.delta[data-sense="bad"] { color: var(--signal-critical); }
+.delta[data-sense="watch"] { color: var(--signal-watch); }
+.delta[data-sense="neutral"] { color: var(--muted-foreground); }

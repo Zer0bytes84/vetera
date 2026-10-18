@@ -1,8 +1,6 @@
 /* Local tokens only: the rest of Baitari keeps its existing appearance. */
 .care-page {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-    sans-serif;
+  font-family: var(--app-font-sans);
 }
 :root:not(.dark) .care-page {
   --foreground: #292929;

@@ -51,7 +51,7 @@ function DialogContent({
       <DialogOverlay className={overlayClassName} />
       <DialogPrimitive.Popup
         className={cn(
-        "data-open:fade-in-0 data-closed:fade-out-0 fixed start-1/2 top-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl border border-foreground/10 bg-popover p-4 text-popover-foreground text-sm outline-none shadow-[0_24px_80px_-32px_rgba(0,0,0,0.45)] duration-[220ms] ease-[var(--ease-out)] data-closed:animate-out data-open:animate-in sm:max-w-sm rtl:translate-x-1/2 dark:border-white/10 dark:shadow-[0_28px_90px_-36px_rgba(0,0,0,0.75)]",
+        "data-open:fade-in-0 data-closed:fade-out-0 fixed start-1/2 top-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl border border-foreground/10 bg-popover p-5 sm:p-6 text-popover-foreground text-sm outline-none shadow-[0_24px_80px_-32px_rgba(0,0,0,0.45)] duration-[220ms] ease-[var(--ease-out)] data-closed:animate-out data-open:animate-in sm:max-w-sm rtl:translate-x-1/2 dark:border-white/10 dark:shadow-[0_28px_90px_-36px_rgba(0,0,0,0.75)]",
           className
         )}
         data-slot="dialog-content"
@@ -119,7 +119,7 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
     <DialogPrimitive.Title
       className={cn(
-        "font-heading font-medium text-base leading-none",
+        "font-heading font-medium t-24 leading-tight",
         className
       )}
       data-slot="dialog-title"

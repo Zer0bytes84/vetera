@@ -37,9 +37,27 @@ export interface SectionCardItem {
   trend?: "up" | "down" | "neutral";
   value: string | number;
   change?: number | null;
+  /**
+   * How `change` reads. "variation" (default): percentage vs a previous value,
+   * the only kind with a trend arrow. "rate": a share such as a completion rate.
+   * "count": a plain number of items. "difference": a signed change in
+   * units vs a previous value (e.g. +2 vs hier), shown with an arrow.
+   */
+  changeKind?: "variation" | "rate" | "count" | "difference";
+  /** Previous value (variation) or denominator (rate). Zero hides the percentage. */
+  changeBase?: number | null;
   changeLabel?: string;
+  /** True when a rise is bad news (overdue items, stock alerts). */
   inverse?: boolean;
 }
+
+type Sense = "good" | "bad" | "watch" | "neutral";
+const toneSense: Record<NonNullable<SectionCardItem["tone"]>, Sense> = {
+  positive: "good",
+  critical: "bad",
+  watch: "watch",
+  quiet: "neutral",
+};
 
 const iconRules: [pattern: RegExp, icon: LucideIcon][] = [
   [/patient/i, PawPrint],
@@ -65,49 +83,64 @@ function resolveDefaultIcon(title: string, index: number) {
 }
 
 function renderDeltaBadge(item: SectionCardItem) {
-  // Case 1: numeric change percentage
+  // Numeric change: only a real variation gets an arrow, coloured by meaning.
   if (item.change !== undefined && item.change !== null) {
+    const kind = item.changeKind ?? "variation";
+    const label = item.changeLabel || (item.inverse ? "vs échéances précédentes" : "vs période précédente");
+    if (kind === "count") {
+      const sense: Sense = item.tone ? toneSense[item.tone] : item.change === 0 ? "neutral" : item.inverse ? "bad" : "good";
+      return (
+        <span className="delta" data-sense={sense}>
+          <span>{formatNumber(item.change)}</span>
+          <span className="delta-label">{label}</span>
+        </span>
+      );
+    }
+    // A percentage of nothing says nothing: hide it when the base is zero.
+    if (item.changeBase === 0) {
+      return item.changeLabel ? (
+        <span className="delta" data-sense="neutral">
+          <span className="delta-label">{item.changeLabel}</span>
+        </span>
+      ) : null;
+    }
+    if (kind === "rate") {
+      return (
+        <span className="delta" data-sense="neutral">
+          <span>{formatNumber(item.change, { maximumFractionDigits: 1 })} %</span>
+          <span className="delta-label">{label}</span>
+        </span>
+      );
+    }
     const isZero = item.change === 0;
-    const isUp = item.inverse ? item.change < 0 : item.change > 0;
-    const dir = isZero ? "flat" : isUp ? "up" : "down";
+    const good = item.inverse ? item.change < 0 : item.change > 0;
+    const sense: Sense = isZero ? "neutral" : good ? "good" : "bad";
     const Icon = item.change < 0 ? ArrowDownRight : ArrowUpRight;
-    const formattedPercent = `${item.change > 0 ? "+" : ""}${formatNumber(item.change, { maximumFractionDigits: 1 })} %`;
+    const unit = kind === "difference" ? "" : " %";
+    const formattedPercent = `${item.change > 0 ? "+" : ""}${formatNumber(item.change, { maximumFractionDigits: 1 })}${unit}`;
     return (
-      <span className="delta" data-dir={dir}>
+      <span className="delta" data-sense={sense}>
         {!isZero && <Icon size={13} strokeWidth={1.5} aria-hidden="true" />}
         <span>{formattedPercent}</span>
-        <span className="delta-label">
-          {item.changeLabel || (item.inverse ? "vs échéances précédentes" : "vs période précédente")}
-        </span>
+        <span className="delta-label">{label}</span>
       </span>
     );
   }
 
-  // Case 2: badge text provided
+  // Text badge: a status, never a trend. Colour comes from its tone only.
   if (item.badge) {
-    const isUp = item.trend === "up" || item.tone === "positive";
-    const isDown = item.trend === "down" || item.tone === "critical";
-    const dir = isUp ? "up" : isDown ? "down" : "flat";
-    const Icon = isUp ? ArrowUpRight : isDown ? ArrowDownRight : null;
-
     return (
-      <span className="delta" data-dir={dir}>
-        {Icon && <Icon size={13} strokeWidth={1.5} aria-hidden="true" />}
+      <span className="delta" data-sense={item.tone ? toneSense[item.tone] : "neutral"}>
         <span className="delta-badge-value">{item.badge}</span>
         {item.changeLabel && <span className="delta-label">{item.changeLabel}</span>}
       </span>
     );
   }
 
-  // Case 3: footerTitle as delta label if no detailRow provided
+  // Footer title shown as a quiet label when there is no detail row.
   if (item.footerTitle && !item.detailRow) {
-    const isUp = item.trend === "up";
-    const isDown = item.trend === "down";
-    const dir = isUp ? "up" : isDown ? "down" : "flat";
-    const Icon = isUp ? ArrowUpRight : isDown ? ArrowDownRight : null;
     return (
-      <span className="delta" data-dir={dir}>
-        {Icon && <Icon size={13} strokeWidth={1.5} aria-hidden="true" />}
+      <span className="delta" data-sense="neutral">
         <span className="delta-label">{item.footerTitle}</span>
       </span>
     );

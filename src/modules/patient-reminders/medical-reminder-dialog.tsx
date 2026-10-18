@@ -104,8 +104,8 @@ export function MedicalReminderDialog({
                 <div className="medical-reminder-proposal-summary">
                   <CheckCircle2 aria-hidden="true" className="size-5 shrink-0 text-primary" strokeWidth={1} />
                   <div className="min-w-0">
-                    <p className="font-heading text-[16px] font-medium">{patient?.name ?? "Patient"} · {draft.typeLabel}</p>
-                    <p className="mt-1 text-[13px] text-muted-foreground">Le rappel sera créé uniquement après votre confirmation.</p>
+                    <p className="font-heading t-16 font-medium">{patient?.name ?? "Patient"} · {draft.typeLabel}</p>
+                    <p className="mt-1 t-13 text-muted-foreground">Le rappel sera créé uniquement après votre confirmation.</p>
                   </div>
                 </div>
               )}

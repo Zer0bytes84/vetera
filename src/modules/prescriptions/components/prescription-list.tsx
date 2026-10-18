@@ -54,7 +54,7 @@ export function PrescriptionList({
     >
       <div className="mb-6 flex flex-row items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 truncate font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+          <div className="flex items-center gap-1.5 truncate font-bold t-12 text-muted-foreground uppercase tracking-wider">
             <Pill className="size-3.5 text-primary" weight="duotone" />
             {t("prescriptions.list.title")}
           </div>
@@ -160,14 +160,14 @@ function PrescriptionRow({
           <div className="flex items-center gap-2 font-semibold text-sm">
             {dateStr}
             <Badge
-              className="text-[10px]"
+              className="t-12"
               variant={status === "signed" ? "default" : "secondary"}
             >
               {t(`prescriptions.status.${status}`)}
             </Badge>
           </div>
           {diagnosis ? (
-            <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+            <p className="mt-0.5 truncate t-12 text-muted-foreground">
               {diagnosis}
             </p>
           ) : null}
@@ -181,7 +181,7 @@ function PrescriptionRow({
         />
       </div>
       <div className="pt-0">
-        <ul className="divide-y divide-border/40 text-[11px]">
+        <ul className="divide-y divide-border/40 t-12">
           {items.slice(0, 4).map((it) => (
             <li
               className="flex items-center justify-between gap-2 py-1.5"
@@ -201,7 +201,7 @@ function PrescriptionRow({
             </li>
           ))}
           {items.length > 4 ? (
-            <li className="pt-1 text-[10px] text-muted-foreground">
+            <li className="pt-1 t-12 text-muted-foreground">
               + {items.length - 4}
             </li>
           ) : null}

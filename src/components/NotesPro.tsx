@@ -41,6 +41,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNotesRepository, usePatientsRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { Note, Patient } from "@/types/db";
+import { formatElapsed } from "@/utils/display-format";
 
 const DocumentsWorkspace = lazy(() => import("@/modules/documents/components/documents-workspace"));
 const DocumentTemplateManager = lazy(() => import("@/modules/documents/components/document-template-manager"));
@@ -59,22 +60,8 @@ const formatDate = (dateInput: any) => {
   }
   const date = normalizeDate(dateInput);
   const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const minutes = Math.floor(diff / 60_000);
-  const hours = Math.floor(diff / 3_600_000);
-  const days = Math.floor(diff / 86_400_000);
-
-  if (minutes < 1) {
-    return "À l'instant";
-  }
-  if (minutes < 60) {
-    return `Il y a ${minutes}min`;
-  }
-  if (hours < 24) {
-    return `Il y a ${hours}h`;
-  }
-  if (days < 7) {
-    return `Il y a ${days}j`;
+  if (now.getTime() - date.getTime() < 7 * 86_400_000) {
+    return formatElapsed(date, now);
   }
 
   return date.toLocaleDateString("fr-FR", {
@@ -145,7 +132,7 @@ function PatientPicker({
       <PopoverContent align="end" className="w-[min(320px,calc(100vw-32px))] gap-0 rounded-xl border border-border bg-white p-1.5 shadow-[0_14px_38px_-18px_rgba(25,47,29,0.3)] dark:border-white/10 dark:bg-muted" sideOffset={7}>
         <div className="px-2.5 pt-2 pb-2.5">
           <p className="text-xs font-semibold text-foreground dark:text-foreground">{isFilter ? "Afficher les documents de" : "Rattacher cette note à"}</p>
-          <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground dark:text-muted-foreground">{isFilter ? "Ce choix filtre la bibliothèque sans modifier les notes." : "La note sera enregistrée dans le dossier choisi."}</p>
+          <p className="mt-0.5 t-12 leading-4 text-muted-foreground dark:text-muted-foreground">{isFilter ? "Ce choix filtre la bibliothèque sans modifier les notes." : "La note sera enregistrée dans le dossier choisi."}</p>
         </div>
         <div className="relative px-1 pb-1.5">
           <HugeiconsIcon aria-hidden="true" className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-muted-foreground" icon={SearchIcon} strokeWidth={1.5} />
@@ -155,7 +142,7 @@ function PatientPicker({
           {!query && <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-foreground dark:hover:bg-white/10" onClick={() => select("")} type="button"><span className="min-w-0 flex-1">{emptyLabel}</span>{!value && <Check aria-hidden="true" className="size-3.5" />}</button>}
           {results.map((patient) => (
             <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:hover:bg-white/10" key={patient.id} onClick={() => select(patient.id)} type="button">
-              <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-foreground dark:text-foreground">{patient.name}</span><span className="block truncate text-[11px] text-muted-foreground dark:text-muted-foreground">{patient.species}{patient.breed ? ` · ${patient.breed}` : ""}</span></span>
+              <span className="min-w-0 flex-1"><span className="block truncate text-xs font-medium text-foreground dark:text-foreground">{patient.name}</span><span className="block truncate t-12 text-muted-foreground dark:text-muted-foreground">{patient.species}{patient.breed ? ` · ${patient.breed}` : ""}</span></span>
               {value === patient.id && <Check aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground dark:text-muted-foreground" />}
             </button>
           ))}
@@ -447,11 +434,8 @@ const NotesPro: React.FC = () => {
 
   return (
     <div className="documents-workspace dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pt-4 pb-0 md:pt-5 lg:px-6">
-      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0 flex-1">
-          <MotivationalHeader section="notes" title="Documents" subtitle="Vos notes cliniques, reliées aux dossiers de vos patients." />
-        </div>
-        <div data-slot="page-header-actions" className="flex w-full shrink-0 flex-wrap items-center gap-2 lg:w-auto lg:flex-nowrap">
+      <MotivationalHeader section="notes" title="Documents" subtitle="Vos notes cliniques, reliées aux dossiers de vos patients."
+        actions={<>
           <Button size="sm" variant="outline" onClick={() => setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant")}>{workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"}</Button>
           <Button size="sm" variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? "Bibliothèque" : "Modèles"}</Button>
           <div className="relative min-w-[160px] flex-1 lg:w-48 lg:flex-none">
@@ -466,7 +450,7 @@ const NotesPro: React.FC = () => {
                 <span aria-hidden="true" className="ml-1 flex h-4 items-center border-current/20 border-l pl-2"><ChevronDown className="size-3.5" /></span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-72 p-1.5">
-                <DropdownMenuLabel className="px-2 pt-2 pb-1.5 text-[11px] uppercase tracking-[0.08em]">Partir d’un modèle</DropdownMenuLabel>
+                <DropdownMenuLabel className="px-2 pt-2 pb-1.5 t-12 uppercase tracking-[0.08em]">Partir d’un modèle</DropdownMenuLabel>
                 {documentNoteTemplateOrder.map((kind) => (
                   <DropdownMenuItem key={kind} onClick={() => void handleCreateTemplate(kind)}>
                     <FileText className="mr-2 size-4 shrink-0" />
@@ -477,8 +461,8 @@ const NotesPro: React.FC = () => {
                 <DropdownMenuItem onClick={() => void handleCreateNote()}><HugeiconsIcon className="mr-2 size-4" icon={Add01Icon} strokeWidth={1.5} />Page vierge</DropdownMenuItem>
               </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
+        </>}
+      />
 
       {/* Main workspace */}
       {workspaceMode !== "library" ? (
@@ -499,7 +483,7 @@ const NotesPro: React.FC = () => {
         >
           <div className="shrink-0 px-5 pt-5 pb-4">
             <div className="flex items-baseline justify-between gap-3">
-              <h2 className="font-semibold text-xl tracking-[-0.025em] text-foreground dark:text-foreground">Bibliothèque</h2>
+              <h2 className="font-semibold t-18 tracking-[-0.025em] text-foreground dark:text-foreground">Bibliothèque</h2>
               <span className="text-xs font-medium tabular-nums text-muted-foreground dark:text-muted-foreground">{filteredNotes.length} document{filteredNotes.length === 1 ? "" : "s"}</span>
             </div>
           </div>
@@ -507,7 +491,9 @@ const NotesPro: React.FC = () => {
           <div className="shrink-0 border-border border-b px-4 py-2 dark:border-white/10">
             <ToggleGroup
               aria-label="Filtrer les documents"
-              className="document-library-filters w-full gap-0 rounded-lg bg-muted/60 p-0.5"
+              className="document-library-filters"
+              data-tabs-style="segmented"
+              data-tabs-fill=""
               multiple={false}
               value={[filter]}
               onValueChange={values => {
@@ -547,8 +533,8 @@ const NotesPro: React.FC = () => {
                   <div className="group/folder flex items-center gap-1 px-1 py-1">
                     <button aria-expanded={isOpen} className="flex min-h-9 min-w-0 flex-1 items-center gap-2 rounded-lg px-2 text-left text-foreground hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-foreground dark:hover:bg-white/5" onClick={() => setClosedFolders((current) => current.includes(group.key) ? current.filter((key) => key !== group.key) : [...current, group.key])} type="button">
                       {isOpen ? <FolderOpen aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.8} /> : <Folder aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.8} />}
-                      <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">{group.label}</span>
-                      <span className="text-[11px] tabular-nums text-muted-foreground dark:text-muted-foreground">{group.notes.length}</span>
+                      <span className="min-w-0 flex-1 truncate t-13 font-semibold">{group.label}</span>
+                      <span className="t-12 tabular-nums text-muted-foreground dark:text-muted-foreground">{group.notes.length}</span>
                       <ChevronRight aria-hidden="true" className={cn("size-3.5 shrink-0 text-muted-foreground transition-transform dark:text-muted-foreground", isOpen && "rotate-90")} />
                     </button>
                     <button aria-label={`Créer une note de consultation dans ${group.label}`} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-white hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-muted-foreground dark:hover:bg-white/10" onClick={() => void handleCreateTemplate("consultation", group.patientId)} title={`Nouvelle note de consultation · ${group.label}`} type="button"><HugeiconsIcon className="size-3.5" icon={Add01Icon} strokeWidth={1.5} /></button>
@@ -576,8 +562,8 @@ const NotesPro: React.FC = () => {
                       >
                         <FileText aria-hidden="true" className={cn("size-4 shrink-0", isSelected ? "text-foreground dark:text-foreground" : "text-muted-foreground dark:text-muted-foreground")} strokeWidth={1.6} />
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13px] font-medium text-foreground" title={formatDisplayText(note.title || "Sans titre")}>{formatDisplayText(note.title || "Sans titre")}</span>
-                          <span className="mt-0.5 block text-[11px] text-muted-foreground tabular-nums">{formatDate(note.updatedAt)}</span>
+                          <span className="block truncate t-13 font-medium text-foreground" title={formatDisplayText(note.title || "Sans titre")}>{formatDisplayText(note.title || "Sans titre")}</span>
+                          <span className="mt-0.5 block t-12 text-muted-foreground tabular-nums">{formatDate(note.updatedAt)}</span>
                         </span>
                         {isPinned && <Pin aria-label="Épinglé" className="size-3 shrink-0 text-muted-foreground" />}
                         {note.isFavorite && <Star aria-label="Favori" className="size-3 shrink-0 fill-amber-500 text-amber-500" />}

@@ -27,9 +27,9 @@ export function StayBilling({ stay }: { stay: Stay }) {
   const product = products.data.find(item => item.id === productId);
   const days = stayDays(new Date(stay.admitted_at), new Date(stay.discharged_at!));
   return <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
-    <h3 className="text-[16px] font-medium">Facturation du séjour</h3>
-    <p className="text-[13px] text-muted-foreground">{days} journée{days > 1 ? "s" : ""} occupée{days > 1 ? "s" : ""}. Minimum une journée, sortie à minuit exclue. Le brouillon devra être vérifié et émis dans Finances.</p>
-    {!desktop ? <p className="text-[13px] text-muted-foreground">Facturation indisponible sur le web.</p> : loading ? <p role="status" className="text-[13px]">Chargement de la facture…</p> : invoiceId ? <p className="text-[13px]">La facture de ce séjour est disponible dans Finances.</p> :
+    <h3 className="t-16 font-medium">Facturation du séjour</h3>
+    <p className="t-13 text-muted-foreground">{days} journée{days > 1 ? "s" : ""} occupée{days > 1 ? "s" : ""}. Minimum une journée, sortie à minuit exclue. Le brouillon devra être vérifié et émis dans Finances.</p>
+    {!desktop ? <p className="t-13 text-muted-foreground">Facturation indisponible sur le web.</p> : loading ? <p role="status" className="t-13">Chargement de la facture…</p> : invoiceId ? <p className="t-13">La facture de ce séjour est disponible dans Finances.</p> :
       <form className="space-y-3" onSubmit={async event => {
         event.preventDefault();
         const patient = patients.data.find(item => item.id === stay.patient_id);
@@ -43,15 +43,15 @@ export function StayBilling({ stay }: { stay: Stay }) {
         } catch (cause) { setError(cause instanceof Error ? cause.message : "Le brouillon n’a pas pu être préparé."); }
         finally { setBusy(false); }
       }}>
-        <label className="block space-y-2 text-[13px]">Tarif par journée
-          <select aria-label="Tarif par journée" className="h-11 w-full rounded-xl border border-border bg-background px-3 text-[13px]" value={productId} onChange={event => setProductId(event.target.value)}>
+        <label className="block space-y-2 t-13">Tarif par journée
+          <select aria-label="Tarif par journée" className="h-11 w-full rounded-xl border border-border bg-background px-3 t-13" value={productId} onChange={event => setProductId(event.target.value)}>
             <option value="">Choisir un tarif du catalogue</option>
             {products.data.filter(item => !item.archivedAt).map(item => <option key={item.id} value={item.id}>{item.name} · {(item.salePriceAmount / 100).toLocaleString("fr-FR")} DA</option>)}
           </select>
         </label>
-        {product && <p className="text-[14px] font-medium">Total proposé : {(days * product.salePriceAmount / 100).toLocaleString("fr-FR")} DA</p>}
+        {product && <p className="t-14 font-medium">Total proposé : {(days * product.salePriceAmount / 100).toLocaleString("fr-FR")} DA</p>}
         <Button type="submit" className="h-11" disabled={!product || !currentUser || busy}>{busy ? "Préparation…" : "Créer le brouillon de facture"}</Button>
       </form>}
-    {error && <p role="alert" className="text-[13px] text-destructive">{error}</p>}
+    {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
   </section>;
 }

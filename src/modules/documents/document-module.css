@@ -77,7 +77,7 @@
 .document-template-variable:hover { background: var(--muted); }
 .document-template-variable:disabled { opacity: .6; cursor: default; }
 .document-template-variable > span { font-size: 12px; }
-.document-template-variable code { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 11px; overflow-wrap: anywhere; }
+.document-template-variable code { color: var(--muted-foreground); font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
 
 @container document-templates (max-width: 800px) {
   .document-templates-table .document-templates-date-column { display: none; }

@@ -112,7 +112,7 @@ export function PatientPeekView({
     >
       <SheetContent className="patient-peek-panel w-full! gap-0 bg-card sm:max-w-[620px]">
         <SheetHeader className="border-b border-border px-6 py-5 pr-14">
-          <SheetTitle className="text-base">Dossier médical</SheetTitle>
+          <SheetTitle>Dossier médical</SheetTitle>
           <SheetDescription>
             Lecture rapide du patient et de son suivi clinique.
           </SheetDescription>

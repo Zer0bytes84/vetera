@@ -19,9 +19,9 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
   }, [stayId]);
   useEffect(() => { void refresh(); }, [refresh]);
   return <section className="space-y-3 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border">
-    <h3 className="text-[16px] font-medium">Contrôle à la sortie</h3>
-    {loading ? <p role="status" className="text-[13px] text-muted-foreground">Chargement du contrôle…</p> : task ?
-      <p className="text-[13px]">Contrôle prévu le {new Date(`${task.due_date}T12:00:00`).toLocaleDateString("fr-FR")}. Retrouvez-le dans Rappels.</p> :
+    <h3 className="t-16 font-medium">Contrôle à la sortie</h3>
+    {loading ? <p role="status" className="t-13 text-muted-foreground">Chargement du contrôle…</p> : task ?
+      <p className="t-13">Contrôle prévu le {new Date(`${task.due_date}T12:00:00`).toLocaleDateString("fr-FR")}. Retrouvez-le dans Rappels.</p> :
       <form className="flex flex-wrap items-end gap-3" onSubmit={async event => {
         event.preventDefault();
         if (!currentUser || busy || !date) return;
@@ -33,9 +33,9 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
         } catch (cause) { setError(cause instanceof Error ? cause.message : "Le contrôle n’a pas pu être planifié."); }
         finally { setBusy(false); }
       }}>
-        <label className="space-y-2 text-[13px]">Date du contrôle<DatePicker className="h-11" value={date} onChange={(value) => setDate(value)} required/></label>
+        <label className="space-y-2 t-13">Date du contrôle<DatePicker className="h-11" value={date} onChange={(value) => setDate(value)} required/></label>
         <Button type="submit" className="h-11" disabled={busy || !date || !currentUser}>{busy ? "Enregistrement…" : "Ajouter dans Rappels"}</Button>
       </form>}
-    {error && <p role="alert" className="text-[13px] text-destructive">{error}</p>}
+    {error && <p role="alert" className="t-13 text-destructive">{error}</p>}
   </section>;
 }

@@ -168,14 +168,14 @@ export function VitalsEntryDialog({
                 "T° (°C)"
               )}
               onChange={setTemperatureC}
-              placeholder="38.5"
+              placeholder="Ex. 38,5"
               value={temperatureC}
             />
             <Field
               id="v-fc"
               label={t("modules.hospitalizations.vitals.heartRate", "FC (bpm)")}
               onChange={setHeartRateBpm}
-              placeholder="120"
+              placeholder="Ex. 120"
               value={heartRateBpm}
             />
             <Field
@@ -185,35 +185,35 @@ export function VitalsEntryDialog({
                 "FR (/min)"
               )}
               onChange={setRespiratoryRateBpm}
-              placeholder="24"
+              placeholder="Ex. 24"
               value={respiratoryRateBpm}
             />
             <Field
               id="v-spo2"
               label={t("modules.hospitalizations.vitals.spo2", "SpO2 (%)")}
               onChange={setSpo2Percent}
-              placeholder="98"
+              placeholder="Ex. 98"
               value={spo2Percent}
             />
             <Field
               id="v-pas"
               label={t("modules.hospitalizations.vitals.bp", "PAS (mmHg)")}
               onChange={setBloodPressureSys}
-              placeholder="120"
+              placeholder="Ex. 120"
               value={bloodPressureSys}
             />
             <Field
               id="v-pad"
               label={t("modules.hospitalizations.vitals.bp", "PAD (mmHg)")}
               onChange={setBloodPressureDia}
-              placeholder="80"
+              placeholder="Ex. 80"
               value={bloodPressureDia}
             />
             <Field
               id="v-wt"
               label={t("modules.hospitalizations.vitals.weight", "Poids (kg)")}
               onChange={setWeightKg}
-              placeholder="0.0"
+              placeholder="Ex. 12,5"
               value={weightKg}
             />
             <Field
@@ -223,7 +223,7 @@ export function VitalsEntryDialog({
                 "Glycémie (mmol/L)"
               )}
               onChange={setBloodGlucoseMmolL}
-              placeholder="6.5"
+              placeholder="Ex. 6,5"
               value={bloodGlucoseMmolL}
             />
           </div>
@@ -236,7 +236,7 @@ export function VitalsEntryDialog({
                 "TRC (s)"
               )}
               onChange={setCapillaryRefillTimeS}
-              placeholder="< 2"
+              placeholder="Ex. < 2"
               value={capillaryRefillTimeS}
             />
             <div className="grid gap-2">
@@ -252,7 +252,7 @@ export function VitalsEntryDialog({
                 max={10}
                 min={0}
                 onChange={(e) => setPainScore(e.target.value)}
-                placeholder="0"
+                placeholder="De 0 à 10"
                 value={painScore}
               />
             </div>

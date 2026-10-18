@@ -98,7 +98,7 @@ export function HospitalizationList({
             <Hospital className="size-5 text-sky-600" weight="duotone" />
           </div>
           <div className="grid flex-1 gap-0.5">
-            <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.06em]">
+            <div className="font-mono t-12 text-muted-foreground uppercase tracking-[0.06em]">
               {t("modules.hospitalizations.subtitle", "Suivi 24h")}
             </div>
             <div className="font-semibold text-lg tracking-tight">
@@ -121,7 +121,7 @@ export function HospitalizationList({
           {filters.map((f) => (
             <button
               className={cn(
-                "rounded-full border px-3 py-1 font-medium text-[11px] transition-all",
+                "rounded-full border px-3 py-1 font-medium t-12 transition-all",
                 filter === f.value
                   ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-200"
                   : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"
@@ -203,7 +203,7 @@ export function HospitalizationList({
                         {h.diagnosis}
                       </p>
                     ) : null}
-                    <p className="text-[11px] text-muted-foreground/80">
+                    <p className="t-12 text-muted-foreground/80">
                       {t("modules.hospitalizations.fields.admittedAt", "Admis")}{" "}
                       : {formatTimeAgo(h.admissionDate)}
                     </p>

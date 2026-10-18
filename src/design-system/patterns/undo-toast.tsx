@@ -7,7 +7,7 @@ export function UndoToast({
   action: ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 text-[13px]">
+    <div className="flex items-center justify-between gap-4 t-13">
       <p>{message}</p>
       {action}
     </div>

@@ -451,7 +451,7 @@ export function Help() {
             <input
               className="w-full rounded-lg border border-zinc-200 bg-white py-1.5 pr-3 pl-9 text-sm outline-none transition-all placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-zinc-900"
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher une rubrique..."
+              placeholder="Rechercher une rubrique…"
               type="text"
               value={searchQuery}
             />
@@ -466,7 +466,7 @@ export function Help() {
             ) : (
               filteredCategories.map((category) => (
                 <div className="space-y-1.5" key={category.title}>
-                  <h3 className="mb-2 pl-3 font-semibold text-[11px] text-zinc-500 uppercase tracking-wider dark:text-zinc-400">
+                  <h3 className="mb-2 pl-3 font-semibold t-12 text-zinc-500 uppercase tracking-wider dark:text-zinc-400">
                     {category.title}
                   </h3>
                   <ul className="space-y-0.5" role="list">
@@ -531,7 +531,7 @@ export function Help() {
                 />
               </div>
               <div>
-                <h1 className="font-bold text-2xl text-zinc-900 tracking-tight md:text-3xl dark:text-white">
+                <h1 className="font-bold t-24 text-zinc-900 tracking-tight dark:text-white">
                   {activeSection.title}
                 </h1>
                 <p className="mt-2 text-sm text-zinc-500 leading-relaxed md:text-base dark:text-zinc-400">

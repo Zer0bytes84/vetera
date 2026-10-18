@@ -41,7 +41,7 @@ export function NavDocuments({
   const { isMobile } = useSidebar();
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:p-0">
-      <SidebarGroupLabel className="mb-1.5 px-2.5 font-medium text-[10px] text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel className="mb-1.5 px-2.5 font-medium t-12 text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden">
         {premiumTitle ? <><span className="classic-sidebar-label">{title ?? t("nav.sections.operations")}</span><span className="premium-sidebar-label">{premiumTitle}</span></> : title ?? t("nav.sections.operations")}
       </SidebarGroupLabel>
       <SidebarMenu className="gap-1 group-data-[collapsible=icon]:gap-2">
