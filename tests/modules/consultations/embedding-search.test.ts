@@ -88,6 +88,8 @@ import {
   searchPatientDocuments,
   searchAllPatientsDocuments,
   searchAllPatientsClinical,
+  readPatientLexicalMatches,
+  searchAllPatientsFastLexical,
 } from "../../../src/modules/consultations/local-ai/embedding-store";
 let directory: string;
 const scope: SearchScope = {
@@ -178,6 +180,34 @@ beforeEach(async () => {
 afterEach(() => {
   fixture.db?.close();
   rmSync(directory, { recursive: true, force: true });
+});
+describe("Lecture des nouveaux documents sans copie dans les anciennes notes", () => {
+  function insertDocument(id: string, patientId = "rex", state = "finalise", textState?: string) {
+    const attachment = textState ? JSON.stringify({ name: "laboratoire.pdf", mimeType: "application/pdf", size: 20, dataUrl: "data:application/pdf;base64,JVBERi0=", textState, pages: [{ page: 2, text: "Amoxicilline 50 mg matin et soir." }] }) : null;
+    fixture.db!.prepare("INSERT INTO documents(id,patient_id,patient_name,type_document,titre,contenu_genere,statut,clinic_snapshot,values_snapshot,created_at,updated_at,created_by,author_name,finalized_at,attachment_json) VALUES(?,?,?,'import',?,'Amoxicilline 50 mg matin et soir.',?,'{}','{}','2026-10-17T09:00:00Z','2026-10-17T09:00:00Z','vet','Dr Test',?,?)")
+      .run(id, patientId, patientId, id, state, state === "finalise" ? "2026-10-17T09:00:00Z" : null, attachment);
+  }
+  const documentScope: SearchScope = { patientId: "rex", sourceTypes: ["document"], sections: ["document"] };
+  it("retrouve le document finalisé et le PDF extractible du patient courant sans modèle ni insertion d’une note", async () => {
+    insertDocument("generated"); insertDocument("pdf", "rex", "finalise", "extractible"); insertDocument("other-patient", "mocha");
+    fixture.failEmbedding = true;
+    const found = await searchPatientDocuments(documentScope, "Amoxicilline");
+    expect(found.map(row => row.sourceId).sort()).toEqual(["patient-document:generated", "patient-document:pdf"]);
+    expect(found.every(row => row.patientId === "rex")).toBe(true);
+    expect(found.find(row => row.sourceId.endsWith(":pdf"))?.text).toContain("Page 2");
+    expect(fixture.db!.prepare("SELECT COUNT(*) AS count FROM notes").get()).toEqual({ count: 0 });
+  });
+  it("exclut immédiatement les documents annulés, les brouillons, les scans et les images", async () => {
+    insertDocument("cancelled"); insertDocument("draft", "rex", "brouillon"); insertDocument("scan", "rex", "finalise", "scan"); insertDocument("image", "rex", "finalise", "image");
+    fixture.db!.exec("UPDATE documents SET statut='annule',motif_annulation='Erreur de patient' WHERE id='cancelled'");
+    expect(await readPatientLexicalMatches(adapter(), documentScope, "Amoxicilline")).toEqual([]);
+  });
+  it("conserve l’identité de chaque patient uniquement dans le mode global explicite", async () => {
+    insertDocument("rex-document"); insertDocument("mocha-document", "mocha");
+    const matches = await searchAllPatientsFastLexical({ sourceTypes: ["document"], sections: ["document"] }, "Amoxicilline");
+    expect(matches.map(row => row.patientId).sort()).toEqual(["mocha", "rex"]);
+    expect(matches.every(row => row.patientName)).toBe(true);
+  });
 });
 describe("Recherche sémantique locale : index et isolation", () => {
   it("retrouve bactérie dans une rubrique bactérienne sans abaisser le seuil sémantique", () => {

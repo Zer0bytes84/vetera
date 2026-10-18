@@ -47,6 +47,7 @@ const ConsultationDocumentsAssistant = lazy(
   () =>
     import("@/modules/documents/components/consultation-documents-assistant")
 );
+const DocumentComposer = lazy(() => import("@/modules/documents/components/document-composer").then((module) => ({ default: module.DocumentComposer })));
 
 const LocalConsultationAssistant = lazy(
   () => import("./local-consultation-assistant")
@@ -95,6 +96,7 @@ export function SoapPanel({
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [documentsOpen, setDocumentsOpen] = useState(false);
+  const [documentComposerOpen, setDocumentComposerOpen] = useState(false);
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
   const [activeSection, setActiveSection] =
     useState<keyof LocalSoapNote>("subjective");
@@ -305,6 +307,13 @@ export function SoapPanel({
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
             <Button
+              disabled={!initialised || dirty || saveStatus === "saving" || !isSoapReviewed(payload)}
+              size="sm"
+              onClick={() => setDocumentComposerOpen(true)}
+            >
+              <FileText className="size-3.5" /> Générer un document
+            </Button>
+            <Button
               disabled={!initialised || saveStatus === "saving"}
               size="sm"
               variant="outline"
@@ -404,6 +413,9 @@ export function SoapPanel({
           />
         </Suspense>
       )}
+      {documentComposerOpen && <Suspense fallback={<p role="status">Ouverture de la génération…</p>}>
+        <DocumentComposer open={documentComposerOpen} patientId={patientId} consultationId={appointmentId} onClose={() => setDocumentComposerOpen(false)} />
+      </Suspense>}
       <ConsultationAssistantPanel open={assistantOpen}>
         <Suspense
           fallback={

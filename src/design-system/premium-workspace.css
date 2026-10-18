@@ -380,7 +380,7 @@
 
 :root[data-visual-style="premium"] .quick-reminder-fields {
   display: grid;
-  grid-template-columns: 32px minmax(180px, 1fr) minmax(160px, 200px) 156px auto auto;
+  grid-template-columns: minmax(180px, 1fr) minmax(160px, 200px) 156px auto auto;
   align-items: end;
   gap: 12px;
   padding: 20px 24px;
@@ -400,11 +400,8 @@
   color: var(--ink-soft);
 }
 
-:root[data-visual-style="premium"] .quick-reminder-fields .quick-reminder-icon {
-  align-self: center;
-  width: 32px;
-  height: 32px;
-  background: transparent;
+:root[data-visual-style="premium"] .quick-reminder-title > label {
+  display: flex;
 }
 
 :root[data-visual-style="premium"] .quick-reminder-fields :is(input, [data-slot="input-group"]) {
@@ -482,7 +479,6 @@
     grid-template-columns: minmax(0, 1fr) 156px auto;
     align-items: end;
   }
-  :root[data-visual-style="premium"] .quick-reminder-fields .quick-reminder-icon { display: none; }
   :root[data-visual-style="premium"] .quick-reminder-title { grid-column: 1 / -1; }
   :root[data-visual-style="premium"] .quick-reminder-details { grid-column: 2; }
 }
@@ -1008,3 +1004,16 @@
 :root[data-visual-style="premium"] .settings-credits > .settings-panel-heading { padding: 20px 24px; border-bottom: 1px solid var(--line); background: var(--band); }
 :root[data-visual-style="premium"] .settings-credits .settings-contributor { border-radius: 0; border-color: var(--line); box-shadow: var(--hair-l); }
 :root[data-visual-style="premium"] .settings-credits h4 { font-family: var(--app-font-heading); font-weight: 500; color: var(--ink); }
+
+/* Calendars are tables: keep the premium data-table cell styling (padding,
+   hairlines, row hover) out of their day grid so popovers stay compact. */
+:root[data-visual-style="premium"] [data-slot="calendar"] :is(th, td) {
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-size: inherit !important;
+  vertical-align: middle !important;
+}
+:root[data-visual-style="premium"] [data-slot="calendar"] tr:hover > td:not([data-selected="true"]) {
+  background: transparent !important;
+}

@@ -247,7 +247,7 @@ it("la mise à niveau conserve les soins validés existants et initialise leur r
       INSERT INTO care_task_history(id,task_id,from_status,to_status,author_id,changed_at) VALUES('h','c','a_faire','fait','vet','${now}');`);
     const original = old.prepare("SELECT * FROM care_tasks").get();
     const history = old.prepare("SELECT * FROM care_task_history").all();
-    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["035"]);
+    await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["035", "036", "037"]);
     expect(old.prepare("SELECT * FROM care_tasks").get()).toEqual({...original, completion_revision: 0});
     expect(old.prepare("SELECT * FROM care_task_history").all()).toEqual(history);
     expect(() => old.exec("UPDATE care_tasks SET completion_revision=-1")).toThrow();

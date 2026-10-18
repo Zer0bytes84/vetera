@@ -1,7 +1,251 @@
-.patient-reminders-panel {font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",sans-serif;color:#292929;}
-.patient-reminders-panel :is(button,input,select) {font-family:inherit;}
-.patient-reminders-panel .border-border {border-color:#F2F2F2;}
-.patient-reminders-panel .text-muted-foreground {color:#7F7F7F;}
-.dark .patient-reminders-panel {color:var(--foreground);}
-.dark .patient-reminders-panel .border-border {border-color:var(--border);}
-.dark .patient-reminders-panel .text-muted-foreground {color:var(--muted-foreground);}
+.reminders-page,
+.patient-reminders-panel,
+.medical-reminder-dialog,
+.medical-reminder-calendar {
+  --reminder-control-height: 44px;
+}
+
+.patient-reminders-panel {
+  color: var(--foreground);
+  font-family: var(--app-font-sans);
+  container: medical-reminders / inline-size;
+}
+
+.patient-reminders-panel :is(button, input, select) { font-family: inherit; }
+.patient-reminders-panel .font-heading { font-family: var(--app-font-heading); }
+.patient-reminders-panel svg { stroke-width: 1; }
+.reminders-page .lucide { stroke-width: 1; }
+.medical-reminder-proposal-summary { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--muted); }
+.medical-reminder-dialog :is(input, button, textarea) { min-height: 44px; }
+.medical-reminder-dialog [data-slot="dialog-close"] { min-height: 32px; }
+
+/* Keep the medical controls consistent without resizing controls on other pages. */
+:root[data-visual-style="premium"] .patient-reminders-panel [data-slot="button"],
+:root[data-visual-style="premium"] .medical-reminder-dialog button,
+:root[data-visual-style="premium"] .reminders-page [data-slot="page-header-actions"] :is([data-slot="button"], [data-slot="native-select"]) {
+  height: var(--reminder-control-height) !important;
+  min-height: var(--reminder-control-height) !important;
+}
+:root .medical-reminder-dialog button { min-width: 44px; }
+
+:root .medical-reminder-dialog :is([data-slot="input"], [data-slot="textarea"], [data-slot="input-group"]) {
+  border: 1px solid var(--input) !important;
+  background: var(--surface) !important;
+}
+
+.medical-reminder-dialog [data-slot="input-group"] {
+  height: var(--reminder-control-height);
+}
+
+:root .medical-reminder-dialog [data-slot="input-group-control"] {
+  height: 100% !important;
+  min-height: 0;
+  border: 0 !important;
+  border-radius: inherit;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.medical-reminder-dialog [data-slot="input-group-addon"] {
+  align-self: stretch;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+}
+
+:root .medical-reminder-dialog [data-slot="input-group"] button {
+  width: var(--reminder-control-height);
+  min-width: var(--reminder-control-height);
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:root .medical-reminder-dialog [data-slot="input-group"] button:hover {
+  background: var(--muted) !important;
+}
+
+:root .medical-reminder-dialog [data-slot="input-group"] button:focus-visible {
+  outline-offset: -3px;
+}
+
+:root .medical-reminder-dialog .medical-reminder-date-trigger {
+  justify-content: flex-start !important;
+}
+
+.medical-reminder-calendar {
+  --reminder-control-height: 40px;
+  max-width: calc(100vw - 24px);
+  font-family: var(--app-font-sans);
+}
+
+.medical-reminder-calendar [data-slot="calendar"] {
+  --cell-size: var(--reminder-control-height);
+}
+
+:root .medical-reminder-calendar th {
+  padding-inline: 0 !important;
+}
+
+:root .medical-reminder-calendar :is([data-day], .rdp-nav button) {
+  width: var(--reminder-control-height) !important;
+  min-width: var(--reminder-control-height) !important;
+  height: var(--reminder-control-height) !important;
+  min-height: var(--reminder-control-height) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  box-shadow: none !important;
+}
+
+:root .medical-reminder-calendar :is([data-day], .rdp-nav button):hover {
+  background: var(--muted) !important;
+}
+
+:root .medical-reminder-calendar [data-day][data-selected-single="true"] {
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+.reminder-segments {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-radius: 10px;
+  padding: 3px;
+  background: var(--muted);
+}
+
+.reminder-segment {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 7px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.reminder-segment:is([aria-selected="true"], [aria-pressed="true"]) {
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.medical-reminder-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 4px;
+}
+
+.medical-reminder-row-actions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 120px;
+  justify-self: end;
+  align-items: center;
+  gap: 8px;
+}
+
+:root .patient-reminders-panel .medical-reminder-row-actions > button {
+  width: 100%;
+  min-width: 0;
+  height: var(--reminder-control-height) !important;
+  min-height: var(--reminder-control-height) !important;
+  padding: 0 12px !important;
+}
+
+.medical-reminder-date {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.medical-reminder-date svg { width: 17px; height: 17px; stroke-width: 1; }
+.patient-reminders-panel .medical-reminder-date.is-due { border-color: color-mix(in srgb, var(--premium-blue, var(--interactive-blue)) 32%, var(--border)); color: var(--premium-blue, var(--interactive-blue)); }
+.medical-reminder-date.is-overdue { border-color: color-mix(in srgb, var(--destructive) 38%, var(--border)); color: var(--destructive); }
+
+.medical-phone-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius);
+  padding: 0 8px;
+  color: var(--premium-blue, var(--interactive-blue));
+  font-weight: 500;
+}
+
+.medical-phone-link:hover { background: color-mix(in srgb, var(--primary) 8%, transparent); }
+
+.medical-reminder-action {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 16px;
+}
+
+.medical-reminders-widget { container: medical-reminders-widget / inline-size; }
+.medical-reminders-widget-content { display: grid; grid-template-columns: minmax(240px, 0.9fr) minmax(0, 2fr); gap: 32px; align-items: start; }
+.medical-reminders-widget-zone { display: grid; min-width: 0; gap: 12px; }
+.medical-reminders-widget-zone + .medical-reminders-widget-zone { border-inline-start: 1px solid var(--border); padding-inline-start: 32px; }
+.medical-reminders-widget-label { margin: 0; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+.medical-reminders-widget-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; }
+.medical-reminders-widget-totals dd { margin: 0; }
+.medical-reminders-widget-upcoming { display: grid; margin: 0; padding: 0; list-style: none; }
+.medical-reminders-widget-upcoming > li { display: grid; grid-template-columns: 104px minmax(0, 1fr) minmax(0, 0.8fr); align-items: baseline; gap: 16px; min-height: 40px; padding-block: 9px; }
+.medical-reminders-widget-upcoming > li + li { border-top: 1px solid var(--border); }
+:root[data-visual-style="premium"] .medical-reminders-widget { padding: 0; border-radius: 0; background: transparent; box-shadow: var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r); }
+:root[data-visual-style="premium"] .medical-reminders-widget > div { border-radius: 0; background: transparent; }
+
+@media (max-width: 840px) {
+  .medical-reminder-row { grid-template-columns: 84px minmax(0, 1fr); }
+}
+
+@container medical-reminders-widget (max-width: 760px) {
+  .medical-reminders-widget-content { grid-template-columns: 1fr; gap: 20px; }
+  .medical-reminders-widget-zone + .medical-reminders-widget-zone { border-inline-start: 0; border-top: 1px solid var(--border); padding-inline-start: 0; padding-top: 20px; }
+}
+
+@container medical-reminders-widget (max-width: 460px) {
+  .medical-reminders-widget-upcoming > li { grid-template-columns: 96px minmax(0, 1fr); gap: 4px 12px; }
+  .medical-reminders-widget-upcoming > li > span:last-child { grid-column: 2; }
+}
+
+@container medical-reminders (max-width: 900px) {
+  .medical-reminder-row { grid-template-columns: 120px minmax(0, 1fr); }
+  .medical-reminder-row-actions { grid-column: 1 / -1; }
+}
+
+@container medical-reminders (max-width: 520px) {
+  .medical-reminder-row-actions {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-columns: auto;
+    justify-self: stretch;
+  }
+}
+
+@media (max-width: 520px) {
+  .medical-reminder-row { grid-template-columns: 1fr; }
+  .medical-reminder-date { width: fit-content; min-height: 40px; padding: 0 12px; }
+}

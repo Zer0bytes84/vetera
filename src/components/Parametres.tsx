@@ -5,6 +5,9 @@ import { PageDate } from "@/components/PageDate";
 import { MascotSettings } from "@/components/mascot/mascot-settings";
 import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
 import { InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
+import DocumentTemplateManager from "@/modules/documents/components/document-template-manager";
+import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
+import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
 import {
   Alert02Icon,
@@ -86,6 +89,8 @@ type SettingsTab =
   | "apparence"
   | "securite"
   | "ia"
+  | "rappels-medicaux"
+  | "modeles-documents"
   | "sauvegarde"
   | "apropos";
 
@@ -171,6 +176,20 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
           "modèle local",
           "intelligence artificielle",
         ],
+      },
+      {
+        id: "rappels-medicaux",
+        label: "Rappels médicaux",
+        description: "Types et intervalles préventifs",
+        icon: InformationSquareIcon,
+        keywords: ["vaccin", "vermifuge", "contrôle", "dentaire", "échéance"],
+      },
+      {
+        id: "modeles-documents",
+        label: "Modèles de documents",
+        description: "Formulations et champs des documents du cabinet",
+        icon: PencilEdit01Icon,
+        keywords: ["ordonnance", "certificat", "compte-rendu", "lettre", "document", "modèle"],
       },
     ],
   },
@@ -526,6 +545,7 @@ const Parametres: React.FC<ParametresProps> = ({
     return () => window.removeEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
   }, []);
   const { currentUser, refreshCurrentUser } = useAuth();
+  const medicalReminders = usePatientReminders();
   const { data: users, update: updateUserDoc } = useUsersRepository();
   const userDoc = users.find((u) => u.email === currentUser?.email);
 
@@ -711,6 +731,8 @@ const Parametres: React.FC<ParametresProps> = ({
 
   const renderContent = () => {
     switch (activeTab) {
+      case "modeles-documents":
+        return <DocumentTemplateManager embedded onConfigureClinic={() => setActiveTab("cabinet")} />;
       case "profil":
         return (
           <div className="settings-section-stack">
@@ -1055,6 +1077,14 @@ const Parametres: React.FC<ParametresProps> = ({
         );
       case "ia":
         return <AIModelSettings />;
+      case "rappels-medicaux":
+        return (
+          <PatientRemindersContent
+            embedded
+            model={medicalReminders}
+            view="types"
+          />
+        );
       case "sauvegarde":
         return <div className="settings-section-stack"><BackupSettings /><LocalDataResetSettings /></div>;
       case "apropos":

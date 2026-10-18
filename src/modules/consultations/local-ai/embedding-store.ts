@@ -17,6 +17,7 @@ import {
   MIN_SEARCH_SCORE,
   assertSearchScope,
   documentSearchChunks,
+  managedDocumentSearchChunks,
   embeddingFromHex,
   embeddingToHex,
   matchesSearchTerms,
@@ -32,6 +33,7 @@ import {
   type SourceType,
   type SearchSection,
 } from "./embedding-index";
+import type { DocumentAttachment, PatientDocument } from "@/modules/documents/document-domain";
 export interface SearchDatabase {
   select<T>(query: string, values?: unknown[]): Promise<T>;
   execute(query: string, values?: unknown[]): Promise<unknown>;
@@ -39,6 +41,20 @@ export interface SearchDatabase {
 const SOAP_COLUMNS =
   "id,patient_id AS patientId,subjective,objective,assessment,plan,content,ai_draft AS aiDraft";
 const NOTE_COLUMNS = "id,patient_id AS patientId,content,tags";
+
+/** Read current final documents only; no embeddings, remote lookup or write occurs here. */
+async function managedPatientChunks(db: SearchDatabase, patientId?: string): Promise<SearchChunk[]> {
+  const rows = await db.select<Array<Pick<PatientDocument, "id" | "patientId" | "patientName" | "title" | "content" | "kind" | "status" | "updatedAt"> & { attachmentJson: string | null }>>(
+    "SELECT d.id,d.patient_id AS patientId,p.name AS patientName,d.type_document AS kind,d.titre AS title,d.contenu_genere AS content,d.statut AS status,d.updated_at AS updatedAt,d.attachment_json AS attachmentJson FROM documents d JOIN patients p ON p.id=d.patient_id WHERE d.statut='finalise'" + (patientId ? " AND d.patient_id=?" : ""),
+    patientId ? [patientId] : [],
+  );
+  return rows.flatMap(row => {
+    try {
+      const attachment: DocumentAttachment | null = row.attachmentJson ? JSON.parse(row.attachmentJson) : null;
+      return managedDocumentSearchChunks({ ...row, attachment });
+    } catch { return []; }
+  });
+}
 export async function persistSearchChunks(
   db: SearchDatabase,
   chunks: SearchChunk[],
@@ -365,6 +381,8 @@ export async function readPatientLexicalMatches(
       catch { /* Only current human-reviewed documents are eligible. */ }
     }
   }
+  if (scope.sourceTypes.includes("document") && scope.sections.includes("document"))
+    chunks.push(...await managedPatientChunks(db, scope.patientId));
   return chunks.filter(chunk => chunk.patientId === scope.patientId &&
     scope.sourceTypes.includes(chunk.sourceType) && scope.sections.includes(chunk.section) &&
     matchesSearchTerms(query, chunk.text))
@@ -439,8 +457,11 @@ export async function searchAllPatientsDocuments(
     if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
     const scope = { patientId: patient.id, ...filters };
     const rows = await runDbRead((db) => readPatientSearchRows(db, scope));
+    const lexical = filters.sourceTypes.includes("document") && filters.sections.includes("document")
+      ? (await runDbRead(db => managedPatientChunks(db, patient.id))).filter(chunk => matchesSearchTerms(query, chunk.text)).map(chunk => ({ ...chunk, score: 0.95, match: "text" as const }))
+      : [];
     found.push(
-      ...rankPatientChunks(rows, vector, scope, 5, MIN_SEARCH_SCORE, query).map(
+      ...[...lexical, ...rankPatientChunks(rows, vector, scope, 5, MIN_SEARCH_SCORE, query)].map(
         (row) => ({ ...row, patientName: patient.name }),
       ),
     );
@@ -494,6 +515,13 @@ export async function searchAllPatientsFastLexical(
     };
 
     const allowedSources = new Set(filters.sourceTypes);
+
+    if (allowedSources.has("document") && filters.sections.includes("document")) {
+      for (const chunk of await managedPatientChunks(db)) {
+        if (matchesSearchTerms(trimmed, chunk.text))
+          addMatch({ ...chunk, patientName: chunk.patientName || "Patient", score: 0.95 });
+      }
+    }
 
     // 1. Pre-computed indexed vector chunks (SOAP & documents in SQLite embeddings table)
     const embeddingTypes = filters.sourceTypes.filter((t) =>

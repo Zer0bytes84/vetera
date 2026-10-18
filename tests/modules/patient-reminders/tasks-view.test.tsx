@@ -39,14 +39,14 @@ vi.mock("@/modules/patient-reminders/use-patient-reminders", () => ({
 }));
 
 import Tasks from "@/components/Tasks";
+import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
 
 const render = () => renderToStaticMarkup(<Tasks />);
 const task = (id: string, dueDate = "2026-10-14", status: Task["status"] = "todo") => ({
   id, title: `Rappel ${id}`, dueDate, status, priority: "medium", assignedTo: "vet",
 } as Task);
-const medical = (id: string, due_date: string, status: PatientReminder["status"] = "en_cours") => ({
-  id, patient_id: "patient", type_id: "vaccination", family_key: "vaccination", due_date,
-  status, origin: "manuel",
+const medical = (id: string, echeance: string, statut: PatientReminder["statut"] = "en_cours") => ({
+  id, patient_id: "patient", type: "vaccin", echeance, statut,
 } as PatientReminder);
 
 beforeEach(() => {
@@ -56,7 +56,7 @@ beforeEach(() => {
   harness.appointmentsReminders = [];
   harness.medicalReminders = [];
   harness.patients = [{ id: "patient", name: "Patient test" } as Patient];
-  harness.types = [{ id: "vaccination", name: "Vaccination", active: 1 } as ReminderType];
+  harness.types = [{ id: "vaccin", name: "Vaccin", active: 1 } as ReminderType];
   harness.error = null;
 });
 afterEach(() => vi.useRealTimers());
@@ -71,20 +71,24 @@ it("affiche les quatre rappels à traiter même en l’absence de rappels médic
 
 it("compte et affiche les mêmes échéances médicales et manuelles, sans inclure les futures ou terminées", () => {
   harness.tasks = [task("manuel"), task("futur", "2026-10-15"), task("termine", "2026-10-14", "done")];
-  harness.medicalReminders = [medical("du", "2026-10-13"), medical("futur", "2026-10-15"), medical("termine", "2026-10-12", "traite")];
+  harness.medicalReminders = [medical("du", "2026-10-13"), medical("futur", "2026-10-15"), medical("termine", "2026-10-12", "termine")];
   const html = render();
   expect(html).toMatch(/À traiter[\s\S]*?class="[^"]*\bsection-atlas-value\b[^"]*"[^>]*>2<\/span>/);
   expect(html).toContain('data-task-id="manuel"');
-  expect(html).toContain("Patient test · Vaccination");
+  expect(html).toContain('data-medical-reminder-id="du"');
+  expect(html).toContain("Patient test");
+  expect(html).toContain("Vaccin");
   expect(html).not.toContain('data-task-id="futur"');
   expect(html).not.toContain('data-task-id="termine"');
-  expect((html.match(/Patient test · Vaccination/g) || []).length).toBe(1);
+  expect(html).not.toContain('data-medical-reminder-id="futur"');
+  expect(html).not.toContain('data-medical-reminder-id="termine"');
 });
 
 it("propose le type et une date préremplie dans le formulaire rapide", () => {
   const html = render();
   expect(html).toContain('aria-label="Type du nouveau rappel"');
-  expect(html).toMatch(/aria-label="Date du nouveau rappel"[^>]*value="2026-10-14"/);
+  // French calendar field (no native English picker), prefilled with the civil day.
+  expect(html).toMatch(/aria-label="Date du nouveau rappel"[^>]*>[^]*?14\/10\/2026/);
 });
 
 it("signale un échec de chargement des rappels patients au lieu de le masquer derrière la liste manuelle", () => {
@@ -94,4 +98,15 @@ it("signale un échec de chargement des rappels patients au lieu de le masquer d
   expect(html).toContain(harness.error);
   expect(html).toContain('role="alert"');
   expect(html).toContain('data-task-id="manuel"');
+});
+
+it("conserve l’administration des types historiques utilisés par les rappels manuels", () => {
+  const types = [
+    { id: "vaccination", name: "Vaccination manuelle", active: 1, interval_months: 12 },
+    { id: "vaccin", name: "Vaccin", active: 1, interval_months: 12 },
+  ] as ReminderType[];
+  const html = renderToStaticMarkup(<PatientRemindersContent embedded includeManualTypes view="types" model={{ reminders: [], types, error: null, loading: false, refresh: async () => {} }} />);
+  expect(html).toContain("Vaccination manuelle");
+  expect(html).toContain("Vaccin");
+  expect((html.match(/>Modifier<\/button>/g) ?? []).length).toBe(2);
 });

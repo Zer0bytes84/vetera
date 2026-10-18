@@ -1,4 +1,5 @@
 import { useRowSaveFlash } from "@/hooks/useRowSaveFlash";
+import { MedicalActReminderPrompt } from "@/modules/patient-reminders/medical-act-reminder-prompt";
 import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
@@ -1141,6 +1142,7 @@ function AppShellInner() {
       </SidebarInset>
 
       {/* Command Palette */}
+      <MedicalActReminderPrompt />
       {peekPatientId && (
         <PatientPeek
           patientId={peekPatientId}

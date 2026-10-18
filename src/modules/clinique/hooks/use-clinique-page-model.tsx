@@ -24,6 +24,8 @@ import {
 } from "@/data/repositories";
 import { PRE_CONSULTATION_STATUSES } from "@/domain/clinical/scheduling";
 import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
+import { localToday, medicalReminderTypeForAct } from "@/modules/patient-reminders/domain";
+import { announceMedicalActRecorded } from "@/modules/patient-reminders/medical-act-events";
 
 import { getInvoiceSettings } from "@/services/invoiceSettingsService";
 import { exportInvoicePdf } from "@/lib/invoice-pdf";
@@ -581,6 +583,16 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       setActiveConsultation(null);
       setBillingAppointment(updatedAppointment);
       toast.success("Consultation clôturée et déplacée dans Terminées.");
+      const reminderType = medicalReminderTypeForAct(`${updatedAppointment.type} ${updatedAppointment.title ?? ""} ${updatedAppointment.reason ?? ""}`);
+      if (reminderType) {
+        announceMedicalActRecorded({
+          id: `consultation:${updatedAppointment.id}`,
+          patientId: updatedAppointment.patientId,
+          type: reminderType,
+          date: localToday(),
+          note: updatedAppointment.reason || updatedAppointment.title,
+        });
+      }
     } catch (error) {
       console.error(error);
       toast.error("Impossible de clôturer la consultation.");

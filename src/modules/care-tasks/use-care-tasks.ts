@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { careDisplayStatus, type CareTask } from "./domain";
 import { careTasksService } from "./service";
 export const CARE_TASKS_CHANGED = "baitari:care-tasks-changed";
+/** Session key: day the Soins list opens on after a redirect (YYYY-MM-DD). */
+export const CARE_LIST_DAY_KEY = "baitari:care-list-day";
 export function announceCareTasksChanged() {
   window.dispatchEvent(new Event(CARE_TASKS_CHANGED));
 }

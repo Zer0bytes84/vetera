@@ -46,6 +46,9 @@ import {
   type LocalModelStatus,
 } from "@/modules/consultations/local-ai/models";
 import { useDocumentTemplates } from "../hooks/use-document-templates";
+import { usePatientDocuments } from "../hooks/use-managed-documents";
+import type { PatientDocument } from "../document-domain";
+import { attachmentFile, readPatientDocument } from "../lib/patient-document-reading";
 import { renderClinicalDocument } from "../lib/document-templates";
 import {
   readLocalDocument,
@@ -108,10 +111,14 @@ export default function ConsultationDocumentsAssistant({
   appointmentId,
   patientId,
   onClose,
+  initialMode = "generate",
+  initialDocument,
 }: {
   appointmentId: string;
   patientId: string;
   onClose?: () => void;
+  initialMode?: "generate" | "read";
+  initialDocument?: PatientDocument;
 }) {
   const { currentUser } = useAuth();
   const patients = useSQLite<Patient>("patients");
@@ -121,6 +128,7 @@ export default function ConsultationDocumentsAssistant({
   const files = useSQLite<ConsultationDocument>("consultation_documents");
   const notes = useSQLite<Note>("notes");
   const templates = useDocumentTemplates();
+  const managedDocuments = usePatientDocuments(patientId);
   const patient = patients.data.find((entry) => entry.id === patientId);
   const appointment = appointments.data.find(
     (entry) => entry.id === appointmentId && entry.patientId === patientId
@@ -130,10 +138,11 @@ export default function ConsultationDocumentsAssistant({
       entry.appointmentId === appointmentId && entry.patientId === patientId
   );
   const owner = owners.data.find((entry) => entry.id === patient?.ownerId);
-  const [mode, setMode] = useState<"generate" | "read">("generate");
+  const [mode, setMode] = useState<"generate" | "read">(initialMode);
   const [templateId, setTemplateId] = useState("document-report");
   const [models, setModels] = useState<LocalModelStatus>(EMPTY_MODEL_STATUS);
   const [reading, setReading] = useState<ReadDocument | null>(null);
+  const [selectedManagedId, setSelectedManagedId] = useState(initialDocument?.id ?? "");
   const [question, setQuestion] = useState(
     "Quels sont les principaux résultats mentionnés dans ce document ?"
   );
@@ -154,6 +163,14 @@ export default function ConsultationDocumentsAssistant({
   const picker = useRef<HTMLInputElement>(null);
   const id = useId();
   useEffect(() => {
+    if (!initialDocument) return;
+    let active = true;
+    void readPatientDocument(initialDocument, { patientId })
+      .then(source => { if (active) setReading(source); })
+      .catch(failure => { if (active) setError((failure as Error).message); });
+    return () => { active = false; };
+  }, [initialDocument, patientId]);
+  useEffect(() => {
     let active = true;
     void getLocalModels()
       .then((status) => {
@@ -161,7 +178,7 @@ export default function ConsultationDocumentsAssistant({
       })
       .catch(() => {
         if (active)
-          setError("L’installation de l’assistant n’a pas pu être vérifiée.");
+          setError(previous => previous || "L’installation de l’assistant n’a pas pu être vérifiée.");
       });
     return () => {
       active = false;
@@ -192,7 +209,8 @@ export default function ConsultationDocumentsAssistant({
     soaps.error ||
     templates.error ||
     files.error ||
-    notes.error
+    notes.error ||
+    managedDocuments.error
   );
   const createDraft = () => {
     if (!ready || !patient || !appointment || !soap) return;
@@ -239,6 +257,7 @@ export default function ConsultationDocumentsAssistant({
     const task = new AbortController();
     controller.current = task;
     setBusy(true);
+    setSelectedManagedId(sourceId ?? "");
     setError("");
     setReading(null);
     setAnswer(null);
@@ -266,14 +285,22 @@ export default function ConsultationDocumentsAssistant({
     setAskedQuestion("");
     setDraft(null);
     resetReview();
+    const managed = managedDocuments.documents.find(entry => entry.id === value && entry.patientId === patientId);
+    setSelectedManagedId(managed?.id ?? "");
+    if (managed) {
+      setReading(null);
+      void readPatientDocument(managed, { patientId })
+        .then(setReading)
+        .catch(failure => setError((failure as Error).message));
+      return;
+    }
     const file = files.data.find(
       (entry) => entry.id === value && entry.patientId === patientId
     );
     const note = notes.data.find(
       (entry) =>
         entry.id === value &&
-        entry.patientId === patientId &&
-        entry.userId === currentUser?.uid
+        entry.patientId === patientId
     );
     if (file) {
       try {
@@ -397,9 +424,10 @@ export default function ConsultationDocumentsAssistant({
       )
   );
   const availableNotes = notes.data.filter(
-    (entry) =>
-      entry.patientId === patientId && entry.userId === currentUser?.uid
+    (entry) => entry.patientId === patientId
   );
+  const availableManaged = managedDocuments.documents.filter(entry => entry.patientId === patientId && entry.status === "finalise");
+  const selectedManaged = availableManaged.find(entry => entry.id === selectedManagedId);
   return (
     <section
       aria-label="Assistant documents de consultation"
@@ -507,13 +535,18 @@ export default function ConsultationDocumentsAssistant({
             </FieldLabel>
             <NativeSelect
               id={id + "-source"}
-              value={reading?.sourceId ?? ""}
+              value={reading?.sourceId ?? selectedManagedId}
               onChange={(event) => chooseExisting(event.target.value)}
               disabled={busy || saving || unavailable}
             >
               <NativeSelectOption value="">
                 Choisir un document…
               </NativeSelectOption>
+              {availableManaged.map(document => (
+                <NativeSelectOption key={document.id} value={document.id}>
+                  {document.title}{document.attachment?.textState === "scan" ? " · PDF numérisé" : document.attachment?.textState === "image" ? " · Image" : ""}
+                </NativeSelectOption>
+              ))}
               {availableFiles.map((file) => (
                 <NativeSelectOption key={file.id} value={file.id}>
                   {file.fileName}
@@ -525,6 +558,14 @@ export default function ConsultationDocumentsAssistant({
                 </NativeSelectOption>
               ))}
             </NativeSelect>
+            {selectedManaged?.attachment?.textState === "image" && !reading && (
+              <Button className="mt-2 w-fit" size="sm" variant="outline" disabled={busy || saving} onClick={() => {
+                try { void readFile(attachmentFile(selectedManaged.attachment!), selectedManaged.id); }
+                catch (failure) { setError((failure as Error).message); }
+              }}>
+                Reconnaître le texte de l’image
+              </Button>
+            )}
           </Field>
           <input
             ref={picker}

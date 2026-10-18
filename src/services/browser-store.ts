@@ -10,6 +10,9 @@ export type BrowserTableName =
   | "notes"
   | "consultation_documents"
   | "document_templates"
+  | "documents"
+  | "document_events"
+  | "document_versions"
   | "tasks"
   | "app_settings"
   | "migrations"
@@ -53,6 +56,9 @@ const EMPTY_STATE: BrowserDatabaseState = {
     notes: [],
     consultation_documents: [],
     document_templates: [],
+    documents: [],
+    document_events: [],
+    document_versions: [],
     tasks: [],
     app_settings: [],
     migrations: [],
@@ -227,6 +233,21 @@ export function replaceBrowserTable<T extends BrowserRow>(
   const state = readState();
   state.tables[tableName] = rows;
   writeState(state);
+}
+
+let browserTransactionQueue: Promise<unknown> = Promise.resolve();
+/** Commit a local module's related rows together; a failed operation writes nothing. */
+export function runBrowserTablesTransaction<T>(
+  operation: (tables: Record<BrowserTableName, BrowserRow[]>) => Promise<T>
+): Promise<T> {
+  const pending = browserTransactionQueue.catch(() => undefined).then(async () => {
+    const state = cloneState(readState());
+    const result = await operation(state.tables);
+    writeState(state);
+    return result;
+  });
+  browserTransactionQueue = pending;
+  return pending;
 }
 
 export function getBrowserSetting(key: string): string | null {

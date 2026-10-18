@@ -10,6 +10,7 @@ import {
   getDefaultClassNames,
   type Locale,
 } from "react-day-picker";
+import { fr } from "date-fns/locale";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,8 @@ function Calendar({
   showOutsideDays = true,
   captionLayout = "label",
   buttonVariant = "ghost",
-  locale,
+  locale = fr,
+  weekStartsOn = 1,
   formatters,
   components,
   ...props
@@ -179,6 +181,7 @@ function Calendar({
       }}
       locale={locale}
       showOutsideDays={showOutsideDays}
+      weekStartsOn={weekStartsOn}
       {...props}
     />
   );

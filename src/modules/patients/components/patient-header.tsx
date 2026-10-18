@@ -1,4 +1,5 @@
 import { CalendarPlus, Notebook, PencilSimple } from "@/lib/icons";
+import { Download } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,7 @@ interface PatientHeaderProps {
   onEditProfile: () => void;
   onNewAppointment: () => void;
   onOpenClinicalNote?: () => void;
+  onExportPdf?: () => void;
   owner?: Owner;
   patient: Patient;
 }
@@ -22,6 +24,7 @@ export function PatientHeader({
   onEditProfile,
   onNewAppointment,
   onOpenClinicalNote,
+  onExportPdf,
   patient,
 }: PatientHeaderProps) {
   const speciesTheme = getSpeciesTheme(patient.species);
@@ -69,6 +72,10 @@ export function PatientHeader({
             <PencilSimple className="size-4" aria-hidden="true" />
             Modifier
           </Button>
+          {onExportPdf && <Button variant="outline" size="sm" className="medical-action medical-action-outline" onClick={onExportPdf}>
+            <Download className="size-4" strokeWidth={1} aria-hidden="true" />
+            Exporter en PDF
+          </Button>}
         </div>
       </div>
       <ClinicalAlerts patient={patient} />

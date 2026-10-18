@@ -73,12 +73,12 @@ it("répare une base 033 sans archived_at et charge les lots et opérations sans
   await expect(inventorySnapshotInDatabase(db)).rejects.toThrow("no such column: p.archived_at");
   await expect(stockOperationsSnapshotInDatabase(db, now)).rejects.toThrow("no such column: p.archived_at");
 
-  await expect(runSqliteMigrations(db, SQLITE_MIGRATIONS)).resolves.toEqual(["034", "035"]);
+  await expect(runSqliteMigrations(db, SQLITE_MIGRATIONS)).resolves.toEqual(["034", "035", "036", "037"]);
   expect(history(connection)).toEqual(before);
   expect(connection.prepare("SELECT * FROM products").get()).toEqual({...productBefore, archived_at: null});
   expect(connection.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
   expect(connection.prepare("PRAGMA integrity_check").get()?.integrity_check).toBe("ok");
-  expect(connection.prepare("PRAGMA user_version").get()?.user_version).toBe(35);
+  expect(connection.prepare("PRAGMA user_version").get()?.user_version).toBe(37);
 
   const inventory = await inventorySnapshotInDatabase(db);
   expect(inventory.supported).toBe(true);
@@ -105,7 +105,7 @@ it("conserve une colonne d’archivage déjà présente et ses valeurs à la mis
   const before = history(connection);
   const productBefore = connection.prepare("SELECT * FROM products").get();
 
-  await expect(runSqliteMigrations(db, SQLITE_MIGRATIONS)).resolves.toEqual(["034", "035"]);
+  await expect(runSqliteMigrations(db, SQLITE_MIGRATIONS)).resolves.toEqual(["034", "035", "036", "037"]);
   expect(connection.prepare("SELECT * FROM products").get()).toEqual(productBefore);
   expect(history(connection)).toEqual(before);
   expect((await inventorySnapshotInDatabase(db)).balances[0].productArchived).toBe(true);
@@ -119,7 +119,7 @@ it("met aussi à niveau une ancienne base avant les lots sans changer les quanti
   connection.exec(`INSERT INTO products(id,name,category,unit,quantity,purchase_price_amount,sale_price_amount)
     VALUES('old','Stock existant','Médicaments','ml',4.5,100,200);`);
 
-  await expect(runSqliteMigrations(db, SQLITE_MIGRATIONS)).resolves.toEqual(["031", "032", "033", "034", "035"]);
+  await expect(runSqliteMigrations(db, SQLITE_MIGRATIONS)).resolves.toEqual(["031", "032", "033", "034", "035", "036", "037"]);
   expect((await inventorySnapshotInDatabase(db)).balances).toMatchObject([
     {productId: "old", quantity: 4.5, lotId: null, productArchived: false},
   ]);

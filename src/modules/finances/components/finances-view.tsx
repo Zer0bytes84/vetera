@@ -118,6 +118,7 @@ import {
 import type { FinancesViewProps } from "../hooks/use-finances-page-model";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import "../finances-premium.css";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export function FinancesView(props: FinancesViewProps) {
   const isPremium = useIsPremium();
@@ -1173,15 +1174,14 @@ export function FinancesView(props: FinancesViewProps) {
               </div>
               <Field>
                 <FieldLabel htmlFor="invoice-due-at">Échéance</FieldLabel>
-                <Input
+                <DatePicker clearable
                   id="invoice-due-at"
-                  onChange={(event) =>
+                  onChange={(value) =>
                     setInvoiceDraft((current) => ({
                       ...current,
-                      dueAt: event.target.value,
+                      dueAt: value,
                     }))
                   }
-                  type="date"
                   value={invoiceDraft.dueAt}
                 />
               </Field>
@@ -1721,15 +1721,14 @@ export function FinancesView(props: FinancesViewProps) {
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="transaction-date">Date</FieldLabel>
-                  <Input
+                  <DatePicker
                     id="transaction-date"
-                    onChange={(event) =>
+                    onChange={(value) =>
                       setTransactionDraft((current) => ({
                         ...current,
-                        date: event.target.value,
+                        date: value,
                       }))
                     }
-                    type="date"
                     value={transactionDraft.date}
                   />
                 </Field>

@@ -38,6 +38,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useWeightEntriesRepository } from "@/data/repositories";
 import type { WeightEntry } from "@/types/db";
 import { toDateInputValue } from "./patients-shared";
+import { DatePicker } from "@/components/ui/date-picker";
 
 interface WeightEntryDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -211,10 +212,9 @@ export function WeightEntryDialog({
             <FieldLabel htmlFor="weight-date">
               {t("patientDetail.weight.dateLabel")}
             </FieldLabel>
-            <Input
+            <DatePicker
               id="weight-date"
-              onChange={(event) => setDate(event.target.value)}
-              type="date"
+              onChange={(value) => setDate(value)}
               value={date}
             />
           </Field>

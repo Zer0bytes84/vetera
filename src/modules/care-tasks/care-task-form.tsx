@@ -7,9 +7,8 @@ import {
   CommandEmpty,
   CommandItem,
 } from "@/components/ui/command";
-import { CalendarDays, ChevronDown } from "./care-icons";
-import { fr } from "date-fns/locale";
-import { Calendar } from "@/components/ui/calendar";
+import { ChevronDown } from "./care-icons";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Popover,
   PopoverContent,
@@ -56,12 +55,11 @@ export function CareTaskForm({
   const [patient, setPatient] = useState(patientId ?? "");
   const [label, setLabel] = useState(suggestion?.label ?? "");
   const [type, setType] = useState<CareType>(suggestion?.type ?? "controle");
-  const [scheduledDate, setScheduledDate] = useState<Date>();
+  const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
-  const [calendarOpen, setCalendarOpen] = useState(false);
   const scheduled =
     scheduledDate && /^([01]\d|2[0-3]):[0-5]\d$/.test(scheduledTime.trim())
-      ? `${scheduledDate.getFullYear()}-${String(scheduledDate.getMonth() + 1).padStart(2, "0")}-${String(scheduledDate.getDate()).padStart(2, "0")}T${scheduledTime.trim()}`
+      ? `${scheduledDate}T${scheduledTime.trim()}`
       : "";
   const [product, setProduct] = useState("");
   const [productQuantity, setProductQuantity] = useState("1");
@@ -199,8 +197,8 @@ export function CareTaskForm({
           onChange={(e) => setLabel(e.target.value)}
         />
       </label>
-      <div className="grid gap-4 sm:grid-cols-[1fr_1.2fr]">
-        <label className="block space-y-1.5 text-[13px]">
+      <div className="grid gap-4 sm:grid-cols-[minmax(170px,0.8fr)_minmax(0,1.2fr)]">
+        <label className="block min-w-0 space-y-1.5 text-[13px]">
           Type
           <select
             aria-label="Type de soin"
@@ -215,40 +213,16 @@ export function CareTaskForm({
             ))}
           </select>
         </label>
-        <div className="space-y-1.5 text-[13px]">
+        <div className="min-w-0 space-y-1.5 text-[13px]">
           <span>Date et heure prévues</span>
           <div className="flex gap-2">
-            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-              <PopoverTrigger
-                aria-label="Choisir la date du soin"
-                render={
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-11 min-w-0 flex-1 justify-start gap-2 rounded-xl px-3 text-[13px]"
-                  />
-                }
-              >
-                <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
-                <span className="truncate">
-                  {scheduledDate
-                    ? scheduledDate.toLocaleDateString("fr-FR")
-                    : "Choisir la date"}
-                </span>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-auto p-2">
-                <Calendar
-                  mode="single"
-                  locale={fr}
-                  selected={scheduledDate}
-                  className="[--cell-size:44px] text-[14px]"
-                  onSelect={(date) => {
-                    setScheduledDate(date);
-                    if (date) setCalendarOpen(false);
-                  }}
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              aria-label="Choisir la date du soin"
+              className="h-11 flex-1 rounded-xl text-[13px]"
+              onChange={setScheduledDate}
+              placeholder="Choisir la date"
+              value={scheduledDate}
+            />
             <CareTimePicker value={scheduledTime} onChange={setScheduledTime} />
           </div>
         </div>

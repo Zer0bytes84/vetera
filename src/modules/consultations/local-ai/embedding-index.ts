@@ -1,6 +1,7 @@
 import type { ConsultationSoap, Note } from "@/types/db";
 import { isSoapReviewed, soapSourceKey } from "./soap-review";
 import { SOAP_SECTIONS } from "./soap-schema";
+import type { PatientDocument } from "@/modules/documents/document-domain";
 export const EMBEDDING_MODEL_KEY =
   "embeddinggemma-300m-onnx-fp32-wasm-768-sections-v2";
 export const MIN_SEARCH_SCORE = 0.3;
@@ -131,6 +132,26 @@ export function documentSearchChunks(
         },
       ]
     : [];
+}
+
+/** Managed documents are read directly, without copying them into legacy notes. */
+export function managedDocumentSearchChunks(
+  document: Pick<PatientDocument, "id" | "patientId" | "patientName" | "kind" | "title" | "content" | "status" | "attachment" | "updatedAt">,
+): SearchChunk[] {
+  if (!document.patientId || document.status !== "finalise") return [];
+  if (document.attachment && document.attachment.textState !== "extractible") return [];
+  const pages = document.attachment?.pages;
+  const text = pages
+    ? pages.map(page => `Page ${page.page}\n${page.text}`).join("\n\n")
+    : document.content;
+  if (!text.trim()) return [];
+  return [{
+    patientId: document.patientId, patientName: document.patientName,
+    sourceId: "patient-document:" + document.id,
+    sourceType: "document", documentType: ["prescription", "certificate", "report"].includes(document.kind) ? document.kind as "prescription" | "certificate" | "report" : "document",
+    section: "document", chunkIndex: 0, text,
+    sourceKey: JSON.stringify([document.updatedAt, document.status, text]),
+  }];
 }
 
 export function patientSearchChunks(patient: {

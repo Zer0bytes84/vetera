@@ -90,6 +90,7 @@ import {
   setStoredAdminToken,
   verifyAdminToken,
 } from "@/services/licenseActivationService";
+import { DatePicker } from "@/components/ui/date-picker";
 
 type ServerStatus = "checking" | "online" | "offline";
 type StatusFilter = "all" | "active" | "expiring" | "expired" | "revoked";
@@ -715,11 +716,10 @@ function GeneratorTabView({
 
               {preset === "custom" && (
                 <div className="pt-1">
-                  <Input
+                  <DatePicker
                     className="h-9 text-xs"
                     min={new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => setCustomDate(e.target.value)}
-                    type="date"
+                    onChange={(value) => setCustomDate(value)}
                     value={customDate}
                   />
                 </div>

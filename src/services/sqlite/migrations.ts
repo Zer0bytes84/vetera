@@ -1,9 +1,11 @@
 import { CLINICAL_STOCK_MIGRATION_SQL } from "@/modules/stock/clinical-stock-migration";
 import { TASK_REMINDER_TYPES_MIGRATION_SQL } from "@/modules/patient-reminders/task-types-migration";
 import { PATIENT_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/migration";
+import { MEDICAL_REMINDERS_MIGRATION_SQL } from "@/modules/patient-reminders/medical-reminders-migration";
 import { STAYS_MIGRATION_SQL } from "@/modules/hospitalizations/stays/migration";
 import { CARE_TASKS_MIGRATION_SQL } from "@/modules/care-tasks/migration";
 import { CARE_COMPLETION_ROLLBACK_MIGRATION_SQL } from "@/modules/care-tasks/completion-rollback-migration";
+import { DOCUMENTS_MIGRATION_SQL } from "@/modules/documents/document-migration";
 import {
   MIGRATION_001_SQL,
   MIGRATION_002_SQL,
@@ -134,6 +136,8 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     sql: "ALTER TABLE products ADD COLUMN archived_at TEXT;",
   },
   { version: "035", name: "care-completion-rollback", sql: CARE_COMPLETION_ROLLBACK_MIGRATION_SQL },
+  { version: "036", name: "medical-reminders", sql: MEDICAL_REMINDERS_MIGRATION_SQL },
+  { version: "037", name: "managed-patient-documents", sql: DOCUMENTS_MIGRATION_SQL },
 ] as const;
 import { DISPENSING_MIGRATION_SQL } from "@/modules/stock/dispensing-migration";
 import { MOVEMENT_SNAPSHOT_MIGRATION_SQL } from "@/modules/stock/movement-snapshot-migration";

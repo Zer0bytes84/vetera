@@ -19,6 +19,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ClipboardList } from "lucide-react";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
+import { MedicalRemindersModule } from "@/modules/patient-reminders/medical-reminders-widget";
 
 import Avatar from "@/components/Avatar";
 
@@ -217,6 +218,13 @@ export function CliniqueView(props: CliniqueViewProps) {
           </div>
 
           <SectionCards items={sectionCards} />
+
+          <MedicalRemindersModule
+            onAll={() => {
+              window.sessionStorage.setItem("baitari:reminders-source", "medical");
+              onNavigate?.("taches");
+            }}
+          />
 
           <div className="grid gap-4">
             <Card className="clinical-activity-board surface-card relative min-h-[480px] overflow-hidden border-0">

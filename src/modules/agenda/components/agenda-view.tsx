@@ -131,6 +131,7 @@ import {
   AgendaMonthView,
 } from "@/modules/agenda/components/agenda-shared";
 import type { AgendaViewProps } from "../hooks/use-agenda-page-model";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export function AgendaView(props: AgendaViewProps) {
   const {
@@ -1365,11 +1366,10 @@ export function AgendaView(props: AgendaViewProps) {
                             defaultValue: "Date de fin (optionnelle)",
                           })}
                         </FieldLabel>
-                        <Input
-                          onChange={(event) =>
-                            setRecurrenceEndDate(event.target.value)
+                        <DatePicker clearable
+                          onChange={(value) =>
+                            setRecurrenceEndDate(value)
                           }
-                          type="date"
                           value={recurrenceEndDate}
                         />
                       </Field>

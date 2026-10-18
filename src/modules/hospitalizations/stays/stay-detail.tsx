@@ -5,6 +5,7 @@ import { StayFollowUp } from "./stay-follow-up";
 import { announceCareTasksChanged } from "@/modules/care-tasks/use-care-tasks";
 import { vitalAlerts } from "./vital-alerts";
 import { CarePlanForm } from "./care-plan-form";
+import { StayDateTimeField } from "./stay-date-time-field";
 import { VitalsForm } from "./vitals-form";
 import { VitalsCurves } from "./vitals-curves";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -38,7 +39,7 @@ export function StayDetail({stay,patientName,species,onBack}: {stay: Stay;patien
  {error && <p role="alert" className="text-[13px] text-destructive">{error}</p>}
  {active && <section className="space-y-4 rounded-2xl border border-[#F2F2F2] bg-card p-5 dark:border-border"><h3 className="text-[16px] font-medium">Parcours du séjour</h3>
  {stay.status === "admis" && <Button className="h-11" disabled={busy} onClick={() => void transition("en_cours")}>Commencer le suivi</Button>}
- {stay.status === "en_cours" && <div className="flex flex-wrap gap-3"><Input className="h-11 w-auto" aria-label="Date de sortie prévue" type="datetime-local" value={planned} onChange={event => setPlanned(event.target.value)}/><Button className="h-11" disabled={busy || !planned} onClick={() => void transition("sortie_prevue")}>Préparer la sortie</Button></div>}
+ {stay.status === "en_cours" && <div className="flex flex-wrap gap-3"><div className="w-full max-w-sm"><StayDateTimeField label="Date de sortie prévue" timeLabel="Heure de sortie prévue" value={planned} onChange={setPlanned}/></div><Button className="h-11" disabled={busy || !planned} onClick={() => void transition("sortie_prevue")}>Préparer la sortie</Button></div>}
  {stay.status === "sortie_prevue" && <div className="space-y-3"><label className="block text-[13px]">Résumé de sortie<Input className="mt-2 h-11" value={summary} onChange={event => setSummary(event.target.value)}/></label><Button className="h-11" disabled={busy || !summary.trim()} onClick={() => void transition("sorti")}>Confirmer la sortie</Button></div>}
  <div className="flex flex-wrap gap-3 border-t pt-4"><Input className="h-11 min-w-48 flex-1" placeholder="Motif d’annulation" aria-label="Motif d’annulation du séjour" value={reason} onChange={event => setReason(event.target.value)}/><Button className="h-11" variant="outline" disabled={busy || !reason.trim()} onClick={() => void transition("annule")}>Annuler le séjour</Button></div></section>}
  {stay.discharge_summary && <p className="rounded-xl bg-muted p-4 text-[13px]">{stay.discharge_summary}</p>}

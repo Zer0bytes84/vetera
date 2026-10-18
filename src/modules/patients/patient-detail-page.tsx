@@ -12,7 +12,7 @@ import {
   Syringe,
   X,
 } from "@/lib/icons";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -70,6 +70,9 @@ import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
 import { getNextDueVaccination } from "./lib";
+import { DatePicker } from "@/components/ui/date-picker";
+
+const PatientRecordExportDialog = lazy(() => import("./export/patient-record-export-dialog").then(module => ({ default: module.PatientRecordExportDialog })));
 
 interface PatientDetailPageProps {
   onNavigate: (view: View) => void;
@@ -200,6 +203,7 @@ export function PatientDetailPage({
   const tasksRepo = useTasksRepository();
 
   const [weightDialogOpen, setWeightDialogOpen] = useState(false);
+  const [pdfExportOpen, setPdfExportOpen] = useState(false);
   const [editingWeight, setEditingWeight] = useState<WeightEntry | null>(null);
   const [vaccinationDialogOpen, setVaccinationDialogOpen] = useState(false);
   const [editingVaccination, setEditingVaccination] =
@@ -563,6 +567,7 @@ export function PatientDetailPage({
         )}
         <PatientHeader
           onEditProfile={openProfileEditor}
+          onExportPdf={() => setPdfExportOpen(true)}
           onNewAppointment={() => {
             prepareAppointment(patient.id);
             onNavigate("agenda");
@@ -575,6 +580,9 @@ export function PatientDetailPage({
           owner={owner}
           patient={patient}
         />
+        {pdfExportOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture de l’export PDF…</p>}>
+          <PatientRecordExportDialog key={patientId} patientId={patientId} patientName={patient.name} onClose={() => setPdfExportOpen(false)} />
+        </Suspense>}
         {appointmentsRepo.loading ||
         vaccinationsRepo.loading ||
         weightsRepo.loading ? (
@@ -703,16 +711,15 @@ export function PatientDetailPage({
               </label>
               <label className="grid gap-2 text-sm">
                 <span className="font-medium">Date de naissance</span>
-                <Input
-                  onChange={(event) =>
+                <DatePicker clearable
+                  onChange={(value) =>
                     setProfileDraft((current) =>
                       current
-                        ? { ...current, dateOfBirth: event.target.value }
+                        ? { ...current, dateOfBirth: value }
                         : current
                     )
                   }
-                  type="date"
-                  value={profileDraft.dateOfBirth}
+                  value={profileDraft.dateOfBirth ?? ""}
                 />
               </label>
               <label className="grid gap-2 text-sm">

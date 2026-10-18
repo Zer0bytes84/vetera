@@ -65,6 +65,7 @@ import type {
   Transaction,
 } from "@/types/db";
 import { formatDZD } from "@/utils/currency";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export const COMMON_SPECIES = [
   "Chien",
@@ -986,14 +987,13 @@ export function PatientDetailsDialog({
 
                             <Field>
                               <FieldLabel>Date de naissance</FieldLabel>
-                              <Input
-                                onChange={(event) =>
+                              <DatePicker clearable
+                                onChange={(value) =>
                                   setPatientData((current) => ({
                                     ...current,
-                                    dateOfBirth: event.target.value,
+                                    dateOfBirth: value,
                                   }))
                                 }
-                                type="date"
                                 value={patientData.dateOfBirth}
                               />
                             </Field>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
+import { COMPACT_CALENDAR_CLASS } from "@/components/ui/date-picker";
 import { CalendarDays } from "@/lib/icons";
 import { admissionDateTime } from "./admission-date";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,7 @@ export function AdmissionForm({locations,onSaved}: {locations: StayLocation[];on
  <CalendarDays className="size-4 text-muted-foreground"/><span>{date ? date.toLocaleDateString("fr-FR") : "Choisir la date"}</span>
  </PopoverTrigger>
  <PopoverContent align="start" className="w-auto p-2">
- <Calendar mode="single" required locale={fr} selected={date} defaultMonth={date} className="[--cell-size:44px] text-[14px]" onSelect={selected => {setDate(selected);setCalendarOpen(false);}}/>
+ <Calendar mode="single" required locale={fr} selected={date} defaultMonth={date} className={COMPACT_CALENDAR_CLASS} onSelect={selected => {setDate(selected);setCalendarOpen(false);}}/>
  </PopoverContent>
  </Popover>
  <label className="sr-only" htmlFor="admission-time">Heure d’admission</label>

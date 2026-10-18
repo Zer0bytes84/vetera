@@ -32,6 +32,7 @@ import {
 import { useConsultationDocumentsRepository, useNotesRepository } from "@/data/repositories";
 import { cn } from "@/lib/utils";
 import type { ConsultationDocument } from "@/types/db";
+import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
 
 interface PatientDocumentsListProps {
   className?: string;
@@ -77,7 +78,7 @@ function formatBytes(bytes: number) {
 function formatDate(iso: string) {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) {
-    return "—";
+    return "Date non renseignée";
   }
   return date.toLocaleDateString("fr-FR", {
     day: "2-digit",
@@ -97,8 +98,7 @@ export function PatientDocumentsList({
   const repo = useConsultationDocumentsRepository();
   const notesRepo = useNotesRepository();
   const { currentUser } = useAuth();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const uploadControl = useRef<{ open: () => void }>(null);
   const [deleteTarget, setDeleteTarget] =
     useState<ConsultationDocument | null>(null);
 
@@ -128,60 +128,6 @@ export function PatientDocumentsList({
     openNotes(created.id);
   };
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    if (file.size > 12 * 1024 * 1024) {
-      toast.error("Le fichier dépasse 12 Mo.");
-      return;
-    }
-
-    setIsUploading(true);
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const dataUrl = e.target?.result as string;
-        const category = file.type.includes("pdf")
-          ? "pdf"
-          : file.type.startsWith("image/")
-            ? "image"
-            : "other";
-
-        await repo.add({
-          patientId,
-          appointmentId: "",
-          fileName: file.name,
-          mimeType: file.type,
-          sizeBytes: file.size,
-          category,
-          dataUrl,
-        } as any);
-        toast.success("Document ajouté avec succès !");
-      } catch (_err) {
-        toast.error("Erreur lors de l'ajout du document.");
-      } finally {
-        setIsUploading(false);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const triggerUpload = () => {
-    if (onUpload) {
-      onUpload();
-    } else {
-      fileInputRef.current?.click();
-    }
-  };
-
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
@@ -204,6 +150,8 @@ export function PatientDocumentsList({
 
   return (
     <div className={cn("clinical-surface flex flex-col p-5 sm:p-6", className)}>
+      <PatientDocumentRegistry key={patientId} patientId={patientId} onUpload={onUpload} uploadControl={uploadControl} />
+      <div className="mt-8 border-t border-border pt-5">
       <div className="mb-4 flex flex-row items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
@@ -211,29 +159,15 @@ export function PatientDocumentsList({
           </span>
           <div>
             <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
-              {t("patientDetail.documents.title")}
+              Pièces jointes antérieures
             </div>
             <div className="mt-0.5 text-muted-foreground text-xs">
               {t("patientDetail.documents.count", { count: docs.length })}
             </div>
           </div>
         </div>
-        <input
-          accept=".pdf,image/*"
-          className="hidden"
-          onChange={handleFileChange}
-          ref={fileInputRef}
-          type="file"
-        />
-        <Button
-          className="h-8 gap-1.5 rounded-lg"
-          disabled={isUploading}
-          onClick={triggerUpload}
-          size="sm"
-          variant="default"
-        >
-          <Plus className="size-3.5" weight="bold" />
-          {isUploading ? "Import..." : t("patientDetail.documents.upload")}
+        <Button className="gap-1.5" disabled={!currentUser} onClick={() => uploadControl.current?.open()} size="sm" variant="outline">
+          <Plus className="size-4" />{t("patientDetail.documents.upload")}
         </Button>
       </div>
       <div className="mb-5 rounded-xl border border-emerald-900/10 bg-emerald-50/45 p-3 dark:border-emerald-200/10 dark:bg-emerald-200/5">
@@ -360,6 +294,7 @@ export function PatientDocumentsList({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </div>
     </div>
   );
 }

@@ -1,17 +1,19 @@
 import { isTauriRuntime } from "@/services/browser-store";
 import { generateId } from "@/services/sqlite/database";
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
-import { addCalendarMonths } from "@/modules/patient-reminders/domain";
+import { MedicalReminderDialog } from "@/modules/patient-reminders/medical-reminder-dialog";
+import { onMedicalActRecorded } from "@/modules/patient-reminders/on-medical-act-recorded";
 import { patientRemindersService } from "@/modules/patient-reminders/service";
+import type { MedicalReminderProposal } from "@/modules/patient-reminders/store";
 import { announcePatientRemindersChanged } from "@/modules/patient-reminders/use-patient-reminders";
-import { CheckCircle, Plus, Syringe } from "@/lib/icons";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Plus, Syringe } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+import { Field, FieldGroup } from "@/components/ui/field";
 import {
   FormDialogBody,
   FormDialogContent,
@@ -25,16 +27,12 @@ import {
 } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  COMMON_VACCINES,
-  VACCINATION_STATUS_META,
-  type VaccinationStatus,
-} from "@/config/status-meta";
+import { COMMON_VACCINES } from "@/config/status-meta";
 import { useAuth } from "@/contexts/AuthContext";
 import { useVaccinationsRepository } from "@/data/repositories";
 import type { Vaccination } from "@/types/db";
-import { getVaccinationStatus } from "../lib";
 import { toDateInputValue } from "./patients-shared";
+import { DatePicker } from "@/components/ui/date-picker";
 
 interface VaccinationDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -59,17 +57,12 @@ export function VaccinationDialog({
   const [administeredAt, setAdministeredAt] = useState(() =>
     toDateInputValue(new Date().toISOString())
   );
-  const [nextDueAt, setNextDueAt] = useState("");
   const [batchNumber, setBatchNumber] = useState("");
   const [manufacturer, setManufacturer] = useState("");
   const [notes, setNotes] = useState("");
   const [presetId, setPresetId] = useState("");
   const vaccinationDraftId = useRef("");
-  const dueDateTouched = useRef(false);
-  const administeredDateRef = useRef(administeredAt);
-  const [reminderActive, setReminderActive] = useState(true);
-  const [reminderMonths, setReminderMonths] = useState(12);
-  const [dueOrigin, setDueOrigin] = useState<"auto" | "manuel">("auto");
+  const [proposal, setProposal] = useState<MedicalReminderProposal | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,29 +71,12 @@ export function VaccinationDialog({
       return;
     }
     setError(null);
-    let cancelled = false;
     vaccinationDraftId.current = vaccination?.id ?? generateId();
-    dueDateTouched.current = false;
-    administeredDateRef.current = vaccination ? toDateInputValue(vaccination.administeredAt) : toDateInputValue(new Date().toISOString());
-    if (isTauriRuntime()) {
-      void patientRemindersService.types().then((types) => {
-        if (cancelled) return;
-        const type = types.find((entry) => entry.id === "vaccination" && entry.active);
-        setReminderActive(!!type);
-        if (type) {
-          setReminderMonths(type.interval_months);
-          if (!vaccination && !dueDateTouched.current) setNextDueAt(addCalendarMonths(administeredDateRef.current, type.interval_months));
-        } else if (!vaccination && !dueDateTouched.current) setNextDueAt("");
-      }).catch(() => {if (!cancelled) setError("Les réglages des rappels n’ont pas pu être chargés. Vérifiez l’échéance avant d’enregistrer.");});
-    }
-    setDueOrigin(vaccination ? "manuel" : "auto");
+    setProposal(null);
     if (vaccination) {
       setVaccineName(vaccination.vaccineName ?? "");
       setVaccineType(vaccination.vaccineType ?? "");
       setAdministeredAt(toDateInputValue(vaccination.administeredAt));
-      setNextDueAt(
-        vaccination.nextDueAt ? toDateInputValue(vaccination.nextDueAt) : ""
-      );
       setBatchNumber(vaccination.batchNumber ?? "");
       setManufacturer(vaccination.manufacturer ?? "");
       setNotes(vaccination.notes ?? "");
@@ -109,13 +85,11 @@ export function VaccinationDialog({
       setVaccineName("");
       setVaccineType("");
       setAdministeredAt(toDateInputValue(new Date().toISOString()));
-      setNextDueAt(addCalendarMonths(toDateInputValue(new Date().toISOString()), 12));
       setBatchNumber("");
       setManufacturer("");
       setNotes("");
       setPresetId("");
     }
-    return () => { cancelled = true; };
   }, [open, vaccination]);
 
   const handlePresetChange = (value: string) => {
@@ -129,13 +103,6 @@ export function VaccinationDialog({
     }
     setVaccineName(preset.label);
     setVaccineType(preset.type);
-    if (reminderActive && administeredAt && dueOrigin === "auto") setNextDueAt(addCalendarMonths(administeredAt, reminderMonths));
-  };
-
-  const handleAdministeredChange = (value: string) => {
-    setAdministeredAt(value);
-    administeredDateRef.current = value;
-    if (reminderActive && value && dueOrigin === "auto") setNextDueAt(addCalendarMonths(value, reminderMonths));
   };
 
   const handleSave = async () => {
@@ -146,13 +113,14 @@ export function VaccinationDialog({
     }
     setIsSubmitting(true);
     setError(null);
+    let vaccinationSaved = false;
     try {
       const payload = {
         patientId,
         vaccineName: vaccineName.trim(),
         vaccineType: vaccineType.trim() || undefined,
-        administeredAt: new Date(administeredAt).toISOString(),
-        nextDueAt: nextDueAt ? new Date(nextDueAt).toISOString() : undefined,
+        administeredAt: new Date(`${administeredAt}T12:00:00`).toISOString(),
+        nextDueAt: vaccination?.nextDueAt,
         batchNumber: batchNumber.trim() || undefined,
         manufacturer: manufacturer.trim() || undefined,
         notes: notes.trim() || undefined,
@@ -162,17 +130,37 @@ export function VaccinationDialog({
         await patientRemindersService.saveVaccination({
           id: vaccinationDraftId.current, patientId, vaccineName: vaccineName.trim(),
           vaccineType: vaccineType.trim() || undefined, administeredDate: administeredAt,
-          dueDate: nextDueAt || undefined, origin: dueOrigin,
+          dueDate: vaccination?.nextDueAt
+            ? toDateInputValue(vaccination.nextDueAt)
+            : undefined,
           batchNumber: batchNumber.trim() || undefined, manufacturer: manufacturer.trim() || undefined,
           notes: notes.trim() || undefined,
         }, currentUser?.id ?? "");
+        vaccinationSaved = true;
         emitSQLiteDataChanged("vaccinations");
         announcePatientRemindersChanged();
         void repo.refresh().catch(() => { toast.warning("La vaccination est enregistrée. Actualisez le carnet si nécessaire."); });
+        if (!isEditing) {
+          const nextProposal = await onMedicalActRecorded(
+            {
+              date: administeredAt,
+              id: vaccinationDraftId.current,
+              note: notes.trim() || vaccineName.trim(),
+              patientId,
+              type: "vaccin",
+            },
+            patientRemindersService
+          );
+          if (nextProposal) {
+            setProposal(nextProposal);
+            toast.success("Vaccination enregistrée");
+            return;
+          }
+        }
       } else if (vaccination?.id) {
         const ok = await repo.update(vaccination.id, payload);
         if (!ok) {
-          throw new Error("Update failed");
+          throw new Error("La vaccination n’a pas pu être modifiée.");
         }
       } else {
         const created = await repo.add(
@@ -182,40 +170,46 @@ export function VaccinationDialog({
           >
         );
         if (!created) {
-          throw new Error("Insert failed");
+          throw new Error("La vaccination n’a pas pu être enregistrée.");
         }
       }
       toast.success(t("patientDetail.vaccinations.save"));
       onOpenChange(false);
     } catch (err) {
       console.error("[VaccinationDialog] save failed", err);
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(vaccinationSaved
+        ? "La vaccination est enregistrée. Le prochain rappel n’a pas pu être préparé. Réessayez ou fermez ce dialogue."
+        : err instanceof Error ? err.message : "L’enregistrement a échoué.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Prévisualisation du statut en temps réel sur le champ nextDueAt
-  const previewMeta = useMemo(() => {
-    if (!nextDueAt) {
-      return null;
-    }
-    const fakeEntry: Pick<Vaccination, "nextDueAt"> = { nextDueAt };
-    const status: VaccinationStatus = getVaccinationStatus(
-      fakeEntry as Vaccination
+  if (open && proposal) {
+    return (
+      <MedicalReminderDialog
+        key={proposal.acteSourceId}
+        onClose={() => onOpenChange(false)}
+        onConfirm={async (draft) => {
+          await patientRemindersService.createFromProposal(draft, currentUser?.id ?? "");
+          announcePatientRemindersChanged();
+          emitSQLiteDataChanged("vaccinations");
+          void repo.refresh();
+          toast.success("Rappel médical créé");
+        }}
+        proposal={proposal}
+      />
     );
-    return VACCINATION_STATUS_META[status];
-  }, [nextDueAt]);
+  }
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <FormDialogContent size="sm">
         <FormDialogHeader
             artwork="vaccination"
-          description="Vaccin, lot et prochaine échéance."
-          icon={<Syringe weight="duotone" />}
-          title={
-            isEditing
+          description="Vaccin, lot et date d’administration."
+          icon={<Syringe strokeWidth={1} />}
+          title={isEditing
               ? t("patientDetail.vaccinations.editTitle")
               : t("patientDetail.vaccinations.dialogTitle")
           }
@@ -272,7 +266,7 @@ export function VaccinationDialog({
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             <Field>
               <label
                 className="font-medium text-sm"
@@ -280,24 +274,10 @@ export function VaccinationDialog({
               >
                 {t("patientDetail.vaccinations.administeredLabel")}
               </label>
-              <Input
+              <DatePicker
                 id="vaccine-administered"
-                onChange={(event) =>
-                  handleAdministeredChange(event.target.value)
-                }
-                type="date"
+                onChange={(value) => setAdministeredAt(value)}
                 value={administeredAt}
-              />
-            </Field>
-            <Field>
-              <label className="font-medium text-sm" htmlFor="vaccine-next-due">
-                {t("patientDetail.vaccinations.nextDueLabel")}
-              </label>
-              <Input
-                id="vaccine-next-due"
-                onChange={(event) => { dueDateTouched.current = true; setNextDueAt(event.target.value); setDueOrigin("manuel"); }}
-                type="date"
-                value={nextDueAt}
               />
             </Field>
           </div>
@@ -339,17 +319,6 @@ export function VaccinationDialog({
               rows={2}
               value={notes}
             />
-            {previewMeta ? (
-              <FieldDescription>
-                <span className="inline-flex items-center gap-1">
-                  <CheckCircle
-                    className="size-3 text-emerald-600 dark:text-emerald-400"
-                    weight="duotone"
-                  />
-                  {previewMeta.label}
-                </span>
-              </FieldDescription>
-            ) : null}
           </Field>
 
           {error ? (
@@ -365,7 +334,7 @@ export function VaccinationDialog({
 
         <FormDialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">
           <span className="inline-flex items-center gap-1 text-muted-foreground text-xs">
-            <Syringe className="size-3.5" weight="duotone" />
+            <Syringe className="size-3.5" strokeWidth={1} />
             {t("patientDetail.vaccinations.subtitle")}
           </span>
           <div className="flex items-center gap-2">
@@ -380,7 +349,7 @@ export function VaccinationDialog({
             </Button>
             <Button
               className="cursor-pointer"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !vaccineName.trim() || !administeredAt}
               onClick={handleSave}
               type="button"
               variant="default"
@@ -388,7 +357,7 @@ export function VaccinationDialog({
               {isSubmitting ? (
                 <Spinner className="size-4" />
               ) : (
-                <Plus className="size-4" weight="duotone" />
+                <Plus className="size-4" strokeWidth={1} />
               )}
               {t("patientDetail.vaccinations.save")}
             </Button>

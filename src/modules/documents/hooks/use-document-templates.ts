@@ -1,17 +1,17 @@
 import { useMemo } from "react";
-import { useSQLite } from "@/hooks/useSQLite";
+import { useManagedTemplates } from "./use-managed-documents";
 import {
-  DEFAULT_DOCUMENT_TEMPLATES,
+  validateTemplate,
   type ClinicalDocumentTemplate,
 } from "../lib/document-templates";
 export function useDocumentTemplates() {
-  const store = useSQLite<ClinicalDocumentTemplate>("document_templates");
+  const store = useManagedTemplates();
   const templates = useMemo(() => {
-    const map = new Map(
-      DEFAULT_DOCUMENT_TEMPLATES.map((template) => [template.id, template])
-    );
-    store.data.forEach((template) => map.set(template.id, template));
-    return [...map.values()];
-  }, [store.data]);
+    return store.templates.filter((template) => {
+      if (template.kind === "referral" || !template.active) return false;
+      try { validateTemplate(template); return true; }
+      catch { return false; } // Extended variables use the managed generation flow.
+    }) as ClinicalDocumentTemplate[];
+  }, [store.templates]);
   return { ...store, templates };
 }

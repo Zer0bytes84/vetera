@@ -1,0 +1,42 @@
+.patient-export-dialog { min-width: 0; }
+.patient-export-options { display: grid; gap: 24px; }
+.patient-export-options fieldset { min-width: 0; margin: 0; border: 0; padding: 0; }
+.patient-export-options legend { margin-bottom: 12px; font-weight: 500; color: var(--foreground); }
+.patient-export-period { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--muted); }
+.patient-export-period label { display: flex; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); color: var(--muted-foreground); cursor: pointer; }
+.patient-export-period label[data-selected="true"] { background: var(--background); color: var(--foreground); font-weight: 500; }
+.patient-export-period input { width: 14px; height: 14px; margin: 0; accent-color: var(--foreground); }
+.dark .patient-export-period input, .dark .patient-export-dates input { color-scheme: dark; }
+.patient-export-period label:focus-within { outline: 2px solid var(--ring); outline-offset: 2px; }
+.patient-export-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.patient-export-dates label { display: grid; min-width: 0; gap: 7px; color: var(--muted-foreground); font-size: 13px; }
+.patient-export-dates input { width: 100%; min-width: 0; min-height: 40px; color-scheme: inherit; }
+.patient-export-sections .patient-export-option + .patient-export-option { border-top: 1px solid var(--border); }
+.patient-export-option { display: flex; min-height: 62px; min-width: 0; align-items: center; justify-content: space-between; gap: 20px; padding: 11px 0; cursor: pointer; }
+.patient-export-option > span { display: grid; min-width: 0; gap: 3px; }
+.patient-export-option strong { font-size: 14px; font-weight: 500; color: var(--foreground); }
+.patient-export-option > span > span { color: var(--muted-foreground); font-size: 13px; line-height: 1.5; }
+.patient-export-attachments { margin-top: -8px; border-top: 1px solid var(--border); padding-top: 20px; }
+.patient-export-footer-hint { margin-right: auto; max-width: 25ch; color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+.patient-export-error { border: 1px solid color-mix(in srgb, var(--destructive) 25%, transparent); border-radius: var(--radius-md); padding: 12px 14px; color: var(--destructive); background: color-mix(in srgb, var(--destructive) 5%, var(--background)); font-size: 13px; line-height: 1.6; }
+.patient-export-generating { display: flex; min-height: 250px; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; }
+.patient-export-generating progress { width: min(100%, 320px); height: 5px; accent-color: var(--primary); }
+.patient-export-large { max-width: 48ch; color: var(--muted-foreground); font-size: 13px; line-height: 1.5; }
+.patient-export-dialog-preview { height: min(900px, calc(100dvh - 48px)); }
+.patient-export-preview-body { display: flex; flex-direction: column; gap: 12px; background: var(--muted); }
+.patient-export-preview { min-width: 0; }
+.patient-export-preview canvas { display: block; width: min(100%, 680px); height: auto; margin-inline: auto; background: white; }
+.patient-export-preview-status { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; color: var(--muted-foreground); font-size: 13px; }
+.patient-export-preview-error { display: grid; justify-items: start; gap: 14px; color: var(--destructive); font-size: 13px; line-height: 1.6; }
+.patient-export-preview-footer { justify-content: space-between; flex-wrap: wrap; }
+.patient-export-pagination, .patient-export-preview-actions { display: flex; min-width: 0; align-items: center; gap: 8px; }
+.patient-export-pagination > span { min-width: 56px; text-align: center; font-size: 13px; }
+.patient-export-preview-actions { flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .patient-export-options { gap: 20px; }
+  .patient-export-period label { padding-inline: 6px; font-size: 12px; }
+  .patient-export-footer-hint { max-width: none; margin: 0 0 2px; }
+  .patient-export-preview-footer { flex-direction: column; align-items: stretch; }
+  .patient-export-preview-actions { justify-content: flex-end; }
+  .patient-export-pagination { justify-content: center; }
+}

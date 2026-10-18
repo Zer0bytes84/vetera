@@ -1,259 +1,264 @@
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
+import { Copy, FileText, Pencil, Plus, RefreshCw, Search, Settings2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Dialog } from "@/components/ui/dialog";
+import { FormDialogBody, FormDialogContent, FormDialogFooter, FormDialogHeader } from "@/components/ui/form-dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDocumentTemplates } from "../hooks/use-document-templates";
-import {
-  DEFAULT_DOCUMENT_TEMPLATES,
-  DOCUMENT_KINDS,
-  TEMPLATE_FIELDS,
-  validateTemplate,
-  type ClinicalDocumentKind,
-  type ClinicalDocumentTemplate,
-} from "../lib/document-templates";
+import { DOCUMENT_TYPES, type DocumentKind, type ManagedDocumentTemplate } from "../document-domain";
+import { documentsService } from "../document-service";
+import { DOCUMENT_VARIABLES } from "../document-variables";
+import { MANAGED_DOCUMENT_DEFAULTS } from "../document-migration";
+import { useManagedTemplates } from "../hooks/use-managed-documents";
+import "../document-module.css";
 
-export default function DocumentTemplateManager() {
+type TemplateDraft = {
+  source: ManagedDocumentTemplate | null;
+  name: string;
+  kind: DocumentKind;
+  body: string;
+  active: boolean;
+};
+
+function templateDraft(template?: ManagedDocumentTemplate, duplicate = false): TemplateDraft {
+  return {
+    source: duplicate ? null : template ?? null,
+    name: template ? (duplicate ? `Copie de ${template.name}`.slice(0, 100) : template.name) : "",
+    kind: template?.kind ?? "report",
+    body: template?.body ?? "",
+    active: duplicate ? true : template?.active ?? true,
+  };
+}
+
+function modificationDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Date non renseignée" : date.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+}
+
+export default function DocumentTemplateManager({ onConfigureClinic, embedded = false }: { onConfigureClinic?: () => void; embedded?: boolean } = {}) {
   const { currentUser } = useAuth();
-  const store = useDocumentTemplates();
-  const [selected, setSelected] = useState<ClinicalDocumentTemplate | null>(
-    null
-  );
-  const [name, setName] = useState("");
-  const [kind, setKind] = useState<ClinicalDocumentKind>("report");
-  const [body, setBody] = useState("");
-  const [busy, setBusy] = useState(false);
+  const store = useManagedTemplates();
+  const [draft, setDraft] = useState<TemplateDraft | null>(null);
   const [error, setError] = useState("");
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<ManagedDocumentTemplate | null>(null);
+  const [discardOpen, setDiscardOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const textarea = useRef<HTMLTextAreaElement>(null);
   const id = useId();
   const canEdit = currentUser?.role === "admin";
-  const choose = (template: ClinicalDocumentTemplate | null) => {
-    setSelected(template);
-    setName(template?.name ?? "");
-    setKind(template?.kind ?? "report");
-    setBody(template?.body ?? "");
+  const providedTemplate = draft?.source ? MANAGED_DOCUMENT_DEFAULTS.find(template => template.id === draft.source?.id) : undefined;
+  const normalizedQuery = query.trim().toLocaleLowerCase("fr");
+  const templates = store.templates.filter((template) => (
+    (statusFilter === "all" || template.active === (statusFilter === "active")) &&
+    (!normalizedQuery || `${template.name} ${DOCUMENT_TYPES[template.kind]}`.toLocaleLowerCase("fr").includes(normalizedQuery))
+  ));
+  const variables = draft ? DOCUMENT_VARIABLES.filter((variable) => !variable.kinds || variable.kinds.includes(draft.kind)) : [];
+  const variableGroups = [...new Set(variables.map((variable) => variable.group))];
+  const initial = draft ? templateDraft(draft.source ?? undefined) : null;
+  const dirty = Boolean(draft && initial && (
+    draft.name !== initial.name || draft.kind !== initial.kind || draft.body !== initial.body || draft.active !== initial.active
+  ));
+
+  const openEditor = (template?: ManagedDocumentTemplate, duplicate = false) => {
     setError("");
+    setDraft(templateDraft(template, duplicate));
+  };
+  const requestClose = () => {
+    if (busy) return;
+    if (dirty && canEdit) setDiscardOpen(true);
+    else setDraft(null);
   };
   const save = async () => {
-    if (!canEdit || busy) return;
+    if (!draft || !currentUser || !canEdit || busy) return;
+    setBusy(true);
+    setError("");
     try {
-      const valid = validateTemplate({ name, kind, body });
-      setBusy(true);
-      const now = new Date().toISOString();
-      if (selected)
-        await store.set(selected.id, {
-          ...valid,
-          createdAt: selected.createdAt,
-          updatedAt: now,
-        });
-      else {
-        const created = await store.add(valid);
-        if (!created) throw new Error("Le modèle n’a pas été enregistré.");
-        setSelected(created);
-      }
-      setError("");
+      await documentsService.saveTemplate({
+        id: draft.source?.id, name: draft.name, kind: draft.kind, body: draft.body,
+        active: draft.active, expectedUpdatedAt: draft.source?.updatedAt,
+      }, currentUser.id);
+      await store.refresh();
+      setDraft(null);
       toast.success("Modèle enregistré sur cet ordinateur.");
     } catch (failure) {
-      setError(
-        failure instanceof Error
-          ? failure.message
-          : "Impossible d’enregistrer le modèle."
-      );
+      setError(failure instanceof Error ? failure.message : "Le modèle n’a pas pu être enregistré. Réessayez.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const setTemplateActive = async (template: ManagedDocumentTemplate) => {
+    if (!currentUser || !canEdit || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await documentsService.saveTemplate({
+        id: template.id, name: template.name, kind: template.kind, body: template.body,
+        active: !template.active, expectedUpdatedAt: template.updatedAt,
+      }, currentUser.id);
+      await store.refresh();
+      toast.success(template.active ? "Modèle désactivé. Les documents existants sont conservés." : "Modèle activé.");
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "Le statut du modèle n’a pas pu être modifié. Réessayez.");
     } finally {
       setBusy(false);
     }
   };
   const remove = async () => {
-    if (!selected || !canEdit || busy) return;
+    if (!pendingDelete || !currentUser || !canEdit || busy) return;
     setBusy(true);
+    setError("");
     try {
-      if (
-        store.data.some((template) => template.id === selected.id) &&
-        !(await store.remove(selected.id))
-      )
-        throw new Error("Le modèle n’a pas pu être supprimé.");
-      choose(null);
-      toast.success(
-        "Modèle retiré. Les documents déjà validés sont conservés."
-      );
+      await documentsService.deleteTemplate(pendingDelete.id, currentUser.id);
+      await store.refresh();
+      setPendingDelete(null);
+      toast.success("Modèle supprimé.");
     } catch (failure) {
-      setError((failure as Error).message);
+      setError(failure instanceof Error ? failure.message : "Le modèle n’a pas pu être supprimé. Réessayez.");
+      setPendingDelete(null);
     } finally {
       setBusy(false);
     }
   };
+  const insertVariable = (key: string) => {
+    if (!draft || busy || !canEdit) return;
+    const start = textarea.current?.selectionStart ?? draft.body.length;
+    const end = textarea.current?.selectionEnd ?? start;
+    const token = `{{${key}}}`;
+    const next = draft.body.slice(0, start) + token + draft.body.slice(end);
+    if (next.length > 12000) {
+      setError("Le texte du modèle est limité à 12 000 caractères.");
+      return;
+    }
+    setDraft({ ...draft, body: next });
+    requestAnimationFrame(() => {
+      textarea.current?.focus();
+      textarea.current?.setSelectionRange(start + token.length, start + token.length);
+    });
+  };
+
   return (
-    <section
-      aria-label="Modèles de documents"
-      className="mx-auto w-full max-w-4xl space-y-5 p-4 sm:p-6"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <section aria-label="Modèles de documents" className="document-templates-manager">
+      <div className="document-templates-heading">
         <div>
-          <h2 className="font-semibold text-lg">Modèles de documents</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Les champs sont remplis à partir de la note validée. Les doses
-            restent à la main du vétérinaire.
-          </p>
+          <h2 className={embedded ? "sr-only" : undefined}>Modèles de documents</h2>
+          <p>Vos formulations, réutilisables pour chaque patient. Les documents déjà générés conservent leur contenu.</p>
         </div>
-        {canEdit && (
-          <Button size="sm" variant="outline" onClick={() => choose(null)}>
-            Nouveau modèle
-          </Button>
-        )}
+        {canEdit && <Button disabled={store.loading || Boolean(store.error)} onClick={() => openEditor()}><Plus aria-hidden="true" />Nouveau modèle</Button>}
       </div>
-      {!canEdit && (
-        <p role="status" className="text-sm text-muted-foreground">
-          La modification des modèles est réservée à l’administrateur du
-          cabinet.
-        </p>
-      )}
-      {store.error && (
-        <p role="alert" className="text-sm text-destructive">
-          Les modèles n’ont pas pu être chargés.
-        </p>
-      )}
-      <div className="flex flex-wrap gap-2" aria-label="Choisir un modèle">
-        {store.templates.map((template) => (
-          <Button
-            key={template.id}
-            size="sm"
-            variant={selected?.id === template.id ? "secondary" : "outline"}
-            onClick={() => choose(template)}
-            aria-pressed={selected?.id === template.id}
-          >
-            {template.name}
-          </Button>
-        ))}
+
+      <div className="document-templates-clinic">
+        <Settings2 aria-hidden="true" strokeWidth={1} />
+        <p>L’en-tête, le logo et les mentions du cabinet sont communs à tous les documents.</p>
+        {onConfigureClinic ? <Button onClick={onConfigureClinic} variant="outline">Configurer le cabinet</Button> : <span>Paramètres &gt; Cabinet &amp; factures</span>}
       </div>
-      <FieldGroup className="gap-4">
-        <Field>
-          <FieldLabel htmlFor={id + "-name"}>Nom du modèle</FieldLabel>
-          <Input
-            id={id + "-name"}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={!canEdit || busy}
-            maxLength={100}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor={id + "-kind"}>Type de document</FieldLabel>
-          <NativeSelect
-            id={id + "-kind"}
-            value={kind}
-            onChange={(e) => setKind(e.target.value as ClinicalDocumentKind)}
-            disabled={!canEdit || busy}
-          >
-            {Object.entries(DOCUMENT_KINDS).map(([key, label]) => (
-              <NativeSelectOption key={key} value={key}>
-                {label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </Field>
-        <Field>
-          <FieldLabel htmlFor={id + "-body"}>Texte du modèle</FieldLabel>
-          <Textarea
-            id={id + "-body"}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            disabled={!canEdit || busy}
-            className="min-h-72 font-mono text-xs"
-            maxLength={12000}
-          />
-        </Field>
-      </FieldGroup>
-      <div className="flex flex-wrap gap-1.5" aria-label="Champs disponibles">
-        {TEMPLATE_FIELDS.map((field) => (
-          <Button
-            key={field}
-            size="sm"
-            variant="ghost"
-            className="h-7 font-mono text-xs"
-            disabled={!canEdit || busy}
-            onClick={() => setBody((value) => value + "{{" + field + "}}")}
-          >
-            {"{{" + field + "}}"}
-          </Button>
-        ))}
-      </div>
-      {error && (
-        <p role="alert" className="text-sm text-destructive">
-          {error}
-        </p>
-      )}
-      {canEdit && (
-        <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            disabled={busy || store.loading || !!store.error}
-            onClick={() => void save()}
-          >
-            {busy ? "Enregistrement…" : "Enregistrer le modèle"}
-          </Button>
-          {selected && (
-            <Button
-              size="sm"
-              variant="ghost"
-              disabled={busy}
-              onClick={() => setDeleteConfirmOpen(true)}
-            >
-              {DEFAULT_DOCUMENT_TEMPLATES.some((t) => t.id === selected.id)
-                ? "Restaurer le modèle d’origine"
-                : "Supprimer le modèle"}
-            </Button>
-          )}
+      {!canEdit && <p className="document-templates-notice" role="status">Vous pouvez consulter les modèles. Leur gestion est réservée à l’administrateur du cabinet.</p>}
+      {error && !draft && <p className="document-templates-error" role="alert">{error}</p>}
+
+      {store.error ? (
+        <div className="document-templates-empty" role="alert">
+          <p>Les modèles n’ont pas pu être chargés.</p>
+          <Button onClick={() => void store.refresh()} variant="outline"><RefreshCw aria-hidden="true" />Réessayer</Button>
         </div>
+      ) : store.loading ? (
+        <div className="document-templates-empty" role="status"><Spinner className="size-4" /><p>Chargement des modèles…</p></div>
+      ) : (
+        <>
+          <div className="document-templates-toolbar">
+            <label className="document-templates-search">
+              <Search aria-hidden="true" />
+              <span className="sr-only">Rechercher un modèle</span>
+              <Input onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un modèle…" type="search" value={query} />
+            </label>
+            <NativeSelect aria-label="Filtrer les modèles par statut" className="document-templates-status-filter" onChange={(event) => setStatusFilter(event.target.value)} value={statusFilter}>
+              <NativeSelectOption value="all">Tous les statuts</NativeSelectOption>
+              <NativeSelectOption value="active">Actifs</NativeSelectOption>
+              <NativeSelectOption value="inactive">Inactifs</NativeSelectOption>
+            </NativeSelect>
+            <span className="document-templates-count">{templates.length} modèle{templates.length > 1 ? "s" : ""}</span>
+          </div>
+          <div className="document-templates-table-wrap">
+            <table className="document-templates-table">
+              <caption className="sr-only">Modèles disponibles pour la génération de documents</caption>
+              <thead><tr><th scope="col">Modèle</th><th className="document-templates-type-column" scope="col">Type</th><th scope="col">Statut</th><th className="document-templates-date-column" scope="col">Modifié le</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
+              <tbody>
+                {templates.map((template) => (
+                  <tr key={template.id}>
+                    <td>
+                      <button className="document-templates-name" onClick={() => openEditor(template)} type="button">{template.name}</button>
+                      <span className="document-templates-mobile-type">{DOCUMENT_TYPES[template.kind]}</span>
+                      {template.usageCount > 0 && <span className="document-templates-usage">Utilisé pour {template.usageCount} document{template.usageCount > 1 ? "s" : ""}</span>}
+                    </td>
+                    <td className="document-templates-type-column">{DOCUMENT_TYPES[template.kind]}</td>
+                    <td><span className="document-templates-status" data-active={template.active}>{template.active ? "Actif" : "Inactif"}</span></td>
+                    <td className="document-templates-date-column"><time dateTime={template.updatedAt}>{modificationDate(template.updatedAt)}</time></td>
+                    <td>
+                      <div className="document-templates-row-actions">
+                        <Button aria-label={`${canEdit ? "Modifier" : "Consulter"} ${template.name}`} disabled={busy} onClick={() => openEditor(template)} size="icon-sm" title={canEdit ? "Modifier le modèle" : "Consulter le modèle"} variant="ghost"><Pencil aria-hidden="true" /></Button>
+                        {canEdit && <>
+                          <Button aria-label={`Dupliquer ${template.name}`} disabled={busy} onClick={() => openEditor(template, true)} size="icon-sm" title="Dupliquer le modèle" variant="ghost"><Copy aria-hidden="true" /></Button>
+                          <Switch aria-label={`${template.active ? "Désactiver" : "Activer"} ${template.name}`} checked={template.active} disabled={busy} onCheckedChange={() => void setTemplateActive(template)} />
+                          <Button aria-label={`Supprimer ${template.name}`} disabled={busy || template.usageCount > 0} onClick={() => { setError(""); setPendingDelete(template); }} size="icon-sm" title={template.usageCount > 0 ? "Ce modèle est utilisé. Vous pouvez le désactiver." : "Supprimer le modèle"} variant="ghost"><Trash2 aria-hidden="true" /></Button>
+                        </>}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {templates.length === 0 && <tr><td colSpan={5}><div className="document-templates-empty"><FileText aria-hidden="true" /><p>{store.templates.length ? "Aucun modèle ne correspond à votre recherche." : "Aucun modèle disponible."}</p>{store.templates.length > 0 && <Button onClick={() => { setQuery(""); setStatusFilter("all"); }} variant="outline">Effacer les filtres</Button>}</div></td></tr>}
+              </tbody>
+            </table>
+          </div>
+          <p className="document-templates-notice">Un modèle utilisé ne peut pas être supprimé. Désactivez-le pour le retirer des prochains choix.</p>
+        </>
       )}
 
-      <AlertDialog
-        onOpenChange={setDeleteConfirmOpen}
-        open={deleteConfirmOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {selected &&
-              DEFAULT_DOCUMENT_TEMPLATES.some((t) => t.id === selected.id)
-                ? "Restaurer le modèle d’origine ?"
-                : "Supprimer le modèle ?"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {selected
-                ? `« ${selected.name} » sera définitivement supprimé. Les documents déjà validés sont conservés.`
-                : ""}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={busy}>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={busy}
-              onClick={() => {
-                setDeleteConfirmOpen(false);
-                void remove();
-              }}
-            >
-              Supprimer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+      <Dialog onOpenChange={(open) => { if (!open) requestClose(); }} open={Boolean(draft)}>
+        {draft && <FormDialogContent className="document-template-editor" size="xl">
+          <FormDialogHeader description="Insérez les champs utiles dans vos formulations. Les informations manquantes seront signalées avant validation." icon={<FileText strokeWidth={1} />} title={draft.source ? (canEdit ? "Modifier le modèle" : "Consulter le modèle") : "Nouveau modèle"} tone={null} />
+          <form className="contents" onSubmit={(event) => { event.preventDefault(); void save(); }}>
+            <FormDialogBody>
+              <div className="document-template-editor-layout">
+                <FieldGroup className="document-template-editor-fields">
+                  <div className="document-template-editor-meta">
+                    <Field><FieldLabel htmlFor={`${id}-name`}>Nom du modèle</FieldLabel><Input autoFocus disabled={!canEdit || busy} id={`${id}-name`} maxLength={100} onChange={(event) => setDraft({ ...draft, name: event.target.value })} placeholder="Ex. Compte-rendu de consultation" required value={draft.name} /></Field>
+                    <Field><FieldLabel htmlFor={`${id}-kind`}>Type de document</FieldLabel><NativeSelect className="w-full" disabled={!canEdit || busy} id={`${id}-kind`} onChange={(event) => setDraft({ ...draft, kind: event.target.value as DocumentKind })} value={draft.kind}>{Object.entries(DOCUMENT_TYPES).map(([value, label]) => <NativeSelectOption key={value} value={value}>{label}</NativeSelectOption>)}</NativeSelect></Field>
+                  </div>
+                  <Field>
+                    <div className="document-template-body-label"><FieldLabel htmlFor={`${id}-body`}>Texte du modèle</FieldLabel><span>{draft.body.length.toLocaleString("fr-FR")} / 12 000</span></div>
+                    <Textarea className="document-template-body" disabled={!canEdit || busy} id={`${id}-body`} maxLength={12000} onChange={(event) => setDraft({ ...draft, body: event.target.value })} placeholder={"Patient : {{patient.nom}}\n\nMotif : {{soap.motif}}"} ref={textarea} required spellCheck value={draft.body} />
+                    <FieldDescription>Les champs entre doubles accolades seront remplacés par les données du dossier. Une valeur absente affichera « [à compléter] ».</FieldDescription>
+                  </Field>
+                  {canEdit && providedTemplate && <Button type="button" variant="outline" disabled={busy || (draft.body === providedTemplate.body && draft.name === providedTemplate.name && draft.kind === providedTemplate.kind)} onClick={() => setDraft({ ...draft, name: providedTemplate.name, kind: providedTemplate.kind, body: providedTemplate.body })}>Rétablir le modèle fourni</Button>}
+                  <div className="document-template-active-field"><Switch checked={draft.active} disabled={!canEdit || busy} id={`${id}-active`} onCheckedChange={(active) => setDraft({ ...draft, active })} /><div><label htmlFor={`${id}-active`}>Modèle actif</label><p>Disponible lors de la génération d’un document.</p></div></div>
+                  {error && <p className="document-templates-error" role="alert">{error}</p>}
+                </FieldGroup>
+                <aside aria-label="Variables disponibles" className="document-template-variables">
+                  <h3>Champs disponibles</h3><p>Cliquez pour insérer un champ à l’emplacement du curseur.</p>
+                  {variableGroups.map((group) => <div className="document-template-variable-group" key={group}><h4>{group}</h4>{variables.filter((variable) => variable.group === group).map((variable) => <button className="document-template-variable" disabled={!canEdit || busy} key={variable.key} onClick={() => insertVariable(variable.key)} title={`Insérer {{${variable.key}}}`} type="button"><span>{variable.label}</span><code>{`{{${variable.key}}}`}</code></button>)}</div>)}
+                </aside>
+              </div>
+            </FormDialogBody>
+            <FormDialogFooter><Button disabled={busy} onClick={requestClose} type="button" variant="outline">{canEdit ? "Annuler" : "Fermer"}</Button>{canEdit && <Button disabled={busy || !draft.name.trim() || !draft.body.trim()} type="submit">{busy && <Spinner className="size-4" />}Enregistrer le modèle</Button>}</FormDialogFooter>
+          </form>
+        </FormDialogContent>}
+      </Dialog>
+
+      <AlertDialog onOpenChange={(open) => { if (!busy && !open) setPendingDelete(null); }} open={Boolean(pendingDelete)}>
+        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Supprimer ce modèle ?</AlertDialogTitle><AlertDialogDescription>« {pendingDelete?.name} » sera définitivement supprimé. Vous pouvez aussi le désactiver pour le conserver.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={busy}>Annuler</AlertDialogCancel><Button disabled={busy} onClick={() => void remove()} variant="destructive">{busy && <Spinner className="size-4" />}Supprimer le modèle</Button></AlertDialogFooter></AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog onOpenChange={setDiscardOpen} open={discardOpen}>
+        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Fermer sans enregistrer ?</AlertDialogTitle><AlertDialogDescription>Les modifications de ce modèle n’ont pas encore été enregistrées.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Continuer la rédaction</AlertDialogCancel><AlertDialogAction onClick={() => { setDiscardOpen(false); setDraft(null); }}>Fermer sans enregistrer</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
       </AlertDialog>
     </section>
   );

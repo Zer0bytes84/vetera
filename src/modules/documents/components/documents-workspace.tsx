@@ -7,6 +7,8 @@ import {
 import { useSQLite } from "@/hooks/useSQLite";
 import type { Patient, Appointment } from "@/types/db";
 import ConsultationDocumentsAssistant from "./consultation-documents-assistant";
+import { DocumentComposer } from "./document-composer";
+import { Button } from "@/components/ui/button";
 
 export default function DocumentsWorkspace({
   initialPatientId = "",
@@ -17,6 +19,7 @@ export default function DocumentsWorkspace({
   const appointments = useSQLite<Appointment>("appointments");
   const [patientId, setPatientId] = useState(initialPatientId);
   const [appointmentId, setAppointmentId] = useState("");
+  const [composerOpen, setComposerOpen] = useState(false);
   const visits = appointments.data
     .filter(
       (entry) =>
@@ -74,6 +77,10 @@ export default function DocumentsWorkspace({
           Les dossiers n’ont pas pu être chargés.
         </p>
       )}
+      {appointmentId && patientId && (
+        <Button onClick={() => setComposerOpen(true)}>Générer un document</Button>
+      )}
+      {composerOpen && <DocumentComposer open={composerOpen} patientId={patientId} consultationId={appointmentId} onClose={() => setComposerOpen(false)} />}
       {appointmentId && patientId && (
         <ConsultationDocumentsAssistant
           key={patientId + ":" + appointmentId}

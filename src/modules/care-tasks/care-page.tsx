@@ -34,9 +34,10 @@ import {
 import { CareTaskForm, careTypeLabels } from "./care-task-form";
 import { CareCompletionRollbackDialog } from "./care-completion-rollback-dialog";
 import { careTasksService } from "./service";
-import { announceCareTasksChanged, useCareTasks } from "./use-care-tasks";
+import { announceCareTasksChanged, CARE_LIST_DAY_KEY, useCareTasks } from "./use-care-tasks";
 import { insufficientStockMessage, stockQuantityLabel, parseStockQuantityInput } from "@/domain/stock";
 import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
+import { DatePicker } from "@/components/ui/date-picker";
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",
@@ -66,7 +67,17 @@ export default function CarePage({
   onNavigateToPatient?: (patientId: string) => void;
 }) {
   const isPremium = useIsPremium();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    // A follow-up planned from a SOAP Plan opens the list on its own day, once.
+    const day = typeof sessionStorage === "undefined" ? null : sessionStorage.getItem(CARE_LIST_DAY_KEY);
+    if (!day) return null;
+    sessionStorage.removeItem(CARE_LIST_DAY_KEY);
+    const match = day.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return null;
+    const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12);
+    const today = new Date();
+    return date.toDateString() === today.toDateString() ? null : date;
+  });
   const {
     tasks: allTasks,
     now,
@@ -312,14 +323,13 @@ export default function CarePage({
     );
   }
   const dateControl = (
-    <Input
-      type="date"
+    <DatePicker
       aria-label="Date des soins"
       className="h-11 w-44"
       value={`${careDate.getFullYear()}-${String(careDate.getMonth() + 1).padStart(2, "0")}-${String(careDate.getDate()).padStart(2, "0")}`}
-      onChange={(e) => {
-        if (e.target.value)
-          setCareDate(new Date(`${e.target.value}T12:00:00`));
+      onChange={(value) => {
+        if (value)
+          setCareDate(new Date(`${value}T12:00:00`));
       }}
     />
   );

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
 import { staysService } from "./service";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export function StayFollowUp({ stayId }: { stayId: string }) {
   const { currentUser } = useAuth();
@@ -33,7 +33,7 @@ export function StayFollowUp({ stayId }: { stayId: string }) {
         } catch (cause) { setError(cause instanceof Error ? cause.message : "Le contrôle n’a pas pu être planifié."); }
         finally { setBusy(false); }
       }}>
-        <label className="space-y-2 text-[13px]">Date du contrôle<Input type="date" className="h-11" value={date} onChange={event => setDate(event.target.value)} required/></label>
+        <label className="space-y-2 text-[13px]">Date du contrôle<DatePicker className="h-11" value={date} onChange={(value) => setDate(value)} required/></label>
         <Button type="submit" className="h-11" disabled={busy || !date || !currentUser}>{busy ? "Enregistrement…" : "Ajouter dans Rappels"}</Button>
       </form>}
     {error && <p role="alert" className="text-[13px] text-destructive">{error}</p>}
