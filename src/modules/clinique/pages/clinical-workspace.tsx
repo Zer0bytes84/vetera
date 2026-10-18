@@ -8,7 +8,6 @@ import { useCareTasks } from "@/modules/care-tasks/use-care-tasks";
 import { Badge } from "@/components/ui/badge";
 import PatientsPage from "@/modules/patients/pages/patients-page";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { useFocus, type FocusRequest } from "@/contexts/focus-provider";
 import type { View } from "@/types";
 export default function ClinicalWorkspace({
@@ -134,18 +133,10 @@ export default function ClinicalWorkspace({
           <StaysPage key={stayId || "all"} initialStayId={stayId} />
         ) : tab === "soins" ? (
           <>
-            {patientId && (
-              <Button
-                variant="ghost"
-                className="mx-6 mt-4"
-                onClick={() => setPatientId(undefined)}
-              >
-                Afficher tous les patients
-              </Button>
-            )}
             <CarePage
               key={`${patientId ?? "all"}-${taskId ?? ""}`}
               patientId={patientId}
+              onShowAll={() => setPatientId(undefined)}
               initialTaskId={taskId}
               onNavigateToPatient={onNavigateToPatient}
             />

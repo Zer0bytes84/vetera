@@ -23,32 +23,32 @@ export function PatientRecordHealth({
     {
       complete: Boolean(patient.breed),
       label: "Race",
-      action: "Ajouter la race",
+      action: "Race à renseigner",
     },
     {
       complete: Boolean(patient.dateOfBirth),
       label: "Date de naissance",
-      action: "Ajouter la date de naissance",
+      action: "Date de naissance à renseigner",
     },
     {
       complete: Boolean(owner),
       label: "Propriétaire",
-      action: "Associer un propriétaire",
+      action: "Propriétaire à associer",
     },
     {
       complete: Boolean(owner?.phone),
       label: "Téléphone contact",
-      action: "Ajouter un téléphone",
+      action: "Téléphone à renseigner",
     },
     {
       complete: weightEntries.length > 0,
       label: "Première pesée",
-      action: "Ajouter une pesée",
+      action: "Aucune pesée : onglet Poids",
     },
     {
       complete: vaccinations.length > 0,
       label: "Vaccination",
-      action: "Ajouter un vaccin",
+      action: "Aucun vaccin : onglet Vaccinations",
     },
   ];
   const completed = checks.filter((check) => check.complete).length;

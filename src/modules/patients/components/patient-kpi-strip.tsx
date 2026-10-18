@@ -1,25 +1,23 @@
 import {
   ArrowUpRight,
   CalendarBlank,
-  Plus,
   Scales,
   Stethoscope,
-  Syringe,
 } from "@/lib/icons";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
+import type { Appointment, WeightEntry } from "@/types/db";
+import {
+  describeWeightChange,
+  sortWeightEntries,
+} from "../lib/weight-change";
 import { normalizeDate } from "./patients-shared";
 
 interface PatientKpiStripProps {
   className?: string;
   lastVisit?: string;
   nextAppointment?: Appointment;
-  nextVaccination?: Vaccination | null;
-  now: number;
   onAppointmentClick: () => void;
   onTimelineClick: () => void;
-  onVaccinationClick: () => void;
   onWeightClick: () => void;
   showLastVisit?: boolean;
   weightEntries: WeightEntry[];
@@ -36,44 +34,24 @@ function formatDateShort(value: string | undefined) {
     : null;
 }
 
-function diffDays(target: Date, now: Date) {
-  return Math.round((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-}
-
 export function PatientKpiStrip({
   className,
   lastVisit,
   nextAppointment,
-  nextVaccination,
-  now,
   onAppointmentClick,
   onTimelineClick,
-  onVaccinationClick,
   onWeightClick,
   showLastVisit = true,
   weightEntries,
 }: PatientKpiStripProps) {
-  const currentDate = new Date(now);
-  const sortedWeights = [...weightEntries].sort(
-    (a, b) =>
-      new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime()
-  );
+  const sortedWeights = sortWeightEntries(weightEntries);
   const lastWeight = sortedWeights[sortedWeights.length - 1];
-  const previousWeight = sortedWeights[sortedWeights.length - 2];
-  const weightDifference =
-    lastWeight && previousWeight
-      ? lastWeight.weightKg - previousWeight.weightKg
-      : null;
-  const weightDelta =
-    weightDifference !== null && Math.abs(weightDifference) >= 0.05
-      ? `${weightDifference > 0 ? "+" : ""}${weightDifference.toLocaleString(
-          "fr-FR",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        )} kg`
-      : null;
+  const weightChange = describeWeightChange(weightEntries);
+  const formatKg = (value: number) =>
+    value.toLocaleString("fr-FR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
   const sparklineWeights = sortedWeights.slice(-6);
   const minWeight = Math.min(
@@ -98,13 +76,6 @@ export function PatientKpiStrip({
     })
     .join(" ");
 
-  const nextVaccDate = normalizeDate(nextVaccination?.nextDueAt);
-  const nextVaccDaysOut = nextVaccDate
-    ? diffDays(nextVaccDate, currentDate)
-    : null;
-  const isVaccOverdue = nextVaccDaysOut !== null && nextVaccDaysOut < 0;
-  const isVaccDueSoon =
-    nextVaccDaysOut !== null && nextVaccDaysOut >= 0 && nextVaccDaysOut <= 30;
   const lastVisitFormatted = formatDateShort(lastVisit);
   const nextApptDate = normalizeDate(nextAppointment?.startTime);
   const nextApptFormatted = nextApptDate
@@ -129,17 +100,15 @@ export function PatientKpiStrip({
             </div>
             <h2 className="text-xs font-semibold text-foreground/80 tracking-wide uppercase">Poids</h2>
           </div>
-          {lastWeight && (
-            <button
-              onClick={onWeightClick}
-              type="button"
-              className="medical-icon-action"
-              aria-label="Voir l’historique des pesées"
-              title="Historique des pesées"
-            >
-              <ArrowUpRight size={16} aria-hidden="true" />
-            </button>
-          )}
+          <button
+            onClick={onWeightClick}
+            type="button"
+            className="medical-icon-action"
+            aria-label="Voir l’historique des pesées"
+            title="Historique des pesées"
+          >
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </button>
         </div>
         {lastWeight ? (
           <>
@@ -191,108 +160,35 @@ export function PatientKpiStrip({
             </div>
             <div className="medical-kpi-caption-row mt-2">
               <span className="text-xs text-muted-foreground">Mesuré le {formatDateShort(lastWeight.measuredAt)}</span>
-              {weightDelta && (
+              {weightChange.kind === "change" && (
                 <span
                   className={cn(
                     "medical-weight-delta inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border shadow-2xs",
-                    weightDifference && weightDifference < 0
+                    weightChange.deltaKg < 0
                       ? "bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/40"
                       : "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
                   )}
                   title="Variation depuis la pesée précédente"
                 >
-                  {weightDelta}
+                  {`${weightChange.deltaKg > 0 ? "+" : ""}${formatKg(weightChange.deltaKg)} kg`}
                 </span>
+              )}
+              {weightChange.kind === "implausible" && (
+                <button
+                  className="medical-weight-delta inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  onClick={onWeightClick}
+                  title={`Pesée précédente : ${formatKg(weightChange.previous.weightKg)} kg le ${formatDateShort(weightChange.previous.measuredAt)}. Écart trop grand pour être une variation réelle : vérifiez la saisie dans l’onglet Poids.`}
+                  type="button"
+                >
+                  Écart à vérifier
+                </button>
               )}
             </div>
           </>
         ) : (
           <div className="medical-kpi-empty mt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="medical-action medical-action-outline h-8 text-xs font-medium cursor-pointer"
-              onClick={onWeightClick}
-            >
-              <Plus className="size-3.5 mr-1" aria-hidden="true" />
-              Ajouter une pesée
-            </Button>
-            <p className="text-xs text-muted-foreground mt-1">Suivre l’évolution du poids.</p>
-          </div>
-        )}
-      </article>
-
-      <article className="medical-kpi group" aria-label="Suivi vaccinal">
-        <div className="medical-kpi-heading">
-          <div className="flex items-center gap-2.5">
-            <div className="size-8 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-200/60 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/40 shrink-0 shadow-xs">
-              <Syringe size={16} weight="duotone" aria-hidden="true" />
-            </div>
-            <h2 className="text-xs font-semibold text-foreground/80 tracking-wide uppercase">Vaccination</h2>
-          </div>
-          {nextVaccination && (
-            <button
-              onClick={onVaccinationClick}
-              type="button"
-              className="medical-icon-action"
-              aria-label="Voir les vaccinations"
-              title="Détails des vaccinations"
-            >
-              <ArrowUpRight size={16} aria-hidden="true" />
-            </button>
-          )}
-        </div>
-        {nextVaccination ? (
-          <>
-            <div className="medical-kpi-value-row mt-1">
-              <p className="medical-kpi-value text-lg font-bold text-foreground">
-                {formatDateShort(nextVaccination.nextDueAt) ||
-                  "Rappel à planifier"}
-              </p>
-              <span
-                className={cn(
-                  "medical-kpi-status inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border shadow-2xs",
-                  nextVaccDaysOut === null
-                    ? "bg-muted text-muted-foreground border-border"
-                    : isVaccOverdue
-                      ? "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/40"
-                      : isVaccDueSoon
-                        ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/40"
-                        : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40"
-                )}
-              >
-                {nextVaccDaysOut === null
-                  ? "À planifier"
-                  : isVaccOverdue
-                    ? "En retard"
-                    : isVaccDueSoon
-                      ? "Bientôt dû"
-                      : "À jour"}
-              </span>
-            </div>
-            <p className="medical-kpi-detail text-xs font-medium text-foreground/85 truncate mt-1">{nextVaccination.vaccineName}</p>
-            {nextVaccDaysOut !== null && (
-              <p className="medical-kpi-caption medical-kpi-footer text-xs text-muted-foreground mt-auto pt-2">
-                {nextVaccDaysOut < 0
-                  ? `${Math.abs(nextVaccDaysOut)} jours de retard`
-                  : nextVaccDaysOut === 0
-                    ? "Rappel aujourd’hui"
-                    : `Rappel dans ${nextVaccDaysOut} jours`}
-              </p>
-            )}
-          </>
-        ) : (
-          <div className="medical-kpi-empty mt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="medical-action medical-action-outline h-8 text-xs font-medium cursor-pointer"
-              onClick={onVaccinationClick}
-            >
-              <Plus className="size-3.5 mr-1" aria-hidden="true" />
-              Ajouter un vaccin
-            </Button>
-            <p className="text-xs text-muted-foreground mt-1">Tenir le carnet vaccinal à jour.</p>
+            <p className="medical-kpi-value text-lg font-bold text-foreground">Aucune pesée</p>
+            <p className="text-xs text-muted-foreground mt-1">À saisir dans l’onglet Poids.</p>
           </div>
         )}
       </article>
@@ -334,16 +230,9 @@ export function PatientKpiStrip({
           </>
         ) : (
           <div className="medical-kpi-empty mt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="medical-action medical-action-outline h-8 text-xs font-medium cursor-pointer"
-              onClick={onAppointmentClick}
-            >
-              <Plus className="size-3.5 mr-1" aria-hidden="true" />
-              Planifier une visite
-            </Button>
-            {!showLastVisit && <p className="text-xs text-muted-foreground mt-1">Aucune visite à venir.</p>}
+            <p className="medical-kpi-value text-lg font-bold text-foreground">
+              {showLastVisit ? "Aucune visite" : "Aucune visite à venir"}
+            </p>
           </div>
         )}
         {showLastVisit && nextAppointment ? (

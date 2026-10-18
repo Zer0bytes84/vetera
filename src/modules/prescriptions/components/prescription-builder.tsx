@@ -2,6 +2,7 @@ import {
   ArrowDown,
   ArrowsDownUp,
   ArrowUp,
+  ChevronDown,
   Pill,
   Trash,
   X,
@@ -46,13 +47,23 @@ import {
   parsePosology,
 } from "../lib/dose-calculator";
 import {
+  getMedicationById,
   type MedicationSearchResult,
   patientSpeciesToCatalogKey,
   type SpeciesKey,
 } from "../lib/medication-catalog";
+import {
+  checkPrescriptionSafety,
+  collectActiveTreatments,
+  type SafetyAlert,
+} from "../lib/prescription-safety";
 import { DoseCalculatorCard } from "./dose-calculator-card";
 import { MedicationPicker } from "./medication-picker";
 import { PrescriptionPreview } from "./prescription-preview";
+import {
+  PrescriptionSafetyBadges,
+  PrescriptionSafetyBanner,
+} from "./prescription-safety-alerts";
 
 export interface PrescriptionBuilderProps {
   appointmentId: string;
@@ -108,6 +119,17 @@ const ROUTE_OPTIONS = [
   { value: "oculaire", key: "oculaire" },
 ] as const;
 
+/** Libellé traduit d'une option, ou la valeur brute si elle vient du catalogue (« PO/SC »). */
+function optionLabel(
+  t: (key: string) => string,
+  group: "form" | "route",
+  options: readonly { key: string; value: string }[],
+  value: string
+): string {
+  const option = options.find((o) => o.value === value);
+  return option ? t(`prescriptions.${group}.${option.key}`) : value;
+}
+
 function makeId(): string {
   return `tmp_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 }
@@ -136,6 +158,12 @@ function medToDraft(
     warnings: med.effetsSecondaires?.join(" · "),
     sortOrder,
   };
+}
+
+/** DCI et noms commerciaux du catalogue, pour la correspondance des règles. */
+function catalogAliases(medicationId: string | undefined): string[] {
+  const med = medicationId ? getMedicationById(medicationId) : null;
+  return med ? [med.nom, ...(med.nomCommercial ?? [])] : [];
 }
 
 function computeItemDose(
@@ -301,6 +329,35 @@ export function PrescriptionBuilder({
       })
     );
   }, [weightKg]);
+
+  // Contrôle de sécurité : recalculé à chaque ajout ou modification de ligne.
+  const activeTreatments = useMemo(
+    () =>
+      collectActiveTreatments({
+        excludeAppointmentId: appointmentId,
+        items: itemsRepo.data,
+        now: new Date(),
+        patientId: patient.id,
+        prescriptions: prescriptionsRepo.data,
+        resolveAliases: (medicationId) => catalogAliases(medicationId),
+      }),
+    [appointmentId, itemsRepo.data, patient.id, prescriptionsRepo.data]
+  );
+
+  const safetyAlerts = useMemo(
+    () =>
+      checkPrescriptionSafety({
+        active: activeTreatments,
+        draft: items.map((it) => ({
+          key: it.id,
+          name: it.medicationName,
+          className: it.medicationClass,
+          aliases: catalogAliases(it.medicationId),
+        })),
+        patient,
+      }),
+    [activeTreatments, items, patient]
+  );
 
   const handleSave = useCallback(
     async (newStatus: "draft" | "signed") => {
@@ -478,6 +535,8 @@ export function PrescriptionBuilder({
             </Card>
           </div>
 
+          <PrescriptionSafetyBanner alerts={safetyAlerts} />
+
           {items.length === 0 ? (
             <EmptyState
               action={
@@ -500,6 +559,12 @@ export function PrescriptionBuilder({
                     onMoveDown={() => moveItem(it.id, 1)}
                     onMoveUp={() => moveItem(it.id, -1)}
                     onRemove={() => removeItem(it.id)}
+                    safetyAlerts={safetyAlerts.filter(
+                      (alert) =>
+                        alert.medicationKey === it.id ||
+                        (alert.other?.origin === "ordonnance" &&
+                          alert.other.key === it.id)
+                    )}
                     weightKg={weightKg}
                   />
                 ))}
@@ -549,6 +614,18 @@ export function PrescriptionBuilder({
               pourra plus repasser en brouillon. Vérifiez les médicaments,
               les doses et les instructions avant de confirmer.
             </AlertDialogDescription>
+            {safetyAlerts.length > 0 ? (
+              <p
+                className="font-medium text-destructive text-sm"
+                data-testid="prescription-safety-sign-note"
+              >
+                {safetyAlerts.length > 1
+                  ? `${safetyAlerts.length} alertes de sécurité restent signalées`
+                  : "1 alerte de sécurité reste signalée"}{" "}
+                (interaction ou contre-indication). Vous pouvez signer après
+                vérification.
+              </p>
+            ) : null}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isSaving}>Annuler</AlertDialogCancel>
@@ -735,6 +812,7 @@ function ItemRow({
   onMoveDown,
   onMoveUp,
   onRemove,
+  safetyAlerts,
   weightKg,
 }: {
   canDown: boolean;
@@ -744,6 +822,7 @@ function ItemRow({
   onMoveDown: () => void;
   onMoveUp: () => void;
   onRemove: () => void;
+  safetyAlerts: SafetyAlert[];
   weightKg: number | undefined;
 }) {
   const { t } = useTranslation();
@@ -751,10 +830,24 @@ function ItemRow({
     () => computeItemDose(item, weightKg),
     [item, weightKg]
   );
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const detailsId = `rx-item-details-${item.id}`;
+
+  // Résumé du détail replié : rien n'est masqué sans être signalé.
+  const detailsSummary = [
+    optionLabel(t, "form", FORM_OPTIONS, item.form ?? "comprime"),
+    optionLabel(t, "route", ROUTE_OPTIONS, item.route ?? "PO"),
+    item.quantity?.trim() ? item.quantity.trim() : null,
+    item.concentrationMgPerMl != null
+      ? `${item.concentrationMgPerMl} mg/mL`
+      : null,
+    item.instructions?.trim() ? t("prescriptions.item.instructionsFilled") : null,
+    item.warnings?.trim() ? t("prescriptions.item.warningsFilled") : null,
+  ].filter((part): part is string => Boolean(part));
 
   return (
-    <Card className="overflow-hidden">
-      <div className="grid gap-0 lg:grid-cols-[1fr_280px]">
+    <Card className="@container overflow-hidden">
+      <div className="grid gap-0 @3xl:grid-cols-[minmax(0,1fr)_240px]">
         <div className="space-y-3 px-3 py-3">
           {/* Ligne 1 : nom + actions */}
           <div className="flex items-center justify-between gap-2">
@@ -771,6 +864,7 @@ function ItemRow({
                     {item.medicationClass}
                   </p>
                 ) : null}
+                <PrescriptionSafetyBadges alerts={safetyAlerts} />
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-0.5">
@@ -809,27 +903,15 @@ function ItemRow({
             </div>
           </div>
 
-          {/* Ligne 2 : dose / form / frequency / duration / route */}
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+          {/* L'essentiel : dose, fréquence, durée */}
+          <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2 @lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]">
             <DoseField item={item} onChange={onChange} />
-            <FieldShell label={t("prescriptions.item.form")}>
-              <NativeSelect
-                className="h-8 text-xs"
-                onChange={(e) => onChange({ form: e.target.value })}
-                value={item.form ?? "comprime"}
-              >
-                {FORM_OPTIONS.map((o) => (
-                  <NativeSelectOption key={o.value} value={o.value}>
-                    {t(`prescriptions.form.${o.key}`)}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </FieldShell>
             <FieldShell label={t("prescriptions.item.frequency")}>
               <Input
                 className="h-8 text-xs"
                 onChange={(e) => onChange({ frequency: e.target.value })}
                 placeholder={t("prescriptions.item.frequencyPlaceholder")}
+                title={item.frequency || undefined}
                 value={item.frequency}
               />
             </FieldShell>
@@ -838,75 +920,135 @@ function ItemRow({
                 className="h-8 text-xs"
                 onChange={(e) => onChange({ duration: e.target.value })}
                 placeholder={t("prescriptions.item.durationPlaceholder")}
+                title={item.duration || undefined}
                 value={item.duration}
               />
             </FieldShell>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-            <FieldShell label={t("prescriptions.item.route")}>
-              <NativeSelect
-                className="h-8 text-xs"
-                onChange={(e) => onChange({ route: e.target.value })}
-                value={item.route ?? "PO"}
-              >
-                {ROUTE_OPTIONS.map((o) => (
-                  <NativeSelectOption key={o.value} value={o.value}>
-                    {t(`prescriptions.route.${o.key}`)}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </FieldShell>
-            <FieldShell label={t("prescriptions.item.quantity")}>
-              <Input
-                className="h-8 text-xs"
-                onChange={(e) => onChange({ quantity: e.target.value })}
-                placeholder={t("prescriptions.item.quantityPlaceholder")}
-                value={item.quantity ?? ""}
-              />
-            </FieldShell>
-            <FieldShell
-              label={`${t("prescriptions.item.name")} (concentration mg/mL)`}
+          {/* Le détail, replié par défaut avec un résumé */}
+          <div className="rounded-md border border-border/60">
+            <button
+              aria-controls={detailsId}
+              aria-expanded={detailsOpen}
+              className="flex w-full items-center gap-2 px-2.5 py-2 text-left"
+              onClick={() => setDetailsOpen((open) => !open)}
+              type="button"
             >
-              <Input
-                className="h-8 text-xs"
-                inputMode="decimal"
-                onChange={(e) => {
-                  const v = e.target.value.replace(",", ".");
-                  onChange({
-                    concentrationMgPerMl: v ? Number.parseFloat(v) : undefined,
-                  });
-                }}
-                placeholder="—"
-                step="0.1"
-                type="number"
-                value={item.concentrationMgPerMl ?? ""}
+              <span className="shrink-0 font-medium t-12 text-muted-foreground uppercase tracking-wider">
+                {t("prescriptions.item.details")}
+              </span>
+              <span className="min-w-0 flex-1 t-12 text-muted-foreground">
+                {detailsOpen ? null : detailsSummary.join(" · ")}
+              </span>
+              <ChevronDown
+                className={cn(
+                  "size-3.5 shrink-0 text-muted-foreground transition-transform",
+                  detailsOpen && "rotate-180"
+                )}
               />
-            </FieldShell>
-          </div>
-
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-            <FieldShell label={t("prescriptions.item.instructions")}>
-              <Textarea
-                className="min-h-[44px] resize-none border-0 bg-muted/30 text-xs shadow-none focus-visible:ring-1"
-                onChange={(e) => onChange({ instructions: e.target.value })}
-                placeholder={t("prescriptions.item.instructionsPlaceholder")}
-                value={item.instructions ?? ""}
-              />
-            </FieldShell>
-            <FieldShell label={t("prescriptions.item.warnings")}>
-              <Textarea
-                className="min-h-[44px] resize-none border-0 bg-muted/30 text-xs shadow-none focus-visible:ring-1"
-                onChange={(e) => onChange({ warnings: e.target.value })}
-                placeholder={t("prescriptions.item.warningsPlaceholder")}
-                value={item.warnings ?? ""}
-              />
-            </FieldShell>
+            </button>
+            {detailsOpen ? (
+              <div
+                className="space-y-2 border-border/60 border-t px-2.5 py-2.5"
+                id={detailsId}
+              >
+                <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
+                  <FieldShell label={t("prescriptions.item.form")}>
+                    <NativeSelect
+                      className="h-8 text-xs"
+                      onChange={(e) => onChange({ form: e.target.value })}
+                      value={item.form ?? "comprime"}
+                    >
+                      {FORM_OPTIONS.map((o) => (
+                        <NativeSelectOption key={o.value} value={o.value}>
+                          {t(`prescriptions.form.${o.key}`)}
+                        </NativeSelectOption>
+                      ))}
+                      {item.form &&
+                      !FORM_OPTIONS.some((o) => o.value === item.form) ? (
+                        <NativeSelectOption value={item.form}>
+                          {item.form}
+                        </NativeSelectOption>
+                      ) : null}
+                    </NativeSelect>
+                  </FieldShell>
+                  <FieldShell label={t("prescriptions.item.route")}>
+                    <NativeSelect
+                      className="h-8 text-xs"
+                      onChange={(e) => onChange({ route: e.target.value })}
+                      value={item.route ?? "PO"}
+                    >
+                      {ROUTE_OPTIONS.map((o) => (
+                        <NativeSelectOption key={o.value} value={o.value}>
+                          {t(`prescriptions.route.${o.key}`)}
+                        </NativeSelectOption>
+                      ))}
+                      {item.route &&
+                      !ROUTE_OPTIONS.some((o) => o.value === item.route) ? (
+                        <NativeSelectOption value={item.route}>
+                          {item.route}
+                        </NativeSelectOption>
+                      ) : null}
+                    </NativeSelect>
+                  </FieldShell>
+                  <FieldShell label={t("prescriptions.item.quantity")}>
+                    <Input
+                      className="h-8 text-xs"
+                      onChange={(e) => onChange({ quantity: e.target.value })}
+                      placeholder={t("prescriptions.item.quantityPlaceholder")}
+                      title={item.quantity || undefined}
+                      value={item.quantity ?? ""}
+                    />
+                  </FieldShell>
+                  <FieldShell label={t("prescriptions.item.concentration")}>
+                    <Input
+                      className="h-8 text-xs"
+                      inputMode="decimal"
+                      onChange={(e) => {
+                        const v = e.target.value.replace(",", ".");
+                        onChange({
+                          concentrationMgPerMl: v
+                            ? Number.parseFloat(v)
+                            : undefined,
+                        });
+                      }}
+                      placeholder="—"
+                      step="0.1"
+                      type="number"
+                      value={item.concentrationMgPerMl ?? ""}
+                    />
+                  </FieldShell>
+                </div>
+                <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
+                  <FieldShell label={t("prescriptions.item.instructions")}>
+                    <Textarea
+                      className="min-h-[60px] resize-none border-0 bg-muted/30 text-xs shadow-none focus-visible:ring-1"
+                      onChange={(e) =>
+                        onChange({ instructions: e.target.value })
+                      }
+                      placeholder={t(
+                        "prescriptions.item.instructionsPlaceholder"
+                      )}
+                      value={item.instructions ?? ""}
+                    />
+                  </FieldShell>
+                  <FieldShell label={t("prescriptions.item.warnings")}>
+                    <Textarea
+                      className="min-h-[60px] resize-none border-0 bg-muted/30 text-xs shadow-none focus-visible:ring-1"
+                      onChange={(e) => onChange({ warnings: e.target.value })}
+                      placeholder={t("prescriptions.item.warningsPlaceholder")}
+                      value={item.warnings ?? ""}
+                    />
+                  </FieldShell>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 
         {/* Colonne droite : dose calculator + état */}
-        <div className="space-y-2 border-border/40 border-t bg-muted/20 px-3 py-3 lg:border-t-0 lg:border-l">
+        <div className="space-y-2 border-border/40 border-t bg-muted/20 px-3 py-3 @3xl:border-t-0 @3xl:border-l">
           <DoseCalculatorCard
             className="bg-background"
             computation={computation}
@@ -949,10 +1091,10 @@ function DoseField({
 }) {
   const { t } = useTranslation();
   return (
-    <FieldShell label={t("prescriptions.item.frequency") + " (mg/kg)"}>
+    <FieldShell label={t("prescriptions.item.dose")}>
       <div className="flex items-center gap-1">
         <Input
-          className="h-8 text-xs"
+          className="h-8 min-w-[64px] flex-1 text-xs"
           inputMode="decimal"
           onChange={(e) => {
             const v = e.target.value.replace(",", ".");
@@ -964,7 +1106,7 @@ function DoseField({
           value={item.dosagePerKg || ""}
         />
         <NativeSelect
-          className="h-8 w-[78px] text-xs"
+          className="h-8 w-[88px] shrink-0 text-xs"
           onChange={(e) =>
             onChange({
               dosageUnit: e.target.value as DraftItem["dosageUnit"],

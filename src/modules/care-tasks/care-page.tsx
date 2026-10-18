@@ -67,8 +67,11 @@ export default function CarePage({
   patientId,
   onNavigateToPatient,
   initialTaskId,
+  onShowAll,
 }: {
   initialTaskId?: string;
+  /** Leaves the single-patient view; when given, the page keeps the common header. */
+  onShowAll?: () => void;
   patientId?: string;
   onNavigateToPatient?: (patientId: string) => void;
 }) {
@@ -343,12 +346,12 @@ export default function CarePage({
     <section
       aria-label="Soins"
       className={
-        patientId
+        patientId && !onShowAll
           ? "care-page min-w-0 space-y-4 t-13"
           : "care-page dashboard-stage min-w-0 px-4 pb-8 lg:px-6 space-y-6 font-sans t-13 font-normal"
       }
     >
-      {patientId ? (
+      {patientId && !onShowAll ? (
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="t-18 font-medium tracking-tight">Soins</h2>
@@ -363,9 +366,16 @@ export default function CarePage({
       ) : (
         <PageHeader
           actions={
-            <Button className="min-h-11" onClick={() => setCreating(true)}>
-              Planifier un soin
-            </Button>
+            <>
+              {patientId && onShowAll && (
+                <Button className="min-h-11" onClick={onShowAll} variant="outline">
+                  Afficher tous les patients
+                </Button>
+              )}
+              <Button className="min-h-11" onClick={() => setCreating(true)}>
+                Planifier un soin
+              </Button>
+            </>
           }
           icon={<HugeiconsIcon icon={InjectionIcon} size={20} strokeWidth={1.5} />}
           kicker={formatLongDay(careDate)}

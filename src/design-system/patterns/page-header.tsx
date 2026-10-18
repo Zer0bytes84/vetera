@@ -35,7 +35,7 @@ export function PageHeader({
   subtitle?: ReactNode;
   /** Small line above the title (a date, a parent section). */
   kicker?: ReactNode;
-  /** Way back to the parent list, shown before the title. */
+  /** Way back to the parent list, sitting in the title row before the icon and title. */
   back?: ReactNode;
   actions?: ReactNode;
   className?: string;
@@ -56,9 +56,9 @@ export function PageHeader({
         data-slot="page-header"
       >
         <div className="min-w-0">
-          {back && <div className="page-header-back mb-2">{back}</div>}
           <div className="premium-page-head min-w-0">
             <div className="premium-page-head-main flex min-w-0 items-start gap-3.5">
+              {back && <div className="page-header-back shrink-0">{back}</div>}
               {icon && (
                 <div
                   aria-hidden="true"

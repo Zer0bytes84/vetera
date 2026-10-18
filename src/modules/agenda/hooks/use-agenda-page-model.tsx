@@ -100,7 +100,7 @@ export function useAgendaPageModel() {
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const [vetFilter, setVetFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [tableTab, setTableTab] = useState<TableTab>("planning");
+  const [tableTab, setTableTab] = useState<TableTab>("selection");
 
   const {
     data: appointments,
@@ -419,16 +419,24 @@ export function useAgendaPageModel() {
       dailyAppointments.length - closedCount
     );
     const capacityHours = Math.max(1, vets.length) * 8;
+    const hasDailyAppointments = dailyAppointments.length > 0;
 
     return [
       {
         title: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux" }),
         value: formatNumber(dailyAppointments.length),
-        change: delta,
-        changeKind: "difference",
-        changeLabel: "vs hier",
-        trend: delta > 0 ? "up" : delta < 0 ? "down" : "neutral",
-        detailRow: `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""} · ${remainingSlots} restant${remainingSlots > 1 ? "s" : ""}`,
+        // No trend when either day is empty: "-1 vs hier" on a free day says nothing.
+        ...(hasDailyAppointments && previousDayAppointments.length > 0
+          ? {
+              change: delta,
+              changeKind: "difference" as const,
+              changeLabel: "vs hier",
+              trend: delta > 0 ? ("up" as const) : delta < 0 ? ("down" as const) : ("neutral" as const),
+            }
+          : { trend: "neutral" as const }),
+        detailRow: hasDailyAppointments
+          ? `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""} · ${remainingSlots} restant${remainingSlots > 1 ? "s" : ""}`
+          : "Aucun rendez-vous ce jour",
         footerTitle: `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""}`,
         footerDescription: t("agenda.overview.closedConsultations", {
           count: closedCount,
@@ -441,10 +449,13 @@ export function useAgendaPageModel() {
           defaultValue: "Urgences ouvertes",
         }),
         value: formatNumber(urgentOpenCount),
-        change: urgentOpenCount,
-        changeKind: "count",
-        changeLabel:
-          urgentOpenCount > 0 ? "cas prioritaires" : "aucun cas critique",
+        ...(urgentOpenCount > 0
+          ? {
+              change: urgentOpenCount,
+              changeKind: "count" as const,
+              changeLabel: "cas prioritaires",
+            }
+          : {}),
         inverse: true,
         tone: urgentOpenCount > 0 ? "critical" : "positive",
         trend: urgentOpenCount > 0 ? "down" : "neutral",
@@ -462,12 +473,19 @@ export function useAgendaPageModel() {
           defaultValue: "Temps planifié",
         }),
         value: formatDuration(totalPlannedMinutes),
-        change: Number.isFinite(occupancy) ? occupancy : 0,
-        changeKind: "rate",
-        changeBase: occupancyTarget,
-        changeLabel: "d'occupation",
+        ...(totalPlannedMinutes > 0
+          ? {
+              change: Number.isFinite(occupancy) ? occupancy : 0,
+              changeKind: "rate" as const,
+              changeBase: occupancyTarget,
+              changeLabel: "d'occupation",
+            }
+          : {}),
         trend: occupancy > 85 ? "down" : "neutral",
-        detailRow: `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""} · Capacité max ${capacityHours}h`,
+        detailRow:
+          engagedVetsCount > 0
+            ? `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""} · Capacité max ${capacityHours}h`
+            : `Rien de planifié · Capacité max ${capacityHours}h`,
         footerTitle: t("agenda.overview.engagedVets", {
           count: engagedVetsCount,
           defaultValue_one: "{{count}} praticien mobilisé",
@@ -996,8 +1014,17 @@ export function useAgendaPageModel() {
 
     return TABLE_TABS.reduce<Record<TableTab, AgendaTableRow[]>>(
       (accumulator, tab) => {
+        // The day scope lists the whole selected day, finished and flagged
+        // appointments included; the other scopes keep their own buckets.
         accumulator[tab.value] = rows
-          .filter((row) => row.tab === tab.value)
+          .filter((row) =>
+            tab.value === "selection"
+              ? isSameDay(
+                  normalizeDate(row.appointment.startTime) ?? new Date(0),
+                  selectedDate
+                )
+              : row.tab === tab.value
+          )
           .sort((left, right) => {
             const leftTime = new Date(left.appointment.startTime).getTime();
             const rightTime = new Date(right.appointment.startTime).getTime();

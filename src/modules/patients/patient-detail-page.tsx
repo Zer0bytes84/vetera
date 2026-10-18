@@ -1,9 +1,7 @@
 import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
 import {
   ArrowLeft,
-  Plus,
   Check,
-  ChevronRight,
   Clock,
   FileText,
   FirstAid,
@@ -31,6 +29,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
+  useConsultationSoapsRepository,
   useOwnersRepository,
   usePatientsRepository,
   usePrescriptionsRepository,
@@ -58,12 +57,14 @@ import { PatientDocumentsList } from "./components/patient-documents-list";
 import { PatientHeader } from "./components/patient-header";
 import { PatientContextWidgets } from "./components/patient-context-widgets";
 import {
+  ClinicalAlerts,
   OwnerContact,
   recordDate,
 } from "./components/medical-record-summary";
 import { MedicalRecordTabs } from "./components/medical-record-tabs";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
+import { PatientOverview } from "./components/patient-overview";
 import { PatientRecordHealth } from "./components/patient-record-health";
 import { PatientTimeline } from "./components/patient-timeline";
 import { VaccinationDialog } from "./components/vaccination-dialog";
@@ -71,10 +72,9 @@ import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
 import { getNextDueVaccination } from "./lib";
+import { getVaccinationStatus } from "./lib/vaccination-status";
 import { DatePicker } from "@/components/ui/date-picker";
 import { PageHeader } from "@/design-system/patterns/page-header";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { MedicalFileIcon } from "@/lib/hugeicons";
 
 const PatientRecordExportDialog = lazy(() => import("./export/patient-record-export-dialog").then(module => ({ default: module.PatientRecordExportDialog })));
 
@@ -198,6 +198,7 @@ export function PatientDetailPage({
   const prescriptionsRepo = usePrescriptionsRepository();
   const vaccinationsRepo = useVaccinationsRepository();
   const weightsRepo = useWeightEntriesRepository();
+  const soapsRepo = useConsultationSoapsRepository();
   const ownersRepo = useOwnersRepository();
   const tasksRepo = useTasksRepository();
 
@@ -290,11 +291,6 @@ export function PatientDetailPage({
     () => weightsRepo.forPatient(patientId),
     [weightsRepo, patientId]
   );
-  // Référence unique pour la dernière pesée (tri par date décroissante).
-  const latestWeight = useMemo(
-    () => weightsRepo.latestFor(patientId),
-    [weightsRepo, patientId]
-  );
   const vaccinations = useMemo(
     () => vaccinationsRepo.forPatient(patientId),
     [vaccinationsRepo, patientId]
@@ -338,6 +334,15 @@ export function PatientDetailPage({
         )[0] ?? null,
     [appointments, now]
   );
+  // A booster overdue or due within 30 days is raised with the clinical alerts.
+  const vaccinationDue = useMemo(() => {
+    const next = getNextDueVaccination(vaccinations, new Date(now));
+    if (!next) return null;
+    const status = getVaccinationStatus(next, new Date(now));
+    return status === "overdue" || status === "due_soon"
+      ? { status, vaccination: next }
+      : null;
+  }, [now, vaccinations]);
   const clinicalNoteAppointment = useMemo(
     () =>
       appointments.find(
@@ -432,11 +437,12 @@ export function PatientDetailPage({
   };
   // Dirige l'utilisateur vers le bon formulaire selon le repère manquant.
   const completeRecordCheck = (label: string) => {
-    if (label === "Poids") {
-      openNewWeight();
+    // Weighings and vaccines are recorded in their own tabs.
+    if (label === "Première pesée") {
+      handleTabChange("weight");
       return;
     }
-    if (label === "Vaccins") {
+    if (label === "Vaccination") {
       handleTabChange("vaccinations");
       return;
     }
@@ -502,61 +508,20 @@ export function PatientDetailPage({
       <div className="mx-auto w-full max-w-7xl space-y-4">
         <PageHeader
           className="patient-record-heading"
-          icon={<HugeiconsIcon icon={MedicalFileIcon} size={20} strokeWidth={1.5} />}
-          actions={
-            <Button variant="outline" onClick={() => { requestFocus("care_patient", patientId); onNavigate("clinique"); }}>Ouvrir les soins de ce patient</Button>
-          }
           back={
             <Button
-              className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+              aria-label={t("patientDetail.back")}
+              className="size-10 rounded-lg"
               onClick={() => onNavigate("patients")}
-              size="sm"
-              variant="ghost"
+              size="icon"
+              title="Retour à la liste des patients"
+              variant="outline"
             >
-              <ArrowLeft className="size-4" weight="duotone" />
-              {t("patientDetail.back")}
+              <ArrowLeft className="size-5" weight="duotone" />
             </Button>
           }
           subtitle={`${patient.name} · consultations, traitements et suivi`}
           title="Dossier patient"
-        />
-        <PatientContextWidgets
-          patientName={patient.name}
-          appointments={appointments}
-          appointmentsLoading={appointmentsRepo.loading}
-          appointmentsError={Boolean(appointmentsRepo.error)}
-          lastAppointment={lastAppointment}
-          lastVisit={patient.lastVisit}
-          nextAppointment={nextAppointment}
-          now={now}
-          tasks={patientTasks}
-          tasksLoading={tasksRepo.loading}
-          tasksError={Boolean(tasksRepo.error)}
-          onOpenHistory={() => {
-            handleTabChange("timeline");
-            requestAnimationFrame(() =>
-              document
-                .getElementById("record-tab-content")
-                ?.scrollIntoView({ block: "start" })
-            );
-          }}
-          onOpenLastConsultation={() => {
-            if (lastAppointment) {
-              openSoapForAppointment(lastAppointment.id);
-            } else {
-              handleTabChange("timeline");
-              requestAnimationFrame(() =>
-                document
-                  .getElementById("record-tab-content")
-                  ?.scrollIntoView({ block: "start" })
-              );
-            }
-          }}
-          onOpenTask={(taskId) => {
-            requestFocus("task", taskId);
-            onNavigate("taches");
-          }}
-          onRetryTasks={() => void tasksRepo.refresh()}
         />
         {soapAppointmentId && (
           <section id="patient-consultation-note" aria-label={`Note de consultation de ${patient.name}`} className="space-y-4 border-b border-border pb-6">
@@ -580,57 +545,124 @@ export function PatientDetailPage({
               ? () => openSoapForAppointment(clinicalNoteAppointment.id)
               : undefined
           }
+          onOpenCare={() => {
+            requestFocus("care_patient", patientId);
+            onNavigate("clinique");
+          }}
           owner={owner}
           patient={patient}
         />
         {pdfExportOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture de l’export PDF…</p>}>
           <PatientRecordExportDialog key={patientId} patientId={patientId} patientName={patient.name} onClose={() => setPdfExportOpen(false)} />
         </Suspense>}
-        {appointmentsRepo.loading ||
-        vaccinationsRepo.loading ||
-        weightsRepo.loading ? (
-          <div
-            className="medical-kpi-strip"
-            aria-label="Chargement du suivi clinique"
-            aria-busy="true"
-          >
-            {[0, 1, 2].map((index) => (
-              <div className="medical-kpi" key={index}>
-                <SkeletonBlock className="h-24" />
-              </div>
-            ))}
-          </div>
-        ) : appointmentsRepo.error ||
-          vaccinationsRepo.error ||
-          weightsRepo.error ? (
-          <div role="status" className="medical-kpi-load-error">
-            <span>Une partie du suivi clinique n’a pas pu être chargée.</span>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                void appointmentsRepo.refresh();
-                void vaccinationsRepo.refresh();
-                void weightsRepo.refresh();
-              }}
-            >
-              Réessayer
-            </Button>
-          </div>
-        ) : (
-          <PatientKpiStrip
-            lastVisit={lastAppointment?.startTime ?? patient.lastVisit}
-            nextAppointment={nextAppointment ?? undefined}
-            nextVaccination={getNextDueVaccination(vaccinations)}
+        <section className="patient-record-indicators" aria-label={`Indicateurs de ${patient.name}`}>
+          <PatientContextWidgets
+            patientName={patient.name}
+            appointments={appointments}
+            appointmentsLoading={appointmentsRepo.loading}
+            appointmentsError={Boolean(appointmentsRepo.error)}
+            lastAppointment={lastAppointment}
+            lastVisit={patient.lastVisit}
+            nextAppointment={nextAppointment}
             now={now}
-            onAppointmentClick={() => onNavigate("agenda")}
-            onTimelineClick={() => handleTabChange("timeline")}
-            onVaccinationClick={() => handleTabChange("vaccinations")}
-            onWeightClick={() => handleTabChange("weight")}
-            showLastVisit={false}
-            weightEntries={weightEntries}
+            tasks={patientTasks}
+            tasksLoading={tasksRepo.loading}
+            tasksError={Boolean(tasksRepo.error)}
+            onOpenHistory={() => {
+              handleTabChange("timeline");
+              requestAnimationFrame(() =>
+                document
+                  .getElementById("record-tab-content")
+                  ?.scrollIntoView({ block: "start" })
+              );
+            }}
+            onOpenLastConsultation={() => {
+              if (lastAppointment) {
+                openSoapForAppointment(lastAppointment.id);
+              } else {
+                handleTabChange("timeline");
+                requestAnimationFrame(() =>
+                  document
+                    .getElementById("record-tab-content")
+                    ?.scrollIntoView({ block: "start" })
+                );
+              }
+            }}
+            onOpenTask={(taskId) => {
+              requestFocus("task", taskId);
+              onNavigate("taches");
+            }}
+            onRetryTasks={() => void tasksRepo.refresh()}
           />
-        )}
+          {appointmentsRepo.loading ||
+          vaccinationsRepo.loading ||
+          weightsRepo.loading ? (
+            <div
+              className="medical-kpi-strip"
+              aria-label="Chargement du suivi clinique"
+              aria-busy="true"
+            >
+              {[0, 1, 2].map((index) => (
+                <div className="medical-kpi" key={index}>
+                  <SkeletonBlock className="h-24" />
+                </div>
+              ))}
+            </div>
+          ) : appointmentsRepo.error ||
+            vaccinationsRepo.error ||
+            weightsRepo.error ? (
+            <div role="status" className="medical-kpi-load-error">
+              <span>Une partie du suivi clinique n’a pas pu être chargée.</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  void appointmentsRepo.refresh();
+                  void vaccinationsRepo.refresh();
+                  void weightsRepo.refresh();
+                }}
+              >
+                Réessayer
+              </Button>
+            </div>
+          ) : (
+            <PatientKpiStrip
+              lastVisit={lastAppointment?.startTime ?? patient.lastVisit}
+              nextAppointment={nextAppointment ?? undefined}
+              onAppointmentClick={() => onNavigate("agenda")}
+              onTimelineClick={() => handleTabChange("timeline")}
+              onWeightClick={() => handleTabChange("weight")}
+              showLastVisit={false}
+              weightEntries={weightEntries}
+            />
+          )}
+
+        </section>
+
+        <ClinicalAlerts
+          extra={
+            vaccinationDue ? (
+              <button
+                className="medical-vaccine-alert flex w-full items-start gap-3 rounded-xl border border-amber-300/70 bg-amber-50/80 p-3 text-left text-amber-900 shadow-xs hover:bg-amber-100/80 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-200"
+                onClick={() => handleTabChange("vaccinations")}
+                type="button"
+              >
+                <span className="mt-0.5 shrink-0 rounded-lg bg-amber-500/20 p-1.5 text-amber-600 dark:bg-amber-500/30 dark:text-amber-400">
+                  <Syringe aria-hidden="true" className="size-4" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <strong className="text-xs font-semibold tracking-wide uppercase text-amber-700 dark:text-amber-300">
+                    {vaccinationDue.status === "overdue" ? "Rappel vaccinal en retard" : "Rappel vaccinal à prévoir"}
+                  </strong>
+                  <span className="mt-0.5 block text-sm font-medium leading-relaxed">
+                    {vaccinationDue.vaccination.vaccineName} · {recordDate(vaccinationDue.vaccination.nextDueAt)}. Voir l’onglet Vaccinations.
+                  </span>
+                </span>
+              </button>
+            ) : null
+          }
+          patient={patient}
+        />
 
         {isProfileEditorOpen && profileDraft ? (
           <section className="rounded-2xl border border-border/80 bg-card/95 shadow-md p-5 sm:p-6 backdrop-blur-xl">
@@ -865,12 +897,8 @@ export function PatientDetailPage({
         <div className="medical-workspace">
           <section
             className="medical-register"
-            aria-labelledby="medical-record-title"
+            aria-label={`Dossier clinique de ${patient.name}`}
           >
-            <div className="medical-register-header">
-              <h2 id="medical-record-title">Dossier clinique</h2>
-              <p>Consultations, traitements et suivi de {patient.name}.</p>
-            </div>
             <MedicalRecordTabs label="Sections du dossier médical">
               {PATIENT_RECORD_SECTIONS.map((section) => {
                 const SectionIcon = section.icon;
@@ -911,153 +939,16 @@ export function PatientDetailPage({
               aria-labelledby={`record-tab-${activeTab}`}
             >
               {activeTab === "overview" && (
-                <div className="medical-overview">
-                  <section>
-                    <div className="medical-overview-heading">
-                      <h3>Actes & Dernières consultations</h3>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 t-12 text-[#5D5D5D] hover:text-[#292929] cursor-pointer"
-                        onClick={() => handleTabChange("timeline")}
-                      >
-                        Voir tout l’historique
-                      </Button>
-                    </div>
-
-                    {appointmentsRepo.loading ? (
-                      <div className="py-6 flex justify-center">
-                        <Spinner className="size-5" />
-                      </div>
-                    ) : appointmentsRepo.error ? (
-                      <div className="medical-empty">
-                        Les consultations ne sont pas disponibles.{" "}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => void appointmentsRepo.refresh()}
-                        >
-                          Réessayer
-                        </Button>
-                      </div>
-                    ) : recentVisits.length ? (
-                      <div className="space-y-2">
-                        {recentVisits.slice(0, 4).map((appointment) => {
-                          const statusConfig: Record<string, { label: string; className: string }> = {
-                            scheduled: { label: "Planifiée", className: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300" },
-                            confirmed: { label: "Confirmée", className: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300" },
-                            arrived: { label: "Arrivé", className: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" },
-                            waiting: { label: "En attente", className: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" },
-                            in_progress: { label: "En cours", className: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300" },
-                            completed: { label: "Terminée", className: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" },
-                            cancelled: { label: "Annulée", className: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300" },
-                            no_show: { label: "Absent", className: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300" },
-                          };
-                          const currentStatus = statusConfig[appointment.status] || {
-                            label: appointment.status,
-                            className: "bg-muted text-muted-foreground",
-                          };
-
-                          return (
-                            <button
-                              className="medical-visit group justify-between cursor-pointer"
-                              type="button"
-                              key={appointment.id}
-                              onClick={() =>
-                                openSoapForAppointment(appointment.id)
-                              }
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <time>{recordDate(appointment.startTime)}</time>
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <strong>{appointment.type}</strong>
-                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full t-12 font-medium ${currentStatus.className}`}>
-                                      {currentStatus.label}
-                                    </span>
-                                  </div>
-                                  <p className="truncate">{appointment.reason || appointment.title}</p>
-                                </div>
-                              </div>
-                              <ChevronRight className="size-4 shrink-0 text-[#7F7F7F] transition-transform duration-200 group-hover:text-[#292929] dark:group-hover:text-white group-hover:translate-x-0.5" />
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="p-4 rounded-lg bg-[#F5F5F5] dark:bg-white/[0.04] text-center t-13 text-[#5D5D5D]">
-                        <p>Aucune visite enregistrée pour {patient.name}.</p>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="mt-2.5 h-8 t-12 cursor-pointer"
-                          onClick={() => {
-                            prepareAppointment(patient.id);
-                            onNavigate("agenda");
-                          }}
-                        >
-                          Planifier la première consultation
-                        </Button>
-                      </div>
-                    )}
-
-                    <div className="medical-action-row">
-                      {clinicalNoteAppointment && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 t-12 border-[#F2F2F2] dark:border-white/[0.1] cursor-pointer"
-                          onClick={() =>
-                            openSoapForAppointment(clinicalNoteAppointment.id)
-                          }
-                        >
-                          Dernière note clinique
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
-                        onClick={openNewWeight}
-                      >
-                        <Plus className="size-3.5" aria-hidden="true" />
-                        Ajouter une pesée
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="medical-action medical-action-outline h-8 gap-1.5 t-12 font-medium cursor-pointer"
-                        onClick={openNewVaccination}
-                      >
-                        <Plus className="size-3.5" aria-hidden="true" />
-                        Ajouter un vaccin
-                      </Button>
-                    </div>
-                  </section>
-                  <section>
-                    <h3 className="medical-section-title">
-                      Informations permanentes
-                    </h3>
-                    <dl className="medical-facts">
-                      <div>
-                        <dt>Date de naissance</dt>
-                        <dd>{recordDate(patient.dateOfBirth)}</dd>
-                      </div>
-                      <div>
-                        <dt>Dernière pesée</dt>
-                        <dd>
-                          {weightsRepo.loading
-                            ? "Chargement…"
-                            : weightsRepo.error
-                              ? "Indisponible"
-                              : latestWeight
-                                ? `${latestWeight.weightKg.toLocaleString("fr-FR")} kg`
-                                : "Aucune pesée"}
-                        </dd>
-                      </div>
-                    </dl>
-                  </section>
-                </div>
+                <PatientOverview
+                  error={Boolean(appointmentsRepo.error)}
+                  getSoap={soapsRepo.forAppointment}
+                  loading={appointmentsRepo.loading}
+                  onOpenHistory={() => handleTabChange("timeline")}
+                  onOpenVisit={openSoapForAppointment}
+                  onRetry={() => void appointmentsRepo.refresh()}
+                  patientName={patient.name}
+                  visits={recentVisits}
+                />
               )}
               {activeTab === "vaccinations" &&
                 (vaccinationsRepo.loading ? (
@@ -1215,56 +1106,83 @@ export function PatientDetailPage({
             </div>
           </section>
 
-          <aside
-            className="medical-rail"
-            aria-label="Informations permanentes du patient"
-          >
-            {ownersRepo.loading ? (
-              <section aria-busy="true">
-                <h3 className="medical-section-title">Propriétaire</h3>
-                <SkeletonBlock className="h-20" />
-              </section>
-            ) : ownersRepo.error ? (
-              <section>
-                <h3 className="medical-section-title">Propriétaire</h3>
-                <p className="medical-empty">
-                  Les coordonnées ne sont pas disponibles.
-                </p>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => void ownersRepo.refresh()}
-                >
-                  Réessayer
-                </Button>
-              </section>
-            ) : (
-              <OwnerContact owner={owner} />
-            )}
+        </div>
+
+        <aside
+          className="medical-permanent"
+          aria-labelledby="medical-permanent-title"
+        >
+          <h2 className="medical-permanent-header" id="medical-permanent-title">
+            Informations permanentes
+          </h2>
+          <div className="medical-permanent-grid">
+          <section>
+            <h3 className="medical-section-title">Identité</h3>
+            <dl className="medical-facts">
+              <div>
+                <dt>Date de naissance</dt>
+                <dd>{recordDate(patient.dateOfBirth)}</dd>
+              </div>
+              {patient.chipNumber ? (
+                <div>
+                  <dt>Puce</dt>
+                  <dd>{patient.chipNumber}</dd>
+                </div>
+              ) : null}
+              {patient.tattooNumber ? (
+                <div>
+                  <dt>Tatouage</dt>
+                  <dd>{patient.tattooNumber}</dd>
+                </div>
+              ) : null}
+            </dl>
+          </section>
+          {ownersRepo.loading ? (
+            <section aria-busy="true">
+              <h3 className="medical-section-title">Propriétaire</h3>
+              <SkeletonBlock className="h-20" />
+            </section>
+          ) : ownersRepo.error ? (
             <section>
-              <h3 className="medical-section-title">Notes générales</h3>
-              <p className="medical-note">
-                {patient.generalNotes?.trim() ||
-                  "Aucune note générale enregistrée."}
+              <h3 className="medical-section-title">Propriétaire</h3>
+              <p className="medical-empty">
+                Les coordonnées ne sont pas disponibles.
               </p>
               <Button
-                className="mt-3"
                 size="sm"
                 variant="ghost"
-                onClick={openProfileEditor}
+                onClick={() => void ownersRepo.refresh()}
               >
-                Modifier les informations
+                Réessayer
               </Button>
             </section>
-            <PatientRecordHealth
-              onCompleteCheck={completeRecordCheck}
-              owner={owner}
-              patient={patient}
-              vaccinations={vaccinations}
-              weightEntries={weightEntries}
-            />
-          </aside>
-        </div>
+          ) : (
+            <OwnerContact owner={owner} />
+          )}
+          <section>
+            <h3 className="medical-section-title">Notes générales</h3>
+            <p className="medical-note">
+              {patient.generalNotes?.trim() ||
+                "Aucune note générale enregistrée."}
+            </p>
+            <Button
+              className="mt-3"
+              size="sm"
+              variant="ghost"
+              onClick={openProfileEditor}
+            >
+              Modifier les informations
+            </Button>
+          </section>
+          <PatientRecordHealth
+            onCompleteCheck={completeRecordCheck}
+            owner={owner}
+            patient={patient}
+            vaccinations={vaccinations}
+            weightEntries={weightEntries}
+          />
+          </div>
+        </aside>
       </div>
 
       <WeightEntryDialog

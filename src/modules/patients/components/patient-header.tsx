@@ -1,17 +1,19 @@
-import { CalendarPlus, Notebook, PencilSimple } from "@/lib/icons";
+import { CalendarPlus, FirstAid, Notebook, PencilSimple } from "@/lib/icons";
 import { Download } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getSpeciesTheme } from "@/lib/species-theme";
 import type { Owner, Patient } from "@/types/db";
-import { ClinicalAlerts, PatientIdentity } from "./medical-record-summary";
+import { PatientIdentity } from "./medical-record-summary";
 
 interface PatientHeaderProps {
   children?: ReactNode;
   className?: string;
   onEditProfile: () => void;
   onNewAppointment: () => void;
+  /** Opens Clinique > Soins filtered on this patient. */
+  onOpenCare?: () => void;
   onOpenClinicalNote?: () => void;
   onExportPdf?: () => void;
   owner?: Owner;
@@ -23,6 +25,7 @@ export function PatientHeader({
   className,
   onEditProfile,
   onNewAppointment,
+  onOpenCare,
   onOpenClinicalNote,
   onExportPdf,
   patient,
@@ -32,7 +35,7 @@ export function PatientHeader({
   return (
     <section
       className={cn("patient-identity medical-patient-header relative overflow-hidden", className)}
-      aria-label={`Identité et alertes de ${patient.name}`}
+      aria-label={`Identité de ${patient.name}`}
     >
       <div
         className="absolute inset-x-0 top-0 h-1"
@@ -63,6 +66,17 @@ export function PatientHeader({
             <CalendarPlus className="size-4" aria-hidden="true" />
             Planifier un rendez-vous
           </Button>
+          {onOpenCare && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="medical-action medical-action-outline"
+              onClick={onOpenCare}
+            >
+              <FirstAid className="size-4" aria-hidden="true" />
+              Ouvrir les soins
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
@@ -78,7 +92,6 @@ export function PatientHeader({
           </Button>}
         </div>
       </div>
-      <ClinicalAlerts patient={patient} />
       {children}
     </section>
   );

@@ -1,16 +1,11 @@
 import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
-import { AgendaCareSchedule } from "@/modules/care-tasks/agenda-care-schedule";
-import { formatPhone, formatPersonName } from "@/utils/display-format";
-import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
+import { formatPersonName } from "@/utils/display-format";
 import {
   Add01Icon,
   Alert02Icon,
   ArrowDown01Icon,
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
   Calendar01Icon,
   CheckmarkCircle02Icon,
-  MoreVerticalCircle01Icon,
   SearchIcon,
   StethoscopeIcon,
   UserCircle02Icon,
@@ -19,6 +14,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
 
 import { AgendaListView } from "@/components/AgendaListView";
+import { AgendaMonthCalendar } from "@/modules/agenda/components/agenda-month-calendar";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { SectionCards } from "@/components/section-cards";
 import {
@@ -31,7 +27,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -45,13 +40,6 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Empty,
   EmptyContent,
@@ -85,19 +73,11 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   APPOINTMENT_STATUS_META,
@@ -122,7 +102,6 @@ import {
   formatDateInput,
   parseDateInput,
   isSameDay,
-  getDateFnsLocale,
   formatTime,
   formatTimeCompact,
   formatDateLabel,
@@ -135,7 +114,6 @@ import {
   AppointmentStatusBadge,
   AgendaDayView,
   AgendaWeekView,
-  AgendaMonthView,
 } from "@/modules/agenda/components/agenda-shared";
 import type { AgendaViewProps } from "../hooks/use-agenda-page-model";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -148,7 +126,6 @@ export function AgendaView(props: AgendaViewProps) {
     closeDialog,
     currentTime,
     currentTimePosition,
-    dailyAppointments,
     dayLoadSummary,
     deleteAppointment,
     duration,
@@ -223,7 +200,6 @@ export function AgendaView(props: AgendaViewProps) {
     setTableTab,
     setVetFilter,
     setViewMode,
-    shiftPeriod,
     statusFilter,
     t,
     tableRowsByTab,
@@ -235,20 +211,47 @@ export function AgendaView(props: AgendaViewProps) {
     vetFilter,
     vets,
     viewMode,
-    visibleRowsCount,
     weekDays,
   } = props;
+  const isDayScope = tableTab === "selection";
+  const displayMode: ViewMode = viewMode === "month" ? "list" : viewMode;
+  const showsList = !isDayScope || displayMode === "list";
+  const hasActiveFilters =
+    searchTerm.trim() !== "" || vetFilter !== "all" || statusFilter !== "all";
+  const resetFilters = () => {
+    setSearchTerm("");
+    setVetFilter("all");
+    setStatusFilter("all");
+  };
+  const dayRows = tableRowsByTab.selection;
+  const dayCompleted = dayRows.filter(
+    (row) => row.appointment.status === "completed"
+  ).length;
+  const dayUrgent = dayRows.filter(
+    (row) => row.appointment.type === "Urgence"
+  ).length;
+  const daySummaryLabel =
+    dayRows.length === 0
+      ? "Aucun rendez-vous"
+      : [
+          `${dayRows.length} rendez-vous`,
+          dayCompleted > 0
+            ? `${dayCompleted} terminé${dayCompleted > 1 ? "s" : ""}`
+            : null,
+          dayRows.length - dayCompleted > 0
+            ? `${dayRows.length - dayCompleted} à suivre`
+            : null,
+          dayUrgent > 0 ? `${dayUrgent} urgence${dayUrgent > 1 ? "s" : ""}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ");
+  const selectedAppointmentDate = selectedAppointment
+    ? normalizeDate(selectedAppointment.startTime)
+    : null;
   return (
     <div className="agenda-workspace dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
       <MotivationalHeader section="agenda"
         actions={<>
-          <Button
-            className="h-9 px-4"
-            onClick={() => setSelectedDate(new Date())}
-            variant="outline"
-          >
-            {t("agenda.today")}
-          </Button>
           <Button
             className="h-9 px-4"
             onClick={() => handleOpenCreate()}
@@ -265,177 +268,227 @@ export function AgendaView(props: AgendaViewProps) {
 
       <SectionCards items={sectionCards} />
 
-      <div className="grid gap-4">
-        <Card className="agenda-planner surface-card min-h-[480px] border-0">
-          <CardHeader className="agenda-planner-heading border-border border-b px-5 py-5 sm:px-6">
-            <CardTitle className="font-medium t-18 tracking-[-0.02em]">
-              {t("agenda.consultationsAgenda")}
+      <AgendaMonthCalendar
+        getAppointmentsForDate={getAppointmentsForDate}
+        monthDays={monthDays}
+        onSelectDate={(date) => {
+          setSelectedDate(date);
+          setTableTab("selection");
+        }}
+        selectedDate={selectedDate}
+      />
+
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_336px] xl:items-start">
+        <Card className="agenda-day-panel surface-card min-h-[420px] min-w-0 overflow-clip border-0">
+          <CardHeader className="agenda-day-heading gap-1.5 border-border border-b px-5 pt-6 pb-5 sm:px-6">
+            <CardTitle className="font-medium text-[18px] tracking-[-0.02em]">
+              {isDayScope
+                ? periodLabel
+                : TABLE_TABS.find((tab) => tab.value === tableTab)?.label}
             </CardTitle>
-            <CardAction>
-              <Badge className="rounded-full px-3 py-1" variant="outline">
-                {t("agenda.slot", { count: dailyAppointments.length })}
-              </Badge>
-            </CardAction>
+            <CardDescription className="text-sm">
+              {!isDayScope
+                ? TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]
+                : displayMode === "day"
+                  ? `${daySummaryLabel}${dayRows.length > 0 ? ", répartis par vétérinaire" : ""}`
+                  : displayMode === "week"
+                    ? "Rendez-vous de la semaine du jour choisi, jour par jour"
+                    : daySummaryLabel}
+            </CardDescription>
           </CardHeader>
 
           <CardContent className="flex min-h-0 flex-1 flex-col px-0 pb-0">
             <Tabs
-              className="flex min-h-0 flex-1 gap-0"
-              onValueChange={(value) => setViewMode(value as ViewMode)}
-              value={viewMode}
+              className="min-w-0 gap-0"
+              onValueChange={(value) => setTableTab(value as TableTab)}
+              value={tableTab}
             >
-              <div className="agenda-toolbar flex flex-col gap-3 border-border border-b px-5 py-4 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
-                <div className="agenda-date-controls flex flex-wrap items-center gap-2">
-                  <div className="agenda-period-navigation flex items-center rounded-xl border border-border bg-card p-0.5">
-                    <Button
-                      aria-label="Période précédente"
-                      size="icon-sm"
-                      variant="ghost"
-                      onClick={() => shiftPeriod(-1)}
+              <div className="agenda-day-toolbar flex flex-col gap-3 border-border border-b px-5 py-4 sm:px-6">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <TabsList aria-label="Rendez-vous à afficher" tabsStyle="segmented">
+                    {TABLE_TABS.map((tab) => (
+                      <TabsTrigger key={tab.value} value={tab.value}>
+                        {tab.label}
+                        <span className="tabCount">
+                          {tableRowsByTab[tab.value].length}
+                        </span>
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {isDayScope ? (
+                    <Tabs
+                      onValueChange={(value) => setViewMode(value as ViewMode)}
+                      value={displayMode}
                     >
-                      <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.5} />
-                    </Button>
-                    <Button
-                      aria-label="Période suivante"
-                      size="icon-sm"
-                      variant="ghost"
-                      onClick={() => shiftPeriod(1)}
-                    >
-                      <HugeiconsIcon
-                        icon={ArrowRight01Icon}
-                        strokeWidth={1.5}
-                      />
-                    </Button>
-                  </div>
-                  <Popover>
-                    <PopoverTrigger
-                      render={
-                        <Button
-                          className="agenda-selected-date h-10 gap-2 rounded-xl"
-                          variant="outline"
-                        >
-                          <HugeiconsIcon
-                            icon={Calendar01Icon}
-                            strokeWidth={1.5}
-                          />
-                          {periodLabel}
-                        </Button>
-                      }
-                    />
-                    <PopoverContent
-                      align="start"
-                      className="w-auto rounded-[1.75rem] p-2"
-                      sideOffset={10}
-                    >
-                      <Calendar
-                        className="rounded-[1.4rem]"
-                        locale={getDateFnsLocale()}
-                        mode="single"
-                        onSelect={(date) => {
-                          if (date) {
-                            setSelectedDate(date);
-                          }
-                        }}
-                        selected={selectedDate}
-                      />
-                    </PopoverContent>
-                  </Popover>
-
-                  {isSameDay(selectedDate, new Date()) ? (
-                    <Badge
-                      className="rounded-full border-transparent bg-primary/10 text-primary"
-                      variant="outline"
-                    >
-                      {t("agenda.today")}
-                    </Badge>
+                      <TabsList aria-label="Affichage de la journée" tabsStyle="segmented">
+                        <TabsTrigger value="list">Liste</TabsTrigger>
+                        <TabsTrigger value="day">Par vétérinaire</TabsTrigger>
+                        <TabsTrigger value="week">Semaine</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
                   ) : null}
                 </div>
 
-                <TabsList aria-label="Vue de l’agenda" tabsStyle="segmented">
-                  <TabsTrigger className="flex-1 rounded-lg" value="list">
-                    {t("agenda.list", { defaultValue: "Vue liste" })}
-                  </TabsTrigger>
-                  <TabsTrigger value="day">{t("agenda.day")}</TabsTrigger>
-                  <TabsTrigger value="week">{t("agenda.week")}</TabsTrigger>
-                  <TabsTrigger value="month">{t("agenda.month")}</TabsTrigger>
-                </TabsList>
+                {showsList ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="relative min-w-[200px] flex-1">
+                      <HugeiconsIcon
+                        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                        icon={SearchIcon}
+                        strokeWidth={1.5}
+                      />
+                      <Input
+                        aria-label="Rechercher un rendez-vous"
+                        className="pl-9"
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        placeholder="Rechercher un patient, un propriétaire, un motif…"
+                        value={searchTerm}
+                      />
+                    </div>
+                    <NativeSelect
+                      aria-label="Vétérinaire"
+                      className="w-full sm:w-48"
+                      onChange={(event) => setVetFilter(event.target.value)}
+                      value={vetFilter}
+                    >
+                      <NativeSelectOption value="all">
+                        Tous les vétérinaires
+                      </NativeSelectOption>
+                      {vets.map((vet) => (
+                        <NativeSelectOption key={vet.id} value={vet.id}>
+                          {formatPersonName(vet.displayName)}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                    <NativeSelect
+                      aria-label="Statut"
+                      className="w-full sm:w-44"
+                      onChange={(event) => setStatusFilter(event.target.value)}
+                      value={statusFilter}
+                    >
+                      <NativeSelectOption value="all">
+                        Tous les statuts
+                      </NativeSelectOption>
+                      {Object.entries(APPOINTMENT_STATUS_META).map(
+                        ([status, meta]) => (
+                          <NativeSelectOption key={status} value={status}>
+                            {meta.label}
+                          </NativeSelectOption>
+                        )
+                      )}
+                    </NativeSelect>
+                    {hasActiveFilters ? (
+                      <Button onClick={resetFilters} variant="ghost">
+                        Réinitialiser les filtres
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
 
-            <AgendaStays selectedDate={selectedDate} weekDays={weekDays} mode={viewMode} patientName={getPatientName}/>
-            <AgendaCareSchedule selectedDate={selectedDate} weekDays={weekDays} mode={viewMode} patientName={getPatientName} />
+              {isDayScope ? (
+                <AgendaStays
+                  mode={displayMode}
+                  patientName={getPatientName}
+                  selectedDate={selectedDate}
+                  weekDays={weekDays}
+                />
+              ) : null}
 
               {loadingAppointments ? (
                 <div className="flex items-center justify-center p-6">
                   <Spinner />
                 </div>
+              ) : displayMode === "day" && isDayScope ? (
+                <div className="min-w-0 overflow-x-auto pt-4">
+                  <AgendaDayView
+                    appointmentsByVet={appointmentsByVet}
+                    currentTimeLabel={formatTime(currentTime)}
+                    currentTimePosition={currentTimePosition}
+                    getPatientName={getPatientName}
+                    onSelectAppointment={selectAppointment}
+                    selectedAppointmentId={selectedAppointmentId}
+                    selectedDate={selectedDate}
+                    vets={vets}
+                  />
+                </div>
+              ) : displayMode === "week" && isDayScope ? (
+                <div className="min-w-0 overflow-x-auto pt-4">
+                  <AgendaWeekView
+                    getAppointmentsForDate={getAppointmentsForDate}
+                    getPatientName={getPatientName}
+                    onSelectAppointment={selectAppointment}
+                    selectedAppointmentId={selectedAppointmentId}
+                    weekDays={weekDays}
+                  />
+                </div>
               ) : (
-                <>
-                  <TabsContent className="min-h-0 flex-1" value="list">
-                    <AgendaListView
-                      formatTime={formatTime}
-                      getAppointmentsForDate={getAppointmentsForDate}
-                      getOwnerName={(ownerId) =>
-                        ownerId ? ownersById.get(ownerId)?.lastName || "" : ""
-                      }
-                      getPatient={(id) => patientsById.get(id)}
-                      getPatientName={getPatientName}
-                      isSameDay={isSameDay}
-                      monthDays={monthDays}
-                      onDateClick={(date) => setSelectedDate(date)}
-                      onSelectAppointment={selectAppointment}
-                      onTransitionStatus={handleAppointmentStatusTransition}
-                      selectedAppointmentId={selectedAppointmentId}
-                      selectedDate={selectedDate}
-                    />
-                  </TabsContent>
-
-                  <TabsContent className="min-h-0 flex-1" value="day">
-                    <AgendaDayView
-                      appointmentsByVet={appointmentsByVet}
-                      currentTimeLabel={formatTime(currentTime)}
-                      currentTimePosition={currentTimePosition}
-                      getPatientName={getPatientName}
-                      onSelectAppointment={selectAppointment}
-                      selectedAppointmentId={selectedAppointmentId}
-                      selectedDate={selectedDate}
-                      vets={vets}
-                    />
-                  </TabsContent>
-
-                  <TabsContent className="min-h-0 flex-1" value="week">
-                    <AgendaWeekView
-                      getAppointmentsForDate={getAppointmentsForDate}
-                      getPatientName={getPatientName}
-                      onSelectAppointment={selectAppointment}
-                      selectedAppointmentId={selectedAppointmentId}
-                      weekDays={weekDays}
-                    />
-                  </TabsContent>
-
-                  <TabsContent className="min-h-0 flex-1" value="month">
-                    <AgendaMonthView
-                      getAppointmentsForDate={getAppointmentsForDate}
-                      getPatientName={getPatientName}
-                      monthDays={monthDays}
-                      onPickDate={(date) => {
-                        setSelectedDate(date);
-                        setViewMode("day");
-                      }}
-                      selectedDate={selectedDate}
-                    />
-                  </TabsContent>
-                </>
+                <AgendaListView
+                  emptyState={
+                    <Empty className="m-5 border border-border/80 border-dashed bg-muted/20 sm:m-6">
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <HugeiconsIcon
+                            icon={tableTab === "attention" ? Alert02Icon : Calendar01Icon}
+                            strokeWidth={1.5}
+                          />
+                        </EmptyMedia>
+                        <EmptyTitle>
+                          {hasActiveFilters
+                            ? "Aucun rendez-vous ne correspond aux filtres"
+                            : isDayScope
+                              ? "Journée libre"
+                              : "Aucun rendez-vous dans cette liste"}
+                        </EmptyTitle>
+                        <EmptyDescription>
+                          {hasActiveFilters
+                            ? "Modifiez la recherche ou réinitialisez les filtres."
+                            : isDayScope
+                              ? "Aucun rendez-vous ce jour-là. Choisissez un autre jour dans le calendrier ou ajoutez un rendez-vous."
+                              : "Rien à afficher pour le moment."}
+                        </EmptyDescription>
+                      </EmptyHeader>
+                      <EmptyContent className="sm:flex-row">
+                        {hasActiveFilters ? (
+                          <Button onClick={resetFilters} variant="outline">
+                            Réinitialiser les filtres
+                          </Button>
+                        ) : null}
+                        <Button
+                          onClick={() => handleOpenCreate(selectedDate)}
+                          variant="outline"
+                        >
+                          <HugeiconsIcon
+                            data-icon="inline-start"
+                            icon={Add01Icon}
+                            strokeWidth={1.5}
+                          />
+                          Nouveau rendez-vous
+                        </Button>
+                      </EmptyContent>
+                    </Empty>
+                  }
+                  formatTime={formatTime}
+                  onDeleteAppointment={deleteAppointment}
+                  onEditAppointment={handleOpenEdit}
+                  onSelectAppointment={(appointment) => selectAppointment(appointment)}
+                  onTransitionStatus={handleAppointmentStatusTransition}
+                  resetKey={`${tableTab}:${selectedDate.toDateString()}:${searchTerm}:${vetFilter}:${statusFilter}`}
+                  rows={tableRowsByTab[tableTab]}
+                  selectedAppointmentId={selectedAppointmentId}
+                  showDate={!isDayScope}
+                />
               )}
             </Tabs>
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] xl:items-start">
+        <aside className="grid min-w-0 gap-4" aria-label="Détail et charge de la journée">
           {selectedAppointment ? (
-            <Card className="min-h-[420px]">
-              <CardHeader className="border-border border-b px-6 py-5">
-                <CardDescription>Détail de la sélection</CardDescription>
-                <CardTitle className="t-18 tracking-[-0.04em]">
+            <Card>
+              <CardHeader className="border-border border-b px-5 py-4">
+                <CardDescription>Rendez-vous sélectionné</CardDescription>
+                <CardTitle className="font-medium text-[18px] tracking-[-0.02em]">
                   {patientsById.get(selectedAppointment.patientId)?.name ||
                     selectedAppointment.title}
                 </CardTitle>
@@ -447,48 +500,29 @@ export function AgendaView(props: AgendaViewProps) {
                 </CardAction>
               </CardHeader>
 
-              <CardContent className="flex min-h-0 flex-1 flex-col gap-4 px-6 py-5">
-                <div
-                  className={cn(
-                    "rounded-2xl border p-4",
-                    getAppointmentTypeMeta(selectedAppointment.type)
-                      .surfaceClassName
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-muted-foreground text-sm">
-                        Acte clinique
-                      </p>
-                      <p className="mt-1 font-medium text-foreground text-lg">
-                        {selectedAppointment.type}
-                      </p>
-                    </div>
-                    <AppointmentTypeBadge type={selectedAppointment.type} />
-                  </div>
+              <CardContent className="grid gap-4 px-5 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-muted-foreground text-sm">Acte</span>
+                  <AppointmentTypeBadge type={selectedAppointment.type} />
                 </div>
 
-                <div className="grid gap-3 rounded-2xl border border-border/60 bg-muted/10 p-4 text-sm">
+                <div className="grid gap-2.5 border-border/60 border-t pt-4 text-sm">
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-muted-foreground">Créneau</span>
-                    <span className="text-right font-medium text-foreground">
-                      {formatTimeCompact(selectedAppointment.startTime)} -{" "}
+                    <span className="text-right font-medium text-foreground tabular-nums">
+                      {formatTimeCompact(selectedAppointment.startTime)} à{" "}
                       {formatTimeCompact(selectedAppointment.endTime)}
                     </span>
                   </div>
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-muted-foreground">Date</span>
                     <span className="text-right font-medium text-foreground">
-                      {formatDateLabel(
-                        normalizeDate(selectedAppointment.startTime) ??
-                          selectedDate,
-                        {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        }
-                      )}
+                      {formatDateLabel(selectedAppointmentDate ?? selectedDate, {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
                   <div className="flex items-start justify-between gap-3">
@@ -505,544 +539,161 @@ export function AgendaView(props: AgendaViewProps) {
                   </div>
                 </div>
 
-                <div className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4 transition-[background-color,color,border-color,box-shadow,opacity,transform] duration-150 ease-out hover:border-border/40 hover:shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)]">
+                <div className="grid gap-1 border-border/60 border-t pt-4">
                   <div className="flex items-center gap-2">
                     <HugeiconsIcon
                       className="size-4 text-muted-foreground"
                       icon={StethoscopeIcon}
                       strokeWidth={1.5}
                     />
-                    <p className="font-medium text-foreground">Patient</p>
-                  </div>
-                  <div className="grid gap-1">
-                    <p className="font-medium text-foreground">
+                    <p className="font-medium text-foreground text-sm">
                       {selectedPatient?.name || "Patient local"}
                     </p>
-                    <p className="text-muted-foreground text-sm">
-                      {getPatientProfile(selectedPatient)} ·{" "}
-                      {getAgeLabel(selectedPatient?.dateOfBirth)}
-                    </p>
                   </div>
-                  {selectedAppointment.reason ? (
-                    <p className="text-muted-foreground text-sm leading-6">
-                      {selectedAppointment.reason}
-                    </p>
-                  ) : (
-                    <p className="text-muted-foreground text-sm">
-                      Aucun motif détaillé n&apos;a encore été saisi.
-                    </p>
-                  )}
+                  <p className="text-muted-foreground text-sm">
+                    {getPatientProfile(selectedPatient)} ·{" "}
+                    {getAgeLabel(selectedPatient?.dateOfBirth)}
+                  </p>
+                  <p className="mt-1 text-muted-foreground text-sm leading-6">
+                    {selectedAppointment.reason ||
+                      "Aucun motif détaillé n'a encore été saisi."}
+                  </p>
                 </div>
               </CardContent>
 
-              <CardFooter className="gap-2 border-t px-6 py-4">
+              <CardFooter className="flex-wrap gap-2 border-t px-5 py-4">
                 <Button
-                  className="h-10 flex-1 rounded-xl"
+                  className="flex-1"
                   onClick={() => handleOpenEdit(selectedAppointment)}
                   variant="outline"
                 >
                   Modifier
                 </Button>
-                <Button
-                  className="h-10 flex-1 rounded-xl"
-                  onClick={() => handleOpenCreate(selectedDate)}
-                >
-                  Nouveau RDV
-                </Button>
+                {selectedAppointmentDate &&
+                !isSameDay(selectedAppointmentDate, selectedDate) ? (
+                  <Button
+                    className="flex-1"
+                    onClick={() => {
+                      setSelectedDate(selectedAppointmentDate);
+                      setTableTab("selection");
+                    }}
+                    variant="outline"
+                  >
+                    Voir la journée
+                  </Button>
+                ) : (
+                  <Button
+                    className="flex-1"
+                    onClick={() => handleOpenCreate(selectedDate)}
+                    variant="outline"
+                  >
+                    Nouveau RDV ce jour
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ) : (
-            <div className="flex h-full min-h-[420px] flex-col items-center justify-center rounded-panel border border-border/80 border-dashed bg-muted/5 p-8 text-center shadow-none transition-[background-color,color,border-color,box-shadow,opacity,transform] duration-150">
-              <div className="mb-4 flex size-12 shrink-0 items-center justify-center rounded-full bg-zinc-900/5 ring-1 ring-zinc-900/10 dark:bg-white/5 dark:ring-white/10">
-                <HugeiconsIcon
-                  className="size-6 text-muted-foreground opacity-80"
-                  icon={Calendar01Icon}
-                  strokeWidth={1.5}
-                />
-              </div>
-              <h3 className="font-medium text-foreground text-lg tracking-tight">
+            <div className="flex flex-col items-center justify-center rounded-panel border border-border/80 border-dashed px-6 py-8 text-center">
+              <HugeiconsIcon
+                className="mb-3 size-6 text-muted-foreground"
+                icon={Calendar01Icon}
+                strokeWidth={1.5}
+              />
+              <p className="font-medium text-foreground text-sm">
                 Aucun rendez-vous sélectionné
-              </h3>
-              <p className="mt-2 max-w-sm text-muted-foreground text-sm leading-6">
-                Cliquez sur un créneau dans le planning ou dans le tableau
-                ci-dessous pour afficher les détails contextuels.
               </p>
-              <Button
-                className="mt-6 h-10 gap-2 rounded-full px-5"
-                onClick={() => handleOpenCreate()}
-                variant="outline"
-              >
-                <HugeiconsIcon
-                  className="size-4"
-                  data-icon="inline-start"
-                  icon={Add01Icon}
-                  strokeWidth={1.5}
-                />
-                Nouveau rendez-vous
-              </Button>
+              <p className="mt-1 max-w-xs text-muted-foreground text-sm leading-6">
+                Cliquez sur un rendez-vous de la liste pour afficher son détail.
+              </p>
             </div>
           )}
 
-          <Card className="flex h-full flex-col justify-between rounded-panel border border-border bg-card shadow-none">
-            <div>
-              <CardHeader className="border-border border-b px-6 py-5">
-                <CardDescription>Cadence de la journée</CardDescription>
-                <CardTitle className="font-normal t-18 tracking-[-0.04em]">
-                  {formatDateLabel(selectedDate)}
-                </CardTitle>
-              </CardHeader>
+          <Card>
+            <CardHeader className="border-border border-b px-5 py-4">
+              <CardDescription>Charge de la journée</CardDescription>
+              <CardTitle className="font-medium text-[18px] tracking-[-0.02em]">
+                {formatDateLabel(selectedDate)}
+              </CardTitle>
+            </CardHeader>
 
-              <CardContent className="grid gap-4 px-6 py-5">
-                <div className="grid gap-2">
-                  {typeSummary.length > 0 ? (
-                    typeSummary.map((entry) => (
+            <CardContent className="grid gap-4 px-5 py-4">
+              {typeSummary.length > 0 ? (
+                <>
+                  <div className="grid gap-1.5">
+                    {typeSummary.map((entry) => (
                       <div
-                        className="flex items-center justify-between gap-3 rounded-2xl bg-muted/30 px-4 py-3 text-sm"
+                        className="flex items-center justify-between gap-3 text-sm"
                         key={entry.type}
                       >
-                        <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-2.5">
                           <span
                             className={cn(
                               "size-2 rounded-full",
                               getAppointmentTypeMeta(entry.type).dotClassName
                             )}
                           />
-                          <span className="font-medium text-foreground">
-                            {entry.type}
-                          </span>
-                        </div>
-                        <Badge className="rounded-lg" variant="outline">
+                          <span className="text-foreground">{entry.type}</span>
+                        </span>
+                        <span className="text-muted-foreground tabular-nums">
                           {entry.count}
-                        </Badge>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
-                      <HugeiconsIcon
-                        className="mb-2 size-8 opacity-30"
-                        icon={Calendar01Icon}
-                        strokeWidth={1.5}
-                      />
-                      <p className="text-sm">
-                        Aucun rendez-vous programmé aujourd'hui
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {dayLoadSummary.length > 0 ? (
-                  <div className="grid gap-2 border-border/40 border-t pt-4">
-                    {dayLoadSummary.map((entry) => (
-                      <div
-                        className="flex items-center justify-between gap-3 rounded-2xl bg-muted/20 px-4 py-2.5 text-sm"
-                        key={entry.vet.id}
-                      >
-                        <div className="min-w-0">
-                          <p className="truncate font-medium text-foreground">
-                            {formatPersonName(entry.vet.displayName)}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {entry.vet.specialty || "Consultation générale"}
-                          </p>
-                        </div>
-                        <Badge className="rounded-lg" variant="outline">
-                          {entry.count}
-                        </Badge>
+                        </span>
                       </div>
                     ))}
                   </div>
-                ) : null}
-              </CardContent>
-            </div>
 
-            <CardContent className="mt-auto px-6 pt-0 pb-5">
-              <div className="grid grid-cols-3 gap-3 border-border/40 border-t pt-5">
-                <div className="text-center">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
-                    Charge
-                  </p>
-                  <p className="mt-1 font-semibold text-base text-foreground tracking-tight">
-                    {formatDuration(totalPlannedMinutes)}
-                  </p>
-                </div>
-                <div className="border-border/40 border-x px-1 text-center">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
-                    Urgences
-                  </p>
-                  <p className="mt-1 font-semibold text-base text-foreground">
-                    {urgentOpenCount}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="font-semibold t-12 text-muted-foreground uppercase tracking-wider">
-                    Mobilisés
-                  </p>
-                  <p className="mt-1 font-semibold text-base text-foreground">
-                    {engagedVetsCount}
-                  </p>
-                </div>
-              </div>
+                  {dayLoadSummary.length > 0 ? (
+                    <div className="grid gap-2 border-border/60 border-t pt-4">
+                      {dayLoadSummary.map((entry) => (
+                        <div
+                          className="flex items-center justify-between gap-3 text-sm"
+                          key={entry.vet.id}
+                        >
+                          <div className="min-w-0">
+                            <p className="truncate text-foreground">
+                              {formatPersonName(entry.vet.displayName)}
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              {entry.vet.specialty || "Consultation générale"}
+                            </p>
+                          </div>
+                          <span className="text-muted-foreground tabular-nums">
+                            {entry.count}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <div className="grid grid-cols-3 gap-3 border-border/60 border-t pt-4 text-center">
+                    <div>
+                      <p className="text-[12px] text-muted-foreground">Charge</p>
+                      <p className="mt-1 font-medium text-foreground tabular-nums">
+                        {formatDuration(totalPlannedMinutes)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[12px] text-muted-foreground">Urgences</p>
+                      <p className="mt-1 font-medium text-foreground tabular-nums">
+                        {urgentOpenCount}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[12px] text-muted-foreground">Mobilisés</p>
+                      <p className="mt-1 font-medium text-foreground tabular-nums">
+                        {engagedVetsCount}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  Aucun rendez-vous ce jour-là.
+                </p>
+              )}
             </CardContent>
           </Card>
-        </div>
+        </aside>
       </div>
-
-      <Card className="overflow-hidden rounded-2xl border-border/70 shadow-none">
-        <CardHeader className="gap-1 border-b border-border/50 px-6 py-5">
-          <CardTitle className="font-medium t-18 tracking-[-0.02em]">
-            Planning des rendez-vous
-          </CardTitle>
-          <CardDescription className="text-sm">
-            {TABLE_SCOPES(formatDateLabel(selectedDate))[tableTab]}
-          </CardDescription>
-          <CardAction>
-            <Badge
-              className="rounded-full border-transparent bg-frame px-3 py-1 text-violet-700 dark:text-violet-300"
-              variant="outline"
-            >
-              {visibleRowsCount} rendez-vous
-            </Badge>
-          </CardAction>
-        </CardHeader>
-
-        <CardContent className="flex min-h-0 flex-1 flex-col px-0 pb-0">
-          <Tabs
-            className="gap-0"
-            onValueChange={(value) => setTableTab(value as TableTab)}
-            value={tableTab}
-          >
-            <div className="flex flex-col gap-3 border-b px-6 py-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
-              <TabsList tabsStyle="segmented">
-                {TABLE_TABS.map((tab) => (
-                  <TabsTrigger
-                    className="rounded-lg"
-                    key={tab.value}
-                    value={tab.value}
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-
-              <div className="grid w-full gap-3 lg:grid-cols-[minmax(200px,1fr)_190px_190px] 2xl:ml-auto 2xl:max-w-4xl 2xl:flex-1">
-                <div className="relative">
-                  <HugeiconsIcon
-                    className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
-                    icon={SearchIcon}
-                    strokeWidth={1.5}
-                  />
-                  <Input
-                    className="h-9 rounded-xl border-border/60 bg-muted/40 pl-10 text-sm focus-visible:border-ring focus-visible:ring-ring/20"
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Rechercher un patient, un motif…"
-                    value={searchTerm}
-                  />
-                </div>
-
-                <NativeSelect
-                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-ring [&>select]:focus-visible:ring-ring/20"
-                  onChange={(event) => setVetFilter(event.target.value)}
-                  value={vetFilter}
-                >
-                  <NativeSelectOption value="all">
-                    Tous les vétérinaires
-                  </NativeSelectOption>
-                  {vets.map((vet) => (
-                    <NativeSelectOption key={vet.id} value={vet.id}>
-                      {formatPersonName(vet.displayName)}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelect>
-
-                <NativeSelect
-                  className="w-full [&>select]:border-border/60 [&>select]:bg-muted/40 [&>select]:focus-visible:border-ring [&>select]:focus-visible:ring-ring/20"
-                  onChange={(event) => setStatusFilter(event.target.value)}
-                  value={statusFilter}
-                >
-                  <NativeSelectOption value="all">
-                    Tous les statuts
-                  </NativeSelectOption>
-                  {Object.entries(APPOINTMENT_STATUS_META).map(
-                    ([status, meta]) => (
-                      <NativeSelectOption key={status} value={status}>
-                        {meta.label}
-                      </NativeSelectOption>
-                    )
-                  )}
-                </NativeSelect>
-              </div>
-            </div>
-
-            {TABLE_TABS.map((tab) => {
-              const rows = tableRowsByTab[tab.value];
-
-              return (
-                <TabsContent
-                  className="px-0 pb-6"
-                  key={tab.value}
-                  value={tab.value}
-                >
-                  {rows.length === 0 ? (
-                    <Empty className="mx-6 border border-border/80 border-dashed bg-muted/20">
-                      <EmptyHeader>
-                        <EmptyMedia variant="icon">
-                          {tab.value === "attention" ? (
-                            <HugeiconsIcon
-                              icon={Alert02Icon}
-                              strokeWidth={1.5}
-                            />
-                          ) : (
-                            <HugeiconsIcon
-                              icon={Calendar01Icon}
-                              strokeWidth={1.5}
-                            />
-                          )}
-                        </EmptyMedia>
-                        <EmptyTitle>
-                          Aucun rendez-vous dans cette vue
-                        </EmptyTitle>
-                        <EmptyDescription>
-                          Ajustez les filtres ou créez un nouveau créneau pour
-                          enrichir le planning.
-                        </EmptyDescription>
-                      </EmptyHeader>
-                      <EmptyContent className="sm:flex-row">
-                        <Button
-                          onClick={() => {
-                            setSearchTerm("");
-                            setVetFilter("all");
-                            setStatusFilter("all");
-                          }}
-                          variant="outline"
-                        >
-                          Réinitialiser
-                        </Button>
-                        <Button onClick={() => handleOpenCreate()} variant="outline">
-                          <HugeiconsIcon
-                            data-icon="inline-start"
-                            icon={Add01Icon}
-                            strokeWidth={1.5}
-                          />
-                          Nouveau rendez-vous
-                        </Button>
-                      </EmptyContent>
-                    </Empty>
-                  ) : (
-                    <Table className="min-w-[900px]">
-                      <TableHeader className="bg-[#edf3ef] dark:bg-[#25332d] [&_th]:h-12 [&_th]:whitespace-nowrap [&_th]:text-[13px] [&_th]:font-semibold [&_th]:tracking-normal [&_th]:text-[#456152] dark:[&_th]:text-[#c0d4c7]">
-                        <TableRow className="border-b border-[#dce7df] hover:bg-transparent dark:border-[#35473d]">
-                          <TableHead className="w-[22%] min-w-[130px] py-3.5 pl-6 font-medium text-xs text-muted-foreground">
-                            Dossier
-                          </TableHead>
-                          <TableHead className="w-[18%] min-w-[110px] py-3.5 font-medium text-xs text-muted-foreground">
-                            Propriétaire
-                          </TableHead>
-                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-medium text-xs text-muted-foreground">
-                            Acte
-                          </TableHead>
-                          <TableHead className="w-[20%] min-w-[130px] py-3.5 font-medium text-xs text-muted-foreground">
-                            Créneau
-                          </TableHead>
-                          <TableHead className="w-[12%] min-w-[80px] py-3.5 font-medium text-xs text-muted-foreground">
-                            Statut
-                          </TableHead>
-                          <TableHead className="w-[12%] min-w-[100px] py-3.5 font-medium text-xs text-muted-foreground">
-                            Vétérinaire
-                          </TableHead>
-                          <TableHead className="w-[4%] min-w-[40px] py-3.5 pr-6 text-right font-medium text-xs text-muted-foreground">
-                            Action
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {rows.map((row) => {
-                          const timePart = row.appointmentAt.includes(" · ")
-                            ? row.appointmentAt.split(" · ")[1]
-                            : row.appointmentAt;
-                          const datePart = row.appointmentAt.includes(" · ")
-                            ? row.appointmentAt.split(" · ")[0]
-                            : "";
-                          return (
-                            <TableRow
-                              className="cursor-pointer border-border/50 transition-colors hover:bg-muted/35 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 [&>td]:py-4"
-                              data-row-id={row.appointment.id}
-                              key={row.appointment.id}
-                              tabIndex={0}
-                              onKeyDown={(event) => {
-                                if (
-                                  event.target === event.currentTarget &&
-                                  (event.key === "Enter" || event.key === " ")
-                                ) {
-                                  event.preventDefault();
-                                  selectAppointment(row.appointment, true);
-                                }
-                              }}
-                              onClick={() =>
-                                selectAppointment(row.appointment, true)
-                              }
-                            >
-                              <TableCell className="w-[22%] min-w-[130px] pl-6">
-                                <div className="flex items-center gap-3.5">
-                                  <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-frame font-semibold text-violet-700 text-sm ring-1 ring-violet-500/10 dark:text-violet-300">
-                                    {(row.patientName || "?")
-                                      .slice(0, 2)
-                                      .toUpperCase()}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <button
-                                      type="button"
-                                      className="max-w-full truncate rounded text-left font-semibold text-ink text-sm tracking-tight hover:text-primary"
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        openPatientPeek(
-                                          row.appointment.patientId
-                                        );
-                                      }}
-                                    >
-                                      {row.patientName}
-                                    </button>
-                                    <p className="mt-0.5 truncate font-medium text-muted-foreground text-xs">
-                                      {getPatientProfile(row.patient)}
-                                    </p>
-                                  </div>
-                                </div>
-                              </TableCell>
-
-                              <TableCell className="w-[18%] min-w-[110px]">
-                                <div className="min-w-0">
-                                  <p className="truncate font-semibold text-foreground text-sm tracking-tight">
-                                    {row.ownerName}
-                                  </p>
-                                  <p className="mt-0.5 flex items-center gap-1 truncate font-medium text-muted-foreground text-xs">
-                                    <span className="t-12 opacity-60">
-                                      📞
-                                    </span>{" "}
-                                    {formatPhone(row.owner?.phone) || "Non renseigné"}
-                                  </p>
-                                </div>
-                              </TableCell>
-
-                              <TableCell className="w-[12%] min-w-[80px]">
-                                <div className="flex items-center">
-                                  <AppointmentTypeBadge
-                                    className="rounded-lg border px-2.5 py-0.5 font-semibold text-xs tracking-tight"
-                                    type={row.appointment.type}
-                                  />
-                                </div>
-                              </TableCell>
-
-                              <TableCell className="w-[20%] min-w-[130px]">
-                                <div className="min-w-0">
-                                  <p className="flex items-center gap-1.5 truncate font-semibold text-foreground text-sm tracking-tight">
-                                    <span className="font-semibold tabular-nums text-foreground">
-                                      {timePart}
-                                    </span>
-                                    {datePart && (
-                                      <>
-                                        <span className="text-muted-foreground/40 text-xs">
-                                          |
-                                        </span>
-                                        <span className="font-normal text-muted-foreground/80 text-xs">
-                                          {datePart}
-                                        </span>
-                                      </>
-                                    )}
-                                  </p>
-                                  <p className="mt-0.5 truncate font-medium font-serif text-muted-foreground/80 text-xs italic">
-                                    {row.appointment.reason ||
-                                      "Motif non renseigné"}
-                                  </p>
-                                </div>
-                              </TableCell>
-
-                              <TableCell className="w-[12%] min-w-[80px]">
-                                <div className="flex items-center">
-                                  <AppointmentStatusBadge
-                                    appointment={row.appointment}
-                                    patient={row.patient}
-                                  />
-                                </div>
-                              </TableCell>
-
-                              <TableCell className="w-[12%] min-w-[100px]">
-                                <div className="min-w-0">
-                                  <p className="flex items-center gap-1.5 truncate font-semibold text-foreground text-sm tracking-tight">
-                                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted font-bold t-12 text-muted-foreground">
-                                      {row.vetName
-                                        .split(" ")
-                                        .pop()
-                                        ?.slice(0, 1)
-                                        .toUpperCase() || "V"}
-                                    </span>
-                                    {row.vetName}
-                                  </p>
-                                  <p className="mt-0.5 truncate pl-[26px] font-medium text-muted-foreground text-xs">
-                                    {row.vet?.specialty || "Pratique générale"}
-                                  </p>
-                                </div>
-                              </TableCell>
-
-                              <TableCell
-                                className="w-[4%] min-w-[40px] pr-6 text-right"
-                                onClick={(event) => event.stopPropagation()}
-                              >
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger
-                                    render={
-                                      <Button
-                                        className="ml-auto"
-                                        size="icon-sm"
-                                        variant="ghost"
-                                      />
-                                    }
-                                  >
-                                    <HugeiconsIcon
-                                      icon={MoreVerticalCircle01Icon}
-                                      strokeWidth={1.5}
-                                    />
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent
-                                    align="end"
-                                    className="w-44"
-                                  >
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        selectAppointment(row.appointment, true)
-                                      }
-                                    >
-                                      Ouvrir
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        handleOpenEdit(row.appointment)
-                                      }
-                                    >
-                                      Modifier
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        deleteAppointment(row.appointment)
-                                      }
-                                      variant="destructive"
-                                    >
-                                      Supprimer
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  )}
-                </TabsContent>
-              );
-            })}
-          </Tabs>
-        </CardContent>
-      </Card>
 
       <Dialog
         onOpenChange={(open) => {

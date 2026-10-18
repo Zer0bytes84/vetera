@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AlertTriangle, Phone, Mail, Stethoscope } from "@/lib/icons";
 import { getSpeciesGlyph } from "@/lib/species-icons";
@@ -145,7 +145,14 @@ export function PatientIdentity({
   );
 }
 
-export function ClinicalAlerts({ patient }: { patient: Patient }) {
+export function ClinicalAlerts({
+  patient,
+  extra,
+}: {
+  patient: Patient;
+  /** Further alert rows (a vaccine booster due) shown under allergies and history. */
+  extra?: ReactNode;
+}) {
   const allergies = patient.allergies?.trim();
   const chronicConditions = patient.chronicConditions?.trim();
   // Les réponses négatives explicites ne constituent pas une alerte clinique.
@@ -176,7 +183,7 @@ export function ClinicalAlerts({ patient }: { patient: Patient }) {
   const hasAllergies = isClinicalSignal(allergies);
   const hasChronic = isClinicalSignal(chronicConditions);
 
-  if (!hasAllergies && !hasChronic) {
+  if (!hasAllergies && !hasChronic && !extra) {
     return null;
   }
 
@@ -215,6 +222,7 @@ export function ClinicalAlerts({ patient }: { patient: Patient }) {
           </div>
         </div>
       )}
+      {extra}
     </div>
   );
 }

@@ -306,6 +306,60 @@
   letter-spacing: -0.02em;
 }
 
+/* The day heading sits inside the frame, aligned with the list and with room above. */
+:root[data-visual-style="premium"] .agenda-day-panel > .agenda-day-heading {
+  padding: 24px 20px 20px !important;
+}
+@media (min-width: 640px) {
+  :root[data-visual-style="premium"] .agenda-day-panel > .agenda-day-heading {
+    padding-inline: 24px !important;
+  }
+}
+
+/* The day toolbar keeps the same inset whether or not it holds the search field. */
+:root[data-visual-style="premium"] .agenda-day-panel .agenda-day-toolbar {
+  padding: 16px 20px !important;
+}
+@media (min-width: 640px) {
+  :root[data-visual-style="premium"] .agenda-day-panel .agenda-day-toolbar {
+    padding-inline: 24px !important;
+  }
+}
+
+/* Agenda month grid: white boxes on a hairline grid, Outlook style. */
+:root:root:root .agenda-month-grid {
+  --agenda-grid-line: color-mix(in oklab, var(--foreground) 10%, transparent);
+  border-color: var(--agenda-grid-line) !important;
+  background: var(--agenda-grid-line) !important;
+}
+:root:root:root .agenda-month-day {
+  background: var(--surface, var(--background)) !important;
+}
+:root:root:root .agenda-month-day:hover {
+  background: color-mix(in oklab, var(--foreground) 4%, var(--surface, var(--background))) !important;
+}
+:root:root:root .agenda-month-day[data-selected] {
+  box-shadow: inset 0 0 0 2px var(--foreground) !important;
+}
+/* Today gets a filled circle and a tinted box. */
+:root:root:root .agenda-month-day[data-today] {
+  background: color-mix(in oklab, var(--premium-blue, var(--primary)) 8%, var(--surface, var(--background))) !important;
+}
+:root:root:root .agenda-month-day[data-today] .agenda-month-day-number {
+  background: var(--premium-blue, var(--primary)) !important;
+  color: #ffffff !important;
+}
+:root:root:root.dark .agenda-month-day[data-today] .agenda-month-day-number {
+  color: #0f1720 !important;
+}
+
+/* Agenda: the month calendar and the day list read as two framed blocks. */
+:root[data-visual-style="premium"] .agenda-month-calendar > header,
+:root[data-visual-style="premium"] .agenda-day-panel > [data-slot="card-header"] {
+  border: 0;
+  box-shadow: var(--hair-b);
+}
+
 :root[data-visual-style="premium"] .agenda-toolbar {
   align-items: center;
   gap: 16px 24px;
@@ -636,13 +690,13 @@
 }
 
 /* Patient record: same typography, engraved rules and mesh headings as Clinique. */
-:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-card, .medical-kpi, .medical-patient-header, .medical-register, .medical-rail) {
+:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-card, .medical-kpi, .medical-patient-header, .medical-register, .medical-rail, .medical-permanent) {
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r);
 }
-:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-widgets, .medical-kpi-strip) {
+:root[data-visual-style="premium"] .patient-record-page :is(.patient-context-widgets, .medical-kpi-strip, .patient-record-indicators) {
   gap: 0;
 }
 :root[data-visual-style="premium"] .patient-record-page .patient-context-card {
@@ -990,4 +1044,27 @@
 }
 :root[data-visual-style="premium"] [data-slot="calendar"] tr:hover > td:not([data-selected="true"]) {
   background: transparent !important;
+}
+
+/* Permanent information block: one band heading, flat columns, no nested cards. */
+:root[data-visual-style="premium"] .patient-record-page .medical-permanent-header {
+  background: var(--band);
+  border: 0;
+  box-shadow: var(--hair-b);
+  font-family: var(--app-font-heading);
+  color: var(--ink);
+}
+:root[data-visual-style="premium"] .patient-record-page .medical-permanent-grid :is(.medical-section-title, .medical-owner h3, .medical-health-heading h3) {
+  color: var(--ink-muted, var(--soft));
+  background: none;
+  box-shadow: none;
+}
+:root[data-visual-style="premium"] .patient-record-page .medical-permanent-grid .medical-record-health {
+  padding: 20px 24px;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
