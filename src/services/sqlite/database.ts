@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import Database from "@tauri-apps/plugin-sql";
 import { runSqliteMigrations } from "./migration-runner";
 import { SQLITE_MIGRATIONS } from "./migrations";
+import { RemoteClinicDatabase, readNetworkLaunchMode } from "./remote-database";
 
 let db: Database | null = null;
 let dbInitPromise: Promise<Database> | null = null;
@@ -169,6 +170,17 @@ export async function getDatabase(): Promise<Database> {
   if (!dbInitPromise) {
     dbInitPromise = (async () => {
       console.log("[DB] Loading database...");
+
+      // A secondary workstation uses the main workstation's file, which
+      // already ran its migrations and integrity repair.
+      if ((await readNetworkLaunchMode()) === "client") {
+        await invoke("clinic_network_connect", {
+          migrations: SQLITE_MIGRATIONS.map(({ version }) => version),
+        });
+        const remoteDb = new RemoteClinicDatabase();
+        db = remoteDb;
+        return remoteDb;
+      }
 
       // The stock SQL plugin uses a pool and does not pin BEGIN/COMMIT to
       // one connection. Register our single-connection pool before any SQL.

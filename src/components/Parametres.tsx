@@ -24,6 +24,7 @@ import {
   Shield01Icon,
   PencilEdit01Icon,
   UserCircle02Icon,
+  Wifi01Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { relaunch } from "@tauri-apps/plugin-process";
@@ -80,6 +81,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { updatePassword } from "@/services/sqlite/auth";
 import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
+import { ClinicNetworkSettings } from "@/modules/clinic-network/clinic-network-settings";
 import {
   AI_ONBOARDING_OPEN_EVENT,
   AI_SETTINGS_PENDING_KEY,
@@ -101,6 +103,7 @@ type SettingsTab =
   | "rappels-medicaux"
   | "modeles-documents"
   | "sauvegarde"
+  | "reseau"
   | "apropos";
 
 type SettingsNavItem = {
@@ -226,6 +229,13 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
           "réinitialisation",
           "réinitialiser",
         ],
+      },
+      {
+        id: "reseau",
+        label: "Réseau local",
+        description: "Partager la base entre les postes du cabinet",
+        icon: Wifi01Icon,
+        keywords: ["réseau", "poste", "accueil", "secrétaire", "partage", "synchronisation", "lan"],
       },
       {
         id: "apropos",
@@ -1151,6 +1161,8 @@ const Parametres: React.FC<ParametresProps> = ({
             <LocalDataResetSettings />
           </div>
         );
+      case "reseau":
+        return <ClinicNetworkSettings />;
       case "apropos":
         return (
           <div className="settings-section-stack">

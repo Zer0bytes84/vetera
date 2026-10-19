@@ -4,6 +4,7 @@
 use tauri::Manager;
 
 mod clinic_database;
+mod clinic_network;
 mod license_installation;
 mod local_ai_models;
 mod local_ai_download;
@@ -15,7 +16,10 @@ fn main() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .manage(clinic_network::ClinicNetwork::new())
         .setup(|_app| {
+            clinic_network::init(_app.handle());
+
             // DevTools only in debug mode
             #[cfg(debug_assertions)]
             {
@@ -28,6 +32,19 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             license_installation::license_installation_id,
             clinic_database::open_clinic_database,
+            clinic_network::clinic_network_status,
+            clinic_network::clinic_network_launch_mode,
+            clinic_network::clinic_network_start_host,
+            clinic_network::clinic_network_regenerate_key,
+            clinic_network::clinic_network_stop,
+            clinic_network::clinic_network_discover,
+            clinic_network::clinic_network_test,
+            clinic_network::clinic_network_join,
+            clinic_network::clinic_network_connect,
+            clinic_network::clinic_network_execute,
+            clinic_network::clinic_network_select,
+            clinic_network::clinic_network_close,
+            clinic_network::clinic_network_ping,
             local_ai_models::local_ai_model_status,
             local_ai_models::import_local_ai_model,
             local_ai_download::download_local_ai_models,

@@ -9,20 +9,34 @@ async fn connect(path: std::path::PathBuf) -> Result<sqlx::SqlitePool, sqlx::Err
     SqlitePoolOptions::new()
         .max_connections(1)
         .acquire_timeout(Duration::from_secs(5))
-        .connect_with(
-            SqliteConnectOptions::new()
-                .filename(path)
-                .create_if_missing(true)
-                .foreign_keys(true)
-                .journal_mode(SqliteJournalMode::Wal)
-                .busy_timeout(Duration::from_secs(3)),
-        )
+        .connect_with(connect_options(path))
         .await
+}
+
+/// Shared by the local pool and by the connections the LAN host opens for
+/// remote workstations, so every writer uses the same journal and timeouts.
+pub(crate) fn connect_options(path: std::path::PathBuf) -> SqliteConnectOptions {
+    SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .foreign_keys(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .busy_timeout(Duration::from_secs(3))
+}
+
+/// Folder holding baitari.db. Debug builds accept BAITARI_DATA_DIR so two
+/// instances can run side by side on one machine to test the LAN mode.
+pub(crate) fn clinic_data_dir(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+    #[cfg(debug_assertions)]
+    if let Some(directory) = std::env::var_os("BAITARI_DATA_DIR") {
+        return Ok(directory.into());
+    }
+    app.path().app_config_dir().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub async fn open_clinic_database(app: tauri::AppHandle) -> Result<(), String> {
-    let directory = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    let directory = clinic_data_dir(&app)?;
     std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
     let instances = app.state::<DbInstances>();
     let mut databases = instances.0.write().await;
