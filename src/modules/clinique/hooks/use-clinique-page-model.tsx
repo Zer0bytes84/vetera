@@ -1,9 +1,11 @@
 import { formatDinars, formatNumber } from "@/utils/display-format";
+import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import {
   useCallback,
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { flushSync } from "react-dom";
@@ -76,6 +78,12 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     useState<Appointment | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { currentUser: authUser } = useAuth();
+  // The journal is written by the database; this only names who acted.
+  const flowUndo = useFlowUndo();
+  const recordFlowRef = useRef(flowUndo.record);
+  useEffect(() => {
+    recordFlowRef.current = flowUndo.record;
+  }, [flowUndo.record]);
   const usersRepo = useUsersRepository();
   const currentUser = authUser
     ? (usersRepo.data.find((u) => u.id === authUser.id) ?? null)
@@ -266,6 +274,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     if (PRE_CONSULTATION_STATUSES.includes(target.status)) {
       transitionAppointmentStatus(target.id, "in_progress")
         .then((updatedAppointment) => {
+          void recordFlowRef.current(target.id);
           flushSync(() => {
             setActiveConsultation(updatedAppointment);
             setListTab("in_progress");
@@ -474,6 +483,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
           appointment.id,
           "in_progress"
         );
+        void flowUndo.record(appointment.id);
         setActiveConsultation(openedAppointment);
         moveSelectionToStatusTab("in_progress", appointment.id);
         toast.success(
@@ -557,6 +567,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
 
       await updateAppointment(activeConsultation.id, finalAppointmentPatch);
       await transitionAppointmentStatus(activeConsultation.id, "completed");
+      void flowUndo.record(activeConsultation.id);
       await updatePatient(activeConsultation.patientId, patientPatch);
 
       await audit.log({

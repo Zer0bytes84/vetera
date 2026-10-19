@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
+import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import { motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -242,6 +244,7 @@ export function DashboardPage({
     sessionStorage.setItem("vetera:pending-consultation-start", id);
     navigate("clinique");
   };
+  const flowUndo = useFlowUndo();
   const advance = async (
     id: string,
     status: AppointmentStatus,
@@ -252,6 +255,9 @@ export function DashboardPage({
     setBusyIds([...pending.current]);
     try {
       await appointments.transitionStatus(id, status);
+      // Opening a consultation leaves the page: it is journaled, not offered for undo.
+      if (after) void flowUndo.record(id);
+      else void flowUndo.confirm(id, APPOINTMENT_STATUS_META[status].label);
       after?.();
     } catch (error) {
       toast.error(

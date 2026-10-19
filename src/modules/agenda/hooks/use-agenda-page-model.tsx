@@ -1,4 +1,5 @@
 import { formatNumber, formatPersonName } from "@/utils/display-format";
+import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import { matchesEveryWord, selectedDossierSearchLabel } from "../quick-search";
 import {
   useDeferredValue,
@@ -124,13 +125,14 @@ export function useAgendaPageModel() {
     remove,
   } = useAppointmentsRepository();
 
+  const flowUndo = useFlowUndo();
   const handleAppointmentStatusTransition = async (
     appointment: Appointment,
     nextStatus: Appointment["status"]
   ) => {
     try {
       await transitionStatus(appointment.id, nextStatus);
-      toast.success(APPOINTMENT_STATUS_META[nextStatus].label);
+      void flowUndo.confirm(appointment.id, APPOINTMENT_STATUS_META[nextStatus].label);
     } catch (error) {
       console.error(error);
       toast.error(
