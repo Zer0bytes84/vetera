@@ -1,0 +1,126 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=KETOFEN+10+%25
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ KETOFEN 10 %
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL contient :
+ Substance active : 
+ Kétoprofène………………………………………
+ 100 mg
+ Excipients : 
+ Composition qualitative en excipients et autres composants : 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Alcool benzylique (E1519)
+ 10 mg
+ Arginine
+ Acide citrique monohydraté
+ (Pour ajustement de pH)
+ Eau pour préparations injectables
+ Solution injectable.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Bovins, porcins et équins.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Chez les bovins :
+ Traitement de l'inflammation, de la douleur ou de la fièvre, notamment dans les affections respiratoires, les œdèmes mammaires, les affections musculosquelettiques : aide au relever, boiteries, arthrites (en complément du traitement étiologique), traumatismes, dystocies.
+ Chez les porcins :
+ Réduction de la fièvre dans les affections respiratoires et dans le syndrome Mammite-Métrite-Agalactie, en complément d'une antibiothérapie spécifique.
+ Chez les équins :
+ Traitement de l'inflammation et de la douleur lors d'affections des systèmes ostéo-articulaire et musculosquelettique, en particulier boiteries d'origine traumatique, arthroses, arthrites, ostéites, éparvins, maladie naviculaire, tendinites, bursites, fourbures, myosites, inflammations postchirurgicales.
+ Traitement antalgique symptomatique des coliques.
+ 3.3 Contre-indications 
+ L'administration de kétoprofène est contre-indiquée dans les cas d'insuffisance rénale sévère et en association avec d'autres A.I.N.S., des diurétiques ou des anticoagulants.
+ Ne pas utiliser en cas d’hypersensibilité à la substance active ou à l’un des excipients.
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Ne pas mélanger à une autre substance.
+ En l'absence de données spécifiques chez la jument gravide et le jeune poulain, il est recommandé de ne pas utiliser le médicament vétérinaire pendant la gestation et chez le poulain de moins de 15 jours d'âge.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ En cas d’ingestion accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ Eviter tout contact avec les yeux et la peau. En cas de contact, rincer immédiatement à l'eau.
+ Se laver les mains après utilisation.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Non connus.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation et lactation :
+ Les études de laboratoire sur les rats et lapins n’ont pas mis en évidence d’effets tératogènes ou embryotoxiques du kétoprofène.
+ Cependant, en l'absence de données spécifiques chez la jument et la truie gestante, il est recommandé de ne pas utiliser le médicament vétérinaire pendant la gestation.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Ne pas administrer en association avec d'autres A.I.N.S., des corticostéroïdes, des diurétiques ou des anticoagulants.
+ 3.9 Voies d'administration et posologie 
+ Bovins : voie intraveineuse ou intramusculaire.
+ 3 mg de kétoprofène par kg de poids vif, par jour, soit 3 mL de solution pour 100 kg de poids vif par jour pendant 1 à 3 jours consécutifs.
+ Porcins : voie intramusculaire.
+ 3 mg de kétoprofène par kg de poids vif, par jour, soit 3 mL de solution pour 100 kg de poids vif en une seule administration.
+ Equins : voie intraveineuse ou intramusculaire.
+ 2,2 mg de kétoprofène par kg de poids vif, par jour, soit 1 mL de solution pour 45 kg de poids vif.
+ - Inflammation et douleur des systèmes ostéo-articulaires et musculo-squelettiques : 3 à 5 jours consécutifs en intraveineuse ou intramusculaire.
+ - Coliques : une injection est généralement suffisante en intraveineuse. Toute injection supplémentaire doit être précédée d'une réévaluation clinique de l'animal.
+ Le bouchon ne doit pas être perforé plus de 45 fois. Pour traiter un grand nombre d’animaux en une fois, une seringue automatique peut être utilisée
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Aucun effet indésirable particulier n'a été identifié à des doses supérieures à celles recommandées.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Porcins et équins :
+ Viande et abats : 4 jours.
+ Bovins :
+ Viande et abats : 4 jours.
+ Lait : zéro jour.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QM01AE03.
+ 4.2 Propriétés pharmacodynamiques 
+ Le kétoprofène est un anti-inflammatoire non stéroïdien doté d'une puissante activité anti-inflammatoire, antalgique et antipyrétique.
+ Il agit en inhibant la synthèse des prostaglandines et des leucotriènes.
+ Les tests classiques d'évaluation de l'activité anti-inflammatoire et antalgique montrent la nette supériorité du kétoprofène sur l'aspirine et la phénylbutazone.
+ 4.3 Propriétés pharmacocinétiques 
+ Après injection, le kétoprofène est rapidement absorbé. Les concentrations plasmatiques maximales sont obtenues en une heure environ. La biodisponibilité est de l'ordre de 80 à 95%. La persistance du kétoprofène dans le sang est faible. Contrairement aux concentrations plasmatiques, les concentrations de kétoprofène dans les sites inflammatoires restent constantes et élevées pendant au moins 30 à 36 heures après une seule injection intraveineuse.
+ L'élimination, essentiellement par l'urine, est complète en 96 heures.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ En l’absence d’études de compatibilité, ce médicament vétérinaire ne doit pas être mélangé avec d’autres médicaments vétérinaires.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ Durée de conservation après première ouverture du conditionnement primaire : 28 jours.
+ 5.3 Précautions particulières de conservation 
+ Conserver le flacon dans l’emballage extérieur de façon à le protéger de la lumière (flacon plastique multicouche).
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon verre brun type II
+ Bouchon chlorobutyle (flacon verre)
+ Flacon plastique multicouche ambré (Polypropylène/Adhésif/Couche en alcool éthylène-vinylique/Adhésif/Polypropylène)
+ Bouchon bromobutyle (flacon plastique)
+ Capsule aluminium
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ CEVA SANTE ANIMALE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/9755302 5/1990
+Boîte de 1 flacon verre de 50 mL
+Boîte de 1 flacon verre de 100 mL
+Boîte de 1 flacon verre de 250 mL
+Boîte de 1 flacon plastique de 50 mL
+Boîte de 1 flacon plastique de 100 mL
+Boîte de 1 flacon plastique de 250 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 01/10/1990
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 27/02/2025
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments (https://medicines.health.europa.eu/veterinary).

@@ -1,5 +1,5 @@
 import { formatNumber, formatPersonName } from "@/utils/display-format";
-import { matchesEveryWord } from "../quick-search";
+import { matchesEveryWord, selectedDossierSearchLabel } from "../quick-search";
 import {
   useDeferredValue,
   useEffect,
@@ -242,7 +242,7 @@ export function useAgendaPageModel() {
       return [];
     }
 
-    return patients
+    const matches = patients
       .map((patient) => {
         const owner = ownersById.get(patient.ownerId);
         const searchIndex = [
@@ -262,7 +262,22 @@ export function useAgendaPageModel() {
       })
       .filter((entry) => matchesEveryWord(entry.searchIndex, personSearchTerm))
       .slice(0, 8);
-  }, [ownersById, patients, personSearchTerm]);
+
+    // The dossier already chosen stays listed while its pre-filled label is
+    // untouched, even if its owner record lacks the words searched for.
+    const selected = selectedPatientId
+      ? patientsById.get(selectedPatientId)
+      : undefined;
+    if (
+      selected &&
+      !matches.some((entry) => entry.patient.id === selected.id) &&
+      personSearchTerm.trim() ===
+        selectedDossierSearchLabel(selected.name, ownersById.get(selected.ownerId))
+    ) {
+      return [{ owner: ownersById.get(selected.ownerId), patient: selected, searchIndex: "" }, ...matches];
+    }
+    return matches;
+  }, [ownersById, patients, patientsById, personSearchTerm, selectedPatientId]);
 
   const appointmentsByDate = useMemo(() => {
     const map = new Map<string, Appointment[]>();
@@ -680,9 +695,7 @@ export function useAgendaPageModel() {
     if (patient) {
       setPatientSearchTerm(patient.name);
       const owner = ownersById.get(patient.ownerId);
-      setPersonSearchTerm(
-        `${patient.name} ${owner ? formatOwnerName(owner) : ""}`.trim()
-      );
+      setPersonSearchTerm(selectedDossierSearchLabel(patient.name, owner));
     }
   };
 

@@ -1,0 +1,172 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=VIDALTA+10+MG+COMPRIMES+A+LIBERATION+PROLONGEE+POUR+CHATS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ VIDALTA 10 MG COMPRIMES A LIBERATION PROLONGEE POUR CHATS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Chaque comprimé à libération prolongée contient :
+ Substance active :
+ Carbimazole ……………………………………………
+ 10,0 mg
+ Excipients :
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Oxyde de fer rouge (E172)
+ 0,25 mg
+ Cellulose microcristalline
+ Hypromellose
+ Talc
+ Silice colloïdale anhydre
+ Stéarate de magnésium
+ Comprimé rond de couleur rose, légèrement tacheté.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chats.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Traitement de l'hyperthyroïdie et des signes cliniques associés à l'hyperthyroïdie.
+ 3.3 Contre-indications 
+ Ne pas utiliser chez les chats souffrant d'une maladie systémique telle qu'une hépatite primaire grave ou un diabète sucré.
+ Ne pas utiliser chez les chats présentant des signes d'une maladie auto-immune et/ou une altération du nombre de globules rouges ou blancs telle qu'anémie, neutropénie ou lymphopénie.
+ Ne pas utiliser chez les chats présentant des troubles plaquettaires (en particulier une thrombocytopénie) ou une coagulopathie.
+ Ne pas utiliser chez les chats présentant une hypersensibilité aux mercapto-imidazoles tels que le carbimazole ou le thiamazole (méthimazole) ou à l'un des excipients.
+ Voir la rubrique 3.7.
+ 3.4 Mises en garde particulières 
+ Le thiamazole (méthimazole), le métabolite actif du carbimazole, inhibe la production de l'hormone thyroïdienne, et de ce fait, l'arrêt du traitement entrainera un retour rapide (en 48 heures) aux niveaux de production hormonale avant traitement. A défaut d'une thyroïdectomie chirurgicale ou par irradiation, une administration continue est donc nécessaire.
+ Une faible proportion de chats à adénome thyroïdien peut ne pas répondre au traitement ou présenter une faible réponse au traitement.
+ Les carcinomes thyroïdiens sont une cause rare d'hyperthyroïdie chez le chat. Dans ces cas, et du fait qu'il ne s'agit pas d'un traitement curatif, la prise en charge médicale seule n'est pas recommandée.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Le traitement doit être adapté après évaluation du rapport bénéfice/risque par le vétérinaire responsable pour chaque cas individuel.
+ Le traitement de l'hyperthyroïdie peut entraîner une diminution du taux de filtration glomérulaire, ce qui peut conduire à révéler un dysfonctionnement rénal préexistant. Le traitement de l'hyperthyroïdie peut également entraîner une augmentation des enzymes hépatiques ou aggraver un trouble hépatique préexistant. Les fonctions rénale et hépatique doivent donc être contrôlées avant et pendant le traitement.
+ En raison du risque de leucopénie ou d'anémie hémolytique, les paramètres hématologiques doivent être contrôlés régulièrement avant et pendant le traitement, de préférence à chaque visite lors de la phase d'ajustement de la dose et de la phase de maintien (voir rubrique 3.9).
+ Pour tout animal sous traitement dont l'état se détériore soudainement, en particulier s'il présente un état fébrile, il conviendra d'effectuer un prélèvement sanguin en vue d'une hématologie de routine et d'une biochimie. Les animaux neutropéniques (neutrophiles < 2,5 x 10 9 /L) doivent être traités à titre prophylactique avec des antibiotiques et un traitement de soutien.
+ Les doses supérieures à 20 mg n'ont été évaluées que chez un faible nombre de chats et doivent être utilisées avec précaution. De ce fait, une surveillance attentive est recommandée et la dose doit être ajustée après évaluation du rapport bénéfice/risque par le vétérinaire responsable traitant pour chaque cas individuel.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Se laver les mains avec de l'eau et du savon après utilisation du produit ainsi qu'après manipulation d'une litière souillée par des animaux traités.
+ Ne pas manipuler ce médicament vétérinaire en cas d'allergie aux anti-hyperthyroïdiens.
+ Si des symptômes allergiques apparaissent, tels qu’une éruption cutanée, un gonflement du visage, des lèvres ou des yeux ou des difficultés respiratoires, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ En raison d’une suspicion d’effet tératogène du carbimazole, les femmes en âge de procréer doivent porter des gants lorsqu’elles manipulent la litière ou les vomissures de chats traités.
+ Les femmes enceintes doivent porter des gants lors de la manipulation du médicament vétérinaire.
+ Ne pas casser ou écraser les comprimés.
+ Ne pas manger, boire ni fumer lors de la manipulation des comprimés ou de la litière souillée.
+ En cas d’ingestion accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ Le carbimazole, en tant que précurseur du thiamazole (méthimazole), peut provoquer des vomissements, une douleur épigastrique, une migraine, de la fièvre, des douleurs articulaires, du prurit et une pancytopénie. Le traitement est symptomatique.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chats :
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Tachycardie ;
+ Vomissements, Diarrhée, Sang dans les vomissures, Hémorragie orale, Sang dans les fèces ;
+ Azotémie 1 , Augmentation des enzymes hépatiques 2 , Anémie 3 , Neutrophilie 3 , Thrombocytopénie 3 , Lymphopénie 3 , Eosinophilie 3 ;
+ Ataxie ;
+ Prurit 4 , Dermatite 4 , Erythème 4 , Alopécie 4 ;
+ Perte de poids, Léthargie, Baisse de l’appétit, Pyrexie, Polydipsie, Déshydratation
+ Très rare
+ ( < 1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Désorientation ;
+ Polyurie, Trouble vasculaire rénal 5 ;
+ Agressivité ;
+ Dyspnée ;
+ Autre résultat de test anormal 6 .
+ 1 Selon la gravité, un arrêt temporaire ou permanent du traitement peut être nécessaire.
+ 2 Les cas graves peuvent nécessiter un arrêt temporaire ou permanent du traitement. Ces augmentations sont généralement réversibles après l’arrêt du traitement, bien qu’un traitement symptomatique (nutritionnel et liquidien) puisse être nécessaire.
+ 3 Peut survenir en particulier pendant les 4-6 premières semaines de traitement. Une interruption de traitement peut être nécessaire dans les cas de troubles persistants et importants. Dans la plupart des cas, ces anomalies se résolvent spontanément dans le mois qui suit l’interruption de traitement.
+ 4 Ces signes cliniques sont généralement légers, maîtrisés par une thérapie symptomatique adéquate et ne requièrent pas d’interruption de traitement. Toutefois, si des signes cliniques plus sévères apparaissent et ne répondent pas à la thérapie symptomatique, il conviendra de réduire la dose ou d’arrêter le traitement en fonction de l’évaluation du rapport bénéfice/risque par le vétérinaire responsable.
+ 5 Le traitement de l’hyperthyroïdie peut entraîner une diminution de la perfusion rénale.
+ 6 Anticorps antinucléaires (ANA) positifs.
+ Dans le cas d’effets indésirables graves, une mortalité, probablement due au médicament vétérinaire, peut survenir si le traitement n’est pas interrompu. Dans de nombreux cas, les effets indésirables se révèlent être réversibles à l’arrêt du traitement.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation et lactation :
+ Des études de laboratoire chez des rats et des souris ont montré que le thiamazole (méthimazole) présentait des effets tératogènes et embryotoxiques.
+ L'innocuité du médicament vétérinaire n’a pas été évaluée chez des chattes gestantes ou allaitantes. De plus, le thiamazole traverse le placenta, est excrété dans le lait ou il atteint approximativement la même concentration que dans le sérum maternel.
+ Ne pas utiliser chez les chattes gestantes ou allaitantes.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Un traitement concomitant au phénobarbital peut réduire l'efficacité clinique du carbimazole.
+ L'utilisation concomitante d'anthelminthiques de la famille des benzimidazoles (fenbendazole ou mébendazole) induit une réduction de l'oxydation hépatique de cette catégorie de substance, ce qui peut entraîner de ce fait une augmentation des taux circulants. En conséquence, l'administration simultanée de carbimazole et d'un benzimidazole n'est pas recommandée.
+ Le thiamazole (méthimazole) peut exercer un effet immunomodulateur. Il convient donc d'en tenir compte en cas de vaccination du chat.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ L'administration dans l'aliment potentialise la biodisponibilité. Le moment choisi pour administrer le traitement en lien avec l'alimentation doit rester constant jour après jour.
+ Ne pas casser ou écraser les comprimés du médicament vétérinaire pour ne pas altérer les propriétés de libération prolongée.
+ L'objectif du traitement est de maintenir les concentrations totales de thyroxine (TT 4 ) dans la partie basse de la zone de référence. A cette fin, les recommandations suivantes sont proposées au cours de la phase d'ajustement et de maintien. Néanmoins, l'ajustement de la dose doit être principalement fondé sur l'évaluation clinique de l'animal. Un contrôle de la TT 4 , des paramètres hématologiques et des paramètres rénaux et hépatiques est recommandé lors de chaque visite de suivi (voir rubriques 3.5 et 3.6).
+ Phase d'ajustement 
+ La dose initiale est une dose quotidienne unique orale d'un comprimé dosé à 15 mg de carbimazole pour un chat. Dans les cas où la TT 4 est seulement légèrement augmentée, par exemple entre 50 nmol/L et 100 nmol/L, il convient d'envisager une dose initiale quotidienne d'un comprimé dosé à 10 mg de carbimazole.
+ Avec la dose initiale recommandée d'un comprimé de 15 mg une fois par jour, la concentration de TT 4 peut diminuer jusqu'à la zone d'euthyroïdie (TT 4 < 50 nmol/L) rapidement après l'initiation du traitement. Un ajustement de la dose peut s'avérer nécessaire dès 10 jours de traitement.
+ Un ajustement de dose doit aussi être réalisé à 3, 5 et 8 semaines après initiation du traitement, en fonction de la réponse clinique et hormonale au traitement.
+ Phase de maintien 
+ Des visites de suivi sont recommandées tous les 3 à 6 mois. La dose doit être ajustée au cas par cas, en fonction des signes cliniques et de la concentration totale en thyroxine (TT 4 ). Il est conseillé de vérifier la concentration en TT 4 10-14 jours après l'ajustement de la dose.
+ La dose thérapeutique est comprise entre 10 mg (un comprimé de 10 mg) et 25 mg (un comprimé de 10 mg et un comprimé de 15 mg) de carbimazole par jour en une prise.
+ Chez certains chats, la dose requise est inférieure à 10 mg par jour. Une administration de 10 mg ou 15 mg de carbimazole un jour sur 2 peut alors suffire pour contrôler la maladie.
+ Il convient de ne pas augmenter les doses par palier de plus de 5 mg.
+ Les doses supérieures à 20 mg ayant seulement été testées chez un faible nombre de chats, elles doivent être envisagées avec prudence.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ En cas de surdosage, les effets indésirables qui peuvent apparaitre comprennent à titre non exhaustif, perte de poids, hyporexie, vomissement, léthargie et moins fréquemment des signes de saignement gastro-intestinal tel qu'hématémèse, hémorragie orale ou hémorragie du tractus intestinal. Des anomalies du poil et de la peau (érythème, alopécie), ainsi que des modifications hématologiques/biochimiques (éosinophile, lymphocytose, neutropénie, lymphopénie, légère leucopénie, agranulocytose, thrombocytopénie ou anémie hémolytique) peuvent également apparaître. Des hépatites et des néphrites ont aussi été rapportées. Ces effets indésirables peuvent devenir graves en cas de surdosage chronique. Dans la plupart des cas, les effets indésirables sont réversibles à l'interruption de traitement et après des soins vétérinaires appropriés.
+ Des concentrations totales en thyroxine (TT 4 ) en dessous de la limite inférieure de la zone de référence peuvent être observées au cours du traitement, bien que rarement en lien avec des signes cliniques manifestes. Diminuer la dose entraîne une élévation de la TT 4 . L'ajustement de la dose ne devrait pas être uniquement réalisé sur la base de la concentration en TT 4 (voir rubrique 3.9).
+ Se reporter également à la rubrique 3.6.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QH03BB01.
+ 4.2 Propriétés pharmacodynamiques 
+ Le carbimazole est le précurseur du thiamazole (méthimazole). Bien que le carbimazole possède une activité antithyroïdienne intrinsèque, il est presque totalement transformé en thiamazole peu de temps après son administration orale in vivo chez les humains et les chats.
+ Le thiamazole agit comme inhibiteur dose-dépendant des réactions catalysées par la thyroïde peroxydase, impliquées dans la synthèse de l'hormone thyroïdienne, dont la réaction d'oxydation de l'ion iodure et l'iodation des groupes iodo-tyrosyl de la thyroglobuline, inhibant ainsi la néo-synthèse des hormones thyroïdiennes. Le thiamazole interfère également avec l'assemblage des iodotyrosines et des iodotyronines, via l'inhibition de la thyroïde peroxydase ou par l'attachement et la modification de la structure de la thyroglobuline, cette dernière réaction étant plus sensible à l'inhibition que la formation des iodotyrosines. L'activité inhibitrice du thiamazole est réversible.
+ Le thiamazole n'inhibe pas l'action des hormones thyroïdiennes déjà synthétisées et présentes dans les glandes thyroïdes ou dans la circulation sanguine. Il n'interfère pas non plus avec l'efficacité des hormones thyroïdiennes exogènes (hyperthyroïdie iatrogène). Cela explique les différences entre individus s'agissant de la longueur de la période de latence pour normalisation des concentrations sériques en thyroxine et triiodothyronine et donc amélioration clinique.
+ 4.3 Propriétés pharmacocinétiques 
+ Le carbimazole est rapidement absorbé par le tractus gastro-intestinal après administration orale et hydrolysé dans le tractus (ou immédiatement après être entré dans la circulation) en métabolite actif thiamazole (méthimazole). La biodisponibilité absolue du thiamazole provenant du carbimazole d'un comprimé dosé à 15 mg est de 88 %.
+ Après administration orale d'un comprimé dosé à 10 mg à des chats à jeun et en bonne santé, les concentrations maximales en thiamazole sont observées 3-4 heures après administration, avec un pic moyen de concentration en thiamazole de 0,54-0,87 µg/mL.
+ Après administration orale d'un comprimé dosé à 15 mg à des chats à jeun et en bonne santé, les concentrations maximales en thiamazole sont observées 5-7 heures après administration, avec un pic moyen de concentration en thiamazole de 0,72-1,13 µg/mL.
+ Pour les deux dosages, le profil temps/concentration du thiamazole est dépourvu d'un pic prononcé et le thiamazole persiste dans la circulation au moins 20 et 24 heures respectivement pour le comprimé dosé à 10 mg et celui dosé à 15 mg.
+ Il a été montré que la présence d'aliments dans le tractus gastro-intestinal au moment de l'administration augmente la biodisponibilité du thiamazole. Quand les comprimés sont administrés avec de l'aliment, la C max et l'AUC peuvent être augmentées, alors que le T max n'est pas supposé être modifié.
+ Aucun effet cumulatif n'est observé en cas d'administration répétée.
+ La distribution tissulaire des mercapto-imidazoles n'a pas été spécifiquement étudiée chez les chats, mais a été pleinement décrite chez les rongeurs. Le thiamazole se concentre principalement dans la thyroïde et les glandes surrénales, et peut être retrouvé dans une moindre mesure dans le thymus, le diaphragme, les reins, le cerveau, le foie, le colon, les testicules, l'intestin grêle, l'estomac et le plasma.
+ Il a aussi été montré que les mercapto-imidazoles traversent la barrière placentaire.
+ Chez les rats, le thiamazole est excrété principalement via l'urine, et dans une moindre mesure dans les fèces.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Sans objet.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 18 mois.
+ Durée de conservation après première ouverture du conditionnement primaire : 100 jours.
+ 5.3 Précautions particulières de conservation 
+ À conserver en dessous de 25º C.
+ À conserver dans l’emballage d’origine.
+ Protéger de la lumière.
+ À conserver dans un endroit sec.
+ Conserver le flacon soigneusement fermé de façon à le protéger de l'humidité.
+ Ne pas retirer le dessiccateur.
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon polyéthylène haute densité de 30 ou 100 comprimés fermé par un bouchon à vis polypropylène avec dispositif d’inviolabilité et sécurité enfant et dessiccateur.
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ INTERVET INTERNATIONAL B.V.
+WIM DE KORVERSTRAAT 35
+5831 AN BOXMEER 
+PAYS-BAS
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/1408206 5/2011
+Boîte de 1 flacon de 30 comprimés à libération prolongée
+Boîte de 1 flacon de 100 comprimés à libération prolongée
+Boîte de 6 flacons de 30 comprimés à libération prolongée
+Boîte de 6 flacons de 100 comprimés à libération prolongée
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 13/12/2011 - 26/10/2016
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 29/10/2024
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

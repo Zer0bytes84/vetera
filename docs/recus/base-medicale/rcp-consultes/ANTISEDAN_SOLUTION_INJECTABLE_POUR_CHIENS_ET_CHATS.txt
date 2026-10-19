@@ -1,0 +1,173 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=ANTISEDAN+SOLUTION+INJECTABLE+POUR+CHIENS+ET+CHATS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ ANTISEDAN SOLUTION INJECTABLE POUR CHIENS ET CHATS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL contient :
+ Susbtance active : 
+ Atipamézole ……………………………………………...
+ 4,27 mg
+ (sous forme de chlorhydrate)
+ (équivalant à 5 mg de chlorhydrate d’atipamézole)
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Parahydroxybenzoate de méthyle (E218)
+ 1,00 mg
+ Chlorure de sodium
+ Eau pour préparations injectables
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens et chats.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ - Antagonisme spécifique des effets sédatifs et analgésiques de la médétomidine ou de la dexmédétomidine.
+ - Antagonisme spécifique des autres effets de la médétomidine ou de la dexmédétomidine, notamment leurs effets cardio-vasculaires et respiratoires.
+ - Traitement du surdosage de la médétomidine ou de la dexmédétomidine.
+ 3.3 Contre-indications 
+ Ne pas utiliser en cas d'hypersensibilité à la substance active ou à l'un des excipients.
+ Ne pas utiliser chez les animaux reproducteurs ou les animaux souffrant de maladies hépatiques, rénales ou cardiaques.
+ Voir aussi rubrique « Utilisation en cas de gestation, de lactation ou de ponte ».
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Après l'administration du médicament vétérinaire, les animaux doivent être tenus au repos dans un endroit calme. Au cours de la phase de récupération, les animaux ne doivent pas demeurer sans surveillance.
+ S’assurer que les animaux ont récupéré leur réflexe de déglutition normal avant de leur donner à manger ou à boire.
+ Si d'autres sédatifs que la médétomidine ou la dexmédétomidine sont administrés, il faudra tenir compte du fait que les effets de ces autres agents sont susceptibles de persister après l'inversion des effets de l'α2-agoniste.
+ L'atipamézole n'inverse pas l'effet de la kétamine, ce qui peut induire des convulsions chez les chiens et entraîner des crampes chez les chats lorsqu'il est utilisé seul. Ne pas administrer d'atipamézole dans les 30-40 minutes qui suivent l'administration de kétamine.
+ Chez les chats, en cas d'administration de faibles doses d'atipamézole pour inverser partiellement les effets de la médétomidine ou de la dexmédétomidine, toutes les précautions nécessaires devront être prises afin d'éviter l'hypothermie, même après le réveil de l'animal.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Du fait de sa puissante activité pharmacologique, tout contact de l'atipamézole avec la peau, les yeux et les muqueuses doit être évité. En cas d'éclaboussures accidentelles, lavez immédiatement la zone concernée avec de l'eau courante et propre. Demandez conseil à un médecin si les irritations persistent. Retirez les vêtements contaminés qui sont directement en contact avec la peau.
+ Des précautions doivent être prises pour éviter toute ingestion ou auto-injection accidentelle. En cas d'auto-injection ou d'ingestion accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ Aucune.
+ 3.6 Effets indésirables 
+ Chiens, chats :
+ Très rare
+ (< 1 animal / 10 000 animaux traités, y compris les cas isolés):
+ Hyperactivité, vocalisations
+ Miction (involontaire)
+ Sédation 2 
+ Tremblements musculaires
+ Tachychardie, hypotension 1 
+ Salivation, vomissements, défécation involontaire
+ Augmentation de la fréquence respiratoire
+ 1 Un effet hypotensif transitoire a été observé au cours des 10 premières minutes qui suivent l’injection
+ d’atipamézole
+ 2 Une sédation récurrente peut survenir, ou le temps de récupération peut ne pas se trouver raccourci
+ suite à l’administration d’atipamézole
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir également la rubrique « Coordonnées » de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ L'innocuité du médicament vétérinaire n’a pas été établie en cas de gestation et de lactation., L’utilisation n’est pas recommandée durant la gestation ou la lactation.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ L'administration simultanée d'atipamézole avec d'autre médicaments vétérinaires actifs sur le système nerveux central comme le diazépam, l'acépromazine ou les opiacés n'est pas recommandée.
+ 3.9 Voies d'administration et posologie 
+ Voie intramusculaire.
+ Le chlorhydrate d'atipamézole est administré 15-60 minutes après l'administration de chlorhydrate de médétomidine ou de dexmédétomidine. Le temps de récupération des chiens et des chats est ramené à environ 5 minutes. Les animaux retrouvent leur mobilité environ 10 minutes après l'administration du médicament vétérinaire.
+ La dose dépend de la dose de médétomidine ou de dexmédétomidine administrée au préalable .
+ Chiens :
+ La dose d’atipamézole (en µg/kg) est égale à 5 fois la dose de médétomidine ou 10 fois la dose de dexmédétomidine utilisée pour la sédation. Afin d’inverser l’effet d’une dose de 40 µg de chlorhydrate de médétomidine par kg ou de 20 µg de chlorhydrate de dexmédétomidine par kg, administrer une dose de 170,8 µg d’atipamézole par kg de poids corporel, équivalant à 200 µg de chlorhydrate d’atipamézole par kg de poids corporel soit 0,04 mL de produit par kg de poids corporel.
+ Comme la concentration en chlorhydrate d’atipamézole de ce médicament vétérinaire (5 mg/mL) est 5 fois supérieure à celle des solutions à 1 mg de chlorhydrate de médétomidine et 10 fois supérieure à celle des solutions à 0,5 mg de chlorhydrate de dexmédétomidine, il suffit d'injecter un volume de médicament vétérinaire équivalent de chacune des solutions. La concentration en chlorhydrate d’atipamézole de ce médicament vétérinaire étant 50 fois supérieure à celle des solutions à 0,1 mg de dexmédétomidine, le volume de médicament vétérinaire à injecter est 5 fois plus faible que celui de solution de dexmédétomidine.
+ Exemple de dosage chez les chiens :
+ Produit utilisé en sédation 
+ Dose de sédatif 
+ Volume de sédatif 
+ Dose de chlorhydrate d’atipamézole 
+ Volume 
+ de produit 
+ Solution à 0,85 mg de médétomidine par mL équivalant à 1 mg de chlorhydrate de médétomidine par mL
+ 40 µg de chlorhydrate de médétomidine / kg
+ 0,4 mL / 10 kg
+ 200 µg / kg
+ 0,4 mL / 10 kg
+ Solution à 0,42 mg de dexmédétomidine par mL équivalant à 0,5 mg de chlorhydrate de dexmédétomidine par mL
+ 20 µg de chlorhydrate de dexmédétomidine / kg
+ 0,4 mL / 10 kg
+ 200 µg / kg
+ 0,4 mL / 10 kg
+ Solution à 0,08 mg de dexmédétomidine par mL équivalant à 0,1 mg de chlorhydrate de dexmédétomidine par mL
+ 20 µg de chlorhydrate de dexmédétomidine / kg
+ 2 mL / 10 kg
+ 200 µg / kg
+ 0,4 mL / 10 kg
+ Chats :
+ La dose d’atipamézole est égale à 2,5 fois la dose de médétomidine ou 5 fois la dose de dexmédétomidine utilisées pour la sédation. Afin d’inverser l’effet d’une dose de 80 µg de chlorhydrate de médétomidine par kg ou de 40 µg de chlorhydrate de dexmédétomidine par kg, administrer une dose de 170,8 µg d’atipamézole par kg de poids corporel, équivalant à 200 µg de chlorhydrate d’atipamézole par kg de poids corporel soit 0,04 mL de produit par kg de poids corporel.
+ En général, il suffit d’injecter un volume de médicament vétérinaire égal à la moitié de celui d’une solution d’1 mg de chlorhydrate de médétomidine par mL ou de 5 mg de chlorhydrate de dexmédétomidine par mL, ou égal à 1/10 ème d’une solution de 0,1 mg de chlorhydrate de dexmédétomidine par mL.
+ Exemple de dosage chez les chats
+ Produit utilisé en sédation 
+ Dose de sédatif 
+ Volume de sédatif 
+ Dose de chlorhydrate d’atipamézole 
+ Volume 
+ de produit 
+ Solution à 1 mg de chlorhydrate de médétomidine par mL
+ 80 µg de chlorhydrate de médétomidine / kg
+ 0,4 mL / 5 kg
+ 200 µg / kg
+ 0,2 mL / 5 kg
+ Solution à 0,5 mg de chlorhydrate de dexmédétomidine par mL
+ 40 µg de chlorhydrate de dexmédétomidine / kg
+ 0,4 mL / 5 kg
+ 200 µg / kg
+ 0,2 mL / 5 kg
+ Solution à 0,1 mg de chlorhydrate de dexmédétomidine par mL
+ 40 µg de chlorhydrate de dexmédétomidine / kg
+ 0,4 mL / kg
+ 200 µg / kg
+ 0,04 mL / kg
+ Chez les chats, la dose d’atipamézole, exprimée en µg de substance active par kg de poids corporel, ne doit pas dépasser plus de 4 fois la dose de médétomidine ou plus de 8 fois la dose de dexmédétomidine utilisées.
+ Le bouchon ne doit pas être ponctionné plus de 50 fois.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Un surdosage de chlorhydrate d'atipamézole peut entraîner une tachycardie transitoire ou une surexcitation (hyperactivité, tremblements musculaires). Si besoin, ces symptômes peuvent être inversés par l'administration d'une dose de chlorhydrate de médétomidine inférieure à la dose clinique habituellement utilisée.
+ En cas d'administration par inadvertance de chlorhydrate d'atipamézole à un animal non traité au préalable avec du chlorhydrate de (dex)médétomidine, des phénomènes d'hyperactivité, et de tremblements musculaires pourront se produire. Ces effets peuvent persister pendant environ 15 minutes.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QV03AB90.
+ 4.2 Propriétés pharmacodynamiques 
+ L'atipamézole est un agent sélectif et puissant, bloquant les récepteurs α2 (antagoniste α2) qui active la libération d'un neurotransmetteur, la noradrénaline, dans le système nerveux central et périphérique, entraînant une activation du système nerveux central par activation sympathique. Les autres effets pharmacodynamiques pouvant être observés, tels qu'une influence sur le système cardiovasculaire, par exemple, sont légers ; en revanche, une baisse transitoire de la pression sanguine peut être observée dans les 10 premières minutes qui suivent l'injection de chlorhydrate d'atipamézole.
+ En tant qu'antagoniste α2, l'atipamézole est capable d'éliminer (ou d'inhiber) les effets d'agonistes des récepteurs α2 tels que la médétomidine ou la dexmédétomidine. Ainsi, l'atipamézole inverse-t-il les effets sédatifs du chlorhydrate de (dex)médétomidine chez les chats et les chiens, dont l'état revient à la normale et peut entraîner une augmentation transitoire du rythme cardiaque.
+ 4.3 Propriétés pharmacocinétiques 
+ Le chlorhydrate d'atipamézole est absorbé rapidement après injection intramusculaire. Il est également rapidement et complètement métabolisé. Les métabolites sont excrétés principalement dans l'urine et en petite quantité dans les fèces.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ En l'absence d'études de compatibilité, ce médicament vétérinaire ne doit pas être mélangé avec d'autres médicaments vétérinaires dans la même seringue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ Durée de conservation après première ouverture du conditionnement primaire : 3 mois.
+ 5.3 Précautions particulières de conservation 
+ Ce médicament vétérinaire ne nécessite pas de conditions particulières de conservation.
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon verre type I
+ Bouchon bromobutyle enrobé d'un polymère fluoré
+ Capsule aluminium
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ ORION CORPORATION
+ORIONINTIE 1
+02200 ESPOO 
+FINLANDE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/8335602 7/1992
+Boîte de 1 flacon de 10 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 14/02/1992 - 13/12/2011
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 05/08/2024
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

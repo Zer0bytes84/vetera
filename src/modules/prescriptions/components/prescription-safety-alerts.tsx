@@ -78,6 +78,11 @@ export function PrescriptionSafetyBanner({ alerts }: { alerts: SafetyAlert[] }) 
             </span>
             <AlertSubject alert={alert} />
             <span className="rx-safety-reason">{alert.reason}</span>
+            {alert.source ? (
+              <span className="rx-safety-source" title={alert.source.url}>
+                Source : {alert.source.label}
+              </span>
+            ) : null}
           </li>
         ))}
       </ul>

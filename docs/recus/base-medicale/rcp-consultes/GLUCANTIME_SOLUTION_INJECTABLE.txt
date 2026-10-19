@@ -1,0 +1,123 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=GLUCANTIME+SOLUTION+INJECTABLE
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ GLUCANTIME SOLUTION INJECTABLE
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL contient :
+ Substance active : 
+ Antimoine ………………………………………………….
+ 81,00 mg
+ (sous forme d’antimoniate de méglumine)
+ (équivalant à 300 mg d’antimoniate de méglumine)
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Métabisulfite de potassium (E224)
+ 1,60 mg
+ Sulfite de sodium anhydre (E221)
+ 0,18 mg
+ Eau pour préparations injectables
+ / 
+ Solution limpide, jaune pâle à jaune-brunâtre
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Traitement de la leishmaniose.
+ 3.3 Contre-indications 
+ Ne pas utiliser chez le chien présentant une insuffisance hépatique, rénale ou cardiaque.
+ Ne pas utiliser en cas d'hypersensibilité à la substance active ou à l’un des excipients.
+ 3.4 Mises en garde particulières 
+ Si après 4 semaines de traitement, aucune réponse n'est obtenue, la souche de Leishmania est considérée comme résistante et une autre option thérapeutique doit être choisie.
+ La leishmaniose est une maladie zoonotique, dans laquelle les chiens jouent un rôle de réservoir. Le traitement ne permet pas d'éradiquer le parasite chez le chien. Par conséquent, l'euthanasie pourra être conseillée sur un animal en mauvais état général et/ou lors de proximité de l'animal avec une personne immuno-déprimée.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ La surveillance de la fonction rénale est nécessaire avant et pendant le traitement.
+ Le traitement permet la rémission des signes cliniques mais le chien peut rester une source de parasites pour les phlébotomes (les mouches des sables, vecteurs de la maladie). Le chien doit être surveillé après la fin du traitement pour que le traitement puisse être ré-administré au besoin.
+ Du fait de l'hépatotoxicité de l'antimoniate de méglumine, la surveillance de la fonction hépatique devra être conseillée.
+ Un suivi de la fonction cardiaque au cours du traitement est également préconisé.
+ En cas d'insuffisance rénale et/ou de troubles oculaires (telles que kératite, uvéite, conjonctivite), les symptômes associés doivent être stabilisés voire traités avant la mise en place du traitement.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Les personnes présentant une hypersensibilité connue à l'un des composants (antimoine ou excipients) doivent éviter tout contact avec ce médicament vétérinaire.
+ En cas d'auto-injection accidentelle du médicament vétérinaire, dans de rares cas, des effets indésirables, tels que anorexie, arthralgie, fièvre, troubles gastro-intestinaux, vertiges, léthargie, mal de tête, myalgie peuvent apparaître.
+ En cas d'auto-injection accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ Eviter tout contact avec les yeux ou la peau. En cas de contact, rincer immédiatement à l'eau claire.
+ Se laver les mains après utilisation. 
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens :
+ Très rare
+ (< 1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Hyperthermie 1 , altération de l’état général 2 
+ Troubles gastro-intestinaux 1 , troubles pancréatiques 2 
+ Troubles rénaux 2 
+ Douleur immédiate au moment de l’injection
+ Douleur articulaire 1 
+ Troubles cardiaques 2 , tachycardie 1 
+ Réaction de type anaphylactique 3 
+ Fréquence indéterminée (ne peut être estimée sur la base des données disponibles)
+ Asthénie 1 , douleur musculaire 1 
+ Polynévrite 2 
+ 1 Au début du traitement. La poursuite du traitement doit faire l'objet d'une analyse bénéfice-risque par le vétérinaire. Le signe disparaît à l'arrêt du traitement.
+ 2 Plus fréquemment en fin de traitement
+ 3 Imprévisible et exceptionnel
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire ou au titulaire de l’autorisation de mise sur le marché, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ En l'absence de données disponibles, ne pas utiliser durant la gestation et la lactation.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ L'association avec l'allopurinol est possible. Une étude a montré que cette association augmente le nombre de rémissions cliniques et diminue le nombre d'échecs thérapeutiques cliniques.
+ 3.9 Voies d'administration et posologie 
+ Voie sous cutanée.
+ 27 mg d'antimoine par kg de poids corporel et par jour, soit 0,33 mL de solution par kg de poids corporel et par jour.
+ Le traitement initial est de 3 semaines.
+ Ce dernier peut être prolongé d'une semaine si aucune amélioration clinique suffisante n’est observée.
+ Pour des volumes supérieurs à 10 mL, réaliser l'administration en deux points d'injection.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ En cas de surdosage, l'animal devra être surveillé et recevoir un traitement symptomatique. Une attention particulière devrait être portée sur les effets toxiques hépatiques, cardiaques ou rénaux.
+ Il n'existe pas d'antidote connu.
+ Des réactions au point d'injection (œdème, induration) peuvent être observées après injection sous cutanée de 200 mg d'antimoniate de méglumine par kg (soit deux fois la dose recommandée).
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QP51DX01.
+ 4.2 Propriétés pharmacodynamiques 
+ L'antimoniate de méglumine est un agent anti-leishmanien antiprotozoaire du groupe antimoine pentavalent dont le mode d'action pourrait être lié à l'inhibition de quelques enzymes glycolytiques parasitaires.
+ Les données expérimentales suggèrent l'hypothèse d'une conversion métabolique intramacrophagique des antimoines pentavalents dans des composés trivalents, qui sont très toxiques à l'étape d'amastigote de Leishmania.
+ 4.3 Propriétés pharmacocinétiques 
+ L'antimoniate de méglumine n'est pas absorbé s'il est administré oralement et il doit être injecté. Il est complètement absorbé (biodisponibilité 100%) par voies intramusculaire et sous-cutanée; il a une demi-vie très courte (demi-vie d'élimination d'environ 20 minutes à deux heures, selon la voie d'administration) et il est éliminé rapidement par voie urinaire (plus de 80% dans les neuf premières heures).
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Aucune connue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ 5.3 Précautions particulières de conservation 
+ Ce médicament vétérinaire ne nécessite pas de conditions particulières de conservation.
+ 5.4 Nature et composition du conditionnement primaire 
+ Ampoule verre
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ BOEHRINGER INGELHEIM ANIMAL HEALTH FRANCE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/7396221 8/1992
+Boîte de 5 ampoules de 5 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 20/07/1992
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 18/07/2025
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments (https://medicines.health.europa.eu/veterinary).

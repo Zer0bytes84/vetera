@@ -1,0 +1,1207 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-10-19",
+  "source": "Résumés des caractéristiques du produit (RCP) officiels, Index des RCP de l'Agence nationale du médicament vétérinaire (ANMV, Anses), https://www.ircp.anmv.anses.fr/ — chaque molécule cite son RCP et les sections utilisées.",
+  "rcpMedications": [
+    {
+      "id": "acide-tolfenamique",
+      "nom": "Acide tolfénamique",
+      "nomCommercial": [
+        "Tolfedine"
+      ],
+      "classe": "Anti-inflammatoire non stéroïdien (AINS)",
+      "formes": [
+        "Injectable",
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien : états inflammatoires et douloureux ostéo-articulaires et musculo-squelettiques",
+        "Chien : douleur post-chirurgicale (prémédication)",
+        "Chat : syndromes fébriles"
+      ],
+      "contreIndications": [
+        "Insuffisance cardiaque",
+        "Insuffisance hépatique",
+        "Ulcération ou saignement digestif",
+        "Dyscrasie sanguine",
+        "Hypersensibilité à l'acide tolfénamique"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "4 mg/kg",
+          "frequence": "1x/jour (PO) ; injection SC/IM renouvelable 48 h après",
+          "voie": "SC/IM/PO",
+          "duree": "3 jours (PO)",
+          "attention": "PO au cours du repas. Prémédication : 4 mg/kg IM, 1 h avant l'induction."
+        },
+        "chat": {
+          "dose": "4 mg/kg",
+          "frequence": "1x/jour (PO) ; injection SC renouvelable 48 h après",
+          "voie": "SC/PO",
+          "duree": "3 jours (PO)",
+          "attention": "Ne pas utiliser la voie intramusculaire chez le chat."
+        }
+      },
+      "effetsSecondaires": [
+        "Vomissements",
+        "Diarrhée",
+        "Polyurie",
+        "Polydipsie"
+      ],
+      "interactions": [
+        "Autres AINS (ne pas associer, ni dans les 24 h suivantes)",
+        "Substances fortement liées aux protéines plasmatiques (compétition)"
+      ],
+      "sources": [
+        {
+          "titre": "RCP TOLFEDINE 40 MG/ML SOLUTION INJECTABLE POUR CHIENS ET CHATS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=TOLFEDINE+40+MG%2FML+SOLUTION+INJECTABLE+POUR+CHIENS+ET+CHATS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        },
+        {
+          "titre": "RCP TOLFEDINE 60 MG COMPRIMES CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=TOLFEDINE+60+MG+COMPRIMES+CHIENS",
+          "sections": "3.2, 3.3, 3.9",
+          "consulteLe": "2026-10-19"
+        },
+        {
+          "titre": "RCP TOLFEDINE 6 MG COMPRIMES CHATS-PETITS CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=TOLFEDINE+6+MG+COMPRIMES+CHATS-PETITS+CHIENS",
+          "sections": "3.2, 3.3, 3.9",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "ketoprofene",
+      "nom": "Kétoprofène",
+      "nomCommercial": [
+        "Ketofen"
+      ],
+      "classe": "Anti-inflammatoire non stéroïdien (AINS)",
+      "formes": [
+        "Injectable"
+      ],
+      "indications": [
+        "Bovins : inflammation, douleur ou fièvre (affections respiratoires, œdème mammaire, boiteries, arthrites, traumatismes, dystocies)",
+        "Porcins : réduction de la fièvre (affections respiratoires, syndrome MMA)",
+        "Équins : inflammation et douleur ostéo-articulaires et musculo-squelettiques ; coliques"
+      ],
+      "contreIndications": [
+        "Insuffisance rénale sévère",
+        "Association avec d'autres AINS, des diurétiques ou des anticoagulants",
+        "Hypersensibilité au kétoprofène"
+      ],
+      "posologies": {
+        "bovins": {
+          "dose": "3 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "IV/IM",
+          "duree": "1 à 3 jours"
+        },
+        "equins": {
+          "dose": "2.2 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "IV/IM",
+          "duree": "3 à 5 jours (appareil locomoteur) ; coliques : une injection IV",
+          "attention": "Toute réinjection pour colique doit être précédée d'une réévaluation clinique."
+        },
+        "porcins": {
+          "dose": "3 mg/kg",
+          "frequence": "Injection unique",
+          "voie": "IM"
+        }
+      },
+      "effetsSecondaires": [
+        "Non connus selon le RCP"
+      ],
+      "interactions": [
+        "Autres AINS",
+        "Corticostéroïdes",
+        "Diurétiques",
+        "Anticoagulants"
+      ],
+      "tempsAttente": {
+        "viande": "4 jours (bovins, porcins, équins)",
+        "lait": "Zéro jour (bovins)"
+      },
+      "sources": [
+        {
+          "titre": "RCP KETOFEN 10 % (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=KETOFEN+10+%25",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "butorphanol",
+      "nom": "Butorphanol",
+      "nomCommercial": [
+        "Alvegesic",
+        "Butador",
+        "Torbugesic"
+      ],
+      "classe": "Analgésique opioïde - Agoniste-antagoniste",
+      "formes": [
+        "Injectable"
+      ],
+      "indications": [
+        "Chien : douleurs viscérales modérées ; sédation avec médétomidine ; pré-anesthésie ; anesthésie avec médétomidine et kétamine",
+        "Chat : analgésie pré et postopératoire ; sédation avec médétomidine ; anesthésie avec médétomidine et kétamine",
+        "Cheval : douleurs abdominales (coliques) ; sédation avec détomidine ou romifidine"
+      ],
+      "contreIndications": [
+        "Dysfonctionnement hépatique ou rénal sévère",
+        "Lésion cérébrale",
+        "Maladie respiratoire obstructive",
+        "Dysfonctionnement cardiaque",
+        "Affections spastiques",
+        "Hypersensibilité au butorphanol"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "0.2-0.3 mg/kg",
+          "frequence": "Renouveler si nécessaire",
+          "voie": "IV/IM/SC",
+          "attention": "Analgésie. Éviter l'IV rapide. Sédation avec médétomidine : 0,1 mg/kg ; prémédication seule : 0,1-0,2 mg/kg."
+        },
+        "chat": {
+          "dose": "0.4 mg/kg",
+          "frequence": "Avant l'induction (analgésie préopératoire)",
+          "voie": "IM/SC",
+          "attention": "15 à 30 min avant les agents IV d'induction ; 5 min avant une induction IM."
+        },
+        "equins": {
+          "dose": "0.1 mg/kg",
+          "frequence": "Renouvelable après 3 à 4 heures",
+          "voie": "IV",
+          "duree": "48 heures au maximum"
+        }
+      },
+      "effetsSecondaires": [
+        "Sédation",
+        "Ataxie",
+        "Excitation",
+        "Dépression respiratoire",
+        "Troubles digestifs"
+      ],
+      "interactions": [
+        "Autres sédatifs et analgésiques (réduire les doses)",
+        "Agonistes purs des récepteurs µ (morphine…) : effet analgésique supprimé ou doses supérieures nécessaires",
+        "Agonistes alpha-2 : synergie, réduire les doses",
+        "Autres dépresseurs du système nerveux central"
+      ],
+      "tempsAttente": {
+        "viande": "Zéro jour (chevaux)",
+        "lait": "Zéro heure (chevaux)"
+      },
+      "sources": [
+        {
+          "titre": "RCP ALVEGESIC VET. 10 MG/ML, SOLUTION INJECTABLE POUR CHEVAUX, CHIENS ET CHATS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=ALVEGESIC+VET.+10+MG%2FML%2C+SOLUTION+INJECTABLE+POUR+CHEVAUX%2C+CHIENS+ET+CHATS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "atipamezole",
+      "nom": "Atipamézole",
+      "nomCommercial": [
+        "Antisedan",
+        "Alzane"
+      ],
+      "classe": "Antagoniste des récepteurs alpha-2",
+      "formes": [
+        "Injectable"
+      ],
+      "indications": [
+        "Antagonisme des effets sédatifs, analgésiques, cardio-vasculaires et respiratoires de la médétomidine ou de la dexmédétomidine",
+        "Surdosage de médétomidine ou de dexmédétomidine"
+      ],
+      "contreIndications": [
+        "Animaux reproducteurs",
+        "Maladie hépatique, rénale ou cardiaque",
+        "Hypersensibilité à l'atipamézole"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "5 fois la dose de médétomidine (10 fois celle de dexmédétomidine), en µg/kg",
+          "frequence": "Injection unique, 15 à 60 min après le sédatif",
+          "voie": "IM",
+          "attention": "Ex. : 200 µg/kg de chlorhydrate d'atipamézole après 40 µg/kg de médétomidine."
+        },
+        "chat": {
+          "dose": "2,5 fois la dose de médétomidine (5 fois celle de dexmédétomidine), en µg/kg",
+          "frequence": "Injection unique, 15 à 60 min après le sédatif",
+          "voie": "IM",
+          "attention": "Ex. : 200 µg/kg de chlorhydrate d'atipamézole après 80 µg/kg de médétomidine."
+        }
+      },
+      "effetsSecondaires": [
+        "Hypotension transitoire",
+        "Hyperactivité, vocalisations",
+        "Tremblements",
+        "Vomissements, salivation",
+        "Sédation récurrente"
+      ],
+      "interactions": [
+        "Diazépam, acépromazine, opiacés et autres médicaments actifs sur le système nerveux central : administration simultanée non recommandée"
+      ],
+      "sources": [
+        {
+          "titre": "RCP ANTISEDAN SOLUTION INJECTABLE POUR CHIENS ET CHATS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=ANTISEDAN+SOLUTION+INJECTABLE+POUR+CHIENS+ET+CHATS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "xylazine",
+      "nom": "Xylazine",
+      "nomCommercial": [
+        "Rompun"
+      ],
+      "classe": "Sédatif/Analgésique - Alpha-2 agoniste",
+      "formes": [
+        "Injectable"
+      ],
+      "indications": [
+        "Sédation, analgésie et myorelaxation",
+        "Prémédication de l'anesthésie générale"
+      ],
+      "contreIndications": [
+        "Insuffisance rénale, hépatique ou cardiaque sévère",
+        "Chien et chat : obstruction œsophagienne, torsion gastrique, hernie",
+        "Prudence lors d'affections pulmonaires"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "1-3 mg/kg",
+          "frequence": "Selon l'effet recherché",
+          "voie": "IM/IV",
+          "attention": "Animaux âgés ou malades : réaction plus forte."
+        },
+        "chat": {
+          "dose": "2-4 mg/kg",
+          "frequence": "Selon l'effet recherché",
+          "voie": "IM/SC"
+        },
+        "bovins": {
+          "dose": "0.05-0.3 mg/kg",
+          "frequence": "Selon l'effet recherché (doses I à IV)",
+          "voie": "IM",
+          "attention": "En IV lente, réduire la dose de 1/2 à 1/3."
+        },
+        "equins": {
+          "dose": "0.6-1 mg/kg",
+          "frequence": "Selon l'effet recherché",
+          "voie": "IV"
+        }
+      },
+      "effetsSecondaires": [
+        "Vomissements (chien, chat)",
+        "Hypotension",
+        "Bradypnée, dyspnée",
+        "Arrêt cardiaque (très rare)",
+        "Convulsions, tremblements"
+      ],
+      "interactions": [
+        "Compatible avec anesthésiques locaux, narcotiques, tranquillisants, antibiotiques, sulfamides, soluté physiologique et calcium (selon le RCP)"
+      ],
+      "tempsAttente": {
+        "viande": "Zéro jour (bovins, chevaux)",
+        "lait": "Zéro jour (bovins, chevaux)"
+      },
+      "sources": [
+        {
+          "titre": "RCP ROMPUN 2 % (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=ROMPUN+2+%25",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "telmisartan",
+      "nom": "Telmisartan",
+      "nomCommercial": [
+        "Telmitraxx",
+        "Semintra"
+      ],
+      "classe": "Antagoniste des récepteurs de l'angiotensine II (ARA II)",
+      "formes": [
+        "Solution buvable"
+      ],
+      "indications": [
+        "Chat : réduction de la protéinurie associée à l'insuffisance rénale chronique"
+      ],
+      "contreIndications": [
+        "Gestation et lactation",
+        "Hypersensibilité au telmisartan"
+      ],
+      "posologies": {
+        "chat": {
+          "dose": "1 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "duree": "Long cours"
+        }
+      },
+      "effetsSecondaires": [
+        "Régurgitations, vomissements, diarrhée",
+        "Augmentation des enzymes hépatiques",
+        "Diminution de la numération érythrocytaire"
+      ],
+      "interactions": [
+        "Autres agents agissant sur le SRAA (IECA, ARA) : peut modifier la fonction rénale",
+        "Amlodipine : pas d'hypotension clinique observée"
+      ],
+      "sources": [
+        {
+          "titre": "RCP TELMITRAXX 4 MG/ML SOLUTION BUVABLE POUR CHATS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=TELMITRAXX+4+MG%2FML+SOLUTION+BUVABLE+POUR+CHATS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "ramipril",
+      "nom": "Ramipril",
+      "nomCommercial": [
+        "Vasotop"
+      ],
+      "classe": "Inhibiteur de l'enzyme de conversion (IECA)",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien : insuffisance cardiaque congestive (NYHA II à IV), seul ou avec furosémide et/ou glycosides cardiotoniques"
+      ],
+      "contreIndications": [
+        "Chienne gestante ou allaitante (absence de données)"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "0.125 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "attention": "Sans amélioration après 2 semaines : jusqu'à 0,25 mg/kg/jour."
+        }
+      },
+      "effetsSecondaires": [
+        "Aucun connu selon le RCP"
+      ],
+      "interactions": [
+        "Diurétiques à haute dose et régime hyposodé : risque d'hypotension",
+        "Diurétiques d'épargne potassique : surveiller la kaliémie (hyperkaliémie)"
+      ],
+      "sources": [
+        {
+          "titre": "RCP VASOTOP P 2,5 MG COMPRIMES POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=VASOTOP+P+2%2C5+MG+COMPRIMES+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "imidapril",
+      "nom": "Imidapril",
+      "nomCommercial": [
+        "Prilium"
+      ],
+      "classe": "Inhibiteur de l'enzyme de conversion (IECA)",
+      "formes": [
+        "Solution buvable"
+      ],
+      "indications": [
+        "Chien de plus de 4 kg : insuffisance cardiaque modérée à sévère (régurgitation mitrale, cardiomyopathie dilatée)"
+      ],
+      "contreIndications": [
+        "Hypotension",
+        "Insuffisance rénale aiguë",
+        "Cardiopathie congénitale",
+        "Sténose aortique, mitrale ou pulmonaire",
+        "Cardiomyopathie hypertrophique obstructive",
+        "Hypersensibilité à un IECA"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "0.25 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "attention": "Dose exprimée en chlorhydrate d'imidapril ; chiens de plus de 4 kg."
+        }
+      },
+      "effetsSecondaires": [
+        "Diarrhée",
+        "Hypotension",
+        "Fatigue, anorexie",
+        "Vertiges",
+        "Vomissements"
+      ],
+      "interactions": [
+        "Diurétiques à haute dose et régime hyposodé : risque d'hypotension",
+        "Diurétiques d'épargne potassique : surveiller la kaliémie (hyperkaliémie)"
+      ],
+      "sources": [
+        {
+          "titre": "RCP PRILIUM POUDRE POUR SOLUTION BUVABLE POUR PETITS CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=PRILIUM+POUDRE+POUR+SOLUTION+BUVABLE+POUR+PETITS+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "carbimazole",
+      "nom": "Carbimazole",
+      "nomCommercial": [
+        "Vidalta",
+        "Felinta"
+      ],
+      "classe": "Antithyroïdien",
+      "formes": [
+        "Comprimés à libération prolongée"
+      ],
+      "indications": [
+        "Chat : hyperthyroïdie et signes cliniques associés"
+      ],
+      "contreIndications": [
+        "Hépatite primaire grave",
+        "Diabète sucré",
+        "Maladie auto-immune",
+        "Anémie, neutropénie, lymphopénie",
+        "Thrombocytopénie ou coagulopathie",
+        "Hypersensibilité au carbimazole ou au thiamazole (méthimazole)"
+      ],
+      "posologies": {
+        "chat": {
+          "dose": "15 mg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "duree": "Long cours, ajusté selon la T4 totale",
+          "attention": "Dose initiale par chat ; 10 mg si la TT4 est entre 50 et 100 nmol/L. Ne pas casser ni écraser. Administrer avec l'aliment, au même moment chaque jour."
+        }
+      },
+      "effetsSecondaires": [
+        "Vomissements, diarrhée",
+        "Prurit, dermatite",
+        "Anémie, thrombocytopénie, lymphopénie",
+        "Augmentation des enzymes hépatiques",
+        "Azotémie"
+      ],
+      "interactions": [
+        "Phénobarbital : efficacité du carbimazole réduite",
+        "Benzimidazoles (fenbendazole, mébendazole) : association non recommandée",
+        "Effet immunomodulateur à considérer lors des vaccinations"
+      ],
+      "sources": [
+        {
+          "titre": "RCP VIDALTA 10 MG COMPRIMES A LIBERATION PROLONGEE POUR CHATS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=VIDALTA+10+MG+COMPRIMES+A+LIBERATION+PROLONGEE+POUR+CHATS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "bromure-de-potassium",
+      "nom": "Bromure de potassium",
+      "nomCommercial": [
+        "Libromide"
+      ],
+      "classe": "Antiépileptique",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien : épilepsie réfractaire, en complément du phénobarbital"
+      ],
+      "contreIndications": [
+        "Insuffisance rénale sévère",
+        "Hypersensibilité au bromure de potassium"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "15 mg/kg",
+          "frequence": "2x/jour avec l'aliment",
+          "voie": "PO",
+          "duree": "Long cours",
+          "attention": "Dose titrée sur la bromurémie (cible 800 à 2000 µg/mL avec le phénobarbital), contrôlée toutes les 4 semaines pendant au moins 3 mois."
+        }
+      },
+      "effetsSecondaires": [
+        "Polyurie, polydipsie, polyphagie",
+        "Vomissements",
+        "Somnolence, ataxie",
+        "Dermatite",
+        "Pancréatite (très rare)"
+      ],
+      "interactions": [
+        "Apport en chlorure (sel, solutés) : bromurémie diminuée",
+        "Diurétiques de l'anse (furosémide) : bromurémie diminuée",
+        "Synergie avec les GABA-ergiques (phénobarbital)"
+      ],
+      "sources": [
+        {
+          "titre": "RCP LIBROMIDE 325 MG COMPRIMES POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=LIBROMIDE+325+MG+COMPRIMES+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "selegiline",
+      "nom": "Sélégiline",
+      "nomCommercial": [
+        "Selgian"
+      ],
+      "classe": "Inhibiteur de la monoamine oxydase B (IMAO-B)",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien : troubles comportementaux d'origine émotionnelle (dépression, dysthymie, anxiété)",
+        "Chien : avec thérapie comportementale, hypersensibilité/hyperactivité, anxiété de séparation, syndrome de privation, phobies"
+      ],
+      "contreIndications": [
+        "Action possible sur la sécrétion de prolactine (voir gestation)"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "0.5 mg/kg",
+          "frequence": "1x/jour, le matin à jeun",
+          "voie": "PO",
+          "duree": "2 mois minimum",
+          "attention": "Dose exprimée en chlorhydrate de sélégiline. Arrêt brusque, sans sevrage progressif."
+        }
+      },
+      "effetsSecondaires": [
+        "Tremblements",
+        "Vomissements"
+      ],
+      "interactions": [
+        "Aucune connue selon le RCP (voir aussi phénylpropanolamine : IMAO contre-indiqués)"
+      ],
+      "sources": [
+        {
+          "titre": "RCP SELGIAN 20 KG COMPRIME PELLICULE (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=SELGIAN+20+KG+COMPRIME+PELLICULE",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "phenylpropanolamine",
+      "nom": "Phénylpropanolamine",
+      "nomCommercial": [
+        "Propalin",
+        "Proin"
+      ],
+      "classe": "Sympathomimétique",
+      "formes": [
+        "Sirop",
+        "Comprimés à croquer"
+      ],
+      "indications": [
+        "Chienne : incontinence urinaire par insuffisance du sphincter urétral (efficacité démontrée chez la chienne ovariohystérectomisée)"
+      ],
+      "contreIndications": [
+        "Traitement par des inhibiteurs non sélectifs de la monoamine oxydase",
+        "Hypersensibilité à la phénylpropanolamine"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "1 mg/kg",
+          "frequence": "3x/jour dans la nourriture",
+          "voie": "PO",
+          "duree": "Long cours"
+        }
+      },
+      "effetsSecondaires": [
+        "Selles molles, diarrhée, vomissements",
+        "Léthargie",
+        "Tachycardie, hypertension, arythmie (très rare)",
+        "Agitation, agressivité"
+      ],
+      "interactions": [
+        "Autres sympathomimétiques, anticholinergiques, antidépresseurs tricycliques, IMAO-B : prudence"
+      ],
+      "sources": [
+        {
+          "titre": "RCP PROPALIN 40,28 MG/ML, SIROP POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=PROPALIN+40%2C28+MG%2FML%2C+SIROP+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "cabergoline",
+      "nom": "Cabergoline",
+      "nomCommercial": [
+        "Galastop",
+        "Finilac"
+      ],
+      "classe": "Agoniste dopaminergique (antiprolactinique)",
+      "formes": [
+        "Solution buvable"
+      ],
+      "indications": [
+        "Chienne : tarissement de la lactation de pseudo-gestation"
+      ],
+      "contreIndications": [
+        "Femelle gestante (risque d'avortement)"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "5 µg/kg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "duree": "4 à 6 jours",
+          "attention": "0,1 mL/kg (3 gouttes) de Galastop. Traitement renouvelable en cas de rechute."
+        }
+      },
+      "effetsSecondaires": [
+        "Léthargie, anorexie",
+        "Vomissements (surtout après la 1re prise)",
+        "Hypotension",
+        "Réactions allergiques (très rare)"
+      ],
+      "interactions": [
+        "Aucune connue selon le RCP"
+      ],
+      "sources": [
+        {
+          "titre": "RCP GALASTOP (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=GALASTOP",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "metamizole",
+      "nom": "Métamizole",
+      "nomCommercial": [
+        "Calmagine"
+      ],
+      "classe": "Analgésique antispasmodique (pyrazolone)",
+      "formes": [
+        "Injectable"
+      ],
+      "indications": [
+        "Douleurs d'origine viscérale, en particulier associées à des spasmes"
+      ],
+      "contreIndications": [
+        "Lésions hématopoïétiques",
+        "Ulcérations ou troubles gastro-intestinaux chroniques",
+        "Insuffisance rénale",
+        "Asthme",
+        "Hypersensibilité au métamizole"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "92.6-185.2 mg/kg",
+          "frequence": "Renouvelable au retour de la douleur",
+          "voie": "IV lente stricte/IM",
+          "attention": "Soit 1 mL de Calmagine (463 mg/mL) pour 2,5 à 5 kg. Réduire la dose en cas d'injections répétées (accumulation)."
+        },
+        "chat": {
+          "dose": "92.6-185.2 mg/kg",
+          "frequence": "Renouvelable au retour de la douleur",
+          "voie": "IV lente stricte/IM",
+          "attention": "Soit 1 mL de Calmagine (463 mg/mL) pour 2,5 à 5 kg."
+        },
+        "bovins": {
+          "dose": "23 mg/kg",
+          "frequence": "Renouvelable",
+          "voie": "IV lente stricte/IM"
+        },
+        "equins": {
+          "dose": "23-46 mg/kg",
+          "frequence": "Renouvelable",
+          "voie": "IV lente stricte/IM"
+        }
+      },
+      "effetsSecondaires": [
+        "Choc cardio-vasculaire (injection IV trop rapide)",
+        "Hémorragie intestinale",
+        "Insuffisance rénale",
+        "Irritation au point d'injection"
+      ],
+      "interactions": [
+        "Barbituriques, glucocorticoïdes, neuroleptiques, diurétiques, phénylbutazone, chlorpromazine : ne pas associer"
+      ],
+      "tempsAttente": {
+        "viande": "Bovins 18 jours ; porcins et équins 15 jours",
+        "lait": "Ne pas utiliser chez les femelles productrices de lait de consommation"
+      },
+      "sources": [
+        {
+          "titre": "RCP CALMAGINE SOLUTION INJECTABLE (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=CALMAGINE+SOLUTION+INJECTABLE",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "oxfendazole",
+      "nom": "Oxfendazole",
+      "nomCommercial": [
+        "Dolthene"
+      ],
+      "classe": "Antiparasitaire - Benzimidazolé",
+      "formes": [
+        "Suspension buvable"
+      ],
+      "indications": [
+        "Chien : ascaridoses (Toxocara canis, Toxascaris leonina), ankylostomoses, trichuroses, taeniasis (Taenia hydatigena, Dipylidium caninum)"
+      ],
+      "contreIndications": [
+        "Voir gestation et lactation dans le RCP",
+        "Hypersensibilité à l'oxfendazole"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "11.3 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "duree": "3 jours consécutifs",
+          "attention": "Soit 0,5 mL/kg de Dolthene, mélangé à la nourriture."
+        }
+      },
+      "effetsSecondaires": [
+        "Anorexie",
+        "Vomissements"
+      ],
+      "interactions": [
+        "Aucune connue selon le RCP"
+      ],
+      "sources": [
+        {
+          "titre": "RCP DOLTHENE CHIEN M SUSPENSION BUVABLE (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=DOLTHENE+CHIEN+M+SUSPENSION+BUVABLE",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "nitenpyrame",
+      "nom": "Nitenpyrame",
+      "nomCommercial": [
+        "Capstar"
+      ],
+      "classe": "Antiparasitaire externe - Néonicotinoïde",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chat et chien : infestation par les puces (Ctenocephalides felis)"
+      ],
+      "contreIndications": [
+        "Aucune selon le RCP"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "11.4 mg",
+          "frequence": "Selon l'infestation, au plus une fois par jour",
+          "voie": "PO",
+          "attention": "1 comprimé de 11,4 mg par animal de 1 à 11 kg (dose minimale efficace 1 mg/kg). Pas d'activité rémanente."
+        },
+        "chat": {
+          "dose": "11.4 mg",
+          "frequence": "Selon l'infestation, au plus une fois par jour",
+          "voie": "PO",
+          "attention": "1 comprimé de 11,4 mg par chat de 1 à 11 kg. Pas d'activité rémanente."
+        }
+      },
+      "effetsSecondaires": [
+        "Prurit transitoire (réaction des puces)",
+        "Hyperactivité, vocalises",
+        "Signes neurologiques (très rare)"
+      ],
+      "interactions": [
+        "Aucune connue ; pas d'effet indésirable avec anti-puces, anthelminthiques, vaccins ou antibiotiques usuels"
+      ],
+      "sources": [
+        {
+          "titre": "RCP CAPSTAR 11,4 MG COMPRIMES POUR CHATS ET PETITS CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=CAPSTAR+11%2C4+MG+COMPRIMES+POUR+CHATS+ET+PETITS+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "miltefosine",
+      "nom": "Miltéfosine",
+      "nomCommercial": [
+        "Milteforan"
+      ],
+      "classe": "Antiparasitaire - Antileishmanien",
+      "formes": [
+        "Solution buvable"
+      ],
+      "indications": [
+        "Chien : signes cliniques de la leishmaniose (Leishmania infantum)"
+      ],
+      "contreIndications": [
+        "Hypersensibilité à la miltéfosine"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "2 mg/kg",
+          "frequence": "1x/jour sur une partie du repas",
+          "voie": "PO",
+          "duree": "28 jours",
+          "attention": "Respecter la durée complète. Porter des gants pour manipuler."
+        }
+      },
+      "effetsSecondaires": [
+        "Vomissements",
+        "Diarrhée"
+      ],
+      "interactions": [
+        "Aucune connue selon le RCP"
+      ],
+      "sources": [
+        {
+          "titre": "RCP MILTEFORAN 20 MG/ML SOLUTION BUVABLE POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=MILTEFORAN+20+MG%2FML+SOLUTION+BUVABLE+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "antimoniate-de-meglumine",
+      "nom": "Antimoniate de méglumine",
+      "nomCommercial": [
+        "Glucantime"
+      ],
+      "classe": "Antiparasitaire - Antileishmanien (antimonié)",
+      "formes": [
+        "Injectable"
+      ],
+      "indications": [
+        "Chien : leishmaniose"
+      ],
+      "contreIndications": [
+        "Insuffisance hépatique, rénale ou cardiaque",
+        "Hypersensibilité à l'antimoniate de méglumine"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "27 mg d'antimoine/kg",
+          "frequence": "1x/jour",
+          "voie": "SC",
+          "duree": "3 semaines, prolongeables d'une semaine",
+          "attention": "Soit 0,33 mL/kg de Glucantime (81 mg d'antimoine par mL). Au-delà de 10 mL, injecter en deux points."
+        }
+      },
+      "effetsSecondaires": [
+        "Douleur à l'injection",
+        "Hyperthermie, troubles digestifs en début de traitement",
+        "Troubles rénaux, pancréatiques, cardiaques (très rare)",
+        "Réaction anaphylactique (très rare)"
+      ],
+      "interactions": [
+        "Allopurinol : association possible (rémissions cliniques augmentées)"
+      ],
+      "sources": [
+        {
+          "titre": "RCP GLUCANTIME SOLUTION INJECTABLE (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=GLUCANTIME+SOLUTION+INJECTABLE",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "imidocarbe",
+      "nom": "Imidocarbe",
+      "nomCommercial": [
+        "Carbesia",
+        "Imidotyl"
+      ],
+      "classe": "Antiparasitaire - Antibabésien",
+      "formes": [
+        "Injectable"
+      ],
+      "indications": [
+        "Chien : traitement et prophylaxie de la babésiose",
+        "Bovins : babésioses, anaplasmose et infections mixtes"
+      ],
+      "contreIndications": [
+        "Aucune selon le RCP"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "2.125 mg/kg",
+          "frequence": "Injection unique (traitement)",
+          "voie": "IM/SC",
+          "attention": "Prophylaxie : 4,25 mg/kg, protection de 4 à 6 semaines au plus."
+        },
+        "bovins": {
+          "dose": "0.85 mg/kg",
+          "frequence": "Injection unique (traitement de la babésiose)",
+          "voie": "IM/SC",
+          "attention": "Prophylaxie de la babésiose et traitement de l'anaplasmose : 2,125 mg/kg."
+        }
+      },
+      "effetsSecondaires": [
+        "Troubles digestifs (vomissements, hypersalivation)",
+        "Tremblements, convulsions (très rare)",
+        "Hyperthermie, prostration"
+      ],
+      "interactions": [
+        "Aucune connue selon le RCP"
+      ],
+      "tempsAttente": {
+        "viande": "213 jours (bovins)",
+        "lait": "6 jours (bovins)"
+      },
+      "sources": [
+        {
+          "titre": "RCP CARBESIA SOLUTION INJECTABLE POUR BOVINS ET CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=CARBESIA+SOLUTION+INJECTABLE+POUR+BOVINS+ET+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "propentofylline",
+      "nom": "Propentofylline",
+      "nomCommercial": [
+        "Karsivan"
+      ],
+      "classe": "Dérivé xanthique - Vasodilatateur",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien âgé : apathie, indolence, fatigabilité liées à des troubles de la microcirculation cérébrale et périphérique"
+      ],
+      "contreIndications": [
+        "Chien de moins de 10 kg",
+        "Cardiopathie à un stade avancé"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "5-10 mg/kg/jour en 2 prises",
+          "frequence": "2x/jour (à 12 h d'intervalle)",
+          "voie": "PO",
+          "duree": "4 à 6 semaines"
+        }
+      },
+      "effetsSecondaires": [
+        "Vomissements",
+        "Réactions allergiques",
+        "Tachycardie, convulsions (hyperstimulation, très rare)"
+      ],
+      "interactions": [
+        "Autres dérivés xanthiques ou médicaments aux propriétés identiques : à éviter"
+      ],
+      "sources": [
+        {
+          "titre": "RCP KARSIVAN 100 COMPRIMES PELLICULES POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=KARSIVAN+100+COMPRIMES+PELLICULES+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "phytomenadione",
+      "nom": "Phytoménadione (vitamine K1)",
+      "nomCommercial": [
+        "Vitamivet K1",
+        "K1 Keyvit"
+      ],
+      "classe": "Antidote - Vitamine K",
+      "formes": [
+        "Injectable",
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien : intoxication par les rodenticides anticoagulants (urgence IV, puis relais oral)"
+      ],
+      "contreIndications": [
+        "Hypersensibilité à la phytoménadione"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "5 mg/kg",
+          "frequence": "1x/jour (PO) ; IV : 2 injections lentes à 12 h d'intervalle",
+          "voie": "IV lente/PO",
+          "duree": "21 jours (relais oral)",
+          "attention": "Relais oral dans les 12 h suivant la fin du traitement IV. Donner pendant ou après le repas."
+        }
+      },
+      "effetsSecondaires": [
+        "Réactions d'hypersensibilité (IV)",
+        "Vomissements, érythème (PO, très rare)"
+      ],
+      "interactions": [
+        "Salicylés (AINS) et céphalosporines à fraction N-méthyl-thiotétrazole : effet de la vitamine K1 réduit"
+      ],
+      "sources": [
+        {
+          "titre": "RCP VITAMIVET K1 10 MG/ML SOLUTION INJECTABLE POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=VITAMIVET+K1+10+MG%2FML+SOLUTION+INJECTABLE+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        },
+        {
+          "titre": "RCP VITAMIVET K1 50 MG COMPRIMES PELLICULES POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=VITAMIVET+K1+50+MG+COMPRIMES+PELLICULES+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "cimetidine",
+      "nom": "Cimétidine",
+      "nomCommercial": [
+        "Zitac"
+      ],
+      "classe": "Anti-H2 - Antisécrétoire gastrique",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien : réduction des vomissements associés à une gastrite chronique"
+      ],
+      "contreIndications": [
+        "Aucune selon le RCP"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "5 mg/kg",
+          "frequence": "3x/jour",
+          "voie": "PO",
+          "duree": "28 jours minimum, puis 2 semaines après rémission",
+          "attention": "Avec un régime alimentaire adapté."
+        }
+      },
+      "effetsSecondaires": [
+        "Gynécomastie légère et transitoire",
+        "Réduction réversible du poids de la prostate"
+      ],
+      "interactions": [
+        "Inhibe le cytochrome P-450 : bêta-bloquants, inhibiteurs calciques, benzodiazépines, barbituriques, phénytoïne, théophylline, aminophylline, warfarine, lidocaïne (réduire leur dose)",
+        "Antiacides (hydroxydes d'aluminium ou de magnésium) : espacer d'au moins 2 heures"
+      ],
+      "sources": [
+        {
+          "titre": "RCP ZITAC 100 MG COMPRIMES POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=ZITAC+100+MG+COMPRIMES+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "loperamide",
+      "nom": "Lopéramide",
+      "nomCommercial": [
+        "Loperal"
+      ],
+      "classe": "Antidiarrhéique - Opioïde périphérique",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien : diarrhée aiguë, avec diète de 12 heures puis reprise progressive de l'alimentation"
+      ],
+      "contreIndications": [
+        "Colleys et races apparentées (mutation MDR1)",
+        "Occlusion ou suspicion d'occlusion intestinale",
+        "Chien de moins de 3 mois ou de moins de 2 kg",
+        "Entérite hémorragique"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "0.093 mg/kg",
+          "frequence": "2x/jour (matin et soir), en dehors des repas",
+          "voie": "PO",
+          "duree": "3 jours consécutifs"
+        }
+      },
+      "effetsSecondaires": [
+        "Vomissements, constipation",
+        "Anorexie",
+        "Prostration, ataxie, parésie (surtout chiens MDR1)"
+      ],
+      "interactions": [
+        "Molécules modifiant la motricité intestinale et inhibiteurs calciques : contre-indiqués"
+      ],
+      "sources": [
+        {
+          "titre": "RCP LOPERAL 0,93 MG COMPRIMES PELLICULES POUR CHIENS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=LOPERAL+0%2C93+MG+COMPRIMES+PELLICULES+POUR+CHIENS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    },
+    {
+      "id": "butylscopolamine",
+      "nom": "Butylbromure de scopolamine",
+      "nomCommercial": [
+        "Scopalgine"
+      ],
+      "classe": "Antispasmodique - Anticholinergique",
+      "formes": [
+        "Comprimés"
+      ],
+      "indications": [
+        "Chien et chat : affections spasmodiques urologiques"
+      ],
+      "contreIndications": [
+        "Aucune selon le RCP"
+      ],
+      "posologies": {
+        "chien": {
+          "dose": "0.14-0.27 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "duree": "4 à 8 jours"
+        },
+        "chat": {
+          "dose": "0.14-0.27 mg/kg",
+          "frequence": "1x/jour",
+          "voie": "PO",
+          "duree": "4 à 8 jours"
+        }
+      },
+      "effetsSecondaires": [
+        "Sécheresse buccale, tachycardie, mydriase (très rare)"
+      ],
+      "interactions": [
+        "Aucune connue selon le RCP"
+      ],
+      "sources": [
+        {
+          "titre": "RCP SCOPALGINE 1,38 MG COMPRIMES POUR CHIENS ET CHATS (ANMV, Index des RCP)",
+          "url": "https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=SCOPALGINE+1%2C38+MG+COMPRIMES+POUR+CHIENS+ET+CHATS",
+          "sections": "3.1, 3.2, 3.3, 3.6, 3.8, 3.9, 3.12",
+          "consulteLe": "2026-10-19"
+        }
+      ]
+    }
+  ]
+}

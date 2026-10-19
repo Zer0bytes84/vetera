@@ -1,0 +1,128 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=VITAMIVET+K1+50+MG+COMPRIMES+PELLICULES+POUR+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ VITAMIVET K1 50 MG COMPRIMES PELLICULES POUR CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Chaque comprimé sécable contient :
+ Substance active: 
+ Phytoménadione…………….. 50 mg
+ Excipients: 
+ Composition qualitative en excipients et autres composants 
+ Noyau 
+ Silice colloïdale anhydre
+ Hydrogénophosphate de calcium dihydraté
+ Dibéhénate de glycérol
+ Stéarate de magnésium
+ Lactose monohydraté
+ Croscarmellose sodique
+ Pelliculage 
+ Hypromellose
+ Polydextrose
+ Talc
+ Maltodextrine
+ Triglycérides à chaîne moyenne
+ Comprimé pelliculé.
+ Comprimé oblong, de couleur légèrement jaune avec 3 barres de sécabilité.
+ Le comprimé peut être coupé en demis et quarts de comprimés.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chien.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Traitement de l'intoxication par les rodonticides anticoagulants, en relais d'un traitement par voie parentérale.
+ 3.3 Contre-indications 
+ Ne pas utiliser en cas d'hypersensibilité à la substance active ou à l'un des excipients.
+ 3.4 Mises en garde particulières 
+ Comme les effets anticoagulants des rodonticides sont connus pour durer dans le temps, il est recommandé d'administrer la vitamine K1 par voie orale pendant 3 semaines. L'hémostase doit être évaluée (via la mesure du Temps de Quick) 48 heures après la dernière administration. S'il est allongé, le traitement est poursuivi jusqu'à ce que le temps de coagulation soit normal, 48 heures après l'arrêt du traitement pour éviter toute rechute. Le traitement peut être maintenu aussi longtemps que l'anticoagulant persiste dans l'organisme.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ La formation de prothrombine peut être altérée chez les animaux présentant un dysfonctionnement hépatique sévère, ce qui nécessite chez ces animaux une surveillance attentive des paramètres de la coagulation après administration du médicament vétérinaire.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Les personnes présentant une hypersensibilité connue à la phytoménadione doivent éviter tout contact avec le médicament vétérinaire.
+Se laver les mains après utilisation.
+ Pour éviter toute ingestion accidentelle, en particulier par un enfant, tout morceau de comprimé inutilisé doit être replacé dans une alvéole de la plaquette, elle-même replacée dans l’étui.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ Aucune.
+ 3.6 Effets indésirables 
+ Chiens :
+ Très rare
+ (< 1 animal / 10 000 animaux traités, y compris les cas isolés):
+ Vomissements
+ Troubles cutanés (par exemple érythème et dermatite)
+ Œdème allergique
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir également la rubrique ‘Coordonnées’ de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ L'innocuité du médicament vétérinaire n'a pas été établie en cas de gestation ou de lactation.
+ Gestation et lactation :
+ L’utilisation ne doit se faire qu’après évaluation du rapport bénéfice/risque établie par le vétérinaire responsable. Les études de laboratoire n’ont pas mis en évidence d’effets tératogènes ou fœtotoxiques. La vitamine K1 traverse la barrière placentaire. 
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Les salicylates (anti-inflammatoires non stéroïdiens) et les céphalosporines présentant la fraction N-méthyl-thiotétrazole peuvent réduire l'effet de la vitamine K1, par inhibition de son recyclage.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+5 mg de phytoménadione par kg de poids corporel et par jour, soit 1 comprimé pour 10 kg de poids corporel et par jour en une seule prise, pendant 21 jours, conformément au tableau suivant :
+ Poids de l'animal (kg) Nombre de comprimés 
+ < 2,5 ¼ 
+ 2,5 - 5 ½ 
+ 5 - 7,5 ¾ 
+ 7,5 - 10 1 
+ *Chien > 10 kg : ¼ de comprimé par tranche de 2,5 kg
+Administrer de préférence pendant ou après le repas de l'animal. 
+Le traitement par voie orale doit être entrepris dans les 12 heures suivant la fin du traitement d'urgence par voie intraveineuse (2 injections IV de 5 mg de vitamine K1 par kg de poids corporel, à 12 heures d'intervalle).
+Voir la rubrique « Mises en garde particulières ».
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Aucun signe d'intolérance n'a été observé à 3 fois la dose thérapeutique, administrée pendant 3 semaines.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QB02BA01.
+ 4.2 Propriétés pharmacodynamiques 
+ La vitamine K1 est un cofacteur nécessaire à la synthèse des facteurs de coagulation dits K-dépendants (facteurs Il, VII, IX et X). Au cours de cette synthèse, la vitamine K1 est transformée en vitamine K1 hydroquinone (forme active de la vitamine K1) puis en vitamine K1 époxyde. Elle est ensuite recyclée en vitamine K1. Les rodonticides antivitamine K inhibent le recyclage de la vitamine K1 époxyde provoquant un risque hémorragique par l'absence de synthèse des facteurs Il, VII, IX et X. L'apport de vitamine K1 doit être suffisamment important pour activer la voie alternative de l'enzyme hydrogénase qui transforme la vitamine K1 (quinone) en sa forme active (hydroquinone).
+ 4.3 Propriétés pharmacocinétiques 
+ Après administration orale, la vitamine K1 est rapidement absorbée chez le chien.
+Une partie de la vitamine K1 est éliminée après biotransformation hépatique avec la bile dans le tractus intestinal, une autre est éliminée dans les urines (sous forme de métabolites glucuronoconjugués).
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Sans objet.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 4 ans.
+Durée de conservation des comprimés entamés : 3 jours.
+ 5.3 Précautions particulières de conservation 
+ A conserver dans l'emballage extérieur. Protéger de la lumière.
+Après ouverture d'une alvéole, replacer les portions de comprimés entamés dans l'alvéole de la plaquette et replacer la plaquette dans l'emballage extérieur.
+ Tout morceau de comprimé inutilisé doit être donné lors de l'administration suivante.
+ 5.4 Nature et composition du conditionnement primaire 
+ Plaquette thermoformée PVC/Aluminium
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères. 
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné. 
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ DOMES PHARMA
+3 RUE ANDRE CITROEN
+63430 PONT DU CHATEAU 
+FRANCE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/9249299 6/1996
+Boîte de 1 plaquette thermoformée de 7 comprimés quadrisécables
+Boîte de 2 plaquettes thermoformées de 7 comprimés quadrisécables
+Boîte de 3 plaquettes thermoformées de 7 comprimés quadrisécables
+Boîte de 4 plaquettes thermoformées de 7 comprimés quadrisécables
+Boîte de 5 plaquettes thermoformées de 7 comprimés quadrisécables
+Boîte de 12 plaquettes thermoformées de 7 comprimés quadrisécables
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 20/03/1996 - 06/09/2017
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 08/06/2023
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

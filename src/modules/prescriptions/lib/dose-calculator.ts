@@ -52,6 +52,17 @@ const NUMBER = "\\d+(?:[.,]\\d+)?";
 const UNIT_ALT =
   "(mg/kg|mg\\/kg|mg\\s*\\/\\s*kg|mg/mL|mg\\/mL|mg\\s*\\/\\s*mL|mg|UI/kg|UI\\/kg|mL/kg|mL\\/kg|mL|cp/kg|cp\\/kg)";
 
+/** Écriture canonique des unités, quelle que soit la casse du texte. */
+const CANONICAL_UNITS = ["mg/kg", "mg/mL", "mg", "UI/kg", "mL/kg", "mL", "cp/kg"];
+
+function canonicalUnit(raw: string): DoseUnit {
+  const compact = raw.replace(/\s/g, "");
+  return (
+    CANONICAL_UNITS.find((unit) => unit.toLowerCase() === compact.toLowerCase()) ??
+    compact
+  );
+}
+
 /**
  * Parse une posologie textuelle.
  * Exemples acceptés : "10-20 mg/kg", "10 mg/kg", "5 mg", "0.5 mL/kg",
@@ -64,12 +75,14 @@ export function parsePosology(input: string): ParsedPosology | null {
   const text = input.trim().toLowerCase().replace(/\s+/g, " ");
 
   // 1. Intervalle : "min-max unit"
+  // Le texte est en minuscules : la comparaison des unités ignore la casse
+  // (« mL/kg », « UI/kg »), et l'unité renvoyée garde son écriture canonique.
   const rangeMatch = text.match(
-    new RegExp(`^(${NUMBER})\\s*[–-]\\s*(${NUMBER})\\s*${UNIT_ALT}$`)
+    new RegExp(`^(${NUMBER})\\s*[–-]\\s*(${NUMBER})\\s*${UNIT_ALT}$`, "i")
   );
   if (rangeMatch) {
     return {
-      unit: rangeMatch[3].replace(/\s/g, ""),
+      unit: canonicalUnit(rangeMatch[3]),
       min: toNumber(rangeMatch[1]),
       max: toNumber(rangeMatch[2]),
       range: true,
@@ -77,10 +90,10 @@ export function parsePosology(input: string): ParsedPosology | null {
   }
 
   // 2. Valeur unique : "val unit"
-  const singleMatch = text.match(new RegExp(`^(${NUMBER})\\s*${UNIT_ALT}$`));
+  const singleMatch = text.match(new RegExp(`^(${NUMBER})\\s*${UNIT_ALT}$`, "i"));
   if (singleMatch) {
     return {
-      unit: singleMatch[2].replace(/\s/g, ""),
+      unit: canonicalUnit(singleMatch[2]),
       min: toNumber(singleMatch[1]),
       max: toNumber(singleMatch[1]),
       range: false,
@@ -88,6 +101,60 @@ export function parsePosology(input: string): ParsedPosology | null {
   }
 
   return null;
+}
+
+/**
+ * Unité de ligne d'ordonnance correspondant à une unité lue. Une dose en « mg »
+ * est une dose totale (« 2.5 mg » de méthimazole par chat) : « mg/tot », jamais
+ * « mg/kg ». `null` pour une unité sans équivalent (« mL » total, « mg/mL ») :
+ * la dose n'est alors pas pré-remplie.
+ */
+export function prescriptionUnitFor(
+  unit: DoseUnit
+): PrescriptionDosageUnit | null {
+  if (unit === "mg") return "mg/tot";
+  const known: PrescriptionDosageUnit[] = ["mg/kg", "mg/tot", "mL/kg", "UI/kg", "cp/kg"];
+  return known.find((value) => value === unit) ?? null;
+}
+
+export interface CatalogPosology {
+  posology: ParsedPosology;
+  /** Texte du catalogue après la dose reprise (« J1 puis 0.05 mg/kg »), sinon "". */
+  remainder: string;
+}
+
+/**
+ * Lecture d'une posologie du catalogue pour pré-remplir une ligne.
+ *
+ * Accepte en plus de `parsePosology` une dose en tête suivie d'un texte, dans
+ * deux cas seulement : le texte ne contient aucune autre valeur
+ * (« 2-3 mg/kg IV (prémédiqué) »), ou c'est un schéma d'attaque puis
+ * d'entretien (« 0.1 mg/kg J1 puis 0.05 mg/kg »). Une posologie à
+ * alternatives (« 5-10 mg/kg IM ou 2-4 mg/kg IV ») reste non lue : le choix
+ * revient au vétérinaire.
+ */
+export function parseCatalogPosology(input: string): CatalogPosology | null {
+  const strict = parsePosology(input);
+  if (strict) {
+    return { posology: strict, remainder: "" };
+  }
+  const text = (input ?? "").trim().replace(/\s+/g, " ");
+  const lead = text.match(
+    new RegExp(`^(${NUMBER}(?:\\s*[–-]\\s*${NUMBER})?\\s*\\S+)\\s+(.+)$`)
+  );
+  if (!lead) {
+    return null;
+  }
+  const posology = parsePosology(lead[1]);
+  const remainder = lead[2].trim();
+  const loadingThenMaintenance = new RegExp(
+    `^J1 puis ${NUMBER}(?:\\s*[–-]\\s*${NUMBER})?\\s*\\S+$`,
+    "i"
+  );
+  if (!posology || (/\d/.test(remainder) && !loadingThenMaintenance.test(remainder))) {
+    return null;
+  }
+  return { posology, remainder };
 }
 
 function toNumber(raw: string): number {

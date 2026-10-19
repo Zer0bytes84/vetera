@@ -1,0 +1,123 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=TOLFEDINE+40+MG%2FML+SOLUTION+INJECTABLE+POUR+CHIENS+ET+CHATS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ TOLFEDINE 40 MG/ML SOLUTION INJECTABLE POUR CHIENS ET CHATS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL contient :
+ Substance active : 
+ Acide tolfénamique ……………………..……………
+ 40,0 mg
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Alcool benzylique (E1519)
+ 10,4 mg
+ Ether monoéthylique de diéthylèneglycol
+ Ethanolamine
+ Eau pour préparations injectables
+ Solution claire, incolore à légèrement jaune, légèrement visqueuse.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens et chats.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Chez les chiens :
+ - Traitement symptomatique des états inflammatoires et douloureux des systèmes ostéo-articulaires et musculo-squelettiques.
+ - Réduction de la douleur post-chirurgicale.
+ Chez les chats :
+ - Traitement des syndromes fébriles.
+ 3.3 Contre-indications 
+ L'administration d'acide tolfénamique est contre-indiquée en cas d'insuffisance cardiaque ou hépatique.
+ L'acide tolfénamique est contre-indiqué lors d'ulcération ou de saignement digestifs, lors de dyscrasie sanguine ou d'hypersensibilité à l'acide tolfénamique.
+ 3.4 Mises en garde particulières 
+ Pour les animaux de faible poids, il est conseillé d'utiliser une seringue à insuline afin d'administrer une dose précise.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ L'utilisation du médicament vétérinaire présente des risques chez les animaux âgés de moins de 6 semaines. Si une telle utilisation ne peut être évitée, une diminution de la posologie et un suivi clinique particulier peut être nécessaire.
+ Ne pas dépasser la dose et la durée recommandées.
+ Ne pas utiliser chez les animaux en déshydratation hypovolémique ou en hypotension (possibilité d'augmentation du risque de toxicité rénale).
+ Bien que les animaux souffrant d'insuffisance rénale chronique puissent être traités sans nécessiter d'ajustement posologique, ce traitement est contre-indiqué dans les épisodes d'insuffisance rénale aiguë.
+ En cas d'effets indésirables (anorexie, vomissement, diarrhée, présence de sang dans les fèces) survenant en cours de traitement, demandez conseil à votre vétérinaire.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Respecter les conditions d'asepsie lors de l'utilisation du médicament vétérinaire.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens et chats :
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Vomissement 1 , diarrhée 1 
+ Fréquence indéterminée
+ (ne peut pas être estimée à partir des données disponibles):
+ Polyurie 1 
+ Polydipsie 1 
+ 1 Dans la plupart des cas, les signes disparaissent spontanément à l’arrêt du traitement 
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation : 
+ Bien que les études sur les animaux de laboratoire n'aient pas montré d'effets sur la reproduction, l'administration de ce médicament vétérinaire pendant la gestation est déconseillée.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Ne pas administrer d'anti-inflammatoire non stéroïdien conjointement ou dans les 24 heures suivantes. L'acide tolfénamique étant fortement lié aux protéines plasmatiques peut rentrer en compétition avec d'autres substances ayant la même propriété.
+ 3.9 Voies d'administration et posologie 
+ - Traitement symptomatique des états inflammatoires et douloureux des systèmes ostéo-articulaires et musculo-squelettiques chez les chiens et traitement des syndromes fébriles chez les chats :
+ 4 mg d'acide tolfénamique par kg de poids corporel, soit 1 injection de 1 mL/10 kg par voie sous-cutanée ou intramusculaire, éventuellement renouvelée 48 heures après (1 mL/10 kg) ou bien 1 injection de 1 mL/10 kg, le traitement pouvant être poursuivi par voie orale.
+ Ne pas utiliser la voie intramusculaire chez les chats.
+ - Réduction de la douleur post-chirurgicale chez les chiens :
+ 4 mg d'acide tolfénamique par kg de poids corporel, soit 1 injection de 1 mL/10 kg, par voie intramusculaire, en prémédication, de préférence 1 heure avant l'induction de l'anesthésie.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ En cas de surdosage, administrer un traitement symptomatique.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QM01AG02 . 
+ Groupe pharmacothérapeutique : anti-inflammatoire non stéroïdien, groupe des fénamates. 
+ 4.2 Propriétés pharmacodynamiques 
+ L'acide tolfénamique (N-(2-méthyl-3-chlorophényl)-acide anthranilique), anti-inflammatoire non stéroïdien appartenant au groupe des fénamates, est doté de propriétés anti-inflammatoires, analgésiques et antipyrétiques.
+ L'activité anti-inflammatoire est principalement liée à une inhibition de la cyclooxygénase conduisant à une réduction de la synthèse des prostaglandines et des thromboxanes, importants médiateurs inflammatoires.
+ 4.3 Propriétés pharmacocinétiques 
+ Chez le chien, l'acide tolfénamique est rapidement absorbé. Par voie injectable, la concentration moyenne maximale plasmatique d'environ 4 µg/mL (SC) et 3 µg/mL (IM) est atteinte 2 heures après administration de 4 mg d'acide tolfénamique / kg (IM et SC).
+ Chez le chat, l'absorption est très rapide. Après administration par voie injectable de 4 mg d'acide tolfénamique / kg, la concentration moyenne maximale plasmatique (Cmax) de 3,9 µg/mL est atteinte en une heure environ (Tmax).
+ L'acide tolfénamique est distribué dans tous les organes avec une forte concentration dans le plasma, le tractus digestif, le foie, les poumons et les reins. Par contre, la concentration dans le cerveau est faible. L'acide tolfénamique et ses métabolites traversent peu la barrière placentaire.
+ L'acide tolfénamique est éliminé en majeure partie sous forme inchangée et en faible partie sous forme de métabolites non actifs.
+ Chez le chien insuffisant rénal, l'élimination de l'acide tolfénamique n'est pas modifiée.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Aucune connue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ Durée de conservation après première ouverture du conditionnement primaire : 28 jours.
+ 5.3 Précautions particulières de conservation 
+ Ce médicament vétérinaire ne nécessite pas de conditions particulières de conservation.
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon verre brun type I
+ Bouchon caoutchouc chlorobutyle
+ Capsule aluminium
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Le médicament vétérinaire ne doit pas être déversé dans les cours d’eau car l’acide tolfénamique pourrait mettre les poissons et autres organismes aquatiques en danger.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ VETOQUINOL S.A.
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/7241352 0/1986
+Boîte de 1 flacon de 10 mL
+Boîte de 1 flacon de 20 mL
+Boîte de 1 flacon de 30 mL
+Boîte de 1 flacon de 50 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 26/12/1986
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 18/06/2026
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments (https://medicines.health.europa.eu/veterinary).

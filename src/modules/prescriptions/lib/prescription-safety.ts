@@ -17,6 +17,7 @@ import {
   type ContraindicationRule,
   INTERACTION_RULES,
   type InteractionRule,
+  type RuleSource,
   SAFETY_GROUPS,
   type SafetyGroupId,
 } from "./prescription-safety-rules";
@@ -55,6 +56,8 @@ export interface SafetyAlert {
   };
   reason: string;
   ruleId: string;
+  /** Référence officielle de la règle (RCP), quand elle est sourcée. */
+  source?: RuleSource;
   /** Pour une contre-indication : la mention du dossier en cause. */
   patientFinding?: {
     field: "allergies" | "conditions";
@@ -191,6 +194,7 @@ function interactionAlerts(
     medicationName: med.name,
     other: otherRef,
     reason: rule.reason,
+    ...(rule.source ? { source: rule.source } : {}),
   }));
 }
 
@@ -227,6 +231,7 @@ function contraindicationAlerts(
         medicationName: med.name,
         patientFinding: { field: rule.field, text: finding },
         reason: rule.reason,
+        ...(rule.source ? { source: rule.source } : {}),
       });
     }
   }

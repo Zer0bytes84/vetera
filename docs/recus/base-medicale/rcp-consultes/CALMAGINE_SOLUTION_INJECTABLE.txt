@@ -1,0 +1,154 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=CALMAGINE+SOLUTION+INJECTABLE
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ CALMAGINE SOLUTION INJECTABLE
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL contient :
+ Substance active : 
+ Métamizole……………………………………………………………....
+ 463,0 mg
+ (sous forme de sel de sodium monohydraté)
+ (equivalant à 522,67 mg de Métamizole sodique monohydraté)
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Alcool benzylique (E1519)
+ 10,4 mg
+ Eau pour préparations injectables
+ Solution incolore à jaune.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Bovins, porcins, équins, chiens et chats.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Réduction des douleurs d'origine viscérale en particulier celles associées à des spasmes.
+ 3.3 Contre-indications 
+ Ne pas utiliser le médicament vétérinaire dans les cas suivants :
+ - lésions hématopoïétiques,
+ - ulcérations gastro-intestinales ou troubles gastro-intestinaux chroniques,
+ - insuffisance rénale,
+ - asthme.
+ Ne pas utiliser en cas d'hypersensibilité à la substance active ou à l'un des excipients.
+ 3.4 Mises en garde particulières 
+ Chez les équins, ce médicament vétérinaire peut induire une réaction positive lors des contrôles antidopage.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ L'injection de la solution peut produire une irritation du tissu sous-cutané, cependant sans nécrose ni suppuration. Il faut donc que les injections intramusculaires soient exécutées dans de strictes conditions d'asepsie.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ En cas d'auto-injection accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l'étiquetage.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Bovins, porcins et équins :
+ Très rare
+ (
+ Choc cardio-vasculaire 1 
+ Hémorragie intestinale
+ Insuffisance rénale
+ Irritation au site d’injection 2 
+ 1 En cas d’injection intraveineuse trop rapide
+ 2 Irritations
+ Chiens :
+ Très rare
+ (
+ Choc cardio-vasculaire 1 
+ Hémorragie intestinale
+ Insuffisance rénale
+ Irritation au site d’injection 2 , réaction au site d’injection
+ Splénomégalie
+ 1 En cas d’injection intraveineuse trop rapide
+ 2 Irritations
+ Chats :
+ Très rare
+ (
+ Choc cardio-vasculaire 1 
+ Hémorragie intestinale
+ Insuffisance rénale
+ Irritation au site d’injection 2 
+ Hypersalivation
+ Léthargie
+ 1 En cas d’injection intraveineuse trop rapide
+ 2 Irritations
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ L’innocuité du médicament vétérinaire n’a pas été établie en cas de gestation.
+ Gestation : 
+ Utilisation non recommandée durant la gestation.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Ne pas utiliser en association avec des barbituriques, des glucocorticoïdes, des neuroleptiques, des diurétiques, de la phénylbutazone ou de la chlorpromazine.
+ 3.9 Voies d'administration et posologie 
+ Voies d'administration : intraveineuse lente stricte, intramusculaire.
+ Equins, porcins :
+ 23 mg à 46 mg de métamizole par kg de poids vif, correspondant à 5 à 10 mL de solution pour 100 kg de poids vif.
+ Bovins :
+ 23 mg de métamizole par kg de poids vif, correspondant à 5 mL de solution pour 100 kg de poids vif.
+ Chiens, chats :
+ 92,6 mg à 185,2 mg de métamizole par kg de poids corporel, correspondant à 1 mL de solution pour 2,5 à 5 kg de poids corporel.
+ L'effet du médicament vétérinaire s'installe 5 à 10 minutes après l'injection pour persister pendant 1 heure environ. Si les douleurs et l'état d'agitation de l'animal font leur réapparition après l'extinction de l'effet du médicament vétérinaire, l'injection peut être répétée.
+ En cas de renouvellements multiples de l'injection du médicament vétérinaire, des métabolites à longue durée d'action vont s'accumuler ; la posologie devra donc être réduite en conséquence.
+ La voie intraveineuse sera préférée pour les interventions urgentes.
+ Lors d'injection intramusculaire, il est préférable de répartir la dose totale en plusieurs points.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Risque de dépression leucocytaire en cas d'administrations répétées.
+ A partir de 1000 mg/kg, sédation, convulsions, hypersalivation, vomissements, collapsus cardiovasculaire, coma et arrêt respiratoire.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Bovins :
+ Viande et abats : 18 jours.
+ Lait : En l'absence de détermination d'un temps d'attente pour le lait, ne pas utiliser chez les femelles productrices de lait de consommation, en lactation ou en période de tarissement, ni chez les futures productrices de lait de consommation dans les 2 mois précédent la mise bas.
+ Porcins :
+ Viande et abats : 15 jours.
+ Equins :
+ Viande et abats : 15 jours.
+ Ne pas utiliser chez les animaux producteurs de lait destiné à la consommation humaine.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QN02BB02.
+ 4.2 Propriétés pharmacodynamiques 
+ Le métamizole (noramidopyrine ou dipyrone) est un AINS de la famille des pyrazolés, doté de propriétés antispasmodiques. Il s'agit d'un antalgique puissant non morphinique.
+ Analgésique, il agit directement au niveau des centres nerveux de la douleur.
+ Antipyrétique et anti-inflammatoire, il accélère le retour à un état normal lors de syndromes fébriles et inflammatoires douloureux.
+ Spasmolytique, il agit sur les fibres musculaires lisses comme sur les fibres musculaires striées dans les états spastiques ayant pour origine douleur, inflammation ou traumatisme. Cette action s'accompagne d'un effet vaso-dilatateur assurant simultanément une meilleure irrigation des zones affectées.
+ 4.3 Propriétés pharmacocinétiques 
+ La concentration plasmatique maximale (Cmax) apparaît 1 heure après l'administration intramusculaire.
+ Le métamizole n'est détectable dans le plasma que très peu de temps après injection intraveineuse. Il est rapidement converti par hydrolyse en un métabolite actif, la 4-MAA (= 4-méthylaminoantipyrine).
+ Ce métabolite principal ainsi que ses propres métabolites sont faiblement liés aux protéines plasmatiques (58% pour la 4-MAA). La 4-MAA et ses métabolites diffusent rapidement dans les tissus et passent dans le lait maternel.
+ Le volume de distribution de la 4-MAA chez le cheval est environ 1,85 L/kg.
+ La 4-MAA est métabolisée au niveau du foie. La principale voie de métabolisation est l'acétylation assurée par des enzymes dépendantes du cytochrome P450. Elle intervient soit directement sur la 4-MAA, soit sur son métabolite déméthylé. La 4-MAA acétylée et déméthylée subit une 2ème réaction de sulfo ou de glucuroconjugaison.
+ L'élimination est essentiellement urinaire. 90% de la dose administrée est éliminée par le rein. Chez le cheval, la demi-vie d'élimination de la 4-MAA après administration intraveineuse est en moyenne de 4.85 h.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Aucune connue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+Durée de conservation après première ouverture du conditionnement primaire : 28 jours.
+ 5.3 Précautions particulières de conservation 
+ Ce médicament vétérinaire ne nécessite pas de conditions particulières de conservation.
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon verre coloré type II
+ Bouchon chlorobutyle
+ Capsule aluminium
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ VETOQUINOL S.A.
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/4053504 3/1992
+Boîte de 1 flacon de 20 mL
+Boîte de 1 flacon de 100 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 22/06/1992
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 23/03/2026
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments (https://medicines.health.europa.eu/veterinary).

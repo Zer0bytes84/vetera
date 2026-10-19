@@ -299,6 +299,7 @@ export function PrescriptionTemplatesDialog({
       <DialogContent
         className="rx-template-dialog sm:max-w-lg"
         data-testid="prescription-templates-dialog"
+        forceBackdrop
         initialFocus={initialMode === "save" ? nameInputRef : undefined}
         showCloseButton
       >

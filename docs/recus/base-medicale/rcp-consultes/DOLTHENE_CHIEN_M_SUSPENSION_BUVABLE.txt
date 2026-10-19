@@ -1,0 +1,117 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=DOLTHENE+CHIEN+M+SUSPENSION+BUVABLE
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ DOLTHENE CHIEN M SUSPENSION BUVABLE
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL contient :
+ Substance active :
+ Oxfendazole ………………………………………
+ 22, 65 mg
+ Excipients :
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Acide sorbique (E200)
+ 1,50 mg
+ Macrogols
+ /
+ Stéarate de macrogol
+ /
+ Carmellose sodique (E466)
+ /
+ Silice colloïdale anhydre
+ /
+ Acide citrique monohydraté
+ /
+ Citrate de sodium
+ /
+ Eau purifiée
+ /
+ Suspension buvable, fluide homogène blanche à presque blanche.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Affections à parasites sensibles à l'oxfendazole.
+ Chez les chiens pesant de 13 à 33 kg :
+ - Traitement curatif des ascaridoses dues à Toxocara canis , Toxascaris leonina , des ankylostomoses dues à Uncinaria stenocephala , Ankylostoma caninum , Ankylostoma braziliense , des trichuroses dues à Trichuris vulpis , et du taeniasis dû à Taenia hydatigena , Dipylidium caninum. 
+ 3.3 Contre-indications 
+ Cf rubrique « Utilisation en cas de gestation, de lactation ou de ponte ».
+ Ne pas utiliser en cas d’hypersensibilité à la substance active ou à l’un des excipients.
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Bien agiter avant l'emploi.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Eviter tout contact direct avec la peau. Bien se laver les mains après utilisation.
+ En cas d’ingestion accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens :
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Anorexie
+ Trouble du tube digestif (tels que des vomissements)
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation :
+ Les études sur les animaux de laboratoire, avec l'oxfendazole comme un certain nombre d'autres benzimidazoles ont mis en évidence des effets embryotoxiques et tératogènes et une réduction des fonctions de l'appareil reproducteur mâle.
+ Ne pas utiliser pendant les 35 premiers jours de la gestation.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Aucune connue.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ Chiens :
+ 11,3 mg par kg de poids corporel par jour pendant trois jours consécutifs, soit 0,5 mL de suspension par kg de poids corporel par jour pendant trois jours consécutifs. Mélanger la suspension à la nourriture ou éventuellement administrer directement dans la gueule.
+ Le contenu d'un applicateur permet de traiter un chien de 10 kg pendant un jour.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Cf rubrique « Effets indésirables ».
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QP52AC02.
+ 4.2 Propriétés pharmacodynamiques 
+ L'oxfendazole appartient à la classe des benzimidazoles, molécules à propriétés antimitotiques. Cette activité est liée à leur capacité à se fixer à la β tubuline, empêchant ainsi la polymérisation des microtubules. La destruction du réseau microtubulaire conduit souvent à la désagrégation et à la mort cellulaire.
+ Il possède une action ovicide, larvicide et adulticide. L'oxfendazole semble se concentrer préférentiellement dans les cellules intestinales des parasites pour y exercer ses principaux effets toxiques. L'absence d'effets similaires au niveau des cellules de l'hôte est probablement due à des mécanismes de liaison différents. L'oxfendazole correspond au métabolite sulfoxydé du fenbendazole. Ces deux molécules sont connues pour leur activité anthelminthique, et pour avoir un métabolisme réversible. L'oxfendazole présente une activité sur les nématodes gastro-intestinaux, sur les nématodes pulmonaires et sur les cestodes.
+ 4.3 Propriétés pharmacocinétiques 
+ Les benzimidazoles sont faiblement solubles en milieu aqueux. L'absorption est favorisée par la présence de graisse dans l'alimentation.
+ Les benzimidazoles sont fortement métabolisés chez toutes les espèces animales. Les benzimidazoles conjugués et leurs métabolites sont excrétés principalement par la bile.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Aucune connue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 2 ans.
+ 5.3 Précautions particulières de conservation 
+ Protéger de la lumière.
+ Ne pas congeler.
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon polyéthylène
+ Bouchon polyéthylène
+ Applicateur polyéthylène
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ DOPHARMA FRANCE S.A.S.
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/1424668 1/2000
+Boîte de 1 flacon de 50 mL et de 1 applicateur de 5 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 25/05/2000
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 12/02/2025
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire non soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

@@ -1,0 +1,137 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=KARSIVAN+100+COMPRIMES+PELLICULES+POUR+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ KARSIVAN 100 COMPRIMES PELLICULES POUR CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un comprimé contient :
+ Substance active :
+ Propentofylline .....................................
+ 100,000 mg
+ Excipients :
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Noyau du comprimé 
+ Amidon de maïs
+ /
+ Crospovidone
+ /
+ Talc
+ /
+ Lactose monohydraté
+ /
+ Stéarate de magnésium
+ /
+ Silice colloïdale anhydre
+ /
+ Pelliculage du comprimé 
+ Hypromellose
+ /
+ Talc
+ /
+ Dioxyde de titane (E171)
+ 0,856 mg
+ Oxyde de fer jaune (E172)
+ 0,258 mg
+ Macrogol 8000
+ /
+ Comprimés pelliculés ocres, biconvexes et oblongs, avec ligne de sécabilité sur les 2 faces et inscription "K100" sur l'une des faces.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Chez les chiens âgés :
+ - Amélioration des troubles comportementaux liés à des perturbations de la microcirculation cérébrale et périphérique : apathie, indolence et fatigabilité.
+ 3.3 Contre-indications 
+ Ne pas administrer aux chiens de moins de 10 kg.
+ Ne pas administrer aux chiens atteints de cardiopathie à un stade avancé.
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ En cas d'insuffisance rénale, il est conseillé de diminuer la dose.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Les personnes présentant une hypersensibilité connue à l'un des composants du médicament vétérinaire doivent éviter tout contact avec le médicament vétérinaire.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens :
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Vomissements 1 
+ Très rare
+ (< 1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Réactions allergiques (par exemple : urticaire) 2 ;
+ Léthargie ;
+ Tachycardie 3 ;
+ Convulsions 4 
+ 1 En particulier en début de traitement.
+ 2 Nécessite l’arrêt du traitement.
+ 3 Symptômes d’hyperstimulation cardiaque. Dans de tels cas, les animaux devront recevoir un traitement symptomatique.
+ 4 Symptômes d’hyperstimulation cérébrale. Dans de tels cas, les animaux devront recevoir un traitement symptomatique.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Sans objet.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Au vu des propriétés pharmacologiques de la propentofylline, il est conseillé de ne pas administrer d'autres médicaments ayant les mêmes propriétés pharmacologiques ou faisant partie des dérivés xanthiques.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ 5 à 10 mg/kg/jour pendant 4 à 6 semaines, en 2 prises quotidiennes séparées approximativement de 12 heures, selon le tableau suivant :
+ Poids de l'animal (kg) 
+ Nombre de comprimés matin et soir 
+ 10-20
+ ½
+ 20-40
+ 1
+ 40-60
+ 1 ½
+ Plus de 60
+ 2
+ Les comprimés peuvent être administrés directement ou cachés dans la nourriture.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Des phénomènes d'excitation, de tachycardie, d'hypotension, de rougissement des muqueuses et de vomissements ont été observés. Un arrêt du traitement entraîne une régression spontanée des symptômes.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QC04AD90.
+ 4.2 Propriétés pharmacodynamiques 
+ La propentofylline est un dérivé xanthique qui, en augmentant le potentiel de déformation des globules rouges et le flux sanguin cérébral, favorise l'apport d'oxygène aux tissus. Elle inhibe également l'agrégation plaquettaire et a des effets sur la fonction cardiaque : chronotrope, inotrope, anti-arythmique.
+ 4.3 Propriétés pharmacocinétiques 
+ La propentofylline est intensivement métabolisée. Sa biodisponibilité par voie orale est de l'ordre de 30 %.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Aucune connue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ 5.3 Précautions particulières de conservation 
+ Ce médicament vétérinaire ne nécessite pas de conditions particulières de conservation.
+ 5.4 Nature et composition du conditionnement primaire 
+ Plaquette PVC-aluminium.
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ INTERVET
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/3136330 1/2002
+Boîte de 1 plaquette de 10 comprimés sécables
+Boîte de 3 plaquettes de 10 comprimés sécables
+Boîte de 6 plaquettes de 10 comprimés sécables
+Boîte de 15 plaquettes de 10 comprimés sécables
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 14/05/2002
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 24/11/2025
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

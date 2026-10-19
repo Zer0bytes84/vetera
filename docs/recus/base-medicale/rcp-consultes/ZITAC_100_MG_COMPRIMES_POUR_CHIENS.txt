@@ -1,0 +1,114 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=ZITAC+100+MG+COMPRIMES+POUR+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ ZITAC 100 MG COMPRIMES POUR CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ 1 comprimé contient :
+ Substance active :
+ Cimétidine ………………
+ 100 mg
+ Excipients :
+ Composition qualitative en excipients et autres composants 
+ Lactose monohydraté
+ Cellulose microcristalline
+ Amidon de maïs prégélatinisé
+ Carboxyméthylamidon sodique (type A)
+ Stéarate de magnésium
+ Comprimés blancs, oblongs, avec une barre de sécabilité sur les 2 faces.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Traitement symptomatique pour la réduction des vomissements associés à une gastrite chronique chez le chien.
+ 3.3 Contre-indications 
+ Aucune.
+ 3.4 Mises en garde particulières 
+ Le traitement par la cimétidine est uniquement symptomatique et ne permet pas la résolution des modifications histopathologiques associées à la gastrite. Avant de commencer le traitement, il est recommandé de conduire des investigations appropriées chez les chiens présentant des vomissements persistants afin d'en diagnostiquer la cause sous-jacente. Ceci est particulièrement important chez les chiens âgés. La réduction de l'acidité gastrique provoquée par la cimétidine peut contribuer à une croissance bactérienne excessive et à une stimulation antigénique.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ En cas de dysfonctionnement rénal, la posologie doit être ajustée car la clairance de la cimétidine peut être réduite. Si la réponse au traitement est faible dans les 15 jours qui suivent son instauration, le diagnostic et le protocole de traitement devront être réévalués.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Aucune.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens :
+ Très fréquent
+ (> 1 animal / 10 animaux traités) :
+ Gonflement des glandes mammaires 1 
+ Très rare
+ (< 1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Réduction du poids de la prostate 2 
+ 1 Gonflement léger et transitoire, et se résorbant de lui-même (gynécomastie) ; activité anti-androgénique.
+ 2 Réversible, sans impact sur les performances de reproduction.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir également la rubrique “Coordonnées” de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation et lactation :
+ L'utilisation du médicament vétérinaire chez les chiennes au cours de la gestation et de la lactation n'a pas été étudiée. En conséquence, l'utilisation du médicament vétérinaire au cours de la gestation et de la lactation devra faire l'objet d'une évaluation du rapport bénéfice/risque par le vétérinaire responsable.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ La cimétidine inhibant l’activité du cytochrome P-450, le métabolisme et l’élimination de certains médicaments peuvent être ralentis. Certaines interactions avec répercussions cliniques peuvent se produire avec des médicaments ayant un faible indice thérapeutique, tels que les β-bloquants, les inhibiteurs calciques, les benzodiazépines, les barbituriques, la phénytoïne, la théophylline, l'aminophylline, la warfarine et la lidocaïne. La posologie de tels médicaments peut nécessiter d’être réduite lorsqu’ils sont administrés simultanément avec la cimétidine.
+ L’augmentation du pH gastrique résultant de l’administration de la cimétidine peut conduire à une réduction de l’absorption de médicaments requérant un milieu acide. Il est recommandé d'attendre au moins 2 heures, lorsque cela est possible, entre l’administration de la cimétidine et celle de l’hydroxyde d’aluminium ou de magnésium, du métoclopramide, de la digoxine ou du kétoconazole.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ Posologie et voie d’administration : 5 mg de cimétidine par kg de poids corporel administré trois fois par jour, par voie orale (voir le tableau indicatif ci-dessous). Un régime alimentaire approprié est fortement recommandé pendant la durée du traitement. Au cours des essais cliniques, seule l’efficacité de la cimétidine administrée simultanément à un régime hypoallergénique a été étudiée.
+ Tableau : Nombre de comprimés de Zitac 100 mg à administrer trois fois par jour selon le poids corporel.
+ Poids (kg)
+ Nombre de comprimés de ZITAC 100 MG
+ 6 à 10
+ ½
+ 11 à 20
+ 1
+ Protocole de traitement recommandé : la réduction des vomissements est obtenue dans les 2 semaines. Les animaux devront cependant être traités pendant au moins 2 semaines après la rémission des signes cliniques. Une durée minimale de traitement de 28 jours est généralement nécessaire et par conséquent recommandée. Si la réponse est considérée comme satisfaisante, le traitement peut être interrompu. Une période de 2 semaines sans traitement devra être instaurée afin de vérifier que les vomissements ne reprennent pas.
+ Si les vomissements réapparaissent après une période sans traitement, le médicament peut être administré de nouveau sans risque d'intolérance.
+ Le traitement doit être adapté à chaque animal en fonction de la réponse thérapeutique, jusqu'à ce que celle-ci soit adéquate et durable. Le régime alimentaire doit toujours être maintenu.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Une exposition importante à la cimétidine entraîne des valeurs de DL 50 supérieures à 2600 mg/kg, soit supérieures à 170 fois la dose journalière recommandée chez les chiens. Une étude de tolérance réalisée chez le chien a démontré que le médicament vétérinaire administré oralement à la dose de 75 mg de cimétidine/kg/jour (cinq fois la dose journalière recommandée) pendant une période de 91 jours, était bien toléré.
+ Aucun signe de surdosage n'est connu.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QA02BA01.
+ 4.2 Propriétés pharmacodynamiques 
+ La cimétidine est un antagoniste des récepteurs H 2 à l'histamine présents dans les cellules gastriques pariétales. La stimulation des récepteurs H 2 par l'histamine active la sécrétion gastrique acide. La cimétidine, par ses propriétés antagonistes envers les récepteurs H 2 de l'histamine, inhibe la sécrétion acide gastrique, entraîne la diminution de l'irritation gastrique et des vomissements subséquents lors de gastrite chronique. Aucune amélioration du statut inflammatoire de la muqueuse gastrique n'a été observée chez les chiens.
+ 4.3 Propriétés pharmacocinétiques 
+ Après administration orale du médicament vétérinaire à des chiens à jeun, à la posologie de 5 mg/kg de poids corporel, la cimétidine est rapidement et presque totalement absorbée, avec des pics plasmatiques d'environ 2 µg/mL, mesurés 1,5 heure après administration. La biodisponibilité est de 95 %. L'absorption de la cimétidine chez les chiens est retardée et réduite d'environ 40 % en présence de nourriture dans l'estomac.
+ Les valeurs de C max et AUC chez les animaux à jeun sont les suivantes : C max 2,94 µg/mL, AUC 0-∞ 8,23 µg.h/mL.
+ Les valeurs de Cmax et AUC chez les animaux nourris sont les suivantes : C max 1,12 µg/mL, AUC 0-∞ 5,43 µg.h/mL.
+ Cependant, cela n'affecte pas l'efficacité du traitement.
+ La demi-vie plasmatique de la cimétidine est d'environ 2 heures à la posologie de 5 mg/kg. La cimétidine est rapidement et presque totalement excrétée via les urines. Aucune accumulation de produit n'apparaît après un traitement oral répété à la posologie de 5 mg/kg trois fois par jour pendant 30 jours consécutifs.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Aucune connue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ 5.3 Précautions particulières de conservation 
+ Conserver les plaquettes dans le conditionnement originel de façon à les protéger de la lumière. Les demi-comprimés non utilisés doivent être conservés dans la plaquette d’origine de façon à les protéger de la lumière.
+ 5.4 Nature et composition du conditionnement primaire 
+ Les comprimés sont conditionnés dans des plaquettes (PVC blanc opaque/feuille d’aluminium) dans une boîte en carton imprimée.
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ INTERVET INTERNATIONAL B.V.
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/6302909 1/2006
+Boîte de 3 plaquettes thermoformées de 10 comprimés sécables
+Boîte de 10 plaquettes thermoformées de 10 comprimés sécables
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 06/11/2006
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 09/01/2025
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

@@ -1,0 +1,111 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=CAPSTAR+11%2C4+MG+COMPRIMES+POUR+CHATS+ET+PETITS+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ CAPSTAR 11,4 MG COMPRIMES POUR CHATS ET PETITS CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un comprimé contient :
+ Substance active : Nitenpyram 11,4 mg
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Cellulose microcristalline
+ Amidon de maïs
+ Lactose monohydraté
+ Silice anhydre
+ Stéarate de magnésium
+ Comprimé blanc à jaune pâle, rond, biconvexe, à bords biseautés, gravé « RB » sur une face et « CG » sur l'autre face.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chats et chiens.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Traitement des infestations par les puces ( C. felis ).
+ 3.3 Contre-indications 
+ Aucune.
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Ne pas utiliser chez l'animal âgé de moins de 4 semaines ou pesant moins de 1 kg, aucune étude n'ayant été réalisée pour ces classes d'animaux.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Aucune.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ Aucune.
+ 3.6 Effets indésirables 
+ Chats et chiens :
+ Très rare
+ (< 1 animal / 10 000 animaux traités, y compris les cas isolés):
+ Mordillement, toilettage et/ou léchage excessif 1 , Hyperactivité
+ Vocalises 1 
+ Signes neurologiques (par exemple tremblements musculaires, ataxie, convulsions) 1 
+ Halètement 1 
+ Augmentation des démangeaisons 2 
+ 1 Transitoires
+ 2 Au cours de la première heure après l'administration ; probablement dû à la réaction des puces au médicament vétérinaire.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir également la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation et lactation : 
+ Peut être utilisé au cours de la gestation et de la lactation. 
+ Les études menées sur animaux de laboratoire (rats et lapins) n'ont mis en évidence aucun effet tératogène ou fœtotoxique. L'innocuité du produit a été démontrée chez les chattes et les chiennes gestantes ou allaitantes. 
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Aucune connue.
+ Aucun effet indésirable n'a été observé lors de l'administration simultanée de nitenpyram et d'autres médicaments vétérinaires, comme des produits anti-puces d'usage courant, des anthelminthiques, des vaccins ou des antibiotiques
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ La dose minimale efficace est de 1 mg/kg avec les recommandations suivantes :
+Un comprimé doit être administré aux chats et petits chiens d'un poids de 1 kg à 11 kg lorsqu'une infestation par les puces est identifiée. La fréquence du traitement dépend du degré d'infestation. Dans le cas d'infestation sévère, il peut être nécessaire de traiter les animaux chaque jour ou un jour sur deux, jusqu'à élimination totale des puces. Le traitement peut être répété en cas de réapparition des puces. Il ne faut pas administrer plus d'un traitement par jour.
+Les comprimés doivent être administrés par voie orale avec ou sans nourriture. Pour faciliter l'administration, les comprimés peuvent être cachés dans une petite quantité de nourriture juste avant la prise.
+Le médicament vétérinaire n'a pas d'activité rémanente. Pour prévenir la ré-infestation, il est recommandé de l'associer à un médicament permettant de traiter les stades immatures des puces.
+Le vétérinaire peut établir un programme de traitement approprié.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Le nitenpyram est bien toléré par les chats et les chiens. Un surdosage allant jusqu'à 50 mg/kg chez le chat et jusqu'à 70 mg/kg chez le chien est asymptomatique.
+Des effets secondaires tels que salivation, vomissements, selles molles, convulsions ou baisse d'activité peuvent être observés à des posologies plus fortes, la sévérité augmentant avec la dose. Les symptômes disparaissent rapidement et le retour à la normale est complet en 24 heures grâce à l'élimination rapide du nitenpyram.
+Aucun effet indésirable cliniquement significatif n'a été observé lors d'une administration quotidienne pendant 6 mois chez le chien et le chat.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QP53BX02.
+ 4.2 Propriétés pharmacodynamiques 
+ Le nitenpyram, principe actif, appartient à la classe des néonicotinoïdes. Il se lie aux récepteurs cholinergiques de type nicotinique spécifiques des insectes en les inhibant. Il interrompt la conduction nerveuse chez la puce adulte, ce qui entraîne sa mort. Le nitenpyram n'inhibe pas l'acétylcholinestérase.
+L'effet sur les puces ( Ctenocephalides felis ) est visible 15 à 30 minutes après l'administration à l'animal hôte. Cela coïncide avec le premier repas sanguin des puces, alors que la concentration sanguine efficace du médicament est atteinte. L'efficacité contre les puces est de 95 à 100 % dans les 6 heures suivant l'administration et de 100 % dans les 24 heures, sans activité résiduelle.
+ 4.3 Propriétés pharmacocinétiques 
+ Après administration orale chez le chat ou le chien, l'absorption du nitenpyram est rapide et supérieure à 90 %. La prise de nourriture n'influe pas sur l'absorption du nitenpyram chez le chien, mais retarde légèrement le Tmax chez le chat sans affecter les autres paramètres pharmacocinétiques et sans conséquence sur l'efficacité. La concentration sanguine maximale est atteinte en 30 à 120 minutes chez le chien et le chat à jeun. La demi-vie d'élimination est de 4 heures chez le chien et de 8 heures chez le chat. Plus de 90 % est excrété dans les urines, en une journée chez le chien et deux jours chez le chat, principalement sous forme inchangée.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Sans objet.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ 5.3 Précautions particulières de conservation 
+ À conserver à une température ne dépassant pas 25°C.
+ 5.4 Nature et composition du conditionnement primaire 
+ Plaquette thermoformée polyamide/aluminium/PVC-aluminium
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ ELANCO
+HEINZ-LOHMANN-STRASSE 4
+27472 CUXHAVEN 
+ALLEMAGNE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/3618747 8/2002
+Boîte de 1 plaquette thermoformée de 1 comprimé
+Boîte de 1 plaquette thermoformée de 6 comprimés
+Boîte de 10 plaquettes thermoformées de 6 comprimés
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 19/08/2002 - 11/07/2007
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 12/06/2023
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire non soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

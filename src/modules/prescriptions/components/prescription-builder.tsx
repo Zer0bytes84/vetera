@@ -47,7 +47,8 @@ import type { PrescriptionVet } from "../types";
 import {
   computeDose,
   type DoseComputation,
-  parsePosology,
+  parseCatalogPosology,
+  prescriptionUnitFor,
 } from "../lib/dose-calculator";
 import {
   getMedicationById,
@@ -153,7 +154,10 @@ function medToDraft(
   speciesKey: SpeciesKey | null
 ): DraftItem {
   const poso = speciesKey ? med.posologies?.[speciesKey] : undefined;
-  const parsed = poso ? parsePosology(poso.dose) : null;
+  const catalog = poso ? parseCatalogPosology(poso.dose) : null;
+  // La dose n'est reprise qu'avec son unité exacte (mL/kg, UI/kg, mg total…).
+  const unit = catalog ? prescriptionUnitFor(catalog.posology.unit) : null;
+  const parsed = unit ? (catalog?.posology ?? null) : null;
 
   return {
     id: makeId(),
@@ -162,12 +166,15 @@ function medToDraft(
     medicationClass: med.classe,
     form: "comprime",
     dosagePerKg: parsed?.min ?? 0,
-    dosageUnit: "mg/kg",
+    dosageUnit: unit ?? "mg/kg",
     dosageMin: parsed?.min,
     dosageMax: parsed?.max,
     frequency: poso?.frequence ?? "",
     duration: poso?.duree ?? "",
     route: poso?.voie,
+    // Schéma complet du catalogue (dose d'entretien, voie…) quand seule la
+    // dose de tête a été reprise : rien n'est perdu, le vétérinaire ajuste.
+    instructions: parsed && catalog?.remainder ? `Schéma : ${poso?.dose}` : undefined,
     warnings: med.effetsSecondaires?.join(" · "),
     sortOrder,
   };
@@ -749,7 +756,7 @@ export function PrescriptionBuilder({
       />
 
       <AlertDialog onOpenChange={setSignConfirmOpen} open={signConfirmOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent forceBackdrop>
           <AlertDialogHeader>
             <AlertDialogTitle>Signer l'ordonnance ?</AlertDialogTitle>
             <AlertDialogDescription>

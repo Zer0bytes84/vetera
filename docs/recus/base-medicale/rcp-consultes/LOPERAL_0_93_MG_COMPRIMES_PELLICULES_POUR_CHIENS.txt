@@ -1,0 +1,139 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=LOPERAL+0%2C93+MG+COMPRIMES+PELLICULES+POUR+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ LOPERAL 0,93 MG COMPRIMES PELLICULES POUR CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un comprimé pelliculé quadrisécable de 381 mg contient :
+ Substance(s) active(s) : 
+ Lopéramide …………………………………
+ 0,93 mg
+ (Equivalant à 1,00 mg de chlorhydrate de lopéramide)
+ Excipient(s) : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Noyau 
+ /
+ Lactose monohydraté
+ /
+ Cellulose microcristalline
+ /
+ Dibéhénate de glycérol
+ /
+ Stéarate de magnésium
+ /
+ Silice colloïdale anhydre
+ /
+ Pelliculage 
+ /
+ Jaune de quinoléine (E 104)
+ 0,9988 mg
+ Indigotine (E 132)
+ 1,3024 mg
+ Jaune orangé (E 110)
+ 0,3322 mg
+ Dioxyde de titane (E 171)
+ 0,2266 mg
+ Lactose monohydraté
+ /
+ Hypromellose
+ /
+ Macrogol
+ /
+ Comprimés pelliculés en forme de bâtonnet, quadrisécables et de couleur verte.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chien.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Traitement symptomatique de la diarrhée aiguë en association avec des mesures diététiques : diète de 12 heures et reprise progressive de l'alimentation.
+ 3.3 Contre-indications 
+ Ne pas utiliser chez les Colleys et apparentés.
+ Ne pas utiliser en cas d'occlusion ou de suspicion d'occlusion intestinale.
+ Ne pas utiliser chez les chiens âgés de moins de 3 mois.
+ Ne pas utiliser chez les chiens pesant moins de 2 kg.
+ Ne pas utiliser en cas d'entérite hémorragique.
+ 3.4 Mises en garde particulières 
+ Sans objet.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Lors d'insuffisance hépatique, une surveillance clinique accrue de l'animal est préférable.
+ En cas d'apparition de sang dans les fèces, interrompre l'administration de la spécialité.
+ La spécialité n'est pas destinée au traitement des diarrhées chroniques.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ En cas d'ingestion accidentelle, en particulier pour un enfant de moins de 8 ans, consulter immédiatement un médecin en lui montrant la boîte ou la notice.
+ La naloxone peut être utilisée comme antidote.
+ Bien se laver les mains après manipulation des comprimés.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens :
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Vomissements, constipation, diarrhée
+ Adipsie, anorexie
+ Prostration 1 , ataxie 1 , parésie 1 
+ 1 en particulier chez les chiens présentant une mutation du gène MDR1.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir également la rubrique « Coordonnées » de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ L’innocuité du médicament vétérinaire n’a pas été établie en cas de gestation ou de lactation.
+ Gestation et lactation :
+ L'utilisation ne doit se faire qu’après évaluation du rapport bénéfice/risque établie par le vétérinaire responsable.
+ Les études de laboratoires sur les rats et les lapins n'ont pas mis en évidence d'effets embryotoxiques ni tératogènes du lopéramide.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ L'utilisation concomitante de molécules modifiant la motricité intestinale ou d'inhibiteurs calciques est contre-indiquée.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ 0,093 mg de lopéramide par kg de poids corporel, soit 1 comprimé pour 10 kg de poids corporel, matin et soir, par voie orale, pendant 3 jours consécutifs.
+ Le médicament doit être administré en dehors des repas.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Signes de surdosage : voir rubrique « effets indésirables ». 
+ Le traitement antidote est la naloxone à raison de 0,01 à 0,04 mg/kg en intraveineuse répétée aussi souvent que nécessaire.
+ On peut lui associer un traitement adsorbant : charbon actif (2 g/kg) per os suivi d'huile de paraffine pour éliminer plus rapidement le lopéramide.
+ L'administration sur une durée supérieure à celle recommandée (4,5 fois) ou en cas de surdosage (3 fois la dose recommandée) est à l'origine d'une leucocytose (principalement une neutrophilie). Les valeurs retournent à la normale au plus tard une semaine après l'arrêt de l'administration sans traitement spécifique.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QA07DA03
+ 4.2 Propriétés pharmacodynamiques 
+ Le lopéramide est un dérivé opiacé synthétique qui agit comme antidiarrhéique en diminuant l'hydratation du contenu digestif et en ralentissant le transit.
+ 4.3 Propriétés pharmacocinétiques 
+ La biodisponibilité du lopéramide par voie orale est d'environ 20 % chez le chien. Il existe un cycle entérohépatique important qui entraîne une distribution quasi exclusive au niveau du tube digestif.
+ Chez le rat, le lopéramide est métabolisé au niveau du foie et de l'intestin. L'élimination se fait essentiellement par voie fécale sous forme de métabolites et sous forme inchangée.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Sans objet
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ 5.3 Précautions particulières de conservation 
+ A conserver à une température ne dépassant pas 30°C.
+ 5.4 Nature et composition du conditionnement primaire 
+ Plaquette thermoformée PVC/aluminium de 12 comprimés pelliculés quadrisécables
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ DOMES PHARMA
+3 RUE ANDRE CITROEN
+63430 PONT DU CHATEAU 
+FRANCE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/9555685 1/2004
+Boîte de 1 plaquette thermoformée de 12 comprimés pelliculés quadrisécables
+Boîte de 2 plaquettes thermoformées de 12 comprimés pelliculés quadrisécables
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 03/12/2004 - 06/10/2009
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 20/10/2023
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

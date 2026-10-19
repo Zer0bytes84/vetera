@@ -1,0 +1,381 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=ALVEGESIC+VET.+10+MG%2FML%2C+SOLUTION+INJECTABLE+POUR+CHEVAUX%2C+CHIENS+ET+CHATS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ ALVEGESIC VET. 10 MG/ML, SOLUTION INJECTABLE POUR CHEVAUX, CHIENS ET CHATS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL contient :
+ Substance(s) active(s) : 
+ Butorphanol
+ 10 mg
+ (équivalant à 14,58 mg de tartrate de butorphanol)
+ Excipient(s): 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Chlorure de benzéthonium
+ 0,10 mg
+ Acide citrique monohydraté
+ /
+ Citrate de sodium
+ /
+ Chlorure de sodium
+ /
+ Eau pour préparation injectable
+ /
+ Solution limpide et incolore
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chevaux, chiens et chats.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ CHEVAUX
+ Comme analgésique : pour soulager les douleurs abdominales modérées à sévères (atténue les douleurs abdominales associées aux coliques d’origine gastro-intestinale).
+ Comme sédatif : pour la sédation après administration de certains agonistes des adrénorécepteurs alpha-2 (détomidine, romifidine).
+ CHIENS
+ Comme analgésique : pour soulager les douleurs viscérales modérées.
+ Comme sédatif : pour la sédation, en association avec certains agonistes des adrénorécepteurs alpha-2 (médétomidine).
+ Comme pré-anesthésique : pour la pré-anesthésie, utilisé seul et en association avec l’acépromazine.
+ Comme anesthésique : pour l’anesthésie, en association avec la médétomidine et la kétamine.
+ CHATS
+ Comme analgésique pour soulager les douleurs modérées : pour l’analgésie préopératoire, en association avec acépromazine/kétamine ou xylazine/kétamine.
+ Pour l’analgésie postopératoire après les petites interventions chirurgicales.
+ Comme sédatif : pour la sédation, en association avec certains agonistes des adrénorécepteurs alpha-2 (médétomidine).
+ Comme anesthésique : pour l’anesthésie, en association avec la médétomidine et la kétamine.
+ 3.3 Contre-indications 
+ Ne pas utiliser en cas d’hypersensibilité au principe actif ou à l’un des excipients. Ne pas utiliser chez les animaux présentant un dysfonctionnement hépatique ou rénal sévère.
+ L’utilisation de butorphanol est contre-indiquée en cas de lésion cérébrale ou de lésions cérébrales organiques ainsi que chez les animaux souffrant d’une maladie respiratoire obstructive, d’un dysfonctionnement cardiaque ou d’affections spastiques.
+ Chevaux : 
+ Association butorphanol/chlorhydrate de détomidine : Ne pas utiliser chez les animaux en cours de gestation.
+ Ne pas utiliser chez les chevaux présentant une dysrythmie cardiaque ou une bradycardie préexistante.
+ L’association entraîne une réduction de la motilité gastro-intestinale et ne doit donc pas être utilisée en cas de colique associée à une obstruction.
+ En raison de l’effet dépresseur possible sur le système respiratoire, le médicament vétérinaire est contre-indiqué chez les chevaux souffrant d’emphysème.
+ Association butorphanol/romifidine : 
+ L’association ne doit pas être utilisée durant le dernier mois de la gestation.
+ 3.4 Mises en garde particulières 
+ Le butorphanol est prévu pour être utilisé lorsqu’une analgésie de courte durée (chevaux, chiens) ou une analgésie de courte à moyenne durée (chats) est nécessaire.
+ Le butorphanol utilisé seul ne permet pas d’obtenir une sédation profonde chez le chat.
+ Chez le chat, la réponse au butorphanol peut varier d’un animal à l’autre. En l’absence de réponse analgésique adéquate, un autre agent analgésique devra être utilisé.
+ Chez le chat, l’augmentation de la dose ne permettra pas d’amplifier l’intensité des effets recherchés ni de les prolonger.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Avant d’utiliser la moindre association médicamenteuse, consulter les contre-indications et les mises en garde figurant dans le Résumé des Caractéristiques du Produit ou les fiches de données des autres produits.
+ En raison de ses propriétés antitussives, le butorphanol peut entraîner une accumulation de mucus dans les voies respiratoires. Par conséquent, chez les animaux atteints de maladies respiratoires associées à une production accrue de mucus ou traités par des expectorants, le butorphanol devra être utilisé uniquement sur la base d’une analyse des bénéfices/risques par le vétérinaire responsable.
+ Pour l’utilisation concomitante d’autres agents dépresseurs du système nerveux central, se reporter à la rubrique 3.8.
+ Pour l’association de butorphanol et d’agonistes des adrénorécepteurs-α2, se reporter à la rubrique 3.8. Une prudence particulière est requise en cas d’administration du médicament vétérinaire chez des animaux dont les fonctions hépatique ou rénale sont altérées.
+ POUR TOUTES LES ESPÈCES CIBLES
+ La sécurité du médicament vétérinaire chez les chiots, les chatons et les poulains n'a pas été établie. L'utilisation du produit dans ces groupes doit se faire sur la base d'une analyse bénéfice/risque par le vétérinaire responsable.
+ Chevaux : 
+ - L’utilisation du médicament vétérinaire à la dose recommandée peut provoquer une ataxie transitoire et/ou une excitation.
+ - Par conséquent, afin d’éviter toute blessure chez l’animal et les personnes qui le traitent, le local dans lequel le cheval recevra le traitement doit être soigneusement choisi.
+ Chiens : 
+ - Lorsque le médicament vétérinaire est administré par injection intraveineuse, il doit être injecté lentement. Ne pas l’injecter en bolus.
+ - Chez les chiens présentant une mutation du gène MDR1, réduire la dose de 25 à 50 %.
+ Chats : 
+ Lorsque le médicament vétérinaire est administré par injection intraveineuse, il doit être injecté lentement. Il est recommandé d’utiliser des seringues à insuline ou des seringues graduées de 1 mL.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Le butorphanol a une activité de type opioïde. Des précautions doivent être prises pour éviter toute (auto-)injection accidentelle de ce médicament puissant. Les effets indésirables les plus fréquents du butorphanol chez l’être humain sont les somnolences, la sudation, les nausées, les étourdissements et les vertiges, qui peuvent survenir à la suite d’une auto-injection accidentelle. En cas d’auto-injection accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquetage.
+ NE PAS CONDUIRE. Les effets peuvent être contrés à l’aide d’un antagoniste opioïde (par exemple : la naloxone). En cas de projections sur la peau ou dans les yeux, rincer à l’eau immédiatement.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chevaux : 
+ Très fréquent
+ ( > 1 animal / 10 animaux traités):
+ Ataxie 1,2 
+ Sédation³
+ Fréquence indéterminée
+ (ne peut pas être estimé à partir des données disponibles) :
+ Excitation 4 
+ Agitation
+ Dépression cardiaque
+ Troubles du tube digestif 5 
+ FrissonsDépression respiratoire
+ 1 Légère, peut persister pendant 3 à 10 minutes, peut durer 1 à 2 heures dans certains cas.
+ 2 Légère à sévère, peut être rencontrée en association avec la détomidine, mais des études cliniques ont montré que les chevaux ne sont pas susceptibles de tomber. Les précautions habituelles doivent être observées pour éviter l'automutilation.
+ 3 Peut survenir chez environ 15 % des chevaux
+ 4 Effets locomoteurs excitateurs après l'injection d'un bolus IV à la dose maximale recommandée (0,1 mg/kg de poids corporel)
+ 5 Aucune réduction du temps de transit gastro-intestinal n'est observée. Ces effets dépendent de la dose et sont généralement mineurs et transitoires.
+ Chiens : 
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Diarrhée
+ Ataxie 1 
+ Anorexie
+ Fréquence indéterminée
+ (ne peut pas être estimé à partir des données disponibles) :
+ Douleur au point d'injection 2 
+ Dépression cardiaque 3,4 
+ Troubles du tube digestif 5 
+ Sédation 6 
+ Dépression respiratoire 3,4 
+ 1 Signe clinique transitoire.
+ 2 Douleur localisée à la suite d'une injection intramusculaire.
+ 3 Comme en témoigne une diminution de la fréquence respiratoire, le développement d'une bradycardie et une diminution de la pression diastolique peuvent survenir. Le degré de dépression est dose-dépendant. L’extension de la dépression est dose-dépendant. La naloxone peut être utilisée comme antidote.
+ 4 Une dépression cardiopulmonaire modérée à sévère peut survenir lors d'une injection intraveineuse rapide.
+ 5 Réduction de la motilité gastro-intestinale.
+ 6 Intensité légère
+ Chats : 
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Diarrhée
+ Ataxie
+ Anorexie
+ Fréquence indéterminée
+ (ne peut pas être estimé à partir des données disponibles) :
+ Douleur au point d'injection 1 
+ Agitation 2 
+ Mydriase
+ Sédation 2 
+ Dépression respiratoire 3 
+ Dysphorie
+ 1 Douleur localisée à la suite d'une injection intramusculaire.
+ 2 Intensité légère
+ 3 La naloxone peut être utilisée comme antidote
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la rubrique « coordonnées » de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation et lactation :
+ La sécurité du médicament vétérinaire n’a pas été établie chez les espèces cibles en cas de gravidité et de lactation. L’utilisation durant la gestation et la lactation n’est pas recommandée.
+ Concernant l’utilisation du médicament vétérinaire en association avec les agonistes des adrénorécepteurs-alpha 2, voir la rubrique 3.3.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Le butorphanol doit être utilisé avec prudence lorsqu’il est associé à d’autres sédatifs ou analgésiques (voir la rubrique 3.5). Afin d’éviter tout effet synergétique indésirable, réduire la posologie du butorphanol et des agonistes alpha comme il convient.
+ L’utilisation de butorphanol peut avoir une incidence sur l’administration ultérieure d’autres analgésiques, par exemple des doses plus élevées d’analgésiques opioïdes agonistes purs comme la morphine ou l’oxymorphone pourront être nécessaires.
+ En raison de ses propriétés antagonistes des récepteurs aux opiacés mu (µ), le butorphanol peut supprimer l’effet analgésique des agonistes purs des récepteurs opioïdes mu (µ) chez les animaux ayant reçu antérieurement ces agents.
+ L’utilisation concomitante d’autres agents dépresseurs du système nerveux central pourrait potentialiser les effets du butorphanol, aussi ces médicaments doivent être utilisés avec prudence. Une dose réduite de butorphanol doit être utilisée lorsque ces agents sont utilisés conjointement.
+ L’association du butorphanol et d’agonistes des récepteurs alpha2-adrénergiques doit être utilisée avec prudence chez les animaux présentant une maladie cardiovasculaire. L’utilisation concomitante d’anticholinergiques, comme l’atropine, doit être envisagée.
+ 3.9 Voies d'administration et posologie 
+ Chevaux : Voie intraveineuse (IV)
+ Chiens et chats : Voie intraveineuse (IV), intramusculaire (IM) et sous-cutanée (SC).
+ Afin de garantir une posologie correcte, le poids corporel doit être déterminé aussi précisément que possible.
+ CHEVAUX 
+ Pour l’analgésie 
+ Les effets analgésiques apparaissent dans les 15 minutes suivant l’injection et subsistent pendant environ 2 heures.
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg
+ Dose d’Alvegesic vet. 10 mg/mL 
+ mL/kg de poids corporel 
+ Remarques
+ IV
+ 0,10
+ 0,01 mL 
+ La dose peut être renouvelée au bout de 3 à 4 heures. La durée de traitement ne doit pas dépasser 48 heures.
+ Pour la sédation (voie intraveineuse) en association avec d’autres médicaments 
+ Sédatif associé
+ (administré 5 minutes avant Alvegesic vet. 10 mg/mL Solution injectable)
+ Dose IV de l’agent associé
+ mg/kg de poids corporel
+ Dose IV de butorphanol
+ mg/kg de poids corporel
+ Dose IV 
+ Alvegesic vet. 10 mg/mL 
+ mL/100kg de poids corporel 
+ Chlorhydrate de détomidine*
+ 0,012
+ 0,025
+ 0,25 mL/100 kg de poids corporel 
+ Romifidine
+ 0,04-0,12
+ 0,02
+ 0,20 mL/100 kg de poids corporel 
+ * L’expérience clinique a montré qu’une dose totale de 5 mg de chlorhydrate de détomidine et 10 mg de butorphanol permet d’obtenir une sédation efficace et sûre chez les chevaux dont le poids corporel dépasse 200 kg.
+ CHIENS 
+ Pour l’analgésie 
+ Les effets analgésiques sont observés dans les 15 minutes suivant l’injection.
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic vet. 10 mg/mL 
+ mL/kg de poids corporel 
+ Remarques
+ IV,
+ IM ou
+ SC
+ 0,20-0,30
+ 0,02–0,03 mL 
+ Éviter toute injection IV rapide (voir la rubrique 3.6). Administrer 15 minutes avant la fin de l’anesthésie afin d’assurer l’analgésie en phase de réveil. Renouveler la dose si nécessaire.
+ Pour la sédation en association avec d’autres médicaments 
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic vet. 
+ 10 mg/mL 
+ mL/kg de poids corporel 
+ Dose de chlorhydrate de médétomidine
+ mg/kg de poids corporel
+ Remarque
+ IM ou
+ IV
+ 0,1
+ 0,01 mL 
+ 0,01-0,025
+ (dépend du niveau de sédation recherché)
+ Attendre 20 minutes pour qu’une sédation profonde s’installe avant de commencer l’intervention.
+ Comme prémédication/pré-anesthésique 
+ 1. lorsque Alvegesic vet 10 mg/mL solution injectable est utilisé seul :
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose 
+ d’Alvegesic vet 10 mg/mL 
+ mL/kg de poids corporel 
+ Voie d’administration
+ Moment de l’administration
+ 0,1-0,20
+ 0,01-0,02 mL 
+ IV, IM ou SC
+ 15 minutes avant induction
+ 2. lorsque Alvegesic vet 10 mg/mL solution injectable est utilisé en association avec 0,02 mg/kg d’acépromazine :
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic vet 10 mg/mL 
+ mL/kg de poids corporel 
+ Voie d’administration
+ Moment de l’administration
+ 0,10*
+ 0,01 mL* 
+ IV ou IM
+ Attendre au moins 20 minutes pour le début de l’action, le délai entre la prémédication et l’induction étant, lui, flexible, entre 20 et 120 minutes
+ * La dose peut être portée à 0,2 mg/kg (équivalant à 0,02 mL/kg) si l’animal souffre déjà avant le début de la procédure ou si une analgésie plus puissante est requise pendant l’intervention.
+ Pour l’anesthésie, en association avec la médétomidine et la kétamine 
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic vet 10 mg/mL 
+ mL/kg de poids corporel 
+ Dose de médétomidine
+ mg/kg de poids corporel
+ Dose de kétamine
+ mg/kg de poids corporel
+ Remarque
+ IM
+ 0,10
+ 0,01 mL 
+ 0,025
+ 5,0*
+ L’utilisation d’atipamézole pour inverser les effets de l’anesthésie n’est pas recommandée. 
+ * La kétamine doit être administré 15 minutes après l’administration IM de l’association butorphanol/médétomidine.
+ Suite à l’administration IM de l’association du médicament vétérinaire avec la médétomidine, le passage en position couchée et la perte du réflexe myotatique de rétraction de la patte surviennent respectivement au bout de 6 minutes et 14 minutes environ. Suite à l'administration de la kétamine, le réflexe myotatique de rétraction de la patte réapparaît au bout de 53 minutes environ, le passage en décubitus sternal 35 minutes plus tard et en position debout encore 36 minutes plus tard.
+ CHATS 
+ Pour l’analgésie 
+ Préopératoire : 
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic 
+ vet. 10 mg/mL 
+ mL/kg de poids corporel 
+ Remarques
+ IM ou SC
+ 0,4
+ 0,04 mL 
+ Administrer 15 à 30 minutes avant d’injecter les agents IV destinés à induire l’anesthésie.
+ Administrer 5 minutes avant l’induction en cas d’utilisation d’agents IM pour l’induction de l’anesthésie, comme les associations IM d’acépromazine/kétamine ou xylazine/kétamine.
+ Les études de modèles précliniques et les essais cliniques de terrain chez le chat ont montré que l’effet analgésique du tartrate de butorphanol est observé dans les 20 minutes.
+ Post-opératoire : 
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic 
+ vet. 10 mg/mL 
+ mL/kg de poids corporel 
+ Remarque
+ SC ou IM
+ 0,4
+ 0,04 mL 
+ Administrer 15 minutes avant le réveil.
+ IV
+ 0,1
+ 0,01 mL 
+ Administrer 15 minutes avant le réveil.
+ Pour la sédation en association avec d’autres médicaments 
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic vet. 
+ 10 mg/mL 
+ mL/kg de poids corporel 
+ Dose de chlorhydrate de médétomidine
+ mg/kg de poids corporel
+ Remarque
+ IM ou SC
+ 0,4
+ 0,04 mL 
+ 0,05
+ Un anesthésique en infiltration locale doit être utilisé pour suturer la plaie.
+ Pour l’anesthésie, en association avec la médétomidine et la kétamine 
+ Voie d’administration
+ Dose de butorphanol
+ mg/kg de poids corporel
+ Dose d’Alvegesic 
+ vet 10 mg/mL 
+ mg/kg de poids corporel 
+ Dose de médétomidine
+ mg/kg de poids corporel
+ Dose de kétamine
+ mg/kg de poids corporel
+ Remarques
+ IM
+ 0,40
+ 0,04 mL 
+ 0,08
+ 5,0*
+ Le passage en position couchée et la perte du réflexe de retrait de la patte surviennent respectivement dans les 2-3 minutes et 3 minutes après l’injection.
+ L’inversion de l’anesthésie à l’aide d’atipamézole entraîne la réapparition du réflexe de retrait de la patte 2 minutes plus tard, le passage en décubitus sternal 6 minutes plus tard et en position debout 31 minutes plus tard.
+ IV
+ 0,10
+ 0,01 mL 
+ 0,04
+ 1,25-2,50
+ (selon le niveau de sédation recherché)
+ L’inversion de l’anesthésie à l’aide d’atipamézole entraîne la réapparition du réflexe de retrait de la patte 4 minutes plus tard, le passage en décubitus sternal 7 minutes plus tard et en position debout 18 minutes plus tard.
+ * La kétamine doit être administrée 15 minutes après l’injection IM de l’association butorphanol/médétomidine.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ La principale conséquence du surdosage est une dépression respiratoire. Cet effet peut être inversé à l’aide de naloxone. Pour inverser les effets des associations avec la détomidine/médétomide, l’atipamézole peut être utilisé, sauf si une association de butorphanol, médétomidine et kétamine a été injectée par voie intramusculaire pour obtenir une anesthésie chez le chien. Dans ce cas précis, l’atipamézole ne doit pas être utilisé (voir la rubrique 3.9).
+ Les autres signes éventuels d’un surdosage chez le cheval sont notamment la nervosité/l’excitabilité, les tremblements musculaires, l’ataxie, l’hypersalivation, la réduction de la motilité gastro-intestinale et les convulsions.
+ Chez le chat, les principaux signes de surdosage sont l’incoordination, la salivation et des convulsions de faible intensité.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Chevaux : Viande et abats : Zéro jour
+ Lait : Zéro heure
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QN02AF01
+ 4.2 Propriétés pharmacodynamiques 
+ Le butorphanol est un médicament opioïde agoniste/antagoniste doté d’une activité agoniste intrinsèque au niveau du récepteur opioïde κ et d’une activité antagoniste au niveau du récepteur opioïde μ. L’activité des opioïdes endogènes et exogènes se produit par le biais de la liaison avec les récepteurs opioïdes situés dans le cerveau, la moelle épinière et le système périphérique. L’activation des récepteurs opioïdes est associée à des modifications de la conduction ionique et des interactions avec la protéine G, aboutissant à l’inhibition de la transmission de la douleur.
+ 4.3 Propriétés pharmacocinétiques 
+ Après administration parentérale, l’absorption du médicament vétérinaire est rapide et pratiquement totale, les pics de concentration sérique étant atteints au bout de 0,5-1,5 heures. Le volume de distribution apparent est important (V d > 1l/kg) et le produit est largement diffusé chez l’animal. Le butorphanol subit une métabolisation hépatique extensive. Les métabolites (hydroxybutorphanol et norbutorphanol) n’ont à priori aucune activité pharmacologique. En cas d’insuffisance hépatique cliniquement significative, la dose de butorphanol doit donc être réduite et/ou l’intervalle d’administration doit être prolongé.
+ L’élimination plasmatique du médicament sous forme inchangée est rapide chez les animaux. Le médicament vétérinaire est excrété principalement par l’intermédiaire des reins. Seuls 10-14 % du butorphanol administré par voie parentérale sont éliminés par excrétion biliaire.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ En l’absence d’études de compatibilité, ce médicament vétérinaire ne doit pas être mélangé avec d’autres médicaments vétérinaires.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 4 ans
+ Durée de conservation après première ouverture du conditionnement primaire : 28 jours
+ 5.3 Précautions particulières de conservation 
+ Conserver le flacon dans l’emballage extérieur de façon à la protégerde la lumière. Ne pas conserver au réfrigérateur ou ne pas congeler.
+ 5.4 Nature et composition du conditionnement primaire 
+ Boîte en carton contenant 1 flacon en verre (Type II) de 10 mL avec un bouchon en caoutchouc bromobutyle et un opercule en aluminium.
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ VMD
+HOGE MAUW 900
+2370 ARENDONK 
+BELGIQUE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/3493749 9/2011
+Boîte en carton contenant 1 flacon en verre de 10 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 23/05/2011 - 28/02/2014
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 21/06/2024
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

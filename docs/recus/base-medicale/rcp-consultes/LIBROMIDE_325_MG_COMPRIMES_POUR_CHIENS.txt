@@ -1,0 +1,147 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=LIBROMIDE+325+MG+COMPRIMES+POUR+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ LIBROMIDE 325 MG COMPRIMES POUR CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Chaque comprimé contient :
+ Substance active : 
+ Bromure de potassium 325 mg
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Lactose monohydraté
+ Cellulose microcristalline
+ Stéarate de magnésium
+ Acide stéarique
+ Saccharine sodique
+ Comprimé rond biconvexe blanc de 9,5 mm de diamètre avec une barre de sécabilité sur une face.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Agent anti-épileptique à utiliser en complément du phénobarbital dans le contrôle des cas réfractaires d'épilepsie chez le chien.
+ 3.3 Contre-indications 
+ Ne pas utiliser chez les chiens souffrant d'insuffisance rénale sévère.
+ Ne pas utiliser en cas d'hypersensibilité à la substance active ou à l'un des excipients.
+ 3.4 Mises en garde particulières 
+ Il est recommandé de ne pas changer le régime alimentaire du chien pendant le traitement en raison de l'effet de la prise de chlorure sur les concentrations sériques de bromure (voir rubrique 3.8).
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Une interruption brutale du traitement peut déclencher des crises.
+ En cas d'insuffisance rénale, l'excrétion du bromure est réduite. Afin de prévenir l'accumulation de bromure, et une surdose relative de bromure de potassium (voir rubrique 3.10), administrez une dose réduite du médicament vétérinaire et surveillez la concentration sérique de bromure attentivement.
+ Une réduction de la prise de chlorure peut entraîner une intoxication au bromure (voir rubrique 3.8).
+ Une administration à un animal à l'estomac vide peut entraîner des vomissements.
+ Il n'est pas possible d'administrer avec précision la dose initiale recommandée de 15 mg/kg deux fois par jour aux chiens de moins de 11 kg car la dose minimale pouvant être obtenue par division du médicament vétérinaire est de 162,5 mg (voir rubrique 3.9).
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Ce produit ne doit pas être manipulé par des femmes enceintes, qui pensent être enceintes ou qui allaitent.
+ Les personnes présentant une hypersensibilité connue au bromure doivent éviter tout contact avec le médicament vétérinaire.
+ Se laver soigneusement les mains immédiatement après avoir coupé ou manipulé des comprimés.
+ Cesser la manipulation du médicament vétérinaire en cas d'apparition de signes d'irritation cutanée, y compris démangeaisons, éruption, exfoliation ou desquamation de la peau ou rougeur. En cas d'irritation de la peau ou des yeux, ou en cas d'auto-administration accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l'étiquetage.
+ Pour le médecin :
+ L'intoxication au bromure peut être soignée par l'administration de chlorure de sodium ou d'un agent chlorurétique approprié.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ Des effets secondaires potentiellement graves peuvent être associés à l'utilisation du bromure de potassium chez les chats.
+ 3.6 Effets indésirables 
+ Chiens :
+ Fréquent
+ (1 à 10 animaux / 100 animaux traités) :
+ Concentrations élevées de lipase spécifique au pancréas a 
+ Dermatite (éruption cutanée au bromure) b 
+ Polyurie
+ Polyphagie, polydipsie
+ Vomissements, nausées
+ Somnolence, ataxie c 
+ Peu fréquent
+ (1 à 10 animaux / 1 000 animaux traités) :
+ Troubles du comportement (p. ex., agitation, irritabilité)
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Diarrhée d 
+ Très rare
+ ( < 1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Pancréatite b , diarrhée hémorragique
+ Anorexie
+ Sédation e 
+ Hépatopathie
+ Dyspnée
+ Vocalisation
+ a Chez les chiens recevant du bromure de potassium en association avec du phénobarbital. Effets qui peuvent ou non être associés à des signes cliniques de pancréatite.
+ b Un traitement symptomatique peut être requis.
+ c Faiblesse des membres postérieurs et perte de coordination.
+ d Transitoire.
+ e Si le chien est sous sédation excessive, évaluez les concentrations sériques de bromure et de phénobarbital pour déterminer si la dose de l’un ou de l’autre doit être réduite.
+ Les signes cliniques indésirables susceptibles d’apparaître chez les chiens auxquels des doses plus élevées sont administrées disparaissent généralement après une réduction de la dose. Si la dose est réduite, mesurez la concentration sérique de bromure afin de veiller à ce qu’elle reste dans les limites thérapeutiques.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché ou à son représentant local, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation et lactation :
+ L’innocuité du médicament vétérinaire n'a pas été établie en cas de gestation ou de lactation chez le chien. Bien qu'il n'y ait eu aucune preuve de toxicité pour la reproduction chez les animaux de laboratoire, le bromure peut traverser le placenta, et des cas d'intoxication néonatale au bromure ont été rapportés chez les humains. En l'absence de données spécifiques, la poursuite de l'utilisation du produit pendant la gravidité doit être assujettie à la réalisation d'une évaluation des risques/bénéfices par le vétérinaire responsable.
+ Étant donné que le bromure peut être excrété dans le lait, surveiller les chiots allaités pour tout signe de somnolence/effets sédatifs ; si nécessaire, envisager un sevrage précoce, ou une méthode d'allaitement artificiel.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Le bromure et le chlorure sont tous deux réabsorbés par les reins. L'augmentation de la prise de chlorure (sel) dans l'alimentation fera baisser la réabsorption du bromure, entraînant une baisse des concentrations sériques de bromure, ce qui pourrait occasionner des crises. A l'inverse, passer à un régime alimentaire pauvre en chlorure fera augmenter les concentrations sériques de bromure, ce qui peut entraîner une intoxication au bromure (voir rubrique 3.10).
+ Les diurétiques de l'anse (tels que le furosémide) peuvent augmenter l'excrétion du bromure et réduire ainsi les concentrations sériques de bromure.
+ L'administration de liquides ou médicaments contenant du chlorure peut réduire les concentrations sériques de bromure.
+ Le bromure agit en synergie avec d'autres médicaments GABA-ergiques, tels que le phénobarbital.
+ 3.9 Voies d'administration et posologie 
+ Voie orale. Administrer avec de la nourriture.
+ Administrer aux chiens souffrant d'épilepsie réfractaire, lorsque le contrôle des crises n'est pas satisfaisant en dépit d'un traitement au phénobarbital approprié, lorsque les concentrations sériques de phénobarbital sont stables dans les limites thérapeutiques.
+ La dose doit être titrée en fonction du chien traité, car la dose requise dépendra de la nature et de la gravité de la maladie sous-jacente.
+ Administrer avec les aliments à une dose initiale de 15 mg/kg du poids corporel deux fois par jour (soit une dose quotidienne totale de 30 mg/kg). Une administration deux fois par jour est recommandée afin de réduire le risque de troubles gastro-intestinaux.
+ Les comprimés peuvent être divisés en deux parties.
+ En raison de la demi-vie de 24 jours du bromure, il peut falloir plusieurs semaines ou mois avant de parvenir à des concentrations sériques stables. Pendant au moins les trois premiers mois du traitement, mesurer les concentrations sériques de bromure toutes les 4 semaines. La concentration sérique thérapeutique de bromure anticipée (lorsqu'il est administré en conjonction avec du phénobarbital) est de 800 à 2000 µg/mL. La dose doit être ajustée en tenant compte de la fréquence des crises, de la demi-vie du bromure et de la concentration sérique de bromure.
+ Un suivi à long terme des concentrations sériques de bromure (et du phénobarbital associé) doit être effectué si le cas individuel le justifie cliniquement.
+ Une surveillance étroite des effets secondaires est recommandée lorsque les concentrations sériques de bromure sont élevées.
+ L'utilisation chez des chiens dont le poids corporel est inférieur à 11 kg doit faire l'objet d'une évaluation des risques/bénéfices (voir rubrique 3.5).
+ Afin de garantir une posologie appropriée, le poids corporel doit être déterminé aussi précisément que possible.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Des signes cliniques d'intoxication au bromure tels que l'ataxie, la somnolence, la nausée et la pancréatite peuvent apparaître chez les chiens à qui une haute dose est administrée.
+ Si un surdosage est suspecté, réduire immédiatement le dosage. Suivre de près la concentration sérique de bromure afin d'établir une concentration thérapeutique appropriée.
+ En cas de surdosage, et si cela est nécessaire et approprié, administrer une solution de chlorure de sodium à 0,9 % en intraveineuse pour faire baisser les concentrations sériques de bromure.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QN03AX91.
+ 4.2 Propriétés pharmacodynamiques 
+ Le bromure de potassium est un antispasmodique. Le bromure remplace le chlorure dans tous les fluides corporels. Il est en compétition avec le transport du chlorure à travers les membranes des cellules nerveuses et inhibe le transport du sodium, provoquant ainsi l'hyperpolarisation des membranes. Cette hyperpolarisation augmente le seuil épileptogène et prévient la propagation des décharges épileptiques. Le bromure agit sur le transport actif à travers la membrane des cellules gliales et affecte les mouvements passifs des ions en rivalisant avec le chlorure pour les canaux anioniques dans les membranes post-synaptiques qui sont activés par les neurotransmetteurs inhibiteurs. Cela potentialise l'effet de GABA, qui se traduit par une activité synergique du bromure avec d'autres médicaments qui ont une activité GABA-ergique.
+ 4.3 Propriétés pharmacocinétiques 
+ La pharmacocinétique du bromure de potassium a été étudiée chez le chien. La demi-vie est d'environ 24 jours. En raison de sa demi-vie extrêmement longue, il peut prendre plusieurs semaines/mois avant d'arriver à des concentrations à l'état d'équilibre. Le bromure de potassium est bien absorbé par voie orale, avec un pic d'absorption en environ 1,5 heure. Une fois ingéré, le sel du bromure de potassium se dissocie, et l'ion bromure est rapidement absorbé par le tractus gastro-intestinal.
+ Après absorption, l'ion bromure se diffuse rapidement (comme le fait le chlorure) dans tout l'espace extracellulaire et dans les cellules. Le chlorure est diffusé passivement à travers la plupart des membranes cellulaires selon le potentiel transmembranaire, et il est probable que le bromure se diffuse de la même manière. Tandis que la concentration de bromure augmente dans l'organisme, la concentration de chlorure diminue proportionnellement.
+ Le bromure n'est pas métabolisé par l'organisme, et entre dans celui-ci et quitte celui-ci uniquement sous forme d'anion monovalent. L'excrétion du bromure s'effectue principalement par les reins, où il rivalise avec le chlorure pour la réabsorption tubulaire.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Sans objet.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ Durée de conservation après première ouverture du conditionnement primaire : 3 mois.
+ Utiliser tout comprimé coupé dans les 12 heures.
+ 5.3 Précautions particulières de conservation 
+ A conserver à une température ne dépassant pas 25°C.
+ Conserver le pot soigneusement fermé de façon à le protéger de l'humidité.
+ 5.4 Nature et composition du conditionnement primaire 
+ Pots cylindriques en polypropylène opaque blanc, avec couvercles blancs en polyéthylène opaque à l’épreuve des enfants ou inviolables.
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ DECHRA REGULATORY B.V.
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/3104847 5/2013
+Boîte de 1 pot de 100 comprimés
+Boîte de 1 pot de 500 comprimés
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 06/11/2013
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 29/04/2026
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments (https://medicines.health.europa.eu/veterinary).

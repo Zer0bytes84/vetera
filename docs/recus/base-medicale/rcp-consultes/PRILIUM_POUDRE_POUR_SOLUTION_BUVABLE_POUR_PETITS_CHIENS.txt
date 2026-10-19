@@ -1,0 +1,140 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=PRILIUM+POUDRE+POUR+SOLUTION+BUVABLE+POUR+PETITS+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ PRILIUM POUDRE POUR SOLUTION BUVABLE POUR PETITS CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Poudre : 
+ Un flacon (0,880 g) contient :
+ Substance active : 
+ 138 mg d’imidapril équivalant à 150 mg de chlorhydrate d’imidapril
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Benzoate de sodium (E211)
+ 30 mg
+ Mannitol
+ Poudre blanche.
+ Solution reconstituée avec de l’eau du robinet (voir rubrique 3.9 Voies d’administration et posologie) 
+ Chaque mL contient :
+ Substance active : 
+ 4,6 mg d’imidapril équivalant à 5 mg de chlorhydrate d’imidapril
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Benzoate de sodium (E211)
+ 1,0 mg
+ Mannitol
+ Solution claire et incolore.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens pesant plus de 4 kg.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Traitement de l'insuffisance cardiaque modérée à sévère, causée par une régurgitation mitrale ou par une cardiomyopathie dilatée.
+ 3.3 Contre-indications 
+ Ne pas utiliser en cas d'hypotension.
+ Ne pas utiliser en cas d'insuffisance rénale aiguë.
+ Ne pas utiliser en cas de cardiopathie congénitale.
+ Ne pas utiliser en cas d’hypersensibilité à la substance active, à un inhibiteur de l’ECA, ou à l’un des excipients.
+ Ne pas utiliser en cas de sténose hémodynamique (sténose aortique, sténose de la valve mitrale, sténose pulmonaire).
+ Ne pas utiliser en cas de cardiomyopathie hypertrophique obstructive.
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ L'usage des inhibiteurs de l'enzyme de conversion de l'angiotensine chez un chien présentant une hypovolémie ou une déshydratation peut provoquer une hypotension sévère. Dans de tels cas, la balance hydroélectrolytique doit être restaurée immédiatement et le traitement suspendu jusqu'à un retour à la normale.
+ Les paramètres utilisés dans la surveillance de la fonction rénale doivent être contrôlés en début de traitement puis à intervalles réguliers.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ En cas d’ingestion accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ Se laver soigneusement les mains après administration du produit.
+ En cas de projection oculaire accidentelle, rincer abondamment à l'eau.
+ Le flacon doit être fermé en utilisant le bouchon sécurité enfant avant d'être mis au réfrigérateur.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens :
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Diarrhée 1 
+ Hypotension 1 
+ Fatigue 1 , anorexie 1 
+ Vertiges 1 
+ Très rare
+ ( < 1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Vomissements 1 
+ 1 Dans ces cas, le traitement doit être suspendu jusqu’au retour à un état physiologique normal. 
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir la notice pour les coordonnées respectives.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ L’innocuité du médicament vétérinaire n’a pas été établie en cas de gestation et lactation.
+ Gestation et lactation :
+ Les études menées sur les animaux de laboratoire (rats, lapins) n'ont pas révélé d'effets tératogènes, embryotoxiques ou maternotoxiques ou d'effets sur la performance reproductive lorsque l'imidapril a été administré à la dose thérapeutique.
+ Ne pas utiliser chez les chiennes gestantes ou allaitantes ou chez les chiens destinés à la reproduction.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Dans l'essai clinique, le produit a été utilisé avec du furosémide et de la digoxine et aucun problème de tolérance n'a été relevé.
+ Toutefois, les diurétiques et un régime hyposodé potentialisent l'action des inhibiteurs de l'ECA en activant le système rénine-angiotensine-aldostérone (SRAA). Des diurétiques utilisés à haute dose, ainsi qu'un régime hyposodé, sont par conséquent déconseillés pendant un traitement avec des inhibiteurs de l'ECA, afin d'éviter l'apparition d'une hypotension avec des signes cliniques tels qu'apathie, ataxie, syncopes rares et insuffisance rénale. En cas d'administration concomitante avec des diurétiques d'épargne potassique, la kaliémie doit être surveillée en raison d'un risque d'hyperkaliémie.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ La dose recommandée de chlorhydrate d’imidapril est de 0,25 mg/kg (correspondant à 0,23 mg d’imidapril/kg) une fois par jour par voie orale, soit 0,05 mL de médicament vétérinaire/kg pour les chiens de plus de 4 kg.
+ Afin de garantir une posologie appropriée, le poids corporel doit être déterminé aussi précisément que possible.
+ Le médicament vétérinaire peut être administré soit directement dans la gueule de l'animal à jeun ou pendant les repas, soit sur la nourriture.
+ Préparation de la solution buvable : après avoir enlevé le manchon et le bouchon du flacon contenant la poudre, verser de l'eau non gazeuse jusqu'au trait de jauge (30 mL), enfoncer le bouchon de sécurité puis visser à fond. La solution reconstituée doit être claire et incolore.
+ Administration : après avoir dévissé le bouchon de sécurité, introduire la seringue graduée dans l'adaptateur, retourner l'ensemble et mesurer la quantité à administrer à l'aide de la seringue graduée en kg. Après administration du produit, replacer le bouchon de sécurité sur le flacon et rincer la seringue avec de l'eau. Replacer le flacon au réfrigérateur.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Un traitement répété par voie orale à des doses allant jusqu'à 5 mg/kg/j d'imidapril n'a entraîné aucun signe d'intolérance chez des chiens sains.
+ Des signes de surdosage peuvent se manifester sous la forme d'une hypotension avec apathie et ataxie. Le traitement est symptomatique.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QC09AA16.
+ 4.2 Propriétés pharmacodynamiques 
+ L'imidapril est une pro-drogue qui est hydrolysée in vivo en un métabolite actif, l'imidaprilate. L'imidaprilate inhibe l'enzyme de conversion de l'angiotensine (ECA). Cette enzyme catalyse la conversion plasmatique et tissulaire de l'angiotensine I en angiotensine II et inhibe la dégradation de la bradykinine. Comme l'angiotensine II possède une puissante action vasoconstrictrice, tandis que la bradykinine est un vasodilatateur, la diminution de la synthèse d'angiotensine II et l'inactivation de la dégradation de la bradykinine conduisent à une action vasodilatatrice.
+ L'imidapril réduit la pré-charge et la post-charge et abaisse la pression artérielle sans augmentation de la fréquence cardiaque.
+ 4.3 Propriétés pharmacocinétiques 
+ Après administration orale chez le chien, l'imidapril est rapidement absorbé par le tractus digestif et atteint sa concentration plasmatique maximale en moins d'une heure. Le temps de demi-vie de l'imidapril est d'environ 2 heures.
+ L'imidapril est hydrolysé principalement dans le foie et dans les reins en son métabolite actif, l'imidaprilate. Le pic de concentration plasmatique d'imidaprilate est atteint en 5 heures environ et son temps de demi-vie est supérieur à 10 heures.
+ La biodisponibilité de l'imidapril et de l'imidaprilate est diminuée par l'administration concomitante de nourriture.
+ Les taux de fixation aux protéines plasmatiques de l'imidapril et de l'imidaprilate sont modérés (85 % et 53 % respectivement).
+ Après administration orale d'un composé radioactif, 40 % de la radioactivité totale est excrétée dans les urines et 60 % dans les fèces.
+ Lors d'administrations répétées, les concentrations plasmatiques d'imidapril sont environ trois fois plus élevées après la seconde administration qu'après la première administration, mais aucune augmentation supplémentaire n'est observée après d'autres administrations.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Aucune connue.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ Durée de conservation après reconstitution conforme aux instructions : 77 jours.
+ 5.3 Précautions particulières de conservation 
+ Avant reconstitution : A conserver à une température ne dépassant pas 25°C.
+ Après reconstitution : A conserver au réfrigérateur (entre 2°C - 8°C).
+ 5.4 Nature et composition du conditionnement primaire 
+ Conditionnement primaire :
+ - Flacon verre brun de type II
+ - Bouchon bromobutyle
+ - Seringue polypropylène à graduations noires
+ - Adaptateur de seringue polyéthylène
+ - Bouchon sécurité enfant en polyéthylène haute densité
+ Chaque boîte en carton contient un flacon (30 mL) de 0,880 g de poudre et une seringue graduée de 2 mL à graduations noires.
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ VETOQUINOL S.A.
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/7178888 9/2002
+Boîte en carton de 1 flacon de 0,880 g de poudre et 1 seringue graduée de 2 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 19/02/2002
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 10/07/2026
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments (https://medicines.health.europa.eu/veterinary).

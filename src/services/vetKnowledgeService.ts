@@ -10,6 +10,7 @@ import emergenciesData from "../data/vet-knowledge/emergencies.json";
 // Import des données JSON (Vite gère l'import JSON)
 import medicationsData from "../data/vet-knowledge/medications.json";
 import medicationsExtendedData from "../data/vet-knowledge/medications-extended.json";
+import medicationsRcpData from "../data/vet-knowledge/medications-rcp.json";
 import referenceData from "../data/vet-knowledge/reference.json";
 import speciesData from "../data/vet-knowledge/species.json";
 
@@ -36,6 +37,17 @@ export interface Medication {
     }
   >;
   tempsAttente?: Record<string, string>;
+  /** Références officielles (RCP) des données de la fiche, quand elles sont sourcées. */
+  sources?: MedicationSource[];
+}
+
+export interface MedicationSource {
+  /** Date de consultation (AAAA-MM-JJ). */
+  consulteLe: string;
+  /** Rubriques du RCP utilisées (« 3.2, 3.3, 3.9 »). */
+  sections: string;
+  titre: string;
+  url: string;
 }
 
 export interface Disease {
@@ -165,7 +177,11 @@ class VetKnowledgeService {
           additionalMedications: Medication[];
         }
       ).additionalMedications || [];
-    this.medications = [...baseMeds, ...extendedMeds];
+    // Molécules sourcées sur les RCP officiels (ANMV) : chaque fiche cite le sien.
+    const rcpMeds =
+      (medicationsRcpData as unknown as { rcpMedications: Medication[] })
+        .rcpMedications || [];
+    this.medications = [...baseMeds, ...extendedMeds, ...rcpMeds];
 
     this.diseases =
       (diseasesData as unknown as { diseases: Disease[] }).diseases || [];

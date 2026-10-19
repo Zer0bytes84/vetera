@@ -1,0 +1,120 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=GALASTOP
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ GALASTOP
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Un mL de solution contient :
+ Substance active : 
+ Cabergoline...........................................................
+ 0,05 mg
+ Excipient : 
+ Composition qualitative des excipients et autres composants 
+ Triglycérides à chaîne moyenne
+ Solution buvable en gouttes.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chiens (chiennes).
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Tarissement de la sécrétion lactée lors de lactation de pseudo-gestation.
+ 3.3 Contre-indications 
+ Ne pas administrer chez les femelles gestantes (risques d'avortement).
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Aucune chez la chienne non gestante.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Les femmes enceintes doivent manipuler le médicament vétérinaire avec précaution et éviter tout contact avec la solution.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens (chiennes)
+ Rare 
+ (1 à 10 animaux / 10 000 animaux traités) 
+ Léthargie 1 , anorexie 1 
+ Vomissement 1, 2 
+ Hypotension
+ Très rare 
+ (< 1 animal / 10 000 animaux traités, y compris les cas isolés) : 
+ Réactions allergiques (par ex. œdème, urticaire, prurit)
+ Dermatite allergique
+ Symptômes neurologiques (par ex. : somnolence, tremblements musculaires, ataxie, convulsions)
+ Hyperactivité
+ 1 modéré et transitoire
+ 2 Les vomissements ne surviennent généralement qu'après la première administration. Le cas échéant, le traitement ne doit pas être interrompu dans la mesure où il est improbable que les vomissements se reproduisent après les administrations suivantes. 
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché <ou à son représentant local>, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir également la rubrique « Coordonnées » de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ Gestation :
+ Ne pas utiliser en cas de gestation.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Aucune connue.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ 5 µg de cabergoline par kg de poids corporel, soit 0,1 mL par kg de poids corporel par jour en une seule administration quotidienne pendant 4 à 6 jours (3 gouttes = 0,1 mL).
+ La solution peut être administrée soit avec le compte-gouttes, soit avec la seringue.
+ Le médicament peut être administré soit directement dans la gueule de l'animal, soit incorporé à la nourriture.
+ Le traitement peut être recommencé en cas de rechute.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Symptômes : des vomissements peuvent apparaître.
+ Antidote : injection parentérale d'un agent antidopaminergique comme le métoclopramide.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QG02CB03.
+ 4.2 Propriétés pharmacodynamiques 
+ La cabergoline est un dérivé de l'argoline caractérisé par un effet inhibiteur de la prolactine. Cette action est puissante, sélective et de longue durée.
+ La cabergoline agit directement sur l'hypophyse antérieure par la stimulation des récepteurs dopaminergiques inhibiteurs. La cabergoline n'a pas d'autre action endocrine et est pratiquement dénuée d'effets centraux.
+ 4.3 Propriétés pharmacocinétiques 
+ Suite à l'administration orale de 5 µg de cabergoline par kg de poids corporel, la concentration plasmatique maximale est atteinte après environ 4 à 8 heures. Elle persiste pendant plusieurs jours . 
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Eviter de mélanger la solution huileuse du produit avec des produits en solution aqueuse.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ Durée de conservation après première ouverture du conditionnement primaire :
+ 6 jours (flacons de 3 mL, 7 mL et 15 mL).
+ 12 jours (flacons de 24 mL).
+ 5.3 Précautions particulières de conservation 
+ Ce médicament vétérinaire ne nécessite pas de conditions particulières de conservation.
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon verre coloré de type III
+ Bouchon aluminium
+ Bouchon polyéthylène haute densité
+ Joint polyéthylène basse densité
+ Compte-goutte : flacon polypropylène, tube verre et pompe pvc
+ Seringues polypropylène
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ CEVA SANTE ANIMALE
+10 AVENUE DE LA BALLASTIERE
+33500 LIBOURNE 
+FRANCE
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/6609046 1/1992
+Boîte de 1 flacon de 3 mL et 1 compte-gouttes
+Boîte de 1 flacon de 3 mL et 1 seringue graduée
+Boîte de 1 flacon de 7 mL et 1 compte-gouttes
+Boîte de 1 flacon de 7 mL et 1 seringue graduée
+Boîte de 1 flacon de 15 mL et 1 compte-gouttes
+Boîte de 1 flacon de 15 mL et 1 seringue graduée
+Boîte de 1 flacon de 24 mL et 1 seringue graduée
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 25/03/1992 - 26/10/2011
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 05/07/2024
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

@@ -1,0 +1,147 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=TELMITRAXX+4+MG%2FML+SOLUTION+BUVABLE+POUR+CHATS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ TELMITRAXX 4 MG/ML SOLUTION BUVABLE POUR CHATS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Chaque mL contient :
+ Substance(s) active(s) : 
+ Telmisartan …………………………………………..
+ 4,0 mg
+ Excipient(s) : 
+ Composition qualitative en excipients et autres composants 
+ Composition quantitative si cette information est essentielle à une bonne administration du médicament vétérinaire 
+ Solution de chlorure de benzalkonium
+ 0,1 mg
+ Maltitol
+ /
+ Hydroxyéthylcellulose
+ /
+ Edétate disodique
+ 1,0 mg
+ Eau, purifiée
+ /
+ Hydroxyde de sodium
+ /
+ Acide chlorhydrique, dilué
+ /
+ Solution claire et incolore à jaune pratiquement exempte de particules.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Chats.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Réduction de la protéinurie associée à l'insuffisance rénale chronique (IRC).
+ 3.3 Contre-indications 
+ Ne pas utiliser pendant la gestation ou la lactation (voir également la section 3.7).
+ Ne pas utiliser en cas d’hypersensibilité à la substance active ou à l’un des excipients.
+ 3.4 Mises en garde particulières 
+ Aucune.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ L’innocuité et l'efficacité du telmisartan n'ont pas été évaluées chez les chats de moins de 6 mois.
+ La surveillance de la pression artérielle des chats sous anesthésie auquel on administre du telmisartan est une bonne pratique clinique.
+ Une hypotension transitoire peut survenir, en raison du mode d'action du médicament vétérinaire.
+ Un traitement symptomatique, par exemple une fluidothérapie, doit être mis en place en cas de signes cliniques d'hypotension.
+ Ainsi qu’établi pour des substances agissant sur le Système Rénine-Angiotensine-Aldostérone (SRAA), une légère diminution de la numération érythrocytaire peut survenir. La numération érythrocytaire doit être surveillée pendant le traitement. Les substances agissant sur le SRAA peuvent entraîner une réduction du taux de filtration glomérulaire et dégrader la fonction rénale chez les chats souffrant d'une insuffisance rénale sévère. L’innocuité et l'efficacité du telmisartan n'ont pas été étudiées chez ces patients. Lors de l'utilisation de ce médicament vétérinaire chez des chats avec une insuffisance rénale sévère, il est recommandé de surveiller la fonction rénale (concentration de créatinine plasmatique).
+ .
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Ce produit peut provoquer des effets indésirables, tels que des maux de tête, des vertiges ou une hypotension. Éviter l'ingestion orale par les enfants. En cas d’ingestion accidentelle, demandez immédiatement conseil à un médecin et montrez-lui la notice ou l’étiquette.
+ Ce produit peut provoquer une irritation des yeux. Évitez le contact avec les yeux. En cas de contact accidentel avec les yeux, rincez les yeux à l'eau.
+ Les femmes enceintes doivent prendre des précautions particulières pour éviter tout contact avec le médicament vétérinaire, car il a été prouvé que les substances agissant sur le SRAA, telles que les antagonistes des récepteurs de l'angiotensine (ARA) et les inhibiteurs de l'ECA (IECA), ont des effets sur l'enfant à naître pendant la grossesse.
+ Le telmisartan peut provoquer des réactions allergiques. Les personnes présentant une hypersensibilité au telmisartan ou à d'autres sartans/ARA doivent éviter tout contact avec le médicament vétérinaire.
+ Se laver les mains après utilisation.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chats :
+ Rare
+ (1 à 10 animaux / 10 000 animaux traités) :
+ Signes gastro-intestinaux (régurgitations 1 , vomissements, diarrhée)
+ Très rare
+ (moins d’un animal sur 10 000 animaux traités, y compris les cas isolés) :
+ Augmentation des enzymes hépatiques².
+ Diminution de la numération érythrocytaire (voir section 3.5).
+ 1 Légères et intermittentes
+ ² Les valeurs se sont normalisées quelques jours après l'arrêt du traitement.
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d'un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l'intermédiaire d'un vétérinaire, soit au titulaire de l'autorisation de mise sur le marché ou à son représentant local, soit à l'autorité nationale compétente par l’intermédiaire du système national de notification.
+ Voir également la rubrique “Coordonnées” de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ L'innocuité du médicament vétérinaire n'a pas été établie chez les chattes reproductrices, gestantes ou allaitantes.
+ Ne pas utiliser pendant la gestation et la lactation.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Pendant le traitement concomitant avec l'amlodipine à la dose recommandée, aucun signe clinique d'hypotension n'a été observé.
+ Les données disponibles chez les chats souffrant d'IRC ne montrent pas d’interaction médicamenteuse lors de l’utilisation du telmisartan avec d'autres médicaments agissant sur le SRAA (tels que les ARA ou les IECA). L'association d'agents agissant sur le SRAA chez les chats souffrant d'IRC peut modifier la fonction rénale.
+ 3.9 Voies d'administration et posologie 
+ Voie orale.
+ La dose recommandée est de 1 mg de telmisartan/kg de poids corporel (0,25 mL/kg de poids corporel).
+ Le médicament vétérinaire doit être administré une fois par jour directement dans la bouche ou avec un peu de nourriture. Le médicament vétérinaire est une solution orale et est bien acceptée par la plupart des chats.
+ La solution doit être administrée à l'aide de la seringue doseuse fournie dans le conditionnement. La seringue s’adapte sur le flacon et possède une graduation en mL.
+ Après l'administration du médicament vétérinaire, bien fermer le flacon avec le bouchon et laver la seringue doseuse à l'eau et la laisser sécher.
+ Pour éviter toute contamination, utiliser uniquement la seringue fournie pour administrer le médicament vétérinaire.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Après l'administration de telmisartan jusqu'à 5 fois la dose recommandée pendant 6 mois à de jeunes chats adultes en bonne santé, les effets indésirables observés étaient cohérents avec ceux mentionnés dans la rubrique 3.6.
+ L'administration de telmisartan en surdose (3 à 5 fois la dose recommandée pendant 6 mois) a entraîné des baisses importantes de la pression sanguine, des diminutions de la numération érythrocytaire (effets attribuables à l'activité pharmacologique du médicament vétérinaire) et des augmentations de l'azote uréique sanguin (BUN).
+ En cas d'hypotension, un traitement symptomatique, par exemple une fluidothérapie, doit être mis en place.
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Sans objet.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QC09CA07
+ 4.2 Propriétés pharmacodynamiques 
+ Le telmisartan est un antagoniste spécifique des récepteurs de l'angiotensine II (sous-type AT 1 ), actif par voie orale, qui induit une baisse dose-dépendante de la pression artérielle chez les mammifères, dont le chat. Lors d'un essai clinique chez des chats souffrant d'une maladie rénale chronique, une diminution de la protéinurie a été observée dans les 7 jours suivant le début du traitement.
+ Le telmisartan déplace l'angiotensine II de son site de liaison sur le récepteur de sous-type AT 1 . Le telmisartan se fixe sélectivement au récepteur AT 1 et ne montre pas d'affinité pour d'autres récepteurs, y compris le récepteur AT 2 ou d'autres récepteurs AT moins caractérisés. La stimulation du récepteur AT 1 est responsable des effets pathologiques de l'angiotensine II au niveau du rein et d'autres organes associés à l'angiotensine II, tels que vasoconstriction, rétention de sodium et d'eau, accroissement de la synthèse d'aldostérone et remaniement de l’organe. Les effets associés à une stimulation du récepteur AT 2 , tels que vasodilatation, natriurèse et inhibition de la croissance cellulaire inappropriée, ne sont pas supprimés. La liaison au récepteur est de longue durée en raison de la lente dissociation du telmisartan du site de liaison au récepteur AT 1 . Le telmisartan ne montre aucune activité agoniste partielle sur le récepteur AT 1 .
+ L'hypokaliémie est associée à l'IRC, cependant le telmisartan n'affecte pas l'excrétion de potassium, comme l'a montré l'essai clinique sur les chats.
+ 4.3 Propriétés pharmacocinétiques 
+ Absorption 
+ Après administration orale de 1 mg/kg de poids corporel de telmisartan chez le chat, l’évolution dans le temps de la concentration plasmatique du composé d’origine se caractérise par une absorption rapide, avec des concentrations plasmatiques maximales (C max ) atteintes en 0,5 heure (t max ). Une augmentation proportionnelle à la dose a été observée, tant pour les valeurs de C max que pour les valeurs de l’aire sous la courbe (AUC) dans l'intervalle de doses compris entre 0,5 mg/kg à 3 mg/kg. Comme le montre l’AUC, la consommation d'aliments n'affecte pas le degré d’absorption globale du telmisartan.
+ Le telmisartan est hautement lipophile et présente une cinétique de perméabilité membranaire rapide, ce qui facilite la distribution tissulaire. Aucun effet significatif lié au sexe n'a été observé.
+ Aucune accumulation cliniquement pertinente n'a été observée après administration répétée à raison d’une fois par jour pendant 21 jours. La biodisponibilité absolue après administration orale était de 
+ 33 %.
+ Distribution 
+ Des études in vitro effectuées sur les plasmas de l’homme, de chien, de souris et de rat ont montré une forte liaison aux protéines plasmatiques (> 99,5 %), principalement à l'albumine et à l'α-1-glycoprotéine acide.
+ Métabolisme 
+ Le telmisartan est métabolisé par conjugaison du glucuronide du composé d’origine. Aucune activité pharmacologique du conjugué n'a été observée. D’après les études in vitro et ex vivo sur des microsomes hépatiques félins, il est possible de conclure que le telmisartan est bien glucuronidé chez le chat.
+ La glucuronidation a entraîné la formation du métabolite 1-O-acylglucuronide du telmisartan.
+ Élimination 
+ La demi-vie d'élimination terminale (t 1/2 ) est comprise entre 7,3 et 8,6 heures, avec une valeur moyenne de 7,7 heures.
+ Après administration orale, le telmisartan est presque exclusivement excrété dans les fèces, principalement sous forme de substance active inchangée.
+ Propriétés environnementales 
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ En l’absence d’études de compatibilité, ce médicament vétérinaire ne doit pas être mélangé avec d’autres médicaments vétérinaires.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 3 ans.
+ Durée de conservation après première ouverture du conditionnement primaire : 6 mois.
+ 5.3 Précautions particulières de conservation 
+ À conserver en dessous de 30°C.
+ Conserver dans l'emballage d'origine de façon à le protéger de la lumière.
+ 5.4 Nature et composition du conditionnement primaire 
+ Un flacon PEHD contenant 30, 60, 90 ou 200 mL.
+ Chaque flacon est fermé par un adaptateur en PEBD et un bouchon inviolable en polypropylène (PP).
+ Chaque conditionnement contient un flacon et une seringue doseuse (3 mL, corps et piston en PEBD, embout en PS).
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l'élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ ALFASAN NEDERLAND B.V.
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/2399288 9/2023
+Boîte de 1 flacon de 30 mL et une seringue
+Boîte de 1 flacon de 60 mL et une seringue
+Boîte de 1 flacon de 90 mL et une seringue
+Boîte de 1 flacon de 200 mL et une seringue
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 21/08/2023
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 16/10/2026
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l'Union sur les médicaments. ( https://medicines.health.europa.eu/veterinary )

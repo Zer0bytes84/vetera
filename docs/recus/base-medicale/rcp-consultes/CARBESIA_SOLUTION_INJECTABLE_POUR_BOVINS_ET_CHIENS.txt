@@ -1,0 +1,125 @@
+SOURCE: https://www.ircp.anmv.anses.fr/rcp.aspx?NomMedicament=CARBESIA+SOLUTION+INJECTABLE+POUR+BOVINS+ET+CHIENS
+CONSULTÉ LE: 2026-10-19 (Index des RCP, ANMV - Anses)
+
+RCP 
+ RESUME DES CARACTERISTIQUES DU PRODUIT
+ 1. NOM DU MEDICAMENT VETERINAIRE 
+ CARBESIA SOLUTION INJECTABLE POUR BOVINS ET CHIENS
+ 2. COMPOSITION QUALITATIVE ET QUANTITATIVE 
+ Chaque mL contient :
+ Substance active : 
+ Imidocarbe (sous forme de diproprionate).........
+ 85 mg
+ (Equivalant à 121,15 mg de dipropionate d’imidocarbe )
+ Excipients : 
+ Composition qualitative en excipients et autres composants 
+ Acide propionique (ajustement du pH)
+ Eau pour préparations injectables
+ Liquide aqueux clair de couleur ambre pâle.
+ 3. INFORMATIONS CLINIQUES 
+ 3.1 Espèces cibles 
+ Bovins et chiens.
+ 3.2 Indications d'utilisation pour chaque espèce cible 
+ Chez les bovins :
+ - Traitement et prophylaxie des babésioses, des anaplasmoses et des infections mixtes.
+ Chez les chiens :
+ - Traitement et prophylaxie de la babésiose.
+ 3.3 Contre-indications 
+ Aucune.
+ 3.4 Mises en garde particulières 
+ L'imidocarbe est un puissant inhibiteur de la cholinestérase. La posologie varie selon les espèces et le but recherché. Dans tous les cas, elle doit être strictement adaptée au poids de l'animal.
+ 3.5 Précautions particulières d'emploi 
+ Précautions particulières pour une utilisation sûre chez les espèces cibles 
+ Ne pas administrer par voie intraveineuse.
+ Respecter strictement les doses indiquées et éviter l'association avec d'autres babésicides.
+ L'administration des posologies les plus élevées peut être douloureuse et provoquer des réactions de défense chez les animaux. Certains chiens sont particulièrement sensibles à cette douleur.
+ Précautions particulières à prendre par la personne qui administre le médicament vétérinaire aux animaux 
+ Sans objet.
+ Précautions particulières concernant la protection de l'environnement 
+ Sans objet.
+ Autres précautions 
+ 3.6 Effets indésirables 
+ Chiens :
+ Très rare
+ (1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Troubles digestifs (par exemple Vomissements, Coliques, Hypersalivation) ;
+ Troubles neuromusculaires (par exemple Tremblements, Convulsions) ;
+ Hyperthermie, prostration ;
+ Sudation
+ Bovins :
+ Très rare
+ (1 animal / 10 000 animaux traités, y compris les cas isolés) :
+ Troubles digestifs (par exemple Coliques, Hypersalivation) ;
+ Troubles neuromusculaires (par exemple Tremblements, Convulsions) ;
+ Hyperthermie, prostration ;
+ Fréquence indéterminée
+ (ne peut être estimée à partir des données disponibles) :
+ Sudation
+ Il est important de notifier les effets indésirables. La notification permet un suivi continu de l’innocuité d’un médicament vétérinaire. Les notifications doivent être envoyées, de préférence par l’intermédiaire d’un vétérinaire, soit au titulaire de l’autorisation de mise sur le marché, soit à l’autorité nationale compétente par l’intermédiaire du système national de notification. Voir également la rubrique « Coordonnées » de la notice.
+ 3.7 Utilisation en cas de gestation, de lactation ou de ponte 
+ L’innocuité du médicament vétérinaire n’a pas été établie en cas de gestation ou de lactation.
+ Gestation :
+ L’utilisation chez la femelle gestante ne doit se faire qu’après évaluation du rapport bénéfice/risque établie par le vétérinaire responsable.
+ Les études menées sur les animaux de laboratoire n’ont pas mis en évidence d’effets tératogènes.
+ 3.8 Interactions médicamenteuses et autres formes d'interactions 
+ Aucune connue.
+ 3.9 Voies d'administration et posologie 
+ Voies intramusculaire ou sous cutanée.
+ Bovins :
+ - Babésiose : voie intramusculaire profonde ou sous cutanée dans l'encolure ou à la croupe :
+ Prophylaxie : 2,125 mg d'imidocarbe par kg de poids vif correspondant à 2,5 mL de solution par 100 kg de poids vif.
+ Traitement : 0,85 mg d'imidocarbe par kg de poids vif correspondant à 1 mL par 100 kg de poids vif. Une seule injection est généralement suffisante.
+ - Anaplasmose bovine :
+ Traitement : 2,125 mg d'imidocarbe par kg de poids vif correspondant à 2,5 mL de solution pour 100 kg de poids vif.
+ Chiens :
+ - Babésiose: voie intramusculaire ou sous cutanée :
+ Prophylaxie : 4,25 mg d'imidocarbe par kg de poids corporel correspondant à 0,5 mL pour 10 kg de poids corporel. La durée de la prévention ne dépassera pas 4 à 6 semaines (chimio-prévention).
+ Traitement : 2,125 mg d'imidocarbe par kg de poids corporel correspondant à 0,25 mL pour 10 kg de poids corporel. Une seule injection est généralement suffisante.
+ Le bouchon ne doit pas être perforé plus de 10 fois.
+ 3.10 Symptômes de surdosage (et, le cas échéant, conduite d'urgence et antidotes) 
+ Cf. rubrique « Effets indésirables ».
+ 3.11 Restrictions d'utilisation spécifiques et conditions particulières d'emploi, y compris les restrictions liées à l'utilisation de médicaments vétérinaires antimicrobiens et antiparasitaires en vue de réduire le risque de développement de résistance 
+ Sans objet.
+ 3.12 Temps d'attente 
+ Bovins :
+ Viande et abats : 213 jours.
+ Lait : 6 jours.
+ 4. INFORMATIONS PHARMACOLOGIQUES 
+ 4.1 Code ATCvet 
+ QP51EX01.
+ 4.2 Propriétés pharmacodynamiques 
+ L'imidocarbe, dérivé carbanilide, a des propriétés à la fois babésicide et anaplasmicide. Son mécanisme d'action est mal connu. Après pénétration active dans le parasite par des transporteurs protéiques de base puriques, il pourrait se comporter comme un inhibiteur des topo-isomérases de type II. Il bloque ainsi la réplication de l'ADN ; il pourrait également interférer avec synthèse des polyamines par le parasite.
+ 4.3 Propriétés pharmacocinétiques 
+ Non documentées.
+ Propriétés environnementales 
+ Aucune connue.
+ 5. DONNÉES PHARMACEUTIQUES 
+ 5.1 Incompatibilités majeures 
+ Non connues.
+ 5.2 Durée de conservation 
+ Durée de conservation du médicament vétérinaire tel que conditionné pour la vente : 18 mois.
+ Durée de conservation après première ouverture du conditionnement primaire : 28 jours.
+ 5.3 Précautions particulières de conservation 
+ À conserver à une température ne dépassant pas 25°C.
+ Protéger de la lumière.
+ 5.4 Nature et composition du conditionnement primaire 
+ Flacon en verre ambré (type I) avec un bouchon en bromobutyle et une capsule en aluminium.
+ 5.5 Précautions particulières à prendre lors de l'élimination de médicaments vétérinaires non utilisés ou de déchets dérivés de l'utilisation de ces médicaments 
+ Ne pas jeter les médicaments dans les égouts ou dans les ordures ménagères.
+ Utiliser les dispositifs de reprise mis en place pour l’élimination de tout médicament vétérinaire non utilisé ou des déchets qui en dérivent, conformément aux exigences locales et à tout système national de collecte applicable au médicament vétérinaire concerné.
+ 6. NOM DU TITULAIRE DE L'AUTORISATION DE MISE SUR LE MARCHÉ 
+ INTERVET
+ 7. NUMÉRO(S) D'AUTORISATION DE MISE SUR LE MARCHÉ 
+ FR/V/6280218 7/1980
+Boîte de 1 flacon de 10 mL
+Boîte de 1 flacon de 100 mL
+Toutes les présentations peuvent ne pas être commercialisées.
+ 8. DATE DE PREMIÈRE AUTORISATION 
+ 22/12/1980
+ 9. DATE DE LA DERNIÈRE MISE À JOUR DU RÉSUMÉ DES CARACTÉRISTIQUES DU PRODUIT 
+ 20/12/2024
+ MARCHES LIMITES 
+ CIRCONSTANCES EXCEPTIONNELLES 
+ 10. CLASSIFICATION DES MEDICAMENTS VETERINAIRES 
+ Médicament vétérinaire soumis à ordonnance.
+ Des informations détaillées sur ce médicament vétérinaire sont disponibles dans la base de données de l’Union sur les médicaments ( https://medicines.health.europa.eu/veterinary ).

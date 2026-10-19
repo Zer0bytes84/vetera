@@ -46,6 +46,12 @@
   font-size: 12px;
 }
 
+.rx-safety-source {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-style: italic;
+}
+
 .rx-safety-tag {
   display: inline-flex;
   align-items: center;
@@ -84,7 +90,7 @@
   color: var(--ink);
 }
 
-:root[data-visual-style="premium"] :is(.rx-safety-sub, .rx-safety-reason) {
+:root[data-visual-style="premium"] :is(.rx-safety-sub, .rx-safety-reason, .rx-safety-source) {
   color: var(--ink-soft);
 }
 
