@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useRoomLabel } from "@/modules/rooms/use-rooms";
 import {
   AlertTriangle,
   ArrowRight,
@@ -38,6 +39,7 @@ export function VisitFlowBoard({
 }) {
   const reduced = useReducedMotion();
   const { next, waiting, startsIn, allergies, today } = snapshot;
+  const nextRoom = useRoomLabel()(next?.appointment.room);
   const hasAllergy =
     allergies &&
     !/^(aucun(?:e)?(?: connue)?|néant|non|ras)$/i.test(allergies.trim());
@@ -165,10 +167,10 @@ export function VisitFlowBoard({
                 <Stethoscope size={14} aria-hidden="true" />
                 {next.appointment.type}
               </span>
-              {next.appointment.room && (
+              {nextRoom && (
                 <span>
                   <DoorOpen size={14} aria-hidden="true" />
-                  {next.appointment.room}
+                  {nextRoom}
                 </span>
               )}
               {next.appointment.reason &&

@@ -1,4 +1,5 @@
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
+import { useRoomLabel } from "@/modules/rooms/use-rooms";
 import {
   Cat,
   Dog,
@@ -208,6 +209,7 @@ function AppointmentListItem({
   showDate: boolean;
 }) {
   const { appointment, patient } = row;
+  const roomName = useRoomLabel()(appointment.room);
   const typeMeta = getAppointmentTypeMeta(appointment.type);
   const duration = getDurationLabel(appointment);
   const nextAction = getNextAppointmentAction(appointment.status);
@@ -298,10 +300,10 @@ function AppointmentListItem({
               <Stethoscope className="size-3" />
               {row.vetName}
             </span>
-            {appointment.room ? (
+            {roomName ? (
               <span>
                 <MapPin className="size-3" />
-                {appointment.room}
+                {roomName}
               </span>
             ) : null}
           </div>

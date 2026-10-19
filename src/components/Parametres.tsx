@@ -15,6 +15,7 @@ import {
   CheckmarkCircle02Icon,
   DatabaseIcon,
   Delete01Icon,
+  Door01Icon,
   File02Icon,
   InformationCircleIcon,
   LaptopIcon,
@@ -82,6 +83,7 @@ import {
 import { updatePassword } from "@/services/sqlite/auth";
 import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
 import { ClinicNetworkSettings } from "@/modules/clinic-network/clinic-network-settings";
+import { RoomsSettings } from "@/modules/rooms/rooms-settings";
 import {
   AI_ONBOARDING_OPEN_EVENT,
   AI_SETTINGS_PENDING_KEY,
@@ -96,6 +98,7 @@ import { Settings02Icon } from "@/lib/hugeicons";
 
 type SettingsTab =
   | "cabinet"
+  | "salles"
   | "profil"
   | "apparence"
   | "securite"
@@ -155,6 +158,13 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         label: "Cabinet & factures",
         description: "Coordonnées, logo et présentation des PDF",
         icon: Building01Icon,
+      },
+      {
+        id: "salles",
+        label: "Salles",
+        description: "Les espaces où vous recevez les animaux",
+        icon: Door01Icon,
+        keywords: ["salle", "consultation", "chirurgie", "bloc", "box", "espace", "agenda"],
       },
       {
         id: "apparence",
@@ -1161,6 +1171,8 @@ const Parametres: React.FC<ParametresProps> = ({
             <LocalDataResetSettings />
           </div>
         );
+      case "salles":
+        return <RoomsSettings />;
       case "reseau":
         return <ClinicNetworkSettings />;
       case "apropos":

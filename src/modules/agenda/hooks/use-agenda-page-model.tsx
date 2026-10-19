@@ -24,6 +24,8 @@ import {
 
 import { useAudit } from "@/services/use-audit";
 import { generateId } from "@/services/sqlite/database";
+import { useRooms } from "@/modules/rooms/use-rooms";
+import { roomLabel } from "@/modules/rooms/store";
 import type {
   Appointment,
   AppointmentRecurrence,
@@ -82,7 +84,19 @@ export function useAgendaPageModel() {
   const [formTime, setFormTime] = useState("09:00");
   const [duration, setDuration] = useState(15);
   const [reason, setReason] = useState("");
-  const [formRoom, setFormRoom] = useState("consult-1");
+  const [formRoom, setFormRoom] = useState("");
+  const { active: activeRooms, rooms } = useRooms();
+  const defaultRoomId = activeRooms[0]?.id ?? "";
+  const selectedRoom = formRoom || defaultRoomId;
+  // Active rooms, plus the archived room of an appointment being edited so
+  // saving it never moves it to another room.
+  const roomOptions = useMemo(() => {
+    const options = activeRooms.map((room) => ({ archived: false, label: room.name, value: room.id }));
+    if (selectedRoom && !options.some((option) => option.value === selectedRoom)) {
+      options.push({ archived: true, label: roomLabel(selectedRoom, rooms) ?? selectedRoom, value: selectedRoom });
+    }
+    return options;
+  }, [activeRooms, rooms, selectedRoom]);
   const [recurrenceEnabled, setRecurrenceEnabled] = useState(false);
   const [recurrenceFrequency, setRecurrenceFrequency] =
     useState<RecurrenceFrequency>("weekly");
@@ -608,7 +622,7 @@ export function useAgendaPageModel() {
     setFormTime("09:00");
     setDuration(15);
     setReason("");
-    setFormRoom("consult-1");
+    setFormRoom("");
     setRecurrenceEnabled(false);
     setRecurrenceFrequency("weekly");
     setRecurrenceEndDate("");
@@ -649,6 +663,7 @@ export function useAgendaPageModel() {
         : 15
     );
     setReason(appointment.reason || "");
+    setFormRoom(appointment.room ?? "");
     setIsDialogOpen(true);
   };
 
@@ -887,7 +902,7 @@ export function useAgendaPageModel() {
                 ?.status
             : undefined) ?? "scheduled",
         reason,
-        room: formRoom,
+        room: selectedRoom || undefined,
       });
 
       if (!saved) {
@@ -1105,8 +1120,9 @@ export function useAgendaPageModel() {
     filteredPatientsForForm,
     formDate,
     formError,
-    formRoom,
+    formRoom: selectedRoom,
     formTime,
+    roomOptions,
     getAppointmentsForDate,
     getPatientName,
     handleAppointmentStatusTransition,

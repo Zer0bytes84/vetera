@@ -90,7 +90,6 @@ import {
   APPOINTMENT_TYPES,
   AppointmentTimePicker,
   DURATION_OPTIONS,
-  APPOINTMENT_ROOMS,
   RECURRENCE_FREQUENCIES,
   DAY_OF_WEEK_LABELS,
   TABLE_SCOPES,
@@ -136,6 +135,7 @@ export function AgendaView(props: AgendaViewProps) {
     formError,
     formRoom,
     formTime,
+    roomOptions,
     getAppointmentsForDate,
     getPatientName,
     handleAppointmentStatusTransition,
@@ -844,28 +844,31 @@ export function AgendaView(props: AgendaViewProps) {
                   </FieldDescription>
                 </Field>
 
-                <Field>
-                  <FieldLabel>
-                    {t("scheduling.room", { defaultValue: "Salle" })}
-                  </FieldLabel>
-                  <NativeSelect
-                    className="w-full cursor-pointer"
-                    onChange={(event) => setFormRoom(event.target.value)}
-                    value={formRoom}
-                  >
-                    {APPOINTMENT_ROOMS.map((room) => (
-                      <NativeSelectOption key={room.value} value={room.value}>
-                        {t(room.i18nKey)}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                  <FieldDescription>
-                    {t("scheduling.roomDescription", {
-                      defaultValue:
-                        "Salles physiques de la clinique. Un conflit de salle empêchera l'enregistrement.",
-                    })}
-                  </FieldDescription>
-                </Field>
+                {/* A clinic with a single room has nothing to choose. */}
+                {roomOptions.length > 1 && (
+                  <Field>
+                    <FieldLabel>
+                      {t("scheduling.room", { defaultValue: "Salle" })}
+                    </FieldLabel>
+                    <NativeSelect
+                      className="w-full cursor-pointer"
+                      onChange={(event) => setFormRoom(event.target.value)}
+                      value={formRoom}
+                    >
+                      {roomOptions.map((room) => (
+                        <NativeSelectOption key={room.value} value={room.value}>
+                          {room.archived ? `${room.label} (archivée)` : room.label}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                    <FieldDescription>
+                      {t("scheduling.roomDescription", {
+                        defaultValue:
+                          "Salles physiques de la clinique. Un conflit de salle empêchera l'enregistrement.",
+                      })}
+                    </FieldDescription>
+                  </Field>
+                )}
               </div>
 
               <Field>

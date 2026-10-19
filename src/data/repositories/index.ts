@@ -1,4 +1,5 @@
 import { useSQLite } from "@/hooks/useSQLite";
+import { roomsService } from "@/modules/rooms/service";
 import {
   normalizeOwnerDraft,
   normalizePatientDraft,
@@ -208,11 +209,18 @@ export function useAppointmentsRepository() {
     }
 
     const appointmentId = input.id ?? "new-appointment";
+    // A new booking without a room goes to the clinic's first active room,
+    // never to a room the clinic archived.
+    const room =
+      input.room ??
+      (input.id
+        ? undefined
+        : ((await roomsService.defaultRoomId().catch(() => null)) ?? undefined));
     assertNoAppointmentConflict(
       {
         id: appointmentId,
         vetId: finalVetId,
-        room: input.room,
+        room,
         ...interval,
       },
       appointmentsStore.data
@@ -220,6 +228,7 @@ export function useAppointmentsRepository() {
 
     const payload = {
       ...input,
+      ...(room ? { room } : {}),
       ownerId: patient.ownerId,
       vetId: finalVetId,
       title,

@@ -99,13 +99,6 @@ const resources = {
         settings: "Paramètres",
       },
       scheduling: {
-        rooms: {
-          consult1: "Consult. 1",
-          consult2: "Consult. 2",
-          surgery: "Chirurgie",
-          hospitalization: "Hospitalisation",
-          imaging: "Imagerie",
-        },
         room: "Salle",
         selectRoom: "Sélectionner une salle",
         recurrence: {
@@ -1229,13 +1222,6 @@ const resources = {
         logout: "Sign out",
       },
       scheduling: {
-        rooms: {
-          consult1: "Consult. 1",
-          consult2: "Consult. 2",
-          surgery: "Surgery",
-          hospitalization: "Hospitalization",
-          imaging: "Imaging",
-        },
         room: "Room",
         selectRoom: "Select a room",
         recurrence: {

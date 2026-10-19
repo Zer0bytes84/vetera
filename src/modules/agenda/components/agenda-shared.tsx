@@ -1,3 +1,4 @@
+import { useRoomLabel } from "@/modules/rooms/use-rooms";
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
@@ -257,14 +258,6 @@ export function AppointmentTimePicker({
 export const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 
 export const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-
-export const APPOINTMENT_ROOMS = [
-  { value: "consult-1", i18nKey: "scheduling.rooms.consult1" },
-  { value: "consult-2", i18nKey: "scheduling.rooms.consult2" },
-  { value: "surgery", i18nKey: "scheduling.rooms.surgery" },
-  { value: "hospitalization", i18nKey: "scheduling.rooms.hospitalization" },
-  { value: "imaging", i18nKey: "scheduling.rooms.imaging" },
-] as const;
 
 export const RECURRENCE_FREQUENCIES: {
   value: RecurrenceFrequency;
@@ -894,6 +887,7 @@ export function CalendarAppointmentBlock({
   selected: boolean;
   variant: "day" | "week";
 }) {
+  const roomName = useRoomLabel()(appointment.room);
   const start = normalizeDate(appointment.startTime);
   const end = normalizeDate(appointment.endTime);
   if (!(start && end)) {
@@ -930,7 +924,7 @@ export function CalendarAppointmentBlock({
         left: `calc(${leftPercent}% + 3px)`,
         width: `calc(${widthPercent}% - 6px)`,
       }}
-      title={`${patientName} · ${appointment.type}\n${timeRange}${appointment.room ? ` · ${appointment.room}` : ""}${appointment.reason ? `\n${appointment.reason}` : ""}`}
+      title={`${patientName} · ${appointment.type}\n${timeRange}${roomName ? ` · ${roomName}` : ""}${appointment.reason ? `\n${appointment.reason}` : ""}`}
       type="button"
     >
       <span

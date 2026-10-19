@@ -48,6 +48,7 @@ export { default as DashboardSquare01Icon } from "@hugeicons/core-free-icons/Das
 export { default as DashboardSquareEditIcon } from "@hugeicons/core-free-icons/DashboardSquareEditIcon";
 export { default as DatabaseIcon } from "@hugeicons/core-free-icons/DatabaseIcon";
 export { default as Delete01Icon } from "@hugeicons/core-free-icons/Delete01Icon";
+export { default as Door01Icon } from "@hugeicons/core-free-icons/Door01Icon";
 export { default as Delete02Icon } from "@hugeicons/core-free-icons/Delete02Icon";
 export { default as Doctor01Icon } from "@hugeicons/core-free-icons/Doctor01Icon";
 export { default as Dollar01Icon } from "@hugeicons/core-free-icons/Dollar01Icon";
