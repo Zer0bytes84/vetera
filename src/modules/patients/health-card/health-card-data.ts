@@ -192,6 +192,27 @@ const STATUS_RANK: Record<VaccineStatus, number> = {
   no_reminder: 3,
 };
 
+/**
+ * Dernière injection de chaque vaccin du patient, avec l'état de son rappel,
+ * les plus urgents d'abord. Une injection déjà renouvelée n'est jamais « en
+ * retard » : seule la plus récente porte le rappel en cours. Partagé par le
+ * carnet de santé et le bandeau du dossier.
+ */
+export function currentVaccineReminders(
+  patientId: string,
+  all: readonly Vaccination[],
+  now: Date
+): HealthCardVaccine[] {
+  return buildVaccinations(patientId, all, now).all;
+}
+
+/** Jours entiers écoulés depuis l'échéance (0 si elle n'est pas dépassée). */
+export function daysOverdue(nextDueAt: string | undefined, now: Date): number {
+  const due = time(nextDueAt);
+  if (Number.isNaN(due)) return 0;
+  return Math.max(0, Math.round((startOfDay(now) - startOfDay(new Date(due))) / DAY_MS));
+}
+
 function buildVaccinations(patientId: string, all: readonly Vaccination[], now: Date) {
   const own = all.filter(
     (v) => v.patientId === patientId && !Number.isNaN(time(v.administeredAt))
@@ -221,6 +242,7 @@ function buildVaccinations(patientId: string, all: readonly Vaccination[], now: 
         time(b.administeredAt) - time(a.administeredAt)
     );
   return {
+    all: current,
     current: current.slice(0, MAX_VACCINATION_ROWS),
     hiddenCurrent: Math.max(0, current.length - MAX_VACCINATION_ROWS),
     totalInjections: own.length,

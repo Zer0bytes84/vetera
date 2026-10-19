@@ -71,8 +71,7 @@ import { VaccinationDialog } from "./components/vaccination-dialog";
 import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
-import { getNextDueVaccination } from "./lib";
-import { getVaccinationStatus } from "./lib/vaccination-status";
+import { lateLabel, vaccinationBannerEntries } from "./lib/vaccination-banner";
 import { DatePicker } from "@/components/ui/date-picker";
 import { PageHeader } from "@/design-system/patterns/page-header";
 
@@ -336,15 +335,16 @@ export function PatientDetailPage({
         )[0] ?? null,
     [appointments, now]
   );
-  // A booster overdue or due within 30 days is raised with the clinical alerts.
+  // Every overdue booster, then those due within 30 days, are raised with the
+  // clinical alerts (same classification as the health card).
   const vaccinationDue = useMemo(() => {
-    const next = getNextDueVaccination(vaccinations, new Date(now));
-    if (!next) return null;
-    const status = getVaccinationStatus(next, new Date(now));
-    return status === "overdue" || status === "due_soon"
-      ? { status, vaccination: next }
-      : null;
-  }, [now, vaccinations]);
+    const entries = vaccinationBannerEntries(patientId, vaccinations, new Date(now));
+    if (!entries.length) return null;
+    return {
+      status: entries.some((entry) => entry.status === "overdue") ? "overdue" : "due_soon",
+      entries,
+    };
+  }, [now, patientId, vaccinations]);
   const clinicalNoteAppointment = useMemo(
     () =>
       appointments.find(
@@ -661,7 +661,14 @@ export function PatientDetailPage({
                     {vaccinationDue.status === "overdue" ? "Rappel vaccinal en retard" : "Rappel vaccinal à prévoir"}
                   </strong>
                   <span className="mt-0.5 block text-sm font-medium leading-relaxed">
-                    {vaccinationDue.vaccination.vaccineName} · {recordDate(vaccinationDue.vaccination.nextDueAt)}. Voir l’onglet Vaccinations.
+                    {vaccinationDue.entries.map((entry, index) => (
+                      <span key={`${entry.name}-${entry.nextDueAt}`}>
+                        {index > 0 ? " ; " : null}
+                        {entry.status === "overdue"
+                          ? <>{entry.name} · <span className="font-semibold">{lateLabel(entry.daysLate ?? 0)}</span> (prévu le {recordDate(entry.nextDueAt)})</>
+                          : <>{entry.name} · {recordDate(entry.nextDueAt)}</>}
+                      </span>
+                    ))}. Voir l’onglet Vaccinations.
                   </span>
                 </span>
               </button>
