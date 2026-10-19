@@ -1,13 +1,9 @@
 import { useRoomLabel } from "@/modules/rooms/use-rooms";
-import {
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-  StethoscopeIcon,
-} from "@/lib/hugeicons";
+import { StethoscopeIcon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ar, de, enUS, es, fr, pt } from "date-fns/locale";
 
-import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -101,156 +97,201 @@ export function addMinutesToTime(value: string, delta: number): string {
   return minutesToTime(timeToMinutes(value) + delta);
 }
 
+/** Another booking of the same veterinarian or room, in minutes of the day. */
+export interface BusySlot {
+  end: number;
+  label: string;
+  start: number;
+}
+
 export interface TimePickerProps {
+  /** Bookings the new time must not overlap; the save refuses them anyway. */
+  busy?: readonly BusySlot[];
   durationMinutes: number;
   onChange: (value: string) => void;
   value: string;
 }
 
+const PICKER_HOURS = Array.from({ length: 14 }, (_, index) => index + 7);
+const PICKER_MINUTES = Array.from({ length: 12 }, (_, index) => index * STEP_MINUTES);
+
+/**
+ * Reads a time typed the way people say it: "9", "905", "0905", "9:05",
+ * "9h05", "21h". Returns HH:MM in 24-hour format, or null.
+ */
+export function parseTypedTime(text: string): string | null {
+  const clean = text.trim().toLowerCase().replace(/\s+/g, "");
+  if (!clean) return null;
+  const match = /^(\d{1,2})(?:[:h.]?(\d{2})?)?$/.exec(clean) ?? /^(\d{1,2})(\d{2})$/.exec(clean);
+  if (!match) return null;
+  let hours = Number(match[1]);
+  let minutes = Number(match[2] ?? 0);
+  if (!match[2] && match[1].length === 2 && hours > 23) return null;
+  if (match[1].length === 1 && !match[2] && clean.length === 3) {
+    hours = Number(clean[0]);
+    minutes = Number(clean.slice(1));
+  }
+  if (hours > 23 || minutes > 59) return null;
+  return minutesToTime(hours * 60 + minutes);
+}
+
+export function overlappingSlot(
+  startMinutes: number,
+  durationMinutes: number,
+  busy: readonly BusySlot[]
+): BusySlot | null {
+  const end = startMinutes + Math.max(1, durationMinutes);
+  return busy.find((slot) => startMinutes < slot.end && end > slot.start) ?? null;
+}
+
+/** First start at or after `from`, on the 5-minute grid, that overlaps nothing. */
+export function nextFreeTime(
+  from: number,
+  durationMinutes: number,
+  busy: readonly BusySlot[],
+  lastStart = 21 * 60
+): string | null {
+  const first = Math.ceil(from / STEP_MINUTES) * STEP_MINUTES;
+  for (let start = first; start <= lastStart; start += STEP_MINUTES) {
+    if (!overlappingSlot(start, durationMinutes, busy)) return minutesToTime(start);
+  }
+  return null;
+}
+
 export function AppointmentTimePicker({
+  busy = [],
   durationMinutes,
   value,
   onChange,
 }: TimePickerProps) {
-  const { t } = useTranslation();
+  const [draft, setDraft] = useState<string | null>(null);
   const valueMinutes = timeToMinutes(value);
-  const endMinutes = valueMinutes + durationMinutes;
-  const endLabel = minutesToTime(endMinutes);
+  const hour = Math.floor(valueMinutes / 60);
+  const minute = valueMinutes % 60;
+  const endLabel = minutesToTime(valueMinutes + durationMinutes);
+  const conflict = overlappingSlot(valueMinutes, durationMinutes, busy);
+  const suggestion = conflict ? nextFreeTime(valueMinutes, durationMinutes, busy) : null;
+  // A time typed outside the grid stays reachable.
+  const hours = PICKER_HOURS.includes(hour) ? PICKER_HOURS : [...PICKER_HOURS, hour].sort((a, b) => a - b);
+
+  const commit = () => {
+    if (draft === null) return;
+    const parsed = parseTypedTime(draft);
+    if (parsed) onChange(parsed);
+    setDraft(null);
+  };
+
+  const chip = "h-9 rounded-lg px-0 text-sm tabular-nums";
 
   return (
     <div className="appointment-time-picker space-y-3">
-      <div className="appointment-time-adjustments flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
-        <div className="flex items-center gap-1">
-          <Button
-            aria-label="Heure précédente"
-            className="h-8 w-8"
-            onClick={() => onChange(addMinutesToTime(value, -60))}
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-          >
-            <HugeiconsIcon
-              icon={ArrowLeft01Icon}
-              size={14}
-              strokeWidth={1.5}
-            />
-          </Button>
-          <Button
-            aria-label="-15 minutes"
-            className="h-8 px-2 text-xs"
-            onClick={() => onChange(addMinutesToTime(value, -15))}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            −15
-          </Button>
-          <Button
-            aria-label="-5 minutes"
-            className="h-8 px-2 text-xs"
-            onClick={() => onChange(addMinutesToTime(value, -STEP_MINUTES))}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            −5
-          </Button>
-        </div>
-        <div className="flex flex-col items-center">
-          <Input
-            className="w-24 text-center font-semibold text-base tabular-nums"
-            onChange={(event) => {
-              const next = event.target.value;
-              if (/^([0-1]?\d|2[0-3]):[0-5]\d$/.test(next)) {
-                onChange(next);
-              }
-            }}
-            type="time"
-            value={value}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <Input
+          aria-label="Heure de début"
+          className="h-10 w-[5.5rem] text-center text-base font-semibold tabular-nums"
+          inputMode="numeric"
+          onBlur={commit}
+          onChange={(event) => setDraft(event.target.value)}
+          onFocus={(event) => {
+            setDraft(value);
+            event.currentTarget.select();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              commit();
+              event.currentTarget.blur();
+            } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+              event.preventDefault();
+              setDraft(null);
+              onChange(addMinutesToTime(value, event.key === "ArrowUp" ? STEP_MINUTES : -STEP_MINUTES));
+            }
+          }}
+          placeholder="09:00"
+          value={draft ?? value}
+        />
+        <span className="text-sm tabular-nums text-muted-foreground">
+          → {endLabel}
+        </span>
+        <span
+          aria-live="polite"
+          className={cn(
+            "flex items-center gap-1.5 text-xs",
+            conflict ? "text-amber-700 dark:text-amber-300" : "text-muted-foreground"
+          )}
+        >
+          <span
+            aria-hidden
+            className={cn("size-1.5 rounded-full", conflict ? "bg-amber-500" : "bg-emerald-500")}
           />
-          <span className="mt-0.5 t-12 text-muted-foreground/80">
-            {t("appointment.time.endsAt", {
-              defaultValue: "Fin",
-            })}{" "}
-            {endLabel}
-          </span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            aria-label="+5 minutes"
-            className="h-8 px-2 text-xs"
-            onClick={() => onChange(addMinutesToTime(value, STEP_MINUTES))}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            +5
-          </Button>
-          <Button
-            aria-label="+15 minutes"
-            className="h-8 px-2 text-xs"
-            onClick={() => onChange(addMinutesToTime(value, 15))}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            +15
-          </Button>
-          <Button
-            aria-label="Heure suivante"
-            className="h-8 w-8"
-            onClick={() => onChange(addMinutesToTime(value, 60))}
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-          >
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              size={14}
-              strokeWidth={1.5}
-            />
-          </Button>
-        </div>
+          {conflict
+            ? `Chevauche ${conflict.label} (${minutesToTime(conflict.start)} – ${minutesToTime(conflict.end)})`
+            : busy.length > 0
+              ? "Créneau libre"
+              : "Aucun autre rendez-vous ce jour"}
+        </span>
       </div>
 
-      {TIME_PERIODS.map((period, index) => {
-        // A boundary time (12:00, 18:00) opens the next period; only the last keeps its end.
-        const isLast = index === TIME_PERIODS.length - 1;
-        const slots = QUICK_TIMES.filter((time) => {
-          const minutes = timeToMinutes(time);
+      <div aria-label="Heure" className="grid grid-cols-7 gap-1.5" role="group">
+        {hours.map((h) => {
+          const busyHour = busy.some((slot) => slot.start < (h + 1) * 60 && slot.end > h * 60);
           return (
-            minutes >= timeToMinutes(period.from) &&
-            (isLast ? minutes <= timeToMinutes(period.to) : minutes < timeToMinutes(period.to))
+            <Button
+              aria-pressed={h === hour}
+              className={cn(chip, "relative")}
+              key={h}
+              onClick={() => onChange(minutesToTime(h * 60 + minute))}
+              size="sm"
+              type="button"
+              variant={h === hour ? "default" : "outline"}
+            >
+              {String(h).padStart(2, "0")}
+              {busyHour && (
+                <span
+                  aria-hidden
+                  className="absolute right-1 top-1 size-1 rounded-full bg-amber-500"
+                />
+              )}
+            </Button>
           );
-        });
-        if (slots.length === 0) {
-          return null;
-        }
-        return (
-          <div className="space-y-1.5" key={period.id}>
-            <p className="font-bold t-12 text-muted-foreground/80 uppercase tracking-wider">
-              {period.label}
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {slots.map((time) => {
-                const active = value === time;
-                return (
-                  <Button
-                    className="tabular-nums"
-                    key={time}
-                    onClick={() => onChange(time)}
-                    size="xs"
-                    type="button"
-                    variant={active ? "default" : "outline"}
-                  >
-                    {time}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
+        })}
+      </div>
+
+      <div aria-label="Minutes" className="grid grid-cols-6 gap-1.5" role="group">
+        {PICKER_MINUTES.map((m) => {
+          const taken = overlappingSlot(hour * 60 + m, durationMinutes, busy);
+          return (
+            <Button
+              aria-label={`${String(hour).padStart(2, "0")}:${String(m).padStart(2, "0")}${taken ? `, chevauche ${taken.label}` : ""}`}
+              aria-pressed={m === minute}
+              className={cn(
+                chip,
+                taken && m !== minute && "border-dashed text-muted-foreground/70 line-through decoration-amber-500/70"
+              )}
+              key={m}
+              onClick={() => onChange(minutesToTime(hour * 60 + m))}
+              size="sm"
+              title={taken ? `Occupé : ${taken.label}` : undefined}
+              type="button"
+              variant={m === minute ? "default" : "outline"}
+            >
+              :{String(m).padStart(2, "0")}
+            </Button>
+          );
+        })}
+      </div>
+
+      {suggestion && (
+        <Button
+          className="h-8"
+          onClick={() => onChange(suggestion)}
+          size="sm"
+          type="button"
+          variant="secondary"
+        >
+          Prochain créneau libre : {suggestion}
+        </Button>
+      )}
     </div>
   );
 }

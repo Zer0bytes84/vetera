@@ -1,4 +1,6 @@
 import { formatNumber, formatPersonName } from "@/utils/display-format";
+import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
+import type { BusySlot } from "../components/agenda-shared";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
 import { matchesEveryWord, selectedDossierSearchLabel } from "../quick-search";
 import {
@@ -343,6 +345,31 @@ export function useAgendaPageModel() {
     });
     return map;
   }, [dailyAppointments]);
+
+  // Other bookings of the chosen veterinarian or room that day, with the
+  // same rule as the conflict check run on save.
+  const timeBusySlots = useMemo<BusySlot[]>(() => {
+    const vetId = selectedVetId || vets[0]?.id || "";
+    const [year, month, day] = formDate.split("-").map(Number);
+    return appointments.flatMap((appointment) => {
+      if (appointment.id === editingAppointmentId) return [];
+      if (TERMINAL_APPOINTMENT_STATUSES.includes(appointment.status)) return [];
+      const sameVet = Boolean(vetId) && appointment.vetId === vetId;
+      const sameRoom = Boolean(selectedRoom) && appointment.room === selectedRoom;
+      if (!sameVet && !sameRoom) return [];
+      const start = new Date(appointment.startTime);
+      const end = new Date(appointment.endTime);
+      if (start.getFullYear() !== year || start.getMonth() + 1 !== month || start.getDate() !== day) return [];
+      const endMinutes = end.toDateString() === start.toDateString() ? end.getHours() * 60 + end.getMinutes() : 24 * 60;
+      return [
+        {
+          end: endMinutes,
+          label: patientsById.get(appointment.patientId)?.name ?? "un autre patient",
+          start: start.getHours() * 60 + start.getMinutes(),
+        },
+      ];
+    });
+  }, [appointments, editingAppointmentId, formDate, patientsById, selectedRoom, selectedVetId, vets]);
 
   const selectedAppointment = useMemo(
     () =>
@@ -1125,6 +1152,7 @@ export function useAgendaPageModel() {
     formRoom: selectedRoom,
     formTime,
     roomOptions,
+    timeBusySlots,
     getAppointmentsForDate,
     getPatientName,
     handleAppointmentStatusTransition,

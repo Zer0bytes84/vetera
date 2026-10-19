@@ -136,6 +136,7 @@ export function AgendaView(props: AgendaViewProps) {
     formRoom,
     formTime,
     roomOptions,
+    timeBusySlots,
     getAppointmentsForDate,
     getPatientName,
     handleAppointmentStatusTransition,
@@ -1069,6 +1070,7 @@ export function AgendaView(props: AgendaViewProps) {
                 <Field>
                   <FieldLabel>Heure</FieldLabel>
                   <AppointmentTimePicker
+                    busy={timeBusySlots}
                     durationMinutes={duration}
                     onChange={setFormTime}
                     value={formTime}
