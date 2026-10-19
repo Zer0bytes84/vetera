@@ -15,6 +15,8 @@ import { fr } from "date-fns/locale";
 
 import { AgendaListView } from "@/components/AgendaListView";
 import { AgendaMonthCalendar } from "@/modules/agenda/components/agenda-month-calendar";
+import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
+import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { SectionCards } from "@/components/section-cards";
 import {
@@ -79,10 +81,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  APPOINTMENT_STATUS_META,
-  getAppointmentTypeMeta,
-} from "@/config/status-meta";
+import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 
 import { cn } from "@/lib/utils";
 
@@ -245,6 +244,8 @@ export function AgendaView(props: AgendaViewProps) {
         ]
           .filter(Boolean)
           .join(" · ");
+  // Suite proposée par le panneau de charge quand la journée est libre.
+  const nextAppointmentAfterDay = findNextAppointmentAfter(appointments, selectedDate);
   const selectedAppointmentDate = selectedAppointment
     ? normalizeDate(selectedAppointment.startTime)
     : null;
@@ -278,7 +279,7 @@ export function AgendaView(props: AgendaViewProps) {
         selectedDate={selectedDate}
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_336px] xl:items-start">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_336px] xl:items-start">
         <Card className="agenda-day-panel surface-card min-h-[420px] min-w-0 overflow-clip border-0">
           <CardHeader className="agenda-day-heading gap-1.5 border-border border-b px-5 pt-6 pb-5 sm:px-6">
             <CardTitle className="font-medium text-[18px] tracking-[-0.02em]">
@@ -483,9 +484,9 @@ export function AgendaView(props: AgendaViewProps) {
           </CardContent>
         </Card>
 
-        <aside className="grid min-w-0 gap-4" aria-label="Détail et charge de la journée">
+        <aside className="grid min-w-0 gap-6" aria-label="Détail et charge de la journée">
           {selectedAppointment ? (
-            <Card>
+            <Card className="agenda-side-panel board-frame">
               <CardHeader className="border-border border-b px-5 py-4">
                 <CardDescription>Rendez-vous sélectionné</CardDescription>
                 <CardTitle className="font-medium text-[18px] tracking-[-0.02em]">
@@ -593,7 +594,7 @@ export function AgendaView(props: AgendaViewProps) {
               </CardFooter>
             </Card>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-panel border border-border/80 border-dashed px-6 py-8 text-center">
+            <div className="agenda-side-panel agenda-side-empty board-frame rounded-panel border border-border/80 border-dashed">
               <HugeiconsIcon
                 className="mb-3 size-6 text-muted-foreground"
                 icon={Calendar01Icon}
@@ -608,90 +609,31 @@ export function AgendaView(props: AgendaViewProps) {
             </div>
           )}
 
-          <Card>
-            <CardHeader className="border-border border-b px-5 py-4">
-              <CardDescription>Charge de la journée</CardDescription>
-              <CardTitle className="font-medium text-[18px] tracking-[-0.02em]">
-                {formatDateLabel(selectedDate)}
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="grid gap-4 px-5 py-4">
-              {typeSummary.length > 0 ? (
-                <>
-                  <div className="grid gap-1.5">
-                    {typeSummary.map((entry) => (
-                      <div
-                        className="flex items-center justify-between gap-3 text-sm"
-                        key={entry.type}
-                      >
-                        <span className="flex items-center gap-2.5">
-                          <span
-                            className={cn(
-                              "size-2 rounded-full",
-                              getAppointmentTypeMeta(entry.type).dotClassName
-                            )}
-                          />
-                          <span className="text-foreground">{entry.type}</span>
-                        </span>
-                        <span className="text-muted-foreground tabular-nums">
-                          {entry.count}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {dayLoadSummary.length > 0 ? (
-                    <div className="grid gap-2 border-border/60 border-t pt-4">
-                      {dayLoadSummary.map((entry) => (
-                        <div
-                          className="flex items-center justify-between gap-3 text-sm"
-                          key={entry.vet.id}
-                        >
-                          <div className="min-w-0">
-                            <p className="truncate text-foreground">
-                              {formatPersonName(entry.vet.displayName)}
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                              {entry.vet.specialty || "Consultation générale"}
-                            </p>
-                          </div>
-                          <span className="text-muted-foreground tabular-nums">
-                            {entry.count}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : null}
-
-                  <div className="grid grid-cols-3 gap-3 border-border/60 border-t pt-4 text-center">
-                    <div>
-                      <p className="text-[12px] text-muted-foreground">Charge</p>
-                      <p className="mt-1 font-medium text-foreground tabular-nums">
-                        {formatDuration(totalPlannedMinutes)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[12px] text-muted-foreground">Urgences</p>
-                      <p className="mt-1 font-medium text-foreground tabular-nums">
-                        {urgentOpenCount}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[12px] text-muted-foreground">Mobilisés</p>
-                      <p className="mt-1 font-medium text-foreground tabular-nums">
-                        {engagedVetsCount}
-                      </p>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  Aucun rendez-vous ce jour-là.
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <AgendaDayLoadCard
+            dayLoadSummary={dayLoadSummary}
+            engagedVetsCount={engagedVetsCount}
+            getAppointmentCount={(date) => getAppointmentsForDate(date).length}
+            nextAppointment={
+              nextAppointmentAfterDay
+                ? {
+                    appointment: nextAppointmentAfterDay,
+                    patientName:
+                      patientsById.get(nextAppointmentAfterDay.patientId)?.name ||
+                      nextAppointmentAfterDay.title,
+                  }
+                : null
+            }
+            onCreateAppointment={() => handleOpenCreate(selectedDate)}
+            onSelectDate={(date) => {
+              setSelectedDate(date);
+              setTableTab("selection");
+            }}
+            selectedDate={selectedDate}
+            totalPlannedMinutes={totalPlannedMinutes}
+            typeSummary={typeSummary}
+            urgentOpenCount={urgentOpenCount}
+            weekDays={weekDays}
+          />
         </aside>
       </div>
 

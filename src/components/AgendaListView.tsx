@@ -31,6 +31,7 @@ import {
 } from "@/modules/agenda/components/agenda-shared";
 import type { Appointment, AppointmentStatus } from "@/types/db";
 import { formatPhone } from "@/utils/display-format";
+import "@/modules/agenda/components/agenda-cards.css";
 
 interface AgendaListViewProps {
   /** Shown when there is nothing to list. */
@@ -70,7 +71,7 @@ function getDurationLabel(appointment: Appointment) {
 
 function SpeciesIcon({ species }: { species?: string }) {
   const normalized = species?.toLocaleLowerCase("fr") ?? "";
-  const props = { "aria-hidden": true as const, className: "size-6", strokeWidth: 1.6 };
+  const props = { "aria-hidden": true as const, className: "size-5", strokeWidth: 1.6 };
   if (normalized.includes("chien")) return <Dog {...props} />;
   if (normalized.includes("chat")) return <Cat {...props} />;
   if (normalized.includes("lapin")) return <Rabbit {...props} />;
@@ -126,7 +127,7 @@ export function AgendaListView({
 
   return (
     <div className="agenda-appointment-list min-w-0 px-5 pt-4 pb-5 sm:px-6">
-      <ol className="space-y-2">
+      <ol className="agenda-appt-list">
         {pageRows.map((row) => (
           <AppointmentListItem
             formatTime={formatTime}
@@ -221,13 +222,9 @@ function AppointmentListItem({
     <li>
       <div
         aria-pressed={isSelected}
-        className={cn(
-          "agenda-appointment-row group grid w-full min-w-0 grid-cols-[68px_minmax(0,1fr)] gap-4 rounded-xl border border-border/60 px-2 py-4 text-left outline-none transition-colors sm:grid-cols-[78px_48px_minmax(0,1fr)_auto] sm:items-center sm:px-3",
-          isSelected
-            ? "border-foreground/30 bg-muted/60"
-            : "hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/40"
-        )}
+        className="agenda-appointment-row agenda-appt-card group"
         data-row-id={appointment.id}
+        data-selected={isSelected || undefined}
         onClick={() => onSelectAppointment(appointment)}
         onKeyDown={(event) => {
           if (
@@ -241,36 +238,28 @@ function AppointmentListItem({
         role="button"
         tabIndex={0}
       >
-        <div className="self-start pt-0.5 sm:self-center sm:pt-0">
-          {showDate ? (
-            <p className="mb-0.5 text-[12px] text-muted-foreground">
-              {dateLabel}
-            </p>
-          ) : null}
-          <p className="font-semibold text-sm tabular-nums">
-            {formatTime(appointment.startTime)}
-          </p>
-          <p className="mt-0.5 t-12 text-muted-foreground tabular-nums">
+        <span
+          aria-hidden="true"
+          className={cn("agenda-appt-accent", typeMeta.dotClassName)}
+        />
+
+        <div className="agenda-appt-time">
+          {showDate ? <p className="agenda-appt-date">{dateLabel}</p> : null}
+          <p className="agenda-appt-start">{formatTime(appointment.startTime)}</p>
+          <p className="agenda-appt-range">
             {formatTime(appointment.endTime)}
+            {duration ? <span> · {duration}</span> : null}
           </p>
-          {duration ? (
-            <p className="mt-1 t-12 text-muted-foreground">{duration}</p>
-          ) : null}
         </div>
 
-        <span
-          className={cn(
-            "hidden size-11 place-items-center rounded-xl text-xl ring-1 ring-inset sm:grid",
-            typeMeta.surfaceClassName
-          )}
-        >
+        <span className={cn("agenda-appt-avatar", typeMeta.surfaceClassName)}>
           <SpeciesIcon species={patient?.species} />
         </span>
 
-        <div className="min-w-0">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <div className="agenda-appt-main">
+          <div className="agenda-appt-title-row">
             <button
-              className="truncate rounded font-semibold text-sm tracking-[-0.01em] hover:underline"
+              className="agenda-appt-patient"
               onClick={(event) => {
                 event.stopPropagation();
                 openPatientPeek(appointment.patientId);
@@ -279,36 +268,38 @@ function AppointmentListItem({
             >
               {row.patientName}
             </button>
-            <AppointmentTypeBadge type={appointment.type} />
-            <AppointmentStatusBadge appointment={appointment} patient={patient} />
+            <span className="agenda-appt-badges">
+              <AppointmentTypeBadge type={appointment.type} />
+              <AppointmentStatusBadge appointment={appointment} patient={patient} />
+            </span>
           </div>
-          <p className="mt-1 truncate text-muted-foreground text-xs">
+          <p className="agenda-appt-reason">
             {appointment.reason || appointment.title || "Motif non renseigné"}
           </p>
-          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1 t-12 text-muted-foreground">
-            <span className="inline-flex min-w-0 items-center gap-1.5">
+          <div className="agenda-appt-meta">
+            <span>
               <UserRound className="size-3" />
               <span className="truncate">{row.ownerName}</span>
             </span>
             {phone ? (
-              <span className="inline-flex items-center gap-1.5 tabular-nums">
+              <span className="tabular-nums">
                 <Phone className="size-3" />
                 {phone}
               </span>
             ) : null}
             {patient?.species ? (
-              <span className="inline-flex items-center gap-1.5">
+              <span>
                 <PawPrint className="size-3" />
                 {patient.species}
                 {patient.breed ? ` · ${patient.breed}` : ""}
               </span>
             ) : null}
-            <span className="inline-flex items-center gap-1.5">
+            <span>
               <Stethoscope className="size-3" />
               {row.vetName}
             </span>
             {appointment.room ? (
-              <span className="inline-flex items-center gap-1.5">
+              <span>
                 <MapPin className="size-3" />
                 {appointment.room}
               </span>
@@ -316,7 +307,7 @@ function AppointmentListItem({
           </div>
         </div>
 
-        <div className="col-start-2 mt-1 flex items-center justify-end gap-1 sm:col-start-auto sm:mt-0">
+        <div className="agenda-appt-actions">
           {nextAction ? (
             <Button
               className="h-8 min-w-[108px] rounded-lg px-3 text-xs shadow-none"
