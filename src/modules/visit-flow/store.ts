@@ -28,6 +28,13 @@ export interface VisitFlowState {
   version: number;
 }
 
+export interface VisitFlowBoardState extends VisitFlowState {
+  /** First time the visit entered the waiting room, from the journal. */
+  arrivedAt: string | null;
+  /** When the visit entered its current stage; null before the journal existed. */
+  stageSince: string | null;
+}
+
 export interface FlowDatabase {
   select<T>(sql: string, values?: unknown[]): Promise<T>;
   execute(sql: string, values?: unknown[]): Promise<{ rowsAffected: number }>;
@@ -122,6 +129,47 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
   return {
     state(appointmentId: string) {
       return persistence.read((db) => state(db, appointmentId));
+    },
+
+    /**
+     * Stage of several visits at once, with when each entered its stage and
+     * when it arrived. Times come from the journal, so they are real.
+     */
+    boardStates(appointmentIds: readonly string[]): Promise<VisitFlowBoardState[]> {
+      if (appointmentIds.length === 0) return Promise.resolve([]);
+      return persistence.read(async (db) =>
+        (
+          await db.select<
+            Array<{
+              appointment_id: string;
+              arrived_at: string | null;
+              care: number;
+              stage: VisitFlowStage | null;
+              stage_since: string | null;
+              status: AppointmentStatus;
+              version: number | null;
+            }>
+          >(
+            `SELECT s.appointment_id, s.status, s.stage, s.care, f.version,
+              (SELECT MAX(e.created_at) FROM visit_flow_events e
+                WHERE e.appointment_id = s.appointment_id AND e.to_stage = s.stage
+                  AND e.from_stage IS NOT e.to_stage) AS stage_since,
+              (SELECT MIN(e.created_at) FROM visit_flow_events e
+                WHERE e.appointment_id = s.appointment_id AND e.to_stage = 'waiting') AS arrived_at
+             FROM visit_flow_stages s LEFT JOIN visit_flow f ON f.appointment_id = s.appointment_id
+             WHERE s.appointment_id IN (SELECT value FROM json_each(?))`,
+            [JSON.stringify(appointmentIds)]
+          )
+        ).map((row) => ({
+          appointmentId: row.appointment_id,
+          arrivedAt: row.arrived_at,
+          care: Number(row.care) === 1,
+          stage: row.stage,
+          stageSince: row.stage_since,
+          status: row.status,
+          version: Number(row.version ?? 0),
+        }))
+      );
     },
 
     events(appointmentId: string): Promise<VisitFlowEvent[]> {

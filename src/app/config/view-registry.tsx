@@ -12,6 +12,7 @@ import type { View } from "@/types";
 
 const ClinicalWorkspace = lazy(() => import("@/modules/clinique/pages/clinical-workspace"));
 const AgendaPage = lazy(() => import("@/modules/agenda/pages/agenda-page"));
+const FlowBoardPage = lazy(() => import("@/modules/flow-board/flow-board-page"));
 const FinancesPage = lazy(() => import("@/modules/finances/pages/finances-page"));
 const HelpPage = lazy(() => import("@/components/Help"));
 const NotesPage = lazy(() => import("@/components/NotesPro"));
@@ -123,6 +124,8 @@ export function renderView(view: View, props: ViewRegistryProps) {
       return renderLazyView(<AgendaPage />);
     case "clinique":
       return renderLazyView(<ClinicalWorkspace onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
+    case "flux":
+      return renderLazyView(<FlowBoardPage onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
     case "patients":
       return renderLazyView(
         <PatientsPage onNavigateToPatient={props.onNavigateToPatient} />

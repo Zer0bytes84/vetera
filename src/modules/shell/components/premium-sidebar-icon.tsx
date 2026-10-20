@@ -1,6 +1,6 @@
 import {
   Activity, CalendarDays, CircleHelp, ClipboardList, FileText, Hospital,
-  LayoutDashboard, Package, Pill, Search, Settings2, Stethoscope, UsersRound, Wallet,
+  LayoutDashboard, Package, Pill, Search, Settings2, SquareKanban, Stethoscope, UsersRound, Wallet,
   type LucideIcon,
 } from "lucide-react";
 import type { View } from "@/types";
@@ -11,6 +11,7 @@ const icons: Partial<Record<View, LucideIcon>> = {
   patient_detail: Stethoscope,
   agenda: CalendarDays,
   clinique: Hospital,
+  flux: SquareKanban,
   taches: ClipboardList,
   soins: Pill,
   notes: FileText,

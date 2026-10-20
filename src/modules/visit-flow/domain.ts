@@ -18,6 +18,9 @@ export const VISIT_FLOW_STAGE_LABELS: Record<VisitFlowStage, string> = {
 
 export type VisitFlowCause = "status" | "care" | "billing" | "undo";
 
+/** Fired after a move that may not touch the appointment itself (care, undo). */
+export const VISIT_FLOW_CHANGED = "baitari:visit-flow-changed";
+
 /** How long a manual move can be taken back. */
 export const VISIT_FLOW_UNDO_WINDOW_MS = 10_000;
 

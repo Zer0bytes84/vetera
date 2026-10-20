@@ -27,6 +27,7 @@ export type View =
   | "dashboard"
   | "agenda"
   | "clinique"
+  | "flux"
   | "patients"
   | "notes"
   | "stock"

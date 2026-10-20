@@ -79,6 +79,7 @@ const ALL_VIEWS: View[] = [
   "dashboard",
   "agenda",
   "clinique",
+  "flux",
   "patients",
   "notes",
   "stock",

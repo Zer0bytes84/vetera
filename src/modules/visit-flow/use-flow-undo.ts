@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { emitSQLiteDataChanged } from "@/hooks/useSQLite";
 import { isTauriRuntime } from "@/services/browser-store";
+import { VISIT_FLOW_CHANGED } from "./domain";
 import { visitFlowService } from "./service";
 
 const UNDO_SAFETY_MS = 400;
@@ -47,6 +48,7 @@ export function useFlowUndo() {
             visitFlowService.undo(event.id, actorId).then(
               () => {
                 emitSQLiteDataChanged("appointments");
+                window.dispatchEvent(new Event(VISIT_FLOW_CHANGED));
                 toast.success("Déplacement annulé.");
               },
               (error: unknown) => {

@@ -70,6 +70,7 @@ export { default as Heading02Icon } from "@hugeicons/core-free-icons/Heading02Ic
 export { default as HelpCircleIcon } from "@hugeicons/core-free-icons/HelpCircleIcon";
 export { default as Home04Icon } from "@hugeicons/core-free-icons/Home04Icon";
 export { default as Hospital01Icon } from "@hugeicons/core-free-icons/Hospital01Icon";
+export { default as KanbanIcon } from "@hugeicons/core-free-icons/KanbanIcon";
 export { default as HospitalBed01Icon } from "@hugeicons/core-free-icons/HospitalBed01Icon";
 export { default as HourglassIcon } from "@hugeicons/core-free-icons/HourglassIcon";
 export { default as InformationCircleIcon } from "@hugeicons/core-free-icons/InformationCircleIcon";

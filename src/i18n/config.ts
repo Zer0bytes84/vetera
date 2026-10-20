@@ -240,6 +240,8 @@ const resources = {
         dashboard: "Tableau de bord",
         agenda: "Agenda",
         clinique: "Clinique",
+
+        flux: "Flux",
         patients: "Patients",
         notes: "Documents",
         stock: "Produits",
@@ -1363,6 +1365,8 @@ const resources = {
         dashboard: "Dashboard",
         agenda: "Agenda",
         clinique: "Clinic",
+
+        flux: "Flow",
         patients: "Patients",
         notes: "Notes",
         stock: "Products",
@@ -2292,6 +2296,8 @@ const resources = {
         dashboard: "لوحة التحكم",
         agenda: "الأجندة",
         clinique: "العيادة",
+
+        flux: "التدفق",
         patients: "المرضى",
         notes: "الملاحظات",
         stock: "المنتجات",
@@ -2580,6 +2586,8 @@ const resources = {
         dashboard: "Panel",
         agenda: "Agenda",
         clinique: "Clínica",
+
+        flux: "Flujo",
         patients: "Pacientes",
         notes: "Notas",
         stock: "Productos",
@@ -2874,6 +2882,8 @@ const resources = {
         dashboard: "Painel",
         agenda: "Agenda",
         clinique: "Clínica",
+
+        flux: "Fluxo",
         patients: "Pacientes",
         notes: "Notas",
         stock: "Produtos",
@@ -3167,6 +3177,8 @@ const resources = {
         dashboard: "Dashboard",
         agenda: "Agenda",
         clinique: "Klinik",
+
+        flux: "Ablauf",
         patients: "Patienten",
         notes: "Notizen",
         stock: "Produkte",

@@ -1,0 +1,437 @@
+/* Tableau de flux : charte Baitari, jetons existants uniquement. */
+
+.flow-board-page {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flow-board {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.flow-lanes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
+  gap: 10px;
+}
+
+/* Narrow windows scroll sideways, never vertically inside the board. */
+@media (max-width: 1180px) {
+  .flow-lanes {
+    grid-template-columns: repeat(5, minmax(232px, 1fr));
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+    scroll-snap-type: x proximity;
+  }
+}
+
+.flow-lane,
+.flow-planned {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: var(--radius-panel);
+  background: var(--frame);
+  box-shadow: var(--shadow-hairline);
+  padding: 10px;
+  scroll-snap-align: start;
+  transition: box-shadow var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
+}
+
+.flow-lane {
+  min-height: 180px;
+}
+
+.flow-lane.is-over,
+.flow-planned.is-over {
+  background: color-mix(in oklch, var(--frame) 70%, var(--primary) 6%);
+  box-shadow: 0 0 0 1.5px color-mix(in oklch, var(--primary) 45%, transparent);
+}
+
+.flow-lane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 4px;
+}
+
+.flow-lane-head h2 {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.flow-count {
+  min-width: 22px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-hairline);
+  padding: 1px 7px;
+  text-align: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+
+.flow-lane-warning {
+  margin: 0 4px;
+  font-size: 12px;
+  color: color-mix(in oklch, var(--signal-watch) 75%, var(--ink));
+}
+
+.flow-lane-empty {
+  border: 1px dashed var(--hairline);
+  border-radius: var(--radius-body);
+  padding: 14px 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.flow-lane-list,
+.flow-planned-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flow-planned-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Cards of one row share a height, so their actions line up. */
+.flow-lane-list > li,
+.flow-planned-list > li {
+  display: flex;
+  min-width: 0;
+}
+
+.flow-lane-list > li > .flow-card,
+.flow-planned-list > li > .flow-card {
+  flex: 1;
+  min-width: 0;
+}
+
+.flow-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: grab;
+  border-radius: var(--radius-body);
+  background: var(--surface);
+  box-shadow: var(--shadow-hairline), var(--shadow-card);
+  padding: 10px 10px 8px;
+  outline: none;
+  touch-action: none;
+  transition: box-shadow var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
+}
+
+/* The selected card must read at a glance, in light and dark themes. */
+.flow-card:focus {
+  outline: 2px solid var(--ring, var(--primary));
+  outline-offset: 2px;
+  background: var(--surface-raised);
+}
+
+.flow-card:focus:not(:focus-visible) {
+  outline-color: color-mix(in oklch, var(--ring, var(--primary)) 55%, transparent);
+}
+
+.flow-card.is-urgent {
+  box-shadow: inset 3px 0 0 var(--signal-critical), var(--shadow-hairline), var(--shadow-card);
+}
+
+.flow-card.is-dragging {
+  opacity: 0.35;
+}
+
+.flow-card.is-overlay {
+  cursor: grabbing;
+  box-shadow: var(--shadow-hairline), var(--shadow-float);
+  rotate: -1.5deg;
+}
+
+.flow-card.is-compact {
+  gap: 6px;
+  padding: 7px 8px 6px;
+}
+
+.flow-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.flow-species {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-control);
+  background: var(--frame);
+  color: var(--ink-muted);
+}
+
+.is-compact .flow-species {
+  width: 24px;
+  height: 24px;
+}
+
+.flow-card-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.flow-card-sub {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  margin-top: 1px;
+}
+
+.flow-card-sub .flow-card-meta {
+  max-width: 100%;
+}
+
+.flow-urgent {
+  flex: none;
+  border-radius: 6px;
+  background: color-mix(in oklch, var(--signal-critical) 12%, transparent);
+  padding: 1px 6px;
+  font-family: var(--app-font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: color-mix(in oklch, var(--signal-critical) 80%, var(--ink));
+}
+
+.flow-card-meta {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.flow-card-details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.flow-timer {
+  flex: none;
+  border-radius: 999px;
+  background: var(--frame);
+  padding: 2px 7px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink-muted);
+}
+
+.flow-timer.is-warning,
+.flow-timer.is-late {
+  background: color-mix(in oklch, var(--signal-watch) 16%, transparent);
+  color: color-mix(in oklch, var(--signal-watch) 70%, var(--ink));
+}
+
+.flow-card-alerts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.flow-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.flow-alert[data-kind="allergy"],
+.flow-alert[data-kind="bite"] {
+  background: color-mix(in oklch, var(--signal-critical) 11%, transparent);
+  color: color-mix(in oklch, var(--signal-critical) 80%, var(--ink));
+}
+
+.flow-alert[data-kind="vaccine"] {
+  background: color-mix(in oklch, var(--signal-watch) 14%, transparent);
+  color: color-mix(in oklch, var(--signal-watch) 70%, var(--ink));
+}
+
+.flow-alert[data-kind="more"] {
+  background: var(--frame);
+  color: var(--ink-muted);
+}
+
+.flow-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.flow-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-top: -4px;
+}
+
+.flow-toolbar-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.flow-toolbar-summary strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.flow-toolbar-summary .is-warning {
+  color: color-mix(in oklch, var(--signal-watch) 70%, var(--ink));
+}
+
+.flow-toolbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Opens the patient record: same quiet icon button as the rest of the app. */
+.flow-record-button {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+
+.flow-record-button:hover {
+  background: var(--frame);
+  border-color: color-mix(in oklch, var(--hairline) 60%, var(--ink) 25%);
+}
+
+.flow-record-button:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--primary) 50%, transparent);
+  outline-offset: 1px;
+}
+
+.flow-density {
+  display: inline-flex;
+  border-radius: var(--radius-control);
+  background: var(--frame);
+  padding: 2px;
+  box-shadow: var(--shadow-hairline);
+}
+
+.flow-density button {
+  display: inline-flex;
+  height: 30px;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--ink-muted);
+  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.flow-density button[aria-pressed="true"] {
+  background: var(--surface);
+  box-shadow: var(--shadow-hairline);
+  color: var(--ink);
+}
+
+.flow-density button:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--primary) 50%, transparent);
+  outline-offset: 1px;
+}
+
+.flow-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.flow-elsewhere {
+  border-radius: var(--radius-control);
+  padding: 4px 8px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--ink-muted);
+}
+
+.flow-elsewhere:hover {
+  color: var(--ink);
+}
+
+.flow-error {
+  border-radius: var(--radius-body);
+  background: color-mix(in oklch, var(--signal-critical) 8%, transparent);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: color-mix(in oklch, var(--signal-critical) 80%, var(--ink));
+}
+
+@media (max-width: 640px) {
+  .flow-lanes {
+    grid-template-columns: repeat(5, 82%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-card,
+  .flow-lane,
+  .flow-planned {
+    transition: none;
+  }
+
+  .flow-card.is-overlay {
+    rotate: none;
+  }
+}
