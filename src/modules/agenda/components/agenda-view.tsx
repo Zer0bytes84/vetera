@@ -1,4 +1,5 @@
 import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
+import { PatientDossierSearch } from "./patient-dossier-search";
 import { formatPersonName } from "@/utils/display-format";
 import {
   Add01Icon,
@@ -83,7 +84,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 
-import { cn } from "@/lib/utils";
 
 import type { RecurrenceFrequency } from "@/types/db";
 import {
@@ -674,55 +674,14 @@ export function AgendaView(props: AgendaViewProps) {
           <FormDialogBody>
             <FieldGroup className="grid gap-6">
               <div className="grid gap-5 lg:grid-cols-2">
-                <Field className="lg:col-span-2">
-                  <FieldLabel>
-                    Recherche rapide patient / propriétaire
-                  </FieldLabel>
-                  <Input
-                    onChange={(event) =>
-                      setPersonSearchTerm(event.target.value)
-                    }
-                    placeholder="Nom de l’animal ou du propriétaire, téléphone, espèce…"
-                    value={personSearchTerm}
-                  />
-                  <FieldDescription>
-                    Sélectionnez directement le bon dossier. Le propriétaire et
-                    le patient seront remplis ensemble.
-                  </FieldDescription>
-                  {personSearchTerm.trim() ? (
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {unifiedAppointmentMatches.length > 0 ? (
-                        unifiedAppointmentMatches.map(({ owner, patient }) => (
-                          <button
-                            className={cn(
-                              "cursor-pointer rounded-2xl border px-4 py-3 text-left transition hover:border-primary/40 hover:bg-primary/5",
-                              selectedPatientId === patient.id
-                                ? "border-primary bg-primary/10"
-                                : "border-border/80 bg-background/70"
-                            )}
-                            key={patient.id}
-                            onClick={() => handlePatientSelect(patient.id)}
-                            type="button"
-                          >
-                            <span className="block font-medium text-foreground">
-                              {patient.name}
-                            </span>
-                            <span className="mt-1 block text-muted-foreground text-sm">
-                              {patient.species}
-                              {patient.breed ? ` · ${patient.breed}` : ""} ·{" "}
-                              {formatOwnerName(owner)}
-                            </span>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="rounded-2xl border border-dashed p-4 text-muted-foreground text-sm sm:col-span-2">
-                          Aucun dossier trouvé. Créez d’abord le patient dans le
-                          module Patients, puis revenez ici.
-                        </div>
-                      )}
-                    </div>
-                  ) : null}
-                </Field>
+                <PatientDossierSearch
+                  className="lg:col-span-2"
+                  matches={unifiedAppointmentMatches}
+                  onChange={setPersonSearchTerm}
+                  onSelect={handlePatientSelect}
+                  selectedPatientId={selectedPatientId}
+                  value={personSearchTerm}
+                />
 
                 {/* Second path, folded: pick the owner first, then one of their dossiers. */}
                 <Collapsible className="lg:col-span-2" key={isDialogOpen ? "open" : "closed"}>

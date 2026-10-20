@@ -125,3 +125,19 @@ ${trigger(
   syncFlow(invoiceAppointment("NEW.invoice_id"), "billing")
 )}
 `;
+
+/**
+ * 040: a consultation closed as free of charge (acte gratuit) has no invoice
+ * to settle, so it reaches Terminé through an explicit mark instead.
+ */
+const STAGE_VIEW_WITH_NO_CHARGE = STAGE_VIEW.replace(
+  "WHEN a.status = 'completed' THEN CASE",
+  "WHEN a.status = 'completed' THEN CASE\n      WHEN COALESCE(f.no_charge, 0) = 1 THEN 'done'"
+);
+
+export const VISIT_FLOW_NO_CHARGE_MIGRATION_SQL = `
+ALTER TABLE visit_flow ADD COLUMN no_charge INTEGER NOT NULL DEFAULT 0 CHECK(no_charge IN (0, 1));
+DROP VIEW visit_flow_stages;
+${STAGE_VIEW_WITH_NO_CHARGE}
+${trigger("visit_flow_on_no_charge", "UPDATE OF no_charge ON visit_flow", syncFlow("NEW.appointment_id", "billing"), "OLD.no_charge IS NOT NEW.no_charge")}
+`;

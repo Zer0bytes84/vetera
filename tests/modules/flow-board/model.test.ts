@@ -7,6 +7,7 @@ import {
   patientAlerts,
   PLANNED,
   PRIMARY_ACTION,
+  walkInFor,
 } from "@/modules/flow-board/model";
 import type { VisitFlowBoardState } from "@/modules/visit-flow/store";
 import type { Appointment, Owner, Patient, User, Vaccination } from "@/types/db";
@@ -113,13 +114,34 @@ describe("tableau de flux", () => {
     });
   });
 
-  it("laisse les autres jours hors du tableau mais compte les visites encore ouvertes", () => {
+  it("garde hors des colonnes les visites d'autres jours, et montre celles restées ouvertes, les plus anciennes d'abord", () => {
     const result = board(
-      [visit("hier", "in_progress", at("15:00", "2026-10-19")), visit("ancien", "completed", at("15:00", "2026-07-01"))],
-      [state("hier", "consultation", null), state("ancien", "billing", null)]
+      [
+        visit("hier", "in_progress", at("15:00", "2026-10-19")),
+        visit("juillet", "waiting", at("09:00", "2026-07-09")),
+        visit("ancien", "completed", at("15:00", "2026-07-01")),
+        visit("prevu-hier", "scheduled", at("15:00", "2026-10-19")),
+      ],
+      [state("hier", "consultation", null), state("juillet", "waiting", null), state("ancien", "billing", null), state("prevu-hier", null, null)]
     );
     expect(Object.values(result.lanes).flat()).toEqual([]);
-    expect(result.openElsewhere).toBe(1);
+    expect(result.leftOpen.map((card) => [card.appointmentId, card.lane])).toEqual([
+      ["juillet", "waiting"],
+      ["hier", "consultation"],
+    ]);
+  });
+
+  it("cherche dans le patient, le propriétaire, le motif, l'espèce et le vétérinaire, sans tenir compte des accents", () => {
+    const appointments = [visit("Rex", "arrived", at("10:00"), { reason: "Boiterie antérieure" }), visit("Nika", "arrived")];
+    const states = [state("Rex", "waiting", at("10:00")), state("Nika", "waiting", at("10:00"))];
+    const names = (query: string) =>
+      buildFlowBoard({ appointments, now, owners: [owner], patients: appointments.map((a) => patient(a.patientId)), states, users: vets, vaccinations: [], query })
+        .lanes.waiting.map((card) => card.patientName);
+    expect(names("anterieure")).toEqual(["Rex"]);
+    expect(names("haddad nika")).toEqual(["Nika"]);
+    expect(names("karim")).toEqual(["Rex", "Nika"]);
+    expect(names("chat")).toEqual([]);
+    expect(names("  ")).toEqual(["Rex", "Nika"]);
   });
 
   it("filtre par vétérinaire", () => {
@@ -150,15 +172,31 @@ describe("alertes des cartes", () => {
   });
 });
 
+describe("arrivée sans rendez-vous", () => {
+  it("ne double pas un patient déjà là, fait arriver un patient attendu, sinon crée la visite", () => {
+    const rdv = [
+      visit("deja", "waiting"),
+      visit("attendu", "scheduled", at("11:30")),
+      visit("attendu-tot", "confirmed", at("09:30"), { patientId: "attendu" }),
+      visit("hier", "scheduled", at("10:00", "2026-10-19"), { patientId: "nouveau" }),
+    ];
+    expect(walkInFor("deja", rdv, now)).toMatchObject({ kind: "already-here", appointment: { id: "deja" } });
+    expect(walkInFor("attendu", rdv, now)).toMatchObject({ kind: "booked", appointment: { id: "attendu-tot" } });
+    expect(walkInFor("nouveau", rdv, now)).toEqual({ kind: "new" });
+  });
+});
+
 describe("déplacements", () => {
   it("n'autorise que les pas sûrs, et explique les autres", () => {
     expect(boardMove("waiting", "consultation")).toEqual({ kind: "status", status: "in_progress" });
     expect(boardMove("consultation", "care")).toEqual({ kind: "care", care: true });
     expect(boardMove("care", "consultation")).toEqual({ kind: "care", care: false });
-    expect(boardMove("consultation", "billing")).toEqual({ refused: expect.stringContaining("Clinique") });
+    expect(boardMove("consultation", "billing")).toEqual({ kind: "close" });
+    expect(boardMove("care", "billing")).toEqual({ kind: "close" });
     expect(boardMove("billing", "done")).toEqual({ refused: expect.stringContaining("réglée") });
     expect(boardMove("consultation", "waiting")).toEqual({ refused: expect.stringContaining("Annuler") });
     expect(boardMove("waiting", "waiting")).toBeNull();
+    expect(PRIMARY_ACTION.billing).toMatchObject({ label: "Facturer" });
   });
 
   it("affiche des durées lisibles", () => {

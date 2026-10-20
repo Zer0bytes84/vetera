@@ -205,6 +205,26 @@ export function createVisitFlowStore(persistence: FlowPersistence) {
       });
     },
 
+    /**
+     * A closed consultation billed nothing on purpose (acte gratuit): it is
+     * done without an invoice. Journaled like a payment would be.
+     */
+    markNoCharge(appointmentId: string, actorId: string | null) {
+      return persistence.transaction(async (db) => {
+        const current = await state(db, appointmentId);
+        if (current.status !== "completed") {
+          throw new VisitFlowError("not_undoable", "Seule une consultation clôturée peut être marquée sans frais.");
+        }
+        await db.execute(
+          `INSERT INTO visit_flow(appointment_id, no_charge) VALUES (?, 1)
+           ON CONFLICT(appointment_id) DO UPDATE SET no_charge = 1`,
+          [appointmentId]
+        );
+        if (actorId) await attribute(db, appointmentId, actorId);
+        return state(db, appointmentId);
+      });
+    },
+
     /** Names who made the transition the triggers just journaled. */
     async attribute(appointmentId: string, actorId: string | null) {
       if (actorId) await persistence.transaction((db) => attribute(db, appointmentId, actorId));

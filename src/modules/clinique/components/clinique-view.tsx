@@ -106,6 +106,7 @@ export function CliniqueView(props: CliniqueViewProps) {
     activeConsultationPatient,
     anesthesiaOpen,
     billingAppointment,
+    billingInvoice,
     currentUser,
     detailTab,
     effectiveAppointmentId,
@@ -1067,6 +1068,7 @@ export function CliniqueView(props: CliniqueViewProps) {
       {billingAppointment ? (
         <BillingDialog
           appointment={billingAppointment}
+          existingInvoice={billingInvoice}
           onClose={() => setBillingAppointment(null)}
           onConfirm={handleBillingConfirm}
           ownerEmail={getOwner(billingAppointment)?.email}

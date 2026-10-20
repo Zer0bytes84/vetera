@@ -42,8 +42,8 @@ export interface FlowCard {
 
 export interface FlowBoard {
   lanes: Record<BoardLane, FlowCard[]>;
-  /** Open visits booked on other days, left out of today's board. */
-  openElsewhere: number;
+  /** Visits of other days never closed: still waiting, in consultation or in care. */
+  leftOpen: FlowCard[];
 }
 
 const NO_ALLERGY = /^(aucun(?:e)?(?:\s+connue)?|néant|neant|non|ras|r\.a\.s\.?|-)$/i;
@@ -107,8 +107,24 @@ export interface BoardInput {
   states: readonly VisitFlowBoardState[];
   users: readonly User[];
   vaccinations: readonly Vaccination[];
+  /** Words to find in the patient, owner, reason, species or veterinarian. */
+  query?: string;
   /** Only this veterinarian's visits; empty for everyone. */
   vetId?: string;
+}
+
+const fold = (text: string) =>
+  text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("fr");
+
+/** Every word of the query must appear somewhere on the card. */
+export function matchesQuery(card: FlowCard, query: string | undefined) {
+  const words = fold(query ?? "").split(/\s+/).filter(Boolean);
+  if (words.length === 0) return true;
+  const haystack = fold([card.patientName, card.ownerName, card.reason, card.species, card.vetName].join(" "));
+  return words.every((word) => haystack.includes(word));
 }
 
 /** Today's visits by lane, urgent ones first, then longest waiting first. */
@@ -118,23 +134,21 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
   const users = new Map(input.users.map((user) => [user.id, user]));
   const states = new Map(input.states.map((state) => [state.appointmentId, state]));
   const lanes = Object.fromEntries(BOARD_LANES.map((lane) => [lane, [] as FlowCard[]])) as Record<BoardLane, FlowCard[]>;
-  let openElsewhere = 0;
+  const leftOpen: FlowCard[] = [];
 
   for (const appointment of input.appointments) {
     if (input.vetId && appointment.vetId !== input.vetId) continue;
     const state = states.get(appointment.id);
     const stage = state?.stage ?? null;
     const today = isSameLocalDay(appointment.startTime, input.now);
-    if (!today) {
-      if (stage === "waiting" || stage === "consultation" || stage === "care") openElsewhere += 1;
-      continue;
-    }
+    const stillOpen = stage === "waiting" || stage === "consultation" || stage === "care";
+    if (!today && !stillOpen) continue;
     const planned = appointment.status === "scheduled" || appointment.status === "confirmed";
     const lane: BoardLane | null = planned ? PLANNED : stage;
     if (!lane) continue;
     const patient = patients.get(appointment.patientId);
     const owner = owners.get(appointment.ownerId);
-    lanes[lane].push({
+    const card: FlowCard = {
       alerts: patientAlerts(patient, input.vaccinations, input.now),
       appointmentId: appointment.id,
       arrivedAt: state?.arrivedAt ?? null,
@@ -151,7 +165,10 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
       version: state?.version ?? 0,
       vetId: appointment.vetId,
       vetName: users.get(appointment.vetId)?.displayName ?? "",
-    });
+    };
+    if (!matchesQuery(card, input.query)) continue;
+    if (today) lanes[lane].push(card);
+    else leftOpen.push(card);
   }
 
   const time = (value: string | null, fallback: string) => new Date(value ?? fallback).getTime();
@@ -162,7 +179,9 @@ export function buildFlowBoard(input: BoardInput): FlowBoard {
       return time(a.since, a.startTime) - time(b.since, b.startTime);
     });
   }
-  return { lanes, openElsewhere };
+  // Oldest first: the visit forgotten the longest comes up first.
+  leftOpen.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  return { lanes, leftOpen };
 }
 
 export function minutesSince(iso: string | null, now: Date): number | null {
@@ -180,7 +199,9 @@ export function durationLabel(minutes: number): string {
 
 export type BoardMove =
   | { kind: "status"; status: "arrived" | "in_progress" }
-  | { kind: "care"; care: boolean };
+  | { kind: "care"; care: boolean }
+  /** Closing needs the report and the invoice: open the consultation for it. */
+  | { kind: "close" };
 
 /**
  * What moving a card from one lane to another does. Only forward steps a
@@ -193,9 +214,7 @@ export function boardMove(from: BoardLane, to: BoardLane): BoardMove | { refused
   if (from === "waiting" && to === "consultation") return { kind: "status", status: "in_progress" };
   if (from === "consultation" && to === "care") return { kind: "care", care: true };
   if (from === "care" && to === "consultation") return { kind: "care", care: false };
-  if ((from === "consultation" || from === "care") && to === "billing") {
-    return { refused: "Clôturez la consultation dans Clinique : le compte rendu et la facture s'y préparent." };
-  }
+  if ((from === "consultation" || from === "care") && to === "billing") return { kind: "close" };
   if (to === "done") return { refused: "Terminé arrive seul, dès que la facture est entièrement réglée." };
   return { refused: "Pour revenir en arrière, utilisez « Annuler » juste après le déplacement." };
 }
@@ -206,4 +225,25 @@ export const PRIMARY_ACTION: Partial<Record<BoardLane, { label: string; title: s
   waiting: { label: "Faire entrer", title: "Faire entrer en consultation", to: "consultation" },
   consultation: { label: "En soins", title: "Passer en Soins ou résultats", to: "care" },
   care: { label: "Reprendre", title: "Reprendre la consultation", to: "consultation" },
+  billing: { label: "Facturer", title: "Établir la facture et encaisser", to: "done" },
 };
+
+export type WalkIn =
+  | { kind: "already-here"; appointment: Appointment }
+  | { kind: "booked"; appointment: Appointment }
+  | { kind: "new" };
+
+/**
+ * A patient who shows up at the desk: already in the waiting room or in
+ * consultation, booked today and not arrived yet, or a true walk-in.
+ */
+export function walkInFor(patientId: string, appointments: readonly Appointment[], now: Date): WalkIn {
+  const todays = appointments.filter((a) => a.patientId === patientId && isSameLocalDay(a.startTime, now));
+  const here = todays.find((a) => a.status === "arrived" || a.status === "waiting" || a.status === "in_progress");
+  if (here) return { kind: "already-here", appointment: here };
+  const booked = todays
+    .filter((a) => a.status === "scheduled" || a.status === "confirmed")
+    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0];
+  if (booked) return { kind: "booked", appointment: booked };
+  return { kind: "new" };
+}

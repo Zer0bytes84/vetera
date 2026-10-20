@@ -1,4 +1,5 @@
 import { formatDinars, formatPhone } from "@/utils/display-format";
+import { billingDraft, parseDinars, type DraftLine, type ExistingInvoice } from "@/modules/billing/billing-draft";
 import {
   Add01Icon,
   AttachmentIcon,
@@ -1163,6 +1164,7 @@ export function BillingDialog({
   ownerEmail,
   onClose,
   onConfirm,
+  existingInvoice,
 }: {
   appointment: Appointment;
   patientName: string;
@@ -1170,74 +1172,48 @@ export function BillingDialog({
   ownerEmail?: string;
   onClose: () => void;
   onConfirm: (items: BillingItem[], amountReceivedDa: number) => Promise<void>;
+  /** Already issued for this visit: its lines are kept, only the balance is due. */
+  existingInvoice?: ExistingInvoice | null;
 }) {
-  const [items, setItems] = useState<BillingItem[]>([
-    { desc: `Consultation - ${appointment.type}`, amount: 2000 },
+  // No amount is assumed: the price and today's payment are typed by hand.
+  const [lines, setLines] = useState<DraftLine[]>([
+    { desc: `Consultation - ${appointment.type}`, amount: "" },
   ]);
   const [newItemDesc, setNewItemDesc] = useState("");
   const [newItemAmount, setNewItemAmount] = useState("");
   const [isConfirming, setIsConfirming] = useState(false);
-  const [amountReceived, setAmountReceived] = useState("2000");
-  const previousTotalRef = useRef(2000);
+  const [amountReceived, setAmountReceived] = useState("");
 
-  const total = items.reduce((sum, item) => sum + item.amount, 0);
-  useEffect(() => {
-    setAmountReceived((current) =>
-      Number(current) === previousTotalRef.current ? String(total) : current
-    );
-    previousTotalRef.current = total;
-  }, [total]);
-  const received = Math.min(total, Math.max(0, Number(amountReceived) || 0));
-  const balance = Math.max(0, total - received);
+  const draft = billingDraft(lines, amountReceived, existingInvoice);
+  const { due, free, items, total } = draft;
+  const balance = draft.balanceAfter;
 
   const addItem = () => {
-    const parsedAmount = Number(newItemAmount);
-    if (
-      !(newItemDesc.trim() && Number.isFinite(parsedAmount)) ||
-      parsedAmount <= 0
-    ) {
+    const parsedAmount = parseDinars(newItemAmount);
+    if (!newItemDesc.trim() || parsedAmount === null || parsedAmount <= 0) {
       toast.error("Renseignez une ligne de prestation valide.");
       return;
     }
 
-    setItems((current) => [
+    setLines((current) => [
       ...current,
-      { desc: newItemDesc.trim(), amount: parsedAmount },
+      { desc: newItemDesc.trim(), amount: String(parsedAmount) },
     ]);
     setNewItemDesc("");
     setNewItemAmount("");
   };
 
   const removeItem = (index: number) => {
-    setItems((current) =>
+    setLines((current) =>
       current.filter((_, itemIndex) => itemIndex !== index)
     );
   };
 
-  const updateItem = (
-    index: number,
-    field: keyof BillingItem,
-    value: string | number
-  ) => {
-    setItems((current) =>
-      current.map((item, itemIndex) => {
-        if (itemIndex !== index) {
-          return item;
-        }
-
-        if (field === "amount") {
-          const amount = Number(value);
-          return {
-            ...item,
-            amount: Number.isFinite(amount) && amount >= 0 ? amount : 0,
-          };
-        }
-
-        return {
-          ...item,
-          [field]: String(value),
-        };
-      })
+  const updateItem = (index: number, field: keyof DraftLine, value: string) => {
+    setLines((current) =>
+      current.map((line, itemIndex) =>
+        itemIndex === index ? { ...line, [field]: value } : line
+      )
     );
   };
 
@@ -1262,9 +1238,12 @@ export function BillingDialog({
     if (isConfirming) {
       return;
     }
+    if (!draft.canConfirm) {
+      return;
+    }
     try {
       setIsConfirming(true);
-      await onConfirm(items, received);
+      await onConfirm(items, draft.received ?? 0);
     } finally {
       setIsConfirming(false);
     }
@@ -1330,6 +1309,7 @@ export function BillingDialog({
               </div>
             </div>
 
+            {!existingInvoice && (
             <FieldGroup className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px_auto]">
               <Field>
                 <FieldLabel>Nouvelle ligne</FieldLabel>
@@ -1361,6 +1341,7 @@ export function BillingDialog({
                 </Button>
               </div>
             </FieldGroup>
+            )}
 
             <div className="overflow-hidden rounded-lg border">
               <Table>
@@ -1372,27 +1353,39 @@ export function BillingDialog({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.map((item, index) => (
-                    <TableRow key={`${item.desc}-${index}`}>
+                  {existingInvoice
+                    ? existingInvoice.lines.map((line, index) => (
+                        <TableRow key={`${line.desc}-${index}`}>
+                          <TableCell className="pl-8 font-medium">{line.desc}</TableCell>
+                          <TableCell className="w-[180px] tabular-nums">{formatDinars(line.amountDa)}</TableCell>
+                          <TableCell className="pr-8 text-right text-muted-foreground text-xs">Facturé</TableCell>
+                        </TableRow>
+                      ))
+                    : lines.map((line, index) => (
+                    <TableRow key={index}>
                       <TableCell className="pl-8">
                         <Input
                           className="h-9 border-transparent bg-transparent px-0 font-medium shadow-none focus-visible:border-input focus-visible:bg-background"
                           onChange={(event) =>
                             updateItem(index, "desc", event.target.value)
                           }
-                          value={item.desc}
+                          value={line.desc}
                         />
                       </TableCell>
                       <TableCell className="w-[180px]">
                         <div className="flex items-center gap-2">
                           <Input
+                            aria-invalid={parseDinars(line.amount) === null}
+                            aria-label={`Prix de ${line.desc || "la prestation"}`}
                             className="h-9"
+                            inputMode="decimal"
                             min="0"
                             onChange={(event) =>
                               updateItem(index, "amount", event.target.value)
                             }
+                            placeholder="Prix"
                             type="number"
-                            value={String(item.amount)}
+                            value={line.amount}
                           />
                           <span className="text-muted-foreground text-sm">
                             DA
@@ -1401,7 +1394,7 @@ export function BillingDialog({
                       </TableCell>
                       <TableCell className="pr-8 text-right">
                         <Button
-                          disabled={items.length === 1}
+                          disabled={lines.length === 1}
                           onClick={() => removeItem(index)}
                           size="icon-sm"
                           variant="ghost"
@@ -1422,29 +1415,59 @@ export function BillingDialog({
             <div className="rounded-panel border border-border/80 bg-muted/20 px-5 py-4">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-muted-foreground text-sm">
-                  Total à encaisser
+                  {existingInvoice
+                    ? `Reste dû sur la facture ${existingInvoice.number ?? ""}`.trim()
+                    : "Total de la facture"}
                 </span>
                 <span className="font-semibold text-2xl text-foreground tracking-[-0.04em]">
-                  {formatDinars(total)}
+                  {formatDinars(due)}
                 </span>
               </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_180px] sm:items-end">
-                <div>
-                  <p className="font-medium text-sm">Règlement aujourd’hui</p>
-                  <p className="mt-1 text-muted-foreground text-xs">
-                    Laissez 0 DA pour créer une créance à recouvrer.
-                  </p>
+              {existingInvoice && (
+                <p className="mt-1 text-muted-foreground text-xs">
+                  Facture de {formatDinars(total)}, dont {formatDinars(total - due)} déjà réglés.
+                </p>
+              )}
+              {!free && (
+                <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_200px] sm:items-end">
+                  <div>
+                    <p className="font-medium text-sm">Règlement aujourd’hui</p>
+                    <p className="mt-1 text-muted-foreground text-xs">
+                      Saisissez ce que le client paie maintenant. 0 DA crée une créance à recouvrer.
+                    </p>
+                    {due > 0 && (
+                      <button
+                        className="mt-2 t-12 font-medium text-primary underline-offset-2 hover:underline"
+                        onClick={() => setAmountReceived(String(due))}
+                        type="button"
+                      >
+                        Régler la totalité ({formatDinars(due)})
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    aria-label="Montant réglé aujourd’hui"
+                    inputMode="decimal"
+                    max={due}
+                    min="0"
+                    onChange={(event) => setAmountReceived(event.target.value)}
+                    placeholder="Montant réglé"
+                    type="number"
+                    value={amountReceived}
+                  />
                 </div>
-                <Input
-                  min="0"
-                  max={total}
-                  onChange={(event) => setAmountReceived(event.target.value)}
-                  type="number"
-                  value={amountReceived}
-                />
-              </div>
+              )}
+              {free && (
+                <p
+                  className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-amber-800 text-sm dark:text-amber-200"
+                  role="status"
+                >
+                  Total à 0 DA : aucune facture ne sera émise. La consultation sera clôturée comme acte gratuit.
+                  Pour facturer, indiquez le prix de chaque ligne ci-dessus.
+                </p>
+              )}
               <div className="mt-3 flex items-center justify-between rounded-xl bg-background/70 px-3 py-2 text-sm">
-                <span className="text-muted-foreground">Solde restant</span>
+                <span className="text-muted-foreground">Reste à recouvrer après ce règlement</span>
                 <span
                   className={cn(
                     "font-semibold",
@@ -1472,6 +1495,11 @@ export function BillingDialog({
             Email
           </Button>
 
+          {draft.problem && (
+            <p className="text-muted-foreground text-sm sm:me-auto sm:ms-4" role="status">
+              {draft.problem}
+            </p>
+          )}
           <div className="modal-medical-actions">
             <Button
               className="min-w-[120px]"
@@ -1483,7 +1511,7 @@ export function BillingDialog({
             </Button>
             <Button
               className="min-w-[196px]"
-              disabled={isConfirming}
+              disabled={isConfirming || !draft.canConfirm}
               onClick={() => void handleConfirm()}
             >
               {isConfirming ? (
@@ -1495,7 +1523,13 @@ export function BillingDialog({
                   strokeWidth={1.5}
                 />
               )}
-              {isConfirming ? "Traitement..." : "Encaisser et imprimer"}
+              {isConfirming
+                ? "Traitement..."
+                : free
+                  ? "Clôturer comme acte gratuit"
+                  : (draft.received ?? 0) > 0
+                    ? "Encaisser et imprimer"
+                    : "Facturer sans encaisser"}
             </Button>
           </div>
         </div>

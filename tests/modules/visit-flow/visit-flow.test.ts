@@ -214,6 +214,26 @@ describe("journal des transitions", () => {
   });
 });
 
+describe("acte gratuit", () => {
+  beforeEach(() => open());
+
+  it("termine sans facture une consultation clôturée à 0 DA, et le journalise", async () => {
+    book("free", "in_progress");
+    setStatus("free", "completed");
+    expect(stage("free")).toBe("billing");
+    await expect(flow().markNoCharge("free", "vet")).resolves.toMatchObject({ stage: "done" });
+    expect(stage("free")).toBe(visitFlowStage({ care: false, noCharge: true, settled: false, status: "completed" }));
+    expect((await flow().events("free")).slice(-1)[0]).toMatchObject({ cause: "billing", fromStage: "billing", toStage: "done", actorId: "vet" });
+    expect(sqlite.prepare("SELECT COUNT(*) AS n FROM invoices WHERE appointment_id = 'free'").get()?.n).toBe(0);
+  });
+
+  it("refuse de marquer sans frais une visite encore ouverte", async () => {
+    book("open", "in_progress");
+    await expect(flow().markNoCharge("open", "vet")).rejects.toThrow(/clôturée/);
+    expect(stage("open")).toBe("consultation");
+  });
+});
+
 describe("annulation", () => {
   beforeEach(() => open());
 

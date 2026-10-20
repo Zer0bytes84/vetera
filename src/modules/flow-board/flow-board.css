@@ -331,6 +331,79 @@
   gap: 8px;
 }
 
+.flow-search {
+  display: inline-flex;
+  height: 36px;
+  min-width: 220px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  padding: 0 10px;
+  color: var(--ink-muted);
+}
+
+.flow-search:focus-within {
+  border-color: color-mix(in oklch, var(--ring, var(--primary)) 60%, var(--hairline));
+}
+
+.flow-search input {
+  min-width: 0;
+  flex: 1;
+  background: transparent;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+
+.flow-search input::placeholder {
+  color: var(--ink-faint);
+}
+
+/* Visits of other days never closed: visible, but quieter than today. */
+.flow-left-open {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: var(--radius-panel);
+  background: color-mix(in oklch, var(--frame) 88%, var(--signal-watch) 6%);
+  box-shadow: var(--shadow-hairline);
+  padding: 10px;
+}
+
+.flow-left-open > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.flow-left-open > summary::-webkit-details-marker {
+  display: none;
+}
+
+.flow-left-open > summary h2 {
+  flex: none;
+}
+
+.flow-left-open-hint {
+  flex: 1;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.flow-left-open:not([open]) > summary {
+  padding-bottom: 2px;
+}
+
+.flow-card-stage {
+  width: fit-content;
+  border-radius: 6px;
+  background: var(--frame);
+  padding: 2px 6px;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
 /* Opens the patient record: same quiet icon button as the rest of the app. */
 .flow-record-button {
   display: inline-flex;

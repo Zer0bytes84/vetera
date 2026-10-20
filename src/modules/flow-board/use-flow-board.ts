@@ -12,13 +12,15 @@ import { VISIT_FLOW_CHANGED, VISIT_FLOW_STAGE_LABELS } from "@/modules/visit-flo
 import { visitFlowService } from "@/modules/visit-flow/service";
 import type { VisitFlowBoardState } from "@/modules/visit-flow/store";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
-import { boardMove, buildFlowBoard, isSameLocalDay, type BoardLane, type FlowCard } from "./model";
+import { roomsService } from "@/modules/rooms/service";
+import type { Appointment, Patient } from "@/types/db";
+import { boardMove, buildFlowBoard, isSameLocalDay, walkInFor, type BoardLane, type FlowCard } from "./model";
 
 const REFRESH_MS = 30_000;
 const OPEN_STATUSES = new Set(["arrived", "waiting", "in_progress"]);
 
 /** Today's board, kept fresh, with the moves a click or a key can make. */
-export function useFlowBoard(vetId: string) {
+export function useFlowBoard(vetId: string, query = "") {
   const appointments = useAppointmentsRepository();
   const patients = usePatientsRepository();
   const users = useUsersRepository();
@@ -88,17 +90,23 @@ export function useFlowBoard(vetId: string) {
         states,
         users: users.data,
         vaccinations: vaccinations.data,
+        query,
         vetId: vetId || undefined,
       }),
-    [appointments.data, now, patients.owners, patients.data, states, users.data, vaccinations.data, vetId]
+    [appointments.data, now, patients.owners, patients.data, query, states, users.data, vaccinations.data, vetId]
   );
 
   const move = useCallback(
-    async (card: FlowCard, to: BoardLane) => {
+    async (card: FlowCard, to: BoardLane, onClose?: (card: FlowCard) => void) => {
       const outcome = boardMove(card.lane, to);
       if (!outcome) return;
       if ("refused" in outcome) {
         toast.info(outcome.refused);
+        return;
+      }
+      if (outcome.kind === "close") {
+        toast.info(`Clôturez la consultation de ${card.patientName} : compte rendu, puis facture.`);
+        onClose?.(card);
         return;
       }
       if (busyId) return;
@@ -122,6 +130,56 @@ export function useFlowBoard(vetId: string) {
     [appointments, busyId, currentUser?.id, flowUndo, refresh]
   );
 
+  /**
+   * A patient at the desk without being expected: straight to the waiting
+   * room. A booked patient simply arrives; one already here is not doubled.
+   */
+  const walkIn = useCallback(
+    async (patient: Patient) => {
+      if (!patient.ownerId) throw new Error("Ce patient doit être rattaché à un propriétaire.");
+      const actor = currentUser?.id;
+      if (!actor) throw new Error("Reconnectez-vous avant d'enregistrer une arrivée.");
+      const found = walkInFor(patient.id, appointments.data, new Date());
+      if (found.kind === "already-here") {
+        toast.info(`${patient.name} est déjà au cabinet aujourd'hui.`);
+        return found.appointment.id;
+      }
+      let appointment: Appointment | null = found.kind === "booked" ? found.appointment : null;
+      if (appointment) {
+        await appointments.transitionStatus(appointment.id, "arrived");
+      } else {
+        const start = new Date();
+        const room = await roomsService.defaultRoomId().catch(() => null);
+        appointment = await appointments.add({
+          endTime: new Date(start.getTime() + 15 * 60_000).toISOString(),
+          ownerId: patient.ownerId,
+          patientId: patient.id,
+          reason: "Sans rendez-vous",
+          ...(room ? { room } : {}),
+          startTime: start.toISOString(),
+          status: "scheduled",
+          title: `${patient.name} · Sans rendez-vous`,
+          type: "Consultation",
+          vetId: vetId || actor,
+        } as Omit<Appointment, "id" | "createdAt" | "updatedAt">);
+        if (!appointment) throw new Error("L'arrivée n'a pas pu être enregistrée. Réessayez.");
+        // Just created: not in this render's data yet, so set the status by id.
+        if (!(await appointments.update(appointment.id, { status: "arrived" }))) {
+          throw new Error("L'arrivée n'a pas pu être enregistrée. Réessayez.");
+        }
+      }
+      void flowUndo.confirm(appointment.id, `${patient.name} : Attente`);
+      await refresh();
+      return appointment.id;
+    },
+    [appointments, currentUser?.id, flowUndo, refresh, vetId]
+  );
+
+  const appointmentById = useCallback(
+    (id: string) => appointments.data.find((appointment) => appointment.id === id) ?? null,
+    [appointments.data]
+  );
+
   const vets = useMemo(() => {
     const booked = new Set(appointments.data.filter((a) => isSameLocalDay(a.startTime, now)).map((a) => a.vetId));
     return users.data
@@ -131,7 +189,13 @@ export function useFlowBoard(vetId: string) {
   }, [appointments.data, now, users.data]);
 
   return {
+    appointmentById,
     board,
+    completeWithBilling: appointments.completeWithBilling,
+    owners: patients.owners,
+    patients: patients.data,
+    refresh,
+    walkIn,
     busyId,
     error: statesError ?? appointments.error ?? null,
     loading: appointments.loading,

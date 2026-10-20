@@ -2,7 +2,7 @@ import { formatNumber, formatPersonName } from "@/utils/display-format";
 import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
 import type { BusySlot } from "../components/agenda-shared";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
-import { matchesEveryWord, selectedDossierSearchLabel } from "../quick-search";
+import { findDossiers, selectedDossierSearchLabel } from "../quick-search";
 import {
   useDeferredValue,
   useEffect,
@@ -260,26 +260,7 @@ export function useAgendaPageModel() {
       return [];
     }
 
-    const matches = patients
-      .map((patient) => {
-        const owner = ownersById.get(patient.ownerId);
-        const searchIndex = [
-          patient.name,
-          patient.species,
-          patient.breed,
-          owner?.firstName,
-          owner?.lastName,
-          owner?.phone,
-          owner?.email,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        return { owner, patient, searchIndex };
-      })
-      .filter((entry) => matchesEveryWord(entry.searchIndex, personSearchTerm))
-      .slice(0, 8);
+    const matches = findDossiers(patients, ownersById, personSearchTerm);
 
     // The dossier already chosen stays listed while its pre-filled label is
     // untouched, even if its owner record lacks the words searched for.

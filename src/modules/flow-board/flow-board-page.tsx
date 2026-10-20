@@ -15,9 +15,13 @@ import { KeyHint } from "@/design-system/primitives";
 import { PageHeader } from "@/design-system/patterns/page-header";
 import { Button } from "@/components/ui/button";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import { KanbanIcon, MedicalFileIcon } from "@/lib/hugeicons";
-import { AlertTriangle, ArrowRight, Rows3, LayoutGrid, Stethoscope, Syringe } from "@/lib/icons";
+import { KanbanIcon, MedicalFileIcon, UserAdd01Icon } from "@/lib/hugeicons";
+import { AlertTriangle, ArrowRight, Rows3, LayoutGrid, Search, Stethoscope, Syringe } from "@/lib/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { toast } from "sonner";
+import { useAppointmentBilling } from "@/modules/billing/use-appointment-billing";
+import { BillingDialog } from "@/modules/clinique/components/clinique-shared";
+import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { cn } from "@/lib/utils";
 import { VISIT_FLOW_STAGES, VISIT_FLOW_STAGE_LABELS } from "@/modules/visit-flow/domain";
@@ -35,6 +39,7 @@ import {
 } from "./model";
 import { ARROW_DIRECTIONS, nearestInDirection } from "./spatial-nav";
 import { useFlowBoard } from "./use-flow-board";
+import { WalkInDialog } from "./walk-in-dialog";
 import "./flow-board.css";
 
 const PREFS_KEY = "baitari.flow-board.v1";
@@ -99,7 +104,16 @@ function Alerts({ alerts }: { alerts: FlowAlert[] }) {
   );
 }
 
-function Timer({ card, now }: { card: FlowCard; now: Date }) {
+const openedDay = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+
+function Timer({ card, leftOpen, now }: { card: FlowCard; leftOpen?: boolean; now: Date }) {
+  if (leftOpen) {
+    return (
+      <span className="flow-timer is-late" title={`Visite ouverte le ${new Date(card.startTime).toLocaleDateString("fr-FR", { dateStyle: "long" })}, jamais clôturée`}>
+        {openedDay(card.startTime)}
+      </span>
+    );
+  }
   if (card.lane === PLANNED) {
     const late = minutesSince(card.startTime, now) ?? 0;
     const lateText = late > 0 ? `${durationLabel(late)} de retard` : null;
@@ -128,6 +142,8 @@ interface CardProps {
   card: FlowCard;
   compact: boolean;
   focused: boolean;
+  /** A visit of another day still open, shown in Restées ouvertes. */
+  leftOpen?: boolean;
   now: Date;
   onFocus: () => void;
   onOpen: (card: FlowCard) => void;
@@ -136,8 +152,12 @@ interface CardProps {
   registerRef: (node: HTMLElement | null) => void;
 }
 
-function CardBody({ busy, card, compact, now, onOpenRecord, onPrimary }: Omit<CardProps, "focused" | "onFocus" | "onOpen" | "registerRef">) {
-  const action = PRIMARY_ACTION[card.lane];
+function CardBody({ busy, card, compact, leftOpen, now, onOpenRecord, onPrimary }: Omit<CardProps, "focused" | "onFocus" | "onOpen" | "registerRef">) {
+  // A visit forgotten on another day needs closing, not one more step.
+  const reopen = leftOpen && (card.lane === "consultation" || card.lane === "care");
+  const action = reopen
+    ? { label: "Ouvrir", title: "Ouvrir la consultation pour la clôturer" }
+    : PRIMARY_ACTION[card.lane];
   return (
     <>
       <div className="flow-card-head">
@@ -155,7 +175,7 @@ function CardBody({ busy, card, compact, now, onOpenRecord, onPrimary }: Omit<Ca
             </p>
           )}
         </div>
-        <Timer card={card} now={now} />
+        <Timer card={card} leftOpen={leftOpen} now={now} />
       </div>
       {!compact && (
         <div className="flow-card-details">
@@ -170,6 +190,7 @@ function CardBody({ busy, card, compact, now, onOpenRecord, onPrimary }: Omit<Ca
           )}
         </div>
       )}
+      {leftOpen && card.lane !== PLANNED && <p className="flow-card-stage">{VISIT_FLOW_STAGE_LABELS[card.lane]}</p>}
       <Alerts alerts={card.alerts} />
       <div className="flow-card-actions">
         {action && (
@@ -217,12 +238,13 @@ function CardBody({ busy, card, compact, now, onOpenRecord, onPrimary }: Omit<Ca
 }
 
 function DraggableCard(props: CardProps) {
-  const { card, compact, focused, onFocus, registerRef } = props;
+  const { card, compact, focused, leftOpen, onFocus, registerRef } = props;
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: card.appointmentId, data: { card } });
   const label = [
     card.patientName,
     card.urgent ? "urgence" : "",
     card.lane === PLANNED ? `prévu à ${clock(card.startTime)}` : VISIT_FLOW_STAGE_LABELS[card.lane],
+    leftOpen ? `ouverte le ${openedDay(card.startTime)}` : "",
     card.ownerName,
     card.reason,
     card.vetName,
@@ -238,6 +260,9 @@ function DraggableCard(props: CardProps) {
         aria-label={label}
         aria-roledescription="carte de visite"
         className={cn("flow-card", compact && "is-compact", isDragging && "is-dragging", card.urgent && "is-urgent")}
+        onClick={() => {
+          if (!isDragging) openPatientPeek(card.patientId);
+        }}
         onFocus={onFocus}
         ref={(node) => {
           setNodeRef(node);
@@ -293,6 +318,22 @@ function PlannedStrip({ cards, children }: { cards: FlowCard[]; children: ReactN
   );
 }
 
+function LeftOpen({ cards, children }: { cards: FlowCard[]; children: ReactNode }) {
+  if (cards.length === 0) return null;
+  return (
+    <details className="flow-left-open" open>
+      <summary className="flow-lane-head">
+        <h2>Restées ouvertes</h2>
+        <span className="flow-left-open-hint">Visites d'autres jours jamais clôturées</span>
+        <span className="flow-count" aria-hidden>
+          {cards.length}
+        </span>
+      </summary>
+      <ul className="flow-planned-list">{children}</ul>
+    </details>
+  );
+}
+
 export function FlowBoardPage({
   onNavigate,
   onNavigateToPatient,
@@ -301,8 +342,32 @@ export function FlowBoardPage({
   onNavigateToPatient?: (patientId: string) => void;
 }) {
   const [prefs, setPrefs] = useState(readPrefs);
-  const { board, busyId, error, loading, move, now, vets } = useFlowBoard(prefs.vetId);
-  const [focus, setFocus] = useState<{ lane: BoardLane; id: string } | null>(null);
+  const [query, setQuery] = useState("");
+  const [walkInOpen, setWalkInOpen] = useState(false);
+  const {
+    appointmentById,
+    board,
+    busyId,
+    completeWithBilling,
+    error,
+    loading,
+    move,
+    now,
+    owners,
+    patients,
+    refresh,
+    vets,
+    walkIn,
+  } = useFlowBoard(prefs.vetId, query);
+  const patientsById = useMemo(() => new Map(patients.map((patient) => [patient.id, patient])), [patients]);
+  const ownersById = useMemo(() => new Map(owners.map((owner) => [owner.id, owner])), [owners]);
+  const billing = useAppointmentBilling({
+    completeWithBilling,
+    getOwner: (appointment) =>
+      ownersById.get(appointment.ownerId || patientsById.get(appointment.patientId)?.ownerId || ""),
+    getPatient: (patientId) => patientsById.get(patientId),
+  });
+  const [focus, setFocus] = useState<{ id: string } | null>(null);
   const [dragging, setDragging] = useState<FlowCard | null>(null);
   const refs = useRef(new Map<string, HTMLElement>());
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -315,18 +380,23 @@ export function FlowBoardPage({
     });
   };
 
-  const lanesWithCards = useMemo(() => BOARD_LANES.filter((lane) => board.lanes[lane].length > 0), [board]);
+  // Cards in reading order, grouped as shown: planned, left open, then lanes.
+  const groups = useMemo(
+    () => [
+      { key: PLANNED as string, cards: board.lanes[PLANNED] },
+      { key: "left-open", cards: board.leftOpen },
+      ...VISIT_FLOW_STAGES.map((stage) => ({ key: stage as string, cards: board.lanes[stage] })),
+    ],
+    [board]
+  );
   const total = VISIT_FLOW_STAGES.reduce((sum, stage) => sum + board.lanes[stage].length, 0) + board.lanes[PLANNED].length;
 
   // Keep the focus on a card that still exists; fall back to the first one.
   const current = useMemo(() => {
-    if (focus) {
-      const lane = BOARD_LANES.find((l) => board.lanes[l].some((c) => c.appointmentId === focus.id));
-      if (lane) return { lane, id: focus.id };
-    }
-    const first = lanesWithCards[0];
-    return first ? { lane: first, id: board.lanes[first][0].appointmentId } : null;
-  }, [board, focus, lanesWithCards]);
+    const all = groups.flatMap((group) => group.cards);
+    const found = focus && all.find((card) => card.appointmentId === focus.id);
+    return found ? { id: found.appointmentId } : all[0] ? { id: all[0].appointmentId } : null;
+  }, [focus, groups]);
 
   const pendingFocus = useRef<string | null>(null);
   useEffect(() => {
@@ -336,8 +406,8 @@ export function FlowBoardPage({
     }
   });
 
-  const focusCard = (lane: BoardLane, id: string) => {
-    setFocus({ lane, id });
+  const focusCard = (id: string) => {
+    setFocus({ id });
     pendingFocus.current = id;
     refs.current.get(id)?.focus();
   };
@@ -356,28 +426,47 @@ export function FlowBoardPage({
 
   const openRecord = useCallback((card: FlowCard) => onNavigateToPatient?.(card.patientId), [onNavigateToPatient]);
 
+  const startBilling = useCallback(
+    (card: FlowCard) => {
+      const appointment = appointmentById(card.appointmentId);
+      if (appointment) billing.setBillingAppointment(appointment);
+    },
+    [appointmentById, billing]
+  );
+
+  const leftOpenIds = useMemo(() => new Set(board.leftOpen.map((card) => card.appointmentId)), [board.leftOpen]);
+
   const primary = useCallback(
     (card: FlowCard) => {
+      if (leftOpenIds.has(card.appointmentId) && (card.lane === "consultation" || card.lane === "care")) {
+        open(card);
+        return;
+      }
+      if (card.lane === "billing") {
+        startBilling(card);
+        return;
+      }
       const action = PRIMARY_ACTION[card.lane];
       if (action) void move(card, action.to);
       else open(card);
     },
-    [move, open]
+    [leftOpenIds, move, open, startBilling]
   );
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!current || !(event.target instanceof HTMLElement) || !event.target.matches(".flow-card")) return;
-    const cards = board.lanes[current.lane];
-    const index = Math.max(0, cards.findIndex((c) => c.appointmentId === current.id));
-    const card = cards[index];
+    const cards = groups.find((group) => group.cards.some((c) => c.appointmentId === current.id))?.cards ?? [];
+    const card = cards.find((c) => c.appointmentId === current.id);
+    if (!card) return;
     const key = event.key;
     if ((key === "ArrowRight" || key === "ArrowLeft") && event.shiftKey) {
       event.preventDefault();
-      const all = BOARD_LANES.indexOf(current.lane);
+      const all = BOARD_LANES.indexOf(card.lane);
       const target = BOARD_LANES[all + (key === "ArrowRight" ? 1 : -1)];
       if (target) {
         pendingFocus.current = card.appointmentId;
-        void move(card, target);
+        if (target === "done" && card.lane === "billing") startBilling(card);
+        else void move(card, target, open);
       }
       return;
     }
@@ -386,17 +475,17 @@ export function FlowBoardPage({
       event.preventDefault();
       const here = refs.current.get(card.appointmentId)?.getBoundingClientRect();
       if (!here) return;
-      const candidates = BOARD_LANES.flatMap((lane) =>
-        board.lanes[lane].flatMap((other) => {
+      const candidates = groups.flatMap((group) =>
+        group.cards.flatMap((other) => {
           const box = other.appointmentId === card.appointmentId ? null : refs.current.get(other.appointmentId)?.getBoundingClientRect();
-          return box ? [{ box, id: other.appointmentId, lane }] : [];
+          return box ? [{ box, id: other.appointmentId }] : [];
         })
       );
       const next = nearestInDirection(here, candidates, direction);
-      if (next) focusCard(next.lane, next.id);
+      if (next) focusCard(next.id);
     } else if (key === "Home" || key === "End") {
       event.preventDefault();
-      focusCard(current.lane, cards[key === "Home" ? 0 : cards.length - 1].appointmentId);
+      focusCard(cards[key === "Home" ? 0 : cards.length - 1].appointmentId);
     } else if (key === "Enter" || key === " ") {
       event.preventDefault();
       pendingFocus.current = card.appointmentId;
@@ -404,6 +493,9 @@ export function FlowBoardPage({
     } else if (key.toLowerCase() === "o") {
       event.preventDefault();
       open(card);
+    } else if (key.toLowerCase() === "a") {
+      event.preventDefault();
+      openPatientPeek(card.patientId);
     }
   };
 
@@ -426,7 +518,8 @@ export function FlowBoardPage({
     setDragging(null);
     const card = (event.active.data.current as { card: FlowCard } | undefined)?.card;
     const to = event.over?.id as BoardLane | undefined;
-    if (card && to) void move(card, to);
+    if (card && to === "done" && card.lane === "billing") startBilling(card);
+    else if (card && to) void move(card, to, open);
   };
 
   const longestWait = board.lanes.waiting.reduce((max, card) => Math.max(max, minutesSince(card.since, now) ?? 0), 0);
@@ -434,16 +527,17 @@ export function FlowBoardPage({
   const inCare = board.lanes.consultation.length + board.lanes.care.length;
   const todayLabel = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
-  const renderCards = (lane: BoardLane) =>
-    board.lanes[lane].map((card) => (
+  const renderCards = (cards: FlowCard[], leftOpen = false) =>
+    cards.map((card) => (
       <DraggableCard
+        leftOpen={leftOpen}
         busy={busyId === card.appointmentId}
         card={card}
-        compact={prefs.compact}
+        compact={prefs.compact || leftOpen}
         focused={current?.id === card.appointmentId}
         key={card.appointmentId}
         now={now}
-        onFocus={() => setFocus({ lane, id: card.appointmentId })}
+        onFocus={() => setFocus({ id: card.appointmentId })}
         onOpen={open}
         onOpenRecord={openRecord}
         onPrimary={primary}
@@ -479,6 +573,23 @@ export function FlowBoardPage({
           )}
         </p>
         <div aria-label="Affichage du tableau" className="flow-toolbar-controls" role="toolbar">
+          <label className="flow-search">
+            <Search aria-hidden className="size-4" />
+            <span className="sr-only">Rechercher sur le tableau</span>
+            <input
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setQuery("");
+              }}
+              placeholder="Patient, propriétaire, motif…"
+              type="search"
+              value={query}
+            />
+          </label>
+          <Button className="h-9" onClick={() => setWalkInOpen(true)} type="button" variant="outline">
+            <HugeiconsIcon aria-hidden icon={UserAdd01Icon} size={16} strokeWidth={1.5} />
+            Arrivée sans RDV
+          </Button>
           <NativeSelect
             aria-label="Filtrer par vétérinaire"
             className="h-9 min-w-48"
@@ -513,7 +624,8 @@ export function FlowBoardPage({
 
       <DndContext onDragCancel={() => setDragging(null)} onDragEnd={onDragEnd} onDragStart={onDragStart} sensors={sensors}>
         <div className="flow-board" onKeyDown={onKeyDown}>
-          <PlannedStrip cards={board.lanes[PLANNED]}>{renderCards(PLANNED)}</PlannedStrip>
+          <PlannedStrip cards={board.lanes[PLANNED]}>{renderCards(board.lanes[PLANNED])}</PlannedStrip>
+          <LeftOpen cards={board.leftOpen}>{renderCards(board.leftOpen, true)}</LeftOpen>
           <div className="flow-lanes">
             {VISIT_FLOW_STAGES.map((stage) => (
               <Lane
@@ -521,7 +633,7 @@ export function FlowBoardPage({
                 key={stage}
                 lane={stage}
               >
-                {renderCards(stage)}
+                {renderCards(board.lanes[stage])}
               </Lane>
             ))}
           </div>
@@ -552,14 +664,46 @@ export function FlowBoardPage({
           <span className="flex items-center gap-1">
             <KeyHint>O</KeyHint> ouvrir
           </span>
+          <span className="flex items-center gap-1">
+            <KeyHint>A</KeyHint> aperçu du patient
+          </span>
         </p>
-        {board.openElsewhere > 0 && (
-          <button className="flow-elsewhere" onClick={() => onNavigate?.("clinique")} type="button">
-            {board.openElsewhere} visite{board.openElsewhere > 1 ? "s" : ""} d'autres jours encore ouverte
-            {board.openElsewhere > 1 ? "s" : ""}, à retrouver dans Clinique
-          </button>
-        )}
+        {query && total + board.leftOpen.length === 0 && <p>Aucune visite ne correspond à « {query} ».</p>}
       </footer>
+
+      <WalkInDialog
+        onConfirm={async (patient) => {
+          try {
+            const id = await walkIn(patient);
+            if (id) focusCard(id);
+          } catch (reason) {
+            toast.error(reason instanceof Error ? reason.message : "L'arrivée n'a pas pu être enregistrée.");
+            throw reason;
+          }
+        }}
+        onOpenChange={setWalkInOpen}
+        open={walkInOpen}
+        owners={owners}
+        patients={patients}
+      />
+
+      {billing.billingAppointment && (
+        <BillingDialog
+          appointment={billing.billingAppointment}
+          existingInvoice={billing.billingInvoice}
+          onClose={() => billing.setBillingAppointment(null)}
+          onConfirm={async (items, amountReceivedDa) => {
+            await billing.handleBillingConfirm(items, amountReceivedDa);
+            await refresh();
+          }}
+          ownerEmail={ownersById.get(billing.billingAppointment.ownerId)?.email}
+          ownerName={(() => {
+            const owner = ownersById.get(billing.billingAppointment.ownerId);
+            return owner ? `${owner.firstName} ${owner.lastName}`.trim() : undefined;
+          })()}
+          patientName={patientsById.get(billing.billingAppointment.patientId)?.name ?? "Patient"}
+        />
+      )}
     </div>
   );
 }

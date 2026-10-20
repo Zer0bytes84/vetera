@@ -29,6 +29,8 @@ export interface VisitFlowFacts {
   care: boolean;
   /** At least one issued invoice, and every issued invoice is settled. */
   settled: boolean;
+  /** Closed as free of charge: nothing to bill. */
+  noCharge?: boolean;
   status: AppointmentStatus;
 }
 
@@ -37,7 +39,7 @@ export interface VisitFlowFacts {
  * `visit_flow_stages` SQL view; a test keeps both identical.
  * Not arrived yet, cancelled or no-show: outside the flow (null).
  */
-export function visitFlowStage({ care, settled, status }: VisitFlowFacts): VisitFlowStage | null {
+export function visitFlowStage({ care, noCharge, settled, status }: VisitFlowFacts): VisitFlowStage | null {
   switch (status) {
     case "arrived":
     case "waiting":
@@ -45,7 +47,7 @@ export function visitFlowStage({ care, settled, status }: VisitFlowFacts): Visit
     case "in_progress":
       return care ? "care" : "consultation";
     case "completed":
-      return settled ? "done" : "billing";
+      return settled || noCharge ? "done" : "billing";
     default:
       return null;
   }

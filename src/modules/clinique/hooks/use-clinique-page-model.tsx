@@ -1,5 +1,6 @@
-import { formatDinars, formatNumber } from "@/utils/display-format";
+import { formatNumber } from "@/utils/display-format";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
+import { useAppointmentBilling } from "@/modules/billing/use-appointment-billing";
 import {
   useCallback,
   useDeferredValue,
@@ -29,12 +30,6 @@ import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
 import { localToday, medicalReminderTypeForAct } from "@/modules/patient-reminders/domain";
 import { announceMedicalActRecorded } from "@/modules/patient-reminders/medical-act-events";
 
-import { getInvoiceSettings } from "@/services/invoiceSettingsService";
-import { exportInvoicePdf } from "@/lib/invoice-pdf";
-import { invoiceDocument } from "@/lib/invoice-document";
-import { billingService } from "@/services/billingService";
-import { isTauriRuntime } from "@/services/browser-store";
-import { toCentimes } from "@/utils/currency";
 import { useAudit } from "@/services/use-audit";
 import { useAppointmentReminderSync } from "@/services/reminderService";
 
@@ -46,7 +41,6 @@ import type {
 } from "@/types/db";
 import {
   CliniqueProps,
-  BillingItem,
   SaveDraftOptions,
   ListTab,
   DetailTab,
@@ -74,8 +68,6 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
   const [hospitalizationOpen, setHospitalizationOpen] =
     useState<boolean>(false);
   const [anesthesiaOpen, setAnesthesiaOpen] = useState<boolean>(false);
-  const [billingAppointment, setBillingAppointment] =
-    useState<Appointment | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { currentUser: authUser } = useAuth();
   // The journal is written by the database; this only names who acted.
@@ -466,6 +458,8 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     const patient = getPatient(appointment.patientId);
     return ownersById.get(appointment.ownerId || patient?.ownerId || "");
   };
+  const { billingAppointment, billingInvoice, handleBillingConfirm, setBillingAppointment } =
+    useAppointmentBilling({ completeWithBilling, getOwner, getPatient });
   const moveSelectionToStatusTab = (
     status: Appointment["status"],
     appointmentId: string
@@ -659,124 +653,6 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     toast.success("Document supprimé.");
   };
 
-  const handleBillingConfirm = async (
-    items: BillingItem[],
-    amountReceivedDa: number
-  ) => {
-    if (!billingAppointment) {
-      return;
-    }
-
-    try {
-      const patient = getPatient(billingAppointment.patientId);
-      const owner = getOwner(billingAppointment);
-
-      const { totalAmountDa, invoiceNumber, balanceAmountDa } =
-        await completeWithBilling({
-          appointmentId: billingAppointment.id,
-          items,
-          category: "Consultation",
-          method: "cash",
-          amountReceivedDa,
-        });
-
-      // Settlement is complete. Close now: a PDF/save dialog must never keep
-      // the payment form busy or invite a second encashment when export fails.
-      setBillingAppointment(null);
-      if (typeof window !== "undefined") {
-        window.sessionStorage.removeItem(
-          `vetera:consultation-start:${billingAppointment.id}`
-        );
-      }
-      toast.success(
-        balanceAmountDa > 0
-          ? `Facture créée. Solde à recouvrer : ${formatDinars(balanceAmountDa)}.`
-          : "Encaissement enregistré."
-      );
-
-      const exportReceipt = async () => {
-        try {
-          const invoice = isTauriRuntime()
-            ? await billingService.getInvoice(
-                `appointment-invoice-${billingAppointment.id}`
-              )
-            : null;
-          if (isTauriRuntime() && !invoice)
-            throw new Error(
-              "Facture enregistrée introuvable. Réessayez depuis Finances."
-            );
-          const document = invoice
-            ? invoiceDocument(invoice, patient?.name || "Patient")
-            : {
-                settings: await getInvoiceSettings(),
-                data: {
-                  number: invoiceNumber,
-                  date: new Date(),
-                  patientName: patient?.name || "Patient",
-                  ownerName: formatOwnerName(owner),
-                  items: items.map((item) => ({
-                    description: item.desc,
-                    amount: toCentimes(item.amount),
-                  })),
-                  totalAmount: toCentimes(totalAmountDa),
-                  paidAmount: toCentimes(totalAmountDa - balanceAmountDa),
-                  balanceAmount: toCentimes(balanceAmountDa),
-                },
-              };
-          const saved = await exportInvoicePdf(
-            document.data,
-            document.settings
-          );
-          toast.success(
-            saved
-              ? "Facture PDF enregistrée, prête à imprimer."
-              : "Encaissement conservé. Export PDF annulé."
-          );
-        } catch (error) {
-          console.error(
-            "[Billing] Receipt export failed after successful payment",
-            error
-          );
-          toast.error(
-            "Encaissement enregistré, mais le PDF n’a pas pu être généré.",
-            {
-              action: {
-                label: "Réessayer le PDF",
-                onClick: () => {
-                  void exportReceipt();
-                },
-              },
-            }
-          );
-        }
-      };
-      void exportReceipt();
-
-      void audit
-        .log({
-          action: "create",
-          entity: "billing",
-          entityId: billingAppointment.id,
-          payload: {
-            patientId: billingAppointment.patientId,
-            itemCount: items.length,
-            totalAmountDa,
-            method: "cash",
-          },
-        })
-        .catch((error) =>
-          console.error("[Billing] Additional audit failed", error)
-        );
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Impossible de finaliser la facturation."
-      );
-    }
-  };
-
   const handleCallOwner = (owner?: Owner) => {
     if (!owner?.phone) {
       toast.error("Aucun numéro n’est enregistré pour ce propriétaire.");
@@ -833,6 +709,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     activeConsultationPatient,
     anesthesiaOpen,
     billingAppointment,
+    billingInvoice,
     currentUser,
     detailTab,
     effectiveAppointmentId,
