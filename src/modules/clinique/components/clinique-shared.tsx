@@ -406,6 +406,7 @@ export const generatePrescriptionPDF = (data: {
 
 export function ConsultationSessionDialog({
   appointment,
+  closeLabel = "Retour aux consultations",
   patient,
   owner,
   patientName,
@@ -421,6 +422,8 @@ export function ConsultationSessionDialog({
   onDeleteDocument,
 }: {
   appointment: Appointment;
+  /** Where closing leads back to, named by the host view. */
+  closeLabel?: string;
   patient: Patient;
   owner?: Owner;
   patientName: string;
@@ -724,7 +727,7 @@ export function ConsultationSessionDialog({
           </div>
         </div>
         <Button onClick={onClose} size="sm" variant="ghost">
-          Retour aux consultations
+          {closeLabel}
         </Button>
       </header>
 

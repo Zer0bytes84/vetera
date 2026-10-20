@@ -420,6 +420,10 @@
   transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
 }
 
+.flow-record-button ~ .flow-record-button {
+  margin-left: 0;
+}
+
 .flow-record-button:hover {
   background: var(--frame);
   border-color: color-mix(in oklch, var(--hairline) 60%, var(--ink) 25%);

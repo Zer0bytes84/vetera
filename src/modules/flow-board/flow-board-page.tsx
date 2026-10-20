@@ -19,8 +19,8 @@ import { KanbanIcon, MedicalFileIcon, UserAdd01Icon } from "@/lib/hugeicons";
 import { AlertTriangle, ArrowRight, Rows3, LayoutGrid, Search, Stethoscope, Syringe } from "@/lib/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { useAppointmentBilling } from "@/modules/billing/use-appointment-billing";
-import { BillingDialog } from "@/modules/clinique/components/clinique-shared";
+import { ConsultationWorkspace } from "@/modules/consultation-workspace/consultation-workspace";
+import { useConsultationSession } from "@/modules/consultation-workspace/use-consultation-session";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { cn } from "@/lib/utils";
@@ -152,12 +152,14 @@ interface CardProps {
   registerRef: (node: HTMLElement | null) => void;
 }
 
-function CardBody({ busy, card, compact, leftOpen, now, onOpenRecord, onPrimary }: Omit<CardProps, "focused" | "onFocus" | "onOpen" | "registerRef">) {
+function CardBody({ busy, card, compact, leftOpen, now, onOpen, onOpenRecord, onPrimary }: Omit<CardProps, "focused" | "onFocus" | "registerRef">) {
   // A visit forgotten on another day needs closing, not one more step.
   const reopen = leftOpen && (card.lane === "consultation" || card.lane === "care");
   const action = reopen
     ? { label: "Ouvrir", title: "Ouvrir la consultation pour la clôturer" }
     : PRIMARY_ACTION[card.lane];
+  // Today's consultation is worked on right here, in the shared workspace.
+  const consult = !reopen && (card.lane === "consultation" || card.lane === "care");
   return (
     <>
       <div className="flow-card-head">
@@ -211,6 +213,28 @@ function CardBody({ busy, card, compact, leftOpen, now, onOpenRecord, onPrimary 
             {action.label}
             <ArrowRight aria-hidden className="size-3.5" />
           </Button>
+        )}
+        {consult && (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  aria-label={`Ouvrir la consultation de ${card.patientName}`}
+                  className="flow-record-button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onOpen(card);
+                  }}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  tabIndex={-1}
+                  type="button"
+                />
+              }
+            >
+              <Stethoscope aria-hidden className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent>Ouvrir la consultation</TooltipContent>
+          </Tooltip>
         )}
         <Tooltip>
           <TooltipTrigger
@@ -335,7 +359,6 @@ function LeftOpen({ cards, children }: { cards: FlowCard[]; children: ReactNode 
 }
 
 export function FlowBoardPage({
-  onNavigate,
   onNavigateToPatient,
 }: {
   onNavigate?: (view: View) => void;
@@ -348,7 +371,6 @@ export function FlowBoardPage({
     appointmentById,
     board,
     busyId,
-    completeWithBilling,
     error,
     loading,
     move,
@@ -359,14 +381,11 @@ export function FlowBoardPage({
     vets,
     walkIn,
   } = useFlowBoard(prefs.vetId, query);
-  const patientsById = useMemo(() => new Map(patients.map((patient) => [patient.id, patient])), [patients]);
-  const ownersById = useMemo(() => new Map(owners.map((owner) => [owner.id, owner])), [owners]);
-  const billing = useAppointmentBilling({
-    completeWithBilling,
-    getOwner: (appointment) =>
-      ownersById.get(appointment.ownerId || patientsById.get(appointment.patientId)?.ownerId || ""),
-    getPatient: (patientId) => patientsById.get(patientId),
-  });
+  // The consultation opens here, the same workspace as in Clinique; billing
+  // at close and from the À facturer card goes through it as well.
+  const session = useConsultationSession();
+  const { setActiveConsultation, setBillingAppointment } = session;
+  const workspaceOpen = Boolean(session.activeConsultation && session.activeConsultationPatient);
   const [focus, setFocus] = useState<{ id: string } | null>(null);
   const [dragging, setDragging] = useState<FlowCard | null>(null);
   const refs = useRef(new Map<string, HTMLElement>());
@@ -414,14 +433,14 @@ export function FlowBoardPage({
 
   const open = useCallback(
     (card: FlowCard) => {
-      if (card.lane === "consultation" || card.lane === "care") {
-        window.sessionStorage.setItem("vetera:pending-consultation-start", card.appointmentId);
-        onNavigate?.("clinique");
+      const appointment = appointmentById(card.appointmentId);
+      if ((card.lane === "consultation" || card.lane === "care") && appointment?.status === "in_progress") {
+        setActiveConsultation(appointment);
       } else {
         onNavigateToPatient?.(card.patientId);
       }
     },
-    [onNavigate, onNavigateToPatient]
+    [appointmentById, onNavigateToPatient, setActiveConsultation]
   );
 
   const openRecord = useCallback((card: FlowCard) => onNavigateToPatient?.(card.patientId), [onNavigateToPatient]);
@@ -429,9 +448,9 @@ export function FlowBoardPage({
   const startBilling = useCallback(
     (card: FlowCard) => {
       const appointment = appointmentById(card.appointmentId);
-      if (appointment) billing.setBillingAppointment(appointment);
+      if (appointment) setBillingAppointment(appointment);
     },
-    [appointmentById, billing]
+    [appointmentById, setBillingAppointment]
   );
 
   const leftOpenIds = useMemo(() => new Set(board.leftOpen.map((card) => card.appointmentId)), [board.leftOpen]);
@@ -503,7 +522,7 @@ export function FlowBoardPage({
   const currentId = current?.id ?? null;
   useEffect(() => {
     const onWindowKey = (event: globalThis.KeyboardEvent) => {
-      if (!currentId || !ARROW_DIRECTIONS[event.key] || event.shiftKey || event.altKey || event.metaKey || event.ctrlKey) return;
+      if (workspaceOpen || !currentId || !ARROW_DIRECTIONS[event.key] || event.shiftKey || event.altKey || event.metaKey || event.ctrlKey) return;
       const target = event.target as HTMLElement | null;
       if (target?.closest(".flow-card, input, textarea, select, [contenteditable='true'], [role='dialog'], [role='menu'], [role='listbox']")) return;
       event.preventDefault();
@@ -511,7 +530,7 @@ export function FlowBoardPage({
     };
     window.addEventListener("keydown", onWindowKey);
     return () => window.removeEventListener("keydown", onWindowKey);
-  }, [currentId]);
+  }, [currentId, workspaceOpen]);
 
   const onDragStart = (event: DragStartEvent) => setDragging((event.active.data.current as { card: FlowCard }).card);
   const onDragEnd = (event: DragEndEvent) => {
@@ -550,160 +569,148 @@ export function FlowBoardPage({
 
   return (
     <div className="flow-board-page dashboard-stage w-full min-w-0 px-4 pt-8 pb-8 lg:px-6">
-      <PageHeader
-        icon={<HugeiconsIcon icon={KanbanIcon} size={20} strokeWidth={1.5} />}
-        subtitle={
-          loading
-            ? "Chargement des visites du jour…"
-            : total === 0
-              ? "Aucune visite aujourd'hui pour l'instant."
-              : `${total} visite${total > 1 ? "s" : ""} aujourd'hui · qui est où, en un coup d'œil`
-        }
-        title="Flux"
-      />
-
-      <div className="flow-toolbar">
-        <p className="flow-toolbar-summary">
-          <strong>{todayLabel}</strong>
-          <span>
-            {inRoom} en salle d'attente{inCare ? ` · ${inCare} en consultation ou en soins` : ""}
-          </span>
-          {longestWait >= WAIT_WARNING_MINUTES && (
-            <span className="is-warning">Attente la plus longue : {durationLabel(longestWait)}</span>
-          )}
-        </p>
-        <div aria-label="Affichage du tableau" className="flow-toolbar-controls" role="toolbar">
-          <label className="flow-search">
-            <Search aria-hidden className="size-4" />
-            <span className="sr-only">Rechercher sur le tableau</span>
-            <input
-              onChange={(event) => setQuery(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Escape") setQuery("");
-              }}
-              placeholder="Patient, propriétaire, motif…"
-              type="search"
-              value={query}
-            />
-          </label>
-          <Button className="h-9" onClick={() => setWalkInOpen(true)} type="button" variant="outline">
-            <HugeiconsIcon aria-hidden icon={UserAdd01Icon} size={16} strokeWidth={1.5} />
-            Arrivée sans RDV
-          </Button>
-          <NativeSelect
-            aria-label="Filtrer par vétérinaire"
-            className="h-9 min-w-48"
-            onChange={(event) => updatePrefs({ vetId: event.target.value })}
-            value={prefs.vetId}
-          >
-            <NativeSelectOption value="">Tous les vétérinaires</NativeSelectOption>
-            {vets.map((vet) => (
-              <NativeSelectOption key={vet.id} value={vet.id}>
-                {vet.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        <div aria-label="Affichage des cartes" className="flow-density" role="group">
-            <button aria-pressed={!prefs.compact} onClick={() => updatePrefs({ compact: false })} title="Cartes détaillées" type="button">
-              <LayoutGrid aria-hidden className="size-4" />
-              <span>Détaillée</span>
-            </button>
-            <button aria-pressed={prefs.compact} onClick={() => updatePrefs({ compact: true })} title="Cartes compactes" type="button">
-              <Rows3 aria-hidden className="size-4" />
-              <span>Compacte</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {error && (
-        <p className="flow-error" role="alert">
-          {error}
-        </p>
-      )}
-
-      <DndContext onDragCancel={() => setDragging(null)} onDragEnd={onDragEnd} onDragStart={onDragStart} sensors={sensors}>
-        <div className="flow-board" onKeyDown={onKeyDown}>
-          <PlannedStrip cards={board.lanes[PLANNED]}>{renderCards(board.lanes[PLANNED])}</PlannedStrip>
-          <LeftOpen cards={board.leftOpen}>{renderCards(board.leftOpen, true)}</LeftOpen>
-          <div className="flow-lanes">
-            {VISIT_FLOW_STAGES.map((stage) => (
-              <Lane
-                cards={board.lanes[stage]}
-                key={stage}
-                lane={stage}
-              >
-                {renderCards(board.lanes[stage])}
-              </Lane>
-            ))}
-          </div>
-        </div>
-        <DragOverlay dropAnimation={null}>
-          {dragging && (
-            <div className={cn("flow-card is-overlay", prefs.compact && "is-compact")}>
-              <CardBody busy card={dragging} compact={prefs.compact} now={now} onOpenRecord={() => undefined} onPrimary={() => undefined} />
-            </div>
-          )}
-        </DragOverlay>
-      </DndContext>
-
-      <footer className="flow-footer">
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="flex items-center gap-1">
-            <KeyHint>↑</KeyHint>
-            <KeyHint>↓</KeyHint>
-            <KeyHint>←</KeyHint>
-            <KeyHint>→</KeyHint> naviguer
-          </span>
-          <span className="flex items-center gap-1">
-            <KeyHint>Entrée</KeyHint> action principale
-          </span>
-          <span className="flex items-center gap-1">
-            <KeyHint>Maj</KeyHint>+<KeyHint>→</KeyHint> étape suivante
-          </span>
-          <span className="flex items-center gap-1">
-            <KeyHint>O</KeyHint> ouvrir
-          </span>
-          <span className="flex items-center gap-1">
-            <KeyHint>A</KeyHint> aperçu du patient
-          </span>
-        </p>
-        {query && total + board.leftOpen.length === 0 && <p>Aucune visite ne correspond à « {query} ».</p>}
-      </footer>
-
-      <WalkInDialog
-        onConfirm={async (patient) => {
-          try {
-            const id = await walkIn(patient);
-            if (id) focusCard(id);
-          } catch (reason) {
-            toast.error(reason instanceof Error ? reason.message : "L'arrivée n'a pas pu être enregistrée.");
-            throw reason;
+      {!workspaceOpen && (
+        <>
+        <PageHeader
+          icon={<HugeiconsIcon icon={KanbanIcon} size={20} strokeWidth={1.5} />}
+          subtitle={
+            loading
+              ? "Chargement des visites du jour…"
+              : total === 0
+                ? "Aucune visite aujourd'hui pour l'instant."
+                : `${total} visite${total > 1 ? "s" : ""} aujourd'hui · qui est où, en un coup d'œil`
           }
-        }}
-        onOpenChange={setWalkInOpen}
-        open={walkInOpen}
-        owners={owners}
-        patients={patients}
-      />
-
-      {billing.billingAppointment && (
-        <BillingDialog
-          appointment={billing.billingAppointment}
-          existingInvoice={billing.billingInvoice}
-          onClose={() => billing.setBillingAppointment(null)}
-          onConfirm={async (items, amountReceivedDa) => {
-            await billing.handleBillingConfirm(items, amountReceivedDa);
-            await refresh();
-          }}
-          ownerEmail={ownersById.get(billing.billingAppointment.ownerId)?.email}
-          ownerName={(() => {
-            const owner = ownersById.get(billing.billingAppointment.ownerId);
-            return owner ? `${owner.firstName} ${owner.lastName}`.trim() : undefined;
-          })()}
-          patientName={patientsById.get(billing.billingAppointment.patientId)?.name ?? "Patient"}
+          title="Flux"
         />
+
+        <div className="flow-toolbar">
+          <p className="flow-toolbar-summary">
+            <strong>{todayLabel}</strong>
+            <span>
+              {inRoom} en salle d'attente{inCare ? ` · ${inCare} en consultation ou en soins` : ""}
+            </span>
+            {longestWait >= WAIT_WARNING_MINUTES && (
+              <span className="is-warning">Attente la plus longue : {durationLabel(longestWait)}</span>
+            )}
+          </p>
+          <div aria-label="Affichage du tableau" className="flow-toolbar-controls" role="toolbar">
+            <label className="flow-search">
+              <Search aria-hidden className="size-4" />
+              <span className="sr-only">Rechercher sur le tableau</span>
+              <input
+                onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") setQuery("");
+                }}
+                placeholder="Patient, propriétaire, motif…"
+                type="search"
+                value={query}
+              />
+            </label>
+            <Button className="h-9" onClick={() => setWalkInOpen(true)} type="button" variant="outline">
+              <HugeiconsIcon aria-hidden icon={UserAdd01Icon} size={16} strokeWidth={1.5} />
+              Arrivée sans RDV
+            </Button>
+            <NativeSelect
+              aria-label="Filtrer par vétérinaire"
+              className="h-9 min-w-48"
+              onChange={(event) => updatePrefs({ vetId: event.target.value })}
+              value={prefs.vetId}
+            >
+              <NativeSelectOption value="">Tous les vétérinaires</NativeSelectOption>
+              {vets.map((vet) => (
+                <NativeSelectOption key={vet.id} value={vet.id}>
+                  {vet.name}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+          <div aria-label="Affichage des cartes" className="flow-density" role="group">
+              <button aria-pressed={!prefs.compact} onClick={() => updatePrefs({ compact: false })} title="Cartes détaillées" type="button">
+                <LayoutGrid aria-hidden className="size-4" />
+                <span>Détaillée</span>
+              </button>
+              <button aria-pressed={prefs.compact} onClick={() => updatePrefs({ compact: true })} title="Cartes compactes" type="button">
+                <Rows3 aria-hidden className="size-4" />
+                <span>Compacte</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {error && (
+          <p className="flow-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <DndContext onDragCancel={() => setDragging(null)} onDragEnd={onDragEnd} onDragStart={onDragStart} sensors={sensors}>
+          <div className="flow-board" onKeyDown={onKeyDown}>
+            <PlannedStrip cards={board.lanes[PLANNED]}>{renderCards(board.lanes[PLANNED])}</PlannedStrip>
+            <LeftOpen cards={board.leftOpen}>{renderCards(board.leftOpen, true)}</LeftOpen>
+            <div className="flow-lanes">
+              {VISIT_FLOW_STAGES.map((stage) => (
+                <Lane
+                  cards={board.lanes[stage]}
+                  key={stage}
+                  lane={stage}
+                >
+                  {renderCards(board.lanes[stage])}
+                </Lane>
+              ))}
+            </div>
+          </div>
+          <DragOverlay dropAnimation={null}>
+            {dragging && (
+              <div className={cn("flow-card is-overlay", prefs.compact && "is-compact")}>
+                <CardBody busy card={dragging} compact={prefs.compact} now={now} onOpen={() => undefined} onOpenRecord={() => undefined} onPrimary={() => undefined} />
+              </div>
+            )}
+          </DragOverlay>
+        </DndContext>
+
+        <footer className="flow-footer">
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="flex items-center gap-1">
+              <KeyHint>↑</KeyHint>
+              <KeyHint>↓</KeyHint>
+              <KeyHint>←</KeyHint>
+              <KeyHint>→</KeyHint> naviguer
+            </span>
+            <span className="flex items-center gap-1">
+              <KeyHint>Entrée</KeyHint> action principale
+            </span>
+            <span className="flex items-center gap-1">
+              <KeyHint>Maj</KeyHint>+<KeyHint>→</KeyHint> étape suivante
+            </span>
+            <span className="flex items-center gap-1">
+              <KeyHint>O</KeyHint> ouvrir
+            </span>
+            <span className="flex items-center gap-1">
+              <KeyHint>A</KeyHint> aperçu du patient
+            </span>
+          </p>
+          {query && total + board.leftOpen.length === 0 && <p>Aucune visite ne correspond à « {query} ».</p>}
+        </footer>
+
+        <WalkInDialog
+          onConfirm={async (patient) => {
+            try {
+              const id = await walkIn(patient);
+              if (id) focusCard(id);
+            } catch (reason) {
+              toast.error(reason instanceof Error ? reason.message : "L'arrivée n'a pas pu être enregistrée.");
+              throw reason;
+            }
+          }}
+          onOpenChange={setWalkInOpen}
+          open={walkInOpen}
+          owners={owners}
+          patients={patients}
+        />
+        </>
       )}
+
+      <ConsultationWorkspace closeLabel="Retour au tableau" onBilled={refresh} session={session} />
     </div>
   );
 }

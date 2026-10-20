@@ -72,9 +72,7 @@ import { getAppointmentTypeMeta } from "@/config/status-meta";
 import { PRE_CONSULTATION_STATUSES } from "@/domain/clinical/scheduling";
 
 import { cn } from "@/lib/utils";
-import { AnesthesiaSheet } from "@/modules/anesthesia";
-import { HospitalizationSheet } from "@/modules/hospitalizations";
-import { PrescriptionSheet } from "@/modules/prescriptions";
+import { ConsultationWorkspace } from "@/modules/consultation-workspace/consultation-workspace";
 
 import {
   ListTab,
@@ -90,8 +88,6 @@ import {
   getPatientStatusMeta,
   AppointmentTypeBadge,
   AppointmentStatusBadge,
-  ConsultationSessionDialog,
-  BillingDialog,
 } from "@/modules/clinique/components/clinique-shared";
 import type { CliniqueViewProps } from "../hooks/use-clinique-page-model";
 
@@ -100,38 +96,22 @@ export function CliniqueView(props: CliniqueViewProps) {
   const {
     SelectedSpeciesIcon,
     activeConsultation,
-    activeConsultationDocuments,
-    activeConsultationHistory,
-    activeConsultationOwner,
     activeConsultationPatient,
-    anesthesiaOpen,
-    billingAppointment,
-    billingInvoice,
-    currentUser,
     detailTab,
-    effectiveAppointmentId,
-    effectiveSheetPatient,
     filteredAppointments,
     getOwner,
     getPatient,
-    handleBillingConfirm,
     handleCallOwner,
-    handleConsultationComplete,
-    handleConsultationDocumentDelete,
-    handleConsultationDocumentUpload,
-    handleConsultationSaveDraft,
     handlePalettePatientPicked,
     handlePrescription,
     handleStatusAction,
-    hospitalizationOpen,
     listTab,
     loadingAppointments,
     onNavigate,
+    palettePatient,
     palettePickerAction,
     palettePickerOpen,
     patientHistory,
-    patientsById,
-    prescriptionOpen,
     searchQuery,
     sectionCards,
     selectedAppointment,
@@ -139,16 +119,12 @@ export function CliniqueView(props: CliniqueViewProps) {
     selectedOwner,
     selectedPatient,
     selectedPatientDocuments,
-    setActiveConsultation,
-    setAnesthesiaOpen,
-    setBillingAppointment,
+    session,
     setDetailTab,
-    setHospitalizationOpen,
     setListTab,
     setPalettePatient,
     setPalettePickerAction,
     setPalettePickerOpen,
-    setPrescriptionOpen,
     setSearchQuery,
     setSelectedAppointmentId,
     stats,
@@ -1042,84 +1018,11 @@ export function CliniqueView(props: CliniqueViewProps) {
           </div>
         </>
       )}
-      {activeConsultation && activeConsultationPatient ? (
-        <ConsultationSessionDialog
-          appointment={activeConsultation}
-          key={activeConsultation.id}
-          documents={activeConsultationDocuments}
-          historyAppointments={activeConsultationHistory}
-          onClose={() => setActiveConsultation(null)}
-          onComplete={handleConsultationComplete}
-          onDeleteDocument={handleConsultationDocumentDelete}
-          onOpenAnesthesia={() => setAnesthesiaOpen(true)}
-          onOpenHospitalization={() => setHospitalizationOpen(true)}
-          onOpenPrescription={() => setPrescriptionOpen(true)}
-          onSaveDraft={handleConsultationSaveDraft}
-          onUploadDocument={handleConsultationDocumentUpload}
-          owner={activeConsultationOwner}
-          patient={activeConsultationPatient}
-          patientName={
-            patientsById.get(activeConsultation.patientId)?.name ||
-            "Patient local"
-          }
-        />
-      ) : null}
-
-      {billingAppointment ? (
-        <BillingDialog
-          appointment={billingAppointment}
-          existingInvoice={billingInvoice}
-          onClose={() => setBillingAppointment(null)}
-          onConfirm={handleBillingConfirm}
-          ownerEmail={getOwner(billingAppointment)?.email}
-          ownerName={formatOwnerName(getOwner(billingAppointment))}
-          patientName={
-            patientsById.get(billingAppointment.patientId)?.name ||
-            "Patient local"
-          }
-        />
-      ) : null}
-
-      {effectiveSheetPatient ? (
-        <PrescriptionSheet
-          appointmentId={effectiveAppointmentId}
-          onOpenChange={(open) => {
-            setPrescriptionOpen(open);
-            if (!open) {
-              setPalettePatient(null);
-            }
-          }}
-          open={prescriptionOpen}
-          patient={effectiveSheetPatient}
-          vet={currentUser}
-        />
-      ) : null}
-
-      {effectiveSheetPatient ? (
-        <HospitalizationSheet
-          onOpenChange={(open) => {
-            setHospitalizationOpen(open);
-            if (!open) {
-              setPalettePatient(null);
-            }
-          }}
-          open={hospitalizationOpen}
-          patient={effectiveSheetPatient}
-        />
-      ) : null}
-
-      {effectiveSheetPatient ? (
-        <AnesthesiaSheet
-          onOpenChange={(open) => {
-            setAnesthesiaOpen(open);
-            if (!open) {
-              setPalettePatient(null);
-            }
-          }}
-          open={anesthesiaOpen}
-          patient={effectiveSheetPatient}
-        />
-      ) : null}
+      <ConsultationWorkspace
+        onSheetClosed={() => setPalettePatient(null)}
+        session={session}
+        sheetPatient={palettePatient}
+      />
 
       <QuickPatientPicker
         description={

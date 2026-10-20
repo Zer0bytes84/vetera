@@ -1,6 +1,6 @@
 import { formatNumber } from "@/utils/display-format";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
-import { useAppointmentBilling } from "@/modules/billing/use-appointment-billing";
+import { useConsultationSession } from "@/modules/consultation-workspace/use-consultation-session";
 import {
   useCallback,
   useDeferredValue,
@@ -15,39 +15,27 @@ import { toast } from "sonner";
 
 import { type SectionCardItem } from "@/components/section-cards";
 
-import { useAuth } from "@/contexts/AuthContext";
 import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
   useConsultationDocumentsRepository,
-  useConsultationSoapsRepository,
   useOwnersRepository,
   usePatientsRepository,
-  useUsersRepository,
 } from "@/data/repositories";
 import { PRE_CONSULTATION_STATUSES } from "@/domain/clinical/scheduling";
-import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
-import { localToday, medicalReminderTypeForAct } from "@/modules/patient-reminders/domain";
-import { announceMedicalActRecorded } from "@/modules/patient-reminders/medical-act-events";
 
-import { useAudit } from "@/services/use-audit";
 import { useAppointmentReminderSync } from "@/services/reminderService";
 
 import type {
   Appointment,
-  ConsultationDocument,
   Owner,
   Patient,
 } from "@/types/db";
 import {
   CliniqueProps,
-  SaveDraftOptions,
   ListTab,
   DetailTab,
-  ConsultationDraftPayload,
   normalizeDate,
-  getDocumentCategory,
-  readFileAsDataUrl,
   isToday,
   getSpeciesIcon,
   formatOwnerName,
@@ -56,49 +44,46 @@ import {
 
 export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
   const { t } = useTranslation();
-  const audit = useAudit();
   useAppointmentReminderSync();
   const { focus, clearFocus } = useFocus();
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
-  const [activeConsultation, setActiveConsultation] =
-    useState<Appointment | null>(null);
-  const [prescriptionOpen, setPrescriptionOpen] = useState<boolean>(false);
-  const [hospitalizationOpen, setHospitalizationOpen] =
-    useState<boolean>(false);
-  const [anesthesiaOpen, setAnesthesiaOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { currentUser: authUser } = useAuth();
   // The journal is written by the database; this only names who acted.
   const flowUndo = useFlowUndo();
   const recordFlowRef = useRef(flowUndo.record);
   useEffect(() => {
     recordFlowRef.current = flowUndo.record;
   }, [flowUndo.record]);
-  const usersRepo = useUsersRepository();
-  const currentUser = authUser
-    ? (usersRepo.data.find((u) => u.id === authUser.id) ?? null)
-    : null;
   const deferredSearch = useDeferredValue(searchQuery);
   const [listTab, setListTab] = useState<ListTab>("all");
   const [detailTab, setDetailTab] = useState<DetailTab>("overview");
+  const session = useConsultationSession({
+    onMove: (status, appointmentId) => {
+      if (status === "in_progress" || status === "completed") {
+        setListTab(status);
+      }
+      setSelectedAppointmentId(appointmentId);
+    },
+  });
+  const {
+    activeConsultation,
+    activeConsultationPatient,
+    setActiveConsultation,
+    setAnesthesiaOpen,
+    setHospitalizationOpen,
+    setPrescriptionOpen,
+  } = session;
 
   const {
     data: appointments,
     loading: loadingAppointments,
-    update: updateAppointment,
     transitionStatus: transitionAppointmentStatus,
-    completeWithBilling,
   } = useAppointmentsRepository();
-  const { data: patients, update: updatePatient } = usePatientsRepository();
+  const { data: patients } = usePatientsRepository();
   const { data: owners } = useOwnersRepository();
-  const {
-    data: consultationDocuments,
-    add: addConsultationDocument,
-    remove: removeConsultationDocument,
-  } = useConsultationDocumentsRepository();
-  const soapsRepo = useConsultationSoapsRepository();
+  const { data: consultationDocuments } = useConsultationDocumentsRepository();
 
   const patientsById = useMemo(
     () => new Map(patients.map((patient) => [patient.id, patient])),
@@ -280,7 +265,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
         setActiveConsultation(target);
       });
     }
-  }, [appointments, loadingAppointments, transitionAppointmentStatus, consultationOpenRequest]);
+  }, [appointments, loadingAppointments, transitionAppointmentStatus, consultationOpenRequest, setActiveConsultation]);
 
   // Palette-driven quick actions (⌘K): listen for medical action events
   // dispatched by the CommandPalette. If a consultation is already active
@@ -309,7 +294,7 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       }
       setPalettePickerOpen(false);
     },
-    [palettePickerAction]
+    [palettePickerAction, setAnesthesiaOpen, setHospitalizationOpen, setPrescriptionOpen]
   );
 
   const selectedOwner = selectedAppointment
@@ -351,37 +336,6 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
       .slice(0, 24);
   }, [consultationDocuments, selectedPatient]);
 
-  const activeConsultationDocuments = useMemo(() => {
-    if (!activeConsultation) {
-      return [];
-    }
-    return consultationDocuments
-      .filter((document) => document.appointmentId === activeConsultation.id)
-      .sort(
-        (left, right) =>
-          new Date(right.createdAt).getTime() -
-          new Date(left.createdAt).getTime()
-      );
-  }, [activeConsultation, consultationDocuments]);
-
-  const activeConsultationHistory = useMemo(() => {
-    if (!activeConsultation) {
-      return [];
-    }
-
-    return appointments
-      .filter(
-        (appointment) =>
-          appointment.patientId === activeConsultation.patientId &&
-          appointment.id !== activeConsultation.id
-      )
-      .sort(
-        (left, right) =>
-          new Date(right.startTime).getTime() -
-          new Date(left.startTime).getTime()
-      )
-      .slice(0, 4);
-  }, [activeConsultation, appointments]);
 
   const stats = useMemo(
     () => ({
@@ -458,8 +412,6 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     const patient = getPatient(appointment.patientId);
     return ownersById.get(appointment.ownerId || patient?.ownerId || "");
   };
-  const { billingAppointment, billingInvoice, handleBillingConfirm, setBillingAppointment } =
-    useAppointmentBilling({ completeWithBilling, getOwner, getPatient });
   const moveSelectionToStatusTab = (
     status: Appointment["status"],
     appointmentId: string
@@ -495,163 +447,6 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     }
   };
 
-  const handleConsultationSaveDraft = async (
-    payload: ConsultationDraftPayload,
-    options?: SaveDraftOptions
-  ) => {
-    if (!activeConsultation) {
-      return;
-    }
-
-    try {
-      await updateAppointment(activeConsultation.id, payload.appointmentPatch);
-      await updatePatient(activeConsultation.patientId, payload.patientPatch);
-      moveSelectionToStatusTab("in_progress", activeConsultation.id);
-
-      setActiveConsultation((current) =>
-        current
-          ? {
-              ...current,
-              ...payload.appointmentPatch,
-            }
-          : current
-      );
-
-      if (!options?.silent) {
-        toast.success("Consultation mise à jour.");
-      }
-    } catch (error) {
-      console.error(error);
-      if (!options?.silent) {
-        toast.error("Impossible d’enregistrer la consultation.");
-      }
-      throw error;
-    }
-  };
-
-  const handleConsultationComplete = async (
-    payload: ConsultationDraftPayload
-  ) => {
-    if (!activeConsultation) {
-      return;
-    }
-
-    // B1 : une consultation ne peut être clôturée que si la note SOAP a
-    // été relue et validée (risque médico-légal sinon).
-    const soap = soapsRepo.forAppointment(activeConsultation.id);
-    if (!soap || !isSoapReviewed(soap)) {
-      toast.error(
-        "Validez la note SOAP avant de clôturer la consultation.",
-        {
-          description:
-            "Ouvrez la note clinique, relisez-la puis cliquez sur Valider.",
-        }
-      );
-      return;
-    }
-
-    try {
-      const finalAppointmentPatch: Partial<Appointment> = {
-        ...payload.appointmentPatch,
-      };
-      const patientPatch: Partial<Patient> = {
-        ...payload.patientPatch,
-        lastVisit: new Date().toISOString(),
-      };
-
-      await updateAppointment(activeConsultation.id, finalAppointmentPatch);
-      await transitionAppointmentStatus(activeConsultation.id, "completed");
-      void flowUndo.record(activeConsultation.id);
-      await updatePatient(activeConsultation.patientId, patientPatch);
-
-      await audit.log({
-        action: "update",
-        entity: "consultation",
-        entityId: activeConsultation.id,
-        payload: {
-          patientId: activeConsultation.patientId,
-          status: "completed",
-          lastVisit: patientPatch.lastVisit,
-        },
-      });
-
-      if (typeof window !== "undefined") {
-        window.sessionStorage.removeItem(
-          `vetera:consultation-start:${activeConsultation.id}`
-        );
-      }
-
-      const updatedAppointment: Appointment = {
-        ...activeConsultation,
-        ...finalAppointmentPatch,
-        status: "completed",
-      };
-
-      moveSelectionToStatusTab("completed", activeConsultation.id);
-      setActiveConsultation(null);
-      setBillingAppointment(updatedAppointment);
-      toast.success("Consultation clôturée et déplacée dans Terminées.");
-      const reminderType = medicalReminderTypeForAct(`${updatedAppointment.type} ${updatedAppointment.title ?? ""} ${updatedAppointment.reason ?? ""}`);
-      if (reminderType) {
-        announceMedicalActRecorded({
-          id: `consultation:${updatedAppointment.id}`,
-          patientId: updatedAppointment.patientId,
-          type: reminderType,
-          date: localToday(),
-          note: updatedAppointment.reason || updatedAppointment.title,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Impossible de clôturer la consultation.");
-    }
-  };
-
-  const handleConsultationDocumentUpload = async (
-    file: File,
-    description?: string
-  ) => {
-    if (!activeConsultation) {
-      throw new Error("Aucune consultation active.");
-    }
-
-    const patient = getPatient(activeConsultation.patientId);
-    if (!patient) {
-      throw new Error("Patient introuvable pour ce document.");
-    }
-
-    const dataUrl = await readFileAsDataUrl(file);
-    const owner = getOwner(activeConsultation);
-
-    await addConsultationDocument({
-      appointmentId: activeConsultation.id,
-      patientId: activeConsultation.patientId,
-      ownerId: owner?.id,
-      fileName: file.name,
-      mimeType: file.type || "application/octet-stream",
-      sizeBytes: file.size,
-      category: getDocumentCategory(file.type || ""),
-      dataUrl,
-      description: description?.trim() || undefined,
-      createdBy: "local",
-    } as Omit<ConsultationDocument, "id" | "createdAt" | "updatedAt">);
-
-    await audit.log({
-      action: "create",
-      entity: "consultation",
-      entityId: activeConsultation.id,
-      payload: {
-        documentName: file.name,
-        category: getDocumentCategory(file.type || ""),
-        sizeBytes: file.size,
-      },
-    });
-  };
-
-  const handleConsultationDocumentDelete = async (documentId: string) => {
-    await removeConsultationDocument(documentId);
-    toast.success("Document supprimé.");
-  };
 
   const handleCallOwner = (owner?: Owner) => {
     if (!owner?.phone) {
@@ -691,50 +486,26 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
 
   const visibleCount = filteredAppointments.length;
   const SelectedSpeciesIcon = getSpeciesIcon(selectedPatient?.species);
-  const activeConsultationPatient = activeConsultation
-    ? patientsById.get(activeConsultation.patientId)
-    : undefined;
-  const activeConsultationOwner = activeConsultation
-    ? getOwner(activeConsultation)
-    : undefined;
-
-  const effectiveSheetPatient = activeConsultationPatient ?? palettePatient;
-  const effectiveAppointmentId = activeConsultation?.id ?? "";
   return {
     SelectedSpeciesIcon,
     activeConsultation,
-    activeConsultationDocuments,
-    activeConsultationHistory,
-    activeConsultationOwner,
     activeConsultationPatient,
-    anesthesiaOpen,
-    billingAppointment,
-    billingInvoice,
-    currentUser,
     detailTab,
-    effectiveAppointmentId,
-    effectiveSheetPatient,
     filteredAppointments,
     getOwner,
     getPatient,
-    handleBillingConfirm,
     handleCallOwner,
-    handleConsultationComplete,
-    handleConsultationDocumentDelete,
-    handleConsultationDocumentUpload,
-    handleConsultationSaveDraft,
     handlePalettePatientPicked,
     handlePrescription,
     handleStatusAction,
-    hospitalizationOpen,
     listTab,
     loadingAppointments,
     onNavigate,
+    palettePatient,
     palettePickerAction,
     palettePickerOpen,
     patientHistory,
     patientsById,
-    prescriptionOpen,
     searchQuery,
     sectionCards,
     selectedAppointment,
@@ -742,16 +513,12 @@ export function useCliniquePageModel({ onNavigate }: CliniqueProps) {
     selectedOwner,
     selectedPatient,
     selectedPatientDocuments,
-    setActiveConsultation,
-    setAnesthesiaOpen,
-    setBillingAppointment,
+    session,
     setDetailTab,
-    setHospitalizationOpen,
     setListTab,
     setPalettePatient,
     setPalettePickerAction,
     setPalettePickerOpen,
-    setPrescriptionOpen,
     setSearchQuery,
     setSelectedAppointmentId,
     stats,
