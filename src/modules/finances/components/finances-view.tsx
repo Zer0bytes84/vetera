@@ -120,9 +120,11 @@ import type { FinancesViewProps } from "../hooks/use-finances-page-model";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
+import { useListCursor } from "@/hooks/useListCursor";
 
 export function FinancesView(props: FinancesViewProps) {
   const isPremium = useIsPremium();
+  const invoicesRef = useListCursor({ storageKey: "invoices" });
   const {
     activeTab,
     editingTransaction,
@@ -405,7 +407,7 @@ export function FinancesView(props: FinancesViewProps) {
               ) : (
                 <>
                   <div className="hidden lg:block">
-                    <Table className="min-w-[980px]">
+                    <Table className="min-w-[980px]" ref={invoicesRef}>
                       <TableHeader className="bg-muted/25">
                         <TableRow className="hover:bg-transparent">
                           <TableHead className="h-11 pl-5 t-12 text-muted-foreground uppercase tracking-[0.06em]">
@@ -446,13 +448,16 @@ export function FinancesView(props: FinancesViewProps) {
                           return (
                             <TableRow
                               className={cn(
-                                "group h-[76px]",
+                                "group h-[76px] hover:bg-transparent focus-within:bg-transparent",
                                 needsAttention && "bg-rose-500/[0.025]"
                               )}
+                              data-list-row=""
+                              data-row-id={invoice.id}
                               key={invoice.id}
                             >
                               <TableCell className="pl-5">
                                 <button
+                                  data-row-open=""
                                   className="rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                   onClick={() =>
                                     void openInvoiceDetail(invoice)

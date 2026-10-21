@@ -20,3 +20,59 @@
 [data-slot="command"] [cmdk-item] {
   transition-duration: 0ms !important;
 }
+
+/* List rows: one tone step, instant on arrival, fading out in 150 ms.
+   The current row (mouse or keyboard, see useListCursor) and a hovered row
+   look the same. Rows are never moved or resized by the highlight. */
+:is(div, li, a, button, article)[data-list-row] {
+  position: relative;
+  isolation: isolate;
+}
+:is(div, li, a, button, article)[data-list-row]::before {
+  position: absolute;
+  inset: 0 4px;
+  z-index: -1;
+  border-radius: 8px;
+  background: var(--row-hover);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--speed-highlight-out) ease;
+}
+:is(div, li, a, button, article)[data-list-row][data-current]::before {
+  opacity: 1;
+  transition-duration: var(--speed-highlight-in);
+}
+tr[data-list-row] > td {
+  transition: background-color var(--speed-highlight-out) ease;
+}
+/* Premium clears table cells with !important; the current row wins. */
+:root tr[data-list-row][data-current] > td {
+  background-color: var(--row-hover) !important;
+  transition-duration: var(--speed-highlight-in) !important;
+}
+tr[data-list-row][data-current] > td:first-child {
+  border-start-start-radius: 8px;
+  border-end-start-radius: 8px;
+}
+tr[data-list-row][data-current] > td:last-child {
+  border-start-end-radius: 8px;
+  border-end-end-radius: 8px;
+}
+
+/* Secondary row actions wait for the row: revealed on hover, cursor or focus,
+   always visible where there is no hover. */
+[data-list-row] [data-row-reveal] {
+  opacity: 0;
+  transition: opacity var(--speed-highlight-out) ease;
+}
+[data-list-row]:is([data-current], :focus-within) [data-row-reveal],
+[data-list-row] [data-row-reveal]:has([aria-expanded="true"], [data-popup-open]) {
+  opacity: 1;
+  transition-duration: var(--speed-highlight-in);
+}
+@media (hover: none), (pointer: coarse) {
+  [data-list-row] [data-row-reveal] {
+    opacity: 1;
+  }
+}

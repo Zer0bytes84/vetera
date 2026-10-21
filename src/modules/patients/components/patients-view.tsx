@@ -45,6 +45,7 @@ import {
   PatientCreateDialog,
 } from "@/modules/patients/components/patients-shared";
 import { getSpeciesTheme } from "@/lib/species-theme";
+import { useListCursor } from "@/hooks/useListCursor";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 
 export function PatientsView(props: PatientsViewProps) {
@@ -92,6 +93,7 @@ export function PatientsView(props: PatientsViewProps) {
     users,
     visiblePatients,
   } = props;
+  const listRef = useListCursor({ storageKey: "patients", onPeek: openPatientPeek });
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
       <MotivationalHeader section="patients"
@@ -178,7 +180,7 @@ export function PatientsView(props: PatientsViewProps) {
               </div>
             ) : (
               <div className="flex min-h-0 flex-1 flex-col px-6 pt-2 pb-6">
-                <div className="patients-table-wrap flex-1 overflow-auto bg-surface">
+                <div className="patients-table-wrap flex-1 overflow-auto bg-surface" ref={listRef}>
                   <table className="medical-data-table min-w-full border-separate border-spacing-0 text-left">
                     <thead className="bg-zinc-50/50 dark:bg-zinc-900/30">
                       <tr className="font-medium text-xs text-muted-foreground">
@@ -224,7 +226,8 @@ export function PatientsView(props: PatientsViewProps) {
                         return (
                           <tr
                             aria-label={`Ouvrir le dossier de ${entry.patient.name}`}
-                            className="group cursor-pointer transition-colors duration-150 hover:bg-zinc-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring dark:hover:bg-white/[0.02]"
+                            className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                            data-list-row=""
                             data-row-id={entry.patient.id}
                             key={entry.patient.id}
                             onClick={() => {
@@ -262,7 +265,7 @@ export function PatientsView(props: PatientsViewProps) {
                                   return (
                                     <div
                                       className={cn(
-                                        "flex size-10 shrink-0 items-center justify-center rounded-xl border transition duration-200 group-hover:scale-105 shadow-2xs",
+                                        "flex size-10 shrink-0 items-center justify-center rounded-xl border shadow-2xs",
                                         spTheme.avatarBg,
                                         spTheme.avatarBorder,
                                         spTheme.avatarIconColor
@@ -329,7 +332,7 @@ export function PatientsView(props: PatientsViewProps) {
                                 borderClass
                               )}
                             >
-                              <div className="flex items-center justify-end gap-1">
+                              <div className="flex items-center justify-end gap-1" data-row-reveal="">
                                 <Button
                                   className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
                                   onClick={(event) => {

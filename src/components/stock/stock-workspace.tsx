@@ -62,6 +62,7 @@ import { PurchasingPanel } from "@/modules/stock/components/purchasing-panel";
 import { StockOperationsPanel } from "@/modules/stock/components/stock-operations-panel";
 import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
 import { restockNeed, stockAlert, stockExpiry } from "@/domain/stock-alerts";
+import { useListCursor } from "@/hooks/useListCursor";
 
 type StockFilter = "all" | "healthy" | "low" | "out" | "expiring" | "expired";
 
@@ -285,6 +286,7 @@ export function StockWorkspace({
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Product | null>(null);
   const [view, setView] = useState<"table" | "cards">("table");
+  const listRef = useListCursor({ storageKey: "products" });
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [inventoryProductId, setInventoryProductId] = useState("");
   const [countedQuantity, setCountedQuantity] = useState(0);
@@ -464,7 +466,7 @@ export function StockWorkspace({
                   </p>
                 </div>
               ) : view === "table" ? (
-                <Table>
+                <Table ref={listRef}>
                   <TableHeader className="bg-[#edf3ef] dark:bg-[#25332d]">
                     <TableRow className="border-[#dce7df] hover:bg-transparent dark:border-[#35473d]">
                       <TableHead className="text-[#456152] dark:text-[#c0d4c7]">
@@ -484,7 +486,8 @@ export function StockWorkspace({
                   <TableBody>
                     {visibleProducts.map((product) => (
                       <TableRow
-                        className="cursor-pointer"
+                        className="cursor-pointer hover:bg-transparent focus-within:bg-transparent"
+                        data-list-row=""
                         data-row-id={product.id}
                         key={product.id}
                         onClick={() => setSelected(product)}
@@ -525,35 +528,37 @@ export function StockWorkspace({
                           {formatDate(stockExpiry(product))}
                         </TableCell>
                         <TableCell onClick={(event) => event.stopPropagation()}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger
-                              render={
-                                <Button
-                                  aria-label={`Actions pour ${formatDisplayText(product.name)}`}
-                                  size="icon-sm"
-                                  variant="ghost"
-                                />
-                              }
-                            >
-                              <MoreHorizontal />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => onRestock(product)}
+                          <div data-row-reveal="">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger
+                                render={
+                                  <Button
+                                    aria-label={`Actions pour ${formatDisplayText(product.name)}`}
+                                    size="icon-sm"
+                                    variant="ghost"
+                                  />
+                                }
                               >
-                                <RefreshCw /> Réceptionner
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => onEdit(product)}>
-                                <Edit3 /> Modifier
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => onDelete(product)}
-                                variant="destructive"
-                              >
-                                <Archive /> Archiver
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                <MoreHorizontal />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => onRestock(product)}
+                                >
+                                  <RefreshCw /> Réceptionner
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => onEdit(product)}>
+                                  <Edit3 /> Modifier
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => onDelete(product)}
+                                  variant="destructive"
+                                >
+                                  <Archive /> Archiver
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
