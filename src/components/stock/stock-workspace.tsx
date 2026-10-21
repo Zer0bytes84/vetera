@@ -20,7 +20,7 @@ import {
   RefreshCw,
   WalletCards,
 } from "@/lib/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -61,7 +61,7 @@ import { StockLotsPanel } from "@/modules/stock/components/stock-lots-panel";
 import { PurchasingPanel } from "@/modules/stock/components/purchasing-panel";
 import { StockOperationsPanel } from "@/modules/stock/components/stock-operations-panel";
 import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
-import { restockNeed, stockAlert, stockExpiry } from "@/domain/stock-alerts";
+import { expiryWords, restockNeed, stockAlert, stockExpiry, stockWords, unitCount } from "@/domain/stock-alerts";
 import { useListCursor } from "@/hooks/useListCursor";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import {
@@ -294,6 +294,10 @@ export function StockWorkspace({
   const [selected, setSelected] = useState<Product | null>(null);
   const [view, setView] = useState<"table" | "cards">("table");
   const listRef = useListCursor({ storageKey: "products" });
+  // "Commander" on a row opens a supplier order for that product alone.
+  const [orderFor, setOrderFor] = useState<string | null>(null);
+  const clearOrderFor = useCallback(() => setOrderFor(null), []);
+  const order = (product: Product) => { setOrderFor(product.id); setWorkspaceTab("purchasing"); };
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [inventoryProductId, setInventoryProductId] = useState("");
   const [countedQuantity, setCountedQuantity] = useState(0);
@@ -314,9 +318,14 @@ export function StockWorkspace({
   const reorder = products.filter(
     (product) => restockNeed(product) > 0
   );
-  const expiries = products.filter(
-    (product) => ["expired", "expiring"].includes(stockAlert(product))
-  );
+  const expiries = products
+    .filter((product) => ["expired", "expiring"].includes(stockAlert(product)))
+    .sort((left, right) => (stockExpiry(left) ?? "9999").localeCompare(stockExpiry(right) ?? "9999"));
+  const reorderWords = reorder
+    .slice()
+    .sort((left, right) => restockNeed(right) / Math.max(1, right.minStock) - restockNeed(left) / Math.max(1, left.minStock))
+    .slice(0, 2)
+    .map((product) => `${formatDisplayText(product.name)} : ${formatNumber(product.availableQuantity ?? product.quantity)} sur ${formatNumber(product.minStock)}`);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase("fr");
@@ -351,9 +360,9 @@ export function StockWorkspace({
             title: "Valeur du stock",
             icon: WalletCards,
             value: formatDZD(stockValue),
-            badge: "Actif valorisé",
-            tone: "positive",
-            trend: "up",
+            badge: "Au prix d’achat",
+            tone: "quiet",
+            trend: "neutral",
             detailRow: `${formatNumber(products.length)} références · ${formatNumber(categories.length)} catégories actives`,
             onClick: () => { setStatus("all"); setCategory("all"); setWorkspaceTab("catalogue"); },
             actionLabel: "Voir tout le catalogue",
@@ -362,15 +371,12 @@ export function StockWorkspace({
             title: "À réapprovisionner",
             icon: PackageOpen,
             value: formatNumber(reorder.length),
-            change: reorder.length,
-            changeKind: "count",
-            changeLabel: reorder.length > 0 ? "sous le seuil" : "stock suffisant",
-            inverse: true,
+            badge: reorder.length > 0 ? "Sous le seuil" : "Au-dessus des seuils",
             tone: reorder.length ? "watch" : "positive",
             trend: reorder.length ? "down" : "neutral",
             detailRow: reorder.length > 0
-              ? (reorder[0]?.name ? `Priorité : ${reorder[0].name}` : `${reorder.length} commande${reorder.length > 1 ? "s" : ""} à passer`)
-              : "Aucune rupture imminente · Stocks au-dessus du seuil",
+              ? `${reorderWords.join(" · ")}${reorder.length > 2 ? ` · +${reorder.length - 2}` : ""}`
+              : "Chaque produit suivi est au-dessus de son seuil",
             onClick: () => { setStatus("low"); setWorkspaceTab("catalogue"); },
             actionLabel: "Voir les produits concernés",
           },
@@ -378,15 +384,14 @@ export function StockWorkspace({
             title: "Péremptions à surveiller",
             icon: CalendarClock,
             value: formatNumber(expiries.length),
-            change: expiries.length,
-            changeKind: "count",
-            changeLabel: expiries.length > 0 ? "lots à risque" : "lots conformes",
-            inverse: true,
+            badge: expiries.length > 0
+              ? `${expiries.length} produit${expiries.length > 1 ? "s" : ""} sous 90 jours`
+              : "Rien sous 90 jours",
             tone: expiries.length ? "watch" : "positive",
             trend: expiries.length ? "down" : "neutral",
             detailRow: expiries.length > 0
-              ? (expiries[0]?.name ? `Proche échéance : ${expiries[0].name}` : "Rotation FIFO requise sous 90 j")
-              : "Aucune date critique dans les 90 prochains jours",
+              ? `${formatDisplayText(expiries[0].name)} : ${expiryWords(expiries[0]).toLocaleLowerCase("fr")}`
+              : "Aucune date de péremption dans les 90 prochains jours",
             onClick: () => { setStatus("expiring"); setWorkspaceTab("catalogue"); },
             actionLabel: "Voir les échéances",
           },
@@ -394,10 +399,14 @@ export function StockWorkspace({
             title: "Catalogue actif",
             icon: PackageCheck,
             value: formatNumber(products.length),
-            badge: `${formatNumber(movements.length)} mouvements`,
+            badge: `${formatNumber(movements.length)} mouvement${movements.length > 1 ? "s" : ""} enregistré${movements.length > 1 ? "s" : ""}`,
             tone: "quiet",
             trend: "neutral",
-            detailRow: `${formatNumber(products.filter((p) => p.stockTracked !== false).length)} sous suivi physique · Traçabilité active`,
+            detailRow: (() => {
+              const tracked = products.filter((p) => p.stockTracked !== false).length;
+              const untracked = products.length - tracked;
+              return `${formatNumber(tracked)} avec stock suivi${untracked ? ` · ${formatNumber(untracked)} sans suivi de stock` : ""}`;
+            })(),
             onClick: () => { setStatus("all"); setWorkspaceTab("mouvements"); },
             actionLabel: "Voir l'historique des mouvements",
           },
@@ -458,6 +467,39 @@ export function StockWorkspace({
             </div>
 
             <CardContent className="p-0">
+              {!loading && expiries.length > 0 && status !== "expiring" && status !== "expired" && (
+                <ul aria-label="Péremptions proches" className="divide-y border-b bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200 [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200">
+                  {expiries.slice(0, 3).map((product) => (
+                    <li data-expired={stockAlert(product) === "expired" ? "" : undefined} key={product.id}>
+                      <CalendarClock aria-hidden="true" className="size-4 shrink-0" />
+                      <span className="min-w-0 flex-1">
+                        <strong>{formatDisplayText(product.name)}</strong>
+                        {" · "}
+                        {expiryWords(product)}
+                        {(() => {
+                          const quantity = stockAlert(product) === "expired"
+                            ? product.expiredQuantity ?? product.quantity
+                            : product.expiringQuantity ?? product.quantity;
+                          return quantity > 0 ? ` · ${unitCount(quantity, product.unit)} à cette échéance` : "";
+                        })()}
+                      </span>
+                      <Button onClick={() => setSelected(product)} size="sm" type="button" variant="ghost">
+                        Voir les lots
+                      </Button>
+                    </li>
+                  ))}
+                  {expiries.length > 3 && (
+                    <li>
+                      <span className="flex-1 text-muted-foreground">
+                        {expiries.length - 3} autre{expiries.length - 3 > 1 ? "s" : ""} produit{expiries.length - 3 > 1 ? "s" : ""} à surveiller
+                      </span>
+                      <Button onClick={() => setStatus("expiring")} size="sm" type="button" variant="ghost">
+                        Tout afficher
+                      </Button>
+                    </li>
+                  )}
+                </ul>
+              )}
               {loading ? (
                 <div className="p-12 text-center text-muted-foreground">
                   Chargement du catalogue…
@@ -485,7 +527,7 @@ export function StockWorkspace({
                       <TableHead className="text-right">Achat</TableHead>
                       <TableHead className="text-right">Vente</TableHead>
                       <TableHead>Péremption</TableHead>
-                      <TableHead className="w-14">
+                      <TableHead className="w-14 text-right">
                         <span className="sr-only">Actions</span>
                       </TableHead>
                     </TableRow>
@@ -515,6 +557,9 @@ export function StockWorkspace({
                         </TableCell>
                         <TableCell>
                           <StatusBadge product={product} />
+                          {stockWords(product) && (
+                            <p className="mt-1 whitespace-nowrap text-muted-foreground text-xs">{stockWords(product)}</p>
+                          )}
                         </TableCell>
                         <TableCell className="text-right font-semibold tabular-nums">
                           {product.quantity}{" "}
@@ -535,6 +580,12 @@ export function StockWorkspace({
                           {formatDate(stockExpiry(product))}
                         </TableCell>
                         <TableCell onClick={(event) => event.stopPropagation()}>
+                          <div className="flex items-center justify-end gap-1">
+                          {restockNeed(product) > 0 && (
+                            <Button onClick={() => order(product)} size="sm" type="button" variant="outline">
+                              Commander
+                            </Button>
+                          )}
                           <div data-row-reveal="">
                             <DropdownMenu>
                               <DropdownMenuTrigger
@@ -565,6 +616,7 @@ export function StockWorkspace({
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
+                          </div>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -741,7 +793,7 @@ export function StockWorkspace({
           </TabsContent>
 
           <TabsContent value="lots"><StockLotsPanel /></TabsContent>
-          <TabsContent value="purchasing"><PurchasingPanel /></TabsContent>
+          <TabsContent value="purchasing"><PurchasingPanel orderFor={orderFor} onOrderOpened={clearOrderFor} /></TabsContent>
           <TabsContent value="operations"><StockOperationsPanel onOpenMovements={() => setWorkspaceTab("mouvements")} /></TabsContent>
           <TabsContent value="inventaire">
             <CardContent className="grid gap-4 p-5 md:grid-cols-3">

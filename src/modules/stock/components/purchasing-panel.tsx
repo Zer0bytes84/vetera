@@ -1,5 +1,5 @@
 import { ErrorState } from "@/design-system/patterns/error-state";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,10 +49,13 @@ function SupplierForm({supplier, onClose}: {supplier?: StockSupplier; onClose: (
   </form>;
 }
 
-function OrderForm({order, initialLines, fromAlerts, onClose, onSaved}: {order?: PurchaseOrder; initialLines: PurchaseOrderLine[]; fromAlerts: boolean; onClose: () => void; onSaved: (id: string) => void}) {
+function OrderForm({order, initialLines, fromAlerts, productId, onClose, onSaved}: {order?: PurchaseOrder; initialLines: PurchaseOrderLine[]; fromAlerts: boolean; productId?: string; onClose: () => void; onSaved: (id: string) => void}) {
   const {currentUser} = useAuth(); const purchasing = usePurchasing(); const products = useProductsRepository();
   const [orderId] = useState(() => order?.id ?? generateId()); const [supplier, setSupplier] = useState(order?.supplier_id ?? "");
+  const ordered = productId ? products.data.find(product => product.id === productId) : undefined;
   const [rows, setRows] = useState(() => initialLines.length ? initialLines.map(line => ({key: generateId(), productId: line.product_id, quantity: String(line.quantity), cost: String(line.unit_cost_amount / 100)}))
+    // One product ordered from its row: the missing quantity, at least one.
+    : ordered ? [{key: generateId(), productId: ordered.id, quantity: String(Math.max(1, restockNeed(ordered))), cost: String(ordered.purchasePriceAmount / 100)}]
     : fromAlerts ? products.data.filter(product => !product.archivedAt && restockNeed(product) > 0).map(product => ({key: generateId(), productId: product.id,
       quantity: String(restockNeed(product)), cost: String(product.purchasePriceAmount / 100)}))
     : [{key: generateId(), productId: "", quantity: "1", cost: "0"}]);
@@ -114,11 +117,12 @@ function ReceiptForm({order, lines, onClose}: {order: PurchaseOrder; lines: Purc
   </form>;
 }
 
-export function PurchasingPanel() {
+/** `orderFor`: a product to order on its own, from its catalogue row. */
+export function PurchasingPanel({orderFor, onOrderOpened}: {orderFor?: string | null; onOrderOpened?: () => void} = {}) {
   const purchasing=usePurchasing(); const products=useProductsRepository(); const {currentUser}=useAuth();
   const [view,setView]=useState("orders"); const [supplierFilter,setSupplierFilter]=useState("");
   const [supplierEdit,setSupplierEdit]=useState<StockSupplier|"new"|null>(null);
-  const [orderEdit,setOrderEdit]=useState<{order?:PurchaseOrder;fromAlerts:boolean}|null>(null);
+  const [orderEdit,setOrderEdit]=useState<{order?:PurchaseOrder;fromAlerts:boolean;productId?:string}|null>(null);
   const [selected,setSelected]=useState<string|null>(null); const [receiving,setReceiving]=useState(false);
   const [cancelling,setCancelling]=useState<PurchaseOrder|null>(null);
   const [busy,setBusy]=useState(false); const [error,setError]=useState<string|null>(null);
@@ -126,6 +130,10 @@ export function PurchasingPanel() {
   const needs=products.data.filter(item=>!item.archivedAt&&restockNeed(item)>0);
   const order=purchasing.orders.find(item=>item.id===selected); const lines=purchasing.lines.filter(line=>line.order_id===selected);
   const supplier=purchasing.suppliers.find(item=>item.id===order?.supplier_id);
+  useEffect(()=>{
+    if(!orderFor||!purchasing.ready)return;
+    setView("orders");setSelected(null);setOrderEdit({fromAlerts:false,productId:orderFor});onOrderOpened?.();
+  },[orderFor,purchasing.ready,onOrderOpened]);
   const run=async(operation:()=>Promise<unknown>)=>{if(busy)return;setBusy(true);setError(null);try{await operation();}catch(error){setError(failure(error));}finally{setBusy(false);}};
   if(!isTauriRuntime())return <p className="p-5 text-sm text-muted-foreground">Les fournisseurs, commandes et réceptions sont disponibles dans l’application de bureau.</p>;
   return <section aria-label="Approvisionnements" className="min-w-0">
@@ -141,7 +149,7 @@ export function PurchasingPanel() {
       </TableBody></Table>
     </>:<>
       {!activeSuppliers.length&&purchasing.ready&&<p className="p-4 text-sm text-muted-foreground">Ajoutez un fournisseur dans l’onglet Fournisseurs pour préparer une commande.</p>}
-      {orderEdit?<OrderForm key={orderEdit.order?.id??"new"} order={orderEdit.order} fromAlerts={orderEdit.fromAlerts} initialLines={purchasing.lines.filter(line=>line.order_id===orderEdit.order?.id)} onClose={()=>setOrderEdit(null)} onSaved={id=>{setOrderEdit(null);setSelected(id);}}/>:order?<>
+      {orderEdit?<OrderForm key={orderEdit.order?.id??orderEdit.productId??"new"} order={orderEdit.order} fromAlerts={orderEdit.fromAlerts} productId={orderEdit.productId} initialLines={purchasing.lines.filter(line=>line.order_id===orderEdit.order?.id)} onClose={()=>setOrderEdit(null)} onSaved={id=>{setOrderEdit(null);setSelected(id);}}/>:order?<>
         <div className="space-y-4 p-5"><Button size="sm" variant="ghost" onClick={()=>{setSelected(null);setReceiving(false);}}><ArrowLeft className="size-4"/>Toutes les commandes</Button><div className="flex flex-wrap items-start justify-between gap-4"><div><h3 className="text-lg font-medium">{order.reference}</h3><p className="mt-1 text-sm text-muted-foreground">{order.supplier_name} · {dateLabel(order.created_at)}</p></div><Badge variant="outline">{labels[order.status]}</Badge></div>
           <div className="flex flex-wrap gap-2">{order.status==="draft"&&<><Button disabled={busy||!purchasing.ready||!currentUser} onClick={()=>void run(()=>purchasingService.transition(order.id,"order",currentUser!.id))}>Confirmer la commande</Button><Button variant="outline" onClick={()=>setOrderEdit({order,fromAlerts:false})}>Modifier le brouillon</Button></>}{["ordered","partial"].includes(order.status)&&<Button disabled={busy||!purchasing.ready} onClick={()=>setReceiving(true)}>Réceptionner</Button>}<Button variant="outline" disabled={busy||!supplier} onClick={()=>void run(()=>exportPurchaseOrder(order,supplier!,lines))}>Exporter le bon</Button>{["draft","ordered","partial"].includes(order.status)&&<Button variant="ghost" disabled={busy||!currentUser} onClick={()=>{setError(null);setCancelling(order);}}>{order.status==="partial"?"Annuler le reliquat":"Annuler la commande"}</Button>}</div>
         </div>
