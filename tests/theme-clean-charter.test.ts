@@ -33,20 +33,23 @@ const files = (dir: string, ext: RegExp): string[] =>
 afterEach(() => vi.unstubAllGlobals());
 
 describe("thème Clean : jetons", () => {
-  it("pose la feuille, le filet, le survol et les quatre gris", () => {
+  it("pose le cadre, la feuille, le filet, le survol et les quatre gris", () => {
+    expect(declarations.get("--clean-frame")).toBe("#ededee");
     expect(declarations.get("--clean-sheet")).toBe("#fafafa");
-    expect(declarations.get("--clean-line")).toBe("#ebebeb");
-    expect(declarations.get("--clean-hover")).toBe("#f0f0f0");
+    expect(declarations.get("--clean-surface")).toBe("#ffffff");
+    expect(declarations.get("--clean-line")).toBe("#e6e6e8");
+    expect(declarations.get("--clean-hover")).toBe("#f0f0f1");
     expect(declarations.get("--clean-ink-strong")).toBe("#292929");
     expect(declarations.get("--clean-ink")).toBe("#5d5d5d");
     expect(declarations.get("--clean-ink-quiet")).toBe("#7f7f7f");
     expect(declarations.get("--clean-ink-disabled")).toBe("#a6a6a6");
   });
 
-  it("fixe les hauteurs : 40 px en listes, 32 px en tableaux, 30 px dans la sidebar", () => {
+  it("fixe les hauteurs : 40 px en listes, 32 px en tableaux et contrôles, 28 px dans la sidebar", () => {
     expect(declarations.get("--clean-row-list")).toBe("40px");
     expect(declarations.get("--clean-row-table")).toBe("32px");
-    expect(declarations.get("--clean-nav-item")).toBe("30px");
+    expect(declarations.get("--clean-control")).toBe("32px");
+    expect(declarations.get("--clean-nav-item")).toBe("28px");
     const nav = rulesFor(/sidebar-menu-button"\]$/).flatMap((rule) => rule.nodes);
     expect(nav.some((n) => n.type === "decl" && n.prop === "height" && n.value.includes("--clean-nav-item"))).toBe(true);
     const table = rulesFor(/:is\(th, td\)/).flatMap((rule) => rule.nodes);
@@ -69,6 +72,36 @@ describe("thème Clean : jetons", () => {
   });
 });
 
+describe("thème Clean : feuille posée sur le cadre", () => {
+  it("décolle la feuille de 8 px, coins de 12 px, ombre presque invisible", () => {
+    expect(declarations.get("--clean-sheet-inset")).toBe("8px");
+    expect(declarations.get("--clean-sheet-radius")).toBe("12px");
+    expect(declarations.get("--clean-card-radius")).toBe("10px");
+    expect(declarations.get("--clean-sheet-shadow")).toMatch(/0\.5px rgb\(0 0 0 \/ 0\.08\).*0\.04\)/);
+    const panel = rulesFor(/shell-scroll-panel/).map((rule) => rule.toString()).join("");
+    expect(panel).toContain("var(--clean-sheet-radius)");
+    expect(panel).toContain("var(--clean-sheet-shadow)");
+    const inset = rulesFor(/sidebar-inset/).map((rule) => rule.toString()).join("");
+    expect(inset).toContain("var(--clean-sheet-inset)");
+  });
+
+  it("pose la navigation sur le cadre, sans séparateur ni boîte", () => {
+    const sidebar = rulesFor(/sidebar-container"\]::after/);
+    expect(sidebar.some((rule) => rule.toString().includes("display: none"))).toBe(true);
+    expect(rulesFor(/\.app-sidebar, \[data-slot="sidebar-container"\]/)[0].toString()).toContain("var(--clean-frame)");
+  });
+
+  it("charge Inter avec son axe optique sous un nom propre à Clean", () => {
+    const faces: string[] = [];
+    root.walkAtRules("font-face", (rule) => { faces.push(rule.toString()); });
+    expect(faces).toHaveLength(2);
+    for (const face of faces) {
+      expect(face).toContain('font-family: "Inter Clean"');
+      expect(face).toMatch(/inter-latin(-ext)?-opsz-normal\.woff2/);
+    }
+  });
+});
+
 describe("polices par thème", () => {
   const premium = postcss.parse(readFileSync("src/design-system/premium.css", "utf8"));
   const premiumTokens = new Map<string, string>();
@@ -86,7 +119,7 @@ describe("polices par thème", () => {
   });
 
   it("passe Clean sur Inter pour l'interface, le corps et les titres", () => {
-    expect(declarations.get("--clean-font-ui")).toMatch(/^"Inter Variable"/);
+    expect(declarations.get("--clean-font-ui")).toMatch(/^"Inter Clean", "Inter Variable"/);
     expect(declarations.get("--clean-font-heading")).toBe("var(--clean-font-ui)");
     for (const token of ["--app-font-sans", "--font-sans"]) {
       expect(cleanTokens.get(token)).toBe("var(--clean-font-ui) !important");

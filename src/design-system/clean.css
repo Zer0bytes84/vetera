@@ -1,36 +1,65 @@
-/* Clean: a skin over Premium light, in the spirit of Linear (study of 2026-10-21).
-   Every rule is scoped to :root[data-skin="clean"]:not(.dark): Premium light and
-   dark never match it, and no component is forked. Only tokens and the visual
-   treatment of surfaces, sidebar, icons, typography and dashboard cards change. */
+/* Clean: a skin over Premium light, built on Linear as measured in the study
+   of 2026-10-21. Every rule is scoped to :root[data-skin="clean"]:not(.dark):
+   Premium light and dark never match it, and no component is forked. Only the
+   visual treatment changes; layout, order, labels and behaviour do not. */
+
+/* Inter with its optical-size axis, under a family of its own so the Classic
+   "Inter" choice keeps its current files. Large titles take the Display cut. */
+@font-face {
+  font-family: "Inter Clean";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("../../node_modules/@fontsource-variable/inter/files/inter-latin-ext-opsz-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Inter Clean";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("../../node_modules/@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root[data-skin="clean"]:not(.dark) {
-  /* Surfaces: one opaque sheet, one line, one hover step. */
+  /* Depth: a darker frame holds navigation; work happens on one lifted sheet. */
+  --clean-frame: #ededee;
   --clean-sheet: #fafafa;
   --clean-surface: #ffffff;
-  --clean-line: #ebebeb;
-  --clean-hover: #f0f0f0;
-  /* Selection: the accent at a very light chroma, as in Linear. */
+  --clean-line: #e6e6e8;
+  --clean-line-subtle: #efeff0;
+  --clean-hover: #f0f0f1;
+  --clean-nav-hover: #e4e4e6;
+  --clean-nav-active: #dfdfe2;
   --clean-selected: #ebebf0;
   /* Text: the charter's three greys, plus a fourth for disabled text and icons only. */
   --clean-ink-strong: #292929;
   --clean-ink: #5d5d5d;
   --clean-ink-quiet: #7f7f7f;
   --clean-ink-disabled: #a6a6a6;
-  /* Rhythm. */
+  /* Geometry and rhythm (Linear: sheet 8 px in, 12 px corners; nav 28 px). */
+  --clean-sheet-inset: 8px;
+  --clean-sheet-radius: 12px;
+  --clean-card-radius: 10px;
+  --clean-control-radius: 8px;
+  --clean-control: 32px;
   --clean-row-list: 40px;
   --clean-row-table: 32px;
-  --clean-nav-item: 30px;
+  --clean-nav-item: 28px;
   --clean-nav-icon: 16px;
   --clean-list-icon: 16px;
   --clean-icon-stroke: 1px;
-  --clean-card-radius: 12px;
-  /* Type: Inter, Linear's face, for interface, body and titles. Titles have
-     their own token so the mixed variant (Space Grotesk titles) is one value. */
-  --clean-font-ui: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --clean-card-pad: 16px;
+  /* Shadows: none at rest; the sheet barely lifts; floating layers use a soft stack. */
+  --clean-sheet-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --clean-float-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.06), 0 16px 32px -8px rgb(0 0 0 / 0.1);
+  /* Type: Inter for interface, body and titles. Titles have their own token so
+     the mixed variant (Space Grotesk titles) stays a one-value change. */
+  --clean-font-ui: "Inter Clean", "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --clean-font-heading: var(--clean-font-ui);
   --clean-tracking-title: -0.022em;
   --clean-tracking-heading: -0.015em;
-  --clean-card-pad: 16px;
 
   --canvas: var(--clean-sheet) !important;
   --background: var(--clean-sheet) !important;
@@ -41,19 +70,21 @@
   --line: var(--clean-line) !important;
   --border: var(--clean-line) !important;
   --hairline: var(--clean-line) !important;
-  --sidebar: var(--clean-sheet) !important;
-  --sidebar-border: var(--clean-line) !important;
-  --sidebar-accent: var(--clean-hover) !important;
+  --sidebar: var(--clean-frame) !important;
+  --sidebar-border: transparent !important;
+  --sidebar-accent: var(--clean-nav-hover) !important;
   --row-hover: var(--clean-hover);
-  /* Engraved double rules become one plain line; the patterned band becomes plain. */
+  --elev-float: var(--clean-float-shadow) !important;
+  /* No engraved double rules, no patterned bands. */
   --rule-highlight: var(--clean-line) !important;
   --rule-shadow: var(--clean-line) !important;
   --hair-t: inset 0 1px 0 var(--clean-line) !important;
   --hair-b: inset 0 -1px 0 var(--clean-line) !important;
   --hair-l: inset 1px 0 0 var(--clean-line) !important;
   --hair-r: inset -1px 0 0 var(--clean-line) !important;
-  --band-bg: #f4f4f5 !important;
-  --band: var(--band-bg) !important;
+  --band-bg: transparent !important;
+  --band: transparent !important;
+  --tabs-track: #efeff0 !important;
   --app-font-sans: var(--clean-font-ui) !important;
   --font-sans: var(--clean-font-ui) !important;
   --app-font-heading: var(--clean-font-heading) !important;
@@ -61,95 +92,113 @@
   --font-heading: var(--clean-font-heading) !important;
 }
 
-/* ---------- Opaque surfaces: no translucency, no blur ---------- */
+/* ---------- Frame and sheet ---------- */
+:root[data-skin="clean"]:not(.dark) body,
+:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-wrapper"] {
+  background: var(--clean-frame) !important;
+}
+:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-inset"] {
+  padding: var(--clean-sheet-inset) var(--clean-sheet-inset) var(--clean-sheet-inset) 0 !important;
+  background: var(--clean-frame) !important;
+}
+:root[data-skin="clean"]:not(.dark) [data-slot="shell-scroll-panel"] {
+  border: 0 !important;
+  border-radius: var(--clean-sheet-radius) !important;
+  background: var(--clean-sheet) !important;
+  box-shadow: var(--clean-sheet-shadow) !important;
+}
 :root[data-skin="clean"]:not(.dark) [data-slot="app-header"] {
   background: var(--clean-sheet) !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  box-shadow: inset 0 -1px 0 var(--clean-line) !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
 }
 :root[data-skin="clean"]:not(.dark) :is(th, thead)[class*="backdrop-blur"] {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  background: var(--clean-sheet) !important;
+  background: var(--clean-surface) !important;
 }
 :root[data-skin="clean"]:not(.dark) .apple-sidebar-glow { display: none; }
+
+/* Header tools: ghost icon buttons, no boxes. */
+:root[data-skin="clean"]:not(.dark) :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control) {
+  width: var(--clean-control) !important;
+  min-width: var(--clean-control) !important;
+  height: var(--clean-control) !important;
+  min-height: var(--clean-control) !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--clean-ink) !important;
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+}
+/* Premium sets this control inside a cascade layer, so Clean answers in the same layer. */
+@layer utilities {
+  :root[data-skin="clean"]:not(.dark) .shell-toolbar-actions .shell-toolbar-control {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"]:not(.dark) :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control):hover {
+    background: var(--clean-hover) !important;
+    color: var(--clean-ink-strong) !important;
+    transition-duration: var(--speed-highlight-in);
+  }
+}
+
+/* ---------- Sidebar: on the frame, compact and silent ---------- */
 :root[data-skin="clean"]:not(.dark) :is(.app-sidebar, [data-slot="sidebar-container"], [data-slot="sidebar-inner"]) {
-  background: var(--clean-sheet) !important;
+  background: var(--clean-frame) !important;
 }
-:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-container"]::after {
-  width: 1px !important;
-  background: var(--clean-line) !important;
-}
-
-/* ---------- Disabled: the fourth grey, for text and icons only ---------- */
-:root[data-skin="clean"]:not(.dark) :is(button, input, select, textarea, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) {
-  color: var(--clean-ink-disabled) !important;
-  opacity: 1 !important;
-}
-:root[data-skin="clean"]:not(.dark) :is(button, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) svg {
-  color: var(--clean-ink-disabled) !important;
-}
-
-/* ---------- Typography: Inter throughout (Linear's face), Linear's hierarchy ---------- */
-:root[data-skin="clean"]:not(.dark) body { color: var(--clean-ink-strong); }
-:root[data-skin="clean"]:not(.dark) body { font-family: var(--clean-font-ui); }
-:root[data-skin="clean"]:not(.dark) :is(h1, h2, h3) {
-  color: var(--clean-ink-strong);
-  font-family: var(--clean-font-heading);
-  font-weight: 600;
-  letter-spacing: var(--clean-tracking-heading);
-}
-/* Page and welcome titles take Linear's tighter tracking. */
-:root[data-skin="clean"]:not(.dark) :is(h1, .heroTitle) { letter-spacing: var(--clean-tracking-title) !important; }
-/* Tabular figures for amounts and tables, so columns of numbers align. */
-:root[data-skin="clean"]:not(.dark) :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick, .chartTickVisits) {
-  font-variant-numeric: tabular-nums;
-}
-:root[data-skin="clean"]:not(.dark) p:not([class*="text-"]) { color: var(--clean-ink); }
-:root[data-skin="clean"]:not(.dark) :is(.text-muted-foreground, .t-12, small, time) { font-weight: 450; }
-:root[data-skin="clean"]:not(.dark) .text-muted-foreground { color: var(--clean-ink-quiet) !important; }
-/* Labels: small and quiet, sentence case, no tracking (text unchanged). */
-:root[data-skin="clean"]:not(.dark) :is(th, .kicker, .nextLabel, .premium-shortcuts-heading, .app-sidebar [data-slot="sidebar-group-label"]) {
-  color: var(--clean-ink-quiet) !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
-}
-
-/* ---------- Sidebar: compact and silent ---------- */
+:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-container"]::after,
+:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-header-separator"] { display: none !important; }
+:root[data-skin="clean"]:not(.dark) .premium-shortcuts { border-top-color: var(--clean-line) !important; }
 :root[data-skin="clean"]:not(.dark) .app-sidebar {
   --premium-nav-row: var(--clean-nav-item);
-  --premium-shortcut-row: 28px;
+  --premium-shortcut-row: var(--clean-nav-item);
 }
 :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] {
   height: var(--clean-nav-item) !important;
   min-height: var(--clean-nav-item) !important;
-  border-radius: 8px;
+  border-radius: var(--clean-control-radius);
   color: var(--clean-ink);
   font-size: 13px;
   font-weight: 500;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.006em;
   box-shadow: none !important;
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
+:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
 :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
-  background: var(--clean-selected) !important;
+  background: var(--clean-nav-active) !important;
   color: var(--clean-ink-strong) !important;
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"]:hover {
-    background: var(--clean-hover);
+    background: var(--clean-nav-hover);
     color: var(--clean-ink-strong);
     transition-duration: var(--speed-highlight-in);
   }
   :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]):hover {
-    background: var(--clean-selected);
+    background: var(--clean-nav-active);
+  }
+  :root[data-skin="clean"]:not(.dark) .premium-shortcuts button:hover { background: var(--clean-nav-hover) !important; }
+}
+:root[data-skin="clean"]:not(.dark) .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
+/* The account sits on the frame like the rest of the navigation, without a box. */
+:root[data-skin="clean"]:not(.dark) .sidebar-account-frame { box-shadow: none !important; }
+:root[data-skin="clean"]:not(.dark) .sidebar-account-frame .sidebar-user-card {
+  border-radius: var(--clean-control-radius) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"]:not(.dark) .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
+    background: var(--clean-nav-hover) !important;
   }
 }
-:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
-:root[data-skin="clean"]:not(.dark) .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
 
 /* ---------- Icons: one thin stroke, contained size, quiet at rest ---------- */
 @layer utilities {
@@ -165,8 +214,8 @@
     flex-basis: var(--clean-nav-icon) !important;
   }
 }
-:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr) svg,
-:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr) svg [stroke-width] {
+:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg,
+:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg [stroke-width] {
   stroke-width: var(--clean-icon-stroke);
 }
 :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] svg { color: var(--clean-ink-quiet); }
@@ -175,8 +224,82 @@
   :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"]:hover svg { color: var(--clean-ink-strong); }
 }
 /* List icons: 16 px in a 28 px species tile. */
-:root[data-skin="clean"]:not(.dark) .medical-data-table td .size-10 { width: 28px; height: 28px; border-radius: 8px; }
+:root[data-skin="clean"]:not(.dark) .medical-data-table td .size-10 { width: 28px; height: 28px; border-radius: 8px; box-shadow: none; }
 :root[data-skin="clean"]:not(.dark) .medical-data-table td .size-10 svg { width: var(--clean-list-icon); height: var(--clean-list-icon); }
+
+/* ---------- Typography: Inter throughout (Linear's face), Linear's hierarchy ---------- */
+:root[data-skin="clean"]:not(.dark) body {
+  color: var(--clean-ink-strong);
+  font-family: var(--clean-font-ui);
+  font-optical-sizing: auto;
+  letter-spacing: -0.006em;
+}
+:root[data-skin="clean"]:not(.dark) :is(h1, h2, h3) {
+  color: var(--clean-ink-strong);
+  font-family: var(--clean-font-heading);
+  font-weight: 600;
+  letter-spacing: var(--clean-tracking-heading);
+}
+/* Page and welcome titles take Linear's tighter tracking. */
+:root[data-skin="clean"]:not(.dark) :is(h1, .heroTitle) { letter-spacing: var(--clean-tracking-title) !important; }
+:root[data-skin="clean"]:not(.dark) p:not([class*="text-"]) { color: var(--clean-ink); }
+:root[data-skin="clean"]:not(.dark) :is(.text-muted-foreground, .t-12, small, time) { font-weight: 450; }
+:root[data-skin="clean"]:not(.dark) .text-muted-foreground { color: var(--clean-ink-quiet) !important; }
+/* Labels: small and quiet, sentence case, no tracking (text unchanged). */
+:root[data-skin="clean"]:not(.dark) :is(th, .kicker, .nextLabel, .premium-shortcuts-heading, .app-sidebar [data-slot="sidebar-group-label"]) {
+  color: var(--clean-ink-quiet) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+/* Tabular figures for amounts and tables, so columns of numbers align. */
+:root[data-skin="clean"]:not(.dark) :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick, .chartTickVisits) {
+  font-variant-numeric: tabular-nums;
+}
+:root[data-skin="clean"]:not(.dark) :is(.kpiValue, .section-atlas-value) { font-weight: 600 !important; letter-spacing: var(--clean-tracking-title) !important; }
+
+/* ---------- Disabled: the fourth grey, for text and icons only ---------- */
+:root[data-skin="clean"]:not(.dark) :is(button, input, select, textarea, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) {
+  color: var(--clean-ink-disabled) !important;
+  opacity: 1 !important;
+}
+:root[data-skin="clean"]:not(.dark) :is(button, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) svg {
+  color: var(--clean-ink-disabled) !important;
+}
+
+/* ---------- Controls: 32 px, hairline, no shadow at rest ---------- */
+:root[data-skin="clean"]:not(.dark) :is([data-slot="button"], button.group\/button, [data-slot="page-header-actions"] button) {
+  height: var(--clean-control) !important;
+  min-height: var(--clean-control) !important;
+  padding-inline: 12px !important;
+  border-radius: var(--clean-control-radius) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+:root[data-skin="clean"]:not(.dark) :is([data-slot="button"], button.group\/button)[data-size="icon"],
+:root[data-skin="clean"]:not(.dark) :is([data-slot="button"], button.group\/button)[data-size="icon-sm"] {
+  width: var(--clean-control) !important;
+  padding-inline: 0 !important;
+}
+:root[data-skin="clean"]:not(.dark) :is([data-slot="input"], [data-slot="list-search"], .list-search-control, .list-filter-control, [data-slot="select-trigger"]) {
+  box-shadow: none !important;
+}
+:root[data-skin="clean"]:not(.dark) [data-tabs-style="segmented"] {
+  height: var(--clean-control) !important;
+  min-height: var(--clean-control) !important;
+  padding: 2px !important;
+}
+:root[data-skin="clean"]:not(.dark) [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button):is([data-active=""], [data-active="true"], [data-state="active"], [data-state="on"], [data-pressed=""], [data-pressed="true"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"], [aria-current="page"]) {
+  box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 1px rgb(0 0 0 / 0.04) !important;
+}
+/* Status pills: tinted, borderless, full radius. */
+:root[data-skin="clean"]:not(.dark) :is([data-slot="badge"], .section-atlas-status, [data-premium-status]) {
+  border-color: transparent !important;
+  border-radius: 999px !important;
+  font-weight: 500 !important;
+}
 
 /* ---------- Row heights: 40 px dense lists, 32 px tables ---------- */
 :root[data-skin="clean"]:not(.dark) :is(div, li, a, button, article)[data-list-row] { min-height: var(--clean-row-list); }
@@ -188,27 +311,44 @@
   height: var(--clean-row-table) !important;
   padding-block: 6px !important;
 }
-
-/* ---------- Dashboard cards: solid, one line, Linear's rhythm ---------- */
-:root[data-skin="clean"]:not(.dark) :is(.frame, .board-frame)::before { display: none; }
-:root[data-skin="clean"]:not(.dark) :is(.card, .hero) {
+:root[data-skin="clean"]:not(.dark) :is(thead, th, [data-slot="table-head"]) {
   background: var(--clean-surface) !important;
-  border-radius: var(--clean-card-radius);
-  box-shadow: 0 0 0 1px var(--clean-line) !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line) !important;
 }
+:root[data-skin="clean"]:not(.dark) :is(td, [data-slot="table-cell"]) { border-color: var(--clean-line-subtle) !important; }
+
+/* ---------- Paper cards: white, one line, 10 px corners, no lattice ---------- */
+:root[data-skin="clean"]:not(.dark) :is(.frame, .board-frame, .surface-card, [data-slot="card"])::before { display: none !important; }
+:root[data-skin="clean"]:not(.dark) :is(.card, .hero, .kpis, .section-atlas-grid, .board-frame:not(.sidebar-account-frame), .surface-card:has(table), [data-slot="card"]:has(table)) {
+  background: var(--clean-surface) !important;
+  border-radius: var(--clean-card-radius) !important;
+  box-shadow: 0 0 0 1px var(--clean-line) !important;
+  overflow: hidden;
+}
+:root[data-skin="clean"]:not(.dark) :is(.kpis, .section-atlas-grid) > * { box-shadow: inset -1px 0 0 var(--clean-line-subtle) !important; }
+:root[data-skin="clean"]:not(.dark) :is(.kpis, .section-atlas-grid) > :last-child { box-shadow: none !important; }
 :root[data-skin="clean"]:not(.dark) .cardHead {
   padding: var(--clean-card-pad) var(--clean-card-pad) 12px !important;
-  box-shadow: inset 0 -1px 0 var(--clean-line) !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
 }
 :root[data-skin="clean"]:not(.dark) .cardTitle {
   font-family: var(--clean-font-heading);
   font-size: 14px !important;
   font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
+  letter-spacing: var(--clean-tracking-heading) !important;
   color: var(--clean-ink-strong) !important;
 }
 :root[data-skin="clean"]:not(.dark) .cardNote { font-size: 12px !important; font-weight: 450; color: var(--clean-ink-quiet) !important; }
-/* Welcome header: same content and mascot, tighter hierarchy and rhythm. */
+
+/* Page icon: a plain tile instead of the engraved square. */
+:root[data-skin="clean"]:not(.dark) .premium-page-icon::before { display: none; }
+:root[data-skin="clean"]:not(.dark) .premium-page-icon {
+  border-radius: var(--clean-control-radius);
+  background: var(--clean-surface);
+  box-shadow: 0 0 0 1px var(--clean-line);
+}
+
+/* ---------- Welcome header: same content and mascot, Linear's hierarchy ---------- */
 :root[data-skin="clean"]:not(.dark) .heroMain { padding: 24px 24px 20px !important; }
 :root[data-skin="clean"]:not(.dark) .heroTitle { font-family: var(--clean-font-heading); font-weight: 600 !important; color: var(--clean-ink-strong) !important; }
 :root[data-skin="clean"]:not(.dark) .kicker i { box-shadow: none; }
