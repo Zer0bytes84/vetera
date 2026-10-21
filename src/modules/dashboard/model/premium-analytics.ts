@@ -126,6 +126,8 @@ export function buildPremiumAnalytics(data: {
     patients: { count: followed, previous: previousFollowed, change: metricChange(followed, previousFollowed), visits: currentVisits.length,
       previousVisits: previousVisits.length, visitsChange: metricChange(currentVisits.length, previousVisits.length),
       completed: currentVisits.filter(a => a.status === "completed").length,
+      underway: currentVisits.filter(a => ["arrived", "waiting", "in_progress"].includes(a.status)).length,
+      planned: currentVisits.filter(a => ["scheduled", "confirmed"].includes(a.status)).length,
       newRecords: data.patients.filter(p => within(p.createdAt, ranges.current)).length },
     actions: { count: actions.length, previous: previousActions.length, change: metricChange(actions.length, previousActions.length),
       urgent: actions.filter(a => a.tone === "critical").length,

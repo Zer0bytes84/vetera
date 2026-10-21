@@ -87,6 +87,14 @@ function DeltaBadge({
   /** The previous value as shown, so the change names its baseline. */
   previousLabel?: string;
 }) {
+  // Nothing on either side: no change to report, and 0 % would suggest one.
+  if (previous === 0 && current === 0) {
+    return (
+      <span className="delta" data-sense="neutral">
+        <span className="delta-label">Rien à comparer : 0 sur les deux périodes</span>
+      </span>
+    );
+  }
   // A percentage of a zero base says nothing: show the label only.
   if (value === null && previous === 0) {
     return (
@@ -664,7 +672,11 @@ export function PremiumAnalytics({
         const d = new Date(a.startTime);
         return d >= from && d <= to;
       }).length;
-    const weekVisits = visitsBetween(startOfWeek, now);
+    // Same scope as the 30-day KPI: every visit of the week up to tonight,
+    // finished, under way or still planned today.
+    const endOfToday = new Date(now);
+    endOfToday.setHours(23, 59, 59, 999);
+    const weekVisits = visitsBetween(startOfWeek, endOfToday);
     // Last week up to the same day and hour, so the two figures cover the same span.
     const weekAgo = (d: Date) => new Date(d.getTime() - 7 * 86_400_000);
     const previousIncome = transactions
@@ -674,7 +686,7 @@ export function PremiumAnalytics({
         return d >= weekAgo(startOfWeek) && d <= weekAgo(now);
       })
       .reduce((acc, t) => acc + (t.amount || 0), 0);
-    const previousVisits = visitsBetween(weekAgo(startOfWeek), weekAgo(now));
+    const previousVisits = visitsBetween(weekAgo(startOfWeek), weekAgo(endOfToday));
 
     const issuedCount = invoices.filter((i) => i.documentStatus === "issued").length;
     const paidCount = invoices.filter((i) => i.documentStatus === "paid").length;
@@ -945,7 +957,8 @@ export function PremiumAnalytics({
               previousLabel={formatNumber(patients.previousVisits)}
             />
             <span className="kpiDetailRow">
-              {patients.completed} terminées · {Math.max(0, patients.visits - patients.completed)} en cours
+              {patients.completed} terminée{patients.completed > 1 ? "s" : ""} · {patients.underway} en cours
+              {patients.planned ? ` · ${patients.planned} prévue${patients.planned > 1 ? "s" : ""}` : ""}
             </span>
           </span>
         </button>
@@ -1018,10 +1031,7 @@ export function PremiumAnalytics({
           <div className="cardHead">
             <div>
               <h2 className="cardTitle">Recettes & activité</h2>
-              <p className="cardNote">
-                Encaissements en DA et consultations, par jour · Mis à jour à{" "}
-                {formatTime(updatedAt)}
-              </p>
+              <p className="cardNote">Encaissements en DA et consultations, par jour</p>
             </div>
             <button type="button" className="moreLink" onClick={onFinances}>
               Finances <ArrowRight size={13} aria-hidden="true" />
@@ -1043,8 +1053,7 @@ export function PremiumAnalytics({
                   weekday: "long",
                   day: "numeric",
                   month: "short",
-                })}{" "}
-                · Mis à jour à {formatTime(updatedAt)}
+                })}
               </p>
             </div>
             <button
@@ -1188,10 +1197,7 @@ export function PremiumAnalytics({
         <div className="cardHead">
           <div>
             <h2 className="cardTitle">Gestion du cabinet</h2>
-            <p className="cardNote">
-              Accès direct et suivi opérationnel des modules cliniques · Mis à jour à{" "}
-              {formatTime(updatedAt)}
-            </p>
+            <p className="cardNote">Accès direct et suivi opérationnel des modules cliniques</p>
           </div>
         </div>
         <div className="tiles">

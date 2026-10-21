@@ -31,4 +31,14 @@ describe("micro-histogrammes des indicateurs", () => {
     expect(model.patients.previousVisits).toBe(1);
     expect(model.patients.visitsChange).toBe(200);
   });
+
+  it("distingue les visites terminées, en cours et seulement prévues", () => {
+    const at = (id: string, status: Appointment["status"]) => ({ ...visit(id, "rex", 21), status });
+    const model = buildPremiumAnalytics({
+      appointments: [at("a", "completed"), at("b", "in_progress"), at("c", "waiting"), at("d", "scheduled")],
+      patients: [patient("rex")],
+      transactions: [], tasks: [], vaccinations: [], alerts: [],
+    }, "7d", now);
+    expect([model.patients.completed, model.patients.underway, model.patients.planned]).toEqual([1, 2, 1]);
+  });
 });
