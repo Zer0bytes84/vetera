@@ -239,61 +239,86 @@ export function useFinancesPageModel({
   }, [invoices]);
 
   const financeSectionCards = useMemo<SectionCardItem[]>(() => {
+    // Without the invoices, no amount is known: never claim "soldé" or "aucun retard".
+    if (invoiceError || invoicesLoading) {
+      const unknown = invoicesLoading ? "Chargement…" : "Indisponible";
+      const detail = invoicesLoading ? "Lecture des factures en cours" : invoiceError ?? "";
+      // The reason is given once, on the first card.
+      return ["Facturé", "Encaissé", "Solde ouvert", "En retard"].map((title, index) => ({
+        title,
+        value: unknown,
+        tone: "quiet" as const,
+        trend: "neutral" as const,
+        detailRow: index === 0 ? detail : undefined,
+      }));
+    }
+    const issued = invoices.filter((invoice) => invoice.documentStatus === "issued");
+    const open = issued.filter((invoice) => invoice.balanceAmount > 0);
+    const late = issued.filter((invoice) => invoice.settlementStatus === "overdue");
+    const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? "s" : ""}`;
     const recoveryRate =
       invoiceStats.gross > 0
         ? Math.round((invoiceStats.collected / invoiceStats.gross) * 100)
-        : 100;
+        : null;
     return [
       {
         title: "Facturé",
         value: formatDZD(invoiceStats.gross),
-        change: recoveryRate,
-        changeKind: "rate",
-        changeBase: invoiceStats.gross,
-        changeLabel: "taux de recouvrement",
+        ...(recoveryRate !== null
+          ? {
+              change: recoveryRate,
+              changeKind: "rate" as const,
+              changeBase: invoiceStats.gross,
+              changeLabel: "déjà encaissés",
+            }
+          : {}),
         trend: "neutral",
-        detailRow: `${invoices.length} document${invoices.length > 1 ? "s" : ""} émis · Période en cours`,
+        detailRow: `${plural(issued.length, "facture")} émise${issued.length > 1 ? "s" : ""} · toutes périodes`,
         footerTitle: "Montant des factures",
-        footerDescription: "Documents émis",
+        footerDescription: "Factures émises",
       },
       {
         title: "Encaissé",
         value: formatDZD(invoiceStats.collected),
-        badge: invoiceStats.collected > 0 ? "Recettes confirmées" : "Aucune recette",
-        tone: "positive",
-        trend: "up",
-        detailRow: "Règlements reçus · Reçus sans litige",
+        badge: invoiceStats.collected > 0 ? undefined : "Aucun règlement",
+        tone: "quiet",
+        trend: "neutral",
+        detailRow: "Règlements reçus, moins les remboursements",
         footerTitle: "Paiements reçus",
         footerDescription: "Règlements reçus",
       },
       {
         title: "Solde ouvert",
         value: formatDZD(invoiceStats.balance),
-        badge: invoiceStats.balance > 0 ? "À recouvrer" : "Soldé",
+        badge: invoiceStats.balance > 0 ? "À recouvrer" : issued.length ? "Soldé" : undefined,
         tone: invoiceStats.balance > 0 ? "watch" : "positive",
         trend: invoiceStats.balance > 0 ? "down" : "neutral",
         detailRow:
           invoiceStats.balance > 0
-            ? "Créances ouvertes · Règlements attendus"
-            : "Toutes les factures sont acquittées",
+            ? `${plural(open.length, "facture")} non soldée${open.length > 1 ? "s" : ""}`
+            : issued.length
+              ? "Toutes les factures émises sont réglées"
+              : "Aucune facture émise",
         footerTitle: "Reste à recouvrer",
         footerDescription: "Créances ouvertes",
       },
       {
         title: "En retard",
         value: formatDZD(invoiceStats.overdue),
-        badge: invoiceStats.overdue > 0 ? "Impayés" : "0 retard",
-        tone: invoiceStats.overdue > 0 ? "critical" : "positive",
+        badge: invoiceStats.overdue > 0 ? "Échéance dépassée" : undefined,
+        tone: invoiceStats.overdue > 0 ? "critical" : "quiet",
         trend: invoiceStats.overdue > 0 ? "down" : "neutral",
         detailRow:
           invoiceStats.overdue > 0
-            ? "Échéances dépassées · Relance propriétaire requise"
-            : "Aucun retard de paiement à déplorer",
+            ? `${plural(late.length, "facture")} à relancer`
+            : issued.length
+              ? "Aucune échéance dépassée"
+              : "Aucune facture émise",
         footerTitle: "Échéances dépassées",
         footerDescription: "Retards de paiement",
       },
     ];
-  }, [invoiceStats, invoices.length]);
+  }, [invoiceError, invoiceStats, invoices, invoicesLoading]);
 
   const filteredInvoices = useMemo(() => {
     const query = invoiceQuery.trim().toLocaleLowerCase("fr");

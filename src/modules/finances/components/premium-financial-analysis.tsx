@@ -10,11 +10,12 @@ import { percentageDelta, type DashboardMetrics } from "@/lib/metrics";
 import type { View } from "@/types";
 import { formatDinars } from "@/utils/display-format";
 import "../finances-premium.css";
+import { categoryFinding, otherIncome } from "../category-finding";
 import { ChartLineData01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PageHeader } from "@/design-system/patterns/page-header";
 
-function Variation({ current, previous }: { current: number; previous: number }) {
+function Variation({ current, previous, format = (value: number) => value.toLocaleString("fr-FR") }: { current: number; previous: number; format?: (value: number) => string }) {
   if (previous === 0) {
     return <span className="finance-analysis-context">Sans valeur sur la période précédente</span>;
   }
@@ -24,7 +25,7 @@ function Variation({ current, previous }: { current: number; previous: number })
     <span className="finance-analysis-variation" data-direction={delta === 0 ? "equal" : delta < 0 ? "down" : "up"}>
       {delta !== 0 && <Icon size={14} strokeWidth={1} aria-hidden="true" />}
       <span>{delta > 0 ? "+" : ""}{delta.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>
-      <span>vs période précédente</span>
+      <span>contre {format(previous)} sur la période précédente</span>
     </span>
   );
 }
@@ -62,7 +63,7 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate }: {
           <h2>Encaissements</h2>
           <strong>{formatDinars(metrics.summary.income30)}</strong>
           <span className="finance-analysis-context">30 derniers jours</span>
-          <Variation current={metrics.summary.income30} previous={metrics.summary.previousIncome30} />
+          <Variation current={metrics.summary.income30} previous={metrics.summary.previousIncome30} format={formatDinars} />
         </div>
         <div className="finance-analysis-metric">
           <h2>Encaissements annuels</h2>
@@ -141,6 +142,9 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate }: {
               <p>Principales catégories du journal, sur 30 jours</p>
             </div>
           </div>
+          {categoryFinding(categories, metrics.summary.income30) && (
+            <p className="finance-analysis-finding">{categoryFinding(categories, metrics.summary.income30)}</p>
+          )}
           {categories.length ? (
             <ul className="finance-analysis-category-list">
               {categories.map(category => {
@@ -156,6 +160,19 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate }: {
                   </li>
                 );
               })}
+              {otherIncome(categories, metrics.summary.income30) > 0 && (() => {
+                const rest = otherIncome(categories, metrics.summary.income30);
+                const share = rest / metrics.summary.income30 * 100;
+                return (
+                  <li key="autres">
+                    <div><span>Autres catégories</span><strong>{formatDinars(rest)}</strong></div>
+                    <div className="finance-analysis-category-detail">
+                      <div className="finance-analysis-track"><span style={{ width: `${Math.min(100, share)}%` }} /></div>
+                      <span>{share.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>
+                    </div>
+                  </li>
+                );
+              })()}
             </ul>
           ) : <p className="finance-analysis-empty">Aucun encaissement sur cette période.</p>}
           <div className="finance-analysis-category-total"><span>Total sur 30 jours</span><strong>{formatDinars(metrics.summary.income30)}</strong></div>

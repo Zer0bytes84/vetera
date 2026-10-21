@@ -139,3 +139,12 @@
   :root[data-visual-style="premium"] .finance-analysis-metric:nth-child(n) { box-shadow: none; }
   :root[data-visual-style="premium"] .finance-analysis-metric + .finance-analysis-metric { box-shadow: var(--hair-t); }
 }
+
+/* One sentence on where the money came from, above the sources. */
+.finance-analysis-finding {
+  margin: 0;
+  padding: 16px 24px 4px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.45;
+}
