@@ -49,6 +49,49 @@ import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import { Kbd } from "@/components/ui/kbd";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
+import {
+  clinicalFlags,
+  PATIENT_SORT_OPTIONS,
+  type PatientSort,
+} from "../lib/patient-list";
+import type { Patient } from "@/types/db";
+
+const VISIBLE_FLAGS = 2;
+
+/** Allergies and chronic conditions already entered, under the name. */
+function ClinicalFlagPills({ patient }: { patient: Patient }) {
+  const flags = clinicalFlags(patient);
+  if (flags.length === 0) {
+    return null;
+  }
+  const hidden = flags.slice(VISIBLE_FLAGS);
+  return (
+    <span className="mt-1.5 flex max-w-[320px] flex-wrap gap-1 font-normal normal-case">
+      {flags.slice(0, VISIBLE_FLAGS).map((flag) => (
+        <span
+          className={cn(
+            "max-w-[200px] truncate rounded-md px-1.5 py-px t-12",
+            flag.kind === "allergy"
+              ? "bg-signal-critical/10 text-signal-critical"
+              : "bg-signal-watch/15 text-amber-800 dark:text-signal-watch"
+          )}
+          key={`${flag.kind}:${flag.label}`}
+          title={flag.label}
+        >
+          {flag.kind === "allergy" ? `Allergie : ${flag.label}` : flag.label}
+        </span>
+      ))}
+      {hidden.length > 0 ? (
+        <span
+          className="rounded-md bg-zinc-100 px-1.5 py-px t-12 text-muted-foreground dark:bg-white/[0.06]"
+          title={hidden.map((flag) => flag.label).join(", ")}
+        >
+          +{hidden.length}
+        </span>
+      ) : null}
+    </span>
+  );
+}
 
 export function PatientsView(props: PatientsViewProps) {
   const {
@@ -58,6 +101,7 @@ export function PatientsView(props: PatientsViewProps) {
     createdPatientPrompt,
     currentPage,
     detailsInitialTab,
+    filtersActive,
     handleCreatePatient,
     handlePatientSaved,
     hydratedOwners,
@@ -83,9 +127,11 @@ export function PatientsView(props: PatientsViewProps) {
     setIsCreateOpen,
     setSearchTerm,
     setSelectedPatientId,
+    setSortKey,
     setSpeciesFilter,
     setStatusFilter,
     speciesFilter,
+    sortKey,
     speciesOptions,
     statusFilter,
     totalPages,
@@ -123,7 +169,8 @@ export function PatientsView(props: PatientsViewProps) {
               <ListSearch className="w-full sm:w-72" label="Rechercher les patients" placeholder="Nom ou propriétaire…" value={searchTerm} onValueChange={setSearchTerm} />
               <ListFilter label="Espèce" value={speciesFilter} onValueChange={setSpeciesFilter} options={[{ value: "all", label: "Toutes" }, ...speciesOptions.map(value => ({ value, label: value }))]} />
               <ListFilter label="Statut" value={statusFilter} onValueChange={setStatusFilter} options={[{ value: "all", label: "Tous" }, ...Object.entries(PATIENT_STATUS_META).map(([value, option]) => ({ value, label: option.label }))]} />
-              <Button variant="outline" className="ml-auto h-[30px] t-12" onClick={resetFilters}>Réinitialiser les filtres</Button>
+              <ListFilter label="Trier par" value={sortKey} onValueChange={value => setSortKey(value as PatientSort)} options={PATIENT_SORT_OPTIONS} />
+              <Button variant="outline" className="ml-auto h-[30px] t-12" disabled={!filtersActive} onClick={resetFilters}>Réinitialiser les filtres</Button>
             </div>
 
             {loadingPatients ? (
@@ -291,9 +338,10 @@ export function PatientsView(props: PatientsViewProps) {
                                   <span className="mt-0.5 block font-normal text-xs text-zinc-500 normal-case dark:text-zinc-400">
                                     {entry.patient.species}
                                     {entry.patient.breed
-                                      ? ` - ${entry.patient.breed}`
+                                      ? ` · ${entry.patient.breed}`
                                       : ""}
                                   </span>
+                                  <ClinicalFlagPills patient={entry.patient} />
                                 </span>
                               </div>
                             </td>
@@ -327,9 +375,11 @@ export function PatientsView(props: PatientsViewProps) {
                                 borderClass
                               )}
                             >
-                              {entry.lastVisit
-                                ? formatPatientDate(entry.lastVisit)
-                                : "-"}
+                              {entry.lastVisit ? (
+                                formatPatientDate(entry.lastVisit)
+                              ) : (
+                                <span className="font-normal text-muted-foreground">Aucune</span>
+                              )}
                             </td>
 
                             {/* Col 5: Actions */}

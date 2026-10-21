@@ -25,9 +25,16 @@ import {
   DetailsTab,
   PatientRecord,
   PATIENTS_PAGE_SIZE,
+  formatPatientDateTime,
   normalizeDate,
   PatientsProps,
 } from "@/modules/patients/components/patients-shared";
+import {
+  isUpcomingVisit,
+  isVisitOverdue,
+  type PatientSort,
+  sortPatientRecords,
+} from "@/modules/patients/lib/patient-list";
 
 export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const { data: users } = useUsersRepository();
@@ -35,6 +42,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [speciesFilter, setSpeciesFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [sortKey, setSortKey] = useState<PatientSort>("activity");
   const [currentPage, setCurrentPage] = useState(1);
   const [recentOwnersById, setRecentOwnersById] = useState<
     Record<string, Owner>
@@ -96,7 +104,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   const visiblePatients = useMemo<PatientRecord[]>(() => {
     const query = deferredSearchTerm.trim().toLowerCase();
 
-    return patients
+    const records = patients
       .map((patient) => {
         const owner = ownersMap.get(patient.ownerId);
         const patientAppointments = [
@@ -112,14 +120,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
         );
 
         const upcomingAppointment = patientAppointments
-          .filter((appointment) => {
-            const date = normalizeDate(appointment.startTime);
-            return (
-              appointment.status === "scheduled" &&
-              !!date &&
-              date.getTime() >= Date.now()
-            );
-          })
+          .filter((appointment) => isUpcomingVisit(appointment, new Date()))
           .slice()
           .sort((left, right) => {
             const leftDate = normalizeDate(left.startTime)?.getTime() ?? 0;
@@ -165,27 +166,15 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
           return false;
         }
         return true;
-      })
-      .sort((left, right) => {
-        const leftDate =
-          normalizeDate(
-            left.upcomingAppointment?.startTime ||
-              left.lastVisit ||
-              left.patient.createdAt
-          )?.getTime() ?? 0;
-        const rightDate =
-          normalizeDate(
-            right.upcomingAppointment?.startTime ||
-              right.lastVisit ||
-              right.patient.createdAt
-          )?.getTime() ?? 0;
-        return rightDate - leftDate;
       });
+
+    return sortPatientRecords(records, sortKey);
   }, [
     appointmentsByPatient,
     deferredSearchTerm,
     ownersMap,
     patients,
+    sortKey,
     speciesFilter,
     statusFilter,
   ]);
@@ -230,7 +219,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [deferredSearchTerm, speciesFilter, statusFilter]);
+  }, [deferredSearchTerm, sortKey, speciesFilter, statusFilter]);
 
   // Listen for new patient event from sidebar
   useEffect(() => {
@@ -255,100 +244,95 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
   );
 
   const sectionCards = useMemo<SectionCardItem[]>(() => {
-    const activePatients = patients.filter(
-      (patient) => patient.status !== "decede"
-    ).length;
-    const monitoredPatients = patients.filter(
-      (patient) =>
-        patient.status === "traitement" || patient.status === "hospitalise"
-    ).length;
-    const scheduledPatients = new Set(
-      appointments
-        .filter((appointment) => {
-          const date = normalizeDate(appointment.startTime);
-          return (
-            appointment.status === "scheduled" &&
-            !!date &&
-            date.getTime() >= Date.now()
-          );
-        })
-        .map((appointment) => appointment.patientId)
-    ).size;
-    const stalePatients = patients.filter((patient) => {
-      const lastVisit = normalizeDate(patient.lastVisit);
-      if (!lastVisit) {
-        return true;
-      }
-      return Date.now() - lastVisit.getTime() > 1000 * 60 * 60 * 24 * 90;
+    const now = new Date();
+    const plural = (count: number, word: string) =>
+      `${formatNumber(count)} ${word}${count > 1 ? "s" : ""}`;
+    const living = patients.filter((patient) => patient.status !== "decede");
+    const species = (name: string) =>
+      living.filter((p) => (p.species || "").toLowerCase().includes(name)).length;
+    const canine = species("chien");
+    const feline = species("chat");
+    const others = living.length - canine - feline;
+    const households = new Set(living.map((patient) => patient.ownerId)).size;
+    const newInMonth = living.filter((patient) => {
+      const created = normalizeDate(patient.createdAt);
+      return !!created && now.getTime() - created.getTime() <= 30 * 86400000;
     }).length;
-    const canine = patients.filter((p) =>
-      (p.species || "").toLowerCase().includes("chien")
-    ).length;
-    const feline = patients.filter((p) =>
-      (p.species || "").toLowerCase().includes("chat")
-    ).length;
-    const underTreatment = patients.filter(
-      (p) => p.status === "traitement"
-    ).length;
-    const hospitalized = patients.filter(
-      (p) => p.status === "hospitalise"
-    ).length;
-    const newInMonth = patients.filter(
-      (p) =>
-        p.createdAt &&
-        Date.now() - new Date(p.createdAt).getTime() <= 30 * 86400000
-    ).length;
-    const scheduledCount = appointments.filter(
-      (a) => a.status === "scheduled"
-    ).length;
+
+    const underTreatment = patients.filter((p) => p.status === "traitement").length;
+    const hospitalized = patients.filter((p) => p.status === "hospitalise").length;
+    const monitoredPatients = underTreatment + hospitalized;
+
+    const upcoming = appointments
+      .filter((appointment) => isUpcomingVisit(appointment, now))
+      .sort(
+        (left, right) =>
+          (normalizeDate(left.startTime)?.getTime() ?? 0) -
+          (normalizeDate(right.startTime)?.getTime() ?? 0)
+      );
+    const upcomingPatients = new Set(upcoming.map((a) => a.patientId)).size;
+    const next = upcoming[0];
+    const nextName = next
+      ? patients.find((patient) => patient.id === next.patientId)?.name
+      : undefined;
+
+    // Same last visit as the list: latest finished visit, else the record's own.
+    const overdue = living.filter((patient) => {
+      const finished = (appointmentsByPatient.get(patient.id) ?? [])
+        .filter((appointment) => appointment.status === "completed")
+        .map((appointment) => appointment.startTime)
+        .sort()
+        .at(-1);
+      return isVisitOverdue(patient, finished ?? patient.lastVisit, now);
+    }).length;
 
     return [
       {
         title: "Patients actifs",
-        value: formatNumber(activePatients),
-        badge:
-          newInMonth > 0
-            ? `+${newInMonth} ce mois-ci`
-            : `${formatNumber(hydratedOwners.length)} foyers`,
-        trend: "up",
-        detailRow: `${formatNumber(hydratedOwners.length)} foyers · ${canine} chiens · ${feline} chats`,
-        footerTitle: "Patients suivis",
-        footerDescription: "Patients actifs enregistrés",
+        value: formatNumber(living.length),
+        badge: newInMonth > 0 ? `+${plural(newInMonth, "nouveau")} sur 30 jours` : undefined,
+        tone: newInMonth > 0 ? "positive" : undefined,
+        detailRow: [
+          plural(households, "foyer"),
+          plural(canine, "chien"),
+          plural(feline, "chat"),
+          others > 0 ? plural(others, "autre") : "",
+        ]
+          .filter(Boolean)
+          .join(" · "),
+        footerTitle: "Patients actifs",
+        footerDescription: "Patients enregistrés, hors décédés",
       },
       {
         title: "Suivi clinique",
         value: formatNumber(monitoredPatients),
-        badge: monitoredPatients > 0 ? "Surveillance active" : "Tous stables",
+        badge: monitoredPatients > 0 ? "Surveillance active" : "Aucun sous surveillance",
         tone: monitoredPatients > 0 ? "watch" : "positive",
-        trend: monitoredPatients > 0 ? "up" : "neutral",
-        detailRow: `${underTreatment} sous traitement · ${hospitalized} hospitalisé${hospitalized > 1 ? "s" : ""}`,
+        detailRow: `${formatNumber(underTreatment)} sous traitement · ${plural(hospitalized, "hospitalisé")}`,
         footerTitle: "Sous traitement ou hospitalisés",
         footerDescription: "Patients sous traitement ou hospitalisés",
       },
       {
         title: "Rendez-vous à venir",
-        value: formatNumber(scheduledPatients),
-        badge: scheduledPatients > 0 ? `${scheduledPatients} planifiés` : "À planifier",
-        trend: "up",
-        detailRow: `${scheduledCount} consultations prévues · Dossiers synchronisés`,
-        footerTitle: "Consultations planifiées",
-        footerDescription: "Consultations planifiées",
+        value: formatNumber(upcoming.length),
+        badge: upcoming.length > 0 ? `pour ${plural(upcomingPatients, "patient")}` : "Aucun de prévu",
+        detailRow: next
+          ? `Prochain : ${formatPatientDateTime(next.startTime)}${nextName ? ` · ${nextName}` : ""}`
+          : "Planifiez depuis l'Agenda ou le dossier",
+        footerTitle: "Rendez-vous planifiés ou confirmés",
+        footerDescription: "Rendez-vous planifiés ou confirmés à venir",
       },
       {
         title: "Relances à prévoir",
-        value: formatNumber(stalePatients),
-        change: stalePatients,
-        changeKind: "count",
-        changeLabel: stalePatients > 0 ? "sans visite > 90 j" : "dossiers à jour",
-        inverse: true,
-        tone: stalePatients > 0 ? "critical" : "positive",
-        trend: stalePatients > 0 ? "down" : "neutral",
-        detailRow: `${stalePatients} relances automatiques · Rappels vaccins & soins`,
+        value: formatNumber(overdue),
+        badge: overdue > 0 ? "Sans visite depuis plus de 90 jours" : "Tous vus dans les 90 jours",
+        tone: overdue > 0 ? "critical" : "positive",
+        detailRow: "Depuis la dernière visite terminée, hors décédés",
         footerTitle: "Sans visite depuis 90 jours",
         footerDescription: "Patients sans visite depuis 90 jours",
       },
     ];
-  }, [appointments, hydratedOwners.length, patients]);
+  }, [appointments, appointmentsByPatient, patients]);
 
   const openPatientDetails = (patient: Patient, tab: DetailsTab = "info") => {
     setDetailsInitialTab(tab);
@@ -365,8 +349,14 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     setSearchTerm("");
     setSpeciesFilter("all");
     setStatusFilter("all");
+    setSortKey("activity");
     setCurrentPage(1);
   };
+  const filtersActive =
+    searchTerm.trim() !== "" ||
+    speciesFilter !== "all" ||
+    statusFilter !== "all" ||
+    sortKey !== "activity";
 
   const totalPages = Math.max(
     1,
@@ -540,6 +530,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     paginationRange,
     patientsError,
     refreshPatients,
+    filtersActive,
     resetFilters,
     searchTerm,
     sectionCards,
@@ -550,10 +541,12 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
     setIsCreateOpen,
     setSearchTerm,
     setSelectedPatientId,
+    setSortKey,
     setSpeciesFilter,
     setStatusFilter,
     speciesFilter,
     speciesOptions,
+    sortKey,
     statusFilter,
     totalPages,
     transactions,
