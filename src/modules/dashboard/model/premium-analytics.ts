@@ -30,6 +30,28 @@ function within(value: string | undefined, range: AnalyticsRange) {
   return Boolean(date && date >= range.from && date <= range.to);
 }
 
+/**
+ * Buckets for the KPI micro-histograms: one bar per day up to 30 days, per
+ * week over 90 days, per month over 12 months; none for a single day.
+ */
+export function trendBuckets(period: AnalyticsPeriod, range: AnalyticsRange): AnalyticsRange[] {
+  if (period === "today") return [];
+  if (period === "12m") {
+    return Array.from({ length: 12 }, (_, i) => {
+      const from = new Date(range.from.getFullYear(), range.from.getMonth() + i, i === 0 ? range.from.getDate() : 1);
+      const next = new Date(range.from.getFullYear(), range.from.getMonth() + i + 1, 1);
+      return { from, to: new Date(Math.min(next.getTime() - 1, range.to.getTime())) };
+    });
+  }
+  const step = period === "90d" ? 7 : 1;
+  const buckets: AnalyticsRange[] = [];
+  for (let from = range.from; from <= range.to; from = startOfDay(addDays(from, step))) {
+    const to = new Date(Math.min(startOfDay(addDays(from, step)).getTime() - 1, range.to.getTime()));
+    buckets.push({ from, to });
+  }
+  return buckets;
+}
+
 export function metricChange(value: number, previous: number) {
   if (previous === 0) return value === 0 ? 0 : null;
   return ((value - previous) / Math.abs(previous)) * 100;
@@ -91,10 +113,18 @@ export function buildPremiumAnalytics(data: {
   const actionsIn = (range: AnalyticsRange) => data.alerts.filter(a => within(dates.get(a.id), range));
   const actions = actionsIn(ranges.current);
   const previousActions = actionsIn(ranges.previous);
+  const buckets = trendBuckets(period, ranges.current);
+  const trend = {
+    income: buckets.map(range => cashIn(range, "income")),
+    visits: buckets.map(range => currentVisits.filter(a => within(a.startTime, range)).length),
+    patients: buckets.map(range => new Set(currentVisits.filter(a => within(a.startTime, range)).map(a => a.patientId)).size),
+  };
   return {
     ranges,
+    trend,
     cash: { income, expense, net: income - expense, previous: previousIncome, change: metricChange(income, previousIncome) },
     patients: { count: followed, previous: previousFollowed, change: metricChange(followed, previousFollowed), visits: currentVisits.length,
+      previousVisits: previousVisits.length, visitsChange: metricChange(currentVisits.length, previousVisits.length),
       completed: currentVisits.filter(a => a.status === "completed").length,
       newRecords: data.patients.filter(p => within(p.createdAt, ranges.current)).length },
     actions: { count: actions.length, previous: previousActions.length, change: metricChange(actions.length, previousActions.length),

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { firstNameOf, formatNumber } from "@/utils/display-format";
-import { formatCentimes, type ScheduleEntry } from "../v2/model";
+import { formatCentimes, formatTime, type ScheduleEntry } from "../v2/model";
 import { monotonePath, splitUnit } from "./chart-path";
 import {
   ANALYTICS_PERIODS,
@@ -78,11 +78,14 @@ function DeltaBadge({
   previous,
   current = 0,
   inverse = false,
+  previousLabel,
 }: {
   value: number | null;
   previous: number;
   current?: number;
   inverse?: boolean;
+  /** The previous value as shown, so the change names its baseline. */
+  previousLabel?: string;
 }) {
   // A percentage of a zero base says nothing: show the label only.
   if (value === null && previous === 0) {
@@ -108,10 +111,53 @@ function DeltaBadge({
       {computed !== 0 && <Icon size={13} strokeWidth={1.5} aria-hidden="true" />}
       <span>{formattedPercent}</span>
       <span className="delta-label">
-        {inverse ? "vs échéances précédentes" : "vs période précédente"}
+        {previousLabel
+          ? `contre ${previousLabel} la période précédente`
+          : inverse
+            ? "vs échéances précédentes"
+            : "vs période précédente"}
       </span>
-      <span className="sr-only">Valeur précédente : {formatNumber(previous)}</span>
+      {!previousLabel && (
+        <span className="sr-only">Valeur précédente : {formatNumber(previous)}</span>
+      )}
     </span>
+  );
+}
+
+/** A KPI's micro-histogram: grey bars, the latest bucket in the series colour. */
+function MiniBars({ values, label }: { values: number[]; label: string }) {
+  if (values.length < 2) return null;
+  const max = Math.max(...values, 0);
+  const width = 84;
+  const height = 28;
+  const gap = values.length > 20 ? 1 : 2;
+  const bar = (width - gap * (values.length - 1)) / values.length;
+  return (
+    <svg
+      className="kpiBars"
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-label={label}
+    >
+      {values.map((value, i) => {
+        const h = max ? Math.max(2, (value / max) * height) : 2;
+        return (
+          <rect
+            // Bars are positional and never reorder.
+            // biome-ignore lint/suspicious/noArrayIndexKey: fixed buckets
+            key={i}
+            data-current={i === values.length - 1 ? "" : undefined}
+            x={i * (bar + gap)}
+            y={height - h}
+            width={bar}
+            height={h}
+            rx={Math.min(1.5, bar / 2)}
+          />
+        );
+      })}
+    </svg>
   );
 }
 
@@ -463,7 +509,8 @@ export function PremiumAnalytics({
 }: PremiumAnalyticsProps) {
   const { currentUser } = useAuth();
   const userName = firstNameOf(currentUser?.displayName, "Docteur");
-  const { cash, patients, actions, ranges } = model;
+  const { cash, patients, actions, ranges, trend } = model;
+  const updatedAt = now ?? new Date();
 
   const dateOptions = { day: "numeric", month: "short" } as const;
   const rangeLabel =
@@ -809,6 +856,8 @@ export function PremiumAnalytics({
         <div className="filterRange">
           <CalendarDays size={14} strokeWidth={1} aria-hidden="true" />
           <span>{rangeLabel}</span>
+          <span aria-hidden="true">·</span>
+          <span>Mis à jour à {formatTime(updatedAt)}</span>
         </div>
       </div>
 
@@ -828,12 +877,16 @@ export function PremiumAnalytics({
             </span>
             <ArrowRight size={15} strokeWidth={1} className="kpiGo" aria-hidden="true" />
           </span>
-          <span className="kpiValue">{formatCentimes(cash.income)}</span>
+          <span className="kpiValueRow">
+            <span className="kpiValue">{formatCentimes(cash.income)}</span>
+            <MiniBars values={trend.income} label="Recettes encaissées sur la période" />
+          </span>
           <span className="kpiSub">
             <DeltaBadge
               value={cash.change}
               previous={cash.previous / 100}
               current={cash.income / 100}
+              previousLabel={formatCentimes(cash.previous)}
             />
             <span className="kpiDetailRow">
               Solde net : {formatCentimes(cash.net)} · Dépenses : {formatCentimes(cash.expense)}
@@ -855,12 +908,16 @@ export function PremiumAnalytics({
             </span>
             <ArrowRight size={15} strokeWidth={1} className="kpiGo" aria-hidden="true" />
           </span>
-          <span className="kpiValue">{formatNumber(patients.visits)}</span>
+          <span className="kpiValueRow">
+            <span className="kpiValue">{formatNumber(patients.visits)}</span>
+            <MiniBars values={trend.visits} label="Consultations sur la période" />
+          </span>
           <span className="kpiSub">
             <DeltaBadge
-              value={patients.change}
-              previous={patients.previous}
-              current={patients.count}
+              value={patients.visitsChange}
+              previous={patients.previousVisits}
+              current={patients.visits}
+              previousLabel={formatNumber(patients.previousVisits)}
             />
             <span className="kpiDetailRow">
               {patients.completed} terminées · {Math.max(0, patients.visits - patients.completed)} en cours
@@ -882,12 +939,16 @@ export function PremiumAnalytics({
             </span>
             <ArrowRight size={15} strokeWidth={1} className="kpiGo" aria-hidden="true" />
           </span>
-          <span className="kpiValue">{formatNumber(patients.count)}</span>
+          <span className="kpiValueRow">
+            <span className="kpiValue">{formatNumber(patients.count)}</span>
+            <MiniBars values={trend.patients} label="Patients vus sur la période" />
+          </span>
           <span className="kpiSub">
             <DeltaBadge
               value={patients.change}
               previous={patients.previous}
               current={patients.count}
+              previousLabel={formatNumber(patients.previous)}
             />
             <span className="kpiDetailRow">
               {patients.newRecords} nouveaux dossiers dans la période
@@ -916,6 +977,7 @@ export function PremiumAnalytics({
               previous={actions.previous}
               current={actions.count}
               inverse
+              previousLabel={formatNumber(actions.previous)}
             />
             <span className="kpiDetailRow">
               {actions.urgent} prioritaires · {actions.reminders} vaccins · {actions.tasks} tâches

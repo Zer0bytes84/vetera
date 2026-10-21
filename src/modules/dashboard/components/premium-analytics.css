@@ -420,13 +420,14 @@
   opacity: 0;
   transform: translateX(-4px);
   color: var(--faint);
-  transition: opacity 180ms var(--ease-out-quint), transform 180ms var(--ease-out-quint);
+  transition: opacity var(--speed-highlight-out) var(--ease-out-quint), transform var(--speed-highlight-out) var(--ease-out-quint);
 }
 
 @media (hover: hover) and (pointer: fine) {
   :is([data-visual-style="premium"], .premium-analytics-dashboard) .kpi:hover .kpiGo {
     opacity: 1;
     transform: none;
+    transition-duration: var(--speed-highlight-in);
     color: var(--ink);
   }
 }
@@ -439,6 +440,25 @@
   letter-spacing: -0.035em;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiValueRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Micro-histogram: grey bars, the latest bucket in the series colour. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiBars {
+  flex: none;
+  margin-bottom: 3px;
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiBars rect {
+  fill: var(--line-strong);
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiBars rect[data-current] {
+  fill: var(--series-1, var(--premium-blue));
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiSub {
@@ -457,6 +477,22 @@
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
   color: var(--faint);
+}
+
+/* In a KPI the change reads as one sentence: the percentage never breaks. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiSub .delta {
+  /* premium.css sets .delta to inline-flex !important. */
+  display: block !important;
+  line-height: 1.45;
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiSub .delta > svg {
+  display: inline;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiSub .delta > span:not(.delta-label) {
+  margin-right: 4px;
+  white-space: nowrap;
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .delta-label {
