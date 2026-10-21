@@ -192,15 +192,9 @@ interface TrendPoint {
   visits: number;
 }
 
-const T_CHART = { h: 220, top: 16, bottom: 28, left: 54, right: 16 };
+const T_CHART = { h: 220, top: 16, bottom: 28, left: 54, right: 34 };
 
-function TrendChartCurve({
-  points,
-  onFinances,
-}: {
-  points: TrendPoint[];
-  onFinances: () => void;
-}) {
+function TrendChartCurve({ points }: { points: TrendPoint[] }) {
   const [ref, size] = usePlotSize();
   const w = size?.w ?? null;
   // Never shorter than the drawn minimum; taller when the row stretches the card.
@@ -212,7 +206,8 @@ function TrendChartCurve({
   const maxVisits = Math.max(1, ...points.map((p) => p.visits));
 
   const { top: topReceipts, ticks: receiptTicks } = scaleTicks(maxReceipts);
-  const { top: topVisits } = scaleTicks(maxVisits);
+  // Consultations have their own scale, read on the right-hand axis.
+  const { top: topVisits, ticks: visitTicks } = scaleTicks(maxVisits);
 
   const width = w ?? 0;
   const plotW = Math.max(0, width - T_CHART.left - T_CHART.right);
@@ -277,13 +272,8 @@ function TrendChartCurve({
         </span>
         <span className="chartLegendItem">
           <i className="chartLegendKey" style={{ background: "var(--series-2)" }} />
-          <span>Consultations</span>
+          <span>Consultations (échelle de droite)</span>
         </span>
-        <div style={{ marginLeft: "auto" }}>
-          <button type="button" className="moreLink" onClick={onFinances}>
-            Détail des finances <ArrowRight size={13} aria-hidden="true" />
-          </button>
-        </div>
       </div>
 
       <div ref={ref} className="chartPlot">
@@ -313,6 +303,16 @@ function TrendChartCurve({
                   {formatNumber(t)}
                 </text>
               </g>
+            ))}
+            {visitTicks.map((t) => (
+              <text
+                key={`v${t}`}
+                x={width - T_CHART.right + 8}
+                y={yVisits(t)}
+                className="chartTickY chartTickVisits"
+              >
+                {formatNumber(t)}
+              </text>
             ))}
 
             {/* X-axis labels */}
@@ -427,6 +427,17 @@ function TrendChartCurve({
                   y2={yReceipts(0)}
                   className="chartCrosshair"
                 />
+                {/* The hovered day is named on the axis, over the regular labels. */}
+                <text
+                  x={x(activeIdx)}
+                  y={chartH - 8}
+                  className="chartTickX chartTickXActive"
+                  textAnchor={
+                    activeIdx === n - 1 ? "end" : activeIdx === 0 ? "start" : "middle"
+                  }
+                >
+                  {hot.label}
+                </text>
                 <g className="chartHot" style={{ transform: `translate(${x(activeIdx)}px, ${yVisits(hot.visits)}px)` }}>
                   <circle r={10} fill="var(--series-2)" className="chartHalo" />
                   <circle r={4.5} fill="var(--series-2)" className="chartDot" />
@@ -992,12 +1003,18 @@ export function PremiumAnalytics({
         <div className="card frame">
           <div className="cardHead">
             <div>
-              <h2 className="cardTitle">Recettes & Activité</h2>
-              <p className="cardNote">Évolution des encaissements et volume d'actes cliniques</p>
+              <h2 className="cardTitle">Recettes & activité</h2>
+              <p className="cardNote">
+                Encaissements en DA et consultations, par jour · Mis à jour à{" "}
+                {formatTime(updatedAt)}
+              </p>
             </div>
+            <button type="button" className="moreLink" onClick={onFinances}>
+              Finances <ArrowRight size={13} aria-hidden="true" />
+            </button>
           </div>
           <div className="cardFlush">
-            <TrendChartCurve points={chartPoints} onFinances={onFinances} />
+            <TrendChartCurve points={chartPoints} />
           </div>
         </div>
 

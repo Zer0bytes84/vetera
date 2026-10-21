@@ -877,6 +877,22 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Consultations scale, on the right, in the series colour. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTickVisits {
+  fill: var(--series-2);
+  text-anchor: start;
+}
+
+/* The hovered day, written over the regular labels it may cover. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTickXActive {
+  fill: var(--ink);
+  font-weight: 500;
+  stroke: var(--canvas);
+  stroke-width: 10px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartLine {
   stroke-width: 2;
   stroke-linejoin: round;
