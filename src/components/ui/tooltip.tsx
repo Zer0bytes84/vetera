@@ -2,8 +2,10 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 
 import { cn } from "@/lib/utils";
 
+// A first tooltip waits half a second so passing the pointer over a toolbar
+// shows nothing; its neighbours then open at once (Base UI's group timeout).
 function TooltipProvider({
-  delay = 0,
+  delay = 500,
   ...props
 }: TooltipPrimitive.Provider.Props) {
   return (

@@ -63,6 +63,13 @@ import { StockOperationsPanel } from "@/modules/stock/components/stock-operation
 import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
 import { restockNeed, stockAlert, stockExpiry } from "@/domain/stock-alerts";
 import { useListCursor } from "@/hooks/useListCursor";
+import { EmptyMascot } from "@/components/mascot/empty-mascot";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 type StockFilter = "all" | "healthy" | "low" | "out" | "expiring" | "expired";
 
@@ -456,15 +463,15 @@ export function StockWorkspace({
                   Chargement du catalogue…
                 </div>
               ) : visibleProducts.length === 0 ? (
-                <div className="p-12 text-center">
-                  <PackageOpen className="mx-auto size-8 text-muted-foreground" />
-                  <p className="mt-3 font-medium">
-                    Aucun produit dans cette sélection
-                  </p>
-                  <p className="mt-1 text-muted-foreground text-sm">
-                    Modifiez la recherche ou les filtres.
-                  </p>
-                </div>
+                <Empty className="min-h-56 border-0 bg-transparent py-10">
+                  <EmptyHeader>
+                    <EmptyMascot icon={<PackageOpen />} />
+                    <EmptyTitle>Aucun produit dans cette sélection</EmptyTitle>
+                    <EmptyDescription>
+                      Modifiez la recherche ou les filtres.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               ) : view === "table" ? (
                 <Table ref={listRef}>
                   <TableHeader className="bg-[#edf3ef] dark:bg-[#25332d]">

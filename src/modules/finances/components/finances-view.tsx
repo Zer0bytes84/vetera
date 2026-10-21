@@ -121,6 +121,7 @@ import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useListCursor } from "@/hooks/useListCursor";
+import { EmptyMascot } from "@/components/mascot/empty-mascot";
 
 export function FinancesView(props: FinancesViewProps) {
   const isPremium = useIsPremium();
@@ -394,9 +395,9 @@ export function FinancesView(props: FinancesViewProps) {
               ) : filteredInvoices.length === 0 ? (
                 <Empty className="min-h-56 py-10">
                   <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />
-                    </EmptyMedia>
+                    <EmptyMascot
+                      icon={<HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />}
+                    />
                     <EmptyTitle>Aucune facture</EmptyTitle>
                     <EmptyDescription>
                       Créez un premier brouillon puis émettez-le lorsque son
@@ -935,9 +936,9 @@ export function FinancesView(props: FinancesViewProps) {
               ) : filteredTransactions.length === 0 ? (
                 <Empty className="min-h-56 py-10">
                   <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />
-                    </EmptyMedia>
+                    <EmptyMascot
+                      icon={<HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />}
+                    />
                     <EmptyTitle>Aucune écriture</EmptyTitle>
                     <EmptyDescription>
                       Les règlements et mouvements manuels apparaîtront ici.

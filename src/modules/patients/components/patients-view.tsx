@@ -25,7 +25,6 @@ import {
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
-  EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
 
@@ -46,6 +45,9 @@ import {
 } from "@/modules/patients/components/patients-shared";
 import { getSpeciesTheme } from "@/lib/species-theme";
 import { useListCursor } from "@/hooks/useListCursor";
+import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
+import { EmptyMascot } from "@/components/mascot/empty-mascot";
+import { Kbd } from "@/components/ui/kbd";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
 
 export function PatientsView(props: PatientsViewProps) {
@@ -152,9 +154,9 @@ export function PatientsView(props: PatientsViewProps) {
               <div className="flex flex-1 px-6 pb-6">
                 <Empty className="border border-border/80 border-dashed bg-muted/20">
                   <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={BirdIcon} strokeWidth={1.5} />
-                    </EmptyMedia>
+                    <EmptyMascot
+                      icon={<HugeiconsIcon icon={BirdIcon} strokeWidth={1.5} />}
+                    />
                     <EmptyTitle>Aucun dossier dans cette vue</EmptyTitle>
                     <EmptyDescription>
                       Ajustez la recherche ou les filtres, ou créez un nouveau
@@ -171,9 +173,14 @@ export function PatientsView(props: PatientsViewProps) {
                         icon={Add01Icon}
                         strokeWidth={1.5}
                       />
-                      {searchTerm.trim()
-                        ? "Créer avec cette recherche"
-                        : "Nouveau patient"}
+                      {searchTerm.trim() ? (
+                        "Créer avec cette recherche"
+                      ) : (
+                        <>
+                          Nouveau patient
+                          <Kbd className="ml-1 bg-white/15 text-current">⌘ N</Kbd>
+                        </>
+                      )}
                     </Button>
                   </EmptyContent>
                 </Empty>
@@ -333,41 +340,43 @@ export function PatientsView(props: PatientsViewProps) {
                               )}
                             >
                               <div className="flex items-center justify-end gap-1" data-row-reveal="">
-                                <Button
-                                  className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    openPatientPeek(entry.patient.id);
-                                  }}
-                                  size="icon"
-                                  title="Aperçu du dossier médical"
-                                  variant="ghost"
-                                >
-                                  <HugeiconsIcon
-                                    className="size-4"
-                                    icon={ViewIcon}
-                                    strokeWidth={1.5}
-                                  />
-                                  <span className="sr-only">Aperçu du dossier médical</span>
-                                </Button>
-                                {onNavigateToPatient && (
+                                <ShortcutTooltip label="Aperçu du dossier" shortcut="Espace">
                                   <Button
                                     className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
                                     onClick={(event) => {
                                       event.stopPropagation();
-                                      onNavigateToPatient(entry.patient.id);
+                                      openPatientPeek(entry.patient.id);
                                     }}
                                     size="icon"
-                                    title="Dossier"
                                     variant="ghost"
                                   >
                                     <HugeiconsIcon
                                       className="size-4"
-                                      icon={Folder01Icon}
+                                      icon={ViewIcon}
                                       strokeWidth={1.5}
                                     />
-                                    <span className="sr-only">Dossier</span>
+                                    <span className="sr-only">Aperçu du dossier médical</span>
                                   </Button>
+                                </ShortcutTooltip>
+                                {onNavigateToPatient && (
+                                  <ShortcutTooltip label="Ouvrir le dossier" shortcut="Entrée">
+                                    <Button
+                                      className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        onNavigateToPatient(entry.patient.id);
+                                      }}
+                                      size="icon"
+                                      variant="ghost"
+                                    >
+                                      <HugeiconsIcon
+                                        className="size-4"
+                                        icon={Folder01Icon}
+                                        strokeWidth={1.5}
+                                      />
+                                      <span className="sr-only">Dossier</span>
+                                    </Button>
+                                  </ShortcutTooltip>
                                 )}
                               </div>
                             </td>

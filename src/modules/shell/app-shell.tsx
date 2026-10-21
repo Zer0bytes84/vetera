@@ -732,7 +732,6 @@ function AppShellInner() {
                         aria-keyshortcuts="Meta+K Control+K"
                         onClick={() => setPaletteOpen(true)}
                         className="topIcon"
-                        title="Rechercher (⌘K)"
                       >
                         <ToolbarIcon name="search" />
                       </button>
@@ -756,7 +755,6 @@ function AppShellInner() {
                           "topIcon",
                           aiAssistantOpen && "!bg-primary !text-primary-foreground"
                         )}
-                        title="Assistant IA (⌘J)"
                       >
                         <ToolbarIcon name="assistant" />
                       </button>
@@ -771,14 +769,15 @@ function AppShellInner() {
 
                     {/* 4. Settings dropdown */}
                     <DropdownMenu>
-                      <DropdownMenuTrigger
-                        ref={settingsButtonRef}
-                        aria-label="Paramètres et compte"
-                        className="topIcon"
-                        title="Paramètres et compte"
-                      >
-                        <ToolbarIcon name="settings" />
-                      </DropdownMenuTrigger>
+                      <ShortcutTooltip label="Paramètres et compte">
+                        <DropdownMenuTrigger
+                          ref={settingsButtonRef}
+                          aria-label="Paramètres et compte"
+                          className="topIcon"
+                        >
+                          <ToolbarIcon name="settings" />
+                        </DropdownMenuTrigger>
+                      </ShortcutTooltip>
 
                       <DropdownMenuContent
                         align="end"
@@ -943,13 +942,15 @@ function AppShellInner() {
 
                     {/* ── Settings + account dropdown ─────────────────────── */}
                     <DropdownMenu>
-                      <DropdownMenuTrigger
-                        ref={settingsButtonRef}
-                        aria-label="Paramètres et compte"
-                        className="shell-toolbar-control flex size-9 items-center justify-center rounded-full"
-                      >
-                        <ToolbarIcon name="settings" />
-                      </DropdownMenuTrigger>
+                      <ShortcutTooltip label="Paramètres et compte">
+                        <DropdownMenuTrigger
+                          ref={settingsButtonRef}
+                          aria-label="Paramètres et compte"
+                          className="shell-toolbar-control flex size-9 items-center justify-center rounded-full"
+                        >
+                          <ToolbarIcon name="settings" />
+                        </DropdownMenuTrigger>
+                      </ShortcutTooltip>
 
                       <DropdownMenuContent
                         align="end"

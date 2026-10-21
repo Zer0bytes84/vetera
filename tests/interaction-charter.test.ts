@@ -15,7 +15,7 @@ describe("charte d'interaction", () => {
     const tokens = readFileSync("src/design-system/tokens.css", "utf8");
     expect(tokens).toContain("--speed-highlight-in: 0ms;");
     expect(tokens).toContain("--speed-highlight-out: 150ms;");
-    expect(tokens).toContain("--row-hover: #f5f5f5;");
+    expect(tokens).toContain("--row-hover: rgb(0 0 0 / 0.04);");
   });
 
   it("n'anime jamais toutes les propriétés", () => {
