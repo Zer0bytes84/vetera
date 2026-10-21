@@ -24,6 +24,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import Editor from "@/components/Editor";
 import { documentNoteTemplateOrder, documentNoteTemplates, type DocumentNoteTemplate } from "@/components/document-note-templates";
 import MotivationalHeader from "@/components/MotivationalHeader";
+import { useListCursor } from "@/hooks/useListCursor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -167,6 +168,8 @@ const NotesPro: React.FC = () => {
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [workspaceMode, setWorkspaceMode] = useState<"library" | "assistant" | "templates">("library");
   const [searchTerm, setSearchTerm] = useState("");
+  // The library follows the shared list cursor: ↑ ↓ move, Enter opens the note.
+  const libraryRef = useListCursor({ storageKey: "documents" });
   const [filter, setFilter] = useState<FilterType>("all");
   const [patientFilter, setPatientFilter] = useState(() => sessionStorage.getItem("documents:open-patient") ?? "");
   const [closedFolders, setClosedFolders] = useState<string[]>([]);
@@ -526,7 +529,7 @@ const NotesPro: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="px-2 pb-5 pt-2">
+              <div className="px-2 pb-5 pt-2" ref={libraryRef}>
                 {noteGroups.map((group) => {
                   const isOpen = Boolean(searchTerm) || !closedFolders.includes(group.key);
                   return <section className="mb-1" key={group.key}>
@@ -547,15 +550,16 @@ const NotesPro: React.FC = () => {
                   return (
                     <div
                       className={cn(
-                        "group flex w-full items-center gap-1 rounded-lg px-2 py-1 transition-colors duration-150",
-                        isSelected
-                          ? "bg-muted dark:bg-muted"
-                          : "hover:bg-white/80 dark:hover:bg-white/5"
+                        "group flex w-full items-center gap-1 rounded-lg px-2 py-1",
+                        isSelected && "bg-muted dark:bg-muted"
                       )}
+                      data-list-row=""
+                      data-row-id={note.id}
                       key={note.id}
                     >
                       <button
                         aria-current={isSelected ? "true" : undefined}
+                        data-row-open=""
                         className="flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-md px-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                         onClick={() => handleSelectNote(note.id)}
                         type="button"
@@ -569,7 +573,7 @@ const NotesPro: React.FC = () => {
                         {note.isFavorite && <Star aria-label="Favori" className="size-3 shrink-0 fill-amber-500 text-amber-500" />}
                       </button>
 
-                      <div className="shrink-0">
+                      <div className="shrink-0" data-row-reveal="">
                         <DropdownMenu>
                           <DropdownMenuTrigger
                             render={
