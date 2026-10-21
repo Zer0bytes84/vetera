@@ -44,6 +44,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { InjectionIcon } from "@/lib/hugeicons";
 import { formatLongDay } from "@/utils/display-format";
 import { SectionCards } from "@/components/section-cards";
+import { careDaySummary, careDoses, careTimeline, type CareMarkKind } from "./care-day";
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",
@@ -58,6 +59,50 @@ const tones: Record<CareDisplayStatus, string> = {
   annule: "bg-muted text-muted-foreground",
   en_retard: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300",
 };
+const markLabels: Record<CareMarkKind, string> = {
+  done: "Fait",
+  late: "En retard",
+  soon: "Dans les 2 h",
+  later: "Plus tard",
+};
+/** The animal's day at a glance: one mark per care, the current time as a line. */
+function CareDayStrip({
+  tasks,
+  now,
+  onOpen,
+}: {
+  tasks: CareTask[];
+  now: Date;
+  onOpen: (task: CareTask) => void;
+}) {
+  const line = careTimeline(tasks, now);
+  if (!line) return null;
+  return (
+    <div className="care-strip" aria-label="Frise des soins du jour">
+      <div className="care-strip-track">
+        {line.now !== null && (
+          <span aria-hidden="true" className="care-strip-now" style={{ left: `${line.now}%` }} />
+        )}
+        {line.marks.map(({ task, kind, at }) => (
+          <button
+            aria-label={`${time(task.heure_prevue)} · ${task.label} · ${markLabels[kind]}`}
+            className="care-strip-mark"
+            data-kind={kind}
+            key={task.id}
+            onClick={() => onOpen(task)}
+            style={{ left: `${at}%` }}
+            title={`${time(task.heure_prevue)} · ${task.label} · ${markLabels[kind]}`}
+            type="button"
+          />
+        ))}
+      </div>
+      <div aria-hidden="true" className="care-strip-scale">
+        <span>{String(line.startHour).padStart(2, "0")} h</span>
+        <span>{String(line.endHour).padStart(2, "0")} h</span>
+      </div>
+    </div>
+  );
+}
 const time = (value: string) =>
   new Date(value).toLocaleTimeString("fr-FR", {
     hour: "2-digit",
@@ -109,9 +154,8 @@ export default function CarePage({
   const tasks = patientId
     ? allTasks.filter((task) => task.patient_id === patientId)
     : allTasks;
-  const overdueCount = tasks.filter(
-    (task) => careDisplayStatus(task, now) === "en_retard"
-  ).length;
+  const summary = careDaySummary(tasks, now);
+  const overdueCount = summary.overdue.length;
   const patients = usePatientsRepository();
   const products = useProductsRepository();
   const stockWarning = (task: CareTask) => {
@@ -391,13 +435,42 @@ export default function CarePage({
           <SectionCards
             className="care-summary"
             items={[
-              { title: "Soins prévus", value: tasks.length, footerTitle: "Planifiés pour la date choisie" },
-              { title: "À terminer", value: tasks.filter((t) => ["a_faire", "en_cours"].includes(t.statut)).length, footerTitle: "À faire ou en cours" },
+              {
+                title: "Soins prévus",
+                value: summary.planned,
+                detailRow: summary.planned || summary.cancelled
+                  ? [
+                      `${summary.done} fait${summary.done > 1 ? "s" : ""}`,
+                      `${summary.pending} à terminer`,
+                      summary.cancelled ? `${summary.cancelled} annulé${summary.cancelled > 1 ? "s" : ""}` : "",
+                    ].filter(Boolean).join(" · ")
+                  : "Aucun soin planifié pour cette date",
+                footerTitle: "Hors soins annulés",
+              },
+              {
+                title: "À terminer",
+                value: summary.pending,
+                badge: summary.next
+                  ? `Prochain à ${time(summary.next.heure_prevue)}`
+                  : summary.pending
+                    ? undefined
+                    : summary.planned ? "Tous terminés" : undefined,
+                tone: !summary.pending && summary.planned ? "positive" : undefined,
+                detailRow: summary.next
+                  ? `${summary.next.label} · ${patientName(summary.next.patient_id)}`
+                  : summary.inProgress
+                    ? `Dont ${summary.inProgress} en cours`
+                    : "À faire ou en cours",
+                footerTitle: "À faire ou en cours",
+              },
               {
                 title: "En retard",
                 value: overdueCount,
                 badge: overdueCount ? "À traiter en priorité" : "Aucun retard",
                 tone: overdueCount ? "critical" : "quiet",
+                detailRow: summary.overdue[0]
+                  ? `Le plus ancien : ${time(summary.overdue[0].heure_prevue)} · ${patientName(summary.overdue[0].patient_id)}`
+                  : "Heure prévue dépassée, soin non validé",
               },
             ]}
           />
@@ -480,6 +553,17 @@ export default function CarePage({
           </p>
         </div>
       ) : (
+        <>
+        {mode === "patient" && (
+          <ul aria-label="Légende de la frise" className="care-strip-legend">
+            {(Object.keys(markLabels) as CareMarkKind[]).map((kind) => (
+              <li key={kind}>
+                <span aria-hidden="true" className="care-strip-mark" data-kind={kind} />
+                {markLabels[kind]}
+              </li>
+            ))}
+          </ul>
+        )}
         <div
           className={
             mode === "patient"
@@ -494,6 +578,8 @@ export default function CarePage({
               key={group}
               className="care-task-group space-y-3 rounded-2xl border border-border bg-card p-4"
             >
+              <div className="care-group-head">
+              <div className="care-group-title">
               <h2 className="t-16 font-medium">
                 {mode === "patient" ? (
                   onNavigateToPatient ? (
@@ -511,6 +597,27 @@ export default function CarePage({
                   group
                 )}
               </h2>
+              {mode === "patient" && (() => {
+                const doses = careDoses(tasks.filter((t) => t.patient_id === group));
+                return doses.total ? (
+                  <span className="care-group-doses" title="Soins faits sur les soins prévus du jour, hors annulés">
+                    <strong>{doses.done}/{doses.total}</strong> faits
+                  </span>
+                ) : null;
+              })()}
+              </div>
+              {mode === "patient" && (
+                <CareDayStrip
+                  now={now}
+                  onOpen={(task) => {
+                    setSelected(task.id);
+                    setActionError(null);
+                    setReason("");
+                  }}
+                  tasks={tasks.filter((t) => t.patient_id === group)}
+                />
+              )}
+              </div>
               {visible
                 .filter((t) =>
                   mode === "patient"
@@ -522,6 +629,7 @@ export default function CarePage({
             </article>
           ))}
         </div>
+        </>
       )}
       {actionError && (
         <p role="alert" className="text-destructive">
