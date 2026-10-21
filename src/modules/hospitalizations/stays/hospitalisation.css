@@ -7,3 +7,39 @@
 .hospitalisation-view :is(h1, h2, h3) { font-family: var(--app-font-heading); }
 .hospitalisation-view button { min-height: 44px; }
 .hospitalisation-view [data-slot="tabs-list"] { height: auto; }
+
+/* Constantes : dernières valeurs en mots, puis min–max par jour. */
+.vitals-latest ul { margin-top: 8px; }
+.vitals-latest li {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) minmax(80px, 100px) 1fr;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.vitals-latest-label { color: var(--muted-foreground); }
+.vitals-latest-value { font-weight: 500; font-variant-numeric: tabular-nums; }
+.vitals-latest li[data-verdict="above"] .vitals-latest-value,
+.vitals-latest li[data-verdict="below"] .vitals-latest-value { color: var(--signal-critical); }
+.vitals-latest li[data-verdict="above"] .vitals-latest-words,
+.vitals-latest li[data-verdict="below"] .vitals-latest-words { color: var(--foreground); }
+.vitals-latest-words { color: var(--muted-foreground); }
+.vitals-latest > p { margin-top: 6px; }
+@media (max-width: 639px) {
+  .vitals-latest li { grid-template-columns: 1fr auto; }
+  .vitals-latest-words { grid-column: 1 / -1; }
+}
+.vitals-by-day table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vitals-by-day caption { text-align: left; padding-bottom: 8px; }
+.vitals-by-day :is(th, td) {
+  padding: 8px 12px 8px 0;
+  border-top: 1px solid var(--border);
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.vitals-by-day thead th { color: var(--muted-foreground); font-weight: 400; font-size: 12px; }
+.vitals-by-day-date { font-weight: 500; }
+.vitals-by-day-date span { display: block; color: var(--muted-foreground); font-weight: 400; font-size: 12px; }

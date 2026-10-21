@@ -8,9 +8,13 @@ export const SPECIES_VITAL_REFERENCES: Record<string,VitalReference>={
  chat:{temperature:[38.1,39.2],heartRate:[120,140]},
  lapin:{temperature:[38.6,40.1],heartRate:[180,350]},
 };
-export function vitalAlerts(species: string, vital: Pick<VitalSign,"temperature_c" | "heart_rate" | "general_state" | "appetite">, override?: VitalReference): string[] {
+/** Resting reference of a species, when one is recorded. */
+export function vitalReference(species: string): VitalReference | undefined {
  const key=species.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("fr").trim();
- const reference=override || SPECIES_VITAL_REFERENCES[key]; const alerts: string[]=[];
+ return SPECIES_VITAL_REFERENCES[key];
+}
+export function vitalAlerts(species: string, vital: Pick<VitalSign,"temperature_c" | "heart_rate" | "general_state" | "appetite">, override?: VitalReference): string[] {
+ const reference=override || vitalReference(species); const alerts: string[]=[];
  if (reference) {
   if (vital.temperature_c != null && (vital.temperature_c < reference.temperature[0] || vital.temperature_c > reference.temperature[1])) alerts.push("Température hors du repère de l’espèce");
   if (vital.heart_rate != null && (vital.heart_rate < reference.heartRate[0] || vital.heart_rate > reference.heartRate[1])) alerts.push("Fréquence cardiaque hors du repère au repos");
