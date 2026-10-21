@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
  * One cursor for mouse and keyboard over a list, as in Linear.
  * Rows carry `data-list-row` and `data-row-id`; the current row gets
  * `data-current`. Hovering a row makes it current, the arrows move from
- * there, Enter opens it, Space peeks it and Escape clears it. J stays the
- * shell's assistant shortcut, so Linear's J/K are not used here. The last
+ * there, Enter opens it, Space or A (as in Flux) peeks it and Escape clears
+ * it. J stays the shell's assistant shortcut, so Linear's J/K are not used
+ * here. The last
  * opened row is current again when the list comes back.
  * Returns a callback ref for the list container, which may mount late.
  */
@@ -25,7 +26,7 @@ export function useListCursor({
 }: {
   /** Session key remembering the last opened row. */
   storageKey: string;
-  /** Space on the current row; omitted, Space keeps its default. */
+  /** Space or A on the current row; omitted, both keep their default. */
   onPeek?: (rowId: string) => void;
 }) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
@@ -106,7 +107,7 @@ export function useListCursor({
         event.preventDefault();
         remember(row);
         (row.querySelector<HTMLElement>("[data-row-open]") ?? row).click();
-      } else if (key === " " && row && onPeek && free) {
+      } else if ((key === " " || key === "a") && row && onPeek && free) {
         event.preventDefault();
         if (row.dataset.rowId) onPeek(row.dataset.rowId);
       } else if (key === "Escape" && row) {

@@ -19,8 +19,38 @@ export interface NowSnapshot {
   next?: ScheduleEntry;
   allergies?: string;
   waiting: ScheduleEntry[];
+  /** Waiting room order with an estimated time for each patient. */
+  queue: QueueEstimate[];
   maximumWait: number;
   startsIn: number | null;
+  /** When the summary was computed, shown as "Mis à jour à". */
+  at: Date;
+}
+export interface QueueEstimate {
+  entry: ScheduleEntry;
+  position: number;
+  /** Estimated time the patient is seen, from the planned slot lengths. */
+  estimatedAt: Date;
+}
+const MINIMUM_SLOT_MS = 5 * 60_000;
+/**
+ * Estimates when each waiting patient is seen, one after the other: the
+ * visit in progress ends with its planned slot, then each waiting visit
+ * takes its own planned length. It is an estimate from the schedule, not a
+ * measure, and the screen says so.
+ */
+export function estimateQueue(
+  today: ScheduleEntry[],
+  waiting: ScheduleEntry[],
+  now: Date
+): QueueEstimate[] {
+  const current = today.find((row) => row.appointment.status === "in_progress");
+  let cursor = Math.max(now.getTime(), current ? current.end.getTime() : 0);
+  return waiting.map((entry, index) => {
+    const estimatedAt = new Date(cursor);
+    cursor += Math.max(MINIMUM_SLOT_MS, entry.end.getTime() - entry.start.getTime());
+    return { entry, position: index + 1, estimatedAt };
+  });
 }
 export function buildNowSnapshot(
   today: ScheduleEntry[],
@@ -49,6 +79,8 @@ export function buildNowSnapshot(
     today,
     next,
     waiting,
+    queue: estimateQueue(today, waiting, now),
+    at: now,
     maximumWait,
     startsIn: next
       ? Math.round((next.start.getTime() - now.getTime()) / 60_000)

@@ -36,7 +36,15 @@
 .visit-flow-track { height:6px; margin:8px 0; background:var(--border); border-radius:4px; overflow:hidden; }
 .visit-flow-track>span { display:block; height:100%; background:var(--premium-blue, var(--primary)); border-radius:4px; transition:width 220ms ease-out; }
 .visit-flow-caption { font-size: 12px; line-height:1.5; color:var(--muted-foreground); }
-.visit-flow-agenda { display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--border); font-size:12px; text-align:left; }
+.visit-flow-widget { display:flex; flex-direction:column; gap:12px; }
+.visit-flow-head { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.visit-flow-head-title { display:flex; align-items:baseline; gap:10px; min-width:0; }
+.visit-flow-head-title h2 { font-family:var(--app-font-heading); font-size:18px; font-weight:500; letter-spacing:-.02em; }
+.visit-flow-head-title span { font-size:12px; color:var(--muted-foreground); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.visit-flow-open { height:34px; padding:0 14px; font-size:13px; gap:8px; }
+.visit-flow-open svg { transition:transform var(--speed-quick) var(--ease-out); }
+.visit-flow-queue-eta { color:var(--muted-foreground); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.visit-flow-queue-eta time { color:var(--foreground); font-weight:500; }
 .visit-flow-board button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; border-radius:5px; }
 @media (hover: hover) and (pointer: fine) {
   .visit-flow-board button:not(:disabled):hover .visit-flow-queue-number {
@@ -44,8 +52,8 @@
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  .visit-flow-agenda:hover {
-    color:var(--primary);
+  .visit-flow-open:not(:disabled):hover svg {
+    transform:translateX(2px);
   }
 }
 @media(max-width:1000px) { .visit-flow-board { grid-template-columns:minmax(0,1.35fr) minmax(240px,1fr); } .visit-flow-main { padding:20px; } }

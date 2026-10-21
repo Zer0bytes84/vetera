@@ -340,7 +340,7 @@ export function PatientsView(props: PatientsViewProps) {
                               )}
                             >
                               <div className="flex items-center justify-end gap-1" data-row-reveal="">
-                                <ShortcutTooltip label="Aperçu du dossier" shortcut="Espace">
+                                <ShortcutTooltip label="Aperçu du dossier" shortcut="Espace ou A">
                                   <Button
                                     className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
                                     onClick={(event) => {
