@@ -1,0 +1,8 @@
+211c211
+< INSERT INTO app_settings VALUES('updates.last_checked_at','2026-10-21T19:01:29.460Z','2026-10-21 19:01:29');
+---
+> INSERT INTO app_settings VALUES('updates.last_checked_at','2026-10-21T19:07:53.144Z','2026-10-21 19:07:53');
+220c220
+< INSERT INTO app_settings VALUES('license_credentials_v2','{"key":"","email":"zohir.kh@gmail.com","activationToken":"[jeton masqué]","activatedAt":"2026-09-30T19:24:41.457Z","lastSeen":1792609342094}','2026-10-21 19:02:22');
+---
+> INSERT INTO app_settings VALUES('license_credentials_v2','{"key":"","email":"zohir.kh@gmail.com","activationToken":"[jeton masqué]","activatedAt":"2026-09-30T19:24:41.457Z","lastSeen":1792610083205}','2026-10-21 19:14:43');

@@ -19,6 +19,19 @@ Date : 21 octobre 2026, 15 h. Un commit local de corrections (`e365a9b`), aucun 
 
   Les écrans qu'il faudrait ouvrir à la main sont signalés plus bas.
 
+## Incident et suites (mise à jour de 15 h 20)
+
+- **Incident :** aucune donnée clinique n'a été modifiée, dans aucune instance. Le détail, les preuves et les étapes de remise en état (préparées, non exécutées) sont dans `INCIDENT.md`. Depuis le constat, l'app réelle n'a plus été touchée.
+- **Corrections `e365a9b` :** validées sur le principe. Il reste à les contrôler à l'écran.
+- **Reporté au retour devant le Mac :**
+  - contrôle à l'écran des deux corrections ;
+  - frise des Soins ;
+  - Hospitalisation ;
+  - commande préremplie.
+
+  La liste de ce qu'il faudra ouvrir est plus bas.
+- **Décision en attente :** faire remonter les soins en retard des jours passés.
+
 ## Les données réelles en bref
 
 - 10 patients et 50 rendez-vous.
