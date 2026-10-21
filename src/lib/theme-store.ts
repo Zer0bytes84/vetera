@@ -1,4 +1,5 @@
 import { normalizeVisualStyle, type VisualStyle } from "./visual-style";
+import { normalizeSkin, type Skin } from "./theme-skin";
 export type AccentColor =
   | "mist"
   | "blue"
@@ -55,6 +56,8 @@ export const HEADER_PATTERNS: Record<
 
 export interface ThemeConfig {
   visualStyle?: VisualStyle;
+  /** Unset means the default skin (DEFAULT_SKIN), so changing that default reaches untouched installs. */
+  skin?: Skin;
   chromeStyle: "classic" | "liquid-glass";
   accent: AccentColor;
   density: "compact" | "comfortable" | "spacious";
@@ -332,6 +335,9 @@ const ORIGINAL_HEADER_RESTORE_KEY = "baitari_original_header_restored_v2";
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const root = document.documentElement;
   root.dataset.visualStyle = normalizeVisualStyle(config.visualStyle);
+  // Clean is a layer over Premium light; Classic keeps no skin.
+  root.dataset.skin =
+    normalizeVisualStyle(config.visualStyle) === "premium" ? normalizeSkin(config.skin) : "premium";
   root.dataset.chromeStyle = config.chromeStyle === "liquid-glass" ? "liquid-glass" : "classic";
   const accent = ACCENT_THEMES[config.accent];
   const baseMode = isDark ? accent.dark : accent.light;

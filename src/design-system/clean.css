@@ -1,0 +1,208 @@
+/* Clean: a skin over Premium light, in the spirit of Linear (study of 2026-10-21).
+   Every rule is scoped to :root[data-skin="clean"]:not(.dark): Premium light and
+   dark never match it, and no component is forked. Only tokens and the visual
+   treatment of surfaces, sidebar, icons, typography and dashboard cards change. */
+
+:root[data-skin="clean"]:not(.dark) {
+  /* Surfaces: one opaque sheet, one line, one hover step. */
+  --clean-sheet: #fafafa;
+  --clean-surface: #ffffff;
+  --clean-line: #ebebeb;
+  --clean-hover: #f0f0f0;
+  /* Selection: the accent at a very light chroma, as in Linear. */
+  --clean-selected: #ebebf0;
+  /* Text: the charter's three greys, plus a fourth for disabled text and icons only. */
+  --clean-ink-strong: #292929;
+  --clean-ink: #5d5d5d;
+  --clean-ink-quiet: #7f7f7f;
+  --clean-ink-disabled: #a6a6a6;
+  /* Rhythm. */
+  --clean-row-list: 40px;
+  --clean-row-table: 32px;
+  --clean-nav-item: 30px;
+  --clean-nav-icon: 16px;
+  --clean-list-icon: 16px;
+  --clean-icon-stroke: 1px;
+  --clean-card-radius: 12px;
+  --clean-card-pad: 16px;
+
+  --canvas: var(--clean-sheet) !important;
+  --background: var(--clean-sheet) !important;
+  --frame: var(--clean-sheet) !important;
+  --surface: var(--clean-surface) !important;
+  --surface-hover: var(--clean-hover) !important;
+  --surface-raised: var(--clean-surface) !important;
+  --line: var(--clean-line) !important;
+  --border: var(--clean-line) !important;
+  --hairline: var(--clean-line) !important;
+  --sidebar: var(--clean-sheet) !important;
+  --sidebar-border: var(--clean-line) !important;
+  --sidebar-accent: var(--clean-hover) !important;
+  --row-hover: var(--clean-hover);
+  /* Engraved double rules become one plain line; the patterned band becomes plain. */
+  --rule-highlight: var(--clean-line) !important;
+  --rule-shadow: var(--clean-line) !important;
+  --hair-t: inset 0 1px 0 var(--clean-line) !important;
+  --hair-b: inset 0 -1px 0 var(--clean-line) !important;
+  --hair-l: inset 1px 0 0 var(--clean-line) !important;
+  --hair-r: inset -1px 0 0 var(--clean-line) !important;
+  --band-bg: #f4f4f5 !important;
+  --band: var(--band-bg) !important;
+}
+
+/* ---------- Opaque surfaces: no translucency, no blur ---------- */
+:root[data-skin="clean"]:not(.dark) [data-slot="app-header"] {
+  background: var(--clean-sheet) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line) !important;
+}
+:root[data-skin="clean"]:not(.dark) :is(th, thead)[class*="backdrop-blur"] {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: var(--clean-sheet) !important;
+}
+:root[data-skin="clean"]:not(.dark) .apple-sidebar-glow { display: none; }
+:root[data-skin="clean"]:not(.dark) :is(.app-sidebar, [data-slot="sidebar-container"], [data-slot="sidebar-inner"]) {
+  background: var(--clean-sheet) !important;
+}
+:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-container"]::after {
+  width: 1px !important;
+  background: var(--clean-line) !important;
+}
+
+/* ---------- Disabled: the fourth grey, for text and icons only ---------- */
+:root[data-skin="clean"]:not(.dark) :is(button, input, select, textarea, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) {
+  color: var(--clean-ink-disabled) !important;
+  opacity: 1 !important;
+}
+:root[data-skin="clean"]:not(.dark) :is(button, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) svg {
+  color: var(--clean-ink-disabled) !important;
+}
+
+/* ---------- Typography: Geist body, Space Grotesk headings, Linear's hierarchy ---------- */
+:root[data-skin="clean"]:not(.dark) body { color: var(--clean-ink-strong); }
+:root[data-skin="clean"]:not(.dark) :is(h1, h2, h3) {
+  color: var(--clean-ink-strong);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+:root[data-skin="clean"]:not(.dark) p:not([class*="text-"]) { color: var(--clean-ink); }
+:root[data-skin="clean"]:not(.dark) :is(.text-muted-foreground, .t-12, small, time) { font-weight: 450; }
+:root[data-skin="clean"]:not(.dark) .text-muted-foreground { color: var(--clean-ink-quiet) !important; }
+/* Labels: small and quiet, sentence case, no tracking (text unchanged). */
+:root[data-skin="clean"]:not(.dark) :is(th, .kicker, .nextLabel, .premium-shortcuts-heading, .app-sidebar [data-slot="sidebar-group-label"]) {
+  color: var(--clean-ink-quiet) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* ---------- Sidebar: compact and silent ---------- */
+:root[data-skin="clean"]:not(.dark) .app-sidebar {
+  --premium-nav-row: var(--clean-nav-item);
+  --premium-shortcut-row: 28px;
+}
+:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] {
+  height: var(--clean-nav-item) !important;
+  min-height: var(--clean-nav-item) !important;
+  border-radius: 8px;
+  color: var(--clean-ink);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  box-shadow: none !important;
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+}
+:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+  background: var(--clean-selected) !important;
+  color: var(--clean-ink-strong) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"]:hover {
+    background: var(--clean-hover);
+    color: var(--clean-ink-strong);
+    transition-duration: var(--speed-highlight-in);
+  }
+  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]):hover {
+    background: var(--clean-selected);
+  }
+}
+:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
+:root[data-skin="clean"]:not(.dark) .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
+
+/* ---------- Icons: one thin stroke, contained size, quiet at rest ---------- */
+@layer utilities {
+  :root[data-skin="clean"]:not(.dark) .app-sidebar .sidebar-nav-icon {
+    width: var(--clean-nav-icon) !important;
+    height: var(--clean-nav-icon) !important;
+  }
+  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] .sidebar-nav-icon svg,
+  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] > svg,
+  :root[data-skin="clean"]:not(.dark) .premium-shortcut-icon {
+    width: var(--clean-nav-icon) !important;
+    height: var(--clean-nav-icon) !important;
+    flex-basis: var(--clean-nav-icon) !important;
+  }
+}
+:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr) svg,
+:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr) svg [stroke-width] {
+  stroke-width: var(--clean-icon-stroke);
+}
+:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] svg { color: var(--clean-ink-quiet); }
+:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) svg { color: var(--clean-ink-strong); }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"]:hover svg { color: var(--clean-ink-strong); }
+}
+/* List icons: 16 px in a 28 px species tile. */
+:root[data-skin="clean"]:not(.dark) .medical-data-table td .size-10 { width: 28px; height: 28px; border-radius: 8px; }
+:root[data-skin="clean"]:not(.dark) .medical-data-table td .size-10 svg { width: var(--clean-list-icon); height: var(--clean-list-icon); }
+
+/* ---------- Row heights: 40 px dense lists, 32 px tables ---------- */
+:root[data-skin="clean"]:not(.dark) :is(div, li, a, button, article)[data-list-row] { min-height: var(--clean-row-list); }
+:root[data-skin="clean"]:not(.dark) [data-list-row] .min-h-11 { min-height: var(--clean-row-list); }
+/* A row that is one open-button: the button is the row, at 40 px. */
+:root[data-skin="clean"]:not(.dark) [data-list-row]:has(> [data-row-open].min-h-11) { padding-block: 0; }
+:root[data-skin="clean"]:not(.dark) :is([data-slot="table"], .medical-data-table) :is(th, td),
+:root[data-skin="clean"]:not(.dark) [data-slot="table-head"] {
+  height: var(--clean-row-table) !important;
+  padding-block: 6px !important;
+}
+
+/* ---------- Dashboard cards: solid, one line, Linear's rhythm ---------- */
+:root[data-skin="clean"]:not(.dark) :is(.frame, .board-frame)::before { display: none; }
+:root[data-skin="clean"]:not(.dark) :is(.card, .hero) {
+  background: var(--clean-surface) !important;
+  border-radius: var(--clean-card-radius);
+  box-shadow: 0 0 0 1px var(--clean-line) !important;
+}
+:root[data-skin="clean"]:not(.dark) .cardHead {
+  padding: var(--clean-card-pad) var(--clean-card-pad) 12px !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line) !important;
+}
+:root[data-skin="clean"]:not(.dark) .cardTitle {
+  font-family: var(--app-font-heading);
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--clean-ink-strong) !important;
+}
+:root[data-skin="clean"]:not(.dark) .cardNote { font-size: 12px !important; font-weight: 450; color: var(--clean-ink-quiet) !important; }
+/* Welcome header: same content and mascot, tighter hierarchy and rhythm. */
+:root[data-skin="clean"]:not(.dark) .heroMain { padding: 24px 24px 20px !important; }
+:root[data-skin="clean"]:not(.dark) .heroTitle { font-weight: 600 !important; letter-spacing: -0.02em !important; color: var(--clean-ink-strong) !important; }
+:root[data-skin="clean"]:not(.dark) .kicker i { box-shadow: none; }
+
+/* Widget commands: revealed on hovering the card, as in Linear. Keyboard
+   focus reveals them too; on touch, where nothing hovers, they stay shown. */
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"]:not(.dark) .card .moreLink {
+    opacity: 0;
+    transition: opacity var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+  }
+  :root[data-skin="clean"]:not(.dark) .card:is(:hover, :focus-within) .moreLink {
+    opacity: 1;
+    transition-duration: var(--speed-highlight-in);
+  }
+}

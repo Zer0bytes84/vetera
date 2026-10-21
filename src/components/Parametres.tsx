@@ -92,6 +92,8 @@ import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
+import { AppThemePicker } from "./app-theme-picker";
+import { appThemeSettings, currentAppTheme, normalizeSkin } from "@/lib/theme-skin";
 import { formatPersonName } from "@/utils/display-format";
 import { PageHeader } from "@/design-system/patterns/page-header";
 import { Settings02Icon } from "@/lib/hugeicons";
@@ -910,6 +912,29 @@ const Parametres: React.FC<ParametresProps> = ({
                 <h3>Affichage</h3>
                 <p>Un espace lisible, de jour comme de nuit.</p>
               </div>
+              {themeConfig.visualStyle === "premium" && (
+                <div className="settings-row">
+                  <div>
+                    <p className="settings-row-title">Thème</p>
+                    <p className="settings-row-detail">
+                      Premium clair, Premium sombre ou Clean.
+                    </p>
+                  </div>
+                  <AppThemePicker
+                    value={currentAppTheme(
+                      normalizeSkin(themeConfig.skin),
+                      currentTheme === "dark" ||
+                        (currentTheme === "system" &&
+                          window.matchMedia("(prefers-color-scheme: dark)").matches),
+                    )}
+                    onChange={(theme) => {
+                      const { skin, mode } = appThemeSettings(theme);
+                      handleThemeConfigChange({ ...themeConfig, skin });
+                      onThemeChange?.(mode);
+                    }}
+                  />
+                </div>
+              )}
               <div className="settings-row">
                 <div>
                   <label

@@ -12,6 +12,7 @@
 @import "./design-system/fields.css";
 @import "./design-system/dialogs.css";
 @import "./design-system/interaction.css";
+@import "./design-system/clean.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -4563,6 +4564,20 @@ html[data-density="spacious"] .dashboard-stage [data-slot="card-content"] {
 .settings-segmented .settings-segmented-active { background: var(--background); color: var(--foreground); box-shadow: 0 1px 3px rgb(0 0 0 / .08); }
 .settings-swatch { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--border); border-radius: 50%; }
 .settings-swatch-active { border-color: var(--foreground); box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--foreground); }
+/* Theme picker: three cards, each with a miniature of its sheet. */
+.app-theme-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(100%, 480px); }
+.app-theme-option { display: flex; flex-direction: column; gap: 4px; padding: 8px 8px 10px; border: 1px solid var(--border); border-radius: 10px; text-align: left; background: var(--background); }
+.app-theme-option-active { border-color: var(--foreground); box-shadow: 0 0 0 1px var(--foreground); }
+.app-theme-option:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.app-theme-preview { display: flex; gap: 4px; height: 56px; padding: 5px; border-radius: 6px; }
+.app-theme-preview-nav { display: flex; flex-direction: column; gap: 4px; width: 26%; padding: 4px 3px; border-right: 1px solid; }
+.app-theme-preview-sheet { display: flex; flex: 1; flex-direction: column; gap: 5px; padding: 6px; border: 1px solid; border-radius: 4px; }
+.app-theme-preview i { display: block; height: 4px; border-radius: 2px; }
+.app-theme-preview-sheet i:first-child { width: 55%; }
+.app-theme-preview-sheet i:nth-child(2) { height: 8px; }
+.app-theme-label { margin-top: 4px; font-size: 13px; font-weight: 580; color: var(--foreground); }
+.app-theme-description { font-size: 12px; line-height: 1.4; color: var(--muted-foreground); }
+@media (max-width: 780px) { .app-theme-picker { grid-template-columns: 1fr; } }
 .settings-profile-identity { display: flex; align-items: center; gap: 18px; padding: 24px; }
 .settings-avatar-picker { padding: 14px 24px; border-top: 1px solid var(--border); }
 .settings-avatar-picker summary { width: fit-content; cursor: pointer; color: var(--foreground); font-size: 13px; font-weight: 560; }
