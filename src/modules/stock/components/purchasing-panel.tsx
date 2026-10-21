@@ -130,16 +130,24 @@ export function PurchasingPanel({orderFor, onOrderOpened}: {orderFor?: string | 
   const needs=products.data.filter(item=>!item.archivedAt&&restockNeed(item)>0);
   const order=purchasing.orders.find(item=>item.id===selected); const lines=purchasing.lines.filter(line=>line.order_id===selected);
   const supplier=purchasing.suppliers.find(item=>item.id===order?.supplier_id);
+  // Without an active supplier no order can be saved: say so instead of
+  // opening a form that cannot be confirmed.
+  const [missingSupplierFor,setMissingSupplierFor]=useState<string|null>(null);
   useEffect(()=>{
     if(!orderFor||!purchasing.ready)return;
-    setView("orders");setSelected(null);setOrderEdit({fromAlerts:false,productId:orderFor});onOrderOpened?.();
-  },[orderFor,purchasing.ready,onOrderOpened]);
+    setView("orders");setSelected(null);
+    if(purchasing.suppliers.some(item=>!item.archived_at)){setOrderEdit({fromAlerts:false,productId:orderFor});setMissingSupplierFor(null);}
+    else{setOrderEdit(null);setMissingSupplierFor(orderFor);}
+    onOrderOpened?.();
+  },[orderFor,purchasing.ready,purchasing.suppliers,onOrderOpened]);
+  const missingSupplierProduct=missingSupplierFor?products.data.find(item=>item.id===missingSupplierFor):undefined;
   const run=async(operation:()=>Promise<unknown>)=>{if(busy)return;setBusy(true);setError(null);try{await operation();}catch(error){setError(failure(error));}finally{setBusy(false);}};
   if(!isTauriRuntime())return <p className="p-5 text-sm text-muted-foreground">Les fournisseurs, commandes et réceptions sont disponibles dans l’application de bureau.</p>;
   return <section aria-label="Approvisionnements" className="min-w-0">
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4"><Tabs value={view} onValueChange={value=>{setView(value);setSelected(null);setOrderEdit(null);setReceiving(false);}}><TabsList aria-label="Vue des approvisionnements"><TabsTrigger value="orders">Commandes</TabsTrigger><TabsTrigger value="suppliers">Fournisseurs</TabsTrigger></TabsList></Tabs>
       <div className="flex flex-wrap gap-2">{view==="orders"?<><Button variant="outline" disabled={!purchasing.ready||!activeSuppliers.length||!needs.length||products.data.some(item=>item.availabilityPending)} onClick={()=>{setOrderEdit({fromAlerts:true});setSelected(null);}}>Depuis les alertes ({needs.length})</Button><Button disabled={!purchasing.ready||!activeSuppliers.length} onClick={()=>{setOrderEdit({fromAlerts:false});setSelected(null);}}><Plus className="size-4"/>Nouvelle commande</Button></>:<Button disabled={!purchasing.ready} onClick={()=>setSupplierEdit("new")}><Plus className="size-4"/>Nouveau fournisseur</Button>}</div>
     </div>
+    {missingSupplierFor && !activeSuppliers.length && <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-amber-50/60 px-4 py-3 text-sm dark:bg-amber-500/[0.06]"><span>Aucun fournisseur actif : ajoutez-en un pour commander {missingSupplierProduct?.name ?? "ce produit"}.</span><Button size="sm" onClick={()=>{setView("suppliers");setSupplierEdit("new");setMissingSupplierFor(null);}}><Plus className="size-4"/>Ajouter un fournisseur</Button></div>}
     {purchasing.error ? <ErrorState className="p-4" message={purchasing.error} onRetry={() => void purchasing.refresh()} /> : error && <p role="alert" className="p-4 text-sm text-destructive">{error}</p>}
     {!purchasing.ready&&!purchasing.error&&<p role="status" className="p-4 text-sm text-muted-foreground">Chargement des approvisionnements…</p>}
     {view==="suppliers"?<>

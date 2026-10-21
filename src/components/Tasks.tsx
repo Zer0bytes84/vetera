@@ -124,9 +124,23 @@ function reminderDate(reminder: Reminder) {
   return new Date(value);
 }
 
-function dateLabel(date: Date | null, view: ReminderView) {
+/** A reminder only has an hour when one was entered: never show an invented 12:00. */
+function itemHasTime(item: ReminderItem) {
+  if (item.kind === "manual") return Boolean(item.task.startTime);
+  return item.kind === "automatic";
+}
+
+function dateLabel(date: Date | null, view: ReminderView, withTime = true) {
   if (!date) {
     return "Sans date";
+  }
+  if (!withTime) {
+    const key = toDateKey(date);
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    if (key === toDateKey(new Date())) return "Aujourd'hui";
+    if (key === toDateKey(tomorrow)) return "Demain";
+    return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short", ...(view === "completed" || date.getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}) });
   }
   const today = toDateKey(new Date());
   const key = toDateKey(date);
@@ -613,7 +627,7 @@ const Tasks: React.FC = () => {
           tone: "quiet",
           trend: "neutral",
           detailRow: counts.next
-            ? `Prochain : ${dateLabel(counts.next.date, "upcoming")}`
+            ? `Prochain : ${dateLabel(counts.next.date, "upcoming", itemHasTime(counts.next))}`
             : "Aucun rappel après aujourd’hui",
           onClick: () => { setAuxiliaryView(null); setSourceFilter("all"); setActiveView("upcoming"); },
           actionLabel: "Voir les prochains rappels",
@@ -1106,7 +1120,7 @@ function ManualReminderRow({
         <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
           <span className="inline-flex items-center gap-1.5">
             <Clock3 className="size-3.5" />
-            {dateLabel(item.date, view)}
+            {dateLabel(item.date, view, Boolean(item.task.startTime))}
           </span>
           {item.patient && (
             <span className="inline-flex items-center gap-1.5">
