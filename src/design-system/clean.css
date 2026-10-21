@@ -24,6 +24,12 @@
   --clean-list-icon: 16px;
   --clean-icon-stroke: 1px;
   --clean-card-radius: 12px;
+  /* Type: Inter, Linear's face, for interface, body and titles. Titles have
+     their own token so the mixed variant (Space Grotesk titles) is one value. */
+  --clean-font-ui: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --clean-font-heading: var(--clean-font-ui);
+  --clean-tracking-title: -0.022em;
+  --clean-tracking-heading: -0.015em;
   --clean-card-pad: 16px;
 
   --canvas: var(--clean-sheet) !important;
@@ -48,6 +54,11 @@
   --hair-r: inset -1px 0 0 var(--clean-line) !important;
   --band-bg: #f4f4f5 !important;
   --band: var(--band-bg) !important;
+  --app-font-sans: var(--clean-font-ui) !important;
+  --font-sans: var(--clean-font-ui) !important;
+  --app-font-heading: var(--clean-font-heading) !important;
+  --app-font-display: var(--clean-font-heading) !important;
+  --font-heading: var(--clean-font-heading) !important;
 }
 
 /* ---------- Opaque surfaces: no translucency, no blur ---------- */
@@ -80,12 +91,20 @@
   color: var(--clean-ink-disabled) !important;
 }
 
-/* ---------- Typography: Geist body, Space Grotesk headings, Linear's hierarchy ---------- */
+/* ---------- Typography: Inter throughout (Linear's face), Linear's hierarchy ---------- */
 :root[data-skin="clean"]:not(.dark) body { color: var(--clean-ink-strong); }
+:root[data-skin="clean"]:not(.dark) body { font-family: var(--clean-font-ui); }
 :root[data-skin="clean"]:not(.dark) :is(h1, h2, h3) {
   color: var(--clean-ink-strong);
+  font-family: var(--clean-font-heading);
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--clean-tracking-heading);
+}
+/* Page and welcome titles take Linear's tighter tracking. */
+:root[data-skin="clean"]:not(.dark) :is(h1, .heroTitle) { letter-spacing: var(--clean-tracking-title) !important; }
+/* Tabular figures for amounts and tables, so columns of numbers align. */
+:root[data-skin="clean"]:not(.dark) :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick, .chartTickVisits) {
+  font-variant-numeric: tabular-nums;
 }
 :root[data-skin="clean"]:not(.dark) p:not([class*="text-"]) { color: var(--clean-ink); }
 :root[data-skin="clean"]:not(.dark) :is(.text-muted-foreground, .t-12, small, time) { font-weight: 450; }
@@ -182,7 +201,7 @@
   box-shadow: inset 0 -1px 0 var(--clean-line) !important;
 }
 :root[data-skin="clean"]:not(.dark) .cardTitle {
-  font-family: var(--app-font-heading);
+  font-family: var(--clean-font-heading);
   font-size: 14px !important;
   font-weight: 600 !important;
   letter-spacing: -0.01em !important;
@@ -191,7 +210,7 @@
 :root[data-skin="clean"]:not(.dark) .cardNote { font-size: 12px !important; font-weight: 450; color: var(--clean-ink-quiet) !important; }
 /* Welcome header: same content and mascot, tighter hierarchy and rhythm. */
 :root[data-skin="clean"]:not(.dark) .heroMain { padding: 24px 24px 20px !important; }
-:root[data-skin="clean"]:not(.dark) .heroTitle { font-weight: 600 !important; letter-spacing: -0.02em !important; color: var(--clean-ink-strong) !important; }
+:root[data-skin="clean"]:not(.dark) .heroTitle { font-family: var(--clean-font-heading); font-weight: 600 !important; color: var(--clean-ink-strong) !important; }
 :root[data-skin="clean"]:not(.dark) .kicker i { box-shadow: none; }
 
 /* Widget commands: revealed on hovering the card, as in Linear. Keyboard

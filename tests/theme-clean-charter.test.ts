@@ -69,6 +69,41 @@ describe("thème Clean : jetons", () => {
   });
 });
 
+describe("polices par thème", () => {
+  const premium = postcss.parse(readFileSync("src/design-system/premium.css", "utf8"));
+  const premiumTokens = new Map<string, string>();
+  premium.walkRules(':root[data-visual-style="premium"]', (rule) =>
+    rule.walkDecls((decl) => premiumTokens.set(decl.prop, decl.value))
+  );
+  const cleanTokens = new Map<string, string>();
+  root.walkRules(SCOPE, (rule) =>
+    rule.walkDecls((decl) => cleanTokens.set(decl.prop, `${decl.value}${decl.important ? " !important" : ""}`))
+  );
+
+  it("garde Geist et Space Grotesk comme règle de Premium", () => {
+    expect(premiumTokens.get("--app-font-sans")).toMatch(/^"Geist Variable"/);
+    expect(premiumTokens.get("--app-font-heading")).toMatch(/^"Space Grotesk Variable"/);
+  });
+
+  it("passe Clean sur Inter pour l'interface, le corps et les titres", () => {
+    expect(declarations.get("--clean-font-ui")).toMatch(/^"Inter Variable"/);
+    expect(declarations.get("--clean-font-heading")).toBe("var(--clean-font-ui)");
+    for (const token of ["--app-font-sans", "--font-sans"]) {
+      expect(cleanTokens.get(token)).toBe("var(--clean-font-ui) !important");
+    }
+    for (const token of ["--app-font-heading", "--app-font-display", "--font-heading"]) {
+      expect(cleanTokens.get(token)).toBe("var(--clean-font-heading) !important");
+    }
+  });
+
+  it("resserre l'interlettrage des titres et aligne les chiffres", () => {
+    expect(declarations.get("--clean-tracking-title")).toBe("-0.022em");
+    expect(declarations.get("--clean-tracking-heading")).toBe("-0.015em");
+    const tabular = rulesFor(/\.kpiValue/);
+    expect(tabular.some((rule) => /table/.test(rule.selector) && rule.toString().includes("tabular-nums"))).toBe(true);
+  });
+});
+
 describe("thème Clean : commandes de widget au survol", () => {
   it("masque les liens de carte au repos et les révèle au survol ou au focus, pointeur fin seulement", () => {
     const hidden = rulesFor(/\.card \.moreLink$/);
