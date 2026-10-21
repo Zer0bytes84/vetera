@@ -30,7 +30,7 @@ Date : 21 octobre 2026, 15 h. Un commit local de corrections (`e365a9b`), aucun 
   - commande préremplie.
 
   La liste de ce qu'il faudra ouvrir est plus bas.
-- **Décision en attente :** faire remonter les soins en retard des jours passés.
+- **Décision prise :** les soins en retard des jours passés remontent maintenant dans le jour courant (voir `../soins-retards/`). Il reste à vérifier à l'écran que le soin réel du 14 octobre apparaît bien.
 
 ## Les données réelles en bref
 

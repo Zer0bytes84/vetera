@@ -11,11 +11,15 @@ const byTime = (left: DayTask, right: DayTask) => time(left) - time(right);
 
 /**
  * What a day of care holds. Cancelled care is counted apart and never as
- * planned; late care is care still to do whose time has passed.
+ * planned; late care is care still to do whose time has passed. Care carried
+ * from earlier days (before `dayStart`) counts as late and still to finish,
+ * never as planned for the day.
  */
-export function careDaySummary<T extends DayTask>(tasks: T[], now: Date) {
-  const live = tasks.filter((task) => task.statut !== "annule");
-  const pending = live.filter((task) => task.statut === "a_faire" || task.statut === "en_cours");
+export function careDaySummary<T extends DayTask>(tasks: T[], now: Date, dayStart?: Date) {
+  const carried = dayStart ? tasks.filter((task) => time(task) < dayStart.getTime()) : [];
+  const day = dayStart ? tasks.filter((task) => time(task) >= dayStart.getTime()) : tasks;
+  const live = day.filter((task) => task.statut !== "annule");
+  const pending = [...carried, ...live].filter((task) => task.statut === "a_faire" || task.statut === "en_cours");
   const overdue = pending
     .filter((task) => careDisplayStatus(task, now) === "en_retard")
     .sort(byTime);
@@ -24,7 +28,8 @@ export function careDaySummary<T extends DayTask>(tasks: T[], now: Date) {
     done: live.filter((task) => task.statut === "fait").length,
     pending: pending.length,
     inProgress: pending.filter((task) => task.statut === "en_cours").length,
-    cancelled: tasks.length - live.length,
+    cancelled: day.length - live.length,
+    carried: carried.length,
     overdue,
     next: pending.filter((task) => time(task) >= now.getTime()).sort(byTime)[0],
   };

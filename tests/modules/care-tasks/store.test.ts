@@ -186,3 +186,19 @@ it("un soin de demain est relu par identifiant et dans la période Agenda sans d
     db.prepare("SELECT COUNT(*) AS count FROM care_tasks").get()
   ).toMatchObject({ count: 1 });
 });
+
+it("un soin non validé d'un jour passé reste en retard jusqu'à sa validation ou son annulation", async () => {
+  const { store } = await setup();
+  const late = await store.create({ ...draft, scheduledAt: "2026-10-14T12:30:00Z" }, "vet");
+  const started = await store.create({ ...draft, scheduledAt: "2026-10-15T08:00:00Z" }, "vet");
+  const done = await store.create({ ...draft, scheduledAt: "2026-10-16T08:00:00Z" }, "vet");
+  const cancelled = await store.create({ ...draft, scheduledAt: "2026-10-17T08:00:00Z" }, "vet");
+  await store.create({ ...draft, scheduledAt: "2026-10-21T09:00:00Z" }, "vet");
+  await store.transition(started.id, "en_cours", "vet");
+  await store.transition(done.id, "fait", "vet");
+  await store.transition(cancelled.id, "annule", "vet", "Animal sorti");
+  const today = new Date("2026-10-21T00:00:00Z");
+  expect((await store.overdueBefore(today)).map((task) => task.id)).toEqual([late.id, started.id]);
+  await store.transition(late.id, "fait", "vet");
+  expect((await store.overdueBefore(today)).map((task) => task.id)).toEqual([started.id]);
+});

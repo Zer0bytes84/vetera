@@ -26,6 +26,16 @@ describe("careDaySummary", () => {
   });
 });
 
+describe("careDaySummary with care carried from earlier days", () => {
+  it("counts earlier undone care as late and to finish, never as planned today", () => {
+    const carried = task("old", "08:00", "a_faire", "p1");
+    const earlier = { ...carried, heure_prevue: "2026-10-14T12:30:00" };
+    const summary = careDaySummary([earlier, ...day], now, new Date("2026-10-21T00:00:00"));
+    expect(summary).toMatchObject({ planned: 4, pending: 4, carried: 1, cancelled: 1 });
+    expect(summary.overdue.map((t) => t.id)).toEqual(["old", "b"]);
+  });
+});
+
 describe("careDoses", () => {
   it("counts done out of planned for one animal", () => {
     expect(careDoses(day.filter((t) => t.patient_id === "p1"))).toEqual({ done: 1, total: 3 });

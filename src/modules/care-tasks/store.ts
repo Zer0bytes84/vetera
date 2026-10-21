@@ -44,6 +44,18 @@ export function createCareStore(
         )
       );
     },
+    /**
+     * Care still to do whose time fell before `start`: it stays late until it
+     * is done, moved to a later time or cancelled.
+     */
+    overdueBefore(start: Date) {
+      return persistence.read((db) =>
+        db.select<CareTask[]>(
+          "SELECT * FROM care_tasks WHERE statut IN ('a_faire','en_cours') AND heure_prevue < $1 ORDER BY heure_prevue, id",
+          [start.toISOString()]
+        )
+      );
+    },
     get(taskId: string) {
       return persistence.read(
         async (db) =>

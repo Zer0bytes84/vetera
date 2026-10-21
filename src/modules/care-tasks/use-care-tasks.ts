@@ -42,8 +42,13 @@ export function useCareTasks(date?: Date, rangeEnd?: Date) {
     if (endKey === "day") end.setDate(end.getDate() + 1);
     try {
       const rows = await careTasksService.list(start, end);
+      // Today also carries every earlier care still not done, with its own date.
+      const carried =
+        dateKey === "today" && endKey === "day"
+          ? await careTasksService.overdueBefore(start)
+          : [];
       if (sequence !== requestSequence.current) return;
-      setTasks(rows);
+      setTasks([...carried, ...rows]);
       setNow(current);
       setError(null);
     } catch {

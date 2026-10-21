@@ -108,6 +108,8 @@ const time = (value: string) =>
     hour: "2-digit",
     minute: "2-digit",
   });
+const shortDay = (value: string) =>
+  new Date(value).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 export default function CarePage({
   patientId,
   onNavigateToPatient,
@@ -154,7 +156,14 @@ export default function CarePage({
   const tasks = patientId
     ? allTasks.filter((task) => task.patient_id === patientId)
     : allTasks;
-  const summary = careDaySummary(tasks, now);
+  // Today's list also holds earlier care never done: it stays late, with its
+  // own date, until it is done, moved or cancelled. It is not planned today.
+  const dayStart = new Date(careDate);
+  dayStart.setHours(0, 0, 0, 0);
+  const isCarried = (task: CareTask) => new Date(task.heure_prevue).getTime() < dayStart.getTime();
+  const when = (task: CareTask) =>
+    isCarried(task) ? `${shortDay(task.heure_prevue)}, ${time(task.heure_prevue)}` : time(task.heure_prevue);
+  const summary = careDaySummary(tasks, now, dayStart);
   const overdueCount = summary.overdue.length;
   const patients = usePatientsRepository();
   const products = useProductsRepository();
@@ -306,6 +315,10 @@ export default function CarePage({
           Number(careDisplayStatus(a, now) === "en_retard") ||
         a.heure_prevue.localeCompare(b.heure_prevue)
     );
+  const groupKey = (t: CareTask) =>
+    isCarried(t)
+      ? "Retards des jours précédents"
+      : `${careDisplayStatus(t, now) === "en_retard" ? "Retards · " : ""}${time(t.heure_prevue).slice(0, 2)} h`;
   const groups =
     mode === "patient"
       ? [...new Set(visible.map((t) => t.patient_id))]
@@ -313,7 +326,7 @@ export default function CarePage({
           ...new Set(
             visible.map(
               (t) =>
-                `${careDisplayStatus(t, now) === "en_retard" ? "Retards · " : ""}${time(t.heure_prevue).slice(0, 2)} h`
+                groupKey(t)
             )
           ),
         ];
@@ -344,7 +357,12 @@ export default function CarePage({
               setReason("");
             }}
           >
-            <time className="shrink-0 t-16 font-medium tabular-nums">
+            <time className="shrink-0 t-16 font-medium tabular-nums" dateTime={task.heure_prevue}>
+              {isCarried(task) && (
+                <span className="block t-12 font-normal text-rose-700 dark:text-rose-300">
+                  {shortDay(task.heure_prevue)}
+                </span>
+              )}
               {time(task.heure_prevue)}
             </time>
             <span className="min-w-0 flex-1">
@@ -441,7 +459,7 @@ export default function CarePage({
                 detailRow: summary.planned || summary.cancelled
                   ? [
                       `${summary.done} fait${summary.done > 1 ? "s" : ""}`,
-                      `${summary.pending} à terminer`,
+                      `${summary.pending - summary.carried} à terminer`,
                       summary.cancelled ? `${summary.cancelled} annulé${summary.cancelled > 1 ? "s" : ""}` : "",
                     ].filter(Boolean).join(" · ")
                   : "Aucun soin planifié pour cette date",
@@ -458,7 +476,9 @@ export default function CarePage({
                 tone: !summary.pending && summary.planned ? "positive" : undefined,
                 detailRow: summary.next
                   ? `${summary.next.label} · ${patientName(summary.next.patient_id)}`
-                  : summary.inProgress
+                  : summary.carried
+                    ? `Dont ${summary.carried} des jours précédents`
+                    : summary.inProgress
                     ? `Dont ${summary.inProgress} en cours`
                     : "À faire ou en cours",
                 footerTitle: "À faire ou en cours",
@@ -469,7 +489,7 @@ export default function CarePage({
                 badge: overdueCount ? "À traiter en priorité" : "Aucun retard",
                 tone: overdueCount ? "critical" : "quiet",
                 detailRow: summary.overdue[0]
-                  ? `Le plus ancien : ${time(summary.overdue[0].heure_prevue)} · ${patientName(summary.overdue[0].patient_id)}`
+                  ? `Le plus ancien : ${when(summary.overdue[0])} · ${patientName(summary.overdue[0].patient_id)}${summary.carried ? ` · ${summary.carried} des jours précédents` : ""}`
                   : "Heure prévue dépassée, soin non validé",
               },
             ]}
@@ -598,7 +618,7 @@ export default function CarePage({
                 )}
               </h2>
               {mode === "patient" && (() => {
-                const doses = careDoses(tasks.filter((t) => t.patient_id === group));
+                const doses = careDoses(tasks.filter((t) => t.patient_id === group && !isCarried(t)));
                 return doses.total ? (
                   <span className="care-group-doses" title="Soins faits sur les soins prévus du jour, hors annulés">
                     <strong>{doses.done}/{doses.total}</strong> faits
@@ -614,7 +634,7 @@ export default function CarePage({
                     setActionError(null);
                     setReason("");
                   }}
-                  tasks={tasks.filter((t) => t.patient_id === group)}
+                  tasks={tasks.filter((t) => t.patient_id === group && !isCarried(t))}
                 />
               )}
               </div>
@@ -622,8 +642,7 @@ export default function CarePage({
                 .filter((t) =>
                   mode === "patient"
                     ? t.patient_id === group
-                    : `${careDisplayStatus(t, now) === "en_retard" ? "Retards · " : ""}${time(t.heure_prevue).slice(0, 2)} h` ===
-                      group
+                    : groupKey(t) === group
                 )
                 .map(row)}
             </article>
@@ -695,7 +714,7 @@ export default function CarePage({
               <h2 className="t-18 font-medium">{detail.label}</h2>
               <dl className="grid grid-cols-2 gap-3 t-13">
                 {[
-                  ["Heure prévue", time(detail.heure_prevue)],
+                  ["Heure prévue", when(detail)],
                   ["Type", careTypeLabels[detail.type]],
                   ["Statut", labels[careDisplayStatus(detail, now)]],
                   [
