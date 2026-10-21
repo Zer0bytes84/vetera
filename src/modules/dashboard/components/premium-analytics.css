@@ -842,8 +842,9 @@
   flex: 1;
   width: 100%;
   min-height: 220px;
-  /* A taller neighbour may stretch the card; the curve stops growing here. */
-  max-height: 360px;
+  /* A taller neighbour may stretch the card; the curve stops growing here,
+     high enough to fill the card beside « Cette semaine » and its baselines. */
+  max-height: 460px;
 }
 
 /* Drawn at the box size, so the box never takes its height from the drawing. */
@@ -1850,4 +1851,16 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   font-weight: 400;
   letter-spacing: 0;
   color: var(--faint);
+}
+
+/* A fact's baseline or scope, under its value. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts dd.factNote {
+  margin-top: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.4;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
 }

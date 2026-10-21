@@ -658,11 +658,23 @@ export function PremiumAnalytics({
 
     const weekIncome = weekTransactions.reduce((acc, t) => acc + (t.amount || 0), 0);
 
-    const weekVisits = appointments.filter((a) => {
-      if (!a.startTime || ["cancelled", "no_show"].includes(a.status)) return false;
-      const d = new Date(a.startTime);
-      return d >= startOfWeek && d <= now;
-    }).length;
+    const visitsBetween = (from: Date, to: Date) =>
+      appointments.filter((a) => {
+        if (!a.startTime || ["cancelled", "no_show"].includes(a.status)) return false;
+        const d = new Date(a.startTime);
+        return d >= from && d <= to;
+      }).length;
+    const weekVisits = visitsBetween(startOfWeek, now);
+    // Last week up to the same day and hour, so the two figures cover the same span.
+    const weekAgo = (d: Date) => new Date(d.getTime() - 7 * 86_400_000);
+    const previousIncome = transactions
+      .filter((t) => {
+        if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
+        const d = new Date(t.date);
+        return d >= weekAgo(startOfWeek) && d <= weekAgo(now);
+      })
+      .reduce((acc, t) => acc + (t.amount || 0), 0);
+    const previousVisits = visitsBetween(weekAgo(startOfWeek), weekAgo(now));
 
     const issuedCount = invoices.filter((i) => i.documentStatus === "issued").length;
     const paidCount = invoices.filter((i) => i.documentStatus === "paid").length;
@@ -673,8 +685,11 @@ export function PremiumAnalytics({
     const pending = financials?.pending ?? 0;
 
     return {
+      since: startOfWeek,
       income: weekIncome,
+      previousIncome,
       visits: weekVisits,
+      previousVisits,
       rate,
       pending,
     };
@@ -1023,7 +1038,15 @@ export function PremiumAnalytics({
           <div className="cardHead">
             <div>
               <h2 className="cardTitle">Cette semaine</h2>
-              <p className="cardNote">Indicateurs consolidés et file d'attente</p>
+              <p className="cardNote">
+                Depuis{" "}
+                {weekStats.since.toLocaleDateString("fr-FR", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "short",
+                })}{" "}
+                · Mis à jour à {formatTime(updatedAt)}
+              </p>
             </div>
             <button
               type="button"
@@ -1038,10 +1061,16 @@ export function PremiumAnalytics({
               <div>
                 <dt>Recettes encaissées</dt>
                 <FactValue text={formatCentimes(weekStats.income)} />
+                <dd className="factNote">
+                  Semaine dernière : {formatCentimes(weekStats.previousIncome)}
+                </dd>
               </div>
               <div>
                 <dt>Consultations</dt>
                 <FactValue text={String(weekStats.visits)} />
+                <dd className="factNote">
+                  Semaine dernière : {formatNumber(weekStats.previousVisits)}
+                </dd>
               </div>
               <div>
                 <dt>Taux de règlement</dt>
@@ -1055,10 +1084,12 @@ export function PremiumAnalytics({
                     </span>
                   </>
                 )}
+                <dd className="factNote">Sur toutes les factures émises</dd>
               </div>
               <div data-attention={weekStats.pending > 0 || undefined}>
                 <dt>Reste à recouvrer</dt>
                 <FactValue text={formatCentimes(weekStats.pending)} />
+                <dd className="factNote">Toutes périodes confondues</dd>
               </div>
             </dl>
 
@@ -1113,17 +1144,18 @@ export function PremiumAnalytics({
                             </Badge>
                           </td>
                           <td style={{ textAlign: "right" }}>
-                            <button
-                              type="button"
-                              className="iconBtn"
-                              title="Suivre dans Flux"
-                              aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
-                              onClick={() =>
-                                onStartConsultation?.(row.appointment.id)
-                              }
-                            >
-                              <ArrowRight size={13} strokeWidth={1.5} aria-hidden="true" />
-                            </button>
+                            <ShortcutTooltip label="Suivre dans Flux">
+                              <button
+                                type="button"
+                                className="iconBtn"
+                                aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
+                                onClick={() =>
+                                  onStartConsultation?.(row.appointment.id)
+                                }
+                              >
+                                <ArrowRight size={13} strokeWidth={1.5} aria-hidden="true" />
+                              </button>
+                            </ShortcutTooltip>
                           </td>
                         </tr>
                       );
