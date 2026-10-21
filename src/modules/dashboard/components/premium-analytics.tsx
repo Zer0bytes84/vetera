@@ -710,7 +710,6 @@ export function PremiumAnalytics({
         id: "clinique",
         title: "Soins & hospitalisation",
         description: "Soins du jour, hospitalisations et rappels médicaux",
-        count: "Soins et séjours",
         icon: Stethoscope,
         action: () => onNavigate?.("clinique"),
       },
@@ -726,7 +725,8 @@ export function PremiumAnalytics({
         id: "stock",
         title: "Produits",
         description: "Médicaments, lots FIFO et seuils de réapprovisionnement",
-        count: `${presentation?.products.length ?? 48} références`,
+        // No figure rather than a made-up one while the catalogue loads.
+        count: presentation ? `${presentation.products.length} références` : undefined,
         icon: Package,
         action: () => onNavigate?.("stock"),
       },
@@ -734,7 +734,7 @@ export function PremiumAnalytics({
         id: "finances",
         title: "Facturation & Devis",
         description: "Factures émises, règlements et gestion des devis",
-        count: formatCentimes(cash.income),
+        count: `${formatCentimes(cash.income)} sur la période`,
         icon: Receipt,
         action: onFinances,
       },
@@ -749,7 +749,7 @@ export function PremiumAnalytics({
         id: "taches",
         title: "Rappels & Vaccins",
         description: "Vaccinations à échéance et relances propriétaires",
-        count: `${actions.count} rappels`,
+        count: `${actions.count} action${actions.count > 1 ? "s" : ""} à suivre`,
         icon: Bell,
         action: onActions,
       },
@@ -763,9 +763,8 @@ export function PremiumAnalytics({
     ],
     [
       today?.length,
-      presentation?.patients.length,
       patients.count,
-      presentation?.products.length,
+      presentation,
       cash.income,
       actions.count,
       onNavigate,
@@ -1189,7 +1188,10 @@ export function PremiumAnalytics({
         <div className="cardHead">
           <div>
             <h2 className="cardTitle">Gestion du cabinet</h2>
-            <p className="cardNote">Accès direct et suivi opérationnel des modules cliniques</p>
+            <p className="cardNote">
+              Accès direct et suivi opérationnel des modules cliniques · Mis à jour à{" "}
+              {formatTime(updatedAt)}
+            </p>
           </div>
         </div>
         <div className="tiles">
