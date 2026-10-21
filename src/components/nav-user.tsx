@@ -66,7 +66,7 @@ export function NavUser({
             }
           >
             <Avatar
-              className="size-8 shrink-0 rounded-full ring-1 ring-sidebar-border/70 transition-all group-data-[collapsible=icon]:size-8"
+              className="size-8 shrink-0 rounded-full ring-1 ring-sidebar-border/70 transition group-data-[collapsible=icon]:size-8"
               name={user.name}
               size="sm"
               src={normalizedAvatar}

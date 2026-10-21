@@ -238,7 +238,7 @@ export function HospitalizationDetail({
             ).map((s) => (
               <button
                 className={cn(
-                  "rounded-full border px-2.5 py-0.5 font-medium text-xs transition-all",
+                  "rounded-full border px-2.5 py-0.5 font-medium text-xs transition",
                   hospitalization.status === s
                     ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-200"
                     : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"

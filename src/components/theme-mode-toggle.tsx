@@ -42,7 +42,7 @@ export function ThemeModeToggle({
         return (
           <button
             className={cn(
-              "relative flex items-center gap-1.5 rounded-lg px-3 py-2 font-medium text-xs transition-all",
+              "relative flex items-center gap-1.5 rounded-lg px-3 py-2 font-medium text-xs transition",
               isActive
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"

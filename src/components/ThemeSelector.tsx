@@ -37,7 +37,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
           ).map(([key, theme]) => (
             <button
               className={cn(
-                "group relative flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all hover:scale-[1.02]",
+                "group relative flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition hover:scale-[1.02]",
                 config.accent === key
                   ? "border-primary bg-primary/5"
                   : "border-border bg-card hover:border-primary/30"
@@ -90,7 +90,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
             return (
               <button
                 className={cn(
-                  "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
+                  "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition",
                   isActive
                     ? "border-primary bg-primary/5"
                     : "border-border bg-card hover:border-primary/30"
@@ -140,7 +140,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
             ([key, value]) => (
               <button
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-2 rounded-xl border-2 p-3 transition-all",
+                  "flex flex-1 flex-col items-center gap-2 rounded-xl border-2 p-3 transition",
                   config.radius === key
                     ? "border-primary bg-primary/5"
                     : "border-border bg-card hover:border-primary/30"
@@ -149,7 +149,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                 onClick={() => onChange({ ...config, radius: key })}
               >
                 <div
-                  className="h-8 w-12 border-2 transition-all"
+                  className="h-8 w-12 border-2 transition"
                   style={{
                     borderRadius: value,
                     borderColor:
@@ -177,7 +177,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
           {(["compact", "comfortable", "spacious"] as const).map((density) => (
             <button
               className={cn(
-                "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
+                "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition",
                 config.density === density
                   ? "border-primary bg-primary/5"
                   : "border-border bg-card hover:border-primary/30"
@@ -250,7 +250,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
             </div>
             <div className="flex gap-2">
               <button
-                className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-xs transition-all hover:opacity-90"
+                className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-xs transition hover:opacity-90"
                 style={{
                   borderRadius: RADIUS_MAP[config.radius],
                   fontFamily: FONT_MAP[config.font].css,
@@ -259,7 +259,7 @@ export function ThemeSelector({ config, onChange }: ThemeSelectorProps) {
                 Bouton primaire
               </button>
               <button
-                className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground text-xs transition-all hover:bg-muted"
+                className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground text-xs transition hover:bg-muted"
                 style={{
                   borderRadius: RADIUS_MAP[config.radius],
                   fontFamily: FONT_MAP[config.font].css,

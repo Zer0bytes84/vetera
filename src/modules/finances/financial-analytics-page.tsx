@@ -181,7 +181,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
           <div className="relative flex rounded-full border border-zinc-950/10 bg-white/60 p-1 shadow-sm backdrop-blur-md sm:self-center dark:border-white/10 dark:bg-zinc-900/60">
             <button
               className={cn(
-                "relative cursor-pointer rounded-full px-4 py-1.5 font-semibold text-xs tracking-wide transition-all duration-200 active:scale-95",
+                "relative cursor-pointer rounded-full px-4 py-1.5 font-semibold text-xs tracking-wide transition duration-200 active:scale-95",
                 activeTab === "revenue"
                   ? "font-bold text-white dark:text-zinc-950"
                   : "text-muted-foreground hover:text-foreground"
@@ -200,7 +200,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
             </button>
             <button
               className={cn(
-                "relative cursor-pointer rounded-full px-4 py-1.5 font-semibold text-xs tracking-wide transition-all duration-200 active:scale-95",
+                "relative cursor-pointer rounded-full px-4 py-1.5 font-semibold text-xs tracking-wide transition duration-200 active:scale-95",
                 activeTab === "cashflow"
                   ? "font-bold text-white dark:text-zinc-950"
                   : "text-muted-foreground hover:text-foreground"

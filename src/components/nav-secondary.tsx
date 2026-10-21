@@ -40,7 +40,7 @@ export function NavSecondary({
             <SidebarMenuItem className="group/item" key={item.title}>
               <SidebarMenuButton
                 className={cn(
-                  "h-9 rounded-md px-2.5 font-medium text-sm tracking-tight antialiased transition-all duration-200 ease-out",
+                  "h-9 rounded-md px-2.5 font-medium text-sm tracking-tight antialiased transition duration-200 ease-out",
                   item.isActive
                     ? "!bg-zinc-950/[0.055] !text-zinc-950 dark:!bg-white/[0.08] dark:!text-zinc-100"
                     : "text-zinc-700 hover:!bg-zinc-950/[0.045] hover:!text-zinc-950 dark:text-zinc-400 dark:hover:!bg-white/[0.06] dark:hover:!text-zinc-100",

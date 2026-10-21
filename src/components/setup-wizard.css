@@ -12,7 +12,11 @@
 .setup-welcome .setup-form { color: var(--foreground); background: var(--surface); box-shadow: 0 12px 36px rgb(0 0 0 / .07); }
 .setup-welcome .setup-form label { color: var(--foreground); }
 .setup-welcome .setup-form button[type="submit"] { background: var(--primary); color: var(--primary-foreground); }
-.setup-welcome .setup-form button[type="submit"]:hover { filter: brightness(1.1); }
+@media (hover: hover) and (pointer: fine) {
+  .setup-welcome .setup-form button[type="submit"]:hover {
+    filter: brightness(1.1);
+  }
+}
 .setup-welcome .setup-form [class*="text-zinc-500"],
 .setup-welcome .setup-form [class*="text-zinc-400"] { color: var(--muted-foreground); }
 .setup-welcome .setup-form a { color: var(--foreground); }

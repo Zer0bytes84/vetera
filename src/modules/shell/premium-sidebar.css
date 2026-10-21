@@ -129,11 +129,13 @@
   transition: background-color 160ms var(--ease-out-quint), border-color 160ms var(--ease-out-quint) !important;
 }
 
-[data-visual-style="premium"] .shell-toolbar-actions .shell-toolbar-control:hover,
+@media (hover: hover) and (pointer: fine) {
+  [data-visual-style="premium"] .shell-toolbar-actions .shell-toolbar-control:hover,
 :root[data-visual-style="premium"] .shell-toolbar-actions .shell-toolbar-control:hover,
 :root[data-visual-style="premium"][data-chrome-style="liquid-glass"] .shell-toolbar-actions .shell-toolbar-control:hover {
-  border-color: var(--border-hover) !important;
-  background: var(--surface-hover) !important;
+    border-color: var(--border-hover) !important;
+    background: var(--surface-hover) !important;
+  }
 }
 
 [data-visual-style="premium"] .shell-toolbar-actions .shell-toolbar-control svg,
@@ -158,8 +160,10 @@
   color: var(--faint) !important;
 }
 
-[data-visual-style="premium"] .shell-header-search:hover {
-  border-color: var(--border-hover) !important;
+@media (hover: hover) and (pointer: fine) {
+  [data-visual-style="premium"] .shell-header-search:hover {
+    border-color: var(--border-hover) !important;
+  }
 }
 
 [data-visual-style="premium"] .shell-header-search svg {
@@ -258,13 +262,17 @@
   letter-spacing: -0.01em !important;
 }
 
-[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-menu-button"]:hover {
-  background: var(--nav-hover) !important;
-  color: var(--nav-ink) !important;
+@media (hover: hover) and (pointer: fine) {
+  [data-visual-style="premium"] .app-sidebar [data-slot="sidebar-menu-button"]:hover {
+    background: var(--nav-hover) !important;
+    color: var(--nav-ink) !important;
+  }
 }
 
-[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-menu-button"]:hover .sidebar-nav-icon svg {
-  color: var(--nav-ink) !important;
+@media (hover: hover) and (pointer: fine) {
+  [data-visual-style="premium"] .app-sidebar [data-slot="sidebar-menu-button"]:hover .sidebar-nav-icon svg {
+    color: var(--nav-ink) !important;
+  }
 }
 
 [data-visual-style="premium"] .app-sidebar [data-slot="sidebar-menu-button"][data-active],
@@ -354,9 +362,11 @@
   transition: background-color 0.16s ease, color 0.16s ease;
 }
 
-[data-visual-style="premium"] .app-sidebar .premium-shortcuts button:hover {
-  background: var(--nav-hover);
-  color: var(--nav-ink);
+@media (hover: hover) and (pointer: fine) {
+  [data-visual-style="premium"] .app-sidebar .premium-shortcuts button:hover {
+    background: var(--nav-hover);
+    color: var(--nav-ink);
+  }
 }
 
 [data-visual-style="premium"] .app-sidebar .premium-shortcut-icon {
@@ -367,8 +377,10 @@
   color: var(--nav-muted);
 }
 
-[data-visual-style="premium"] .app-sidebar .premium-shortcuts button:hover .premium-shortcut-icon {
-  color: var(--nav-ink);
+@media (hover: hover) and (pointer: fine) {
+  [data-visual-style="premium"] .app-sidebar .premium-shortcuts button:hover .premium-shortcut-icon {
+    color: var(--nav-ink);
+  }
 }
 
 [data-visual-style="premium"] .app-sidebar .premium-shortcut-dot {
@@ -405,8 +417,10 @@
   transition: background-color 0.16s ease;
 }
 
-[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-footer"] :is(button, a):hover {
-  background: var(--nav-hover);
+@media (hover: hover) and (pointer: fine) {
+  [data-visual-style="premium"] .app-sidebar [data-slot="sidebar-footer"] :is(button, a):hover {
+    background: var(--nav-hover);
+  }
 }
 
 [data-visual-style="premium"] .app-sidebar [data-slot="sidebar-footer"] span.font-medium,
@@ -517,10 +531,12 @@
     box-shadow: none !important;
     transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease !important;
   }
+  @media (hover: hover) and (pointer: fine) {
   [data-visual-style="premium"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"]:hover {
     color: var(--ink) !important;
     background: var(--nav-hover) !important;
   }
+}
   [data-visual-style="premium"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-menu"] [data-slot="sidebar-menu-button"][data-active="true"] {
     color: var(--ink) !important;
     background: var(--surface) !important;
@@ -574,8 +590,10 @@
     border-radius: 10px !important;
     color: var(--ink-muted) !important;
   }
+  @media (hover: hover) and (pointer: fine) {
   [data-visual-style="premium"] [data-collapsible="icon"] .app-sidebar [data-slot="sidebar-footer"] > button:hover {
     color: var(--ink) !important;
     background: var(--nav-hover) !important;
   }
+}
 }

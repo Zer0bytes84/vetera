@@ -51,6 +51,12 @@
     0 24px 48px -24px rgb(9 9 11 / 0.22);
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Speeds: a highlight appears at once and fades out; nothing frequent waits. */
+  --speed-highlight-in: 0ms;
+  --speed-highlight-out: 150ms;
+  --speed-quick: 100ms;
+  --speed-regular: 250ms;
+  --speed-slow: 350ms;
   --app-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --app-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --app-font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

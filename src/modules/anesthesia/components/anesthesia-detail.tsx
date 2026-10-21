@@ -218,7 +218,7 @@ export function AnesthesiaDetail({
               ).map((s) => (
                 <button
                   className={cn(
-                    "rounded-full border px-2.5 py-0.5 font-medium text-xs transition-all",
+                    "rounded-full border px-2.5 py-0.5 font-medium text-xs transition",
                     sheet.status === s
                       ? "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-200"
                       : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"

@@ -218,7 +218,7 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     <span
                       data-active={step >= item}
                       className={cn(
-                        "setup-step flex size-8 items-center justify-center rounded-full border font-semibold text-xs transition-all duration-300",
+                        "setup-step flex size-8 items-center justify-center rounded-full border font-semibold text-xs transition duration-300",
                         step >= item
                           ? "border-[#17231f] bg-[#17231f] text-white"
                           : "border-zinc-300 bg-white/60 text-zinc-400"

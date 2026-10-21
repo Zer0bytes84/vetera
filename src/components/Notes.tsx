@@ -477,7 +477,7 @@ const Notes: React.FC = () => {
                 return (
                   <button
                     className={cn(
-                      "group relative flex w-full flex-col gap-1 rounded-lg p-3 text-left transition-all",
+                      "group relative flex w-full flex-col gap-1 rounded-lg p-3 text-left transition",
                       isSelected
                         ? "bg-muted dark:bg-muted/80"
                         : "hover:bg-muted/50"

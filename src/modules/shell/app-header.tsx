@@ -113,9 +113,9 @@ export function AppHeader({
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 shrink-0 transition-all duration-200">
+    <header className="sticky top-0 z-20 shrink-0 transition duration-200">
       <div
-        className={`flex items-center justify-between gap-4 px-5 py-3.5 transition-all duration-300 md:px-6 ${
+        className={`flex items-center justify-between gap-4 px-5 py-3.5 transition duration-150 md:px-6 ${
           isScrolled
             ? "border-black/6 border-b bg-white/54 backdrop-blur-2xl backdrop-saturate-150 dark:border-white/8 dark:bg-[rgba(10,12,18,0.48)]"
             : "bg-transparent"
@@ -172,7 +172,7 @@ export function AppHeader({
           {/* Barre de recherche CMD+K desktop */}
           <button
             type="button"
-            className="group hidden h-10 w-48 items-center gap-2.5 rounded-2xl border border-black/6 bg-white/70 px-3 text-left shadow-xs backdrop-blur-xl transition-all duration-150 hover:border-black/12 hover:bg-white hover:text-foreground hover:shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/8 dark:bg-white/6 dark:hover:border-white/15 dark:hover:bg-white/10 sm:w-56 md:flex md:w-64 lg:w-72"
+            className="group hidden h-10 w-48 items-center gap-2.5 rounded-2xl border border-black/6 bg-white/70 px-3 text-left shadow-xs backdrop-blur-xl transition duration-150 hover:border-black/12 hover:bg-white hover:text-foreground hover:shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/8 dark:bg-white/6 dark:hover:border-white/15 dark:hover:bg-white/10 sm:w-56 md:flex md:w-64 lg:w-72"
             onClick={onOpenPalette}
             aria-label="Ouvrir la palette de commandes (⌘K)"
           >

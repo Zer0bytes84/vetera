@@ -108,7 +108,7 @@ export function AnesthesiaList({
           {filters.map((f) => (
             <button
               className={cn(
-                "rounded-full border px-3 py-1 font-medium t-12 transition-all",
+                "rounded-full border px-3 py-1 font-medium t-12 transition",
                 filter === f.value
                   ? "border-violet-500/40 bg-violet-500/10 text-violet-700 dark:text-violet-200"
                   : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"

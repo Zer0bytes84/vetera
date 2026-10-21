@@ -196,7 +196,7 @@ export function AppSidebar({
         <div
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-full z-50 h-px bg-zinc-900/7.5 transition-[left,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-white/12",
+            "pointer-events-none absolute top-full z-50 h-px bg-zinc-900/7.5 transition-[left,width] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-white/12",
             sidebarSeparatorWidth
           )}
           data-slot="sidebar-header-separator"
@@ -270,7 +270,7 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter
         className={cn(
-          "relative z-10 shrink-0 transition-all duration-300",
+          "relative z-10 shrink-0 transition-[padding,margin] duration-200",
           isCollapsed
             ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-2 px-0 py-3"
             : "mx-0 mt-auto mb-0 bg-transparent px-3 py-3"
@@ -278,7 +278,7 @@ export function AppSidebar({
       >
         <div
           className={cn(
-            "transition-all duration-300",
+            "transition-[width] duration-200",
             isPremium && "board-frame sidebar-account-frame",
             !isCollapsed && "w-full"
           )}

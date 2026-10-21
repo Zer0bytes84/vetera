@@ -56,9 +56,11 @@
   color: var(--nav-text) !important;
 }
 
-:root[data-visual-style="premium"] .app-sidebar [data-sidebar="trigger"]:hover {
-  border-color: var(--nav-line) !important;
-  background: var(--nav-hover) !important;
+@media (hover: hover) and (pointer: fine) {
+  :root[data-visual-style="premium"] .app-sidebar [data-sidebar="trigger"]:hover {
+    border-color: var(--nav-line) !important;
+    background: var(--nav-hover) !important;
+  }
 }
 
 :root[data-visual-style="premium"] .app-sidebar [data-sidebar="trigger"] .sidebar-toggle-icon {
@@ -261,9 +263,11 @@
   font-size: 13px !important;
 }
 
-:root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"]:hover {
-  background: var(--lift) !important;
-  color: var(--ink) !important;
+@media (hover: hover) and (pointer: fine) {
+  :root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"]:hover {
+    background: var(--lift) !important;
+    color: var(--ink) !important;
+  }
 }
 
 :root[data-visual-style="premium"] .engraved-view-tabs [data-slot="tabs-trigger"][aria-selected="true"] {
@@ -335,8 +339,10 @@
 :root:root:root .agenda-month-day {
   background: var(--surface, var(--background)) !important;
 }
-:root:root:root .agenda-month-day:hover {
-  background: color-mix(in oklab, var(--foreground) 4%, var(--surface, var(--background))) !important;
+@media (hover: hover) and (pointer: fine) {
+  :root:root:root .agenda-month-day:hover {
+    background: color-mix(in oklab, var(--foreground) 4%, var(--surface, var(--background))) !important;
+  }
 }
 :root:root:root .agenda-month-day[data-selected] {
   box-shadow: inset 0 0 0 2px var(--foreground) !important;
@@ -617,7 +623,11 @@
 :root[data-visual-style="premium"] .care-task-row:has([data-premium-status="en_retard"]) {
   box-shadow: inset 3px 0 0 var(--premium-red);
 }
-:root[data-visual-style="premium"] .care-task-row:hover { border-color: var(--line-strong) !important; }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-visual-style="premium"] .care-task-row:hover {
+    border-color: var(--line-strong) !important;
+  }
+}
 :root[data-visual-style="premium"] :is(.stay-summary-card, .stay-location-card) {
   padding: 20px !important;
   border: 1px solid var(--line) !important;
@@ -1018,7 +1028,11 @@
   gap: 10px !important; border: 0 !important; border-radius: 0 !important;
   background: transparent !important; box-shadow: none !important; color: var(--ink) !important;
 }
-:root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) { background: var(--nav-hover) !important; }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
+    background: var(--nav-hover) !important;
+  }
+}
 :root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-card:focus-visible { outline: 2px solid var(--premium-blue); outline-offset: 3px; }
 :root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-name { font-size: 13px !important; font-weight: 500 !important; line-height: 20px !important; }
 :root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-more { opacity: .65; stroke-width: 1; }
@@ -1042,8 +1056,10 @@
   font-size: inherit !important;
   vertical-align: middle !important;
 }
-:root[data-visual-style="premium"] [data-slot="calendar"] tr:hover > td:not([data-selected="true"]) {
-  background: transparent !important;
+@media (hover: hover) and (pointer: fine) {
+  :root[data-visual-style="premium"] [data-slot="calendar"] tr:hover > td:not([data-selected="true"]) {
+    background: transparent !important;
+  }
 }
 
 /* Permanent information block: one band heading, flat columns, no nested cards. */

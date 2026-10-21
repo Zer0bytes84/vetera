@@ -138,7 +138,7 @@ export function SettleStatTile({
         }
       }}
       className={cn(
-        "settle-stat-tile rounded-[14px] p-4 bg-white dark:bg-neutral-900 border border-black/[0.07] dark:border-white/[0.08] shadow-[0_1px_2px_rgb(0_0_0/0.05)] flex flex-col justify-between transition-all",
+        "settle-stat-tile rounded-[14px] p-4 bg-white dark:bg-neutral-900 border border-black/[0.07] dark:border-white/[0.08] shadow-[0_1px_2px_rgb(0_0_0/0.05)] flex flex-col justify-between transition",
         onClick && "cursor-pointer hover:border-black/[0.15] dark:hover:border-white/[0.18] hover:shadow-[0_2px_4px_rgb(0_0_0/0.06)]"
       )}
     >

@@ -1,6 +1,11 @@
 import type { Variants } from "framer-motion";
 
 export const MOTION = {
+  /** Mirrors --speed-* in tokens.css, in seconds. */
+  highlightOut: 0.15,
+  quick: 0.1,
+  regular: 0.25,
+  slow: 0.35,
   fast: 0.15,
   base: 0.22,
   easeOut: [0.2, 0, 0, 1] as const,

@@ -74,7 +74,7 @@ function CommandInput({
 }) {
   return (
     <div className="relative p-2 pb-1" data-slot="command-input-wrapper">
-      <InputGroup className="h-12 rounded-xl border border-black/8 bg-black/[0.03] shadow-none transition-all duration-150 ease-out focus-within:border-zinc-900/35 focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(25,25,25,0.08)] dark:border-white/10 dark:bg-white/[0.05] dark:focus-within:border-white/35 dark:focus-within:bg-zinc-800/90 dark:focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] *:data-[slot=input-group-addon]:ps-3.5!">
+      <InputGroup className="h-12 rounded-xl border border-black/8 bg-black/[0.03] shadow-none transition duration-150 ease-out focus-within:border-zinc-900/35 focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(25,25,25,0.08)] dark:border-white/10 dark:bg-white/[0.05] dark:focus-within:border-white/35 dark:focus-within:bg-zinc-800/90 dark:focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] *:data-[slot=input-group-addon]:ps-3.5!">
         <CommandPrimitive.Input
           className={cn(
             "w-full font-medium t-16 outline-none border-none bg-transparent placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",

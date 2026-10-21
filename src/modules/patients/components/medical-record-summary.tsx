@@ -44,7 +44,7 @@ export function PatientIdentity({
     >
       <div
         className={cn(
-          "medical-avatar relative shrink-0 transition-all duration-200 hover:scale-[1.03]",
+          "medical-avatar relative shrink-0 transition duration-200 hover:scale-[1.03]",
           speciesTheme.avatarBg,
           speciesTheme.avatarBorder,
           speciesTheme.avatarGlow

@@ -80,7 +80,7 @@ export function PatientRecordHealth({
         aria-valuenow={completed}
       >
         <span
-          className="h-full block rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.4)] transition-all duration-500 ease-out"
+          className="h-full block rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.4)] transition-[width] duration-500 ease-out"
           style={{ width: `${(completed / checks.length) * 100}%` }}
         />
       </div>
@@ -97,10 +97,10 @@ export function PatientRecordHealth({
               key={item.label}
               type="button"
               onClick={() => onCompleteCheck(item.label)}
-              className="medical-health-action flex items-center justify-between p-2.5 px-3 rounded-xl border border-border/70 bg-muted/30 hover:bg-muted/80 hover:border-border text-xs text-foreground font-medium transition-all duration-160 cursor-pointer group"
+              className="medical-health-action flex items-center justify-between p-2.5 px-3 rounded-xl border border-border/70 bg-muted/30 hover:bg-muted/80 hover:border-border text-xs text-foreground font-medium transition duration-160 cursor-pointer group"
             >
               <span>{item.action}</span>
-              <ArrowRight size={14} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" aria-hidden="true" />
+              <ArrowRight size={14} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition shrink-0" aria-hidden="true" />
             </button>
           ))}
         </div>

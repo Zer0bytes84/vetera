@@ -926,7 +926,7 @@ export function PatientDetailPage({
                     aria-selected={isSelected}
                     aria-controls="record-tab-content"
                     className={cn(
-                      "group cursor-pointer transition-all",
+                      "group cursor-pointer transition",
                       isSelected && ACTIVE_RECORD_TAB_CLASS
                     )}
                     onClick={() => handleTabChange(section.value)}

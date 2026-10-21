@@ -262,7 +262,7 @@ export function PatientsView(props: PatientsViewProps) {
                                   return (
                                     <div
                                       className={cn(
-                                        "flex size-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 group-hover:scale-105 shadow-2xs",
+                                        "flex size-10 shrink-0 items-center justify-center rounded-xl border transition duration-200 group-hover:scale-105 shadow-2xs",
                                         spTheme.avatarBg,
                                         spTheme.avatarBorder,
                                         spTheme.avatarIconColor

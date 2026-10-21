@@ -80,7 +80,12 @@
   cursor: pointer;
   transition: background-color 160ms ease, border-color 160ms ease, transform 120ms cubic-bezier(.22, 1, .36, 1);
 }
-.mascot-choice:hover { border-color: color-mix(in srgb, var(--foreground) 32%, var(--border)); background: var(--sidebar); }
+@media (hover: hover) and (pointer: fine) {
+  .mascot-choice:hover {
+    border-color: color-mix(in srgb, var(--foreground) 32%, var(--border));
+    background: var(--sidebar);
+  }
+}
 .mascot-choice:active { transform: scale(.98); }
 .mascot-choice:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 .mascot-choice[data-selected="true"] { border-color: color-mix(in srgb, var(--foreground) 44%, var(--border)); background: var(--sidebar); }
@@ -128,8 +133,10 @@
   box-shadow: none;
   transition: transform 160ms ease;
 }
-.sidebar-mascot-circle:hover {
-  transform: scale(1.03);
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-mascot-circle:hover {
+    transform: scale(1.03);
+  }
 }
 .sidebar-mascot-circle:focus-visible,
 .sidebar-brand-home:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
@@ -146,10 +153,15 @@
   place-items: center;
   transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
 }
-.sidebar-mascot-circle[data-sidebar-brand="logo"]:hover,
 .sidebar-mascot-circle[data-sidebar-brand="logo"][data-popup-open] {
   border-color: color-mix(in srgb, var(--sidebar-foreground) 24%, var(--sidebar-border));
   background: var(--sidebar);
+}
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-mascot-circle[data-sidebar-brand="logo"]:hover {
+    border-color: color-mix(in srgb, var(--sidebar-foreground) 24%, var(--sidebar-border));
+    background: var(--sidebar);
+  }
 }
 .sidebar-brand[data-collapsed="true"] .sidebar-mascot-circle[data-sidebar-brand="logo"] {
   width: 44px;
@@ -165,15 +177,23 @@
   box-shadow: none;
   padding: 0;
 }
-.sidebar-mascot-circle[data-sidebar-brand="mascot"]:hover,
 .sidebar-mascot-circle[data-sidebar-brand="mascot"][data-popup-open] {
   border: none;
   background: transparent;
   box-shadow: none;
 }
-.sidebar-mascot-circle[data-sidebar-brand="mascot"]:hover .mascot-3d-wrapper {
-  border-color: color-mix(in srgb, var(--sidebar-foreground) 28%, var(--sidebar-border));
-  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-mascot-circle[data-sidebar-brand="mascot"]:hover {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-mascot-circle[data-sidebar-brand="mascot"]:hover .mascot-3d-wrapper {
+    border-color: color-mix(in srgb, var(--sidebar-foreground) 28%, var(--sidebar-border));
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  }
 }
 .sidebar-brand-home { padding: 6px 0; border-radius: 6px; cursor: pointer; }
 .mascot-picker {
@@ -345,7 +365,9 @@
   color: var(--muted-foreground);
   background: transparent;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
 }
 
 .mascot-tab-button[data-active="true"] {

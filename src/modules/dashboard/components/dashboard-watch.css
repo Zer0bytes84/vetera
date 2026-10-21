@@ -61,8 +61,10 @@
   transition: background-color 180ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow:hover {
-  background: var(--lift, var(--muted));
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow:hover {
+    background: var(--lift, var(--muted));
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .watchRow:focus-visible,
@@ -131,8 +133,10 @@
   cursor: pointer;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMore button:hover {
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .watchMore button:hover {
+    color: var(--ink);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .watchEmpty {

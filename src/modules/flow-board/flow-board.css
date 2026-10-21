@@ -424,9 +424,11 @@
   margin-left: 0;
 }
 
-.flow-record-button:hover {
-  background: var(--frame);
-  border-color: color-mix(in oklch, var(--hairline) 60%, var(--ink) 25%);
+@media (hover: hover) and (pointer: fine) {
+  .flow-record-button:hover {
+    background: var(--frame);
+    border-color: color-mix(in oklch, var(--hairline) 60%, var(--ink) 25%);
+  }
 }
 
 .flow-record-button:focus-visible {
@@ -483,8 +485,10 @@
   color: var(--ink-muted);
 }
 
-.flow-elsewhere:hover {
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  .flow-elsewhere:hover {
+    color: var(--ink);
+  }
 }
 
 .flow-error {

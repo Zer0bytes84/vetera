@@ -182,8 +182,10 @@
   cursor: pointer;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .nextWhoLink:hover {
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .nextWhoLink:hover {
+    color: var(--ink);
+  }
 }
 
 /* ------------------------------------------------------------ .heroBand with cross-hatch pattern */
@@ -228,9 +230,11 @@
   transition: background-color 160ms var(--ease-out-quint), border-color 160ms var(--ease-out-quint), transform 160ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .btn:hover {
-  background: var(--surface-hover);
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .btn:hover {
+    background: var(--surface-hover);
+    color: var(--ink);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .btn:active {
@@ -244,9 +248,11 @@
   box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 12%, transparent) !important;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .btnPrimary:hover {
-  background: var(--btn-primary-hover) !important;
-  border-color: var(--btn-primary-hover) !important;
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .btnPrimary:hover {
+    background: var(--btn-primary-hover) !important;
+    border-color: var(--btn-primary-hover) !important;
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .host {
@@ -263,10 +269,12 @@
   cursor: pointer;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .host:hover {
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .host:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .liveDot {
@@ -304,9 +312,11 @@
   transition: background-color 160ms var(--ease-out-quint), color 160ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .filter:hover {
-  background: var(--lift);
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .filter:hover {
+    background: var(--lift);
+    color: var(--ink);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .filter[data-active="true"] {
@@ -379,8 +389,10 @@
   box-shadow: none;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpi:hover {
-  background: var(--lift);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .kpi:hover {
+    background: var(--lift);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiHead {
@@ -411,10 +423,12 @@
   transition: opacity 180ms var(--ease-out-quint), transform 180ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpi:hover .kpiGo {
-  opacity: 1;
-  transform: none;
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .kpi:hover .kpiGo {
+    opacity: 1;
+    transform: none;
+    color: var(--ink);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiValue {
@@ -513,8 +527,10 @@
   box-shadow: none !important;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr:hover td {
-  background: var(--lift) !important;
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr:hover td {
+    background: var(--lift) !important;
+  }
 }
 
 /* ------------------------------------------------------------ Split Layout (.split) */
@@ -585,8 +601,10 @@
   transition: color 160ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .moreLink:hover {
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .moreLink:hover {
+    color: var(--ink);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .cardBody {
@@ -633,8 +651,10 @@
   box-shadow: none;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .facts > div:hover {
-  background: var(--lift);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .facts > div:hover {
+    background: var(--lift);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .facts dt {
@@ -687,8 +707,10 @@
   cursor: pointer;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .tile:hover {
-  background: var(--lift);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .tile:hover {
+    background: var(--lift);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .tileTop {
@@ -698,8 +720,10 @@
   color: var(--soft);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .tile:hover .tileTop {
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .tile:hover .tileTop {
+    color: var(--ink);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .tileText {
@@ -904,9 +928,11 @@
   transition: background-color 160ms var(--ease-out-quint), border-color 160ms var(--ease-out-quint);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .iconBtn:hover {
-  background: var(--surface-hover);
-  color: var(--ink);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .iconBtn:hover {
+    background: var(--surface-hover);
+    color: var(--ink);
+  }
 }
 
 /* ------------------------------------------------------------ PageHead on other pages (reference PageHead) */
@@ -1044,11 +1070,11 @@
   box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 5%, transparent) !important;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] > button[class*="outline"]:hover,
-:is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] > button:not([class*="primary"]):not(:last-child):not(.dashboard-mode-toggle *):hover,
-:is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] .btnSecondary:hover {
-  background: var(--surface-hover) !important;
-  border-color: var(--border-hover) !important;
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] > button[class*="outline"]:hover, :is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] > button:not([class*="primary"]):not(:last-child):not(.dashboard-mode-toggle *):hover, :is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] .btnSecondary:hover {
+    background: var(--surface-hover) !important;
+    border-color: var(--border-hover) !important;
+  }
 }
 
 /* Primary button: the charter primary token (deep ink in light, accent in dark) */
@@ -1061,11 +1087,11 @@
   box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent) !important;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] > button:last-child:not([class*="outline"]):not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]):hover,
-:is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] button[class*="bg-primary"]:not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]):hover,
-:is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] .btnPrimary:hover {
-  background: var(--primary-hover) !important;
-  border-color: var(--primary-hover) !important;
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] > button:last-child:not([class*="outline"]):not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]):hover, :is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] button[class*="bg-primary"]:not(.dashboard-mode-toggle *):not([data-slot="toggle-group-item"]):hover, :is([data-visual-style="premium"], .premium-analytics-dashboard) [data-slot="page-header-actions"] .btnPrimary:hover {
+    background: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+  }
 }
 
 /* Dashboard mode toggle resilient styles */
@@ -1162,8 +1188,10 @@
   box-shadow: none !important;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .section-atlas-card:hover {
-  background: var(--lift) !important;
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .section-atlas-card:hover {
+    background: var(--lift) !important;
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .section-atlas-content {
@@ -1373,9 +1401,10 @@
   transition: background-color 140ms var(--ease-out-quint) !important;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr:hover td,
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .medical-data-table tbody tr:hover td {
-  background: var(--lift) !important;
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr:hover td, :is([data-visual-style="premium"], .premium-analytics-dashboard) .medical-data-table tbody tr:hover td {
+    background: var(--lift) !important;
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr[data-selected] td,
@@ -1412,12 +1441,16 @@
   transform-origin: center;
 }
 
-button:hover .toggleLine {
-  transform: translateX(-1.5px);
+@media (hover: hover) and (pointer: fine) {
+  button:hover .toggleLine {
+    transform: translateX(-1.5px);
+  }
 }
 
-button:hover .toggleChevron {
-  transform: translateX(-1.5px);
+@media (hover: hover) and (pointer: fine) {
+  button:hover .toggleChevron {
+    transform: translateX(-1.5px);
+  }
 }
 
 [data-collapsed="true"] .togglePanel,
@@ -1472,16 +1505,20 @@ button:hover .toggleChevron {
   transform: translateX(-2px) rotate(180deg);
 }
 
-button:hover [data-collapsed="true"] .toggleLine,
+@media (hover: hover) and (pointer: fine) {
+  button:hover [data-collapsed="true"] .toggleLine,
 button:hover [data-state="collapsed"] .toggleLine,
 button:hover .toggleIcon[data-collapsed="true"] .toggleLine {
-  transform: translateX(-2px);
+    transform: translateX(-2px);
+  }
 }
 
-button:hover [data-collapsed="true"] .toggleChevron,
+@media (hover: hover) and (pointer: fine) {
+  button:hover [data-collapsed="true"] .toggleChevron,
 button:hover [data-state="collapsed"] .toggleChevron,
 button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
-  transform: translateX(0.5px) rotate(180deg);
+    transform: translateX(0.5px) rotate(180deg);
+  }
 }
 
 
@@ -1517,8 +1554,10 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   opacity: 0.85;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPlot:hover .chartArea:not(.chartAreaVisits) {
-  filter: saturate(1.25);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPlot:hover .chartArea:not(.chartAreaVisits) {
+    filter: saturate(1.25);
+  }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartColumn {
@@ -1720,10 +1759,12 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   background: color-mix(in srgb, var(--series-1) 4%, transparent);
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr:hover .iconBtn {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--surface);
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) table tbody tr:hover .iconBtn {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--surface);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

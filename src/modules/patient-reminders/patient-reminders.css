@@ -65,8 +65,10 @@
   box-shadow: none !important;
 }
 
-:root .medical-reminder-dialog [data-slot="input-group"] button:hover {
-  background: var(--muted) !important;
+@media (hover: hover) and (pointer: fine) {
+  :root .medical-reminder-dialog [data-slot="input-group"] button:hover {
+    background: var(--muted) !important;
+  }
 }
 
 :root .medical-reminder-dialog [data-slot="input-group"] button:focus-visible {
@@ -103,8 +105,10 @@
   box-shadow: none !important;
 }
 
-:root .medical-reminder-calendar :is([data-day], .rdp-nav button):hover {
-  background: var(--muted) !important;
+@media (hover: hover) and (pointer: fine) {
+  :root .medical-reminder-calendar :is([data-day], .rdp-nav button):hover {
+    background: var(--muted) !important;
+  }
 }
 
 :root .medical-reminder-calendar [data-day][data-selected-single="true"] {
@@ -193,7 +197,11 @@
   font-weight: 500;
 }
 
-.medical-phone-link:hover { background: color-mix(in srgb, var(--primary) 8%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .medical-phone-link:hover {
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+  }
+}
 
 .medical-reminder-action {
   display: grid;

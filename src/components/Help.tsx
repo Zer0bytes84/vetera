@@ -50,7 +50,7 @@ const sections: Section[] = [
             Guides de démarrage rapide
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition-all duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
+            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
               <h4 className="mb-2 font-semibold text-sm text-zinc-900 dark:text-white">
                 🐾 1. Fiches Patients
               </h4>
@@ -61,7 +61,7 @@ const sections: Section[] = [
               </p>
             </div>
 
-            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition-all duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
+            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
               <h4 className="mb-2 font-semibold text-sm text-zinc-900 dark:text-white">
                 📅 2. Agenda Clinique
               </h4>
@@ -72,7 +72,7 @@ const sections: Section[] = [
               </p>
             </div>
 
-            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition-all duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
+            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
               <h4 className="mb-2 font-semibold text-sm text-zinc-900 dark:text-white">
                 🩺 3. Consultation active
               </h4>
@@ -82,7 +82,7 @@ const sections: Section[] = [
               </p>
             </div>
 
-            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition-all duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
+            <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-5 transition duration-200 hover:border-zinc-200 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10">
               <h4 className="mb-2 font-semibold text-sm text-zinc-900 dark:text-white">
                 📦 4. Gestion de Stock
               </h4>
@@ -449,7 +449,7 @@ export function Help() {
               icon={HelpCircleIcon} strokeWidth={1.5}
             />
             <input
-              className="w-full rounded-lg border border-zinc-200 bg-white py-1.5 pr-3 pl-9 text-sm outline-none transition-all placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-zinc-900"
+              className="w-full rounded-lg border border-zinc-200 bg-white py-1.5 pr-3 pl-9 text-sm outline-none transition placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-zinc-900"
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Rechercher une rubrique…"
               type="text"
@@ -483,7 +483,7 @@ export function Help() {
                         <li key={itemId}>
                           <button
                             className={cn(
-                              "group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-medium text-sm transition-all duration-200",
+                              "group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-medium text-sm transition duration-200",
                               isActive
                                 ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-200/50 dark:bg-zinc-800 dark:text-white dark:ring-white/5"
                                 : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white"

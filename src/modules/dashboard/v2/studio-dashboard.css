@@ -75,9 +75,11 @@
     box-shadow 0.2s,
     border-color 0.2s;
 }
-.studio-stat:hover {
-  border-color: var(--signal);
-  box-shadow: 0 5px 16px -10px var(--signal);
+@media (hover: hover) and (pointer: fine) {
+  .studio-stat:hover {
+    border-color: var(--signal);
+    box-shadow: 0 5px 16px -10px var(--signal);
+  }
 }
 .studio-stat-label {
   display: flex;
@@ -165,8 +167,10 @@
   font-weight: 500;
   white-space: nowrap;
 }
-.studio-link:hover {
-  color: var(--studio-accent);
+@media (hover: hover) and (pointer: fine) {
+  .studio-link:hover {
+    color: var(--studio-accent);
+  }
 }
 .studio-segment {
   display: flex;
@@ -261,8 +265,10 @@
   text-align: start;
   border-bottom: 1px solid var(--studio-line);
 }
-.studio-appointment:hover {
-  background: var(--muted);
+@media (hover: hover) and (pointer: fine) {
+  .studio-appointment:hover {
+    background: var(--muted);
+  }
 }
 .studio-appointment time {
   font-size: 12px;
@@ -341,8 +347,10 @@
 .studio-alert > span:nth-child(2) {
   flex: 1;
 }
-.studio-alert:hover strong {
-  color: var(--studio-accent);
+@media (hover: hover) and (pointer: fine) {
+  .studio-alert:hover strong {
+    color: var(--studio-accent);
+  }
 }
 .studio-alert-dot {
   width: 8px;
@@ -592,14 +600,18 @@
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.9);
   color: #4a453e;
-  transition: all 0.2s ease;
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
-.studio-theme-nav:hover {
-  background: #ffffff;
-  color: #1a1917;
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .studio-theme-nav:hover {
+    background: #ffffff;
+    color: #1a1917;
+    transform: scale(1.05);
+  }
 }
 .studio-theme-trigger {
   display: inline-flex;
@@ -613,13 +625,17 @@
   background: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-.studio-theme-trigger:hover {
-  background: #ffffff;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .studio-theme-trigger:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+  }
 }
 .studio-theme-emoji {
   font-size: 14px;
@@ -655,7 +671,6 @@
     box-shadow 0.25s,
     transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.studio-glass-widget:hover,
 .studio-glass-widget:focus-visible {
   background: rgba(255, 255, 255, 0.52);
   border-color: rgba(255, 255, 255, 0.95);
@@ -664,6 +679,17 @@
     inset 0 -1px 1px 0 rgba(255, 255, 255, 0.55),
     0 18px 42px -12px rgba(45, 35, 60, 0.16);
   transform: translateY(-2px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .studio-glass-widget:hover {
+    background: rgba(255, 255, 255, 0.52);
+    border-color: rgba(255, 255, 255, 0.95);
+    box-shadow:
+    inset 0 1.5px 2px 0 #fff,
+    inset 0 -1px 1px 0 rgba(255, 255, 255, 0.55),
+    0 18px 42px -12px rgba(45, 35, 60, 0.16);
+    transform: translateY(-2px);
+  }
 }
 .studio-glass-widget:active {
   transform: translateY(0) scale(0.99);
@@ -685,12 +711,16 @@
   background: rgba(0, 0, 0, 0.04);
   color: #6b6375;
   margin-inline-start: auto;
-  transition: all 0.2s ease;
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
 }
-.studio-glass-widget:hover .studio-arrow-icon {
-  transform: translate(2px, -2px);
-  background: rgba(0, 0, 0, 0.08);
-  color: #1a191d;
+@media (hover: hover) and (pointer: fine) {
+  .studio-glass-widget:hover .studio-arrow-icon {
+    transform: translate(2px, -2px);
+    background: rgba(0, 0, 0, 0.08);
+    color: #1a191d;
+  }
 }
 .studio-glass-heading small {
   display: block;
@@ -842,11 +872,15 @@
   color: #302f35;
   transition: color 0.15s ease;
 }
-.studio-glass-widget:hover .studio-link-action {
-  color: #8271d6;
+@media (hover: hover) and (pointer: fine) {
+  .studio-glass-widget:hover .studio-link-action {
+    color: #8271d6;
+  }
 }
-.studio-glass-finance:hover .studio-link-action {
-  color: #10b981;
+@media (hover: hover) and (pointer: fine) {
+  .studio-glass-finance:hover .studio-link-action {
+    color: #10b981;
+  }
 }
 .dark .studio-garden {
   background: #252d29;
@@ -867,9 +901,11 @@
   border-color: rgba(255, 255, 255, 0.12);
   color: #d6cee0;
 }
-.dark .studio-theme-nav:hover {
-  background: rgba(60, 58, 68, 0.95);
-  color: #ffffff;
+@media (hover: hover) and (pointer: fine) {
+  .dark .studio-theme-nav:hover {
+    background: rgba(60, 58, 68, 0.95);
+    color: #ffffff;
+  }
 }
 .dark .studio-theme-trigger {
   background: rgba(40, 38, 46, 0.85);
@@ -887,20 +923,24 @@
     inset 0 -1px 1px 0 rgba(255, 255, 255, 0.05),
     0 12px 34px -12px rgba(0, 0, 0, 0.7);
 }
-.dark .studio-glass-widget:hover {
-  background: rgba(32, 42, 38, 0.88);
-  border-color: rgba(255, 255, 255, 0.24);
-  box-shadow:
+@media (hover: hover) and (pointer: fine) {
+  .dark .studio-glass-widget:hover {
+    background: rgba(32, 42, 38, 0.88);
+    border-color: rgba(255, 255, 255, 0.24);
+    box-shadow:
     inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.3),
     0 18px 42px -12px rgba(0, 0, 0, 0.85);
+  }
 }
 .dark .studio-arrow-icon {
   background: rgba(255, 255, 255, 0.06);
   color: #d6cee0;
 }
-.dark .studio-glass-widget:hover .studio-arrow-icon {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+@media (hover: hover) and (pointer: fine) {
+  .dark .studio-glass-widget:hover .studio-arrow-icon {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
 }
 .dark .studio-glass-icon {
   background: rgba(130, 113, 214, 0.18);
@@ -1007,10 +1047,14 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .studio-glass-widget:hover,
   .studio-glass-widget:active {
     transform: none;
   }
+  @media (hover: hover) and (pointer: fine) {
+  .studio-glass-widget:hover {
+    transform: none;
+  }
+}
 }
 
 /* Compact operational overview, with the illustration beside the data. */
@@ -1062,12 +1106,19 @@
   box-shadow: none;
   transition: border-color 160ms;
 }
-.studio-glass-widget:hover, .dark .studio-glass-widget:hover,
 .studio-glass-widget:focus-visible, .studio-glass-widget:active {
   background: var(--muted);
   border-color: var(--muted-foreground);
   box-shadow: none;
   transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .studio-glass-widget:hover, .dark .studio-glass-widget:hover {
+    background: var(--muted);
+    border-color: var(--muted-foreground);
+    box-shadow: none;
+    transform: none;
+  }
 }
 .studio-glass-widget:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 .studio-glass-heading { padding: 8px 10px 12px; }
@@ -1133,7 +1184,11 @@
   color: var(--foreground);
   transition: border-color 160ms;
 }
-.studio-kpi:hover { border-color: var(--muted-foreground); }
+@media (hover: hover) and (pointer: fine) {
+  .studio-kpi:hover {
+    border-color: var(--muted-foreground);
+  }
+}
 .studio-kpi-heading {
   display: flex;
   align-items: center;
@@ -1256,7 +1311,11 @@
 .classic-debt-list strong { font-weight: 500; font-variant-numeric: tabular-nums; }
 .classic-debt-list small { display: block; margin-top: 4px; font-size: 12px; color: var(--muted-foreground); }
 .classic-debt-list button > strong { white-space: nowrap; }
-.classic-debt-list button:hover { color: #2563eb; }
+@media (hover: hover) and (pointer: fine) {
+  .classic-debt-list button:hover {
+    color: #2563eb;
+  }
+}
 .classic-debt-empty { color: var(--muted-foreground); font-size: 12px; line-height: 1.6; padding: 24px 0; max-width: 36ch; }
 .classic-receivables .studio-date-controls { align-items: center; }
 .classic-receipts footer { flex-wrap: wrap; }

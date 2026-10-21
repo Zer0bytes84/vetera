@@ -113,7 +113,7 @@ function NotificationItemRow({
     <li>
       <div
         className={cn(
-          "group/row relative flex items-stretch overflow-hidden rounded-xl border transition-all duration-300",
+          "group/row relative flex items-stretch overflow-hidden rounded-xl border transition duration-150",
           item.isRead
             ? "border-transparent bg-transparent hover:bg-muted/50"
             : "border-primary/10 bg-primary/[0.03] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:border-primary/20 hover:bg-primary/[0.06]"
@@ -174,7 +174,7 @@ function NotificationItemRow({
 
             <div
               className={cn(
-                "mt-2.5 flex items-center gap-1.5 font-semibold t-12 uppercase tracking-wider transition-all duration-300",
+                "mt-2.5 flex items-center gap-1.5 font-semibold t-12 uppercase tracking-wider transition duration-150",
                 item.isRead
                   ? "text-muted-foreground/40"
                   : "text-primary/70 group-hover/row:text-primary"
@@ -199,7 +199,7 @@ function NotificationItemRow({
         </button>
 
         {/* Floating actions container */}
-        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 transition-opacity duration-300 group-hover/row:opacity-100">
+        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 transition-opacity duration-150 group-hover/row:opacity-100">
           <div className="flex items-center gap-0.5 rounded-lg border border-foreground/5 bg-background/80 p-0.5 shadow-sm backdrop-blur-md">
             <button
               aria-label={item.isRead ? "Marquer non lu" : "Marquer lu"}
@@ -397,7 +397,7 @@ export function NotificationCenter({
                 return (
                   <li key={item.id}>
                     <button
-                      className="group/quick relative flex w-full cursor-pointer items-start gap-3 rounded-xl bg-background px-3 py-2.5 text-left shadow-sm ring-1 ring-foreground/5 transition-all duration-200 hover:bg-muted/30 hover:ring-foreground/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98]"
+                      className="group/quick relative flex w-full cursor-pointer items-start gap-3 rounded-xl bg-background px-3 py-2.5 text-left shadow-sm ring-1 ring-foreground/5 transition duration-200 hover:bg-muted/30 hover:ring-foreground/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98]"
                       onClick={() => handleActivate(item)}
                       type="button"
                     >

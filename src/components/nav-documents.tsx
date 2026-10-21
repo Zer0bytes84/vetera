@@ -67,13 +67,13 @@ export function NavDocuments({
               <DropdownMenuTrigger
                 render={
                   <SidebarMenuAction
-                    className="transition-all duration-200 ease-out hover:bg-muted/60 aria-expanded:bg-muted"
+                    className="transition duration-200 ease-out hover:bg-muted/60 aria-expanded:bg-muted"
                     showOnHover
                   />
                 }
               >
                 <HugeiconsIcon
-                  className="text-muted-foreground transition-all duration-200 group-hover:text-foreground"
+                  className="text-muted-foreground transition duration-200 group-hover:text-foreground"
                   icon={MoreHorizontalCircle01Icon}
                   strokeWidth={1.5}
                 />

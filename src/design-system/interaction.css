@@ -1,0 +1,22 @@
+/* Interaction mechanics shared by every theme.
+   What is opened tens of times a day, or from the keyboard, appears at once:
+   menus, popovers, selects and the command palette carry no entrance. */
+:is(
+    [data-slot="dropdown-menu-content"],
+    [data-slot="dropdown-menu-sub-content"],
+    [data-slot="popover-content"],
+    [data-slot="select-content"],
+    [data-slot="context-menu-content"],
+    [data-slot="context-menu-sub-content"],
+    [data-slot="combobox-content"],
+    [data-slot="menubar-content"],
+    [data-slot="menubar-sub-content"],
+    [data-slot="dialog-content"]:has([data-slot="command"])
+  ) {
+  animation: none !important;
+}
+
+/* The palette's current item follows the keyboard without lag. */
+[data-slot="command"] [cmdk-item] {
+  transition-duration: 0ms !important;
+}

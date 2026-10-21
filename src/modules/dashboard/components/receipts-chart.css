@@ -346,10 +346,12 @@
   cursor: default;
 }
 
-.debt-status-grid > div:hover {
-  background: color-mix(in srgb, var(--foreground) 5%, var(--card));
-  border-color: color-mix(in srgb, var(--border) 90%, transparent);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .debt-status-grid > div:hover {
+    background: color-mix(in srgb, var(--foreground) 5%, var(--card));
+    border-color: color-mix(in srgb, var(--border) 90%, transparent);
+    transform: translateY(-1px);
+  }
 }
 
 .debt-status-grid > div:focus-visible {
@@ -398,9 +400,11 @@
   color: var(--debt-overdue, #b85430);
 }
 
-.studio-dashboard .classic-receivables .classic-debt-list button:hover {
-  color: var(--foreground);
-  background: var(--muted);
+@media (hover: hover) and (pointer: fine) {
+  .studio-dashboard .classic-receivables .classic-debt-list button:hover {
+    color: var(--foreground);
+    background: var(--muted);
+  }
 }
 
 .debt-circular-summary { display: flex; align-items: center; justify-content: center; gap: 24px; padding-bottom: 12px; }

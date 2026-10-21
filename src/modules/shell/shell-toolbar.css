@@ -11,7 +11,7 @@
   background: transparent;
   color: rgb(24 24 27 / 0.75);
   box-shadow: none;
-  transition: background-color 150ms ease, color 300ms ease;
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
 
 .shell-toolbar .shell-toolbar-search {

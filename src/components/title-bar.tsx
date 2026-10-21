@@ -19,7 +19,7 @@ export function TitleBar() {
     >
       <div className="flex items-center gap-2">
         <button
-          className="group flex size-3 items-center justify-center rounded-full bg-[#ea580c] transition-all hover:bg-[#dc2626]"
+          className="group flex size-3 items-center justify-center rounded-full bg-[#ea580c] transition hover:bg-[#dc2626]"
           onClick={() => appWindow?.close()}
           type="button"
         >
@@ -38,7 +38,7 @@ export function TitleBar() {
           </svg>
         </button>
         <button
-          className="group flex size-3 items-center justify-center rounded-full bg-[#febc2e] transition-all hover:bg-[#f5a623]"
+          className="group flex size-3 items-center justify-center rounded-full bg-[#febc2e] transition hover:bg-[#f5a623]"
           onClick={() => appWindow?.minimize()}
           type="button"
         >
@@ -57,7 +57,7 @@ export function TitleBar() {
           </svg>
         </button>
         <button
-          className="group flex size-3 items-center justify-center rounded-full bg-[#28c840] transition-all hover:bg-[#1db954]"
+          className="group flex size-3 items-center justify-center rounded-full bg-[#28c840] transition hover:bg-[#1db954]"
           onClick={() => appWindow?.toggleMaximize()}
           type="button"
         >

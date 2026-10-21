@@ -455,7 +455,7 @@ const Team: React.FC = () => {
 
                 return (
                   <div
-                    className="group relative flex flex-col gap-4 rounded-xl border border-border bg-muted/30 p-5 transition-all hover:bg-muted/50 hover:shadow-md"
+                    className="group relative flex flex-col gap-4 rounded-xl border border-border bg-muted/30 p-5 transition hover:bg-muted/50 hover:shadow-md"
                     key={user.id}
                   >
                     {/* Top Row: Info */}

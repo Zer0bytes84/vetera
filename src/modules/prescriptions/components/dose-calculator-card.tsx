@@ -50,11 +50,11 @@ export function DoseCalculatorCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border-transparent bg-white/60 shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:bg-zinc-900/60",
+        "relative overflow-hidden border-transparent bg-white/60 shadow-sm backdrop-blur-xl transition duration-150 hover:shadow-md dark:bg-zinc-900/60",
         className
       )}
     >
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-0 mix-blend-overlay transition-opacity duration-500 group-hover:opacity-100">
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-0 mix-blend-overlay transition-opacity duration-150 group-hover:opacity-100">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent" />
       </div>
       <CardHeader className="relative z-10 flex flex-row items-center justify-between gap-2 space-y-0 px-4 pt-3 pb-2">

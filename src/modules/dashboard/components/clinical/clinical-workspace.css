@@ -38,8 +38,16 @@
 .visit-flow-caption { font-size: 12px; line-height:1.5; color:var(--muted-foreground); }
 .visit-flow-agenda { display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--border); font-size:12px; text-align:left; }
 .visit-flow-board button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; border-radius:5px; }
-.visit-flow-board button:not(:disabled):hover .visit-flow-queue-number { color:var(--primary); }
-.visit-flow-agenda:hover { color:var(--primary); }
+@media (hover: hover) and (pointer: fine) {
+  .visit-flow-board button:not(:disabled):hover .visit-flow-queue-number {
+    color:var(--primary);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .visit-flow-agenda:hover {
+    color:var(--primary);
+  }
+}
 @media(max-width:1000px) { .visit-flow-board { grid-template-columns:minmax(0,1.35fr) minmax(240px,1fr); } .visit-flow-main { padding:20px; } }
 @media(max-width:760px) { .visit-flow-board { grid-template-columns:1fr; } .visit-flow-queue { padding:16px 20px; } .visit-flow-symbol { width:42px; height:42px; } .visit-flow-steps { gap:10px; } }
 @media(prefers-reduced-motion:reduce) { .visit-flow-track>span { transition:none; } }
@@ -49,12 +57,21 @@
 .clinical-filter-tabs { display:flex; flex-wrap:wrap; gap:4px; margin:14px 0 8px; }
 .clinical-filter-tabs button { border-radius:7px; padding:7px 9px; font-size: 12px; color:var(--muted-foreground); transition:background-color 150ms ease-out,color 150ms ease-out; }
 .clinical-filter-tabs button[aria-pressed=true] { background:var(--primary); color:var(--primary-foreground); }
-.clinical-filter-tabs button:not([aria-pressed=true]):hover { background:var(--muted); color:var(--foreground); }
+@media (hover: hover) and (pointer: fine) {
+  .clinical-filter-tabs button:not([aria-pressed=true]):hover {
+    background:var(--muted);
+    color:var(--foreground);
+  }
+}
 .clinical-filter-tabs button:focus-visible,.clinical-receivable-row:focus-visible { outline:2px solid var(--ring); outline-offset:2px; }
 .clinical-day-module [data-row-id] { padding-inline:6px; border-bottom:1px solid var(--border); border-radius:8px; }
 .clinical-actions-module [data-row-id] button:disabled { opacity:.5; cursor:wait; }
 .clinical-patients-module [data-row-id] { padding-inline:6px; }
-.clinical-receivable-row:hover { color:var(--primary); }
+@media (hover: hover) and (pointer: fine) {
+  .clinical-receivable-row:hover {
+    color:var(--primary);
+  }
+}
 .clinical-trend-chart { margin-top:20px; }
 .clinical-trend-chart .studio-kpi-visual { height:170px; }
 .clinical-trend-chart .studio-kpi-visual svg { height:140px; }

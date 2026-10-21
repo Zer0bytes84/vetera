@@ -110,7 +110,7 @@ function KanbanCardBody({
   return (
     <div
       className={cn(
-        "group rounded-xl border-l-4 bg-card p-4 shadow-sm transition-all",
+        "group rounded-xl border-l-4 bg-card p-4 shadow-sm transition",
         isOverlay ? "shadow-xl" : "hover:shadow-md",
         PRIORITY_META[task.priority].cardClassName
       )}

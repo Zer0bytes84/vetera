@@ -675,7 +675,7 @@ export default function LocalConsultationAssistant({
           type="button"
           onClick={() => setActiveTab("dictation")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition-all",
+            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition",
             activeTab === "dictation"
               ? "bg-background text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
@@ -689,7 +689,7 @@ export default function LocalConsultationAssistant({
           type="button"
           onClick={() => setActiveTab("soap")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition-all",
+            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition",
             activeTab === "soap"
               ? "bg-background text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
@@ -706,7 +706,7 @@ export default function LocalConsultationAssistant({
           type="button"
           onClick={() => setActiveTab("search")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition-all",
+            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition",
             activeTab === "search"
               ? "bg-background text-foreground shadow-xs"
               : "text-muted-foreground hover:text-foreground"
@@ -1088,7 +1088,7 @@ export default function LocalConsultationAssistant({
                 }
                 onClick={() => void generate()}
                 title="Structurer la consultation en note SOAP (⌘+Entrée)"
-                className="h-9 gap-1.5 px-4 t-13 font-semibold tracking-[-0.01em] shadow-sm hover:shadow active:scale-[0.98] transition-all"
+                className="h-9 gap-1.5 px-4 t-13 font-semibold tracking-[-0.01em] shadow-sm hover:shadow active:scale-[0.98] transition"
               >
                 <Sparkle className="size-3.5 stroke-[2.2]" />
                 <span>{sectionIndex < 3 ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}` : "Relire la note SOAP"}</span>

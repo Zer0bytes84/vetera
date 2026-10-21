@@ -158,7 +158,7 @@ export function MetricOverviewStrip({
             className={cn(
               "group relative flex flex-col overflow-hidden rounded-2xl border-border/70 bg-card pb-0",
               "shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
-              "transition-all duration-200 hover:border-border hover:shadow-[0_1px_2px_rgba(15,23,42,0.05),0_12px_28px_-16px_rgba(15,23,42,0.18)]"
+              "transition duration-200 hover:border-border hover:shadow-[0_1px_2px_rgba(15,23,42,0.05),0_12px_28px_-16px_rgba(15,23,42,0.18)]"
             )}
             key={item.label}
           >

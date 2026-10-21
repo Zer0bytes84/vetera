@@ -584,7 +584,7 @@ export function KpiReceivablesGauge({
               strokeDasharray={circumference}
               strokeDashoffset={strokeOffset}
               strokeLinecap="round"
-              className="transition-all duration-300 ease-out"
+              className="transition-[stroke-dashoffset] duration-300 ease-out"
             />
           </svg>
 

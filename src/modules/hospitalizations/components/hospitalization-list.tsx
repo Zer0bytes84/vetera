@@ -121,7 +121,7 @@ export function HospitalizationList({
           {filters.map((f) => (
             <button
               className={cn(
-                "rounded-full border px-3 py-1 font-medium t-12 transition-all",
+                "rounded-full border px-3 py-1 font-medium t-12 transition",
                 filter === f.value
                   ? "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-200"
                   : "border-border/50 bg-background text-muted-foreground hover:border-border hover:text-foreground"

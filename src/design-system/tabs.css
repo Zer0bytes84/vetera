@@ -64,9 +64,11 @@
   color: var(--tabs-text) !important;
   cursor: pointer;
 }
-:root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button):hover {
-  background: transparent !important;
-  color: var(--tabs-ink) !important;
+@media (hover: hover) and (pointer: fine) {
+  :root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button):hover {
+    background: transparent !important;
+    color: var(--tabs-ink) !important;
+  }
 }
 :root:root:root [data-tabs-style="nav"] > :is([data-slot="tabs-trigger"], [role="tab"], button):is([data-active=""], [data-active="true"], [data-state="active"], [aria-selected="true"], [aria-pressed="true"], [aria-current="page"]) {
   background: transparent !important;
@@ -128,9 +130,11 @@
   color: var(--tabs-text) !important;
   cursor: pointer;
 }
-:root:root:root [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button):hover {
-  background: transparent !important;
-  color: var(--tabs-ink) !important;
+@media (hover: hover) and (pointer: fine) {
+  :root:root:root [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button):hover {
+    background: transparent !important;
+    color: var(--tabs-ink) !important;
+  }
 }
 :root:root:root [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button):is([data-active=""], [data-active="true"], [data-state="active"], [data-state="on"], [data-pressed=""], [data-pressed="true"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"], [aria-current="page"]) {
   background: var(--tabs-active-bg) !important;

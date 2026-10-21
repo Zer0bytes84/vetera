@@ -27,9 +27,11 @@
     background-color 160ms var(--ease-out, ease-out);
 }
 
-.rx-template-chip:hover {
-  border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
-  background: color-mix(in oklab, var(--primary) 4%, var(--background));
+@media (hover: hover) and (pointer: fine) {
+  .rx-template-chip:hover {
+    border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+    background: color-mix(in oklab, var(--primary) 4%, var(--background));
+  }
 }
 
 .rx-template-chip:focus-visible {

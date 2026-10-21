@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { showInFlux } from "@/modules/flow-board/open-in-flux";
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import {
   useAppointmentsRepository,
@@ -15,7 +15,6 @@ import {
 import { useNowTick } from "@/hooks/useNowTick";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { usePatientIntentPrefetch } from "@/hooks/usePatientIntentPrefetch";
-import { rowMotion, reducedRowMotion } from "@/design-system/motion";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import type { View } from "@/types";
 import {
@@ -50,7 +49,6 @@ import {
 } from "../model/dashboard-watch";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 
-const ENTRY_KEY = "baitari:clinical-dashboard-entered";
 export interface DashboardPageProps {
   onNavigate?: (view: View) => void;
   onNavigateToPatient?: (patientId: string) => void;
@@ -101,14 +99,7 @@ export function DashboardPage({
   const pending = useRef(new Set<string>());
   const now = useNowTick(30_000);
   const reduced = useReducedMotion();
-  const hasEntered = useRef(Boolean(sessionStorage.getItem(ENTRY_KEY)));
-  const entrance = version === "clinical" && !hasEntered.current;
   const intent = usePatientIntentPrefetch();
-  useEffect(() => {
-    if (version !== "clinical") return;
-    hasEntered.current = true;
-    sessionStorage.setItem(ENTRY_KEY, "true");
-  }, [version]);
   const today = useMemo(
     () =>
       buildTodaySchedule({
@@ -311,31 +302,8 @@ export function DashboardPage({
       onAgenda={() => navigate("agenda")}
       onPatients={() => navigate("patients")}
       onFinances={() => navigate("finances")}
-      renderRow={(id, index, content) => (
-        <motion.div
-          key={id}
-          variants={
-            reduced
-              ? reducedRowMotion
-              : {
-                  ...rowMotion,
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 0.22,
-                      ease: [0.2, 0, 0, 1],
-                      delay: entrance ? index * 0.1 : 0,
-                    },
-                  },
-                }
-          }
-          initial={entrance ? "hidden" : false}
-          animate="visible"
-        >
-          {content}
-        </motion.div>
-      )}
+      // Rows appear with the data: a dashboard opened every morning does not perform an entrance.
+      renderRow={(id, _index, content) => <div key={id}>{content}</div>}
     />
   );
     return (

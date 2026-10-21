@@ -36,11 +36,13 @@
   }
 }
 
-.agenda-appt-card:hover {
-  border-color: color-mix(in oklab, var(--foreground) 18%, transparent);
-  box-shadow:
+@media (hover: hover) and (pointer: fine) {
+  .agenda-appt-card:hover {
+    border-color: color-mix(in oklab, var(--foreground) 18%, transparent);
+    box-shadow:
     0 1px 2px rgb(0 0 0 / 0.04),
     0 8px 24px -16px rgb(0 0 0 / 0.18);
+  }
 }
 
 .agenda-appt-card:focus-visible {
@@ -133,9 +135,11 @@
   white-space: nowrap;
 }
 
-.agenda-appt-patient:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+@media (hover: hover) and (pointer: fine) {
+  .agenda-appt-patient:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 .agenda-appt-patient:focus-visible {
@@ -391,8 +395,10 @@
   cursor: pointer;
 }
 
-.agenda-week-day:not(:disabled):hover .agenda-week-track {
-  background: color-mix(in oklab, var(--foreground) 9%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .agenda-week-day:not(:disabled):hover .agenda-week-track {
+    background: color-mix(in oklab, var(--foreground) 9%, transparent);
+  }
 }
 
 .agenda-week-day:focus-visible {

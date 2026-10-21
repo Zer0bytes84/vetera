@@ -698,7 +698,7 @@ function AppShellInner() {
                     aria-haspopup="dialog"
                     aria-keyshortcuts="Meta+K Control+K"
                     onClick={() => setPaletteOpen(true)}
-                    className="shell-header-search group flex h-9 w-full max-w-[300px] items-center gap-2.5 rounded-full border border-black/8 bg-black/[0.03] px-3.5 text-left shadow-2xs backdrop-blur-md transition-all duration-150 hover:border-black/15 hover:bg-black/[0.05] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-white/18 dark:hover:bg-white/[0.08]"
+                    className="shell-header-search group flex h-9 w-full max-w-[300px] items-center gap-2.5 rounded-full border border-black/8 bg-black/[0.03] px-3.5 text-left shadow-2xs backdrop-blur-md transition duration-150 hover:border-black/15 hover:bg-black/[0.05] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-white/18 dark:hover:bg-white/[0.08]"
                   >
                     <ToolbarIcon
                       name="search"
@@ -894,7 +894,7 @@ function AppShellInner() {
                           })
                         }
                         className={cn(
-                          "shell-toolbar-control flex size-9 items-center justify-center rounded-full transition-all",
+                          "shell-toolbar-control flex size-9 items-center justify-center rounded-full transition",
                           aiAssistantOpen && "!bg-primary !text-primary-foreground shadow-xs"
                         )}
                       >
@@ -910,7 +910,7 @@ function AppShellInner() {
                         aria-label="Notifications"
                         onClick={() => setNotificationsOpen((prev) => !prev)}
                         className={cn(
-                          "shell-toolbar-control relative flex size-9 items-center justify-center rounded-full transition-all",
+                          "shell-toolbar-control relative flex size-9 items-center justify-center rounded-full transition",
                           notificationsOpen && "!bg-accent !text-accent-foreground"
                         )}
                       >
