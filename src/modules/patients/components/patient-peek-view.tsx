@@ -41,6 +41,11 @@ export interface PatientPeekViewProps {
   onRetry: () => void;
   onClose: () => void;
   onOpenFull: () => void;
+  /**
+   * Opened from a list cursor: non-modal, no backdrop, focus left on the
+   * list so the arrows keep moving and the peek follows them.
+   */
+  follow?: boolean;
   skeletons: { profile: boolean; history: boolean; followUp: boolean };
   historyLoading: boolean;
   followUpLoading: boolean;
@@ -74,6 +79,7 @@ export function PatientPeekView({
   onRetry,
   onClose,
   onOpenFull,
+  follow = false,
 }: PatientPeekViewProps) {
   const [tab, setTab] = useState("summary");
   const id = useId();
@@ -106,11 +112,18 @@ export function PatientPeekView({
   return (
     <Sheet
       open
+      modal={!follow}
       onOpenChange={(open) => {
         if (!open) onClose();
       }}
     >
-      <SheetContent className="patient-peek-panel w-full! gap-0 bg-card sm:max-w-[620px]">
+      <SheetContent
+        className="patient-peek-panel w-full! gap-0 bg-card sm:max-w-[620px]"
+        data-peek-follow={follow ? "" : undefined}
+        initialFocus={follow ? false : undefined}
+        finalFocus={follow ? false : undefined}
+        showOverlay={!follow}
+      >
         <SheetHeader className="border-b border-border px-6 py-5 pr-14">
           <SheetTitle>Dossier médical</SheetTitle>
           <SheetDescription>
@@ -348,6 +361,7 @@ export function PatientPeekView({
             Fermer
           </ActionButton>
           <ActionButton
+            data-peek-open-full=""
             disabled={!patient || pending || error}
             onClick={onOpenFull}
           >

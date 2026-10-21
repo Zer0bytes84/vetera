@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
  * Rows carry `data-list-row` and `data-row-id`; the current row gets
  * `data-current`. Hovering a row makes it current, the arrows move from
  * there, Enter opens it, Space or A (as in Flux) peeks it and Escape clears
- * it. J stays the shell's assistant shortcut, so Linear's J/K are not used
+ * it. While a peek opened this way is showing (`data-peek-follow`), the
+ * arrows keep moving the cursor and the peek follows; Escape is left to the
+ * peek and Enter opens what the peek offers (`data-peek-open-full`). J stays the shell's assistant shortcut, so Linear's J/K are not used
  * here. The last
  * opened row is current again when the list comes back.
  * Returns a callback ref for the list container, which may mount late.
@@ -26,8 +28,11 @@ export function useListCursor({
 }: {
   /** Session key remembering the last opened row. */
   storageKey: string;
-  /** Space or A on the current row; omitted, both keep their default. */
-  onPeek?: (rowId: string) => void;
+  /**
+   * Space or A on the current row ("key"), or the cursor moving while a
+   * following peek is open ("follow"). Omitted, Space and A keep their default.
+   */
+  onPeek?: (rowId: string, reason: "key" | "follow") => void;
 }) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   useEffect(() => {
@@ -90,8 +95,13 @@ export function useListCursor({
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
       if (!container.isConnected || container.offsetParent === null) return;
       const target = event.target as HTMLElement | null;
-      if (target?.closest("input, textarea, select, [contenteditable='true'], [role='dialog'], [role='menu'], [role='listbox']")) return;
-      if (document.querySelector("[role='dialog'], [role='menu'], [role='listbox']")) return;
+      const peek = document.querySelector("[data-peek-follow]");
+      const inPeek = !!(peek && target && peek.contains(target));
+      const blocking = "[role='dialog']:not([data-peek-follow]), [role='menu'], [role='listbox']";
+      if (target?.closest(`input, textarea, select, [contenteditable='true'], ${blocking}`)) return;
+      if (document.querySelector(blocking)) return;
+      // Inside the following peek, only the arrows reach the list.
+      if (inPeek && event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
       const list = rows();
       if (!list.length) return;
       settled = true;
@@ -102,15 +112,19 @@ export function useListCursor({
       const free = !target || target === document.body || target.hasAttribute("data-list-row");
       if (key === "ArrowDown" || key === "ArrowUp") {
         event.preventDefault();
-        setCurrent(list[nextCursorIndex(key, index, list.length)], true);
+        const next = list[nextCursorIndex(key, index, list.length)];
+        setCurrent(next, true);
+        if (peek && onPeek && next.dataset.rowId) onPeek(next.dataset.rowId, "follow");
       } else if (key === "Enter" && row && free) {
         event.preventDefault();
         remember(row);
-        (row.querySelector<HTMLElement>("[data-row-open]") ?? row).click();
+        // With the peek showing, Enter goes one step further: the full record.
+        const openFull = peek?.querySelector<HTMLElement>("[data-peek-open-full]");
+        (openFull ?? row.querySelector<HTMLElement>("[data-row-open]") ?? row).click();
       } else if ((key === " " || key === "a") && row && onPeek && free) {
         event.preventDefault();
-        if (row.dataset.rowId) onPeek(row.dataset.rowId);
-      } else if (key === "Escape" && row) {
+        if (row.dataset.rowId) onPeek(row.dataset.rowId, "key");
+      } else if (key === "Escape" && row && !peek) {
         setCurrent(null);
       }
     };

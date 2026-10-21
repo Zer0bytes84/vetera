@@ -8,15 +8,31 @@ import {
 import { PatientPeekView } from "../components/patient-peek-view";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 export const PATIENT_PEEK_EVENT = "baitari:patient-peek";
-export function openPatientPeek(id: string) {
-  window.dispatchEvent(new CustomEvent(PATIENT_PEEK_EVENT, { detail: { id } }));
+export type PatientPeekDetail = {
+  id: string;
+  /** Opened from a list cursor: no backdrop, focus stays on the list. */
+  follow?: boolean;
+  /** Same patient already shown: close instead (Space twice). */
+  toggle?: boolean;
+};
+export function openPatientPeek(
+  id: string,
+  options: Omit<PatientPeekDetail, "id"> = {}
+) {
+  window.dispatchEvent(
+    new CustomEvent<PatientPeekDetail>(PATIENT_PEEK_EVENT, {
+      detail: { id, ...options },
+    })
+  );
 }
 export function PatientPeek({
   patientId,
+  follow = false,
   onClose,
   onOpenFull,
 }: {
   patientId: string;
+  follow?: boolean;
   onClose: () => void;
   onOpenFull: () => void;
 }) {
@@ -36,7 +52,7 @@ export function PatientPeek({
   const patient = patients.data.find((row) => row.id === patientId);
   return (
     <PatientPeekView
-      key={patientId}
+      follow={follow}
       patient={patient}
       owner={owners.data.find((row) => row.id === patient?.ownerId)}
       appointments={appointments.data

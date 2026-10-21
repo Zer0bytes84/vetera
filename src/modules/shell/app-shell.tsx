@@ -10,6 +10,7 @@ import { useSaveIndicator } from "@/hooks/useSaveIndicator";
 import {
   PatientPeek,
   PATIENT_PEEK_EVENT,
+  type PatientPeekDetail,
   openPatientPeek,
 } from "@/modules/patients/pages/patient-peek";
 import { prepareAppointment } from "./model/clinical-actions";
@@ -161,11 +162,17 @@ function AppShellInner() {
   const [isAssistantCollapsed, setIsAssistantCollapsed] = useState(false);
   const sidebarScrollRef = useRef<HTMLDivElement>(null);
   const [peekPatientId, setPeekPatientId] = useState<string | null>(null);
+  const [peekFollows, setPeekFollows] = useState(false);
   const saveState = useSaveIndicator();
   useRowSaveFlash();
   useEffect(() => {
-    const open = (event: Event) =>
-      setPeekPatientId((event as CustomEvent<{ id: string }>).detail.id);
+    const open = (event: Event) => {
+      const { id, follow = false, toggle = false } = (
+        event as CustomEvent<PatientPeekDetail>
+      ).detail;
+      setPeekFollows(follow);
+      setPeekPatientId((current) => (toggle && current === id ? null : id));
+    };
     window.addEventListener(PATIENT_PEEK_EVENT, open);
     return () => window.removeEventListener(PATIENT_PEEK_EVENT, open);
   }, []);
@@ -256,6 +263,7 @@ function AppShellInner() {
   }, []);
 
   const handleNavigateToPatient = useCallback((patientId: string) => {
+    setPeekPatientId(null);
     setCurrentView("patient_detail");
     setCurrentPatientId(patientId);
   }, []);
@@ -1131,6 +1139,7 @@ function AppShellInner() {
       <MedicalActReminderPrompt />
       {peekPatientId && (
         <PatientPeek
+          follow={peekFollows}
           patientId={peekPatientId}
           onClose={() => setPeekPatientId(null)}
           onOpenFull={() => {

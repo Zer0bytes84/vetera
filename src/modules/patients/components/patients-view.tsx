@@ -93,6 +93,11 @@ function ClinicalFlagPills({ patient }: { patient: Patient }) {
   );
 }
 
+/** Space toggles the peek; the arrows make it follow the cursor. */
+function peekFromList(id: string, reason: "key" | "follow") {
+  openPatientPeek(id, { follow: true, toggle: reason === "key" });
+}
+
 export function PatientsView(props: PatientsViewProps) {
   const {
     appointments,
@@ -141,7 +146,7 @@ export function PatientsView(props: PatientsViewProps) {
     users,
     visiblePatients,
   } = props;
-  const listRef = useListCursor({ storageKey: "patients", onPeek: openPatientPeek });
+  const listRef = useListCursor({ storageKey: "patients", onPeek: peekFromList });
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
       <MotivationalHeader section="patients"
@@ -395,7 +400,7 @@ export function PatientsView(props: PatientsViewProps) {
                                     className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
                                     onClick={(event) => {
                                       event.stopPropagation();
-                                      openPatientPeek(entry.patient.id);
+                                      openPatientPeek(entry.patient.id, { follow: true });
                                     }}
                                     size="icon"
                                     variant="ghost"
