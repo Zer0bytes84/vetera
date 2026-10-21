@@ -512,3 +512,47 @@
     rotate: none;
   }
 }
+
+/*
+ * Dark theme, read against the light one: there, white cards sit on a
+ * cream panel with a clear shadow. Here cards and panel shared one value,
+ * so cards are lifted one step above their panel, empty states and date
+ * pills get the contrast they have in light. The alert badges keep theirs.
+ */
+.dark .flow-board-page {
+  --flow-card: var(--surface-hover, #262626);
+  --flow-card-focus: #2e2e2e;
+}
+
+.dark .flow-board-page .flow-card {
+  background: var(--flow-card);
+  box-shadow:
+    0 0 0 1px var(--line-strong, rgb(255 255 255 / 0.16)),
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 4px 12px -4px rgb(0 0 0 / 0.55);
+}
+
+.dark .flow-board-page .flow-card:focus {
+  background: var(--flow-card-focus);
+}
+
+.dark .flow-board-page .flow-left-open {
+  background: color-mix(in oklch, var(--frame) 92%, var(--signal-watch) 4%);
+  box-shadow: 0 0 0 1px var(--line, rgb(255 255 255 / 0.08));
+}
+
+.dark .flow-board-page .flow-lane-empty {
+  border-color: var(--line-strong, rgb(255 255 255 / 0.16));
+  color: var(--ink-muted);
+}
+
+.dark .flow-board-page .flow-timer.is-warning,
+.dark .flow-board-page .flow-timer.is-late {
+  background: color-mix(in oklch, var(--signal-watch) 12%, var(--flow-card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--signal-watch) 38%, transparent);
+  color: var(--signal-watch);
+}
+
+.dark .flow-board-page .flow-card-stage {
+  background: rgb(255 255 255 / 0.06);
+}

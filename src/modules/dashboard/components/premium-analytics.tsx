@@ -115,19 +115,20 @@ function DeltaBadge({
   );
 }
 
-function useWidth() {
+/** Size of the plot box: the chart is drawn at the height its card gives it. */
+function usePlotSize() {
   const ref = useRef<HTMLDivElement>(null);
-  const [w, setW] = useState<number | null>(null);
+  const [size, setSize] = useState<{ h: number; w: number } | null>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const ro = new ResizeObserver(([e]) => {
-      setW(Math.floor(e.contentRect.width));
+      setSize({ h: Math.floor(e.contentRect.height), w: Math.floor(e.contentRect.width) });
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  return [ref, w] as const;
+  return [ref, size] as const;
 }
 
 function scaleTicks(max: number) {
@@ -154,7 +155,10 @@ function TrendChartCurve({
   points: TrendPoint[];
   onFinances: () => void;
 }) {
-  const [ref, w] = useWidth();
+  const [ref, size] = usePlotSize();
+  const w = size?.w ?? null;
+  // Never shorter than the drawn minimum; taller when the row stretches the card.
+  const chartH = Math.max(T_CHART.h, size?.h ?? 0);
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   const n = points.length;
@@ -166,7 +170,7 @@ function TrendChartCurve({
 
   const width = w ?? 0;
   const plotW = Math.max(0, width - T_CHART.left - T_CHART.right);
-  const plotH = T_CHART.h - T_CHART.top - T_CHART.bottom;
+  const plotH = chartH - T_CHART.top - T_CHART.bottom;
 
   const x = (k: number) => T_CHART.left + (n <= 1 ? plotW / 2 : (k * plotW) / (n - 1));
   const yReceipts = (v: number) => T_CHART.top + plotH - (v / topReceipts) * plotH;
@@ -240,7 +244,7 @@ function TrendChartCurve({
         {w !== null && (
           <svg
             width={width}
-            height={T_CHART.h}
+            height={chartH}
             role="img"
             aria-label="Évolution des recettes et du volume de consultations"
             tabIndex={0}
@@ -271,7 +275,7 @@ function TrendChartCurve({
                 <text
                   key={k}
                   x={x(k)}
-                  y={T_CHART.h - 8}
+                  y={chartH - 8}
                   className="chartTickX"
                   textAnchor={
                     n > 1 && k === n - 1

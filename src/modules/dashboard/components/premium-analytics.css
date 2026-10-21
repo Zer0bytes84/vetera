@@ -744,8 +744,14 @@
   --chart-axis: var(--line-strong);
 }
 
+/* In light, --line is near white and the grid vanished; ink reads as clearly as the dark grid. */
+:root:not(.dark):is([data-visual-style="premium"], .premium-analytics-dashboard) {
+  --chart-grid: color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartWrap {
   display: flex;
+  flex: 1;
   flex-direction: column;
   padding: 16px 20px 20px;
 }
@@ -773,8 +779,17 @@
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPlot {
   position: relative;
+  flex: 1;
   width: 100%;
-  height: 220px;
+  min-height: 220px;
+  /* A taller neighbour may stretch the card; the curve stops growing here. */
+  max-height: 360px;
+}
+
+/* Drawn at the box size, so the box never takes its height from the drawing. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartPlot > svg {
+  position: absolute;
+  inset: 0;
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartGridLine {
