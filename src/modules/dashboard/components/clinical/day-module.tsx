@@ -15,7 +15,6 @@ import {
 import { WidgetShell } from "@/design-system/patterns/widget-shell";
 import { StatusStepper } from "@/design-system/patterns/status-stepper";
 import { MOTION } from "@/design-system/motion";
-import type { AppointmentStatus } from "@/types/db";
 import { formatTime, type ScheduleEntry } from "../../v2/model";
 import {
   ModuleLink,
@@ -30,7 +29,6 @@ export function DayModule({
   date,
   context,
   state,
-  busyIds,
   reducedMotion,
   onShiftDay,
   onToday,
@@ -39,14 +37,12 @@ export function DayModule({
   onPatient,
   onIntent,
   onIntentCancel,
-  onAdvance,
-  onBill,
+  onFlux,
 }: {
   rows: ScheduleEntry[];
   date: Date;
   context: { label: string; rows: ScheduleEntry[] };
   state: WidgetState;
-  busyIds: string[];
   reducedMotion: boolean;
   onShiftDay: (days: number) => void;
   onToday: () => void;
@@ -55,8 +51,7 @@ export function DayModule({
   onPatient: (id: string) => void;
   onIntent: () => void;
   onIntentCancel: () => void;
-  onAdvance: (id: string, status: AppointmentStatus) => void;
-  onBill: (id: string) => void;
+  onFlux: (id: string) => void;
 }) {
   const [filter, setFilter] = useState<
     "all" | "waiting" | "in_progress" | "completed"
@@ -207,9 +202,7 @@ export function DayModule({
                 </div>
                 <StatusStepper
                   status={row.appointment.status}
-                  busy={busyIds.includes(row.appointment.id)}
-                  onAdvance={(status) => onAdvance(row.appointment.id, status)}
-                  onBill={() => onBill(row.appointment.id)}
+                  onFlux={() => onFlux(row.appointment.id)}
                 />
               </motion.div>
             ))}

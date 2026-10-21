@@ -1,48 +1,33 @@
 import StaysPage from "@/modules/hospitalizations/stays/stays-page";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PageSubnavContext } from "@/design-system/patterns/page-header";
-import CliniquePage from "./clinique-page";
 import CarePage from "@/modules/care-tasks/care-page";
 import { careDisplayStatus } from "@/modules/care-tasks/domain";
 import { useCareTasks } from "@/modules/care-tasks/use-care-tasks";
 import { Badge } from "@/components/ui/badge";
-import PatientsPage from "@/modules/patients/pages/patients-page";
+import { MedicalRemindersModule } from "@/modules/patient-reminders/medical-reminders-widget";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFocus, type FocusRequest } from "@/contexts/focus-provider";
 import type { View } from "@/types";
 export default function ClinicalWorkspace({
   onNavigate,
   onNavigateToPatient,
-  initialTab = "consultations",
+  initialTab = "soins",
 }: {
   onNavigate: (view: View) => void;
   onNavigateToPatient?: (id: string) => void;
   initialTab?: string;
 }) {
   const { focus, clearFocus, registerHandler } = useFocus();
+  // Consultations live in Flux and patient records in Patients: this section
+  // keeps the day's care and the hospital stays.
   const [tab, setTab] = useState(() =>
-    typeof sessionStorage !== "undefined" &&
-    sessionStorage.getItem("vetera:pending-clinical-tab") === "consultations"
-      ? "consultations"
-      : focus?.kind === "stay"
-        ? "hospitalisation"
-        : focus?.kind === "care_patient" || focus?.kind === "care_task"
-          ? "soins"
-          : initialTab,
+    focus?.kind === "stay"
+      ? "hospitalisation"
+      : focus?.kind === "care_patient" || focus?.kind === "care_task"
+        ? "soins"
+        : initialTab,
   );
-  useEffect(() => {
-    const openConsultation = () => {
-      setTab("consultations");
-      sessionStorage.removeItem("vetera:pending-clinical-tab");
-    };
-    if (
-      sessionStorage.getItem("vetera:pending-clinical-tab") === "consultations"
-    )
-      openConsultation();
-    window.addEventListener("vetera:open-consultation", openConsultation);
-    return () =>
-      window.removeEventListener("vetera:open-consultation", openConsultation);
-  }, []);
   const [patientId, setPatientId] = useState<string | undefined>(() =>
     focus?.kind === "care_patient" ? focus.id : undefined,
   );
@@ -90,12 +75,10 @@ export default function ClinicalWorkspace({
   const tabsList = useMemo(
     () => (
       <TabsList
-        aria-label="Sections de la clinique"
+        aria-label="Sections soins et hospitalisation"
         className="w-full justify-start"
         tabsStyle="nav"
       >
-        <TabsTrigger value="dossiers">Dossiers</TabsTrigger>
-        <TabsTrigger value="consultations">Consultations</TabsTrigger>
         <TabsTrigger
           value="soins"
           className="gap-2"
@@ -127,22 +110,24 @@ export default function ClinicalWorkspace({
     >
       <PageSubnavContext.Provider value={subnav}>
         {claims === 0 && <div className="px-4 pt-4 lg:px-6">{tabsList}</div>}
-        {tab === "dossiers" ? (
-          <PatientsPage onNavigateToPatient={onNavigateToPatient} />
-        ) : tab === "hospitalisation" ? (
+        {tab === "hospitalisation" ? (
           <StaysPage key={stayId || "all"} initialStayId={stayId} />
-        ) : tab === "soins" ? (
-          <>
-            <CarePage
-              key={`${patientId ?? "all"}-${taskId ?? ""}`}
-              patientId={patientId}
-              onShowAll={() => setPatientId(undefined)}
-              initialTaskId={taskId}
-              onNavigateToPatient={onNavigateToPatient}
-            />
-          </>
         ) : (
-          <CliniquePage onNavigate={onNavigate} />
+          <CarePage
+            key={`${patientId ?? "all"}-${taskId ?? ""}`}
+            patientId={patientId}
+            onShowAll={() => setPatientId(undefined)}
+            initialTaskId={taskId}
+            onNavigateToPatient={onNavigateToPatient}
+            reminders={
+              <MedicalRemindersModule
+                onAll={() => {
+                  window.sessionStorage.setItem("baitari:reminders-source", "medical");
+                  onNavigate("taches");
+                }}
+              />
+            }
+          />
         )}
       </PageSubnavContext.Provider>
     </Tabs>

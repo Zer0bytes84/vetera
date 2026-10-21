@@ -11,7 +11,6 @@ import {
   CalendarDays,
   ClipboardCheck,
   Package,
-  Play,
   Plus,
   Receipt,
   Stethoscope,
@@ -65,6 +64,7 @@ interface PremiumAnalyticsProps {
     pending: number;
     receivables?: any;
   };
+  /** Shows the visit in Flux, where visits move on. */
   onStartConsultation?: (appointmentId: string) => void;
   clinicalView?: React.ReactNode;
   /** Rangée « À surveiller » (rappels, stock, hospitalisés), insérée avant « Gestion du cabinet ». */
@@ -635,9 +635,9 @@ export function PremiumAnalytics({
       },
       {
         id: "clinique",
-        title: "Espace Clinique",
-        description: "Dossiers de consultation, examens et prescriptions",
-        count: `${patients.visits} consultations`,
+        title: "Soins & hospitalisation",
+        description: "Soins du jour, hospitalisations et rappels médicaux",
+        count: "Soins et séjours",
         icon: Stethoscope,
         action: () => onNavigate?.("clinique"),
       },
@@ -690,7 +690,6 @@ export function PremiumAnalytics({
     ],
     [
       today?.length,
-      patients.visits,
       presentation?.patients.length,
       patients.count,
       presentation?.products.length,
@@ -1038,12 +1037,13 @@ export function PremiumAnalytics({
                             <button
                               type="button"
                               className="iconBtn"
-                              title="Démarrer la consultation"
+                              title="Suivre dans Flux"
+                              aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
                               onClick={() =>
                                 onStartConsultation?.(row.appointment.id)
                               }
                             >
-                              <Play size={13} strokeWidth={1.5} aria-hidden="true" />
+                              <ArrowRight size={13} strokeWidth={1.5} aria-hidden="true" />
                             </button>
                           </td>
                         </tr>

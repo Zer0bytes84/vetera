@@ -109,19 +109,6 @@ export function AgendaListView({
     });
   };
 
-  const handleStartConsultation = (
-    event: React.MouseEvent,
-    appointment: Appointment
-  ) => {
-    event.stopPropagation();
-    onSelectAppointment(appointment);
-    window.sessionStorage.setItem(
-      "vetera:pending-consultation-start",
-      appointment.id
-    );
-    window.location.assign("#/clinique");
-  };
-
   if (rows.length === 0) {
     return <>{emptyState}</>;
   }
@@ -137,7 +124,6 @@ export function AgendaListView({
             onDelete={onDeleteAppointment}
             onEdit={onEditAppointment}
             onSelectAppointment={onSelectAppointment}
-            onStartConsultation={handleStartConsultation}
             onTransitionStatus={onTransitionStatus}
             row={row}
             showDate={showDate}
@@ -187,7 +173,6 @@ function AppointmentListItem({
   onDelete,
   onEdit,
   onSelectAppointment,
-  onStartConsultation,
   onTransitionStatus,
   row,
   showDate,
@@ -197,10 +182,6 @@ function AppointmentListItem({
   onDelete: (appointment: Appointment) => void;
   onEdit: (appointment: Appointment) => void;
   onSelectAppointment: (appointment: Appointment) => void;
-  onStartConsultation: (
-    event: React.MouseEvent,
-    appointment: Appointment
-  ) => void;
   onTransitionStatus: (
     appointment: Appointment,
     nextStatus: AppointmentStatus
@@ -314,19 +295,12 @@ function AppointmentListItem({
             <Button
               className="h-8 min-w-[108px] rounded-lg px-3 text-xs shadow-none"
               onClick={(event) => {
-                if (nextAction.status === "in_progress") {
-                  onStartConsultation(event, appointment);
-                  return;
-                }
                 event.stopPropagation();
                 void onTransitionStatus(appointment, nextAction.status);
               }}
               size="sm"
               variant={nextAction.primary ? "default" : "outline"}
             >
-              {nextAction.status === "in_progress" ? (
-                <Stethoscope className="size-3.5" />
-              ) : null}
               {nextAction.label}
             </Button>
           ) : null}
@@ -365,23 +339,16 @@ function AppointmentListItem({
   );
 }
 
+/**
+ * The Agenda books visits; Flux is the one place where a visit moves on.
+ * Only the owner's confirmation of a booking stays here.
+ */
 function getNextAppointmentAction(status: AppointmentStatus): {
   label: string;
   primary: boolean;
   status: AppointmentStatus;
 } | null {
-  switch (status) {
-    case "scheduled":
-      return { label: "Confirmer", primary: false, status: "confirmed" };
-    case "confirmed":
-      return { label: "Patient arrivé", primary: false, status: "arrived" };
-    case "arrived":
-      return { label: "Mettre en attente", primary: false, status: "waiting" };
-    case "waiting":
-      return { label: "Démarrer", primary: true, status: "in_progress" };
-    case "in_progress":
-      return { label: "Reprendre", primary: true, status: "in_progress" };
-    default:
-      return null;
-  }
+  return status === "scheduled"
+    ? { label: "Confirmer", primary: false, status: "confirmed" }
+    : null;
 }

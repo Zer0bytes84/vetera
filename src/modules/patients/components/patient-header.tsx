@@ -12,7 +12,7 @@ interface PatientHeaderProps {
   className?: string;
   onEditProfile: () => void;
   onNewAppointment: () => void;
-  /** Opens Clinique > Soins filtered on this patient. */
+  /** Opens Soins & hospitalisation > Soins filtered on this patient. */
   onOpenCare?: () => void;
   onOpenClinicalNote?: () => void;
   onExportPdf?: () => void;

@@ -8,11 +8,8 @@ import {
   Check,
   Clock3,
   DoorOpen,
-  Loader2,
-  Plus,
   Stethoscope,
 } from "@/lib/icons";
-import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { Panel, SignalBadge } from "@/design-system/primitives";
@@ -20,22 +17,16 @@ import type { NowSnapshot } from "../model/clinical-dashboard";
 import { formatTime } from "../v2/model";
 import "./clinical/clinical-workspace.css";
 
+/**
+ * A read-only summary of the day's care: who is next, the waiting room and
+ * the day's progress. Visits move on in Flux, which this summary opens.
+ */
 export function VisitFlowBoard({
   snapshot,
-  busy = false,
-  onStart,
-  onArrive,
-  onPatient,
-  onAgenda,
-  onPlan,
+  onFlux,
 }: {
   snapshot: NowSnapshot;
-  busy?: boolean;
-  onStart?: (id: string) => void;
-  onArrive?: (id: string) => void;
-  onPatient?: (id: string) => void;
-  onAgenda?: () => void;
-  onPlan?: () => void;
+  onFlux?: (appointmentId?: string) => void;
 }) {
   const reduced = useReducedMotion();
   const { next, waiting, startsIn, allergies, today } = snapshot;
@@ -67,7 +58,7 @@ export function VisitFlowBoard({
           ? `créneau dépassé de ${-startsIn} min`
           : "maintenant";
   return (
-    <div className="visit-flow-board" aria-busy={busy}>
+    <div className="visit-flow-board">
       <Panel className="visit-flow-card" aria-label="Prise en charge">
         <div className="visit-flow-main">
           <div className="visit-flow-topline">
@@ -124,15 +115,7 @@ export function VisitFlowBoard({
               </span>
               <div className="visit-flow-identity">
                 {next ? (
-                  <button
-                    type="button"
-                    disabled={!onPatient}
-                    onClick={() => onPatient?.(next.appointment.patientId)}
-                    className="visit-flow-name"
-                  >
-                    {next.patientName}
-                    <ArrowRight size={18} />
-                  </button>
+                  <h2 className="visit-flow-name">{next.patientName}</h2>
                 ) : (
                   <h2 className="visit-flow-name">
                     {today.length
@@ -144,8 +127,8 @@ export function VisitFlowBoard({
                   {next
                     ? [next.species, next.ownerName].filter(Boolean).join(" · ")
                     : today.length
-                      ? `${completed} consultation${completed > 1 ? "s" : ""} terminée${completed > 1 ? "s" : ""}${absent ? ` · ${absent} absence${absent > 1 ? "s" : ""}` : ""}. Retrouvez les dossiers dans l’agenda.`
-                      : "Planifiez une visite ou consultez les rendez-vous à venir."}
+                      ? `${completed} consultation${completed > 1 ? "s" : ""} terminée${completed > 1 ? "s" : ""}${absent ? ` · ${absent} absence${absent > 1 ? "s" : ""}` : ""}. Retrouvez le parcours de chaque visite dans Flux.`
+                      : "Les visites du jour apparaîtront ici et dans Flux."}
                 </p>
               </div>
               {next && (
@@ -205,62 +188,6 @@ export function VisitFlowBoard({
               )
             )}
           </ol>
-          <div className="visit-flow-actions">
-            {next ? (
-              <>
-                <Button
-                  disabled={busy || (active || arrived ? !onStart : !onArrive)}
-                  className="h-9 px-4 text-xs"
-                  onClick={() =>
-                    active || arrived
-                      ? onStart?.(next.appointment.id)
-                      : onArrive?.(next.appointment.id)
-                  }
-                >
-                  {busy ? (
-                    <Loader2 className="animate-spin" size={15} />
-                  ) : (
-                    <Stethoscope size={15} />
-                  )}
-                  {busy
-                    ? "Enregistrement…"
-                    : active
-                      ? "Reprendre la consultation"
-                      : arrived
-                        ? "Démarrer la consultation"
-                        : "Marquer arrivé"}
-                </Button>
-                <Button
-                  variant="outline"
-                  disabled={!onPatient}
-                  onClick={() => onPatient?.(next.appointment.patientId)}
-                >
-                  Ouvrir le dossier
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  className="h-9 px-4 text-xs"
-                  disabled={!onPlan && !onAgenda}
-                  onClick={onPlan ?? onAgenda}
-                >
-                  <Plus size={15} />
-                  {onPlan
-                    ? "Planifier une visite"
-                    : "Préparer la prochaine visite"}
-                </Button>
-                <Button
-                  variant="outline"
-                  disabled={!onAgenda}
-                  onClick={onAgenda}
-                >
-                  Voir l’agenda
-                  <ArrowRight size={14} />
-                </Button>
-              </>
-            )}
-          </div>
         </div>
       </Panel>
       <Panel
@@ -277,15 +204,11 @@ export function VisitFlowBoard({
             <ul>
               {waiting.slice(0, 3).map((row, i) => (
                 <li key={row.appointment.id}>
-                  <button
-                    disabled={!onPatient}
-                    onClick={() => onPatient?.(row.appointment.patientId)}
-                    type="button"
-                  >
+                  <span className="visit-flow-queue-row">
                     <span className="visit-flow-queue-number">{i + 1}</span>
                     <span>{row.patientName}</span>
                     <time>{formatTime(row.start)}</time>
-                  </button>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -332,10 +255,10 @@ export function VisitFlowBoard({
           <button
             type="button"
             className="visit-flow-agenda"
-            disabled={!onAgenda}
-            onClick={onAgenda}
+            disabled={!onFlux}
+            onClick={() => onFlux?.(next?.appointment.id)}
           >
-            Ouvrir le planning
+            Ouvrir Flux
             <ArrowRight size={14} />
           </button>
         </aside>

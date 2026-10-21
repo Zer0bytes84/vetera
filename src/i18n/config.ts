@@ -53,8 +53,8 @@ const resources = {
           tasksSub: "To-do list et rappels",
           patients: "Patients",
           patientsSub: "Dossiers médicaux",
-          clinique: "Consultations",
-          cliniqueSub: "Suivi clinique",
+          clinique: "Soins & hospitalisation",
+          cliniqueSub: "Soins du jour et hospitalisations",
           notes: "Documents",
           notesSub: "Mémos et documents",
           stock: "Stock & Pharma",
@@ -239,7 +239,7 @@ const resources = {
       views: {
         dashboard: "Tableau de bord",
         agenda: "Agenda",
-        clinique: "Clinique",
+        clinique: "Soins & hospitalisation",
 
         flux: "Flux",
         patients: "Patients",
@@ -358,9 +358,9 @@ const resources = {
           subtitle: "Le planning reste synchronisé en temps réel.",
         },
         clinique: {
-          eyebrow: "Clinique",
+          eyebrow: "Soins & hospitalisation",
           title: "Le flux clinique reste parfaitement cadré.",
-          subtitle: "Suivez les consultations et les dossiers actifs.",
+          subtitle: "Suivez les soins du jour et les hospitalisations.",
         },
         patients: {
           eyebrow: "Patients",
@@ -1177,8 +1177,8 @@ const resources = {
           tasksSub: "To-do list & reminders",
           patients: "Patients",
           patientsSub: "Medical records",
-          clinique: "Consultations",
-          cliniqueSub: "Clinical follow-up",
+          clinique: "Care & hospitalization",
+          cliniqueSub: "Today's care and hospital stays",
           notes: "Notes",
           notesSub: "Memos & documents",
           stock: "Stock & Pharma",
@@ -1364,7 +1364,7 @@ const resources = {
       views: {
         dashboard: "Dashboard",
         agenda: "Agenda",
-        clinique: "Clinic",
+        clinique: "Care & hospitalization",
 
         flux: "Flow",
         patients: "Patients",
@@ -1482,9 +1482,9 @@ const resources = {
           subtitle: "Your planning stays synced in real time.",
         },
         clinique: {
-          eyebrow: "Clinic",
+          eyebrow: "Care & hospitalization",
           title: "Clinical flow stays perfectly structured.",
-          subtitle: "Track appointments and active records.",
+          subtitle: "Track today's care and hospital stays.",
         },
         patients: {
           eyebrow: "Patients",
@@ -2295,7 +2295,7 @@ const resources = {
       views: {
         dashboard: "لوحة التحكم",
         agenda: "الأجندة",
-        clinique: "العيادة",
+        clinique: "الرعاية والاستشفاء",
 
         flux: "التدفق",
         patients: "المرضى",
@@ -2585,7 +2585,7 @@ const resources = {
       views: {
         dashboard: "Panel",
         agenda: "Agenda",
-        clinique: "Clínica",
+        clinique: "Cuidados y hospitalización",
 
         flux: "Flujo",
         patients: "Pacientes",
@@ -2881,7 +2881,7 @@ const resources = {
       views: {
         dashboard: "Painel",
         agenda: "Agenda",
-        clinique: "Clínica",
+        clinique: "Cuidados e internamento",
 
         flux: "Fluxo",
         patients: "Pacientes",
@@ -3176,7 +3176,7 @@ const resources = {
       views: {
         dashboard: "Dashboard",
         agenda: "Agenda",
-        clinique: "Klinik",
+        clinique: "Pflege & Stationär",
 
         flux: "Ablauf",
         patients: "Patienten",

@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { toast } from "sonner";
 import { ConsultationWorkspace } from "@/modules/consultation-workspace/consultation-workspace";
 import { useConsultationSession } from "@/modules/consultation-workspace/use-consultation-session";
+import { useFluxRequests } from "./open-in-flux";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { cn } from "@/lib/utils";
@@ -430,6 +431,9 @@ export function FlowBoardPage({
     pendingFocus.current = id;
     refs.current.get(id)?.focus();
   };
+
+  // Agenda, dashboard and Nouvelle consultation send their visits here.
+  useFluxRequests({ appointmentById, focus: focusCard, open: setActiveConsultation });
 
   const open = useCallback(
     (card: FlowCard) => {

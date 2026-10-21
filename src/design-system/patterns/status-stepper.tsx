@@ -12,31 +12,14 @@ const labels: Record<AppointmentStatus, string> = {
   cancelled: "Annulé",
   no_show: "Absent",
 };
+/** A visit's status, and the way to Flux, where it moves on. */
 export function StatusStepper({
   status,
-  busy,
-  onAdvance,
-  onBill,
+  onFlux,
 }: {
   status: AppointmentStatus;
-  busy?: boolean;
-  onAdvance: (status: AppointmentStatus) => void;
-  onBill?: () => void;
+  onFlux?: () => void;
 }) {
-  const next: AppointmentStatus | undefined =
-    status === "scheduled" || status === "confirmed"
-      ? "arrived"
-      : status === "arrived" || status === "waiting"
-        ? "in_progress"
-        : status === "in_progress"
-          ? "completed"
-          : undefined;
-  const nextLabel =
-    next === "arrived"
-      ? "Arrivé"
-      : next === "in_progress"
-        ? "Démarrer"
-        : "Terminer";
   return (
     <div className="flex flex-wrap items-center gap-2">
       <SignalBadge
@@ -50,19 +33,15 @@ export function StatusStepper({
       >
         {labels[status]}
       </SignalBadge>
-      {next ? (
+      {onFlux && status !== "cancelled" && status !== "no_show" ? (
         <ActionButton
           quiet
-          disabled={busy}
-          onClick={() => onAdvance(next)}
+          onClick={onFlux}
           className="h-7 px-2 t-12 transition-[background-color,scale]"
+          title="Suivre cette visite dans Flux"
         >
-          {busy ? "Enregistrement…" : nextLabel}
+          Dans Flux
           <HugeiconsIcon icon={ArrowRight01Icon} size={12} strokeWidth={1.5} />
-        </ActionButton>
-      ) : status === "completed" && onBill ? (
-        <ActionButton quiet disabled={busy} onClick={onBill} className="h-7 px-2 t-12">
-          Facturer
         </ActionButton>
       ) : null}
     </div>

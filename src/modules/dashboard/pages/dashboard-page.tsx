@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
-import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
+import { showInFlux } from "@/modules/flow-board/open-in-flux";
 import { motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -19,7 +18,6 @@ import { usePatientIntentPrefetch } from "@/hooks/usePatientIntentPrefetch";
 import { rowMotion, reducedRowMotion } from "@/design-system/motion";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
 import type { View } from "@/types";
-import type { AppointmentStatus } from "@/types/db";
 import {
   ClinicalDashboardView,
   type WidgetState,
@@ -36,10 +34,7 @@ import {
   type ClinicalCashPeriod,
 } from "../model/clinical-dashboard";
 import { addDays } from "../v2/model";
-import {
-  prepareAppointment,
-  prepareInvoice,
-} from "@/modules/shell/model/clinical-actions";
+import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import type { ActionFilter } from "../components/clinical/actions-module";
 import { useDashboardVersion } from "../hooks/use-dashboard-version";
 import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
@@ -240,44 +235,8 @@ export function DashboardPage({
     }
   );
   const navigate = (view: View) => onNavigate?.(view);
-  const openConsultation = (id: string) => {
-    sessionStorage.setItem("vetera:pending-consultation-start", id);
-    navigate("clinique");
-  };
-  const flowUndo = useFlowUndo();
-  const advance = async (
-    id: string,
-    status: AppointmentStatus,
-    after?: () => void
-  ) => {
-    if (pending.current.has(id)) return;
-    pending.current.add(id);
-    setBusyIds([...pending.current]);
-    try {
-      await appointments.transitionStatus(id, status);
-      // Opening a consultation leaves the page: it is journaled, not offered for undo.
-      if (after) void flowUndo.record(id);
-      else void flowUndo.confirm(id, APPOINTMENT_STATUS_META[status].label);
-      after?.();
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Le rendez-vous n’a pas été mis à jour."
-      );
-    } finally {
-      pending.current.delete(id);
-      setBusyIds([...pending.current]);
-    }
-  };
-  const start = (id: string) => {
-    const row = presentation.appointments.find((row) => row.id === id);
-    if (row?.status === "in_progress") {
-      openConsultation(id);
-      return;
-    }
-    void advance(id, "in_progress", () => openConsultation(id));
-  };
+  // Visits move on in Flux only: the dashboard shows them there.
+  const showVisit = (id?: string) => (id ? showInFlux(id, navigate) : navigate("flux"));
   const completeTask = async (id: string) => {
     const row = presentation.tasks.find(task => task.id === id);
     if (!row || row.status === "done" || pending.current.has(id)) return;
@@ -294,16 +253,6 @@ export function DashboardPage({
     navigate("agenda");
     window.setTimeout(
       () => window.dispatchEvent(new CustomEvent("vetera:new-appointment")),
-      150
-    );
-  };
-  const bill = (id: string) => {
-    const row = presentation.appointments.find((row) => row.id === id);
-    if (!row) return;
-    prepareInvoice(row.ownerId, row.patientId, row.id);
-    navigate("finances");
-    window.setTimeout(
-      () => window.dispatchEvent(new CustomEvent("vetera:new-invoice")),
       150
     );
   };
@@ -332,7 +281,6 @@ export function DashboardPage({
       reducedMotion={Boolean(reduced)}
       onShiftDay={(days) => setSelectedDay(addDays(dayDate, days))}
       onToday={() => setSelectedDay(null)}
-      onBill={bill}
       onPlan={plan}
       onReminders={() => navigate("taches")}
       states={{
@@ -348,10 +296,7 @@ export function DashboardPage({
       onCustomizingChange={setIsCustomizing}
       trendsOpen={trendsOpen}
       onTrendsOpen={setTrendsOpen}
-      onAdvance={(id, status) => {
-        void advance(id, status);
-      }}
-      onStart={start}
+      onFlux={showVisit}
       onOpenPatient={openPatientPeek}
       onPatientIntent={intent.onPointerEnter}
       onPatientIntentCancel={intent.onPointerLeave}
@@ -450,7 +395,7 @@ export function DashboardPage({
             pending: cashPending,
             receivables: financials.receivables,
           }}
-          onStartConsultation={start}
+          onStartConsultation={showVisit}
         />
       </div>
     );

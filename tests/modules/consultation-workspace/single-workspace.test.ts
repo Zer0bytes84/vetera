@@ -21,13 +21,19 @@ it("rend la consultation et la facturation depuis un seul poste de consultation"
   expect(renderers("BillingDialog")).toEqual(["src/modules/consultation-workspace/consultation-workspace.tsx"]);
 });
 
-it("ouvre ce même poste dans Clinique et dans Flux", () => {
+it("ouvre ce poste dans Flux, seul endroit où une visite avance", () => {
   const users = sources
     .filter(({ text }) => text.includes("<ConsultationWorkspace"))
     .map(({ path }) => path)
     .sort();
-  expect(users).toEqual([
-    "src/modules/clinique/components/clinique-view.tsx",
-    "src/modules/flow-board/flow-board-page.tsx",
-  ]);
+  expect(users).toEqual(["src/modules/flow-board/flow-board-page.tsx"]);
+});
+
+it("fait passer toute demande d'ouverture de visite par Flux", () => {
+  const requesters = sources
+    .filter(({ text }) => text.includes("vetera:pending-consultation-start"))
+    .map(({ path }) => path);
+  expect(requesters).toEqual(["src/modules/flow-board/open-in-flux.ts"]);
+  const toClinique = sources.filter(({ text }) => /assign\("#\/clinique"\)|pending-clinical-tab/.test(text));
+  expect(toClinique.map(({ path }) => path)).toEqual([]);
 });

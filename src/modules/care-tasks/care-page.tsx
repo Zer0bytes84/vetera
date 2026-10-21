@@ -2,7 +2,7 @@ import { ErrorState } from "@/design-system/patterns/error-state";
 import { careErrorMessage } from "./feedback";
 import "./care-page.css";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -68,8 +68,11 @@ export default function CarePage({
   onNavigateToPatient,
   initialTaskId,
   onShowAll,
+  reminders,
 }: {
   initialTaskId?: string;
+  /** Shown under the day's summary, for the whole clinic only. */
+  reminders?: ReactNode;
   /** Leaves the single-patient view; when given, the page keeps the common header. */
   onShowAll?: () => void;
   patientId?: string;
@@ -398,6 +401,7 @@ export default function CarePage({
               },
             ]}
           />
+          {reminders}
           <div className="care-toolbar flex flex-wrap items-center justify-between gap-3">
             <div
               className="flex flex-wrap gap-1"

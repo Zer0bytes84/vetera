@@ -27,7 +27,8 @@ const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH_STORAGE_KEY = "baitari_sidebar_width_v1";
 const SIDEBAR_DEFAULT_WIDTH = 248;
-const SIDEBAR_MIN_WIDTH = 224;
+// « Soins & hospitalisation » (about 151 px in Geist 14 px) fits on one line from here.
+const SIDEBAR_MIN_WIDTH = 240;
 const SIDEBAR_MAX_WIDTH = 360;
 const SIDEBAR_COLLAPSE_THRESHOLD = 208;
 const SIDEBAR_EXPAND_THRESHOLD = 232;

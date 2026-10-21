@@ -105,7 +105,7 @@ const sections: Section[] = [
                 Comment fonctionne la facturation automatique ?
               </h5>
               <p className="mt-1 text-xs text-zinc-500 leading-relaxed dark:text-zinc-400">
-                À la fin d'une consultation active dans le module Clinique,
+                À la fin d'une consultation ouverte depuis Flux,
                 cliquez sur "Générer la facture". Le système regroupe les actes
                 saisis et les produits consommés pour créer un document prêt à
                 être encaissé et comptabilisé.
@@ -187,7 +187,7 @@ const sections: Section[] = [
   },
   {
     id: "clinique",
-    title: "Clinique & Consultations",
+    title: "Flux & consultations",
     icon: Building01Icon,
     description: "Le cœur de votre activité médicale au quotidien.",
     content: (

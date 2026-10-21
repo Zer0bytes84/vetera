@@ -28,7 +28,7 @@ export default function StaysPage({patientId,initialStayId}: {patientId?: string
   <PageHeader
     actions={<Button className="h-11" onClick={() => setForm(view === "emplacements" ? "location" : "admission")}>{view === "emplacements" ? "Créer un emplacement" : "Admettre un patient"}</Button>}
     icon={<HugeiconsIcon icon={Hospital01Icon} size={20} strokeWidth={1.5} />}
-    kicker="Clinique"
+    kicker="Soins & hospitalisation"
     subtitle={`Séjours, surveillance et occupation des emplacements · ${active.length} séjour${active.length > 1 ? "s" : ""} actif${active.length > 1 ? "s" : ""}`}
     title="Hospitalisation"
   />

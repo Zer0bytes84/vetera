@@ -446,8 +446,8 @@ export default function CommandPalette({
       },
       {
         id: "clinique",
-        label: t("commandPalette.nav.clinique", { defaultValue: "Consultations" }),
-        sub: t("commandPalette.nav.cliniqueSub", { defaultValue: "Suivi clinique et soins du jour" }),
+        label: t("commandPalette.nav.clinique", { defaultValue: "Soins & hospitalisation" }),
+        sub: t("commandPalette.nav.cliniqueSub", { defaultValue: "Soins du jour et hospitalisations" }),
         icon: ClinicIcon,
         category: t("commandPalette.category.parcours", { defaultValue: "Parcours patient" }),
         keywords: [
@@ -1499,9 +1499,10 @@ export default function CommandPalette({
                     "soins",
                     "soap",
                   ]}
-                  onSelect={() =>
-                    fireAction("clinique", "vetera:open-consultation")
-                  }
+                  onSelect={() => {
+                    onClose();
+                    window.dispatchEvent(new Event("vetera:quick-consultation"));
+                  }}
                   value="action:open-consultation Nouvelle consultation Ouvrir une consultation"
                 >
                   <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">

@@ -286,6 +286,12 @@ function AppShellInner() {
 
   const { currentUser, logout } = useAuth();
   const [consultationPickerOpen, setConsultationPickerOpen] = useState(false);
+  useEffect(() => {
+    // The palette's Nouvelle consultation opens the same patient picker.
+    const openPicker = () => setConsultationPickerOpen(true);
+    window.addEventListener("vetera:quick-consultation", openPicker);
+    return () => window.removeEventListener("vetera:quick-consultation", openPicker);
+  }, []);
   const [cachedAvatarUrl, setCachedAvatarUrl] = useState(
     () => readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
   );

@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import type { AppointmentStatus } from "@/types/db";
 import { NowBoardView } from "./now-board-view";
 import { DashboardLayoutManager } from "./dashboard-layout-manager";
 import { DayModule } from "./clinical/day-module";
@@ -49,9 +48,8 @@ export interface ClinicalDashboardViewProps {
   onActionFilter: (filter: ActionFilter) => void;
   onShiftDay: (days: number) => void;
   onToday: () => void;
-  onAdvance: (id: string, status: AppointmentStatus) => void;
-  onStart: (id: string) => void;
-  onBill: (id: string) => void;
+  /** Visits move on in Flux only: the dashboard shows them there. */
+  onFlux: (id?: string) => void;
   onOpenPatient: (id: string) => void;
   onPatientIntent: () => void;
   onPatientIntentCancel: () => void;
@@ -75,18 +73,11 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
         0,
         <NowBoardView
           snapshot={p.now}
-          busy={Boolean(
-            p.now.next && p.busyIds.includes(p.now.next.appointment.id)
-          )}
           loading={p.states.now.loading}
           skeleton={p.states.now.skeleton}
           error={p.states.now.error}
           onRetry={p.states.now.retry}
-          onStart={p.onStart}
-          onArrive={(id) => p.onAdvance(id, "arrived")}
-          onOpenPatient={p.onOpenPatient}
-          onAgenda={p.onAgenda}
-          onPlan={p.onPlan}
+          onFlux={p.onFlux}
         />
       ),
     },
@@ -104,7 +95,6 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
             date={p.dayDate}
             context={p.context}
             state={p.states.day}
-            busyIds={p.busyIds}
             reducedMotion={p.reducedMotion}
             onShiftDay={p.onShiftDay}
             onToday={p.onToday}
@@ -113,8 +103,7 @@ export function ClinicalDashboardView(p: ClinicalDashboardViewProps) {
             onPatient={p.onOpenPatient}
             onIntent={p.onPatientIntent}
             onIntentCancel={p.onPatientIntentCancel}
-            onAdvance={(id, status) => status === "in_progress" ? p.onStart(id) : p.onAdvance(id, status)}
-            onBill={p.onBill}
+            onFlux={p.onFlux}
           />
           <ActionsModule
             alerts={p.alerts}

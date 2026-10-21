@@ -9,28 +9,18 @@ import { VisitFlowBoard } from "./visit-flow-board";
 
 export function NowBoardView({
   snapshot,
-  busy,
   loading,
   skeleton,
   error,
   onRetry,
-  onStart,
-  onArrive,
-  onOpenPatient,
-  onAgenda,
-  onPlan,
+  onFlux,
 }: {
   snapshot: NowSnapshot;
-  busy: boolean;
   loading: boolean;
   skeleton: boolean;
   error?: string | null;
   onRetry: () => void;
-  onStart: (id: string) => void;
-  onArrive: (id: string) => void;
-  onOpenPatient: (id: string) => void;
-  onAgenda: () => void;
-  onPlan: () => void;
+  onFlux: (appointmentId?: string) => void;
 }) {
   return (
     <div aria-label="Maintenant" aria-busy={loading || skeleton}>
@@ -54,15 +44,7 @@ export function NowBoardView({
           />
         </Panel>
       ) : (
-        <VisitFlowBoard
-          snapshot={snapshot}
-          busy={busy}
-          onStart={onStart}
-          onArrive={onArrive}
-          onPatient={onOpenPatient}
-          onAgenda={onAgenda}
-          onPlan={onPlan}
-        />
+        <VisitFlowBoard snapshot={snapshot} onFlux={onFlux} />
       )}
     </div>
   );

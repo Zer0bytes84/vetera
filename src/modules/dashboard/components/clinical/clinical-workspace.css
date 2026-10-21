@@ -25,8 +25,8 @@
 .visit-flow-queue-title svg { color:var(--muted-foreground); }
 .visit-flow-queue-title strong { margin-left:auto; font-size: 18px; font-weight:550; font-variant-numeric:tabular-nums; }
 .visit-flow-queue ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px; }
-.visit-flow-queue li button { display:flex; align-items:center; gap:8px; width:100%; padding:6px 0; text-align:left; font-size:12px; }
-.visit-flow-queue li button>span:nth-child(2) { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.visit-flow-queue li .visit-flow-queue-row { display:flex; align-items:center; gap:8px; width:100%; padding:6px 0; text-align:left; font-size:12px; }
+.visit-flow-queue li .visit-flow-queue-row>span:nth-child(2) { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; }
 .visit-flow-queue time { color:var(--muted-foreground); font-size: 12px; font-variant-numeric:tabular-nums; }
 .visit-flow-queue-number { display:grid; place-items:center; width:24px; height:24px; border-radius:7px; background:var(--card); color:var(--muted-foreground); font-size: 12px; }
 .visit-flow-queue-empty { color:var(--muted-foreground); font-size:12px; line-height:1.7; }
@@ -39,7 +39,7 @@
 .visit-flow-agenda { display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--border); font-size:12px; text-align:left; }
 .visit-flow-board button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; border-radius:5px; }
 .visit-flow-board button:not(:disabled):hover .visit-flow-queue-number { color:var(--primary); }
-.visit-flow-agenda:hover,.visit-flow-name:hover { color:var(--primary); }
+.visit-flow-agenda:hover { color:var(--primary); }
 @media(max-width:1000px) { .visit-flow-board { grid-template-columns:minmax(0,1.35fr) minmax(240px,1fr); } .visit-flow-main { padding:20px; } }
 @media(max-width:760px) { .visit-flow-board { grid-template-columns:1fr; } .visit-flow-queue { padding:16px 20px; } .visit-flow-symbol { width:42px; height:42px; } .visit-flow-steps { gap:10px; } }
 @media(prefers-reduced-motion:reduce) { .visit-flow-track>span { transition:none; } }

@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { QuickPatientPicker } from "@/components/QuickPatientPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAppointmentsRepository } from "@/data/repositories";
+import { startInFlux } from "@/modules/flow-board/open-in-flux";
 import { prepareQuickConsultation } from "@/modules/shell/model/quick-consultation";
 import type { View } from "@/types";
 import type { Patient } from "@/types/db";
@@ -20,10 +21,7 @@ export default function QuickConsultation({open,onOpenChange,onNavigate}: {
     busy.current = true;
     try {
       const appointment = await prepareQuickConsultation({patient,userId:currentUser?.id,appointments:appointments.data,create:appointments.add});
-      sessionStorage.setItem("vetera:pending-consultation-start",appointment.id);
-      sessionStorage.setItem("vetera:pending-clinical-tab","consultations");
-      onNavigate("clinique");
-      window.dispatchEvent(new Event("vetera:open-consultation"));
+      startInFlux(appointment.id, onNavigate);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "La consultation n’a pas pu être ouverte.");
     } finally { busy.current = false; }

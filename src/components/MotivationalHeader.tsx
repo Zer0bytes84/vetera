@@ -203,8 +203,8 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
         note: "Planning des consultations, chirurgies et rendez-vous du cabinet.",
       },
       clinique: {
-        title: "Espace Clinique",
-        note: "Actes médicaux, prescriptions, examens et hospitalisations.",
+        title: "Soins & hospitalisation",
+        note: "Soins du jour, hospitalisations et rappels médicaux.",
       },
       stock: {
         title: "Produits",
