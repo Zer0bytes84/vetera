@@ -20,6 +20,7 @@ import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
 import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
 import MotivationalHeader from "@/components/MotivationalHeader";
 import { SectionCards } from "@/components/section-cards";
+import { isActiveBooking } from "./agenda-slots";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -408,6 +409,7 @@ export function AgendaView(props: AgendaViewProps) {
                     currentTimeLabel={formatTime(currentTime)}
                     currentTimePosition={currentTimePosition}
                     getPatientName={getPatientName}
+                    onCreateAt={(vetId, time) => handleOpenCreate(selectedDate, time, vetId)}
                     onSelectAppointment={selectAppointment}
                     selectedAppointmentId={selectedAppointmentId}
                     selectedDate={selectedDate}
@@ -613,7 +615,7 @@ export function AgendaView(props: AgendaViewProps) {
           <AgendaDayLoadCard
             dayLoadSummary={dayLoadSummary}
             engagedVetsCount={engagedVetsCount}
-            getAppointmentCount={(date) => getAppointmentsForDate(date).length}
+            getAppointmentCount={(date) => getAppointmentsForDate(date).filter(isActiveBooking).length}
             nextAppointment={
               nextAppointmentAfterDay
                 ? {

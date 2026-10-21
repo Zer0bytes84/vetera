@@ -2,6 +2,7 @@ import { formatNumber, formatPersonName } from "@/utils/display-format";
 import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
 import type { BusySlot } from "../components/agenda-shared";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
+import { agendaDayStats, isActiveBooking } from "../components/agenda-slots";
 import { findDossiers, selectedDossierSearchLabel } from "../quick-search";
 import {
   useDeferredValue,
@@ -420,150 +421,126 @@ export function useAgendaPageModel() {
   }, [appointments]);
 
   const nextAppointment = upcomingAppointments[0];
-  const urgentOpenCount = appointments.filter(
-    (appointment) =>
-      appointment.type === "Urgence" &&
-      !["completed", "cancelled"].includes(appointment.status)
-  ).length;
-
-  const totalPlannedMinutes = dailyAppointments.reduce((sum, appointment) => {
-    const start = normalizeDate(appointment.startTime);
-    const end = normalizeDate(appointment.endTime);
-    if (!(start && end)) {
-      return sum;
-    }
-    return (
-      sum + Math.max(0, Math.round((end.getTime() - start.getTime()) / 60_000))
-    );
-  }, 0);
-
-  const engagedVetsCount = vets.filter(
-    (vet) => (appointmentsByVet.get(vet.id) ?? []).length > 0
+  // One reading of the selected day for the indicators and the day-load card:
+  // cancelled and missed visits hold no time, urgencies are those of the day.
+  const dayStats = useMemo(() => agendaDayStats(dailyAppointments), [dailyAppointments]);
+  const urgentOpenCount = dayStats.openUrgent.length;
+  const totalPlannedMinutes = dayStats.minutes;
+  const engagedVetsCount = vets.filter((vet) =>
+    (appointmentsByVet.get(vet.id) ?? []).some(isActiveBooking)
   ).length;
 
   const sectionCards = useMemo<SectionCardItem[]>(() => {
-    const delta = dailyAppointments.length - previousDayAppointments.length;
-    const closedCount = dailyAppointments.filter(
-      (item) => item.status === "completed"
-    ).length;
-    const occupancyTarget = Math.max(1, vets.length) * 8 * 60;
-    const occupancy = Math.round((totalPlannedMinutes / occupancyTarget) * 100);
+    const plural = (count: number, word: string) =>
+      `${formatNumber(count)} ${word}${count > 1 ? "s" : ""}`;
+    const today = isSameDay(selectedDate, new Date());
+    const dayName = today
+      ? "aujourd'hui"
+      : `le ${formatDateLabel(selectedDate, { day: "numeric", month: "long" })}`;
+    const day = dayStats;
+    const previous = agendaDayStats(previousDayAppointments);
+    const delta = day.booked - previous.booked;
 
-    const patientName = nextAppointment
-      ? patientsById.get(nextAppointment.patientId)?.name ||
-        nextAppointment.title
+    const urgentNames = day.openUrgent
+      .slice(0, 2)
+      .map(
+        (item) =>
+          `${patientsById.get(item.patientId)?.name ?? "Patient"} à ${formatTimeCompact(item.startTime)}`
+      );
+    const moreUrgent = day.openUrgent.length - urgentNames.length;
+
+    const nextStart = nextAppointment ? normalizeDate(nextAppointment.startTime) : null;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const nextDay = !nextStart
+      ? ""
+      : isSameDay(nextStart, new Date())
+        ? "Aujourd'hui"
+        : isSameDay(nextStart, tomorrow)
+          ? "Demain"
+          : formatDateLabel(nextStart, { weekday: "short", day: "numeric", month: "short" });
+    const nextPatient = nextAppointment
+      ? patientsById.get(nextAppointment.patientId)?.name || nextAppointment.title
       : "";
-    const remainingSlots = Math.max(
-      0,
-      dailyAppointments.length - closedCount
-    );
-    const capacityHours = Math.max(1, vets.length) * 8;
-    const hasDailyAppointments = dailyAppointments.length > 0;
+    const nextVet = nextAppointment
+      ? formatPersonName(vets.find((vet) => vet.id === nextAppointment.vetId)?.displayName)
+      : "";
 
     return [
       {
         title: t("agenda.overview.slotsTitle", { defaultValue: "Créneaux" }),
-        value: formatNumber(dailyAppointments.length),
-        // No trend when either day is empty: "-1 vs hier" on a free day says nothing.
-        ...(hasDailyAppointments && previousDayAppointments.length > 0
+        value: formatNumber(day.booked),
+        // No difference when either day is empty: "-1" against a free day says nothing.
+        ...(day.booked > 0 && previous.booked > 0
           ? {
               change: delta,
               changeKind: "difference" as const,
-              changeLabel: "vs hier",
-              trend: delta > 0 ? ("up" as const) : delta < 0 ? ("down" as const) : ("neutral" as const),
+              changeLabel: `contre ${formatNumber(previous.booked)} la veille`,
             }
-          : { trend: "neutral" as const }),
-        detailRow: hasDailyAppointments
-          ? `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""} · ${remainingSlots} restant${remainingSlots > 1 ? "s" : ""}`
-          : "Aucun rendez-vous ce jour",
-        footerTitle: `${formatNumber(closedCount)} clôturé${closedCount > 1 ? "s" : ""}`,
-        footerDescription: t("agenda.overview.closedConsultations", {
-          count: closedCount,
-          defaultValue_one: "{{count}} consultation clôturée",
-          defaultValue_other: "{{count}} consultations clôturées",
-        }),
+          : {}),
+        detailRow:
+          day.booked > 0 || day.cancelled > 0
+            ? [
+                plural(day.completed, "terminé"),
+                `${formatNumber(day.underway)} en cours`,
+                `${formatNumber(day.planned)} à venir`,
+                day.cancelled > 0 ? plural(day.cancelled, "annulé") : "",
+              ]
+                .filter(Boolean)
+                .join(" · ")
+            : `Aucun rendez-vous ${dayName}`,
+        footerTitle: plural(day.completed, "terminé"),
+        footerDescription: "Rendez-vous du jour, hors annulés",
       },
       {
         title: t("agenda.overview.openEmergencies", {
           defaultValue: "Urgences ouvertes",
         }),
-        value: formatNumber(urgentOpenCount),
-        ...(urgentOpenCount > 0
-          ? {
-              change: urgentOpenCount,
-              changeKind: "count" as const,
-              changeLabel: "cas prioritaires",
-            }
-          : {}),
-        inverse: true,
-        tone: urgentOpenCount > 0 ? "critical" : "positive",
-        trend: urgentOpenCount > 0 ? "down" : "neutral",
+        value: formatNumber(day.openUrgent.length),
+        badge: day.openUrgent.length > 0 ? `Non terminées ${dayName}` : undefined,
+        tone: day.openUrgent.length > 0 ? "critical" : undefined,
         detailRow:
-          urgentOpenCount > 0
-            ? `${urgentOpenCount} patient prioritaire · Surveillance requise`
-            : "Planning régulier · Aucun cas critique",
-        footerTitle: "Cas à surveiller",
-        footerDescription: t("agenda.overview.priorityCases", {
-          defaultValue: "Cas à surveiller en priorité",
-        }),
+          day.openUrgent.length > 0
+            ? `${urgentNames.join(" · ")}${moreUrgent > 0 ? ` · +${moreUrgent}` : ""}`
+            : `Aucune urgence ouverte ${dayName}`,
+        footerTitle: "Urgences non terminées",
+        footerDescription: "Urgences du jour non terminées",
       },
       {
         title: t("agenda.overview.plannedTime", {
           defaultValue: "Temps planifié",
         }),
-        value: formatDuration(totalPlannedMinutes),
-        ...(totalPlannedMinutes > 0
-          ? {
-              change: Number.isFinite(occupancy) ? occupancy : 0,
-              changeKind: "rate" as const,
-              changeBase: occupancyTarget,
-              changeLabel: "d'occupation",
-            }
-          : {}),
-        trend: occupancy > 85 ? "down" : "neutral",
+        value: formatDuration(day.minutes),
         detailRow:
-          engagedVetsCount > 0
-            ? `${engagedVetsCount} praticien${engagedVetsCount > 1 ? "s" : ""} mobilisé${engagedVetsCount > 1 ? "s" : ""} · Capacité max ${capacityHours}h`
-            : `Rien de planifié · Capacité max ${capacityHours}h`,
-        footerTitle: t("agenda.overview.engagedVets", {
-          count: engagedVetsCount,
-          defaultValue_one: "{{count}} praticien mobilisé",
-          defaultValue_other: "{{count}} praticiens mobilisés",
-        }),
-        footerDescription: "Occupation planning",
+          day.minutes > 0
+            ? `${formatNumber(day.vets)} praticien${day.vets > 1 ? "s" : ""} mobilisé${day.vets > 1 ? "s" : ""} sur ${formatNumber(vets.length)} · hors annulés`
+            : `Rien de planifié ${dayName}`,
+        footerTitle: "Durée des rendez-vous du jour",
+        footerDescription: "Durée cumulée des rendez-vous du jour",
       },
       {
         title: t("agenda.overview.nextAppointment", {
           defaultValue: "Prochain rendez-vous",
         }),
-        value: nextAppointment
-          ? formatTimeCompact(nextAppointment.startTime)
-          : t("agenda.overview.free", { defaultValue: "Libre" }),
+        value: nextAppointment ? formatTimeCompact(nextAppointment.startTime) : "Aucun",
         badge: nextAppointment
-          ? nextAppointment.type || "Rendez-vous"
-          : "Disponible",
-        tone: nextAppointment ? "quiet" : "positive",
-        trend: "neutral",
+          ? `${nextDay} · ${nextAppointment.type || "Rendez-vous"}`
+          : undefined,
+        tone: nextAppointment ? "quiet" : undefined,
         detailRow: nextAppointment
-          ? `${patientName} · ${nextAppointment.title || "Consultation standard"}`
-          : "Aucun créneau imminent dans la demi-heure",
-        footerTitle:
-          patientName ||
-          t("agenda.overview.noUpcomingSlot", {
-            defaultValue: "Aucun créneau imminent",
-          }),
+          ? [nextPatient, nextVet].filter(Boolean).join(" · ")
+          : "Aucun rendez-vous à venir",
+        footerTitle: nextPatient || "Aucun rendez-vous à venir",
         footerDescription: "Prochain passage",
       },
     ];
   }, [
-    dailyAppointments,
-    engagedVetsCount,
+    dayStats,
     nextAppointment,
     patientsById,
-    previousDayAppointments.length,
-    totalPlannedMinutes,
-    urgentOpenCount,
-    vets.length,
+    previousDayAppointments,
+    selectedDate,
+    vets,
     t,
   ]);
 
@@ -598,7 +575,7 @@ export function useAgendaPageModel() {
       vets
         .map((vet) => ({
           vet,
-          count: (appointmentsByVet.get(vet.id) ?? []).length,
+          count: (appointmentsByVet.get(vet.id) ?? []).filter(isActiveBooking).length,
         }))
         .filter((entry) => entry.count > 0)
         .sort((left, right) => right.count - left.count),
@@ -610,7 +587,7 @@ export function useAgendaPageModel() {
       APPOINTMENT_TYPES.map((type) => ({
         type,
         count: dailyAppointments.filter(
-          (appointment) => appointment.type === type
+          (appointment) => appointment.type === type && isActiveBooking(appointment)
         ).length,
       })).filter((item) => item.count > 0),
     [dailyAppointments]
@@ -647,10 +624,13 @@ export function useAgendaPageModel() {
     resetForm(selectedDate);
   };
 
-  const handleOpenCreate = (date = selectedDate, time?: string) => {
+  const handleOpenCreate = (date = selectedDate, time?: string, vetId?: string) => {
     resetForm(date);
     if (time) {
       setFormTime(time);
+    }
+    if (vetId) {
+      setSelectedVetId(vetId);
     }
     setIsDialogOpen(true);
   };

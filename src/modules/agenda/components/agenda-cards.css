@@ -465,3 +465,33 @@
   padding: 28px 24px;
   text-align: center;
 }
+
+/* ---------- Vue par vétérinaire : créneaux libres ---------- */
+/* Une demi-heure libre ne montre « + 10:30 » qu'au survol ou au clavier :
+   apparition immédiate, disparition en 150 ms, comme les lignes de liste. */
+.agenda-free-slot {
+  background: transparent;
+  transition: background-color var(--speed-highlight-out) ease;
+}
+.agenda-free-slot-hint {
+  opacity: 0;
+  transition: opacity var(--speed-highlight-out) ease;
+}
+.agenda-free-slot:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+  background: var(--row-hover);
+}
+.agenda-free-slot:focus-visible .agenda-free-slot-hint {
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .agenda-free-slot:hover {
+    background: var(--row-hover);
+    transition-duration: var(--speed-highlight-in);
+  }
+  .agenda-free-slot:hover .agenda-free-slot-hint {
+    opacity: 1;
+    transition-duration: var(--speed-highlight-in);
+  }
+}

@@ -34,6 +34,7 @@ import type {
   RecurrenceFrequency,
 } from "@/types/db";
 import { formatClockTime, formatPersonName } from "@/utils/display-format";
+import { freeSlotStarts, isActiveBooking, personInitials } from "./agenda-slots";
 
 export const APPOINTMENT_TYPES: Appointment["type"][] = [
   "Consultation",
@@ -999,6 +1000,7 @@ export function AgendaDayView({
   currentTimeLabel,
   onSelectAppointment,
   getPatientName,
+  onCreateAt,
 }: {
   vets: AppUser[];
   appointmentsByVet: Map<string, Appointment[]>;
@@ -1008,7 +1010,10 @@ export function AgendaDayView({
   currentTimeLabel: string;
   onSelectAppointment: (appointment: Appointment) => void;
   getPatientName: (patientId: string) => string;
+  /** A free half hour of a column was chosen: book it for that vet. */
+  onCreateAt?: (vetId: string, time: string) => void;
 }) {
+  const showsNow = isSameDay(selectedDate, new Date()) && currentTimePosition !== null;
   if (vets.length === 0) {
     return (
       <div className="flex flex-1 px-6 pb-6">
@@ -1033,22 +1038,53 @@ export function AgendaDayView({
       <div className="min-w-[980px] overflow-hidden rounded-lg border">
         <div className="flex">
           <div className="w-20 shrink-0 border-border/70 border-r bg-muted/20 pt-[4.5rem]">
-            {HOUR_BLOCKS.map((hour) => (
-              <div
-                className="relative pr-4 text-right"
-                key={hour}
-                style={{ height: DAY_HOUR_HEIGHT }}
-              >
-                <span className="-translate-y-1/2 font-medium text-muted-foreground text-xs">
-                  {`${hour.toString().padStart(2, "0")}:00`}
-                </span>
-              </div>
-            ))}
+            <div className="relative">
+              {HOUR_BLOCKS.map((hour) => (
+                <div
+                  className="relative pr-4 text-right"
+                  key={hour}
+                  style={{ height: DAY_HOUR_HEIGHT }}
+                >
+                  <span
+                    className={cn(
+                      "-translate-y-1/2 font-medium text-muted-foreground text-xs",
+                      // The current time label takes the place of an hour it would touch.
+                      showsNow &&
+                        Math.abs((hour - CALENDAR_START_HOUR) * DAY_HOUR_HEIGHT - (currentTimePosition ?? 0)) <
+                          DAY_HOUR_HEIGHT / 3 &&
+                        "invisible"
+                    )}
+                  >
+                    {`${hour.toString().padStart(2, "0")}:00`}
+                  </span>
+                </div>
+              ))}
+              {/* The current time is named once, in the margin. */}
+              {showsNow ? (
+                <div
+                  className="pointer-events-none absolute right-2 z-20 -translate-y-1/2 rounded-full bg-primary px-2 py-0.5 font-medium t-12 text-primary-foreground tabular-nums"
+                  style={{ top: `${currentTimePosition}px` }}
+                >
+                  {currentTimeLabel}
+                </div>
+              ) : null}
+            </div>
           </div>
 
           {vets.map((vet) => {
             const vetAppointments = appointmentsByVet.get(vet.id) ?? [];
             const layoutMap = calculateOverlapMap(vetAppointments);
+            const booked = vetAppointments.filter(isActiveBooking);
+            const bookedPatients = new Set(booked.map((a) => a.patientId)).size;
+            const freeSlots = onCreateAt
+              ? freeSlotStarts({
+                  appointments: vetAppointments,
+                  day: selectedDate,
+                  startHour: CALENDAR_START_HOUR,
+                  endHour: CALENDAR_END_HOUR,
+                  now: new Date(),
+                })
+              : [];
 
             return (
               <div
@@ -1058,14 +1094,16 @@ export function AgendaDayView({
                 <div className="sticky top-0 z-10 border-border/70 border-b bg-card/95 px-4 py-4 backdrop-blur">
                   <div className="flex items-center gap-3">
                     <div className="flex size-11 items-center justify-center rounded-2xl bg-muted text-foreground">
-                      {(vet.displayName || "?").slice(0, 2).toUpperCase()}
+                      {personInitials(vet.displayName)}
                     </div>
                     <div className="min-w-0">
                       <p className="truncate font-medium text-foreground">
                         {formatPersonName(vet.displayName)}
                       </p>
                       <p className="text-muted-foreground text-sm">
-                        {vetAppointments.length} rendez-vous
+                        {booked.length === 0
+                          ? "Aucun rendez-vous"
+                          : `${booked.length} rendez-vous · ${bookedPatients} patient${bookedPatients > 1 ? "s" : ""}`}
                       </p>
                     </div>
                   </div>
@@ -1080,20 +1118,35 @@ export function AgendaDayView({
                     />
                   ))}
 
-                  {isSameDay(selectedDate, new Date()) &&
-                  currentTimePosition !== null ? (
+                  {freeSlots.map((minutes) => {
+                    const time = minutesToTime(minutes);
+                    return (
+                      <button
+                        aria-label={`Nouveau rendez-vous à ${time} avec ${formatPersonName(vet.displayName)}`}
+                        className="agenda-free-slot group/slot absolute inset-x-1 flex items-center gap-1.5 rounded-md px-2 text-left t-12 text-muted-foreground"
+                        key={minutes}
+                        onClick={() => onCreateAt?.(vet.id, time)}
+                        style={{
+                          top: ((minutes - CALENDAR_START_HOUR * 60) / 60) * DAY_HOUR_HEIGHT,
+                          height: DAY_HOUR_HEIGHT / 2,
+                        }}
+                        type="button"
+                      >
+                        <span aria-hidden="true" className="agenda-free-slot-hint">
+                          + {time}
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                  {showsNow ? (
                     <div
-                      className="pointer-events-none absolute inset-x-0 z-20 flex items-center"
+                      className="pointer-events-none absolute inset-x-0 z-20 h-px bg-primary/70"
                       style={{ top: `${currentTimePosition}px` }}
-                    >
-                      <div className="rounded-full bg-primary px-2 py-1 font-medium t-12 text-primary-foreground shadow-sm">
-                        {currentTimeLabel}
-                      </div>
-                      <div className="h-px flex-1 bg-primary/70" />
-                    </div>
+                    />
                   ) : null}
 
-                  <div className="absolute inset-0">
+                  <div className="pointer-events-none absolute inset-0 [&>*]:pointer-events-auto">
                     {vetAppointments.map((appointment) => {
                       const start = normalizeDate(appointment.startTime);
                       const end = normalizeDate(appointment.endTime);
