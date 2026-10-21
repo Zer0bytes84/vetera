@@ -355,6 +355,7 @@ export function DashboardPage({
               remindersError={medicalReminders.error}
               remindersLoading={medicalReminders.loading}
               stock={buildStockWatch({ now, products: presentation.products })}
+              updatedAt={now}
             />
           }
           today={today}

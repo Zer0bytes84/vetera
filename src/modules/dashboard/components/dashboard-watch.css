@@ -169,3 +169,8 @@
   flex-shrink: 0;
   margin-top: 2px;
 }
+
+/* The update time moves to the next line as one piece. */
+.watchUpdated {
+  white-space: nowrap;
+}

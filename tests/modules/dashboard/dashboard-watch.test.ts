@@ -105,7 +105,8 @@ describe("stock à surveiller", () => {
       ["Bientôt", "warning"],
       ["Bas", "warning"],
     ]);
-    expect(list.rows.find((r) => r.title === "Bas")?.detail).toBe("3 dose · seuil 5");
+    expect(list.rows.find((r) => r.title === "Bas")?.detail).toBe("Sous le seuil de 5");
+    expect(list.rows.find((r) => r.title === "Bas")?.meta).toBe("3 doses");
     expect(list.rows.find((r) => r.title === "Bientôt")?.detail).toMatch(/^Périme le 30 nov/);
   });
 
@@ -116,8 +117,8 @@ describe("stock à surveiller", () => {
         product({ quantity: 20, availableQuantity: 2, nearestExpiryDate: "2026-10-30", expiryDate: "2028-01-01" }),
       ],
     });
-    expect(list.rows[0].detail).toMatch(/^2 boîte · seuil 5 · Périme le 30 oct/);
-    expect(list.rows[0].meta).toBe("2 boîte");
+    expect(list.rows[0].detail).toMatch(/^Sous le seuil de 5 · Périme le 30 oct/);
+    expect(list.rows[0].meta).toBe("2 boîtes");
   });
 });
 

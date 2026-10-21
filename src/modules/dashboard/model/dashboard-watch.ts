@@ -119,6 +119,12 @@ export function buildUpcomingReminders({
 // Stock à surveiller
 // ---------------------------------------------------------------------------
 
+/** "3 dose" reads "3 doses": units are stored singular; a plural form is kept. */
+export function quantityLabel(quantity: number, unit: string) {
+  const plural = Math.abs(quantity) > 1 && unit && !/[sx]$/i.test(unit) && !/\s/.test(unit);
+  return `${quantity} ${plural ? `${unit}s` : unit}`.trim();
+}
+
 export function buildStockWatch({
   expiryDays = 60,
   limit = 4,
@@ -142,7 +148,7 @@ export function buildStockWatch({
       parts.push("Rupture de stock");
       raise("critical");
     } else if (quantity <= product.minStock) {
-      parts.push(`${quantity} ${product.unit} · seuil ${product.minStock}`);
+      parts.push(`Sous le seuil de ${product.minStock}`);
       raise("warning");
     }
 
@@ -168,7 +174,7 @@ export function buildStockWatch({
         id: `stock:${product.id}`,
         title: product.name,
         detail: parts.join(" · "),
-        meta: `${quantity} ${product.unit}`,
+        meta: quantityLabel(quantity, product.unit),
         tone,
         order,
       },

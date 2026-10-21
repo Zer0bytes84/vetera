@@ -2,6 +2,7 @@ import { ArrowRight, BedDouble, Bell, Package } from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { WatchList, WatchRow } from "../model/dashboard-watch";
+import { formatTime } from "../v2/model";
 import "./dashboard-watch.css";
 
 interface WatchCardProps {
@@ -18,6 +19,7 @@ interface WatchCardProps {
   /** Résumé court affiché à côté du titre (« 2 en retard »). */
   summary?: string | null;
   title: string;
+  updatedAt?: Date;
 }
 
 function WatchCard({
@@ -33,6 +35,7 @@ function WatchCard({
   onRow,
   summary,
   title,
+  updatedAt,
 }: WatchCardProps) {
   const hidden = list.total - list.rows.length;
   return (
@@ -50,7 +53,15 @@ function WatchCard({
               </span>
             ) : null}
           </h2>
-          <p className="cardNote">{note}</p>
+          <p className="cardNote">
+            {note}
+            {updatedAt ? (
+              <>
+                {" · "}
+                <span className="watchUpdated">Mis à jour à {formatTime(updatedAt)}</span>
+              </>
+            ) : null}
+          </p>
         </div>
         <button className="moreLink" onClick={onMore} type="button">
           {moreLabel} <ArrowRight aria-hidden="true" size={13} />
@@ -113,6 +124,8 @@ export interface DashboardWatchProps {
   remindersLoading?: boolean;
   onRemindersRetry?: () => void;
   stock: WatchList;
+  /** When the lists were computed, shown in each card's note. */
+  updatedAt?: Date;
 }
 
 /** Rangée « À surveiller » : trois listes courtes, issues des vraies données. */
@@ -127,6 +140,7 @@ export function DashboardWatch({
   remindersError,
   remindersLoading,
   stock,
+  updatedAt,
 }: DashboardWatchProps) {
   return (
     <div className="watchGrid">
@@ -143,6 +157,7 @@ export function DashboardWatch({
         onRow={(row) => (row.patientId ? onOpenPatient(row.patientId) : onReminders())}
         summary={reminders.critical ? `${reminders.critical} en retard` : null}
         title="Rappels à venir"
+        updatedAt={updatedAt}
       />
       <WatchCard
         emptyText="Stock à jour : aucun seuil atteint ni lot proche de péremption."
@@ -154,6 +169,7 @@ export function DashboardWatch({
         onRow={onStock}
         summary={stock.total ? `${stock.total} à traiter` : null}
         title="Stock à surveiller"
+        updatedAt={updatedAt}
       />
       <WatchCard
         emptyText="Aucun animal hospitalisé en ce moment."
@@ -165,6 +181,7 @@ export function DashboardWatch({
         onRow={(row) => (row.patientId ? onOpenPatient(row.patientId) : onStays())}
         summary={hospitalized.total ? `${hospitalized.total} en cours` : null}
         title="Hospitalisés"
+        updatedAt={updatedAt}
       />
     </div>
   );
