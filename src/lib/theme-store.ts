@@ -56,7 +56,7 @@ export const HEADER_PATTERNS: Record<
 
 export interface ThemeConfig {
   visualStyle?: VisualStyle;
-  /** Unset means the default skin (DEFAULT_SKIN), so changing that default reaches untouched installs. */
+  /** Unset means the default skin (DEFAULT_SKIN). Installs from before Clean became the default have it set (keepPreviousAppearanceDefaults). */
   skin?: Skin;
   chromeStyle: "classic" | "liquid-glass";
   accent: AccentColor;
@@ -449,8 +449,30 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
 }
 
 const PREMIUM_DEFAULT_MIGRATION_KEY = "baitari-premium-default-v1";
+const CLEAN_DEFAULT_MIGRATION_KEY = "baitari-clean-default-v1";
+
+/**
+ * Clean is the default skin, and light the default mode, for new installs only.
+ * An install that already ran keeps what it showed: Premium, and dark when no
+ * mode was ever chosen. A choice already stored is never touched. Once only.
+ */
+export function keepPreviousAppearanceDefaults() {
+  if (localStorage.getItem(CLEAN_DEFAULT_MIGRATION_KEY) === "true") return;
+  const stored = localStorage.getItem("theme-config");
+  // Every launch since the Premium default has written this key, with or without a stored config.
+  if (stored !== null || localStorage.getItem(PREMIUM_DEFAULT_MIGRATION_KEY) === "true") {
+    let parsed: Partial<ThemeConfig> = {};
+    try { parsed = stored ? JSON.parse(stored) : {}; } catch { /* unreadable config: keep it as is */ }
+    if (parsed && typeof parsed === "object" && parsed.skin === undefined) {
+      localStorage.setItem("theme-config", JSON.stringify({ ...DEFAULT_THEME, ...parsed, skin: "premium" }));
+    }
+    if (localStorage.getItem("theme") === null) localStorage.setItem("theme", "dark");
+  }
+  localStorage.setItem(CLEAN_DEFAULT_MIGRATION_KEY, "true");
+}
 
 export function getThemeConfig(): ThemeConfig {
+  keepPreviousAppearanceDefaults();
   try {
     const stored = localStorage.getItem("theme-config");
     if (stored) {

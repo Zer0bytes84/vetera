@@ -3,6 +3,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import {
   applyTheme as applyAppearance,
   getThemeConfig,
+  keepPreviousAppearanceDefaults,
 } from "@/lib/theme-store";
 
 type Theme = "dark" | "light" | "system";
@@ -90,6 +91,8 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = React.useState<Theme>(() => {
+    // Before reading the mode: an existing install keeps its own (see theme-store).
+    keepPreviousAppearanceDefaults();
     const storedTheme = localStorage.getItem(storageKey);
     if (isTheme(storedTheme)) {
       return storedTheme;

@@ -395,12 +395,47 @@ describe("thème Clean : réglage et défaut", () => {
     return { storage, dataset };
   }
 
-  it("garde Premium par défaut, un seul réglage décide du défaut", () => {
-    environment();
-    expect(DEFAULT_SKIN).toBe("premium");
+  it("Clean par défaut sur une installation neuve, un seul réglage décide du défaut", () => {
+    const { storage } = environment();
+    expect(DEFAULT_SKIN).toBe("clean");
     expect(normalizeSkin(undefined)).toBe(DEFAULT_SKIN);
-    expect(normalizeSkin("clean")).toBe("clean");
+    expect(normalizeSkin("premium")).toBe("premium");
     expect(getThemeConfig().skin).toBeUndefined();
+    expect(normalizeSkin(getThemeConfig().skin)).toBe("clean");
+    // Nothing is stored for the mode: the provider's default (light) applies.
+    expect(storage.get("theme")).toBeUndefined();
+  });
+
+  it("une installation existante garde Premium et son mode sombre", () => {
+    const { storage } = environment();
+    storage.set("baitari-premium-default-v1", "true");
+    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, density: "compact" }));
+    expect(getThemeConfig()).toMatchObject({ skin: "premium", density: "compact" });
+    expect(storage.get("theme")).toBe("dark");
+  });
+
+  it("une installation existante sans configuration enregistrée garde aussi Premium", () => {
+    const { storage } = environment();
+    storage.set("baitari-premium-default-v1", "true");
+    expect(getThemeConfig().skin).toBe("premium");
+    expect(storage.get("theme")).toBe("dark");
+  });
+
+  it("n'écrase aucun choix déjà enregistré", () => {
+    const { storage } = environment();
+    storage.set("baitari-premium-default-v1", "true");
+    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, skin: "clean" }));
+    storage.set("theme", "light");
+    expect(getThemeConfig().skin).toBe("clean");
+    expect(storage.get("theme")).toBe("light");
+  });
+
+  it("ne fige qu'une fois : un réglage fait ensuite sur une installation neuve reste à Clean", () => {
+    const { storage } = environment();
+    getThemeConfig();
+    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, accent: "rose" }));
+    expect(normalizeSkin(getThemeConfig().skin)).toBe("clean");
+    expect(storage.get("theme")).toBeUndefined();
   });
 
   it("pose la peau sur la racine, et jamais en Classique", () => {

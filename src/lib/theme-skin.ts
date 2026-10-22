@@ -6,7 +6,7 @@
 export type Skin = "premium" | "clean";
 
 /** The one value that decides which skin a new or untouched install gets. */
-export const DEFAULT_SKIN: Skin = "premium";
+export const DEFAULT_SKIN: Skin = "clean";
 
 export function normalizeSkin(value: unknown): Skin {
   return value === "clean" || value === "premium" ? value : DEFAULT_SKIN;

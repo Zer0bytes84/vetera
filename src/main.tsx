@@ -101,7 +101,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <AppDirectionProvider>
-        <ThemeProvider defaultTheme="dark">
+        <ThemeProvider defaultTheme="light">
           <AppProviders />
         </ThemeProvider>
       </AppDirectionProvider>
