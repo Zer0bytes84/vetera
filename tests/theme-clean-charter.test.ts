@@ -85,6 +85,19 @@ describe("thème Clean : feuille posée sur le cadre", () => {
     expect(inset).toContain("var(--clean-sheet-inset)");
   });
 
+  it("peint la bande au-dessus de l'en-tête du gris du cadre, malgré l'utilitaire en couche", () => {
+    const layered: string[] = [];
+    root.walkAtRules("layer", (layer) => {
+      layer.walkRules(/sidebar-inset/, (rule) => { layered.push(rule.toString()); });
+    });
+    expect(layered.some((rule) => rule.includes("background: var(--clean-frame) !important"))).toBe(true);
+  });
+
+  it("aligne les champs de page sur les 32 px des contrôles voisins", () => {
+    const tokens = rulesFor(new RegExp(`^${SCOPE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`)).map((rule) => rule.toString()).join("");
+    expect(tokens).toContain("--field-height: var(--clean-control)");
+  });
+
   it("pose la navigation sur le cadre, sans séparateur ni boîte", () => {
     const sidebar = rulesFor(/sidebar-container"\]::after/);
     expect(sidebar.some((rule) => rule.toString().includes("display: none"))).toBe(true);
@@ -134,6 +147,47 @@ describe("polices par thème", () => {
     expect(declarations.get("--clean-tracking-heading")).toBe("-0.015em");
     const tabular = rulesFor(/\.kpiValue/);
     expect(tabular.some((rule) => /table/.test(rule.selector) && rule.toString().includes("tabular-nums"))).toBe(true);
+  });
+});
+
+describe("thème Clean : interrupteurs segmentés", () => {
+  const FAMILY = ':is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle)';
+
+  it("pose la piste, l'item de 28 px et l'ombre de la vue choisie", () => {
+    expect(declarations.get("--clean-segment-track")).toBe("#ededee");
+    expect(declarations.get("--clean-segment-item")).toBe("28px");
+    expect(declarations.get("--clean-segment-radius")).toBe("6px");
+    expect(declarations.get("--clean-segment-active-shadow")).toMatch(/0\.5px rgb\(0 0 0 \/ 0\.1\)/);
+  });
+
+  it("donne le même traitement à toutes les familles, à la hauteur des contrôles voisins", () => {
+    const track = rulesFor(new RegExp(`${FAMILY.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+    expect(track).toHaveLength(1);
+    const base = track.find((rule) => rule.toString().includes("--clean-segment-track"))!.toString();
+    expect(base).toContain("height: var(--clean-control)");
+    const item = rulesFor(/> :is\(\[data-slot="tabs-trigger"\]/).filter((rule) => rule.selector.includes(".flow-density"));
+    expect(item.some((rule) => rule.toString().includes("height: var(--clean-segment-item)"))).toBe(true);
+    const chosen = rulesFor(/\[aria-pressed="true"\][^)]*\.settings-segmented-active\)$/);
+    expect(chosen).toHaveLength(1);
+    expect(chosen[0].toString()).toContain("var(--clean-segment-active-shadow)");
+    expect(chosen[0].toString()).not.toContain("font-weight");
+  });
+
+  it("nomme la vue du tableau de bord avec son libellé existant, jamais un texte écrit en dur", () => {
+    const named = rulesFor(/dashboard-mode-toggle > button\[aria-pressed="true"\]::after/);
+    expect(named).toHaveLength(1);
+    expect(named[0].toString()).toContain("content: attr(aria-label)");
+    root.walkDecls("content", (decl) => {
+      expect(decl.value === '""' || decl.value.startsWith("attr(")).toBe(true);
+    });
+  });
+});
+
+describe("thème Clean : en-tête en verre", () => {
+  it("floute l'en-tête au défilement avec un seul jeton", () => {
+    expect(declarations.get("--clean-glass-blur")).toBe("20px");
+    const header = rulesFor(/\[data-slot="app-header"\]$/).map((rule) => rule.toString()).join("");
+    expect(header).toContain("blur(var(--clean-glass-blur))");
   });
 });
 

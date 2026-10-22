@@ -444,9 +444,10 @@ export function StockWorkspace({
               <ListFilter label="État" value={status} onValueChange={value => setStatus(value as StockFilter)} options={[
                 { value: "all", label: "Tous" }, { value: "healthy", label: "Disponibles" }, { value: "low", label: "Stock bas" }, { value: "out", label: "Ruptures" }, { value: "expiring", label: "À surveiller" }, { value: "expired", label: "Expirés" },
               ]} />
-              <div className="ml-auto flex h-[30px] items-center rounded-full border bg-background p-0.5">
+              <div className="stock-view-toggle ml-auto flex h-[30px] items-center rounded-full border bg-background p-0.5">
                 <Button
                   aria-label="Vue tableau"
+                  aria-pressed={view === "table"}
                   className="size-6"
                   onClick={() => setView("table")}
                   size="icon-sm"
@@ -456,6 +457,7 @@ export function StockWorkspace({
                 </Button>
                 <Button
                   aria-label="Vue cartes"
+                  aria-pressed={view === "cards"}
                   className="size-6"
                   onClick={() => setView("cards")}
                   size="icon-sm"
