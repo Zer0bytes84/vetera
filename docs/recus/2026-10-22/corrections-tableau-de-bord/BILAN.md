@@ -136,3 +136,11 @@ Empreintes de Premium, relevées avec les fichiers du dernier commit, puis avec 
 - `barre.jpg` : les quatre cas forcés, chacun à côté de son état Automatique.
 
 **À savoir en lisant les captures.** Sur le serveur de capture, les rappels patients et les lignes de factures ne se chargent pas (pas de base SQLite) : la carte Rappels montre son message d'erreur, et « Facturé par nature » dit que les factures n'ont pas pu être lues. Sur `hospitalises.jpg`, la grille dit « 4 sur 6 places occupées » et la liste « Aucun animal hospitalisé » : seuls les séjours du nouveau modèle sont injectés. C'est exactement l'écart des deux modèles nommé au point 4.
+
+## Vérifié dans l'app réelle
+
+Après le commit, tu as vérifié le réglage dans l'app réelle, en Clean clair. Tes deux captures sont dans `app-reelle/` :
+- `clean-clair-barre-claire.webp` : « Claire » choisi, la barre et la bande au-dessus de l'en-tête passent en clair ensemble ;
+- `clean-clair-automatique.webp` : retour à « Automatique », la barre sombre du thème revient.
+
+Les autres combinaisons (Premium clair avec Sombre, Premium sombre et Clean sombre avec Claire) restent vérifiées par empreintes et captures sur le serveur de capture, pas encore dans l'app réelle.
