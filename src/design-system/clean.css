@@ -25,6 +25,9 @@
 :root[data-skin="clean"] {
   /* Depth: a darker frame holds navigation; work happens on one lifted sheet. */
   --clean-frame: #ededee;
+  /* The window chrome around the sheet (top and right strips) continues the
+     sidebar, so it takes the dark frame in both declensions. */
+  --clean-chrome: #0c0d0f;
   --clean-sheet: #fafafa;
   --clean-surface: #ffffff;
   --clean-line: #e6e6e8;
@@ -38,6 +41,11 @@
   --clean-ink: #5d5d5d;
   --clean-ink-quiet: #7f7f7f;
   --clean-ink-disabled: #a6a6a6;
+  /* Accent and focus ring: Premium's values for each mode, as Clean tokens so
+     the sidebar can carry the dark ones next to light content. */
+  --clean-accent: #191919;
+  --clean-accent-hover: #000000;
+  --clean-ring: #191919;
   /* Geometry and rhythm (Linear: sheet 8 px in, 12 px corners; nav 28 px). */
   --clean-sheet-inset: 8px;
   --clean-sheet-radius: 12px;
@@ -88,9 +96,13 @@
 
 /* Dark declension, after Linear's dark: tinted near-blacks (LCH hue 272,
    chroma about 1), opaque surfaces, depth carried by lightness steps and fine
-   lines, never by shadows or pure black. Same token names as the light set. */
-:root[data-skin="clean"].dark {
+   lines, never by shadows or pure black. Same token names as the light set.
+   The sidebar takes this same block in Clean light too: a dark sidebar next
+   to light content, identical in both declensions (no palette of its own). */
+:root[data-skin="clean"].dark,
+:root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) {
   --clean-frame: #0c0d0f;
+  --clean-chrome: var(--clean-frame);
   --clean-sheet: #111214;
   --clean-surface: #171719;
   --clean-line: #232426;
@@ -103,6 +115,14 @@
   --clean-ink: #cbcccd;
   --clean-ink-quiet: #959698;
   --clean-ink-disabled: #575759;
+  /* Premium dark's status hues, carried by the sidebar dots in both declensions. */
+  --premium-blue: #88b3ef;
+  --premium-green: #74c399;
+  --premium-red: #ec9288;
+  --premium-orange: #e2b467;
+  --clean-accent: #3b1fe5;
+  --clean-accent-hover: #4b33f0;
+  --clean-ring: #ffffff;
   --clean-segment-track: rgb(255 255 255 / 0.05);
   --clean-segment-active: rgb(255 255 255 / 0.1);
   --clean-segment-active-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.08);
@@ -119,7 +139,8 @@
 /* Premium's semantic tokens point at the Clean values, in both declensions
    (the .dark selector outranks Premium dark's own token block). */
 :root[data-skin="clean"],
-:root[data-skin="clean"].dark {
+:root[data-skin="clean"].dark,
+:root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) {
   --canvas: var(--clean-sheet) !important;
   --background: var(--clean-sheet) !important;
   --frame: var(--clean-sheet) !important;
@@ -160,6 +181,20 @@
   --ink-faint: var(--clean-ink-quiet) !important;
   --faint: var(--clean-ink-quiet) !important;
   --card-foreground: var(--clean-ink-strong) !important;
+  --primary: var(--clean-accent) !important;
+  --primary-hover: var(--clean-accent-hover) !important;
+  --ring: var(--clean-ring) !important;
+  /* Premium's navigation tokens, so the sidebar follows the Clean values. */
+  --nav-ink: var(--clean-ink-strong) !important;
+  --nav-text: var(--clean-ink) !important;
+  --nav-muted: var(--clean-ink-quiet) !important;
+  --nav-bg: var(--clean-frame) !important;
+  --nav-surface: var(--clean-surface) !important;
+  --nav-light: var(--clean-surface) !important;
+  --nav-engrave: var(--clean-line) !important;
+  --nav-border: var(--clean-line) !important;
+  --nav-line: var(--clean-line) !important;
+  --nav-hover: var(--clean-nav-hover) !important;
   --sidebar-foreground: var(--clean-ink-strong) !important;
   --sidebar-accent-foreground: var(--clean-ink-strong) !important;
 }
@@ -171,7 +206,7 @@
    Clean dark (sidebar #111 under a #0C0D0F frame, header without its glass). */
 :root[data-skin="clean"][data-skin][data-skin] body,
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-wrapper"] {
-  background: var(--clean-frame) !important;
+  background: var(--clean-chrome) !important;
 }
 /* Raised above the Liquid Glass rule that removes the frame: in Clean, the
    sheet sits on the frame in both header modes. */
@@ -179,14 +214,14 @@
   /* Open at the bottom: the sheet runs into the window's edge, so the work
      reads as continuing below rather than ending on a closed corner. */
   padding: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
-  background: var(--clean-frame) !important;
+  background: var(--clean-chrome) !important;
 }
 /* The inset carries a layered "!bg-white/40" utility, which beats unlayered
    !important: the frame colour goes in the same layer, so the strip above the
    sheet reads as the sidebar's grey. */
 @layer utilities {
   :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-inset"] {
-    background: var(--clean-frame) !important;
+    background: var(--clean-chrome) !important;
   }
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="shell-scroll-panel"] {
@@ -212,7 +247,7 @@
   backdrop-filter: blur(12px) saturate(1.6) !important;
   background: color-mix(in srgb, var(--clean-surface) 82%, transparent) !important;
 }
-:root[data-skin="clean"][data-skin][data-skin] .apple-sidebar-glow { display: none; }
+:root[data-skin="clean"][data-skin][data-skin] .apple-sidebar-glow { display: none; opacity: 0 !important; }
 
 /* Header tools: ghost icon buttons, no boxes. */
 :root[data-skin="clean"][data-skin][data-skin] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control) {
@@ -243,6 +278,14 @@
 }
 
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
+:root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) { color-scheme: dark; }
+/* The account avatar sets its dark look with Tailwind "dark:" classes, which
+   need the .dark root; in the sidebar it takes that dark look in both modes. */
+:root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) [class*="rgba(236,253,245,0.98)"] {
+  border-color: rgb(255 255 255 / 0.12) !important;
+  background-image: linear-gradient(145deg, rgb(16 185 129 / 0.16), rgb(14 165 233 / 0.1)) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08) !important;
+}
 :root[data-skin="clean"][data-skin][data-skin] :is(.app-sidebar, [data-slot="sidebar-container"], [data-slot="sidebar-inner"]) {
   background: var(--clean-frame) !important;
 }

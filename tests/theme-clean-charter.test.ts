@@ -14,11 +14,12 @@ import {
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const SCOPE = ':root[data-skin="clean"]';
 const DARK = ':root[data-skin="clean"].dark';
+const SIDEBAR = ':root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
 const root = postcss.parse(CLEAN);
 const tokensOf = (selector: string) => {
   const found = new Map<string, string>();
   root.walkRules((rule) => {
-    if (rule.selector !== selector) return;
+    if (!rule.selectors.includes(selector)) return;
     rule.walkDecls((decl) => { if (decl.prop.startsWith("--clean-")) found.set(decl.prop, decl.value); });
   });
   return found;
@@ -109,6 +110,46 @@ describe("thème Clean : déclinaison sombre", () => {
   });
 });
 
+describe("thème Clean : sidebar sombre dans les deux déclinaisons", () => {
+  const darkBlock = rulesFor(/\.dark,$|\.dark,\s/).find((rule) => rule.selectors.includes(DARK) && rule.toString().includes("--clean-frame: #0c0d0f"));
+
+  it("reçoit exactement le bloc de jetons de Clean sombre, sans palette à elle", () => {
+    expect(darkBlock?.selectors).toEqual([DARK, SIDEBAR]);
+    const sidebarOnly: string[] = [];
+    root.walkRules((rule) => {
+      if (rule.selectors.length === 1 && rule.selectors[0] === SIDEBAR) {
+        rule.walkDecls((decl) => { if (decl.prop.startsWith("--")) sidebarOnly.push(decl.prop); });
+      }
+    });
+    expect(sidebarOnly).toEqual([]);
+  });
+
+  it("fait pointer les jetons de Premium et de navigation vers Clean, dans la sidebar aussi", () => {
+    const mapping = root.nodes.find((node): node is postcss.Rule => node.type === "rule" && node.selectors.includes(SCOPE) && node.selectors.includes(DARK) && node.selectors.includes(SIDEBAR));
+    const text = mapping?.toString() ?? "";
+    for (const token of ["--nav-ink", "--nav-text", "--nav-muted", "--nav-bg", "--nav-hover", "--sidebar", "--ink", "--primary", "--ring"]) {
+      expect(text, token).toMatch(new RegExp(`\\n\\s*${token}: var\\(--clean-`));
+    }
+  });
+
+  it("garde l'accent, l'anneau de focus et les teintes des pastilles du sombre", () => {
+    expect(darkDeclarations.get("--clean-accent")).toBe("#3b1fe5");
+    expect(darkDeclarations.get("--clean-ring")).toBe("#ffffff");
+    expect(declarations.get("--clean-accent")).toBe("#191919");
+    expect(declarations.get("--clean-ring")).toBe("#191919");
+    expect(darkBlock?.toString()).toContain("--premium-blue: #88b3ef");
+    expect(rulesFor(new RegExp(`^${SIDEBAR.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`)).some((rule) => rule.toString().includes("color-scheme: dark"))).toBe(true);
+  });
+
+  it("prolonge la sidebar dans le cadre autour de la feuille, du même gris qu'en sombre", () => {
+    expect(declarations.get("--clean-chrome")).toBe(darkDeclarations.get("--clean-frame"));
+    expect(darkDeclarations.get("--clean-chrome")).toBe("var(--clean-frame)");
+    const frame = rulesFor(/sidebar-wrapper"\]$|sidebar-inset"\]$/).map((rule) => rule.toString()).join("");
+    expect(frame).toContain("var(--clean-chrome)");
+    expect(frame).not.toContain("background: var(--clean-frame)");
+  });
+});
+
 describe("thème Clean : feuille posée sur le cadre", () => {
   it("décolle la feuille de 8 px, coins de 12 px, ombre presque invisible", () => {
     expect(declarations.get("--clean-sheet-inset")).toBe("8px");
@@ -127,7 +168,7 @@ describe("thème Clean : feuille posée sur le cadre", () => {
     root.walkAtRules("layer", (layer) => {
       layer.walkRules(/sidebar-inset/, (rule) => { layered.push(rule.toString()); });
     });
-    expect(layered.some((rule) => rule.includes("background: var(--clean-frame) !important"))).toBe(true);
+    expect(layered.some((rule) => rule.includes("background: var(--clean-chrome) !important"))).toBe(true);
   });
 
   it("aligne les champs de page sur les 32 px des contrôles voisins", () => {
@@ -160,7 +201,7 @@ describe("polices par thème", () => {
   );
   const cleanTokens = new Map<string, string>();
   root.walkRules((rule) => {
-    if (rule.selectors.join("|") !== `${SCOPE}|${DARK}`) return;
+    if (!rule.selectors.includes(SCOPE) || !rule.selectors.includes(DARK)) return;
     rule.walkDecls((decl) => cleanTokens.set(decl.prop, `${decl.value}${decl.important ? " !important" : ""}`));
   });
 
