@@ -1,0 +1,7 @@
+{"modele":"gemma-4-E2B-it-web.task (2 004 Mo, SHA-256 2cbff161…c5a5)","moteur":"@mediapipe/tasks-genai 0.10.29 (version installée, sans mise à jour), WebGPU, gabarit <|turn>user … <turn|>","machine":"Apple M1, 8 Go",
+"froid_premier_lancement":{"load1_s":3.5,"reload_s":21.07,"inTok":542,"outTok":139,"ttft_s":1.28,"decode_tok_s":31.7,"total_s":30.23,"fidelity":"5/5"},
+"chaud_court":[{"total_s":12.65,"ttft_s":1.3,"decode_tok_s":30.5,"fidelity":"5/5"},{"total_s":11.88,"ttft_s":1.32,"decode_tok_s":29.6,"fidelity":"5/5"},{"total_s":12.14,"ttft_s":1.31,"decode_tok_s":30.4,"fidelity":"5/5","load1_s":2.95,"reload_s":3.31}],
+"chaud_long":[{"inTok":1345,"total_s":13.55,"ttft_s":2.89,"decode_tok_s":30.1,"fidelity":"5/5"},{"inTok":1345,"total_s":13.25,"ttft_s":2.73,"decode_tok_s":32.9,"fidelity":"5/5"}],
+"memoire_Mo":{"base_somme_gpu_renderers":1240,"pendant_generation":4266,"pic":4279,"surcout":3040,"detail_pic":{"gpu":"+1 250","renderers":"+1 800"}},
+"journal_moteur":"int8_kv_cache: true, load_per_layer_embedding_dynamically: true, max_num_images: 0 (texte seul)",
+"incident":"une lecture HTTP de 2 Go a échoué (ENOBUFS du serveur de test Python sous pression mémoire) ; sans lien avec le modèle, l'app lit les poids via le protocole de fichiers Tauri"}

@@ -1,0 +1,4 @@
+{"modele":"embeddinggemma-300m ONNX fp32 (1 261 Mo)","moteur":"transformers.js 3.8.1, onnxruntime-web WASM, 1 thread","machine":"Apple M1, 8 Go",
+"mesure":{"chargement_s":6.06,"requete_ms":214,"extrait_tokens":135,"extrait_ms":904,"chemin_requete_total_s":6.27},
+"pic_memoire_Mo":{"processus_gpu":{"base":187,"pic":356},"renderers":{"base":754,"pic":3633},"pic_simultane_base":940,"pic_simultane":3988,"surcout_total":3048},
+"note":"le worker est recréé à chaque recherche : le chargement de 6 s est payé à chaque requête"}

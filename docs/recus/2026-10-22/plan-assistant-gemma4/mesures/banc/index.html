@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><title>bench</title><pre id=out>prêt</pre>
+<script type="module">
+const out=document.getElementById("out");
+window.run=(file,runs=3,template="g3",long=1)=>new Promise((res,rej)=>{const w=new Worker("./worker-classic.js?"+Date.now());w.onmessage=({data})=>{if(data.log){out.textContent+="\n"+data.log;}if(data.done){w.terminate();res(data.done);}if(data.error){w.terminate();rej(data.error);}};w.onerror=(e)=>{out.textContent+="\nERREUR "+e.message;rej(e.message);};w.postMessage({file:new URL(file,location.href).href,runs,template,long});});
+out.textContent+="\nadapter: "+!!(navigator.gpu&&await navigator.gpu.requestAdapter());
+</script>

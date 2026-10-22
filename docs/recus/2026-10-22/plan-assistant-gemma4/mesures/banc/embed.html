@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>embed</title><pre id=out>prêt</pre>
+<script type="module">
+import { env, AutoTokenizer, AutoModel } from "./tjs/transformers.js";
+const out = document.getElementById("out"); const log = s => out.textContent += "\n" + s;
+env.allowRemoteModels = false; env.allowLocalModels = true; env.useBrowserCache = false; env.localModelPath = new URL("./models/", location.href).href;
+env.backends.onnx.wasm.wasmPaths = new URL("./onnx/", location.href).href; env.backends.onnx.wasm.numThreads = 1; env.backends.onnx.wasm.proxy = false;
+const chunk = "Chien croisé labrador de sept ans, boiterie du membre postérieur droit depuis trois jours. Douleur à la palpation du grasset droit, tiroir antérieur douteux. Suspicion de rupture partielle du ligament croisé crânial. Radiographies prévues, repos strict, contrôle à dix jours. ".repeat(2);
+window.bench = async () => {
+  const t0 = performance.now();
+  const tok = await AutoTokenizer.from_pretrained("embeddinggemma", { local_files_only: true });
+  const model = await AutoModel.from_pretrained("embeddinggemma", { local_files_only: true, device: "wasm", dtype: "fp32", use_external_data_format: true });
+  const t1 = performance.now();
+  let i = await tok("task: search result | query: boiterie grasset chien", { padding: true });
+  let s = performance.now(); await model(i); const q = performance.now() - s;
+  i = await tok("title: none | text: " + chunk, { padding: true });
+  const n = Number(i.input_ids.dims.at(-1));
+  s = performance.now(); await model(i); const d = performance.now() - s;
+  await model.dispose();
+  const r = { load_s: +((t1 - t0)/1000).toFixed(2), query_ms: Math.round(q), chunk_tokens: n, chunk_ms: Math.round(d), total_query_path_s: +((t1 - t0 + q)/1000).toFixed(2) };
+  log(JSON.stringify(r)); return r;
+};
+log("chargé");
+</script>

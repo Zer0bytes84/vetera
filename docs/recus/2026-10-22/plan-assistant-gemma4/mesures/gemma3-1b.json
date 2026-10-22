@@ -1,0 +1,6 @@
+{"modele":"gemma3-1b-it-int4-web.task (700 Mo)","moteur":"@mediapipe/tasks-genai 0.10.29, WebGPU, worker classique","machine":"Apple M1, 8 Go, macOS (Darwin 27), système déjà à ~6,2 Go utilisés et 4 Go de swap",
+"froid_premier_lancement":{"load1_s":3.29,"reload_s":25.29,"inTok":516,"outTok":142,"ttft_s":1.54,"decode_tok_s":49.7,"total_s":32.98,"validJson":true},
+"chaud_court":[{"inTok":516,"total_s":6.69,"ttft_s":0.96,"decode_tok_s":52.8},{"inTok":516,"total_s":7.58,"ttft_s":1.0,"decode_tok_s":52.7},{"inTok":542,"total_s":9.68,"ttft_s":1.1,"decode_tok_s":45.4,"fidelity":"4/5"},{"inTok":542,"total_s":9.98,"ttft_s":1.18,"decode_tok_s":46.1,"fidelity":"4/5"}],
+"chaud_long":[{"inTok":1345,"total_s":9.74,"ttft_s":2.89,"decode_tok_s":44.9,"fidelity":"4/5"},{"inTok":1345,"total_s":9.73,"ttft_s":2.89,"decode_tok_s":44.0,"fidelity":"4/5"}],
+"alterations_observees":["ligament croisé crânial -> ligament croânial (court)","pas de vomissement -> pas de vomition (long)"],
+"pic_memoire_Mo":{"processus_gpu":{"base":196,"pic":1435},"renderers":{"base":771,"pic":1879},"pic_simultane_base":967,"pic_simultane":2986,"surcout_total":2019}}

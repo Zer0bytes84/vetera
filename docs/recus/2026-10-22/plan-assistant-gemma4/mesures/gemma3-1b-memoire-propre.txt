@@ -1,0 +1,1 @@
+Gemma 3 1B, série du 22/10 15:14:39-15:15:00 : base GPU+renderers 967 Mo, pic simultané 2 986 Mo, soit +2,0 Go.

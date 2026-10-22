@@ -1,0 +1,7 @@
+{"modele":"gemma-4-E4B-it-web.task (2 964 Mo, SHA-256 f3bd72fc…f086)","moteur":"@mediapipe/tasks-genai 0.10.29, WebGPU","machine":"Apple M1, 8 Go",
+"passages":[{"etat":"froid","total_s":41.9,"load1_s":5.19,"reload_s":18.79,"ttft_s":8.24,"decode_tok_s":14.4,"inTok":542,"fidelity":"5/5"},
+{"etat":"chaud","total_s":35.07,"load1_s":4.37,"reload_s":8.82,"ttft_s":11.85,"decode_tok_s":13.9,"inTok":542,"fidelity":"5/5"},
+{"etat":"chaud","total_s":33.17,"load1_s":4.53,"reload_s":8.49,"ttft_s":10.21,"decode_tok_s":14.0,"inTok":542,"fidelity":"5/5"},
+{"etat":"chaud, long","total_s":35.69,"load1_s":4.47,"reload_s":7.07,"ttft_s":14.22,"decode_tok_s":14.0,"inTok":1345,"fidelity":"5/5"}],
+"memoire_Mo":{"base_somme_gpu_renderers":1240,"pendant_generation":"5 600 à 5 980","surcout":"+4 400 à +4 740","swap":"3 552 -> 7 368 Mo pendant la série"},
+"lecture":"Le délai avant le premier mot (8 à 14 s pour 540 tokens, contre 1,3 s pour E2B) indique un système en swap : sur 8 Go, E4B ne tient pas avec le reste du poste."}
