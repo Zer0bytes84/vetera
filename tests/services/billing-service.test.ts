@@ -56,6 +56,7 @@ import {
   getInvoice,
   issueCreditNote,
   issueInvoice,
+  listIssuedInvoiceLines,
   recordPayment,
   recordRefund,
   voidCreditNote,
@@ -655,4 +656,36 @@ it("reprend la facturation de la nouvelle validation sans réutiliser la facture
   expect((await getInvoice(previous.id))?.documentStatus).toBe("void");
   await careTasksService.list(new Date("2026-08-01"), new Date("2026-08-02"));
   expect(database.connection.prepare("SELECT COUNT(*) AS n FROM invoices WHERE document_status='draft'").get()?.n).toBe(1);
+});
+
+describe("lignes des factures émises", () => {
+  it("lit les lignes émises de la période avec ce qui les classe, brouillons et annulées exclus", async () => {
+    const { lineNature } = await import("@/modules/finances/invoice-natures");
+    await database.execute("INSERT INTO patients(id,owner_id,name,species) VALUES('nature-patient','owner-1','Rex','chien')");
+    await database.execute(
+      "INSERT INTO products(id,name,category,unit,quantity,sale_price_amount,purchase_price_amount,created_at) VALUES ('nature-product','Vaccin','Vaccins','dose',10,500,0,'2026-01-01 00:00:00')",
+    );
+    const surgery = await createInvoiceDraft({ id: "nature-surgery", ownerId: "owner-1", lines: [
+      { description: "Ostéosynthèse", quantityMilli: 1000, unitAmount: 300000, discountBps: 0, taxBps: 0 },
+      { description: "Vaccin", productId: "nature-product", quantityMilli: 1000, unitAmount: 500, discountBps: 0, taxBps: 0 },
+    ] });
+    // The appointment only carries its type here; its vet is not under test.
+    await database.execute("PRAGMA foreign_keys = OFF");
+    await database.execute(
+      "INSERT INTO appointments(id,patient_id,owner_id,vet_id,title,start_time,end_time,type) VALUES ('nature-appt','nature-patient','owner-1','vet','Chirurgie','2026-08-01 08:00:00','2026-08-01 09:00:00','Chirurgie')",
+    );
+    await database.execute("PRAGMA foreign_keys = ON");
+    await database.execute("UPDATE invoices SET appointment_id = 'nature-appt' WHERE id = ?", [surgery.id]);
+    await issueInvoice({ invoiceId: surgery.id, idempotencyKey: "nature-issue", clinicSnapshot: CLINIC, issuedAt: "2026-08-01T10:00:00.000Z" });
+    await createInvoiceDraft({ id: "nature-draft", ownerId: "owner-1", lines: [
+      { description: "Brouillon", quantityMilli: 1000, unitAmount: 999, discountBps: 0, taxBps: 0 },
+    ] });
+
+    const lines = await listIssuedInvoiceLines({ from: new Date("2026-07-31T00:00:00Z"), to: new Date("2026-08-02T00:00:00Z") });
+    expect(lines.map((line) => [line.amount, line.productId, line.appointmentType, lineNature(line)])).toEqual([
+      [300000, null, "Chirurgie", "chirurgie"],
+      [500, "nature-product", "Chirurgie", "produits"],
+    ]);
+    expect(await listIssuedInvoiceLines({ from: new Date("2026-08-02T00:00:00Z"), to: new Date("2026-08-03T00:00:00Z") })).toEqual([]);
+  });
 });

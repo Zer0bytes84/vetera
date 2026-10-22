@@ -303,6 +303,41 @@ describe("thème Clean : titre d'accueil", () => {
   });
 });
 
+describe("thème Clean : widgets", () => {
+  const INDEX = readFileSync("src/index.css", "utf8");
+
+  it("masque partout ailleurs les éléments propres à Clean, et seulement Clean masque ce qu'il remplace", () => {
+    expect(INDEX).toContain(':root:not([data-skin="clean"]) [data-clean-only] { display: none !important; }');
+    expect(rulesFor(/\[data-clean-hidden\]$/).some((rule) => rule.toString().includes("display: none !important"))).toBe(true);
+    const elsewhere = files("src", /\.css$/)
+      .filter((file) => !file.endsWith("clean.css"))
+      .filter((file) => /data-clean-hidden/.test(readFileSync(file, "utf8")));
+    expect(elsewhere).toEqual([]);
+  });
+
+  it("porte la comparaison sous le chiffre et la période précédente en pointillé", () => {
+    const chip = rulesFor(/\.kpiSub \.delta > span:not/).map((rule) => rule.toString()).join("");
+    expect(chip).toContain("border-radius: 999px");
+    expect(rulesFor(/\.chartLinePrevious$/)[0]?.toString()).toMatch(/stroke-dasharray/);
+  });
+
+  it("varie la première rangée : une aire pour la trésorerie, les barres pour un seul indicateur, la même ligne de base", () => {
+    const source = readFileSync("src/modules/dashboard/components/premium-analytics.tsx", "utf8");
+    expect(source.match(/<MiniArea /g)).toHaveLength(1);
+    expect(source.match(/<MiniBars [^>]*cleanHidden/g)).toHaveLength(2);
+    expect(source.match(/<MiniBars /g)).toHaveLength(3);
+    const row = rulesFor(/\.kpis \.kpiValueRow$/)[0]?.toString() ?? "";
+    expect(row).toContain("height: 32px");
+    expect(rulesFor(/\.kpis \.kpi > \.kpiValue$/)[0]?.toString()).toContain("height: 32px");
+  });
+
+  it("dessine la capacité en unités et la vue d'ensemble des finances avec les jetons Clean", () => {
+    const units = rulesFor(/stay-occupancy-units > span,/).map((rule) => rule.toString()).join("");
+    expect(units).toContain("var(--clean-segment-track)");
+    expect(rulesFor(/\.finance-overview$/)[0]?.toString()).toContain("var(--clean-card-radius)");
+  });
+});
+
 describe("thème Clean : en-tête en verre", () => {
   it("floute l'en-tête au défilement avec un seul jeton", () => {
     expect(declarations.get("--clean-glass-blur")).toBe("20px");

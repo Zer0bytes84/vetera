@@ -1264,6 +1264,38 @@ export async function getInvoice(invoiceId: string): Promise<InvoiceDetail | nul
   return runDbRead((database) => loadInvoiceDetail(database, invoiceId));
 }
 
+/** One line of an issued invoice, with what tells its nature apart. */
+export interface IssuedInvoiceLine {
+  invoiceId: string;
+  issuedAt: string;
+  /** Line total in centimes, as invoiced (before any credit note). */
+  amount: number;
+  productId: string | null;
+  appointmentType: string | null;
+}
+
+/** Read only: the lines of invoices issued between two dates, voided ones excluded. */
+export async function listIssuedInvoiceLines(range: { from: Date; to: Date }): Promise<IssuedInvoiceLine[]> {
+  return runDbRead(async (database) => {
+    const rows = await database.select<DatabaseRow[]>(
+      `SELECT l.invoice_id, i.issued_at, l.gross_amount, l.product_id, a.type AS appointment_type
+       FROM invoice_lines l
+       JOIN invoices i ON i.id = l.invoice_id
+       LEFT JOIN appointments a ON a.id = i.appointment_id
+       WHERE i.document_status = 'issued' AND i.issued_at >= ? AND i.issued_at <= ?
+       ORDER BY i.issued_at, l.invoice_id, l.sort_order`,
+      [toSQLiteTimestamp(range.from), toSQLiteTimestamp(range.to)],
+    );
+    return rows.map((row) => ({
+      invoiceId: valueAsString(row.invoice_id),
+      issuedAt: valueAsString(row.issued_at),
+      amount: valueAsAmount(row.gross_amount),
+      productId: valueAsNullableString(row.product_id),
+      appointmentType: valueAsNullableString(row.appointment_type),
+    }));
+  });
+}
+
 /** Used by clinical commands that must create stock and invoice atomically. */
 export async function createInvoiceDraftInDatabase(
   database: BillingDatabase,
@@ -2203,6 +2235,7 @@ export async function voidCreditNote(
 
 export const billingService = {
   listInvoices,
+  listIssuedInvoiceLines,
   getInvoice,
   createInvoiceDraft,
   updateInvoiceDraft,

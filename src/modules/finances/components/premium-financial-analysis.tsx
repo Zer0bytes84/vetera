@@ -14,6 +14,8 @@ import { categoryFinding, otherIncome } from "../category-finding";
 import { ChartLineData01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PageHeader } from "@/design-system/patterns/page-header";
+import type { Transaction } from "@/types/db";
+import { FinanceOverview } from "./finance-overview";
 
 function Variation({ current, previous, format = (value: number) => value.toLocaleString("fr-FR") }: { current: number; previous: number; format?: (value: number) => string }) {
   if (previous === 0) {
@@ -30,9 +32,11 @@ function Variation({ current, previous, format = (value: number) => value.toLoca
   );
 }
 
-export function PremiumFinancialAnalysis({ metrics, onNavigate }: {
+export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [] }: {
   metrics: DashboardMetrics;
   onNavigate: (view: View) => void;
+  /** The journal, for the Clean overview card's own periods. */
+  transactions?: Transaction[];
 }) {
   const [chart, setChart] = useState<"revenue" | "cashflow">("revenue");
   const revenue = chart === "revenue";
@@ -84,7 +88,9 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate }: {
       </section>
 
       <div className="finance-analysis-panels">
-        <section className="finance-analysis-chart board-frame" aria-label="Évolution financière">
+        <FinanceOverview transactions={transactions} />
+        {/* Clean shows the overview above in place of this chart. */}
+        <section className="finance-analysis-chart board-frame" aria-label="Évolution financière" data-clean-hidden="">
           <div className="finance-analysis-panel-heading">
             <div>
               <h2>{revenue ? "Évolution des encaissements" : "Flux de trésorerie"}</h2>

@@ -873,6 +873,246 @@
 :root[data-skin="clean"][data-skin][data-skin] .patient-peek-panel .medical-peek-content > section + section { box-shadow: inset 0 1px 0 var(--clean-line-subtle) !important; }
 :root[data-skin="clean"][data-skin][data-skin] .patient-peek-panel .medical-section-title { box-shadow: none !important; }
 
+/* ---------- Widgets (references: Charles Postiaux, Performance dashboard,
+   Portfolio overview, Disk usage) ----------
+   Elements marked data-clean-only exist for Clean only (hidden elsewhere by
+   index.css); elements marked data-clean-hidden are what Clean replaces. */
+:root[data-skin="clean"] [data-clean-hidden] { display: none !important; }
+
+/* KPI comparison under the figure: the change as a tinted chip, then the
+   previous period's value in quiet grey, on one line when it fits. */
+:root[data-skin="clean"] .kpiSub .delta {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  line-height: 20px;
+}
+:root[data-skin="clean"] .kpiSub .delta > svg { display: none !important; }
+:root[data-skin="clean"] .kpiSub .delta > span:not(.delta-label, .sr-only) {
+  margin: 0 !important;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, currentColor 12%, transparent);
+  font-weight: 600;
+  line-height: 20px;
+}
+:root[data-skin="clean"] .kpiSub .delta-label {
+  color: var(--clean-ink-quiet) !important;
+  font-weight: 450 !important;
+}
+
+/* First row micro visualisations, one per kind of data: a running total as a
+   quiet area (Trésorerie), volumes per day as bars (Consultations), the figure
+   alone where no chart is honest (Patients suivis, Actions à suivre). */
+/* Every card's figure sits on one baseline, with or without a chart beside it
+   (the row was 26 to 31 px depending on its chart, and absent in Actions). */
+:root[data-skin="clean"] .kpis .kpiValueRow { height: 32px; min-height: 32px; align-items: flex-end; }
+:root[data-skin="clean"] .kpis .kpi > .kpiValue { display: flex; align-items: flex-end; height: 32px; }
+:root[data-skin="clean"] .kpiArea { flex: 0 0 auto; overflow: visible; }
+:root[data-skin="clean"] .kpiAreaFill { fill: var(--series-1, var(--premium-blue)); opacity: 0.1; }
+:root[data-skin="clean"] .kpiAreaLine {
+  fill: none;
+  stroke: var(--series-1, var(--premium-blue));
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+
+/* "Cette semaine" keeps the figures the KPI cards do not carry: they sit at
+   their natural height, label then value, instead of stretching the card. */
+:root[data-skin="clean"] .facts:has(> [data-clean-hidden]) {
+  flex: 0 0 auto !important;
+  grid-auto-rows: auto !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle);
+}
+:root[data-skin="clean"] .facts:has(> [data-clean-hidden]) > div {
+  justify-content: flex-start !important;
+  gap: 6px !important;
+}
+
+/* Consultations chart: the previous period as a dashed line under the
+   current one (Performance dashboard reference). */
+:root[data-skin="clean"] .chartLinePrevious {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+:root[data-skin="clean"] :is(.chartLegendKeyPrevious, .chartTipKeyPrevious) {
+  background: repeating-linear-gradient(90deg, var(--series-2) 0 3px, transparent 3px 6px) !important;
+  opacity: 0.7;
+}
+
+/* Hospital capacity as a grid of units (Disk usage reference): one square per
+   active location, the figure first, the legend, then the forecast sentence
+   planned discharges support. */
+:root[data-skin="clean"] .stay-occupancy {
+  display: grid;
+  gap: 12px;
+  padding: 20px 24px;
+  border-radius: var(--clean-card-radius);
+  background: var(--clean-surface);
+  box-shadow: 0 0 0 1px var(--clean-line);
+}
+:root[data-skin="clean"] .stay-occupancy-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  color: var(--clean-ink-quiet);
+  font-size: 13px;
+}
+:root[data-skin="clean"] .stay-occupancy-head strong {
+  color: var(--clean-ink-strong);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: var(--clean-tracking-title);
+  font-variant-numeric: tabular-nums;
+}
+:root[data-skin="clean"] .stay-occupancy-units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+:root[data-skin="clean"] .stay-occupancy-units > span,
+:root[data-skin="clean"] .stay-occupancy-legend i {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--clean-segment-track);
+  box-shadow: inset 0 0 0 1px var(--clean-line);
+}
+:root[data-skin="clean"] .stay-occupancy-units > span[data-state="occupied"],
+:root[data-skin="clean"] .stay-occupancy-legend li[data-state="occupied"] i {
+  background: var(--series-1, var(--premium-blue));
+  box-shadow: none;
+}
+:root[data-skin="clean"] .stay-occupancy-units > span[data-state="leaving"],
+:root[data-skin="clean"] .stay-occupancy-legend li[data-state="leaving"] i {
+  background: repeating-linear-gradient(135deg, var(--series-1, var(--premium-blue)) 0 3px, color-mix(in oklab, var(--series-1, var(--premium-blue)) 35%, transparent) 3px 6px);
+  box-shadow: none;
+}
+:root[data-skin="clean"] .stay-occupancy-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--clean-ink-quiet);
+  font-size: 12px;
+}
+:root[data-skin="clean"] .stay-occupancy-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+:root[data-skin="clean"] .stay-occupancy-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+:root[data-skin="clean"] .stay-occupancy-forecast {
+  margin: 0;
+  color: var(--clean-ink);
+  font-size: 13px;
+}
+
+/* Finances overview (Portfolio overview reference): the period inside the
+   card, a hero figure and its change, the curve, then one row per nature. */
+:root[data-skin="clean"] .finance-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: var(--clean-card-radius) !important;
+  background: var(--clean-surface) !important;
+  box-shadow: 0 0 0 1px var(--clean-line) !important;
+}
+:root[data-skin="clean"] .finance-overview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+:root[data-skin="clean"] .finance-overview-head h2 { margin: 0; font-size: 14px; font-weight: 600; }
+:root[data-skin="clean"] .finance-overview-head p,
+:root[data-skin="clean"] .finance-overview-context,
+:root[data-skin="clean"] .finance-overview-footnote {
+  margin: 0;
+  color: var(--clean-ink-quiet);
+  font-size: 12px;
+}
+:root[data-skin="clean"] .finance-overview-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+:root[data-skin="clean"] .finance-overview-hero strong {
+  color: var(--clean-ink-strong);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: var(--clean-tracking-title);
+  font-variant-numeric: tabular-nums;
+}
+:root[data-skin="clean"] .finance-overview-change {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  color: var(--clean-ink-quiet);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+:root[data-skin="clean"] .finance-overview-change > span[data-sense] {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, currentColor 12%, transparent);
+  color: var(--faint);
+  font-weight: 600;
+  line-height: 20px;
+}
+:root[data-skin="clean"] .finance-overview-change > span[data-sense="good"] { color: var(--ok); }
+:root[data-skin="clean"] .finance-overview-change > span[data-sense="bad"] { color: var(--bad); }
+:root[data-skin="clean"] .finance-overview-plot { height: 220px; }
+:root[data-skin="clean"] .finance-overview-natures {
+  display: grid;
+  gap: 4px;
+  padding-top: 12px;
+  box-shadow: inset 0 1px 0 var(--clean-line-subtle);
+}
+:root[data-skin="clean"] .finance-overview-natures-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--clean-ink-quiet);
+  font-size: 12px;
+  font-weight: 500;
+}
+:root[data-skin="clean"] .finance-overview-natures-head h3 { margin: 0; font-size: 12px; font-weight: 500; color: inherit; }
+:root[data-skin="clean"] .finance-overview-natures ul { margin: 0; padding: 0; list-style: none; }
+:root[data-skin="clean"] .finance-overview-natures li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 220px);
+  align-items: center;
+  gap: 12px;
+  min-height: var(--clean-row-list);
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle);
+}
+:root[data-skin="clean"] .finance-overview-natures li:last-child { box-shadow: none; }
+:root[data-skin="clean"] .finance-overview-nature { color: var(--clean-ink-strong); font-size: 13px; font-weight: 500; }
+:root[data-skin="clean"] .finance-overview-natures li > strong {
+  color: var(--clean-ink-strong);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+:root[data-skin="clean"] .finance-overview-natures li > .finance-overview-change,
+:root[data-skin="clean"] .finance-overview-natures li > .finance-overview-context { justify-content: flex-end; text-align: right; }
+
 /* ---------- Paper cards: white, one line, 10 px corners, no lattice ---------- */
 :root[data-skin="clean"] :is(.frame, .board-frame, .surface-card, [data-slot="card"])::before { display: none !important; }
 :root[data-skin="clean"] :is(.card, .hero, .kpis, .section-atlas-grid, .board-frame:not(.sidebar-account-frame), .surface-card:has(table), [data-slot="card"]:has(table), .finance-register) {

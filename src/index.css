@@ -14,6 +14,10 @@
 @import "./design-system/interaction.css";
 @import "./design-system/clean.css";
 
+/* Elements that only the Clean skin shows (its widget additions): hidden in
+   every other theme, so Premium keeps its exact rendering. */
+:root:not([data-skin="clean"]) [data-clean-only] { display: none !important; }
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

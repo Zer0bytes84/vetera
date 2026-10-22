@@ -542,7 +542,7 @@ export function FinancialAnalyticsV2Page({
   );
 
   if (isPremium) {
-    return <PremiumFinancialAnalysis metrics={metrics} onNavigate={onNavigate} />;
+    return <PremiumFinancialAnalysis metrics={metrics} onNavigate={onNavigate} transactions={transactions} />;
   }
 
   return (

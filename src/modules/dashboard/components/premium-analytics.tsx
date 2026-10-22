@@ -133,7 +133,7 @@ function DeltaBadge({
 }
 
 /** A KPI's micro-histogram: grey bars, the latest bucket in the series colour. */
-function MiniBars({ values, label }: { values: number[]; label: string }) {
+function MiniBars({ values, label, cleanHidden = false }: { values: number[]; label: string; cleanHidden?: boolean }) {
   if (values.length < 2) return null;
   const max = Math.max(...values, 0);
   const width = 84;
@@ -143,6 +143,7 @@ function MiniBars({ values, label }: { values: number[]; label: string }) {
   return (
     <svg
       className="kpiBars"
+      data-clean-hidden={cleanHidden ? "" : undefined}
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
@@ -165,6 +166,35 @@ function MiniBars({ values, label }: { values: number[]; label: string }) {
           />
         );
       })}
+    </svg>
+  );
+}
+
+/**
+ * A KPI's running total across the period, as a quiet area: its last point is
+ * the figure the card shows. Shown by the Clean skin only (data-clean-only).
+ */
+function MiniArea({ values, label }: { values: number[]; label: string }) {
+  if (values.length < 2) return null;
+  const width = 84;
+  const height = 28;
+  const running = values.reduce<number[]>((sums, value) => [...sums, (sums.at(-1) ?? 0) + value], []);
+  const max = Math.max(...running, 0);
+  const x = (i: number) => (i * width) / (running.length - 1);
+  const y = (value: number) => (max ? height - 1 - (value / max) * (height - 2) : height - 1);
+  const line = running.map((value, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
+  return (
+    <svg
+      aria-label={label}
+      className="kpiArea"
+      data-clean-only=""
+      height={height}
+      role="img"
+      viewBox={`0 0 ${width} ${height}`}
+      width={width}
+    >
+      <path className="kpiAreaFill" d={`${line} L${width},${height} L0,${height} Z`} />
+      <path className="kpiAreaLine" d={line} />
     </svg>
   );
 }
@@ -198,6 +228,8 @@ interface TrendPoint {
   long: string;
   receipts: number;
   visits: number;
+  /** Consultations in the matching bucket of the previous period. */
+  previousVisits?: number;
 }
 
 const T_CHART = { h: 220, top: 16, bottom: 28, left: 54, right: 34 };
@@ -228,6 +260,12 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
   const gradientId = useId().replace(/:/g, "");
   const lineReceipts = monotonePath(points.map((p, k) => [x(k), yReceipts(p.receipts)]));
   const lineVisits = monotonePath(points.map((p, k) => [x(k), yVisits(p.visits)]));
+  // The previous period keeps the current scale, so the drawn axis never moves;
+  // a higher value stops at the top of the plot and reads in full in the tooltip.
+  const hasPrevious = points.some((p) => p.previousVisits !== undefined);
+  const linePreviousVisits = hasPrevious
+    ? monotonePath(points.map((p, k) => [x(k), yVisits(Math.min(p.previousVisits ?? 0, topVisits))]))
+    : "";
   const closeArea = (line: string) =>
     n ? `${line} L${x(n - 1).toFixed(1)},${yReceipts(0)} L${x(0).toFixed(1)},${yReceipts(0)} Z` : "";
   const areaReceipts = closeArea(lineReceipts);
@@ -282,6 +320,12 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
           <i className="chartLegendKey" style={{ background: "var(--series-2)" }} />
           <span>Consultations (échelle de droite)</span>
         </span>
+        {hasPrevious ? (
+          <span className="chartLegendItem" data-clean-only="">
+            <i className="chartLegendKey chartLegendKeyPrevious" />
+            <span>Consultations, période précédente</span>
+          </span>
+        ) : null}
       </div>
 
       <div ref={ref} className="chartPlot">
@@ -374,6 +418,16 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
             {/* Halo doux sous les courbes, pour la profondeur */}
             <path className="chartGlow" d={lineVisits} stroke="var(--series-2)" />
             <path className="chartGlow" d={lineReceipts} stroke="var(--series-1)" />
+
+            {/* Previous period's consultations, dashed under the current curve. */}
+            {hasPrevious ? (
+              <path
+                d={linePreviousVisits}
+                className="chartLine chartLinePrevious"
+                data-clean-only=""
+                stroke="var(--series-2)"
+              />
+            ) : null}
 
             {/* Series 2: Consultations curve (Orange) */}
             <path
@@ -485,6 +539,14 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
                 <strong>{hot.visits}</strong> consultations
               </span>
             </div>
+            {hot.previousVisits !== undefined ? (
+              <div className="chartTipRow" data-clean-only="">
+                <i className="chartTipKey chartTipKeyPrevious" />
+                <span>
+                  <strong>{hot.previousVisits}</strong> la période précédente
+                </span>
+              </div>
+            ) : null}
           </div>
         )}
       </div>
@@ -571,6 +633,10 @@ export function PremiumAnalytics({
     const transactions = presentation?.transactions || [];
     const appointments = presentation?.appointments || [];
     const { from, to } = ranges.current;
+    // Each bucket's twin in the previous period, the same length earlier.
+    const shift = from.getTime() - ranges.previous.from.getTime();
+    const isVisit = (a: { startTime?: string; status: string }) =>
+      Boolean(a.startTime) && !["cancelled", "no_show"].includes(a.status);
 
     const daysCount = Math.max(
       1,
@@ -615,11 +681,20 @@ export function PremiumAnalytics({
               year: "numeric",
             });
 
+      const previousFrom = cursor.getTime() - shift;
+      const previousTo = bucketEnd.getTime() - shift;
+      const previousVisits = appointments.filter((a) => {
+        if (!isVisit(a)) return false;
+        const time = new Date(a.startTime).getTime();
+        return time >= previousFrom && time <= previousTo;
+      }).length;
+
       points.push({
         label,
         long,
         receipts: receiptsSum / 100, // into standard DA
         visits: visitsCount,
+        previousVisits,
       });
 
       cursor.setDate(cursor.getDate() + step);
@@ -920,7 +995,8 @@ export function PremiumAnalytics({
           </span>
           <span className="kpiValueRow">
             <span className="kpiValue">{formatCentimes(cash.income)}</span>
-            <MiniBars values={trend.income} label="Recettes encaissées sur la période" />
+            <MiniBars values={trend.income} label="Recettes encaissées sur la période" cleanHidden />
+            <MiniArea values={trend.income} label="Cumul des recettes encaissées sur la période" />
           </span>
           <span className="kpiSub">
             <DeltaBadge
@@ -983,7 +1059,8 @@ export function PremiumAnalytics({
           </span>
           <span className="kpiValueRow">
             <span className="kpiValue">{formatNumber(patients.count)}</span>
-            <MiniBars values={trend.patients} label="Patients vus sur la période" />
+            {/* Distinct patients do not add up across days: Clean shows the figure alone. */}
+            <MiniBars values={trend.patients} label="Patients vus sur la période" cleanHidden />
           </span>
           <span className="kpiSub">
             <DeltaBadge
@@ -1070,14 +1147,16 @@ export function PremiumAnalytics({
           </div>
           <div className="cardFlush">
             <dl className="facts">
-              <div>
+              {/* The KPI cards above already carry this figure with its comparison. */}
+              <div data-clean-hidden="">
                 <dt>Recettes encaissées</dt>
                 <FactValue text={formatCentimes(weekStats.income)} />
                 <dd className="factNote">
                   Semaine dernière : {formatCentimes(weekStats.previousIncome)}
                 </dd>
               </div>
-              <div>
+              {/* The KPI cards above already carry this figure with its comparison. */}
+              <div data-clean-hidden="">
                 <dt>Consultations</dt>
                 <FactValue text={String(weekStats.visits)} />
                 <dd className="factNote">
