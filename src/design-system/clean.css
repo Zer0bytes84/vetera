@@ -297,7 +297,6 @@
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-container"]::after,
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-header-separator"] { display: none !important; }
-:root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts { border-top-color: var(--clean-line) !important; }
 :root[data-skin="clean"][data-skin][data-skin] .app-sidebar {
   --premium-nav-row: var(--clean-nav-item);
   --premium-shortcut-row: var(--clean-nav-item);
@@ -338,6 +337,7 @@
   background: color-mix(in oklab, var(--premium-shortcut-color) var(--clean-dot-mix), var(--clean-ink-quiet)) !important;
 }
 /* The account sits on the frame like the rest of the navigation, without a box. */
+:root[data-skin="clean"][data-skin][data-skin] .sidebar-user-role { color: var(--clean-ink-quiet); }
 :root[data-skin="clean"][data-skin][data-skin] .sidebar-account-frame { box-shadow: none !important; }
 :root[data-skin="clean"][data-skin][data-skin] .sidebar-account-frame .sidebar-user-card {
   border-radius: var(--clean-control-radius) !important;

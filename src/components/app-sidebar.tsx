@@ -30,6 +30,7 @@ import {
   subscribeToCachedProfile,
 } from "@/lib/profile-cache";
 import { cn } from "@/lib/utils";
+import { roleLabel } from "@/lib/user-role";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
 
@@ -40,6 +41,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   currentUserName: string;
   currentUserEmail: string;
   currentUserAvatar?: string | null;
+  currentUserRole?: string | null;
 };
 
 export function AppSidebar({
@@ -49,6 +51,7 @@ export function AppSidebar({
   currentUserName,
   currentUserEmail,
   currentUserAvatar,
+  currentUserRole,
   variant = "sidebar",
   ...props
 }: AppSidebarProps) {
@@ -279,7 +282,7 @@ export function AppSidebar({
         <div
           className={cn(
             "transition-[width] duration-200",
-            isPremium && "board-frame sidebar-account-frame",
+            isPremium && "sidebar-account-frame",
             !isCollapsed && "w-full"
           )}
         >
@@ -292,6 +295,7 @@ export function AppSidebar({
               name: resolvedUserName,
               email: currentUserEmail,
               avatar: resolvedUserAvatar,
+              role: roleLabel(currentUserRole, currentUserEmail),
             }}
           />
         </div>

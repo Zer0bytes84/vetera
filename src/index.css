@@ -3401,7 +3401,10 @@ html[data-header-pattern="quiet"] .header-pattern-live {
   container-type: inline-size;
 }
 
-@container sidebar-user-card (max-width: 180px) {
+/* Name and role keep one line each: below this width the "⋯" gives way so
+   the longest role ("Super Administrateur") still shows whole. The whole
+   block still opens the account menu. */
+@container sidebar-user-card (max-width: 219px) {
   .sidebar-user-more {
     display: none;
   }

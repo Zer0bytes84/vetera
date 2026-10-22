@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  ArrowRight01Icon,
+  MoreHorizontalIcon,
   Notification01Icon,
   Settings01Icon,
   UserCircleIcon,
@@ -34,6 +34,7 @@ interface NavUserProps {
     name: string;
     email: string;
     avatar?: string | null;
+    role?: string | null;
   };
 }
 
@@ -59,7 +60,7 @@ export function NavUser({
             render={
               <SidebarMenuButton
                 aria-label={`Ouvrir le menu du compte de ${user.name}`}
-                className="sidebar-user-card !gap-2.5 group-data-[collapsible=icon]:!size-11 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-auto min-h-14 min-w-0 flex-1 rounded-xl border border-sidebar-border bg-sidebar-accent/45 px-2.5 py-3 transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent"
+                className="sidebar-user-card !gap-2.5 group-data-[collapsible=icon]:!size-11 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!rounded-xl group-data-[collapsible=icon]:!p-0 h-auto min-h-12 min-w-0 flex-1 rounded-lg bg-transparent px-2 py-2 transition-colors hover:bg-sidebar-accent/75 aria-expanded:bg-sidebar-accent"
                 size="lg"
                 tooltip={`Menu du compte de ${user.name}`}
               />
@@ -73,16 +74,21 @@ export function NavUser({
             />
             <div className="grid min-w-0 flex-1 text-start text-xs leading-tight group-data-[collapsible=icon]:hidden">
               <span
-                className="sidebar-user-name whitespace-normal break-words font-medium t-13 text-sidebar-foreground leading-5 tracking-[-0.01em] antialiased"
+                className="sidebar-user-name truncate font-medium t-13 text-sidebar-foreground leading-5 tracking-[-0.01em] antialiased"
                 title={user.name}
               >
                 {user.name}
               </span>
+              {user.role ? (
+                <span className="sidebar-user-role whitespace-nowrap text-xs text-sidebar-foreground/60" title={user.role}>
+                  {user.role}
+                </span>
+              ) : null}
             </div>
             <HugeiconsIcon
               aria-hidden="true"
-              className="sidebar-user-more ms-1 size-4 shrink-0 text-sidebar-foreground/55 transition-colors group-hover:text-sidebar-foreground group-data-[collapsible=icon]:hidden"
-              icon={ArrowRight01Icon}
+              className="sidebar-user-more size-4 shrink-0 text-sidebar-foreground/55 transition-colors group-hover:text-sidebar-foreground group-data-[collapsible=icon]:hidden"
+              icon={MoreHorizontalIcon}
               strokeWidth={1.5}
             />
           </DropdownMenuTrigger>

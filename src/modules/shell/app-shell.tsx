@@ -535,6 +535,7 @@ function AppShellInner() {
         currentUserAvatar={currentUser?.avatarUrl ?? null}
         currentUserEmail={userEmail}
         currentUserName={userDisplayName}
+        currentUserRole={currentUser?.role}
         currentView={currentView}
         onNavigate={handleNavigate}
         onQuickAction={(action) => {

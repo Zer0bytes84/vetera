@@ -96,6 +96,7 @@ import { AppThemePicker } from "./app-theme-picker";
 import { appThemeSettings, currentAppTheme, normalizeSkin } from "@/lib/theme-skin";
 import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
+import { roleLabel as displayRole } from "@/lib/user-role";
 import { PageHeader } from "@/design-system/patterns/page-header";
 import { Settings02Icon } from "@/lib/hugeicons";
 
@@ -754,26 +755,7 @@ const Parametres: React.FC<ParametresProps> = ({
     }
   };
 
-  const getRoleDisplay = () => {
-    if (currentUser?.email === "zohir.kh@gmail.com") {
-      return "Super Administrateur";
-    }
-    const role = userDoc?.role || "stagiaire";
-    switch (role) {
-      case "admin":
-        return "Administrateur";
-      case "vet_principal":
-        return "Vétérinaire Principal";
-      case "vet_adjoint":
-        return "Vétérinaire Adjoint";
-      case "assistant":
-        return "Assistant(e)";
-      default:
-        return "Stagiaire";
-    }
-  };
-
-  const roleLabel = getRoleDisplay();
+  const roleLabel = displayRole(userDoc?.role, currentUser?.email);
 
   const renderContent = () => {
     switch (activeTab) {

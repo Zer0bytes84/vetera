@@ -441,7 +441,7 @@
   gap: 2px;
   padding: 8px 8px 0;
   margin-top: auto;
-  border-top: 1px solid var(--hairline);
+  border-top: 0;
 }
 [data-visual-style="premium"] [data-collapsible="icon"] .premium-shortcuts { display: none; }
 [data-visual-style="premium"] .premium-shortcuts button {

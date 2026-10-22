@@ -1021,11 +1021,12 @@
 :root[data-visual-style="premium"] .settings-reset-panel .settings-row > div { flex: 1 1 280px; }
 :root[data-visual-style="premium"] .settings-reset-panel .settings-row > button { flex-shrink: 0; }
 
-/* Footer du compte : même gravure à angles débordants que les cadres des pages. */
-:root[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-footer"] { padding: 16px 20px !important; }
+/* Footer du compte : un bloc identité posé sur la barre, sans cadre ni filet. */
+/* 15px + 10px of card padding: the avatar lines up with the shortcut icons, the "⋯" with their dots. */
+:root[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-footer"] { padding: 16px 15px 20px !important; }
 :root[data-visual-style="premium"] .sidebar-account-frame .sidebar-user-card {
-  min-height: 56px !important; height: auto !important; padding: 10px 12px !important;
-  gap: 10px !important; border: 0 !important; border-radius: 0 !important;
+  min-height: 48px !important; height: auto !important; padding: 8px 10px !important;
+  gap: 10px !important; border: 0 !important; border-radius: 8px !important;
   background: transparent !important; box-shadow: none !important; color: var(--ink) !important;
 }
 @media (hover: hover) and (pointer: fine) {

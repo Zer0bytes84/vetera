@@ -497,8 +497,10 @@ A neutral theme-card header identifies the workflow above a quiet, opaque readin
 ### Sidebar Separators and Footer Band
 
 - **Header Hairline:** A one-pixel separator sits immediately below the sidebar header and adapts its inset or full width to the sidebar variant.
-- **Footer Hairline:** A theme-aware top border separates the identity dock from navigation at stronger opacity than incidental dividers.
-- **Behavior:** Both remain visible in light and dark themes. The minimal sidebar variant replaces the header hairline with its own shell-level separator.
+- **Footer, no rules:** Nothing draws a line above or inside the footer (quick access and identity). Space alone sets it apart: 24px above Accès rapides, 16px before the identity block.
+- **Identity block:** Avatar 32px, name (13px, medium) and role (12px, muted), one line each, never wrapped or stacked; the whole block opens the account menu, which groups its actions. A quiet "⋯" sits at the end and gives way below 220px of block width so the longest role stays whole.
+- **State dots:** Quick-access dots are 5px and softened, their hue still readable.
+- **Behavior:** The header hairline remains visible in light and dark themes. The minimal sidebar variant replaces it with its own shell-level separator.
 
 ## Do's and Don'ts
 
@@ -507,7 +509,7 @@ A neutral theme-card header identifies the workflow above a quiet, opaque readin
 - **Do** preserve gray outer frames and inset theme-card bodies across operational KPI rows.
 - **Do** derive semantic tone from the meaning and active value of the signal.
 - **Do** pair semantic color with a recognizable icon and explicit label.
-- **Do** keep the identity dock inside the anchored sidebar footer band and retain its hairline boundary.
+- **Do** keep the identity dock anchored at the bottom of the sidebar, set apart by space alone, without a band or hairline.
 - **Do** preserve light- and dark-theme contrast for borders, text, status badges, and dropdown elevation.
 - **Do** fit complete monetary values to available width and retain their currency.
 - **Do** keep the ambient mesh behind top content and preserve the continuous Protocol header glass.
