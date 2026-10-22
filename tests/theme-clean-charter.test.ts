@@ -4,6 +4,7 @@ import postcss from "postcss";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { applyTheme, DEFAULT_THEME, getThemeConfig } from "../src/lib/theme-store";
 import {
+  APP_THEMES,
   appThemeSettings,
   currentAppTheme,
   DEFAULT_SKIN,
@@ -11,12 +12,19 @@ import {
 } from "../src/lib/theme-skin";
 
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
-const SCOPE = ':root[data-skin="clean"]:not(.dark)';
+const SCOPE = ':root[data-skin="clean"]';
+const DARK = ':root[data-skin="clean"].dark';
 const root = postcss.parse(CLEAN);
-const declarations = new Map<string, string>();
-root.walkDecls((decl) => {
-  if (decl.prop.startsWith("--clean-")) declarations.set(decl.prop, decl.value);
-});
+const tokensOf = (selector: string) => {
+  const found = new Map<string, string>();
+  root.walkRules((rule) => {
+    if (rule.selector !== selector) return;
+    rule.walkDecls((decl) => { if (decl.prop.startsWith("--clean-")) found.set(decl.prop, decl.value); });
+  });
+  return found;
+};
+const declarations = tokensOf(SCOPE);
+const darkDeclarations = tokensOf(DARK);
 const rulesFor = (pattern: RegExp) => {
   const found: postcss.Rule[] = [];
   root.walkRules((rule) => {
@@ -72,6 +80,35 @@ describe("thème Clean : jetons", () => {
   });
 });
 
+describe("thème Clean : déclinaison sombre", () => {
+  it("redéfinit chaque jeton de couleur avec le même nom, et rien d'autre", () => {
+    const colours = [...declarations.keys()].filter((name) => /^#|rgb\(|color-mix|shadow|var\(--clean-surface\)/.test(declarations.get(name)!) || /shadow|glass-(top|bottom|edge|rule|drop)|capsule|segment-(track|active)/.test(name));
+    for (const name of darkDeclarations.keys()) expect(declarations.has(name)).toBe(true);
+    for (const name of colours) expect(darkDeclarations.has(name), name).toBe(true);
+    for (const name of ["--clean-control", "--clean-row-table", "--clean-nav-item", "--clean-font-ui", "--clean-sheet-radius"]) {
+      expect(darkDeclarations.has(name)).toBe(false);
+    }
+  });
+
+  it("garde des noirs teintés, sans noir pur ni ombre portée", () => {
+    for (const [name, value] of darkDeclarations) {
+      expect(value, name).not.toMatch(/#000(000)?\b|rgb\(0 0 0/);
+    }
+    expect(darkDeclarations.get("--clean-frame")).toBe("#0c0d0f");
+    expect(darkDeclarations.get("--clean-sheet")).toBe("#111214");
+    expect(darkDeclarations.get("--clean-surface")).toBe("#171719");
+    expect(darkDeclarations.get("--clean-ink-strong")).toBe("#f3f3f5");
+  });
+
+  it("aucune règle ne vise un seul mode : clair et sombre partagent le traitement", () => {
+    const modeOnly: string[] = [];
+    root.walkRules((rule) => {
+      for (const selector of rule.selectors) if (/:not\(\.dark\)|\.dark /.test(selector)) modeOnly.push(selector);
+    });
+    expect(modeOnly).toEqual([]);
+  });
+});
+
 describe("thème Clean : feuille posée sur le cadre", () => {
   it("décolle la feuille de 8 px, coins de 12 px, ombre presque invisible", () => {
     expect(declarations.get("--clean-sheet-inset")).toBe("8px");
@@ -94,7 +131,7 @@ describe("thème Clean : feuille posée sur le cadre", () => {
   });
 
   it("aligne les champs de page sur les 32 px des contrôles voisins", () => {
-    const tokens = rulesFor(new RegExp(`^${SCOPE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`)).map((rule) => rule.toString()).join("");
+    const tokens = rulesFor(/^:root\[data-skin="clean"\],/).map((rule) => rule.toString()).join("");
     expect(tokens).toContain("--field-height: var(--clean-control)");
   });
 
@@ -122,9 +159,10 @@ describe("polices par thème", () => {
     rule.walkDecls((decl) => premiumTokens.set(decl.prop, decl.value))
   );
   const cleanTokens = new Map<string, string>();
-  root.walkRules(SCOPE, (rule) =>
-    rule.walkDecls((decl) => cleanTokens.set(decl.prop, `${decl.value}${decl.important ? " !important" : ""}`))
-  );
+  root.walkRules((rule) => {
+    if (rule.selectors.join("|") !== `${SCOPE}|${DARK}`) return;
+    rule.walkDecls((decl) => cleanTokens.set(decl.prop, `${decl.value}${decl.important ? " !important" : ""}`));
+  });
 
   it("garde Geist et Space Grotesk comme règle de Premium", () => {
     expect(premiumTokens.get("--app-font-sans")).toMatch(/^"Geist Variable"/);
@@ -180,6 +218,47 @@ describe("thème Clean : interrupteurs segmentés", () => {
     root.walkDecls("content", (decl) => {
       expect(decl.value === '""' || decl.value.startsWith("attr(")).toBe(true);
     });
+  });
+});
+
+describe("thème Clean : icônes", () => {
+  const SUBSTITUTIONS: [target: RegExp, icon: string][] = [
+    [/aria-label="Patients"\] svg/, "paw-print"],
+    [/data-tone="orange"\] svg/, "syringe"],
+    [/data-kpi="Urgences ouvertes"\]/, "siren"],
+    [/data-kpi="Relances à prévoir"\]/, "calendar-clock"],
+    [/data-kpi="En retard"\]/, "clock-alert"],
+    [/value="clinical"\] svg/, "calendar-heart"],
+  ];
+
+  it("liste chaque substitution, une icône Lucide par sens, et rien d'autre", () => {
+    const icons = [...declarations.keys()].filter((name) => name.startsWith("--clean-icon-") && name !== "--clean-icon-stroke");
+    expect(icons.sort()).toEqual(SUBSTITUTIONS.map(([, icon]) => `--clean-icon-${icon}`).sort());
+    for (const [target, icon] of SUBSTITUTIONS) {
+      const rule = rulesFor(target).find((found) => found.toString().includes(`var(--clean-icon-${icon})`));
+      expect(rule, icon).toBeDefined();
+    }
+  });
+
+  it("dessine la substitution à la place de l'icône d'origine, dans sa couleur et sa boîte", () => {
+    const paint = rulesFor(/^:root\[data-skin="clean"\] :is\(/).find((rule) => rule.toString().includes("mask: var(--clean-icon)"));
+    expect(paint?.toString()).toContain("background: currentColor");
+    expect(rulesFor(/\) > \*$/).some((rule) => rule.toString().includes("display: none"))).toBe(true);
+  });
+
+  it("pose l'icône de page sur la ligne du titre, avec ou sans date au-dessus", () => {
+    const tile = rulesFor(/\[data-slot="page-header"\] \.premium-page-icon$/).map((rule) => rule.toString()).join("");
+    expect(tile).toContain("height: 28px");
+    expect(rulesFor(/:has\(\.page-header-kicker\) \.premium-page-icon$/)).toHaveLength(1);
+  });
+});
+
+describe("thème Clean : titre d'accueil", () => {
+  it("reste au plafond de 24 px, en graisse 500 pour compenser l'œil d'Inter", () => {
+    const hero = rulesFor(/\.heroTitle$/).map((rule) => rule.toString()).join("");
+    expect(hero).toContain("font-size: 24px !important");
+    expect(hero).toContain("font-weight: 500 !important");
+    expect(hero).not.toMatch(/font-size: (2[5-9]|[3-9]\d)px/);
   });
 });
 
@@ -255,11 +334,14 @@ describe("thème Clean : réglage et défaut", () => {
     expect(dataset.skin).toBe("premium");
   });
 
-  it("distingue les trois thèmes et leurs réglages", () => {
-    expect(currentAppTheme("clean", false)).toBe("clean");
-    expect(currentAppTheme("clean", true)).toBe("premium-dark");
+  it("présente les quatre combinaisons et leurs réglages", () => {
+    expect(APP_THEMES.map((theme) => theme.label)).toEqual(["Premium clair", "Premium sombre", "Clean clair", "Clean sombre"]);
+    expect(currentAppTheme("clean", false)).toBe("clean-light");
+    expect(currentAppTheme("clean", true)).toBe("clean-dark");
     expect(currentAppTheme("premium", false)).toBe("premium-light");
-    expect(appThemeSettings("clean")).toEqual({ skin: "clean", mode: "light" });
+    expect(currentAppTheme("premium", true)).toBe("premium-dark");
+    expect(appThemeSettings("clean-dark")).toEqual({ skin: "clean", mode: "dark" });
+    expect(appThemeSettings("clean-light")).toEqual({ skin: "clean", mode: "light" });
     expect(appThemeSettings("premium-dark")).toEqual({ skin: "premium", mode: "dark" });
     expect(appThemeSettings("premium-light")).toEqual({ skin: "premium", mode: "light" });
   });

@@ -917,7 +917,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   <div>
                     <p className="settings-row-title">Thème</p>
                     <p className="settings-row-detail">
-                      Premium clair, Premium sombre ou Clean.
+                      Premium clair, Premium sombre, Clean clair ou Clean sombre.
                     </p>
                   </div>
                   <AppThemePicker

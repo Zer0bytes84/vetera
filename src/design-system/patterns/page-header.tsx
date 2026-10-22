@@ -53,6 +53,7 @@ export function PageHeader({
           "page-header flex flex-col gap-4 md:flex-row md:items-start md:justify-between",
           className,
         )}
+        data-page-title={typeof title === "string" ? title : undefined}
         data-slot="page-header"
       >
         <div className="min-w-0">

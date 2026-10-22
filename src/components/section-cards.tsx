@@ -182,6 +182,7 @@ export function SectionCards({
             <Content
               key={item.title}
               className={cn("kpi section-atlas-card group")}
+              data-kpi={item.title}
               onClick={item.onClick}
               {...(item.onClick ? { type: "button" as const } : {})}
               aria-label={item.onClick ? `Voir ${item.title}` : undefined}

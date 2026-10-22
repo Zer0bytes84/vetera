@@ -1,5 +1,5 @@
 /* Clean: a skin over Premium light, built on Linear as measured in the study
-   of 2026-10-21. Every rule is scoped to :root[data-skin="clean"]:not(.dark):
+   of 2026-10-21. Every rule is scoped to :root[data-skin="clean"]:
    Premium light and dark never match it, and no component is forked. Only the
    visual treatment changes; layout, order, labels and behaviour do not. */
 
@@ -22,7 +22,7 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-:root[data-skin="clean"]:not(.dark) {
+:root[data-skin="clean"] {
   /* Depth: a darker frame holds navigation; work happens on one lifted sheet. */
   --clean-frame: #ededee;
   --clean-sheet: #fafafa;
@@ -56,7 +56,30 @@
   --clean-segment-track: #ededee;
   --clean-segment-item: 28px;
   --clean-segment-radius: 6px;
+  --clean-segment-active: var(--clean-surface);
   --clean-segment-active-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
+  /* Liquid glass: the header and, in Liquid Glass mode, the tools capsule. */
+  --clean-glass-top: rgb(255 255 255 / 0.78);
+  --clean-glass-bottom: rgb(250 250 250 / 0.56);
+  --clean-glass-edge: rgb(255 255 255 / 0.9);
+  --clean-glass-rule: rgb(0 0 0 / 0.1);
+  --clean-glass-drop: 0 8px 24px -16px rgb(0 0 0 / 0.12);
+  --clean-capsule-top: rgb(255 255 255 / 0.7);
+  --clean-capsule-bottom: rgb(255 255 255 / 0.38);
+  --clean-capsule-edge: rgb(255 255 255 / 0.95);
+  --clean-capsule-ring: rgb(0 0 0 / 0.08);
+  --clean-capsule-drop: 0 1px 2px rgb(0 0 0 / 0.04), 0 6px 16px -8px rgb(0 0 0 / 0.14);
+  /* Icon substitutions (Lucide, drawn as masks over the original icon, so no
+     component changes per theme). Each one is listed in the review and can be
+     vetoed alone by deleting its line in the substitution block below. */
+--clean-icon-paw-print: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='4' r='2'/%3E%3Ccircle cx='18' cy='8' r='2'/%3E%3Ccircle cx='20' cy='16' r='2'/%3E%3Cpath d='M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z'/%3E%3C/svg%3E");
+  --clean-icon-syringe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 2 4 4'/%3E%3Cpath d='m17 7 3-3'/%3E%3Cpath d='M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5'/%3E%3Cpath d='m9 11 4 4'/%3E%3Cpath d='m5 19-3 3'/%3E%3Cpath d='m14 4 6 6'/%3E%3C/svg%3E");
+  --clean-icon-siren: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18v-6a5 5 0 1 1 10 0v6'/%3E%3Cpath d='M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z'/%3E%3Cpath d='M21 12h1'/%3E%3Cpath d='M18.5 4.5 18 5'/%3E%3Cpath d='M2 12h1'/%3E%3Cpath d='M12 2v1'/%3E%3Cpath d='m4.929 4.929.707.707'/%3E%3Cpath d='M12 12v6'/%3E%3C/svg%3E");
+  --clean-icon-calendar-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5'/%3E%3Cpath d='M16 2v4'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M3 10h5'/%3E%3Cpath d='M17.5 17.5 16 16.3V14'/%3E%3Ccircle cx='16' cy='16' r='6'/%3E%3C/svg%3E");
+  --clean-icon-clock-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6v6l4 2'/%3E%3Cpath d='M16 21.16a10 10 0 1 1 5-13.516'/%3E%3Cpath d='M20 11.5v6'/%3E%3Cpath d='M20 21.5h.01'/%3E%3C/svg%3E");
+  --clean-icon-calendar-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10h18V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M16 2v4'/%3E%3Cpath d='M21.29 14.7a2.43 2.43 0 0 0-2.65-.52c-.3.12-.57.3-.8.53l-.34.34-.35-.34a2.43 2.43 0 0 0-2.65-.53c-.3.12-.56.3-.79.53-.95.94-1 2.53.2 3.74L17.5 22l3.6-3.55c1.2-1.21 1.14-2.8.19-3.74Z'/%3E%3C/svg%3E");
+  /* Quick-access dots: the status hues, brought down to the theme's quiet greys. */
+  --clean-dot-mix: 55%;
   /* Shadows: none at rest; the sheet barely lifts; floating layers use a soft stack. */
   --clean-sheet-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
   --clean-float-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.06), 0 16px 32px -8px rgb(0 0 0 / 0.1);
@@ -66,7 +89,47 @@
   --clean-font-heading: var(--clean-font-ui);
   --clean-tracking-title: -0.022em;
   --clean-tracking-heading: -0.015em;
+}
 
+/* Dark declension, after Linear's dark: tinted near-blacks (LCH hue 272,
+   chroma about 1), opaque surfaces, depth carried by lightness steps and fine
+   lines, never by shadows or pure black. Same token names as the light set. */
+:root[data-skin="clean"].dark {
+  --clean-frame: #0c0d0f;
+  --clean-sheet: #111214;
+  --clean-surface: #171719;
+  --clean-line: #232426;
+  --clean-line-subtle: #1c1c1e;
+  --clean-hover: #1e1e20;
+  --clean-nav-hover: #17181a;
+  --clean-nav-active: #1f2022;
+  --clean-selected: #1f2024;
+  --clean-ink-strong: #f3f3f5;
+  --clean-ink: #cbcccd;
+  --clean-ink-quiet: #959698;
+  --clean-ink-disabled: #575759;
+  --clean-segment-track: rgb(255 255 255 / 0.05);
+  --clean-segment-active: rgb(255 255 255 / 0.1);
+  --clean-segment-active-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.08);
+  --clean-sheet-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.07);
+  --clean-float-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.1);
+  --clean-glass-top: rgb(23 23 25 / 0.76);
+  --clean-glass-bottom: rgb(17 18 20 / 0.6);
+  --clean-glass-edge: rgb(255 255 255 / 0.06);
+  --clean-glass-rule: rgb(255 255 255 / 0.08);
+  --clean-glass-drop: 0 0 0 transparent;
+  --clean-capsule-top: rgb(255 255 255 / 0.08);
+  --clean-capsule-bottom: rgb(255 255 255 / 0.03);
+  --clean-capsule-edge: rgb(255 255 255 / 0.1);
+  --clean-capsule-ring: rgb(255 255 255 / 0.08);
+  --clean-capsule-drop: 0 0 0 transparent;
+  --clean-dot-mix: 60%;
+}
+
+/* Premium's semantic tokens point at the Clean values, in both declensions
+   (the .dark selector outranks Premium dark's own token block). */
+:root[data-skin="clean"],
+:root[data-skin="clean"].dark {
   --canvas: var(--clean-sheet) !important;
   --background: var(--clean-sheet) !important;
   --frame: var(--clean-sheet) !important;
@@ -93,20 +156,32 @@
   --hair-r: inset -1px 0 0 var(--clean-line) !important;
   --band-bg: transparent !important;
   --band: transparent !important;
-  --tabs-track: #efeff0 !important;
+  --tabs-track: var(--clean-segment-track) !important;
   --app-font-sans: var(--clean-font-ui) !important;
   --font-sans: var(--clean-font-ui) !important;
   --app-font-heading: var(--clean-font-heading) !important;
   --app-font-display: var(--clean-font-heading) !important;
   --font-heading: var(--clean-font-heading) !important;
+  --ink: var(--clean-ink-strong) !important;
+  --ink-soft: var(--clean-ink) !important;
+  --text-2: var(--clean-ink) !important;
+  --ink-muted: var(--clean-ink-quiet) !important;
+  --soft: var(--clean-ink-quiet) !important;
+  --ink-faint: var(--clean-ink-quiet) !important;
+  --faint: var(--clean-ink-quiet) !important;
+  --card-foreground: var(--clean-ink-strong) !important;
+  --sidebar-foreground: var(--clean-ink-strong) !important;
+  --sidebar-accent-foreground: var(--clean-ink-strong) !important;
 }
 
 /* ---------- Frame and sheet ---------- */
-:root[data-skin="clean"]:not(.dark) body,
-:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-wrapper"] {
+:root[data-skin="clean"] body,
+:root[data-skin="clean"] [data-slot="sidebar-wrapper"] {
   background: var(--clean-frame) !important;
 }
-:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-inset"] {
+/* Raised above the Liquid Glass rule that removes the frame: in Clean, the
+   sheet sits on the frame in both header modes. */
+:root[data-skin="clean"] [data-slot="sidebar-wrapper"] [data-slot="sidebar-inset"] {
   padding: var(--clean-sheet-inset) var(--clean-sheet-inset) var(--clean-sheet-inset) 0 !important;
   background: var(--clean-frame) !important;
 }
@@ -114,11 +189,11 @@
    !important: the frame colour goes in the same layer, so the strip above the
    sheet reads as the sidebar's grey. */
 @layer utilities {
-  :root[data-skin="clean"]:not(.dark) [data-slot="sidebar-inset"] {
+  :root[data-skin="clean"] [data-slot="sidebar-inset"] {
     background: var(--clean-frame) !important;
   }
 }
-:root[data-skin="clean"]:not(.dark) [data-slot="shell-scroll-panel"] {
+:root[data-skin="clean"] [data-slot="shell-scroll-panel"] {
   border: 0 !important;
   border-radius: var(--clean-sheet-radius) !important;
   background: var(--clean-sheet) !important;
@@ -126,42 +201,43 @@
 }
 /* Header: liquid glass over the sheet. Content scrolls beneath it, blurred and
    saturated; a specular top edge and a hairline give it the feel of glass. */
-:root[data-skin="clean"]:not(.dark) [data-slot="app-header"] {
+:root[data-skin="clean"] [data-slot="app-header"] {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.78) 0%, rgb(250 250 250 / 0.56) 100%) !important;
+    linear-gradient(180deg, var(--clean-glass-top) 0%, var(--clean-glass-bottom) 100%) !important;
   -webkit-backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
   backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.9),
-    inset 0 -0.5px 0 rgb(0 0 0 / 0.1),
-    0 8px 24px -16px rgb(0 0 0 / 0.12) !important;
+    inset 0 1px 0 var(--clean-glass-edge),
+    inset 0 -0.5px 0 var(--clean-glass-rule),
+    var(--clean-glass-drop) !important;
 }
 /* With the Liquid Glass setting on, the header tools gather in a glass capsule. */
-:root[data-skin="clean"]:not(.dark)[data-chrome-style="liquid-glass"] .shell-toolbar-actions {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions {
   gap: 2px !important;
   padding: 3px !important;
   border-radius: 999px !important;
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.38)) !important;
+  background: linear-gradient(180deg, var(--clean-capsule-top), var(--clean-capsule-bottom)) !important;
   -webkit-backdrop-filter: blur(12px) saturate(1.6);
   backdrop-filter: blur(12px) saturate(1.6);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.95),
-    inset 0 0 0 0.5px rgb(0 0 0 / 0.08),
-    0 1px 2px rgb(0 0 0 / 0.04),
-    0 6px 16px -8px rgb(0 0 0 / 0.14) !important;
+    inset 0 1px 0 var(--clean-capsule-edge),
+    inset 0 0 0 0.5px var(--clean-capsule-ring),
+    var(--clean-capsule-drop) !important;
 }
-:root[data-skin="clean"]:not(.dark)[data-chrome-style="liquid-glass"] :is(.shell-toolbar-actions button, .shell-toolbar-actions .topIcon) {
+:root[data-skin="clean"][data-chrome-style="liquid-glass"] :is(.shell-toolbar-actions button, .shell-toolbar-actions .topIcon) {
   border-radius: 999px !important;
 }
-:root[data-skin="clean"]:not(.dark) :is(th, thead)[class*="backdrop-blur"] {
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  background: var(--clean-surface) !important;
+/* Sticky table heads take the same glass as the header (Tailwind Plus
+   "with sticky header"): rows scroll beneath them, blurred. */
+:root[data-skin="clean"] :is(th, thead)[class*="backdrop-blur"] {
+  -webkit-backdrop-filter: blur(12px) saturate(1.6) !important;
+  backdrop-filter: blur(12px) saturate(1.6) !important;
+  background: color-mix(in srgb, var(--clean-surface) 82%, transparent) !important;
 }
-:root[data-skin="clean"]:not(.dark) .apple-sidebar-glow { display: none; }
+:root[data-skin="clean"] .apple-sidebar-glow { display: none; }
 
 /* Header tools: ghost icon buttons, no boxes. */
-:root[data-skin="clean"]:not(.dark) :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control) {
+:root[data-skin="clean"] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control) {
   width: var(--clean-control) !important;
   min-width: var(--clean-control) !important;
   height: var(--clean-control) !important;
@@ -174,14 +250,14 @@
 }
 /* Premium sets this control inside a cascade layer, so Clean answers in the same layer. */
 @layer utilities {
-  :root[data-skin="clean"]:not(.dark) .shell-toolbar-actions .shell-toolbar-control {
+  :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control {
     border-color: transparent !important;
     background: transparent !important;
     box-shadow: none !important;
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"]:not(.dark) :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control):hover {
+  :root[data-skin="clean"] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control):hover {
     background: var(--clean-hover) !important;
     color: var(--clean-ink-strong) !important;
     transition-duration: var(--speed-highlight-in);
@@ -189,17 +265,17 @@
 }
 
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
-:root[data-skin="clean"]:not(.dark) :is(.app-sidebar, [data-slot="sidebar-container"], [data-slot="sidebar-inner"]) {
+:root[data-skin="clean"] :is(.app-sidebar, [data-slot="sidebar-container"], [data-slot="sidebar-inner"]) {
   background: var(--clean-frame) !important;
 }
-:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-container"]::after,
-:root[data-skin="clean"]:not(.dark) [data-slot="sidebar-header-separator"] { display: none !important; }
-:root[data-skin="clean"]:not(.dark) .premium-shortcuts { border-top-color: var(--clean-line) !important; }
-:root[data-skin="clean"]:not(.dark) .app-sidebar {
+:root[data-skin="clean"] [data-slot="sidebar-container"]::after,
+:root[data-skin="clean"] [data-slot="sidebar-header-separator"] { display: none !important; }
+:root[data-skin="clean"] .premium-shortcuts { border-top-color: var(--clean-line) !important; }
+:root[data-skin="clean"] .app-sidebar {
   --premium-nav-row: var(--clean-nav-item);
   --premium-shortcut-row: var(--clean-nav-item);
 }
-:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] {
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] {
   height: var(--clean-nav-item) !important;
   min-height: var(--clean-nav-item) !important;
   border-radius: var(--clean-control-radius);
@@ -210,83 +286,89 @@
   box-shadow: none !important;
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
-:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
-:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
   background: var(--clean-nav-active) !important;
+  border-color: transparent !important;
+  outline: 0 !important;
   color: var(--clean-ink-strong) !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"]:hover {
+  :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"]:hover {
     background: var(--clean-nav-hover);
     color: var(--clean-ink-strong);
     transition-duration: var(--speed-highlight-in);
   }
-  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]):hover {
+  :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]):hover {
     background: var(--clean-nav-active);
   }
-  :root[data-skin="clean"]:not(.dark) .premium-shortcuts button:hover { background: var(--clean-nav-hover) !important; }
+  :root[data-skin="clean"] .premium-shortcuts button:hover { background: var(--clean-nav-hover) !important; }
 }
-:root[data-skin="clean"]:not(.dark) .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
+:root[data-skin="clean"] .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
+/* Quick-access dots keep their hue, desaturated towards the theme's greys. */
+:root[data-skin="clean"] .premium-shortcuts button .premium-shortcut-dot {
+  background: color-mix(in oklab, var(--premium-shortcut-color) var(--clean-dot-mix), var(--clean-ink-quiet)) !important;
+}
 /* The account sits on the frame like the rest of the navigation, without a box. */
-:root[data-skin="clean"]:not(.dark) .sidebar-account-frame { box-shadow: none !important; }
-:root[data-skin="clean"]:not(.dark) .sidebar-account-frame .sidebar-user-card {
+:root[data-skin="clean"] .sidebar-account-frame { box-shadow: none !important; }
+:root[data-skin="clean"] .sidebar-account-frame .sidebar-user-card {
   border-radius: var(--clean-control-radius) !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"]:not(.dark) .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
+  :root[data-skin="clean"] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
     background: var(--clean-nav-hover) !important;
   }
 }
 
 /* ---------- Icons: one thin stroke, contained size, quiet at rest ---------- */
 @layer utilities {
-  :root[data-skin="clean"]:not(.dark) .app-sidebar .sidebar-nav-icon {
+  :root[data-skin="clean"] .app-sidebar .sidebar-nav-icon {
     width: var(--clean-nav-icon) !important;
     height: var(--clean-nav-icon) !important;
   }
-  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] .sidebar-nav-icon svg,
-  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] > svg,
-  :root[data-skin="clean"]:not(.dark) .premium-shortcut-icon {
+  :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] .sidebar-nav-icon svg,
+  :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > svg,
+  :root[data-skin="clean"] .premium-shortcut-icon {
     width: var(--clean-nav-icon) !important;
     height: var(--clean-nav-icon) !important;
     flex-basis: var(--clean-nav-icon) !important;
   }
 }
-:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg,
-:root[data-skin="clean"]:not(.dark) :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg [stroke-width] {
+:root[data-skin="clean"] :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg,
+:root[data-skin="clean"] :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg [stroke-width] {
   stroke-width: var(--clean-icon-stroke);
 }
-:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"] svg { color: var(--clean-ink-quiet); }
-:root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) svg { color: var(--clean-ink-strong); }
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] svg { color: var(--clean-ink-quiet); }
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) svg { color: var(--clean-ink-strong); }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"]:not(.dark) .app-sidebar [data-slot="sidebar-menu-button"]:hover svg { color: var(--clean-ink-strong); }
+  :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"]:hover svg { color: var(--clean-ink-strong); }
 }
 /* List icons: 16 px in a 28 px species tile. */
-:root[data-skin="clean"]:not(.dark) .medical-data-table td .size-10 { width: 28px; height: 28px; border-radius: 8px; box-shadow: none; }
-:root[data-skin="clean"]:not(.dark) .medical-data-table td .size-10 svg { width: var(--clean-list-icon); height: var(--clean-list-icon); }
+:root[data-skin="clean"] .medical-data-table td .size-10 { width: 28px; height: 28px; border-radius: 8px; box-shadow: none; }
+:root[data-skin="clean"] .medical-data-table td .size-10 svg { width: var(--clean-list-icon); height: var(--clean-list-icon); }
 
 /* ---------- Typography: Inter throughout (Linear's face), Linear's hierarchy ---------- */
-:root[data-skin="clean"]:not(.dark) body {
+:root[data-skin="clean"] body {
   color: var(--clean-ink-strong);
   font-family: var(--clean-font-ui);
   font-optical-sizing: auto;
   letter-spacing: -0.006em;
 }
-:root[data-skin="clean"]:not(.dark) :is(h1, h2, h3) {
+:root[data-skin="clean"] :is(h1, h2, h3) {
   color: var(--clean-ink-strong);
   font-family: var(--clean-font-heading);
   font-weight: 600;
   letter-spacing: var(--clean-tracking-heading);
 }
 /* Page and welcome titles take Linear's tighter tracking. */
-:root[data-skin="clean"]:not(.dark) :is(h1, .heroTitle) { letter-spacing: var(--clean-tracking-title) !important; }
-:root[data-skin="clean"]:not(.dark) p:not([class*="text-"]) { color: var(--clean-ink); }
-:root[data-skin="clean"]:not(.dark) :is(.text-muted-foreground, .t-12, small, time) { font-weight: 450; }
-:root[data-skin="clean"]:not(.dark) .text-muted-foreground { color: var(--clean-ink-quiet) !important; }
+:root[data-skin="clean"] :is(h1, .heroTitle) { letter-spacing: var(--clean-tracking-title) !important; }
+:root[data-skin="clean"] p:not([class*="text-"]) { color: var(--clean-ink); }
+:root[data-skin="clean"] :is(.text-muted-foreground, .t-12, small, time) { font-weight: 450; }
+:root[data-skin="clean"] .text-muted-foreground { color: var(--clean-ink-quiet) !important; }
 /* Labels: small and quiet, sentence case, no tracking (text unchanged). */
-:root[data-skin="clean"]:not(.dark) :is(th, .kicker, .nextLabel, .premium-shortcuts-heading, .app-sidebar [data-slot="sidebar-group-label"]) {
+:root[data-skin="clean"] :is(th, .kicker, .nextLabel, .premium-shortcuts-heading, .app-sidebar [data-slot="sidebar-group-label"]) {
   color: var(--clean-ink-quiet) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
@@ -294,22 +376,22 @@
   text-transform: none !important;
 }
 /* Tabular figures for amounts and tables, so columns of numbers align. */
-:root[data-skin="clean"]:not(.dark) :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick, .chartTickVisits) {
+:root[data-skin="clean"] :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick, .chartTickVisits) {
   font-variant-numeric: tabular-nums;
 }
-:root[data-skin="clean"]:not(.dark) :is(.kpiValue, .section-atlas-value) { font-weight: 600 !important; letter-spacing: var(--clean-tracking-title) !important; }
+:root[data-skin="clean"] :is(.kpiValue, .section-atlas-value) { font-weight: 600 !important; letter-spacing: var(--clean-tracking-title) !important; }
 
 /* ---------- Disabled: the fourth grey, for text and icons only ---------- */
-:root[data-skin="clean"]:not(.dark) :is(button, input, select, textarea, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) {
+:root[data-skin="clean"] :is(button, input, select, textarea, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) {
   color: var(--clean-ink-disabled) !important;
   opacity: 1 !important;
 }
-:root[data-skin="clean"]:not(.dark) :is(button, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) svg {
+:root[data-skin="clean"] :is(button, [role="button"], [role="menuitem"], [role="tab"]):is(:disabled, [aria-disabled="true"], [data-disabled]) svg {
   color: var(--clean-ink-disabled) !important;
 }
 
 /* ---------- Controls: 32 px, hairline, no shadow at rest ---------- */
-:root[data-skin="clean"]:not(.dark) :is([data-slot="button"], button.group\/button, [data-slot="page-header-actions"] button) {
+:root[data-skin="clean"] :is([data-slot="button"], button.group\/button, [data-slot="page-header-actions"] button) {
   height: var(--clean-control) !important;
   min-height: var(--clean-control) !important;
   padding-inline: 12px !important;
@@ -318,29 +400,29 @@
   font-weight: 500 !important;
   box-shadow: none !important;
 }
-:root[data-skin="clean"]:not(.dark) :is([data-slot="button"], button.group\/button)[data-size="icon"],
-:root[data-skin="clean"]:not(.dark) :is([data-slot="button"], button.group\/button)[data-size="icon-sm"] {
+:root[data-skin="clean"] :is([data-slot="button"], button.group\/button)[data-size="icon"],
+:root[data-skin="clean"] :is([data-slot="button"], button.group\/button)[data-size="icon-sm"] {
   width: var(--clean-control) !important;
   padding-inline: 0 !important;
 }
-:root[data-skin="clean"]:not(.dark) :is([data-slot="input"], [data-slot="list-search"], .list-search-control, .list-filter-control, [data-slot="select-trigger"]) {
+:root[data-skin="clean"] :is([data-slot="input"], [data-slot="list-search"], .list-search-control, .list-filter-control, [data-slot="select-trigger"]) {
   box-shadow: none !important;
 }
 /* Ghost buttons stay ghosts: no box at rest, one hover step (row actions, toolbars). */
-:root[data-skin="clean"]:not(.dark) [data-slot="button"][class*="bg-muted/50"] {
+:root[data-skin="clean"] [data-slot="button"][class*="bg-muted/50"] {
   border-color: transparent !important;
   background: transparent !important;
   color: var(--clean-ink) !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"]:not(.dark) [data-slot="button"][class*="bg-muted/50"]:hover {
+  :root[data-skin="clean"] [data-slot="button"][class*="bg-muted/50"]:hover {
     background: var(--clean-hover) !important;
     color: var(--clean-ink-strong) !important;
   }
 }
 
 /* Status pills: tinted, borderless, full radius. */
-:root[data-skin="clean"]:not(.dark) :is([data-slot="badge"], .section-atlas-status, [data-premium-status]) {
+:root[data-skin="clean"] :is([data-slot="badge"], .section-atlas-status, [data-premium-status]) {
   border-color: transparent !important;
   border-radius: 999px !important;
   font-weight: 500 !important;
@@ -348,7 +430,7 @@
 
 /* List filter bars: the search gives way first (down to 120 px, never past its
    usual 288 px), so the filters and their reset button keep one line. */
-:root[data-skin="clean"]:not(.dark) .flex-wrap > .list-search-control {
+:root[data-skin="clean"] .flex-wrap > .list-search-control {
   flex: 1 1 144px !important;
   min-width: 120px;
   max-width: 18rem;
@@ -357,13 +439,13 @@
 /* Reminders filter bar: when it cannot hold one line, the scope and search
    controls take a full second line, aligned left, the search stretching,
    instead of a lone fragment pushed to the right. */
-:root[data-skin="clean"]:not(.dark) .reminders-filter-bar { container-type: inline-size; }
+:root[data-skin="clean"] .reminders-filter-bar { container-type: inline-size; }
 @container (max-width: 1080px) {
-  :root[data-skin="clean"]:not(.dark) .reminders-filter-bar > .ml-auto {
+  :root[data-skin="clean"] .reminders-filter-bar > .ml-auto {
     flex: 1 1 100%;
     margin-left: 0 !important;
   }
-  :root[data-skin="clean"]:not(.dark) .reminders-filter-bar > .ml-auto > :last-child {
+  :root[data-skin="clean"] .reminders-filter-bar > .ml-auto > :last-child {
     flex: 1 1 auto;
     width: auto !important;
   }
@@ -374,7 +456,7 @@
    choices, notification filters. Track 32 px flush with the controls beside it;
    the chosen item is a white sheet with strong ink, the others stay readable
    grey on the track, no border and no weight change, so nothing shifts. */
-:root[data-skin="clean"]:not(.dark) :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) {
   height: var(--clean-control) !important;
   min-height: var(--clean-control) !important;
   gap: 2px !important;
@@ -384,7 +466,7 @@
   background: var(--clean-segment-track) !important;
   box-shadow: none !important;
 }
-:root[data-skin="clean"]:not(.dark) :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button, [data-slot="tooltip-trigger"]) {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button, [data-slot="tooltip-trigger"]) {
   height: var(--clean-segment-item) !important;
   min-height: var(--clean-segment-item) !important;
   padding-block: 0 !important;
@@ -397,36 +479,36 @@
   font-weight: 500 !important;
   transition: background-color 120ms ease-out, color 120ms ease-out, box-shadow 120ms ease-out !important;
 }
-:root[data-skin="clean"]:not(.dark) :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * svg {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * svg {
   width: 16px !important;
   height: 16px !important;
   color: inherit !important;
 }
-:root[data-skin="clean"]:not(.dark) :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * svg * {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * svg * {
   color: inherit !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"]:not(.dark) :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :not([aria-pressed="true"], [aria-selected="true"], [data-state="active"], [data-state="on"], [data-active=""], [data-active="true"], .settings-segmented-active):hover {
+  :root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :not([aria-pressed="true"], [aria-selected="true"], [data-state="active"], [data-state="on"], [data-active=""], [data-active="true"], .settings-segmented-active):hover {
     color: var(--clean-ink-strong) !important;
   }
 }
-:root[data-skin="clean"]:not(.dark) :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :is([data-active=""], [data-active="true"], [data-state="active"], [data-state="on"], [data-pressed=""], [data-pressed="true"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"], [aria-current="page"], .settings-segmented-active) {
-  background: var(--clean-surface) !important;
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > :is([data-active=""], [data-active="true"], [data-state="active"], [data-state="on"], [data-pressed=""], [data-pressed="true"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"], [aria-current="page"], .settings-segmented-active) {
+  background: var(--clean-segment-active) !important;
   color: var(--clean-ink-strong) !important;
   box-shadow: var(--clean-segment-active-shadow) !important;
 }
-:root[data-skin="clean"]:not(.dark) :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * :is(.text-ink, .text-ink-muted) {
+:root[data-skin="clean"] :is([data-tabs-style="segmented"], .dashboard-mode-toggle, .flow-density, .settings-segmented, .stock-view-toggle) > * :is(.text-ink, .text-ink-muted) {
   color: inherit !important;
 }
 
 /* Dashboard view switch: it changes the view, it is not an action. A hairline
    sets it apart from the two buttons, and the chosen view shows its own name
    (the existing label) beside its icon, so icon, name and view always agree. */
-:root[data-skin="clean"]:not(.dark) .dashboard-mode-toggle {
+:root[data-skin="clean"] .dashboard-mode-toggle {
   position: relative;
   margin-inline-start: 9px !important;
 }
-:root[data-skin="clean"]:not(.dark) .dashboard-mode-toggle::before {
+:root[data-skin="clean"] .dashboard-mode-toggle::before {
   content: "";
   position: absolute;
   inset-block: 6px;
@@ -434,16 +516,16 @@
   width: 1px;
   background: var(--clean-line);
 }
-:root[data-skin="clean"]:not(.dark) .dashboard-mode-toggle > button {
+:root[data-skin="clean"] .dashboard-mode-toggle > button {
   width: auto !important;
   min-width: var(--clean-segment-item) !important;
   gap: 6px !important;
   padding-inline: 6px !important;
 }
-:root[data-skin="clean"]:not(.dark) .dashboard-mode-toggle > button[aria-pressed="true"] {
+:root[data-skin="clean"] .dashboard-mode-toggle > button[aria-pressed="true"] {
   padding-inline: 8px 10px !important;
 }
-:root[data-skin="clean"]:not(.dark) .dashboard-mode-toggle > button[aria-pressed="true"]::after {
+:root[data-skin="clean"] .dashboard-mode-toggle > button[aria-pressed="true"]::after {
   content: attr(aria-label);
   font-size: 13px;
   font-weight: 500;
@@ -451,91 +533,267 @@
   white-space: nowrap;
 }
 /* Catalogue view switch: icon-only items, square. */
-:root[data-skin="clean"]:not(.dark) .stock-view-toggle > button {
+:root[data-skin="clean"] .stock-view-toggle > button {
   width: var(--clean-segment-item) !important;
   padding-inline: 0 !important;
 }
 
 /* The welcome band's buttons share the 32 px control height. */
-:root[data-skin="clean"]:not(.dark) .heroActions .btn {
+:root[data-skin="clean"] .heroActions .btn {
   height: var(--clean-control) !important;
   min-height: var(--clean-control) !important;
 }
 
 /* ---------- Row heights: 40 px dense lists, 32 px tables ---------- */
-:root[data-skin="clean"]:not(.dark) :is(div, li, a, button, article)[data-list-row] { min-height: var(--clean-row-list); }
-:root[data-skin="clean"]:not(.dark) [data-list-row] .min-h-11 { min-height: var(--clean-row-list); }
+:root[data-skin="clean"] :is(div, li, a, button, article)[data-list-row] { min-height: var(--clean-row-list); }
+:root[data-skin="clean"] [data-list-row] .min-h-11 { min-height: var(--clean-row-list); }
 /* A row that is one open-button: the button is the row, at 40 px. */
-:root[data-skin="clean"]:not(.dark) [data-list-row]:has(> [data-row-open].min-h-11) { padding-block: 0; }
-:root[data-skin="clean"]:not(.dark) :is([data-slot="table"], .medical-data-table) :is(th, td),
-:root[data-skin="clean"]:not(.dark) [data-slot="table-head"] {
+:root[data-skin="clean"] [data-list-row]:has(> [data-row-open].min-h-11) { padding-block: 0; }
+:root[data-skin="clean"] :is([data-slot="table"], .medical-data-table) :is(th, td),
+:root[data-skin="clean"] [data-slot="table-head"] {
   height: var(--clean-row-table) !important;
   padding-block: 6px !important;
 }
-:root[data-skin="clean"]:not(.dark) :is(thead, th, [data-slot="table-head"]) {
+:root[data-skin="clean"] :is(thead, th, [data-slot="table-head"]) {
   background: var(--clean-surface) !important;
   box-shadow: inset 0 -1px 0 var(--clean-line) !important;
 }
-:root[data-skin="clean"]:not(.dark) :is(td, [data-slot="table-cell"]) { border-color: var(--clean-line-subtle) !important; }
+:root[data-skin="clean"] :is(td, [data-slot="table-cell"]) { border-color: var(--clean-line-subtle) !important; }
 /* Rows are separated by one subtle line only: no vertical rules between cells. */
-:root[data-skin="clean"]:not(.dark) :is(.medical-data-table, [data-slot="table"]) tbody td {
+:root[data-skin="clean"] :is(.medical-data-table, [data-slot="table"]) tbody td {
   border-inline: 0 !important;
   box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
 }
-:root[data-skin="clean"]:not(.dark) :is(.medical-data-table, [data-slot="table"]) tbody tr:last-child td { box-shadow: none !important; }
+:root[data-skin="clean"] :is(.medical-data-table, [data-slot="table"]) tbody tr:last-child td { box-shadow: none !important; }
 /* A hovered or current row keeps its pill, without the separator showing through. */
-:root[data-skin="clean"]:not(.dark) :is(.medical-data-table, [data-slot="table"]) tbody tr[data-current] td { box-shadow: none !important; }
+:root[data-skin="clean"] :is(.medical-data-table, [data-slot="table"]) tbody tr[data-current] td { box-shadow: none !important; }
+
+/* Patients list: the table runs edge to edge in its card, like Produits and
+   Finances. Filters, table cells and the pager share one 16 px gutter, and the
+   filter rule and header rule both reach the card's edges. */
+:root[data-skin="clean"] .dashboard-stage [data-slot="card-content"]:has(.patients-table-wrap) {
+  padding-inline: 0 !important;
+  padding-block-start: 0 !important;
+  gap: 0 !important;
+}
+:root[data-skin="clean"] [data-slot="card-content"]:has(.patients-table-wrap) > .flex-wrap {
+  padding: 12px 16px !important;
+}
+:root[data-skin="clean"] div:has(> .patients-table-wrap) {
+  padding: 0 !important;
+}
+:root[data-skin="clean"] div:has(> .patients-table-wrap) > :not(.patients-table-wrap) {
+  padding: 12px 16px !important;
+  box-shadow: inset 0 1px 0 var(--clean-line-subtle);
+}
+:root[data-skin="clean"] .patients-table-wrap .medical-data-table :is(th, td):first-child { padding-inline-start: 16px !important; }
+:root[data-skin="clean"] .patients-table-wrap .medical-data-table :is(th, td):last-child { padding-inline-end: 16px !important; }
+/* Row actions are ghosts until hovered, like every other row action. */
+:root[data-skin="clean"] .medical-data-table td :is([data-slot="button"], button.group\/button) {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--clean-ink-quiet) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"] .medical-data-table td :is([data-slot="button"], button.group\/button):hover {
+    background: var(--clean-hover) !important;
+    color: var(--clean-ink-strong) !important;
+  }
+}
+/* Rows are flat: the hover step fills the whole row, without a floating pill. */
+:root[data-skin="clean"] .patients-table-wrap .medical-data-table tbody td {
+  border-radius: 0 !important;
+}
+
+/* ---------- Agenda month, after Tailwind Plus "month view" ----------
+   One-pixel lines, days outside the month on the sheet instead of a heavy
+   grey, and states carried by the day number: the selected day in an ink disc,
+   today in the accent colour (an accent disc when it is also selected). No
+   2 px frame, no tinted box. */
+:root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid {
+  border-color: var(--clean-line) !important;
+  border-radius: var(--clean-card-radius) !important;
+  background: var(--clean-line) !important;
+}
+:root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid > span {
+  background: var(--clean-sheet) !important;
+  color: var(--clean-ink-quiet) !important;
+  font-weight: 500;
+}
+:root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid .agenda-month-day {
+  background: var(--clean-surface) !important;
+  box-shadow: none !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid .agenda-month-day:hover {
+    background: var(--clean-hover) !important;
+  }
+}
+:root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid .agenda-month-day[data-today] .agenda-month-day-number {
+  background: transparent !important;
+  color: var(--premium-blue, var(--primary)) !important;
+}
+:root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid .agenda-month-day[data-selected] .agenda-month-day-number {
+  background: var(--clean-ink-strong) !important;
+  color: var(--clean-surface) !important;
+}
+:root[data-skin="clean"] .agenda-month-calendar .agenda-month-grid .agenda-month-day[data-selected][data-today] .agenda-month-day-number {
+  background: var(--premium-blue, var(--primary)) !important;
+  color: var(--clean-surface) !important;
+}
+
+/* Agenda week and day grids, after Tailwind Plus "week view": an appointment
+   is a flat tinted block (its type's tint, kept from the component), with no
+   border or shadow, 8 px corners, and two tight lines so a 30 min slot shows
+   both the patient and the time. The neutral type (Contrôle) gets the hover
+   grey instead of disappearing into the sheet. */
+:root[data-skin="clean"] button[class*="group/event"] {
+  border-color: transparent !important;
+  border-radius: var(--clean-control-radius) !important;
+  box-shadow: none !important;
+  padding-block: 1px !important;
+}
+:root[data-skin="clean"] button[class*="group/event"][class*="bg-frame"] {
+  background: var(--clean-hover) !important;
+}
+:root[data-skin="clean"] button[class*="group/event"] p {
+  line-height: 13px !important;
+}
+
+/* Week header: today is told by its number in the accent colour, like the
+   month, instead of a tinted column head. */
+:root[data-skin="clean"] div.sticky.top-0.border-b.text-center {
+  background: var(--clean-sheet) !important;
+}
+:root[data-skin="clean"] div.sticky[class*="bg-primary/6"] > :last-child {
+  color: var(--premium-blue, var(--primary)) !important;
+  font-weight: 600 !important;
+}
+/* Spaced capitals become quiet sentence-case labels across the theme (the
+   text itself is unchanged), as for table heads and section labels. */
+:root[data-skin="clean"] :is(.uppercase[class*="tracking-"], .agenda-load-label) {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-weight: 500;
+}
 
 /* ---------- Paper cards: white, one line, 10 px corners, no lattice ---------- */
-:root[data-skin="clean"]:not(.dark) :is(.frame, .board-frame, .surface-card, [data-slot="card"])::before { display: none !important; }
-:root[data-skin="clean"]:not(.dark) :is(.card, .hero, .kpis, .section-atlas-grid, .board-frame:not(.sidebar-account-frame), .surface-card:has(table), [data-slot="card"]:has(table), .finance-register) {
+:root[data-skin="clean"] :is(.frame, .board-frame, .surface-card, [data-slot="card"])::before { display: none !important; }
+:root[data-skin="clean"] :is(.card, .hero, .kpis, .section-atlas-grid, .board-frame:not(.sidebar-account-frame), .surface-card:has(table), [data-slot="card"]:has(table), .finance-register) {
   background: var(--clean-surface) !important;
   border-radius: var(--clean-card-radius) !important;
   box-shadow: 0 0 0 1px var(--clean-line) !important;
   overflow: hidden;
 }
-:root[data-skin="clean"]:not(.dark) :is(.kpis, .section-atlas-grid) > * { box-shadow: inset -1px 0 0 var(--clean-line-subtle) !important; }
-:root[data-skin="clean"]:not(.dark) :is(.kpis, .section-atlas-grid) > :last-child { box-shadow: none !important; }
+:root[data-skin="clean"] :is(.kpis, .section-atlas-grid) > * { box-shadow: inset -1px 0 0 var(--clean-line-subtle) !important; }
+:root[data-skin="clean"] :is(.kpis, .section-atlas-grid) > :last-child { box-shadow: none !important; }
 /* The indicator row never touches the card below it: in block layouts
    (Produits) it gets the 24 px that flex pages (Patients, Finances) already
    have from their gap. */
-:root[data-skin="clean"]:not(.dark) :not(.flex, .grid) > .section-atlas:not(:last-child) {
+:root[data-skin="clean"] :not(.flex, .grid) > .section-atlas:not(:last-child) {
   margin-block-end: 24px !important;
 }
-:root[data-skin="clean"]:not(.dark) .cardHead {
+:root[data-skin="clean"] .cardHead {
   padding: var(--clean-card-pad) var(--clean-card-pad) 12px !important;
   box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
 }
-:root[data-skin="clean"]:not(.dark) .cardTitle {
+:root[data-skin="clean"] .cardTitle {
   font-family: var(--clean-font-heading);
   font-size: 14px !important;
   font-weight: 600 !important;
   letter-spacing: var(--clean-tracking-heading) !important;
   color: var(--clean-ink-strong) !important;
 }
-:root[data-skin="clean"]:not(.dark) .cardNote { font-size: 12px !important; font-weight: 450; color: var(--clean-ink-quiet) !important; }
+:root[data-skin="clean"] .cardNote { font-size: 12px !important; font-weight: 450; color: var(--clean-ink-quiet) !important; }
 
-/* Page icon: a plain tile instead of the engraved square. */
-:root[data-skin="clean"]:not(.dark) .premium-page-icon::before { display: none; }
-:root[data-skin="clean"]:not(.dark) .premium-page-icon {
-  border-radius: var(--clean-control-radius);
-  background: var(--clean-surface);
-  box-shadow: 0 0 0 1px var(--clean-line);
+/* Page icon: sits on the title's line, at the title's size, without a box.
+   It was a 40 px tile pinned to the top of the title block, so it floated
+   between title and subtitle (7.6 px low), or above the title when a date
+   heads it (11 px high). */
+:root[data-skin="clean"] .premium-page-icon::before { display: none; }
+:root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon {
+  width: 28px !important;
+  height: 28px !important;
+  margin-top: 0.5px;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--clean-ink-strong);
+}
+:root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+:root[data-skin="clean"] [data-slot="page-header"]:has(.page-header-kicker) .premium-page-icon {
+  margin-top: 19.5px;
+}
+
+/* Error notices pin their icon to the top of the block; it now sits on the
+   first line of text (it was 6 px above it). */
+:root[data-skin="clean"] .error-state.items-start > svg:first-child {
+  margin-top: 6px;
+}
+
+/* ---------- Icon substitutions: one meaning, one icon ----------
+   Patients are animals: a paw, not the stethoscope that also means
+   consultation. Care is a syringe, as on the Soins page, not the clipboard of
+   Rappels. Emergencies are a siren, not a security shield. Recalls are a due
+   date. Everything late is the same clock with an alert, on every page. The
+   clinical day view is a day of care, not a second "new consultation". */
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
+:root[data-skin="clean"] [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg { --clean-icon: var(--clean-icon-paw-print); }
+:root[data-skin="clean"] .premium-shortcuts [data-tone="orange"] svg { --clean-icon: var(--clean-icon-syringe); }
+:root[data-skin="clean"] [data-kpi="Urgences ouvertes"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-siren); }
+:root[data-skin="clean"] [data-kpi="Relances à prévoir"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-calendar-clock); }
+:root[data-skin="clean"] [data-kpi="En retard"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-clock-alert); }
+:root[data-skin="clean"] .dashboard-mode-toggle button[value="clinical"] svg { --clean-icon: var(--clean-icon-calendar-heart); }
+/* The mechanism: the substitute is painted in the icon's own colour and box. */
+:root[data-skin="clean"] :is(
+  .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
+  [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
+  .premium-shortcuts [data-tone="orange"] svg,
+  [data-kpi="Urgences ouvertes"] .section-atlas-title-icon,
+  [data-kpi="Relances à prévoir"] .section-atlas-title-icon,
+  [data-kpi="En retard"] .section-atlas-title-icon,
+  .dashboard-mode-toggle button[value="clinical"] svg
+) {
+  background: currentColor;
+  -webkit-mask: var(--clean-icon) center / contain no-repeat;
+  mask: var(--clean-icon) center / contain no-repeat;
+}
+:root[data-skin="clean"] :is(
+  .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
+  [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
+  .premium-shortcuts [data-tone="orange"] svg,
+  [data-kpi="Urgences ouvertes"] .section-atlas-title-icon,
+  [data-kpi="Relances à prévoir"] .section-atlas-title-icon,
+  [data-kpi="En retard"] .section-atlas-title-icon,
+  .dashboard-mode-toggle button[value="clinical"] svg
+) > * {
+  display: none;
 }
 
 /* ---------- Welcome header: same content and mascot, Linear's hierarchy ---------- */
-:root[data-skin="clean"]:not(.dark) .heroMain { padding: 24px 24px 20px !important; }
-:root[data-skin="clean"]:not(.dark) .heroTitle { font-family: var(--clean-font-heading); font-weight: 600 !important; color: var(--clean-ink-strong) !important; }
-:root[data-skin="clean"]:not(.dark) .kicker i { box-shadow: none; }
+:root[data-skin="clean"] .heroMain { padding: 24px 24px 20px !important; }
+/* The welcome title stays at the 24 px ceiling. Inter has an 8 % taller
+   x-height than Premium's Space Grotesk (12.7 against 11.8 px at 24 px), so at
+   600 it read larger than 24 px; at 500 it carries the mass of a 24 px title. */
+:root[data-skin="clean"] .heroTitle {
+  font-family: var(--clean-font-heading);
+  font-size: 24px !important;
+  font-weight: 500 !important;
+  color: var(--clean-ink-strong) !important;
+}
+:root[data-skin="clean"] .kicker i { box-shadow: none; }
 
 /* Widget commands: revealed on hovering the card, as in Linear. Keyboard
    focus reveals them too; on touch, where nothing hovers, they stay shown. */
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"]:not(.dark) .card .moreLink {
+  :root[data-skin="clean"] .card .moreLink {
     opacity: 0;
     transition: opacity var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
   }
-  :root[data-skin="clean"]:not(.dark) .card:is(:hover, :focus-within) .moreLink {
+  :root[data-skin="clean"] .card:is(:hover, :focus-within) .moreLink {
     opacity: 1;
     transition-duration: var(--speed-highlight-in);
   }

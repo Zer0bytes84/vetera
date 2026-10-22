@@ -1,11 +1,12 @@
 import { APP_THEMES, type AppTheme } from "@/lib/theme-skin";
 import { cn } from "@/lib/utils";
 
-/** A miniature of each theme's sheet, sidebar and rows, so the three read apart. */
+/** A miniature of each theme's sheet, sidebar and rows, so the four read apart. */
 const PREVIEWS: Record<AppTheme, { frame: string; sheet: string; line: string; ink: string; row: string }> = {
   "premium-light": { frame: "#efefef", sheet: "#f5f5f5", line: "#dcdcdc", ink: "#292929", row: "#ffffff" },
   "premium-dark": { frame: "#151515", sheet: "#1e1e1e", line: "#303030", ink: "#eeeeee", row: "#262626" },
-  clean: { frame: "#fafafa", sheet: "#ffffff", line: "#ebebeb", ink: "#292929", row: "#f0f0f0" },
+  "clean-light": { frame: "#ededee", sheet: "#fafafa", line: "#e6e6e8", ink: "#292929", row: "#ffffff" },
+  "clean-dark": { frame: "#0c0d0f", sheet: "#111214", line: "#232426", ink: "#f3f3f5", row: "#171719" },
 };
 
 export function AppThemePicker({
