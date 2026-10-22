@@ -26,6 +26,7 @@ const fixture = vi.hoisted(() => ({
   failEmbedding: false,
   leases: 0,
   maximum: 0,
+  creates: 0,
 }));
 const vector = (index = 0) =>
   Array.from({ length: 768 }, (_, i) => (i === index ? 1 : 0));
@@ -36,6 +37,7 @@ vi.mock("../../../src/modules/consultations/local-ai/models", () => ({
 vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
   LocalInferenceSession: {
     create: async () => {
+      fixture.creates++;
       fixture.leases++;
       fixture.maximum = Math.max(fixture.maximum, fixture.leases);
       return {
@@ -47,8 +49,21 @@ vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
             vectors: message.texts.map(() => vector()),
           };
         },
-        close: () => {
+        // Parking hands the lease back; the next search resumes it.
+        parked: false,
+        isClosed: false,
+        close() {
+          if (!this.parked && !this.isClosed) fixture.leases--;
+          this.isClosed = true;
+        },
+        park() {
           fixture.leases--;
+          this.parked = true;
+        },
+        resume() {
+          fixture.leases++;
+          fixture.maximum = Math.max(fixture.maximum, fixture.leases);
+          this.parked = false;
         },
       };
     },
@@ -411,6 +426,26 @@ describe("Recherche sémantique locale : index et isolation", () => {
     const results = await searchPatientDocuments(scope, "Évaluation");
     expect(results[0].text).toBe("Nouvelle évaluation");
     expect(fixture.maximum).toBe(1);
+    expect(fixture.leases).toBe(0);
+  });
+  it("reuses the loaded search model for successive searches and reloads after a failure", async () => {
+    const { embedTexts } = await import(
+      "../../../src/modules/consultations/local-ai/embedding-store"
+    );
+    const models = { embeddingReady: true, root: "local" } as never;
+    const signal = new AbortController().signal;
+    await embedTexts(models, ["boiterie"], signal, () => {}, true);
+    const created = fixture.creates;
+    await embedTexts(models, ["grasset"], signal, () => {}, true);
+    expect(fixture.creates).toBe(created);
+    expect(fixture.leases).toBe(0);
+    fixture.failEmbedding = true;
+    await expect(
+      embedTexts(models, ["toux"], signal, () => {}, true)
+    ).rejects.toThrow();
+    fixture.failEmbedding = false;
+    await embedTexts(models, ["toux"], signal, () => {}, true);
+    expect(fixture.creates).toBe(created + 1);
     expect(fixture.leases).toBe(0);
   });
   it("does not re-embed unchanged indexed sources", async () => {

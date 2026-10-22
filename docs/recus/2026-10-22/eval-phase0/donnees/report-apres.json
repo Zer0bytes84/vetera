@@ -1,0 +1,117 @@
+{
+  "label": "apres",
+  "startedAt": "2026-10-22T21:51:53.061Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "synthetic:fictif-boiterie:1:start",
+      "at": 1792705913.061
+    },
+    {
+      "what": "synthetic:fictif-boiterie:1:end",
+      "at": 1792705925.613
+    },
+    {
+      "what": "synthetic:fictif-boiterie:2:start",
+      "at": 1792705925.614
+    },
+    {
+      "what": "synthetic:fictif-boiterie:2:end",
+      "at": 1792705938.311
+    },
+    {
+      "what": "synthetic:fictif-boiterie:3:start",
+      "at": 1792705938.312
+    },
+    {
+      "what": "synthetic:fictif-boiterie:3:end",
+      "at": 1792705950.115
+    },
+    {
+      "what": "synthetic:search:start",
+      "at": 1792705950.116
+    },
+    {
+      "what": "synthetic:search:end",
+      "at": 1792705957.859
+    },
+    {
+      "what": "soap:492633c031a8:start",
+      "at": 1792705957.86
+    },
+    {
+      "what": "soap:492633c031a8:end",
+      "at": 1792705969.1
+    }
+  ],
+  "synthetic": [
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 12.55,
+      "loadedAtSeconds": 4.47,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "run": 1
+    },
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 12.7,
+      "loadedAtSeconds": 4.96,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "run": 2
+    },
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 11.8,
+      "loadedAtSeconds": 3.95,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "run": 3
+    }
+  ],
+  "syntheticSearch": [
+    {
+      "query": 1,
+      "seconds": 7.34
+    },
+    {
+      "query": 2,
+      "seconds": 0.12
+    },
+    {
+      "query": 3,
+      "seconds": 0.1
+    },
+    {
+      "query": 4,
+      "seconds": 0.09
+    },
+    {
+      "query": 5,
+      "seconds": 0.08
+    }
+  ],
+  "soap": [
+    {
+      "id": "492633c031a8",
+      "origin": "dictée conservée",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 11.24,
+      "loadedAtSeconds": 6.51,
+      "error": "La réponse de l’assistant n’est pas un JSON SOAP valide. Votre dictée est conservée ; aucune note n’a été enregistrée."
+    }
+  ],
+  "finishedAt": "2026-10-22T21:52:49.101Z"
+}

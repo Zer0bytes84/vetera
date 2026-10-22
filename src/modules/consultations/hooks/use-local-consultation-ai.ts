@@ -5,27 +5,10 @@ import {
   abortError,
 } from "../local-ai/inference-client";
 import { getLocalModelUrls, type LocalModelStatus } from "../local-ai/models";
+import { prepareSoapDraft } from "../local-ai/soap-pipeline";
 import { normalizeSpokenMentions } from "../local-ai/patient-mentions";
-import { generateValidatedSoap } from "../local-ai/generate-soap";
-import {
-  assertFaithfulSoap,
-  buildDictationScaffold,
-  SoapFidelityError,
-} from "../local-ai/dictation-scaffold";
-import {
-  localSoapSchema,
-  SOAP_SECTIONS,
-  type LocalSoapNote,
-} from "../local-ai/soap-schema";
-import {
-  mergeProtectedDictation,
-  prepareModelDictation,
-  routeGuidedTreatments,
-} from "../local-ai/treatment-routing";
-import {
-  createSoapPrompt,
-  type LocalPatientContext,
-} from "../local-ai/patient-context";
+import type { LocalSoapNote } from "../local-ai/soap-schema";
+import type { LocalPatientContext } from "../local-ai/patient-context";
 import type { LocalAiProgress } from "../local-ai/worker-protocol";
 import type { DictationLanguage } from "../local-ai/whisper-language";
 
@@ -197,109 +180,30 @@ export function useLocalConsultationAi() {
       const attempt: Attempt = { controller: new AbortController() };
       active.current = attempt;
       try {
-        const protectedInput = prepareModelDictation(transcript);
-        const routed = guidedSource
-          ? routeGuidedTreatments(guidedSource)
-          : null;
-        const scaffold = routed
-          ? (Object.fromEntries(
-              SOAP_SECTIONS.map(({ key }) => [
-                key,
-                prepareModelDictation(routed[key]).text,
-              ])
-            ) as LocalSoapNote)
-          : buildDictationScaffold(protectedInput.text);
-        // Treatment-only dictations need no model: still only a draft for review.
-        if (
-          !protectedInput.text &&
-          (protectedInput.planSentences.length ||
-            protectedInput.protectedSections)
-        ) {
-          const draft = localSoapSchema.parse(
-            mergeProtectedDictation(scaffold, protectedInput)
-          );
-          dispose(attempt);
-          setPhase("idle");
-          setProgress({
-            message: "Brouillon prêt à relire. Rien n’a été enregistré.",
-          });
-          return draft;
-        }
-        const prompt = createSoapPrompt(transcript, context, false, scaffold);
-        const retryPrompt = createSoapPrompt(
+        // The pipeline closes its session; the reference only serves cancellation.
+        const draft = await prepareSoapDraft({
+          models,
           transcript,
           context,
-          true,
-          scaffold
-        );
-        const urls = getLocalModelUrls(models);
-        if (!models.generatorReady)
-          throw new Error(
-            "Installez la préparation des notes sur cet ordinateur avant de continuer."
-          );
-        setPhase("loading-soap");
-        setProgress({
-          message: "Préparation de l’assistant…",
-          stage: "loading",
-          attempt: 1,
-        });
-        attempt.session = await LocalInferenceSession.create(
-          "soap",
-          attempt.controller.signal,
-          (event) => {
+          guidedSource,
+          signal: attempt.controller.signal,
+          onSession: (session) => {
+            attempt.session = session;
+          },
+          onProgress: (event) => {
             if (active.current !== attempt) return;
             setProgress(event);
-            if (
+            if (event.stage === "loading") setPhase("loading-soap");
+            else if (
               event.stage === "generating" ||
               event.stage === "validating" ||
               event.stage === "retrying"
             )
               setPhase("generating");
-          }
-        );
-        const session = attempt.session;
-        const note = await generateValidatedSoap({
-          prompt,
-          retryPrompt,
-          signal: attempt.controller.signal,
-          generate: async (nextPrompt, number) => {
-            const result = await session.request(
-              {
-                type: "generate",
-                modelUrl: urls.modelUrl,
-                runtimeRoot: urls.runtimeRoot,
-                prompt: nextPrompt,
-                responseTemplate: JSON.stringify(scaffold),
-                attempt: number,
-              },
-              "generated"
-            );
-            if (result.type !== "generated")
-              throw new Error("La préparation locale de la note a échoué.");
-            if (active.current === attempt)
-              setProgress({
-                message: "Vérification des quatre sections…",
-                stage: "validating",
-                attempt: number,
-              });
-            return result.text;
           },
-          onRetry: (failure) => {
-            setProgress({
-              message:
-                failure instanceof SoapFidelityError
-                  ? "Les observations ne sont pas fidèlement reprises. Je prépare un nouvel essai…"
-                  : "Le format n’est pas conforme. Je prépare un nouvel essai…",
-              stage: "retrying",
-              attempt: 2,
-            });
-          },
-          validate: (note) => assertFaithfulSoap(note, scaffold),
+        }).finally(() => {
+          attempt.session = undefined;
         });
-        // Merge only after strict format, dosage and fidelity validation of LLM output.
-        const draft = localSoapSchema.parse(
-          mergeProtectedDictation(note, protectedInput)
-        );
         dispose(attempt);
         setPhase("idle");
         setProgress({

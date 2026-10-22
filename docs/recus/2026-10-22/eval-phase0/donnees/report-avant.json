@@ -1,0 +1,117 @@
+{
+  "label": "avant",
+  "startedAt": "2026-10-22T21:50:02.786Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "synthetic:fictif-boiterie:1:start",
+      "at": 1792705802.786
+    },
+    {
+      "what": "synthetic:fictif-boiterie:1:end",
+      "at": 1792705817.408
+    },
+    {
+      "what": "synthetic:fictif-boiterie:2:start",
+      "at": 1792705817.409
+    },
+    {
+      "what": "synthetic:fictif-boiterie:2:end",
+      "at": 1792705829.558
+    },
+    {
+      "what": "synthetic:fictif-boiterie:3:start",
+      "at": 1792705829.559
+    },
+    {
+      "what": "synthetic:fictif-boiterie:3:end",
+      "at": 1792705842.818
+    },
+    {
+      "what": "synthetic:search:start",
+      "at": 1792705842.821
+    },
+    {
+      "what": "synthetic:search:end",
+      "at": 1792705878.178
+    },
+    {
+      "what": "soap:492633c031a8:start",
+      "at": 1792705878.185
+    },
+    {
+      "what": "soap:492633c031a8:end",
+      "at": 1792705891.044
+    }
+  ],
+  "synthetic": [
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 14.62,
+      "loadedAtSeconds": 10.13,
+      "error": "L’assistant n’a pas pu être chargé. Vérifiez le fichier de préparation des notes installé et la mémoire disponible.",
+      "run": 1
+    },
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 12.15,
+      "loadedAtSeconds": 7.67,
+      "error": "L’assistant n’a pas pu être chargé. Vérifiez le fichier de préparation des notes installé et la mémoire disponible.",
+      "run": 2
+    },
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 13.26,
+      "loadedAtSeconds": 8.71,
+      "error": "L’assistant n’a pas pu être chargé. Vérifiez le fichier de préparation des notes installé et la mémoire disponible.",
+      "run": 3
+    }
+  ],
+  "syntheticSearch": [
+    {
+      "query": 1,
+      "seconds": 7.87
+    },
+    {
+      "query": 2,
+      "seconds": 5.94
+    },
+    {
+      "query": 3,
+      "seconds": 7.78
+    },
+    {
+      "query": 4,
+      "seconds": 6.23
+    },
+    {
+      "query": 5,
+      "seconds": 7.54
+    }
+  ],
+  "soap": [
+    {
+      "id": "492633c031a8",
+      "origin": "dictée conservée",
+      "accepted": false,
+      "attempts": 2,
+      "totalSeconds": 12.86,
+      "loadedAtSeconds": 9.61,
+      "error": "L’assistant n’a pas pu être chargé. Vérifiez le fichier de préparation des notes installé et la mémoire disponible."
+    }
+  ],
+  "finishedAt": "2026-10-22T21:51:31.059Z"
+}

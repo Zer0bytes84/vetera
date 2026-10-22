@@ -131,3 +131,91 @@ describe("exclusive clinical inference session", () => {
     retry.close();
   });
 });
+
+describe("parked search session", () => {
+  it("gives the lease back, is evicted by the next local task and never resumed", async () => {
+    const { LocalInferenceSession } = await import(
+      "@/modules/consultations/local-ai/inference-client"
+    );
+    const { isClinicalModelReserved } = await import(
+      "@/modules/consultations/local-ai/model-lease"
+    );
+    const progress = vi.fn();
+    const search = await LocalInferenceSession.create(
+      "embedding",
+      new AbortController().signal,
+      progress
+    );
+    search.park();
+    expect(isClinicalModelReserved()).toBe(false);
+    workers[0].emit({ type: "progress", message: "Late progress" });
+    expect(progress).not.toHaveBeenCalled();
+    const dictation = await LocalInferenceSession.create(
+      "whisper",
+      new AbortController().signal,
+      vi.fn()
+    );
+    expect(workers[0].terminate).toHaveBeenCalledOnce();
+    expect(search.isClosed).toBe(true);
+    expect(() =>
+      search.resume(new AbortController().signal, vi.fn())
+    ).toThrow();
+    dictation.close();
+    expect(isClinicalModelReserved()).toBe(false);
+  });
+  it("resumes the same worker with the new request's signal and progress", async () => {
+    const { LocalInferenceSession } = await import(
+      "@/modules/consultations/local-ai/inference-client"
+    );
+    const { isClinicalModelReserved } = await import(
+      "@/modules/consultations/local-ai/model-lease"
+    );
+    const first = new AbortController();
+    const search = await LocalInferenceSession.create(
+      "embedding",
+      first.signal,
+      vi.fn()
+    );
+    search.park();
+    first.abort();
+    expect(search.isClosed).toBe(false);
+    const second = new AbortController(),
+      progress = vi.fn();
+    search.resume(second.signal, progress);
+    expect(isClinicalModelReserved()).toBe(true);
+    expect(workers).toHaveLength(1);
+    workers[0].emit({ type: "progress", message: "Lecture" });
+    expect(progress).toHaveBeenCalledOnce();
+    second.abort();
+    expect(search.isClosed).toBe(true);
+    expect(workers[0].terminate).toHaveBeenCalledOnce();
+    expect(isClinicalModelReserved()).toBe(false);
+  });
+  it("closes a parked worker that crashed instead of resuming it", async () => {
+    const { LocalInferenceSession } = await import(
+      "@/modules/consultations/local-ai/inference-client"
+    );
+    const search = await LocalInferenceSession.create(
+      "embedding",
+      new AbortController().signal,
+      vi.fn()
+    );
+    search.park();
+    workers[0].onerror?.({ preventDefault: vi.fn() });
+    expect(search.isClosed).toBe(true);
+    expect(workers[0].terminate).toHaveBeenCalledOnce();
+  });
+});
+
+describe("engine capacity before the tokenizer is loaded", () => {
+  it("keeps a margin over typical French notes and never goes below the minimum", async () => {
+    const { estimateTokenCapacity } = await import(
+      "@/modules/consultations/local-ai/token-capacity"
+    );
+    expect(estimateTokenCapacity("", 0)).toBe(1024);
+    // A 2 249-character SOAP prompt measured at 542 tokens by Gemma 3.
+    const estimate = estimateTokenCapacity("x".repeat(2249), 256);
+    expect(estimate).toBeGreaterThanOrEqual(542 + 256);
+    expect(estimate).toBeLessThan(2 * (542 + 256));
+  });
+});

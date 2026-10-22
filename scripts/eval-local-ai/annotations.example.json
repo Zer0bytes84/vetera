@@ -1,0 +1,31 @@
+{
+  "_lisezmoi": "Modèle d'annotation, à remplir par un vétérinaire de la clinique à partir de dossiers réels. Les identifiants viennent de la base. Ce fichier contient des données cliniques : il reste sur le poste.",
+  "search": [
+    {
+      "patientId": "<id du patient>",
+      "question": "boiterie du postérieur droit",
+      "relevant": [
+        { "sourceType": "soap", "sourceId": "<id de la note SOAP>", "section": "subjective" }
+      ]
+    },
+    {
+      "patientId": "<id du patient>",
+      "question": "allergie à la pénicilline",
+      "relevant": [],
+      "_note": "liste vide : la bonne réponse est « rien dans le dossier »"
+    }
+  ],
+  "documents": [
+    {
+      "documentId": "<id dans consultation_documents ou notes>",
+      "question": "Quelle est la valeur des ALAT ?",
+      "expectedPages": [2]
+    },
+    {
+      "documentId": "<id>",
+      "question": "Le document mentionne-t-il une échographie ?",
+      "expectedPages": [],
+      "noAnswer": true
+    }
+  ]
+}

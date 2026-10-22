@@ -118,3 +118,12 @@ Les durées sont des estimations de développement pour une personne qui connaî
 | Mémoire au pic | inchangée | ≈ −2 Go sur la recherche (attendu) | +1,0 Go sur la génération (mesuré) | +0,2 à 0,5 Go à l'indexation d'images (attendu) | Pic du poste inférieur ou égal à aujourd'hui, la recherche ayant été le pire cas |
 | Livrable seul | oui | oui | oui | oui (après A) | |
 | Retour arrière | commits | `model_key` v1 conservé | fichier Gemma 3 conservé | `source_type` dédié | |
+
+## 3.5 Mise à jour du 22 octobre au soir : configuration de référence à 16 Go
+
+Ordre des essais : chez toi d'abord, puis chez Aissa. **Le portable d'Aissa (16 Go) est la configuration de terrain de référence** ; le PC Windows 8 Go reste la vérification de plancher (phase 0).
+
+- **Le choix d'E2B par défaut ne change pas** : c'est le seul modèle qui tient sur le plancher 8 Go, et il était déjà fidèle à 100 % sur le cas mesuré.
+- **E4B redevient candidat sur 16 Go.** Il avait été écarté sur 8 Go à cause du swap (+3,8 Go) ; sur 16 Go, ses +4,4 à +4,7 Go tiennent. Il reste environ 1,7 fois plus lent qu'E2B (repères officiels WebGPU).
+- **Phase B amendée :** E2B et E4B mesurés tous deux sur le portable d'Aissa (mémoire, latence, jeux A et C) ; E2B seul sur le plancher 8 Go. L'option E4B n'est proposée qu'aux postes de 16 Go et plus, et seulement si son gain de qualité est net avec une note en 15 s au plus.
+- Résultats de la phase 0 et détail du raisonnement : [../eval-phase0/README.md](../eval-phase0/README.md).

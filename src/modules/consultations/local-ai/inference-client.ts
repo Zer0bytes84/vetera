@@ -1,4 +1,4 @@
-import { reserveClinicalModel } from "./model-lease";
+import { parkIdleModel, reserveClinicalModel } from "./model-lease";
 import type {
   LocalAiProgress,
   WorkerRequest,
@@ -15,17 +15,18 @@ export class LocalInferenceSession {
     timer: ReturnType<typeof setTimeout>;
   } | null = null;
   private closed = false;
+  private unpark: (() => void) | null = null;
   private readonly onAbort = () => this.close();
   private constructor(
     private readonly worker: Worker,
-    private readonly release: () => void,
-    private readonly signal: AbortSignal,
-    onProgress: (event: LocalAiProgress) => void
+    private release: () => void,
+    private signal: AbortSignal,
+    private onProgress: (event: LocalAiProgress) => void
   ) {
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
       if (this.closed) return;
       if (data.type === "progress") {
-        onProgress(data);
+        if (!this.unpark) this.onProgress(data);
         return;
       }
       if (data.type === "error") {
@@ -41,6 +42,11 @@ export class LocalInferenceSession {
     };
     worker.onerror = (event) => {
       event.preventDefault();
+      // A parked worker that failed must not be resumed.
+      if (this.unpark) {
+        this.close();
+        return;
+      }
       this.reject(
         new Error(
           "Le moteur local n’a pas pu démarrer. Vérifiez l’installation de Baitari et réessayez."
@@ -86,7 +92,8 @@ export class LocalInferenceSession {
     expected: WorkerResponse["type"],
     transfer: Transferable[] = []
   ) {
-    if (this.closed || this.signal.aborted) return Promise.reject(abortError());
+    if (this.closed || this.unpark || this.signal.aborted)
+      return Promise.reject(abortError());
     if (this.pending)
       return Promise.reject(new Error("Le moteur local est occupé."));
     return new Promise<WorkerResponse>((resolve, reject) => {
@@ -117,9 +124,39 @@ export class LocalInferenceSession {
       this.pending = null;
     }
   }
+  get isClosed() {
+    return this.closed;
+  }
+  /**
+   * Keeps the worker and its loaded model but gives the lease back: any other
+   * local task evicts it (worker terminated) before starting.
+   */
+  park() {
+    if (this.closed || this.unpark || this.pending) return;
+    this.signal.removeEventListener("abort", this.onAbort);
+    this.release();
+    this.unpark = parkIdleModel(() => this.close());
+  }
+  /** Takes the lease again for a parked session; throws if another task holds it. */
+  resume(signal: AbortSignal, onProgress: (event: LocalAiProgress) => void) {
+    if (this.closed || !this.unpark) throw new Error("Session locale fermée.");
+    if (signal.aborted) throw abortError();
+    this.unpark();
+    this.unpark = null;
+    try {
+      this.release = reserveClinicalModel();
+    } catch (error) {
+      this.close();
+      throw error;
+    }
+    this.signal = signal;
+    this.onProgress = onProgress;
+    signal.addEventListener("abort", this.onAbort, { once: true });
+  }
   close() {
     if (this.closed) return;
     this.closed = true;
+    this.unpark?.();
     this.signal.removeEventListener("abort", this.onAbort);
     // Worker termination also frees sessions during a stalled load / cancel.
     this.worker.terminate();

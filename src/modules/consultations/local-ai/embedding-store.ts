@@ -155,11 +155,8 @@ export async function embedTexts(
       "La recherche locale n’est pas installée. Vos documents restent accessibles.",
     );
   const urls = getLocalModelUrls(models);
-  const session = await LocalInferenceSession.create(
-    "embedding",
-    signal,
-    onProgress,
-  );
+  const session = await takeEmbeddingSession(urls.modelRoot, signal, onProgress);
+  let succeeded = false;
   try {
     const result = await session.request(
       {
@@ -173,10 +170,54 @@ export async function embedTexts(
     );
     if (result.type !== "embedded")
       throw new Error("La préparation de la recherche a échoué.");
+    succeeded = true;
     return result.vectors.map(normalizedEmbedding);
   } finally {
-    session.close();
+    if (succeeded) parkEmbeddingSession(session, urls.modelRoot);
+    else session.close();
   }
+}
+
+// Successive searches reuse the loaded model instead of reloading it each
+// time. The idle model holds no lease: dictation, notes and document reading
+// evict it, and it is freed after a short idle delay.
+const EMBEDDING_IDLE_MS = 120_000;
+let idleEmbedding: {
+  session: LocalInferenceSession;
+  modelRoot: string;
+  timer: ReturnType<typeof setTimeout>;
+} | null = null;
+async function takeEmbeddingSession(
+  modelRoot: string,
+  signal: AbortSignal,
+  onProgress: (event: LocalAiProgress) => void,
+) {
+  const idle = idleEmbedding;
+  idleEmbedding = null;
+  if (idle) {
+    clearTimeout(idle.timer);
+    if (!idle.session.isClosed && idle.modelRoot === modelRoot) {
+      try {
+        idle.session.resume(signal, onProgress);
+      } catch (error) {
+        idle.session.close();
+        throw error;
+      }
+      return idle.session;
+    }
+    idle.session.close();
+  }
+  return LocalInferenceSession.create("embedding", signal, onProgress);
+}
+function parkEmbeddingSession(session: LocalInferenceSession, modelRoot: string) {
+  idleEmbedding?.session.close();
+  session.park();
+  if (session.isClosed) return;
+  const timer = setTimeout(() => {
+    if (idleEmbedding?.session === session) idleEmbedding = null;
+    session.close();
+  }, EMBEDDING_IDLE_MS);
+  idleEmbedding = { session, modelRoot, timer };
 }
 export async function indexReviewedSource(
   source: ConsultationSoap | Note,

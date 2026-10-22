@@ -1,0 +1,18 @@
+{
+  "id": "fictif-boiterie",
+  "origin": "fictif (latence et mémoire seulement)",
+  "transcript": "Chien croisé labrador de sept ans, présenté pour boiterie du membre postérieur droit depuis trois jours, apparue après une promenade. Le propriétaire signale un appétit conservé et pas de vomissement. À l'examen, température 38,6, fréquence cardiaque 96, douleur à la palpation du grasset droit, tiroir antérieur douteux, pas d'amyotrophie. Suspicion de rupture partielle du ligament croisé crânial, diagnostic différentiel entorse. Je prévois des radiographies du grasset la semaine prochaine, repos strict en laisse courte, contrôle dans dix jours.",
+  "appointmentId": "fictif-rdv",
+  "patientId": "fictif-patient",
+  "reference": null,
+  "previousDraft": null,
+  "bundle": {
+    "patient": { "id": "fictif-patient", "name": "Patient fictif", "species": "Chien", "breed": "Croisé labrador", "sex": "M", "status": "sante", "ownerId": "fictif", "createdAt": "2026-01-01" },
+    "appointments": [
+      { "id": "fictif-rdv", "patientId": "fictif-patient", "ownerId": "fictif", "vetId": "fictif", "title": "Consultation", "type": "Consultation", "status": "in_progress", "reason": "Boiterie", "startTime": "2026-10-22 10:00:00", "endTime": "2026-10-22 10:30:00", "createdAt": "2026-10-22" },
+      { "id": "fictif-rdv-ancien", "patientId": "fictif-patient", "ownerId": "fictif", "vetId": "fictif", "title": "Vaccination", "type": "Vaccin", "status": "completed", "reason": "Vaccination annuelle", "notes": "Examen général normal.", "startTime": "2026-05-02 10:00:00", "endTime": "2026-05-02 10:20:00", "createdAt": "2026-05-02" }
+    ],
+    "soaps": [],
+    "notes": []
+  }
+}
