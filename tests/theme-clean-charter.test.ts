@@ -253,10 +253,12 @@ describe("thème Clean : interrupteurs segmentés", () => {
     expect(chosen[0].toString()).not.toContain("font-weight");
   });
 
-  it("nomme la vue du tableau de bord avec son libellé existant, jamais un texte écrit en dur", () => {
-    const named = rulesFor(/dashboard-mode-toggle > button\[aria-pressed="true"\]::after/);
-    expect(named).toHaveLength(1);
-    expect(named[0].toString()).toContain("content: attr(aria-label)");
+  it("montre la vue du tableau de bord en icônes seules, items carrés, sans texte ajouté", () => {
+    expect(rulesFor(/dashboard-mode-toggle[^,]*::(after|before)/)).toHaveLength(0);
+    const items = rulesFor(/^:root\[data-skin="clean"\] \.dashboard-mode-toggle > button$/);
+    expect(items).toHaveLength(1);
+    expect(items[0].toString()).toContain("width: var(--clean-segment-item)");
+    expect(items[0].toString()).toContain("padding-inline: 0");
     root.walkDecls("content", (decl) => {
       expect(decl.value === '""' || decl.value.startsWith("attr(")).toBe(true);
     });

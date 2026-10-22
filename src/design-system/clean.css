@@ -587,37 +587,12 @@
   color: inherit !important;
 }
 
-/* Dashboard view switch: it heads the row under the welcome band, in both
-   views. A hairline sets it apart from the period that follows it, and the
-   chosen view shows its own name (the existing label) beside its icon, so
-   icon, name and view always agree. */
-:root[data-skin="clean"] .dashboard-mode-toggle {
-  position: relative;
-  margin-inline-end: 9px !important;
-}
-:root[data-skin="clean"] .dashboard-mode-toggle:has(+ .filter-segments)::after {
-  content: "";
-  position: absolute;
-  inset-block: 6px;
-  inset-inline-end: -11px;
-  width: 1px;
-  background: var(--clean-line);
-}
+/* Dashboard view switch: icons only, square items, beside the welcome band's
+   actions. Each icon keeps its view's name for tooltip and reader. */
 :root[data-skin="clean"] .dashboard-mode-toggle > button {
-  width: auto !important;
+  width: var(--clean-segment-item) !important;
   min-width: var(--clean-segment-item) !important;
-  gap: 6px !important;
-  padding-inline: 6px !important;
-}
-:root[data-skin="clean"] .dashboard-mode-toggle > button[aria-pressed="true"] {
-  padding-inline: 8px 10px !important;
-}
-:root[data-skin="clean"] .dashboard-mode-toggle > button[aria-pressed="true"]::after {
-  content: attr(aria-label);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
+  padding-inline: 0 !important;
 }
 /* Catalogue view switch: icon-only items, square. */
 :root[data-skin="clean"] .stock-view-toggle > button {
