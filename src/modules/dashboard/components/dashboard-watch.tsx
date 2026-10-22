@@ -5,6 +5,8 @@ import type { WatchList, WatchRow } from "../model/dashboard-watch";
 import "./dashboard-watch.css";
 
 interface WatchCardProps {
+  /** Shown above the list or the empty sentence (the hospital capacity). */
+  aside?: ReactNode;
   emptyText: string;
   error?: string | null;
   icon: ReactNode;
@@ -21,6 +23,7 @@ interface WatchCardProps {
 }
 
 function WatchCard({
+  aside,
   emptyText,
   error,
   icon,
@@ -57,6 +60,7 @@ function WatchCard({
         </button>
       </div>
       <div className="cardFlush">
+        {aside}
         {error ? (
           <p className="watchEmpty" role="alert">
             {error}{" "}
@@ -104,6 +108,8 @@ function WatchCard({
 
 export interface DashboardWatchProps {
   hospitalized: WatchList;
+  /** Places occupied and free, from the same data as the Occupation view. */
+  hospitalizedCapacity?: ReactNode;
   onOpenPatient: (patientId: string) => void;
   onReminders: () => void;
   onStays: () => void;
@@ -118,6 +124,7 @@ export interface DashboardWatchProps {
 /** Rangée « À surveiller » : trois listes courtes, issues des vraies données. */
 export function DashboardWatch({
   hospitalized,
+  hospitalizedCapacity,
   onOpenPatient,
   onReminders,
   onRemindersRetry,
@@ -156,6 +163,7 @@ export function DashboardWatch({
         title="Stock à surveiller"
       />
       <WatchCard
+        aside={hospitalizedCapacity}
         emptyText="Aucun animal hospitalisé en ce moment."
         icon={<BedDouble size={15} strokeWidth={1.5} />}
         list={hospitalized}

@@ -42,6 +42,8 @@ import { PremiumAnalytics } from "../components/premium-analytics";
 import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod } from "../model/premium-analytics";
 import "../components/premium-analytics.css";
 import { DashboardWatch } from "../components/dashboard-watch";
+import { OccupancyUnits } from "@/modules/hospitalizations/stays/occupancy-units";
+import { useStays } from "@/modules/hospitalizations/stays/use-stays";
 import {
   buildHospitalizedWatch,
   buildStockWatch,
@@ -73,6 +75,8 @@ export function DashboardPage({
   const transactions = useTransactionsRepository();
   const vaccinations = useVaccinationsRepository();
   const stays = useHospitalizationsRepository();
+  // Places and stays of the Hospitalisation view, for the Hospitalisés card's capacity.
+  const capacity = useStays();
   const invoices = useDashboardFinancials();
   const medicalReminders = usePatientReminders();
   const [analyticsPeriod, setAnalyticsPeriod] = useState<AnalyticsPeriod>("30d");
@@ -338,6 +342,9 @@ export function DashboardPage({
                 patients: presentation.patients,
                 stays: stays.data,
               })}
+              hospitalizedCapacity={
+                <OccupancyUnits compact locations={capacity.locations} stays={capacity.stays} />
+              }
               onOpenPatient={openPatientPeek}
               onReminders={() => {
                 window.sessionStorage.setItem("baitari:reminders-source", "medical");

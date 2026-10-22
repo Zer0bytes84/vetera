@@ -102,7 +102,7 @@ export function FinanceOverview({ transactions }: { transactions: Transaction[] 
                 ) : null}
               </div>
             ) : null} />
-            <Line dataKey="previous" dot={false} isAnimationActive={false} stroke="var(--series-1, var(--premium-blue))" strokeDasharray="3 4" strokeOpacity={0.5} strokeWidth={1.5} type="monotone" />
+            <Line dataKey="previous" dot={false} isAnimationActive={false} stroke="var(--series-1, var(--premium-blue))" strokeDasharray="2 5" strokeOpacity={0.35} strokeWidth={1} type="monotone" />
             <Area activeDot={{ r: 4, fill: "var(--surface)", stroke: "var(--series-1, var(--premium-blue))", strokeWidth: 1 }} dataKey="value" fill="var(--series-1, var(--premium-blue))" fillOpacity={0.08} isAnimationActive={false} stroke="var(--series-1, var(--premium-blue))" strokeWidth={2} type="monotone" />
           </ComposedChart>
         </ResponsiveContainer>

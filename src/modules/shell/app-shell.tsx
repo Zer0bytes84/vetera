@@ -4,6 +4,7 @@ import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
 import { getThemeConfig } from "@/lib/theme-store";
+import { useSidebarTone } from "@/lib/sidebar-tone";
 import { HeroPattern } from "@/components/HeroPattern";
 import { SaveIndicator } from "@/design-system/patterns/save-indicator";
 import { useSaveIndicator } from "@/hooks/useSaveIndicator";
@@ -293,6 +294,7 @@ function AppShellInner() {
       : getViewTitle(currentView, t);
 
   const { currentUser, logout } = useAuth();
+  useSidebarTone(currentUser?.id);
   const [consultationPickerOpen, setConsultationPickerOpen] = useState(false);
   useEffect(() => {
     // The palette's Nouvelle consultation opens the same patient picker.

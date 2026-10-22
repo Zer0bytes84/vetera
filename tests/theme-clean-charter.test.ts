@@ -14,7 +14,8 @@ import {
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const SCOPE = ':root[data-skin="clean"]';
 const DARK = ':root[data-skin="clean"].dark';
-const SIDEBAR = ':root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
+// The sidebar takes the dark set unless Appearance forces it light (data-sidebar-tone).
+const SIDEBAR = ':root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
 const root = postcss.parse(CLEAN);
 const tokensOf = (selector: string) => {
   const found = new Map<string, string>();
@@ -378,7 +379,7 @@ describe("thème Clean : pureté", () => {
 
   it("ne forke aucun composant : aucun code ne teste le thème Clean", () => {
     const forks = files("src", /\.tsx?$/)
-      .filter((file) => !/lib\/theme-(skin|store)\.ts$|components\/app-theme-picker\.tsx$|components\/Parametres\.tsx$/.test(file))
+      .filter((file) => !/lib\/theme-(skin|store)\.ts$|lib\/sidebar-tone\.ts$|components\/app-theme-picker\.tsx$|components\/Parametres\.tsx$/.test(file))
       .filter((file) => /dataset\.skin|data-skin|skin\s*===|"clean"/.test(readFileSync(file, "utf8")));
     expect(forks).toEqual([]);
   });

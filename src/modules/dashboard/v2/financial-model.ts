@@ -124,6 +124,19 @@ export function buildFinancialOverview(
   };
 }
 
+/**
+ * Share of the invoiced amount already settled, over every issued invoice:
+ * net of credit notes, against what remains to collect (the same net and
+ * balance as "Reste à recouvrer"). Null without any invoiced amount; never
+ * 100 % while a balance remains.
+ */
+export function settlementRate(invoices: Invoice[]): number | null {
+  const [category] = buildFinancialOverview(invoices, [], { from: "", to: "" }, "invoices").categories;
+  if (!category || category.totalValue <= 0) return null;
+  const rate = Math.round((category.safeValue / category.totalValue) * 1000) / 10;
+  return category.riskValue > 0 ? Math.min(rate, 99.9) : rate;
+}
+
 /** Never show a full goal meter while any balance remains outstanding. */
 export function collectionProgress(total: number, collected: number, segments = 40) {
   if (total <= 0) return { percentage: null, filledSegments: 0 };

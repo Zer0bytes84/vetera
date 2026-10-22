@@ -20,6 +20,7 @@ import {
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { firstNameOf, formatNumber } from "@/utils/display-format";
 import { formatCentimes, formatTime, type ScheduleEntry } from "../v2/model";
+import { settlementRate } from "../v2/financial-model";
 import { monotonePath, splitUnit } from "./chart-path";
 import {
   ANALYTICS_PERIODS,
@@ -763,11 +764,9 @@ export function PremiumAnalytics({
       .reduce((acc, t) => acc + (t.amount || 0), 0);
     const previousVisits = visitsBetween(weekAgo(startOfWeek), weekAgo(endOfToday));
 
-    const issuedCount = invoices.filter((i) => i.documentStatus === "issued").length;
-    const paidCount = invoices.filter((i) => i.documentStatus === "paid").length;
-    const rate = issuedCount + paidCount > 0
-      ? Math.round((paidCount / (issuedCount + paidCount)) * 1000) / 10
-      : null; // Sans facture émise ou réglée, il n'y a pas de taux à afficher.
+    // Settled share of the invoiced amount, on every issued invoice. Payment is
+    // the settlement status, never the document status (draft, issued, void).
+    const rate = settlementRate(invoices);
 
     const pending = financials?.pending ?? 0;
 

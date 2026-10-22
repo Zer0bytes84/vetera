@@ -752,9 +752,12 @@
   border-inline-end: 0 !important;
 }
 
-:root.dark[data-visual-style="premium"] .app-sidebar,
-:root.dark[data-visual-style="premium"] [data-slot="sidebar-container"],
-:root.dark[data-visual-style="premium"] [data-slot="sidebar-inner"] {
+:root.dark[data-visual-style="premium"]:where(:not([data-sidebar-tone="light"])) .app-sidebar,
+:root.dark[data-visual-style="premium"]:where(:not([data-sidebar-tone="light"])) [data-slot="sidebar-container"],
+:root.dark[data-visual-style="premium"]:where(:not([data-sidebar-tone="light"])) [data-slot="sidebar-inner"],
+:root[data-visual-style="premium"] .dark .app-sidebar,
+:root[data-visual-style="premium"] .dark [data-slot="sidebar-container"],
+:root[data-visual-style="premium"] .dark [data-slot="sidebar-inner"] {
   background: #111111 !important;
 }
 

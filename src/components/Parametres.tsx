@@ -94,6 +94,7 @@ import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
 import { AppThemePicker } from "./app-theme-picker";
 import { appThemeSettings, currentAppTheme, normalizeSkin } from "@/lib/theme-skin";
+import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
 import { PageHeader } from "@/design-system/patterns/page-header";
 import { Settings02Icon } from "@/lib/hugeicons";
@@ -976,6 +977,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   onChange={(nextMode) => onThemeChange?.(nextMode)}
                 />
               </div>
+              <SidebarToneSetting userId={currentUser?.id} />
               <div className="settings-row">
                 <div>
                   <label
@@ -1317,6 +1319,42 @@ const Parametres: React.FC<ParametresProps> = ({
     </div>
   );
 };
+
+
+/** The sidebar's tone, per user: the theme's own, or always light or dark. */
+function SidebarToneSetting({ userId }: { userId: string | undefined }) {
+  // The choice made here, for the user it was made for; another user reads their own.
+  const [chosen, setChosen] = useState<{ userId: string; tone: SidebarTone } | null>(null);
+  const tone = chosen && chosen.userId === userId ? chosen.tone : getSidebarTone(userId);
+  return (
+    <div className="settings-row">
+      <div>
+        <p className="settings-row-title">Barre latérale</p>
+        <p className="settings-row-detail">
+          Automatique suit le thème. Claire ou Sombre reste votre choix, quel que soit le thème.
+        </p>
+      </div>
+      <div className="settings-segmented" role="group" aria-label="Teinte de la barre latérale">
+        {SIDEBAR_TONES.map(({ value, label }) => (
+          <button
+            aria-pressed={tone === value}
+            className={cn(tone === value && "settings-segmented-active")}
+            disabled={!userId}
+            key={value}
+            onClick={() => {
+              if (!userId) return;
+              setChosen({ userId, tone: value });
+              saveSidebarTone(userId, value);
+            }}
+            type="button"
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function SidebarLayoutSettings() {
   const {

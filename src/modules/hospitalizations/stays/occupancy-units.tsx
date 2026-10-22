@@ -11,14 +11,23 @@ const STATE_LABEL: Record<OccupancyState, string> = {
  * Capacity at a glance: one unit per active location, then the forecast that
  * planned discharges support. Shown by the Clean skin only (data-clean-only).
  */
-export function OccupancyUnits({ locations, stays }: { locations: StayLocation[]; stays: Stay[] }) {
+export function OccupancyUnits({ compact = false, locations, stays }: {
+  /** Inside another card (the dashboard's Hospitalisés): no card of its own. */
+  compact?: boolean;
+  locations: StayLocation[];
+  stays: Stay[];
+}) {
   const summary = occupancySummary(locations, stays, new Date());
   if (!summary.total) return null;
   const states = (["occupied", "leaving", "free"] as const).filter((state) =>
     summary.units.some((unit) => unit.state === state),
   );
   return (
-    <section aria-label="Capacité d’hospitalisation" className="stay-occupancy" data-clean-only="">
+    <section
+      aria-label="Capacité d’hospitalisation"
+      className={compact ? "stay-occupancy stay-occupancy-compact" : "stay-occupancy"}
+      data-clean-only=""
+    >
       <p className="stay-occupancy-head">
         <strong>{summary.occupied}</strong>
         <span>
