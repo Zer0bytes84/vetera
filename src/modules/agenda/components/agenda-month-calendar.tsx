@@ -8,6 +8,12 @@ import type { Appointment } from "@/types/db";
 
 const DAY_NAMES = ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."];
 const MAX_DOTS = 4;
+/** Two lines fit a day box: two appointments, or one and the count of the rest. */
+const MAX_NAMED = 2;
+
+function formatClock(value: string) {
+  return new Date(value).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
 
 function shiftMonth(value: Date, amount: number) {
   const next = new Date(value);
@@ -22,15 +28,18 @@ function sameDay(left: Date, right: Date) {
 
 /**
  * The Agenda's one way to move in time: a month grid where a click picks the
- * day listed below. Each day shows how many appointments it holds.
+ * day listed below. Each day names its first appointments (time and patient),
+ * then how many more it holds; on narrow screens, one dot per appointment.
  */
 export function AgendaMonthCalendar({
   getAppointmentsForDate,
+  getPatientName,
   monthDays,
   onSelectDate,
   selectedDate,
 }: {
   getAppointmentsForDate: (date: Date) => Appointment[];
+  getPatientName: (patientId: string) => string;
   monthDays: Array<Date | null>;
   onSelectDate: (date: Date) => void;
   selectedDate: Date;
@@ -53,7 +62,11 @@ export function AgendaMonthCalendar({
       className="agenda-month-calendar surface-card rounded-panel border border-border bg-card"
     >
       <header className="flex items-center justify-between gap-3 border-border border-b px-5 py-3 sm:px-6">
-        <div className="flex items-center gap-1">
+        <h2 className="font-medium text-[18px] text-foreground tracking-[-0.02em]">
+          {monthLabel}
+        </h2>
+        {/* One place to move in time: previous, today and next sit together. */}
+        <div aria-label="Navigation du mois" className="agenda-month-nav flex items-center gap-1" role="group">
           <Button
             aria-label="Mois précédent"
             onClick={() => onSelectDate(shiftMonth(selectedDate, -1))}
@@ -62,9 +75,14 @@ export function AgendaMonthCalendar({
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.5} />
           </Button>
-          <h2 className="min-w-40 text-center font-medium text-[18px] text-foreground tracking-[-0.02em]">
-            {monthLabel}
-          </h2>
+          <Button
+            disabled={sameDay(selectedDate, today)}
+            onClick={() => onSelectDate(new Date())}
+            size="sm"
+            variant="outline"
+          >
+            Aujourd&apos;hui
+          </Button>
           <Button
             aria-label="Mois suivant"
             onClick={() => onSelectDate(shiftMonth(selectedDate, 1))}
@@ -74,14 +92,6 @@ export function AgendaMonthCalendar({
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.5} />
           </Button>
         </div>
-        <Button
-          disabled={sameDay(selectedDate, today)}
-          onClick={() => onSelectDate(new Date())}
-          size="sm"
-          variant="outline"
-        >
-          Aujourd&apos;hui
-        </Button>
       </header>
 
       <div className="p-3 sm:p-4">
@@ -100,7 +110,7 @@ export function AgendaMonthCalendar({
               return (
                 <span
                   aria-hidden="true"
-                  className="h-[72px] bg-muted/30"
+                  className="h-[84px] bg-muted/30"
                   key={`empty-${index}`}
                 />
               );
@@ -121,7 +131,7 @@ export function AgendaMonthCalendar({
                 aria-current={isSelected ? "date" : undefined}
                 aria-label={label}
                 className={cn(
-                  "agenda-month-day relative flex h-[72px] min-w-0 flex-col items-start justify-between bg-card px-2 py-1.5 text-left text-foreground outline-none transition-colors hover:bg-muted/50 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset",
+                  "agenda-month-day relative flex h-[84px] min-w-0 flex-col items-start justify-start gap-1 bg-card px-2 py-1.5 text-left text-foreground outline-none transition-colors hover:bg-muted/50 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset",
                   isSelected && "z-[1] shadow-[inset_0_0_0_2px_var(--foreground)]"
                 )}
                 data-selected={isSelected || undefined}
@@ -140,8 +150,8 @@ export function AgendaMonthCalendar({
                   {day.getDate()}
                 </span>
                 {count > 0 ? (
-                  <span className="flex w-full min-w-0 items-center gap-1">
-                    <span className="flex shrink-0 items-center gap-0.5" aria-hidden="true">
+                  <>
+                    <span className="flex shrink-0 items-center gap-0.5 sm:hidden" aria-hidden="true">
                       {dayAppointments.slice(0, MAX_DOTS).map((appointment) => (
                         <span
                           className={cn(
@@ -152,10 +162,32 @@ export function AgendaMonthCalendar({
                         />
                       ))}
                     </span>
-                    <span className="hidden truncate text-[12px] text-muted-foreground tabular-nums sm:inline">
-                      {count} RDV
+                    <span className="agenda-month-events hidden w-full min-w-0 flex-col gap-0.5 sm:flex" aria-hidden="true">
+                      {dayAppointments
+                        .slice(0, count > MAX_NAMED ? MAX_NAMED - 1 : MAX_NAMED)
+                        .map((appointment) => (
+                          <span className="agenda-month-event flex min-w-0 items-center gap-1.5 text-[12px] leading-4" key={appointment.id}>
+                            <span
+                              className={cn(
+                                "size-1.5 shrink-0 rounded-full",
+                                getAppointmentTypeMeta(appointment.type).dotClassName
+                              )}
+                            />
+                            <span className="shrink-0 text-muted-foreground tabular-nums">
+                              {formatClock(appointment.startTime)}
+                            </span>
+                            <span className="truncate text-foreground">
+                              {getPatientName(appointment.patientId)}
+                            </span>
+                          </span>
+                        ))}
+                      {count > MAX_NAMED ? (
+                        <span className="agenda-month-more ps-3 text-[12px] text-muted-foreground leading-4 tabular-nums">
+                          + {count - (MAX_NAMED - 1)}
+                        </span>
+                      ) : null}
                     </span>
-                  </span>
+                  </>
                 ) : null}
               </button>
             );

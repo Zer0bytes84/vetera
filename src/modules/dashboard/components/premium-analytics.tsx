@@ -861,8 +861,6 @@ export function PremiumAnalytics({
               <Plus size={16} strokeWidth={1.5} aria-hidden="true" />
               <span>Nouveau patient</span>
             </button>
-
-            {dashboardViewControl}
           </div>
 
           <button type="button" className="host" onClick={() => onNavigate?.("agenda")}>
@@ -872,9 +870,15 @@ export function PremiumAnalytics({
         </div>
       </section>
 
-      {clinicalView ? <div className="premium-clinical-overview">{clinicalView}</div> : <>
+      {/* The view switch changes the view, it is not an action: it heads the
+          row under the welcome band, in the same place in both views. */}
+      {clinicalView ? <>
+      {dashboardViewControl ? <div className="filters dashboard-view-row">{dashboardViewControl}</div> : null}
+      <div className="premium-clinical-overview">{clinicalView}</div>
+      </> : <>
       {/* 2. Contiguous Period Filters Ribbon (Reference .filters) */}
-      <div className="filters">
+      <div className="filters dashboard-view-row">
+        {dashboardViewControl}
         <div aria-label="Période du tableau de bord" className="filter-segments" data-tabs-style="segmented" role="group">
         {ANALYTICS_PERIODS.map((opt) => (
           <button

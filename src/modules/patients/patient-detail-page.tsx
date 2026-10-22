@@ -6,11 +6,14 @@ import {
   FileText,
   FirstAid,
   Hospital,
+  List,
   Pill,
   Scales,
   Syringe,
   X,
 } from "@/lib/icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { MedicalFileIcon } from "@/lib/hugeicons";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -510,18 +513,22 @@ export function PatientDetailPage({
       <div className="mx-auto w-full max-w-7xl space-y-4">
         <PageHeader
           className="patient-record-heading"
-          back={
+          actions={
+            // The way back to the list sits with the page actions, on the right.
             <Button
-              aria-label={t("patientDetail.back")}
-              className="size-10 rounded-lg"
+              className="patient-record-list-link"
               onClick={() => onNavigate("patients")}
-              size="icon"
+              size="sm"
               title="Retour à la liste des patients"
               variant="outline"
             >
-              <ArrowLeft className="size-5" weight="duotone" />
+              <List className="size-4" aria-hidden="true" />
+              Liste des patients
             </Button>
           }
+          // The record's own icon, the one that already opens a record in Flux
+          // and in the command palette.
+          icon={<HugeiconsIcon icon={MedicalFileIcon} size={20} strokeWidth={1.5} />}
           subtitle={`${patient.name} · consultations, traitements et suivi`}
           title="Dossier patient"
         />

@@ -152,6 +152,12 @@
   min-height: 48px;
 }
 
+/* Same 32 px under the page header as on the other pages, where the header's
+   8 px margin and the page's 24 px gap add up (here the margins would merge). */
+.patient-record-page .patient-record-heading[data-slot="page-header"] + * {
+  margin-top: 32px;
+}
+
 .patient-record-heading h2 {
   margin: 0;
   font-size: 24px;
@@ -367,6 +373,11 @@
   :root[data-chrome-style="liquid-glass"] .patient-record-heading {
     /* Le titre occupe la même ligne que les outils, sans les recouvrir. */
     padding-inline-end: 160px;
+  }
+  /* With its own actions (the way back to the list), the heading spans the
+     content width so they line up with the cards' right edge. */
+  :root[data-chrome-style="liquid-glass"] .patient-record-heading:has([data-slot="page-header-actions"]) {
+    padding-inline-end: 0;
   }
 }
 

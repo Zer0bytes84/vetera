@@ -64,11 +64,6 @@
   --clean-glass-edge: rgb(255 255 255 / 0.9);
   --clean-glass-rule: rgb(0 0 0 / 0.1);
   --clean-glass-drop: 0 8px 24px -16px rgb(0 0 0 / 0.12);
-  --clean-capsule-top: rgb(255 255 255 / 0.7);
-  --clean-capsule-bottom: rgb(255 255 255 / 0.38);
-  --clean-capsule-edge: rgb(255 255 255 / 0.95);
-  --clean-capsule-ring: rgb(0 0 0 / 0.08);
-  --clean-capsule-drop: 0 1px 2px rgb(0 0 0 / 0.04), 0 6px 16px -8px rgb(0 0 0 / 0.14);
   /* Icon substitutions (Lucide, drawn as masks over the original icon, so no
      component changes per theme). Each one is listed in the review and can be
      vetoed alone by deleting its line in the substitution block below. */
@@ -118,11 +113,6 @@
   --clean-glass-edge: rgb(255 255 255 / 0.06);
   --clean-glass-rule: rgb(255 255 255 / 0.08);
   --clean-glass-drop: 0 0 0 transparent;
-  --clean-capsule-top: rgb(255 255 255 / 0.08);
-  --clean-capsule-bottom: rgb(255 255 255 / 0.03);
-  --clean-capsule-edge: rgb(255 255 255 / 0.1);
-  --clean-capsule-ring: rgb(255 255 255 / 0.08);
-  --clean-capsule-drop: 0 0 0 transparent;
   --clean-dot-mix: 60%;
 }
 
@@ -175,33 +165,39 @@
 }
 
 /* ---------- Frame and sheet ---------- */
-:root[data-skin="clean"] body,
-:root[data-skin="clean"] [data-slot="sidebar-wrapper"] {
+/* The frame, sheet, header and sidebar rules repeat the scope attribute twice
+   ([data-skin][data-skin]): Premium dark styles the same parts with
+   ":root.dark[data-visual-style]" selectors, which would otherwise win in
+   Clean dark (sidebar #111 under a #0C0D0F frame, header without its glass). */
+:root[data-skin="clean"][data-skin][data-skin] body,
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-wrapper"] {
   background: var(--clean-frame) !important;
 }
 /* Raised above the Liquid Glass rule that removes the frame: in Clean, the
    sheet sits on the frame in both header modes. */
-:root[data-skin="clean"] [data-slot="sidebar-wrapper"] [data-slot="sidebar-inset"] {
-  padding: var(--clean-sheet-inset) var(--clean-sheet-inset) var(--clean-sheet-inset) 0 !important;
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-wrapper"] [data-slot="sidebar-inset"] {
+  /* Open at the bottom: the sheet runs into the window's edge, so the work
+     reads as continuing below rather than ending on a closed corner. */
+  padding: var(--clean-sheet-inset) var(--clean-sheet-inset) 0 0 !important;
   background: var(--clean-frame) !important;
 }
 /* The inset carries a layered "!bg-white/40" utility, which beats unlayered
    !important: the frame colour goes in the same layer, so the strip above the
    sheet reads as the sidebar's grey. */
 @layer utilities {
-  :root[data-skin="clean"] [data-slot="sidebar-inset"] {
+  :root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-inset"] {
     background: var(--clean-frame) !important;
   }
 }
-:root[data-skin="clean"] [data-slot="shell-scroll-panel"] {
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="shell-scroll-panel"] {
   border: 0 !important;
-  border-radius: var(--clean-sheet-radius) !important;
+  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
   background: var(--clean-sheet) !important;
   box-shadow: var(--clean-sheet-shadow) !important;
 }
 /* Header: liquid glass over the sheet. Content scrolls beneath it, blurred and
    saturated; a specular top edge and a hairline give it the feel of glass. */
-:root[data-skin="clean"] [data-slot="app-header"] {
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] {
   background:
     linear-gradient(180deg, var(--clean-glass-top) 0%, var(--clean-glass-bottom) 100%) !important;
   -webkit-backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
@@ -211,33 +207,15 @@
     inset 0 -0.5px 0 var(--clean-glass-rule),
     var(--clean-glass-drop) !important;
 }
-/* With the Liquid Glass setting on, the header tools gather in a glass capsule. */
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] .shell-toolbar-actions {
-  gap: 2px !important;
-  padding: 3px !important;
-  border-radius: 999px !important;
-  background: linear-gradient(180deg, var(--clean-capsule-top), var(--clean-capsule-bottom)) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(1.6);
-  backdrop-filter: blur(12px) saturate(1.6);
-  box-shadow:
-    inset 0 1px 0 var(--clean-capsule-edge),
-    inset 0 0 0 0.5px var(--clean-capsule-ring),
-    var(--clean-capsule-drop) !important;
-}
-:root[data-skin="clean"][data-chrome-style="liquid-glass"] :is(.shell-toolbar-actions button, .shell-toolbar-actions .topIcon) {
-  border-radius: 999px !important;
-}
-/* Sticky table heads take the same glass as the header (Tailwind Plus
-   "with sticky header"): rows scroll beneath them, blurred. */
-:root[data-skin="clean"] :is(th, thead)[class*="backdrop-blur"] {
+:root[data-skin="clean"][data-skin][data-skin] :is(th, thead)[class*="backdrop-blur"] {
   -webkit-backdrop-filter: blur(12px) saturate(1.6) !important;
   backdrop-filter: blur(12px) saturate(1.6) !important;
   background: color-mix(in srgb, var(--clean-surface) 82%, transparent) !important;
 }
-:root[data-skin="clean"] .apple-sidebar-glow { display: none; }
+:root[data-skin="clean"][data-skin][data-skin] .apple-sidebar-glow { display: none; }
 
 /* Header tools: ghost icon buttons, no boxes. */
-:root[data-skin="clean"] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control) {
+:root[data-skin="clean"][data-skin][data-skin] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control) {
   width: var(--clean-control) !important;
   min-width: var(--clean-control) !important;
   height: var(--clean-control) !important;
@@ -250,14 +228,14 @@
 }
 /* Premium sets this control inside a cascade layer, so Clean answers in the same layer. */
 @layer utilities {
-  :root[data-skin="clean"] .shell-toolbar-actions .shell-toolbar-control {
+  :root[data-skin="clean"][data-skin][data-skin] .shell-toolbar-actions .shell-toolbar-control {
     border-color: transparent !important;
     background: transparent !important;
     box-shadow: none !important;
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control):hover {
+  :root[data-skin="clean"][data-skin][data-skin] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control):hover {
     background: var(--clean-hover) !important;
     color: var(--clean-ink-strong) !important;
     transition-duration: var(--speed-highlight-in);
@@ -265,17 +243,17 @@
 }
 
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
-:root[data-skin="clean"] :is(.app-sidebar, [data-slot="sidebar-container"], [data-slot="sidebar-inner"]) {
+:root[data-skin="clean"][data-skin][data-skin] :is(.app-sidebar, [data-slot="sidebar-container"], [data-slot="sidebar-inner"]) {
   background: var(--clean-frame) !important;
 }
-:root[data-skin="clean"] [data-slot="sidebar-container"]::after,
-:root[data-skin="clean"] [data-slot="sidebar-header-separator"] { display: none !important; }
-:root[data-skin="clean"] .premium-shortcuts { border-top-color: var(--clean-line) !important; }
-:root[data-skin="clean"] .app-sidebar {
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-container"]::after,
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="sidebar-header-separator"] { display: none !important; }
+:root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts { border-top-color: var(--clean-line) !important; }
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar {
   --premium-nav-row: var(--clean-nav-item);
   --premium-shortcut-row: var(--clean-nav-item);
 }
-:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] {
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"] {
   height: var(--clean-nav-item) !important;
   min-height: var(--clean-nav-item) !important;
   border-radius: var(--clean-control-radius);
@@ -286,38 +264,39 @@
   box-shadow: none !important;
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
-:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
-:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
   background: var(--clean-nav-active) !important;
   border-color: transparent !important;
   outline: 0 !important;
+  box-shadow: none !important;
   color: var(--clean-ink-strong) !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"]:hover {
+  :root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"]:hover {
     background: var(--clean-nav-hover);
     color: var(--clean-ink-strong);
     transition-duration: var(--speed-highlight-in);
   }
-  :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]):hover {
+  :root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]):hover {
     background: var(--clean-nav-active);
   }
-  :root[data-skin="clean"] .premium-shortcuts button:hover { background: var(--clean-nav-hover) !important; }
+  :root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button:hover { background: var(--clean-nav-hover) !important; }
 }
-:root[data-skin="clean"] .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
+:root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
 /* Quick-access dots keep their hue, desaturated towards the theme's greys. */
-:root[data-skin="clean"] .premium-shortcuts button .premium-shortcut-dot {
+:root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button .premium-shortcut-dot {
   background: color-mix(in oklab, var(--premium-shortcut-color) var(--clean-dot-mix), var(--clean-ink-quiet)) !important;
 }
 /* The account sits on the frame like the rest of the navigation, without a box. */
-:root[data-skin="clean"] .sidebar-account-frame { box-shadow: none !important; }
-:root[data-skin="clean"] .sidebar-account-frame .sidebar-user-card {
+:root[data-skin="clean"][data-skin][data-skin] .sidebar-account-frame { box-shadow: none !important; }
+:root[data-skin="clean"][data-skin][data-skin] .sidebar-account-frame .sidebar-user-card {
   border-radius: var(--clean-control-radius) !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
+  :root[data-skin="clean"][data-skin][data-skin] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
     background: var(--clean-nav-hover) !important;
   }
 }
@@ -501,18 +480,19 @@
   color: inherit !important;
 }
 
-/* Dashboard view switch: it changes the view, it is not an action. A hairline
-   sets it apart from the two buttons, and the chosen view shows its own name
-   (the existing label) beside its icon, so icon, name and view always agree. */
+/* Dashboard view switch: it heads the row under the welcome band, in both
+   views. A hairline sets it apart from the period that follows it, and the
+   chosen view shows its own name (the existing label) beside its icon, so
+   icon, name and view always agree. */
 :root[data-skin="clean"] .dashboard-mode-toggle {
   position: relative;
-  margin-inline-start: 9px !important;
+  margin-inline-end: 9px !important;
 }
-:root[data-skin="clean"] .dashboard-mode-toggle::before {
+:root[data-skin="clean"] .dashboard-mode-toggle:has(+ .filter-segments)::after {
   content: "";
   position: absolute;
   inset-block: 6px;
-  inset-inline-start: -9px;
+  inset-inline-end: -11px;
   width: 1px;
   background: var(--clean-line);
 }
@@ -676,6 +656,179 @@
   letter-spacing: 0 !important;
   font-weight: 500;
 }
+
+/* ---------- Patient record and patient preview: the record, cleaned ----------
+   Same rules as the rest of Clean, applied to the record page and to the
+   preview opened from the patient list. Three paper cards (identity,
+   register, permanent information) and one card of indicators with inner
+   rules; every indicator starts at the top; the allergy and history notice
+   sits on the sheet without a gradient band; tabs are underlined, and their
+   arrows only show when there is something to scroll to; labels in sentence
+   case; sections divided by one line, never a card inside a card. The scope
+   is repeated because Premium styles these blocks with strong selectors. */
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page :is(.medical-patient-header, .medical-register, .medical-permanent),
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators {
+  border: 0 !important;
+  border-radius: var(--clean-card-radius) !important;
+  background: var(--clean-surface) !important;
+  box-shadow: 0 0 0 1px var(--clean-line) !important;
+  overflow: hidden;
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page :is(.medical-patient-header, .medical-register, .medical-permanent)::before { display: none !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-main {
+  padding: 20px 24px !important;
+  background: transparent !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-avatar {
+  border-color: var(--clean-line) !important;
+  border-radius: var(--clean-card-radius) !important;
+  background: var(--clean-sheet) !important;
+  box-shadow: none !important;
+}
+/* Header actions: one primary, the others alike (Modifier no longer the odd one). */
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-actions .medical-action:not(.medical-action-primary) {
+  border: 1px solid var(--clean-line) !important;
+  background: var(--clean-surface) !important;
+  color: var(--clean-ink-strong) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-actions .medical-action:not(.medical-action-primary):hover {
+    background: var(--clean-hover) !important;
+  }
+}
+
+/* Indicators: one card, five cells divided by a subtle rule, all top-aligned. */
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators { gap: 0 !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators :is(.patient-context-card, .medical-kpi) {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  gap: 8px;
+  min-height: 0 !important;
+  padding: 16px 20px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: inset -1px 0 0 var(--clean-line-subtle) !important;
+  text-align: left;
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-kpi-strip > .medical-kpi:last-child { box-shadow: none !important; }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators :is(.patient-context-card, .medical-kpi):hover {
+    background: var(--clean-hover) !important;
+  }
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators :is(.patient-context-value, .medical-kpi-value) {
+  font-weight: 600 !important;
+  letter-spacing: var(--clean-tracking-title) !important;
+  color: var(--clean-ink-strong) !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators :is(.patient-context-heading, .medical-kpi-heading h2) {
+  color: var(--clean-ink-quiet) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* History and allergy notice: on the sheet, no gradient band behind it. */
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-alerts {
+  border-top: 0 !important;
+  background: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-alerts { padding: 0 !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-peek-panel .medical-alerts { box-shadow: inset 0 1px 0 var(--clean-line-subtle); }
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-alerts > div {
+  border-radius: var(--clean-card-radius) !important;
+  box-shadow: none !important;
+}
+
+/* Tabs: underlined like every navigation tab in Clean. The arrows appear only
+   when the row can scroll that way, so they never cover the first tab. */
+@layer utilities {
+  :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-tabs {
+    display: flex !important;
+    gap: 4px !important;
+    padding: 0 12px !important;
+    background: transparent !important;
+    box-shadow: inset 0 -1px 0 var(--clean-line) !important;
+  }
+  :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-tabs > :is(button, [role="tab"]) {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 10px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--clean-ink) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+  }
+  :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-tabs > :is(button, [role="tab"]):is([aria-selected="true"], [data-state="active"], [data-active]) {
+    background: transparent !important;
+    color: var(--clean-ink-strong) !important;
+    box-shadow: inset 0 -2px 0 var(--clean-ink-strong) !important;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-tabs > :is(button, [role="tab"]):hover {
+    color: var(--clean-ink-strong) !important;
+  }
+}
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-tabs > * svg { width: 16px !important; height: 16px !important; color: var(--clean-ink-quiet); }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-tabs-scroll:is(:disabled, [aria-disabled="true"]) { display: none !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-tabs-scroll {
+  border: 0 !important;
+  background: var(--clean-surface) !important;
+  box-shadow: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-tabs-frame:not([data-overflow-start])::before,
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-tabs-frame:not([data-overflow-end])::after { display: none !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-tabs-frame::before { background: linear-gradient(to right, var(--clean-surface) 55%, transparent) !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-tabs-frame::after { background: linear-gradient(to left, var(--clean-surface) 55%, transparent) !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-tab-content { padding: 20px 24px !important; }
+
+/* Permanent information and preview sections: titled by a quiet label,
+   divided by one line; no nested cards. */
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-permanent-header {
+  padding: 14px 24px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-permanent-grid > section + section { box-shadow: inset 1px 0 0 var(--clean-line-subtle) !important; }
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) :is(.medical-section-title, .medical-owner h3, .medical-record-health h3) {
+  color: var(--clean-ink-quiet) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) :is(.medical-record-health, .medical-owner-card) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-owner-card { padding-inline: 0 !important; }
+/* Record completeness: its to-dos read as rows of a list, not boxed cards. */
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-health-action {
+  border: 0 !important;
+  border-radius: var(--clean-control-radius) !important;
+  background: transparent !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-health-action:hover { background: var(--clean-hover) !important; }
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-peek-panel .medical-peek-content > section {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] .patient-peek-panel .medical-peek-content > section + section { box-shadow: inset 0 1px 0 var(--clean-line-subtle) !important; }
+:root[data-skin="clean"][data-skin][data-skin] .patient-peek-panel .medical-section-title { box-shadow: none !important; }
 
 /* ---------- Paper cards: white, one line, 10 px corners, no lattice ---------- */
 :root[data-skin="clean"] :is(.frame, .board-frame, .surface-card, [data-slot="card"])::before { display: none !important; }

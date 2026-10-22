@@ -273,6 +273,7 @@ export function AgendaView(props: AgendaViewProps) {
 
       <AgendaMonthCalendar
         getAppointmentsForDate={getAppointmentsForDate}
+        getPatientName={getPatientName}
         monthDays={monthDays}
         onSelectDate={(date) => {
           setSelectedDate(date);

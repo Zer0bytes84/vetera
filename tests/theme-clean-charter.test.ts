@@ -82,7 +82,7 @@ describe("thème Clean : jetons", () => {
 
 describe("thème Clean : déclinaison sombre", () => {
   it("redéfinit chaque jeton de couleur avec le même nom, et rien d'autre", () => {
-    const colours = [...declarations.keys()].filter((name) => /^#|rgb\(|color-mix|shadow|var\(--clean-surface\)/.test(declarations.get(name)!) || /shadow|glass-(top|bottom|edge|rule|drop)|capsule|segment-(track|active)/.test(name));
+    const colours = [...declarations.keys()].filter((name) => /^#|rgb\(|color-mix|shadow|var\(--clean-surface\)/.test(declarations.get(name)!) || /shadow|glass-(top|bottom|edge|rule|drop)|segment-(track|active)/.test(name));
     for (const name of darkDeclarations.keys()) expect(declarations.has(name)).toBe(true);
     for (const name of colours) expect(darkDeclarations.has(name), name).toBe(true);
     for (const name of ["--clean-control", "--clean-row-table", "--clean-nav-item", "--clean-font-ui", "--clean-sheet-radius"]) {

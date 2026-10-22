@@ -28,13 +28,13 @@ C'était un Premium éclairci. Ce qui rend Linear reconnaissable, c'est sa const
 
 Pour chaque choix : le raisonnement en deux lignes, puis la référence qui l'appuie. Sauf mention contraire, l'étude citée est `docs/etudes/2026-10-21-linear-et-references.md` ; Catalyst et les modules Tailwind Plus viennent du dossier `Tailwindcss plus premium pack`.
 
-1. **Une feuille posée sur un cadre.** Le contenu vit sur une feuille #FAFAFA, décollée de 8 px, aux coins de 12 px et au filet de 0,5 px, posée sur un cadre #EDEDEE qui porte la navigation.
+1. **Une feuille posée sur un cadre, ouverte en bas.** Le contenu vit sur une feuille #FAFAFA, décollée de 8 px en haut et à droite, aux coins supérieurs de 12 px et au filet de 0,5 px, posée sur un cadre #EDEDEE qui porte la navigation. La feuille descend jusqu'au bord de la fenêtre, comme tu le préférais : le travail continue en dessous au lieu de s'arrêter sur un coin fermé.
    - La profondeur dit où l'on travaille et où l'on navigue, sans aucune bordure lourde.
    - *Étude § 1.1 (feuille à 8 px, coins de 12 px, ombre de 2 à 4 %). Catalyst `sidebar-layout` : la même construction, une feuille blanche sur un cadre zinc-100, posée à 8 px.*
 2. **Une sidebar silencieuse.** Items de 28 px en 13 px #5D5D5D, la sélection marquée par un palier de gris, aucun séparateur, le compte sans boîte.
    - La navigation recule pour laisser la feuille au premier plan.
    - *Étude § 1.1 (items de 28 px) ; Catalyst `sidebar` (sélection par fond à 5 %, sans carte).*
-3. **Un en-tête en verre liquide, ta signature.** Dégradé translucide, flou de 20 px saturé, liseré de lumière en haut et filet de 0,5 px en bas. En mode Liquid Glass, les outils se regroupent dans une capsule de verre.
+3. **Un en-tête en verre liquide, ta signature.** Dégradé translucide, flou de 20 px saturé, liseré de lumière en haut et filet de 0,5 px en bas.
    - C'est la seule matière translucide du thème, placée là où elle se voit : le contenu passe dessous au défilement.
    - *Étude § 1.2 (matières translucides réservées aux couches qui flottent) ; Tailwind Plus `tables/with_sticky_header` (en-tête blanc à 75 % flouté).*
 4. **Des cartes en papier.** Fond blanc, un seul filet #E6E6E8, coins de 10 px. Ni croisillons, ni filets doubles, ni bandeaux à motif.
@@ -154,19 +154,40 @@ Le dossier contient aussi :
 
 Le reste du dossier est ignoré. Les captures de référence (`v2/tailwind-plus/`) sont rendues sur cette machine avec le Tailwind du projet, sans aucun appel réseau. Les aperçus fournis par le dossier chargent leurs styles depuis tailwindui.com, avec deux traceurs ; je ne les ai pas ouverts.
 
-### Propositions de structure, séparées, à ta décision
+### Les trois propositions de structure, réalisées à ta demande
 
-Hors de cette passe, puisque la structure ne devait pas bouger.
+Ce sont des changements de composants : ils valent pour tous les thèmes, Premium compris. Capture avant/après : `v2/cote-a-cote/structure.jpg` ; écrans entiers dans `v2/structure/`.
 
-1. **Agenda : regrouper « ‹ Aujourd'hui › » à droite**, comme `month_view` et `week_view`.
-   - Aujourd'hui, les flèches entourent le mois à gauche et « Aujourd'hui » est isolé à l'autre bout.
-   - La navigation se ferait en un seul geste, au même endroit, dans toutes les vues.
-   - Capture : `v2/cote-a-cote/agenda.jpg`, colonne de droite.
-2. **Agenda, mois : afficher les rendez-vous par leur nom** (deux au plus, puis « + n ») au lieu de « • 3 RDV ».
-   - Le mois deviendrait lisible sans clic, comme `month_view`.
-3. **Tableau de bord : sortir la bascule de vue de la rangée d'actions** et la poser sur la ligne de la période.
-   - Une vue n'est pas une action.
-   - Dans Clean, un filet la sépare déjà des boutons, et la vue choisie affiche son nom.
+1. **Agenda : la navigation du mois est regroupée à droite**, comme dans `month_view`.
+   - Le mois est à gauche ; « ‹ Aujourd'hui › » forment un seul groupe à droite.
+   - Libellés et actions inchangés (« Mois précédent », « Aujourd'hui », « Mois suivant »).
+2. **Agenda, mois : les rendez-vous sont nommés.**
+   - Chaque jour montre l'heure et le patient de ses deux premiers rendez-vous, sous le numéro, avec une puce à la couleur du type. Au-delà de deux, le premier, puis « + n ».
+   - Sur écran étroit, les puces seules restent, comme avant. Le libellé accessible de chaque jour ne change pas.
+   - Les cases passent de 72 à 84 px de haut pour loger les deux lignes.
+3. **Tableau de bord : la bascule de vue quitte la rangée d'actions.**
+   - Elle ouvre la ligne sous l'en-tête d'accueil : devant le sélecteur de période en Vue d'ensemble, seule sur sa ligne en Journée clinique. Elle reste au même endroit quand on change de vue.
+   - La rangée d'actions ne garde que les deux actions : « Nouvelle consultation » et « Nouveau patient ».
+   - Dans Clean, un filet la sépare de la période, et la vue choisie affiche son nom.
+
+## Le dossier patient et son aperçu, repris (demande du vétérinaire)
+
+Le dossier gardait l'habillage gravé de Premium. Il est repris dans les règles de Clean, sur la page comme dans l'aperçu ouvert depuis les icônes de la liste Patients. Capture avant/après : `v2/cote-a-cote/dossier-detaille.jpg`.
+
+**Traitement (Clean seulement) :**
+- **Trois cartes en papier :** identité, registre à onglets, informations permanentes. Fond blanc, un filet, coins de 10 px, et plus de bandeau gravé derrière l'identité.
+- **Une seule carte pour les cinq indicateurs,** séparés par un filet discret. Tous commencent en haut : avant, trois étaient centrés verticalement et deux collés en haut. Survol d'un palier, chiffres en 600.
+- **L'alerte d'antécédents et d'allergies** se pose sur la feuille, sans la bande dégradée rose et pêche derrière elle.
+- **Les onglets sont soulignés,** comme tous les onglets de navigation de Clean. Les flèches de défilement n'apparaissent que s'il y a de quoi défiler : la flèche de gauche, inactive, masquait « Synthèse ».
+- **Les libellés de section passent en casse normale,** en gris atténué (« Identité », « Propriétaire », « Complétude du dossier »).
+- **Plus de carte dans une carte :** propriétaire, complétude et sections de l'aperçu sont séparés par un filet, et les tâches de complétude deviennent des lignes de liste.
+- **La rangée d'actions est homogène :** une action principale, les autres au même dessin (« Modifier » n'est plus la seule sans contour).
+
+**Structure (tous les thèmes) :**
+- **Le bouton retour devient « Liste des patients », à droite de l'en-tête,** au ras du bord des cartes, comme « Nouveau patient » sur la page Patients. Même action qu'avant.
+  - Une ancienne réserve de 160 px, laissée pour les outils flottants du mode Liquid Glass, le poussait vers l'intérieur. Elle est neutralisée quand l'en-tête porte des actions.
+- **Une icône de page :** le dossier médical, déjà employé pour ouvrir un dossier dans Flux et dans la palette de commandes.
+- **32 px sous l'en-tête,** comme sur les autres pages, au lieu de 8 px.
 
 ## Écarts avec ton cadrage, assumés
 
@@ -181,6 +202,13 @@ Hors de cette passe, puisque la structure ne devait pas bouger.
 - **Le sélecteur de thème passe de 3 à 4 cartes, en grille 2 × 2.**
   - C'est le seul changement visible hors de Clean : il est dans Paramètres, Apparence, et il est voulu par ton cadrage (« les quatre combinaisons »).
   - Le texte d'aide de la ligne devient « Premium clair, Premium sombre, Clean clair ou Clean sombre. »
+- **Corrections du Clean sombre, après ton essai.** En sombre, trois règles de Premium sombre, plus spécifiques, l'emportaient :
+  - la sidebar restait en #111111 sous un cadre #0C0D0F, d'où la cassure au-dessus de l'en-tête ;
+  - l'en-tête perdait son verre ;
+  - l'item actif gardait son ombre.
+
+  Les règles du cadre, de l'en-tête et de la sidebar répètent désormais l'attribut de portée (`[data-skin][data-skin]`) pour l'emporter, toujours sous la seule portée Clean.
+- **Pas de capsule autour des icônes de l'en-tête.** Je l'avais ajoutée sans que tu la demandes ; elle est retirée, et les icônes restent seules, sans contour.
 - **Dans Clean, les libellés en capitales espacées passent en casse normale** (en-têtes de semaine, « Semaine »). Le texte lui-même ne change pas.
 
 ## Ce qui ne bouge pas
@@ -197,6 +225,15 @@ Hors de cette passe, puisque la structure ne devait pas bouger.
   | Soins | `338:17d5647c` | `337:b04da947` |
 
   Le halo du pic de graphique, qui pulse en continu, est exclu du calcul.
+
+  **Après les trois changements de structure,** seuls le tableau de bord et l'Agenda changent en Premium, comme prévu :
+
+  | Écran | Premium clair | Premium sombre |
+  | --- | --- | --- |
+  | Tableau de bord | `666:fb994994` | `665:fd66517a` |
+  | Agenda | `722:b42e0372` | `721:72771301` |
+
+  Patients, Produits, Finances et Soins restent identiques au dernier commit.
 - **Structure.** Mise en page, ordre des éléments (organisation du tableau de bord comprise), libellés, fonctions, données et commandes. Aucun menu n'a été inventé.
 - **Identité.** Mascottes, logo et couleur d'accent sont intacts. Clean sombre garde le violet de Premium sombre pour l'action principale.
 
@@ -207,6 +244,8 @@ Hors de cette passe, puisque la structure ne devait pas bouger.
 - `v2/cote-a-cote/` :
   - `tableau-de-bord`, `patients`, `dossier`, `sidebar` et `widget-survol` (au repos, puis survolé) : Premium clair, Clean actuel et Clean poussé ;
   - `clean-sombre` : tableau de bord, Patients, gros plan de la sidebar, Agenda en semaine et sélecteur des quatre thèmes ;
+  - `structure` : les trois changements de structure, avant et après, en Clean et en Premium ;
+  - `dossier-detaille` : le dossier patient (haut et bas de page) et son aperçu, avant et après ;
   - `agenda` : mois et semaine, Clean actuel, Clean poussé et module Tailwind Plus de référence ;
   - `tableaux` : liste Patients, Clean actuel, Clean poussé et module Tailwind Plus de référence ;
   - `icones` : les six substitutions et l'icône de page, avant et après.
