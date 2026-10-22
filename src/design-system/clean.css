@@ -52,6 +52,7 @@
   --clean-card-radius: 10px;
   --clean-control-radius: 8px;
   --clean-control: 32px;
+  --clean-header: 48px;
   --clean-row-list: 40px;
   --clean-row-table: 32px;
   --clean-nav-item: 28px;
@@ -71,6 +72,7 @@
   --clean-glass-bottom: rgb(250 250 250 / 0.56);
   --clean-glass-edge: rgb(255 255 255 / 0.9);
   --clean-glass-rule: rgb(0 0 0 / 0.1);
+  --clean-header-rule: rgb(0 0 0 / 0.06);
   --clean-glass-drop: 0 8px 24px -16px rgb(0 0 0 / 0.12);
   /* Icon substitutions (Lucide, drawn as masks over the original icon, so no
      component changes per theme). Each one is listed in the review and can be
@@ -132,6 +134,7 @@
   --clean-glass-bottom: rgb(17 18 20 / 0.6);
   --clean-glass-edge: rgb(255 255 255 / 0.06);
   --clean-glass-rule: rgb(255 255 255 / 0.08);
+  --clean-header-rule: rgb(255 255 255 / 0.06);
   --clean-glass-drop: 0 0 0 transparent;
   --clean-dot-mix: 60%;
 }
@@ -237,16 +240,43 @@
   box-shadow: var(--clean-sheet-shadow) !important;
 }
 /* Header: liquid glass over the sheet. Content scrolls beneath it, blurred and
-   saturated; a specular top edge and a hairline give it the feel of glass. */
+   saturated. One quiet hairline closes it; the top corners follow the sheet's,
+   since WebKit does not clip a backdrop-filter layer to its scroller's radius.
+   48px holds the 32px controls with 8px above and below. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="shell-scroll-panel"] { --header-height: var(--clean-header); }
+:root[data-skin="clean"][data-skin][data-skin] :is([data-slot="app-header"], [data-slot="app-header"] .shell-toolbar) {
+  height: var(--clean-header) !important;
+  min-height: var(--clean-header) !important;
+  max-height: var(--clean-header) !important;
+}
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] {
+  border-radius: var(--clean-sheet-radius) var(--clean-sheet-radius) 0 0 !important;
   background:
     linear-gradient(180deg, var(--clean-glass-top) 0%, var(--clean-glass-bottom) 100%) !important;
   -webkit-backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
   backdrop-filter: blur(var(--clean-glass-blur)) saturate(1.8) !important;
-  box-shadow:
-    inset 0 1px 0 var(--clean-glass-edge),
-    inset 0 -0.5px 0 var(--clean-glass-rule),
-    var(--clean-glass-drop) !important;
+  box-shadow: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"]::after {
+  height: 1px !important;
+  background: var(--clean-header-rule) !important;
+  box-shadow: none !important;
+}
+/* Text starts on the page's 24px margin; the last glyph ends on it too, the
+   button's own 8px of air making up the difference. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar {
+  padding-inline: 24px 16px !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .crumbs {
+  gap: 6px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: -0.006em;
+  color: var(--clean-ink-quiet);
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .crumbs > strong {
+  font-weight: 500;
+  color: var(--clean-ink-strong);
 }
 :root[data-skin="clean"][data-skin][data-skin] :is(th, thead)[class*="backdrop-blur"] {
   -webkit-backdrop-filter: blur(12px) saturate(1.6) !important;
@@ -281,6 +311,34 @@
     color: var(--clean-ink-strong) !important;
     transition-duration: var(--speed-highlight-in);
   }
+}
+/* One cluster, one glyph size, one weight: 16px glyphs 4px apart. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions { gap: 4px !important; }
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions :is(button, .shell-toolbar-control) {
+  border-radius: var(--clean-control-radius) !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 1.5 !important;
+  color: inherit !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg [stroke-width] { stroke-width: 1.5; }
+/* The unread count sits on the bell's shoulder, cut out of the glass. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions button > span:not([class*="sr-only"]) {
+  inset: 2px 1px auto auto !important;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px !important;
+  border-radius: 999px;
+  background: var(--clean-accent) !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  font-weight: 600;
+  line-height: 16px !important;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 2px var(--clean-sheet);
 }
 
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
