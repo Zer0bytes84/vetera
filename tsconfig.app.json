@@ -30,5 +30,5 @@
     },
     "strictNullChecks": true
   },
-  "include": ["src", "scripts/eval-local-ai/eval.ts", "scripts/eval-local-ai/metrics.ts"]
+  "include": ["src", "scripts/eval-local-ai/eval.ts", "scripts/eval-local-ai/metrics.ts", "scripts/eval-local-ai/capture-scenario.ts"]
 }

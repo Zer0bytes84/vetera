@@ -61,6 +61,8 @@ import {
 import { useFocus } from "@/contexts/focus-provider";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { getPatientStatusMeta } from "@/config/status-meta";
+import { bestPassage, focusExcerpt } from "@/modules/consultations/local-ai/passage-search";
+import { highlightPassage } from "@/modules/consultations/local-ai/search-highlight";
 import {
   searchAllPatientsFastLexical,
   searchAllPatientsClinical,
@@ -289,9 +291,8 @@ export default function CommandPalette({
 
   const [recents, setRecents] = useState<RecentEntry[]>([]);
   const [query, setQuery] = useState("");
-  const [group, setGroup] = useState<
-    "all" | "patients" | "semantic" | "navigation" | "actions"
-  >("all");
+  // Three views: everything, the clinic's records, and the app's commands.
+  const [group, setGroup] = useState<"all" | "records" | "commands">("all");
   const [semanticResults, setSemanticResults] = useState<
     Awaited<ReturnType<typeof searchAllPatientsClinical>>
   >([]);
@@ -596,10 +597,11 @@ export default function CommandPalette({
     );
   }, [patients, appointments, group, recents]);
 
-  const showPatients = group === "all" || group === "patients";
-  const showSemantic = group === "all" || group === "semantic";
-  const showNavigation = group === "all" || group === "navigation";
-  const showActions = group === "all" || group === "actions";
+  const showPatients = group === "all" || group === "records";
+  const showSemantic = group === "all" || group === "records";
+  const showAppointments = group === "all" || group === "records";
+  const showNavigation = group === "all" || group === "commands";
+  const showActions = group === "all" || group === "commands";
 
   // Patient search: match on name, owner, species, breed, chip/tattoo
   const matchedPatients = useMemo<Patient[]>(() => {
@@ -780,58 +782,38 @@ export default function CommandPalette({
             <Tabs
               value={group}
               onValueChange={(value) =>
-                setGroup(
-                  value as "all" | "patients" | "semantic" | "navigation" | "actions",
-                )
+                setGroup(value as "all" | "records" | "commands")
               }
               className="w-full"
             >
               <TabsList
                 tabsStyle="segmented"
                 variant="line"
-                aria-label="Catégorie de commandes"
-                className="h-8 gap-4 border-none bg-transparent p-0"
+                aria-label="Catégorie de résultats"
+                className="h-8 gap-1 border-none bg-transparent p-0"
               >
-                <TabsTrigger
-                  value="all"
-                  className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                >
-                  Tout
-                </TabsTrigger>
-                <TabsTrigger
-                  value="patients"
-                  className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                >
-                  Patients
-                  {matchedPatients.length > 0 && (
-                    <Badge variant="secondary" className="ml-1.5 h-4 px-1 t-12">
-                      {matchedPatients.length}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="semantic"
-                  className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                >
-                  Cas similaires
-                  {semanticResults.length > 0 && (
-                    <Badge variant="secondary" className="ml-1.5 h-4 px-1 t-12">
-                      {semanticResults.length}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="navigation"
-                  className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                >
-                  Pages
-                </TabsTrigger>
-                <TabsTrigger
-                  value="actions"
-                  className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                >
-                  Actions
-                </TabsTrigger>
+                {(
+                  [
+                    ["all", "Tout"],
+                    ["records", "Dossiers"],
+                    ["commands", "Commandes"],
+                  ] as const
+                ).map(([value, label]) => (
+                  <TabsTrigger
+                    key={value}
+                    value={value}
+                    className="h-7 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors data-[state=active]:bg-muted data-[state=active]:text-foreground"
+                  >
+                    {label}
+                    {value === "records" &&
+                      q &&
+                      matchedPatients.length + semanticResults.length > 0 && (
+                        <span className="ml-1.5 tabular-nums text-muted-foreground">
+                          {matchedPatients.length + semanticResults.length}
+                        </span>
+                      )}
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </Tabs>
           </div>
@@ -1115,7 +1097,7 @@ export default function CommandPalette({
           )}
 
           {/* Onglet Cas similaires sans requête : suggestions cliniques */}
-          {group === "semantic" && !query.trim() && (
+          {group === "records" && !query.trim() && (
             <CommandGroup heading="Suggestions cliniques · Recherches fréquentes">
               {[
                 {
@@ -1193,7 +1175,7 @@ export default function CommandPalette({
           {/* Résultats Sémantiques : Cas similaires */}
           {showSemantic &&
             (semanticResults.length > 0 ||
-              (semanticLoading && group === "semantic")) && (
+              (semanticLoading && group === "records")) && (
               <CommandGroup heading="Cas similaires · Recherche clinique">
                 {semanticLoading && semanticResults.length === 0 ? (
                   <CommandItem
@@ -1255,65 +1237,48 @@ export default function CommandPalette({
                           ? MedicalFileIcon
                           : StethoscopeIcon;
 
-                    const iconColor = isProduct
-                      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/15 dark:text-emerald-300"
-                      : isPatient
-                        ? "border-blue-500/20 bg-blue-500/10 text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/15 dark:text-blue-300"
-                        : "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/15 dark:text-amber-300";
+                    const passage = focusExcerpt(bestPassage(result.text, query), query);
 
                     return (
                       <CommandItem
                         key={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex}`}
-                        className={commandItemClassName}
+                        className={`${commandItemClassName} items-start`}
                         keywords={[query, result.section, sectionLabel, result.text]}
                         onSelect={handleSelectCase}
                         onClick={handleSelectCase}
                         value={`semantic:${result.sourceType}:${result.patientId}:${result.sourceId}:${result.section}:${result.chunkIndex} ${patientName} ${result.text}`}
                       >
-                        <div
-                          className={`flex size-8 shrink-0 items-center justify-center rounded-xl border ${iconColor}`}
-                        >
+                        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-muted/60 text-muted-foreground">
                           <HugeiconsIcon
                             icon={itemIcon}
                             className="size-4"
                             strokeWidth={1.5}
                           />
                         </div>
-                        <div className="ml-1 min-w-0 flex-1 flex flex-col justify-center gap-1">
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <span className="font-semibold text-foreground text-sm">
-                              {patientName}
-                            </span>
-                            <Badge
-                              variant="outline"
-                              className={`h-4 px-1.5 t-12 font-medium ${
-                                isProduct
-                                  ? "border-emerald-500/30 text-emerald-800 dark:text-emerald-300 bg-emerald-500/5"
-                                  : isPatient
-                                    ? "border-blue-500/30 text-blue-800 dark:text-blue-300 bg-blue-500/5"
-                                    : "border-amber-500/30 text-amber-800 dark:text-amber-300 bg-amber-500/5"
-                              }`}
-                            >
-                              {sectionLabel}
-                            </Badge>
-                            <Badge
-                              variant="secondary"
-                              className="h-4 px-1.5 t-12 font-normal text-muted-foreground"
-                            >
-                              {result.match === "text"
-                                ? "Correspondance clinique"
-                                : `Similarité ${Math.round(result.score * 100)}%`}
-                            </Badge>
-                          </div>
-                          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground/90 font-mono/sans">
-                            « {result.text} »
+                        <div className="ml-1 min-w-0 flex-1 flex flex-col gap-1">
+                          <p className="truncate t-12 text-muted-foreground">
+                            <span className="font-medium text-foreground">{patientName}</span>
+                            {" · "}
+                            {sectionLabel}
+                          </p>
+                          <p className="line-clamp-2 text-[13px] leading-relaxed text-foreground/90">
+                            {highlightPassage(passage, query).map((segment, index) =>
+                              segment.hit ? (
+                                <mark
+                                  key={index}
+                                  className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
+                                >
+                                  {segment.text}
+                                </mark>
+                              ) : (
+                                <span key={index}>{segment.text}</span>
+                              ),
+                            )}
                           </p>
                         </div>
-                        <div className="ml-2 flex flex-col items-end justify-center shrink-0">
-                          <Kbd className="t-12">
-                            {isProduct ? "↵ Voir en stock" : "↵ Ouvrir le dossier"}
-                          </Kbd>
-                        </div>
+                        <Kbd className="ml-2 mt-0.5 shrink-0 t-12 opacity-0 transition-opacity group-data-[selected=true]:opacity-100">
+                          {isProduct ? "↵ Voir en stock" : "↵ Ouvrir"}
+                        </Kbd>
                       </CommandItem>
                     );
                   })
@@ -1322,7 +1287,7 @@ export default function CommandPalette({
             )}
 
           {/* Résultats Rendez-vous */}
-          {showNavigation && matchedAppointments.length > 0 && (
+          {showAppointments && matchedAppointments.length > 0 && (
             <CommandGroup heading={t("commandPalette.group.appointments", { defaultValue: "Rendez-vous" })}>
               {matchedAppointments.map((appt) => {
                 const patient = patientsById.get(appt.patientId);

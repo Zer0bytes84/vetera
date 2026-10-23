@@ -1,0 +1,105 @@
+{
+  "label": "p1",
+  "startedAt": "2026-10-23T08:42:40.701Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "public:start",
+      "at": 1792744960.701
+    }
+  ],
+  "public": [
+    {
+      "dataset": "PublicHealthQA",
+      "questions": 85,
+      "index": {
+        "sections": {
+          "rows": 85,
+          "refused": 0,
+          "total": 85,
+          "seconds": 1452.87
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 178,
+            "refused": 0,
+            "seconds": 146.89
+          },
+          {
+            "size": 1200,
+            "rows": 123,
+            "refused": 0,
+            "seconds": 131.68
+          }
+        ]
+      },
+      "queryWarmMedianMs": 175,
+      "sections": {
+        "recallAt5": 0.8941176470588236,
+        "mrrAt10": 0.7837535014005604,
+        "ndcgAt10": 0.8202936547082781
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.9176470588235294,
+          "mrrAt10": 0.8108963585434175,
+          "ndcgAt10": 0.843358090210499
+        },
+        "1200": {
+          "recallAt5": 0.9176470588235294,
+          "mrrAt10": 0.823249299719888,
+          "ndcgAt10": 0.852927506543011
+        }
+      }
+    },
+    {
+      "dataset": "SyntecRetrieval",
+      "questions": 100,
+      "index": {
+        "sections": {
+          "rows": 90,
+          "refused": 0,
+          "total": 90,
+          "seconds": 171.71
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 217,
+            "refused": 0,
+            "seconds": 188.03
+          },
+          {
+            "size": 1200,
+            "rows": 146,
+            "refused": 0,
+            "seconds": 161.46
+          }
+        ]
+      },
+      "queryWarmMedianMs": 138,
+      "sections": {
+        "recallAt5": 0.92,
+        "mrrAt10": 0.8173015873015872,
+        "ndcgAt10": 0.8525641400844292
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.94,
+          "mrrAt10": 0.7992777777777778,
+          "ndcgAt10": 0.8390119915899379
+        },
+        "1200": {
+          "recallAt5": 0.93,
+          "mrrAt10": 0.7834682539682539,
+          "ndcgAt10": 0.8274145520092867
+        }
+      }
+    }
+  ]
+}

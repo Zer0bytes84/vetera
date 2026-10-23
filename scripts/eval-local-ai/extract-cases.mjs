@@ -42,6 +42,11 @@ const bundle = (patientId) => {
       appointments: all("SELECT * FROM appointments WHERE patient_id = ?", patientId),
       soaps: all("SELECT * FROM consultation_soaps WHERE patient_id = ?", patientId),
       notes: all("SELECT * FROM notes WHERE patient_id = ?", patientId),
+      // Final managed documents, shaped like the app reads them (lexical-only sources).
+      managedDocuments: all(
+        "SELECT d.id, d.patient_id AS patient_id, p.name AS patient_name, d.type_document AS kind, d.titre AS title, d.contenu_genere AS content, d.statut AS status, d.updated_at AS updated_at, d.attachment_json AS attachment_json FROM documents d JOIN patients p ON p.id = d.patient_id WHERE d.statut = 'finalise' AND d.patient_id = ?",
+        patientId,
+      ).map(({ attachmentJson, ...document }) => ({ ...document, attachment: attachmentJson ? JSON.parse(attachmentJson) : null })),
     });
   return patientBundle.get(patientId);
 };

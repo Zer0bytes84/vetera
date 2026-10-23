@@ -18,6 +18,11 @@ import {
   type SearchScope,
 } from "../../../src/modules/consultations/local-ai/embedding-index";
 import type { ConsultationSoap, Note } from "../../../src/types/db";
+import {
+  PASSAGE_CHARACTERS,
+  PASSAGE_MODEL_KEY,
+  passageChunks,
+} from "../../../src/modules/consultations/local-ai/passage-search";
 const fixture = vi.hoisted(() => ({
   db: null as DatabaseSync | null,
   nextId: 0,
@@ -449,14 +454,58 @@ describe("Recherche sémantique locale : index et isolation", () => {
     expect(fixture.leases).toBe(0);
   });
   it("does not re-embed unchanged indexed sources", async () => {
+    // 4 section rows (current index) + 4 passage rows (index built in parallel).
     expect(
       await indexPatientDocuments("rex", new AbortController().signal, () => {})
-    ).toBe(4);
+    ).toBe(8);
     const count = fixture.embeds;
     expect(
       await indexPatientDocuments("rex", new AbortController().signal, () => {})
     ).toBe(0);
     expect(fixture.embeds).toBe(count);
+  });
+  it("construit l’index par extraits en parallèle, bascule dessus et revient sans rien perdre", async () => {
+    const store = new Map<string, string>();
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => void store.set(key, value),
+    });
+    try {
+      await indexPatientDocuments("rex", new AbortController().signal, () => {});
+      const counts = fixture
+        .db!.prepare("SELECT model_key AS key, COUNT(*) AS n FROM embeddings GROUP BY model_key ORDER BY model_key")
+        .all() as Array<{ key: string; n: number }>;
+      expect(counts).toEqual(
+        expect.arrayContaining([
+          { key: EMBEDDING_MODEL_KEY, n: 4 },
+          { key: PASSAGE_MODEL_KEY, n: 4 },
+        ]),
+      );
+      expect(counts).toHaveLength(2);
+      // Par défaut, la recherche lit toujours l’index par rubriques.
+      expect((await readPatientSearchRows(adapter(), scope))[0].text).toBe("Infection respiratoire.");
+      store.set("baitari.search.generation", "passages");
+      const results = await searchPatientDocuments(scope, "infection");
+      expect(results[0]).toMatchObject({ sourceId: "soap-rex", text: "Infection respiratoire." });
+      // Réécrire l’index par extraits ne touche pas à l’index par rubriques.
+      const chunks = passageChunks(soapSearchChunks(soap()));
+      await persistSearchChunks(adapter(), chunks, chunks.map(() => vector()), "passages");
+      store.set("baitari.search.generation", "sections");
+      expect(await readPatientSearchRows(adapter(), scope)).toHaveLength(1);
+      expect(await readPatientSearchRows(adapter(), scope, "passages")).toHaveLength(1);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+  it("découpe une section longue en extraits indexés au lieu de la refuser", async () => {
+    const long = Array.from({ length: 80 }, (_, i) => `Observation ${i} du suivi rénal et digestif détaillée.`).join(" ");
+    fixture.db!.exec("DELETE FROM consultation_soaps WHERE id='soap-rex'");
+    insertSoap(soap("rex", "soap-rex", { subjective: "Suivi.", objective: "", assessment: long, plan: "" }));
+    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    const passages = await readPatientSearchRows(adapter(), scope, "passages");
+    expect(passages.length).toBeGreaterThan(3);
+    expect(Math.max(...passages.map((row) => row.text.length))).toBeLessThanOrEqual(PASSAGE_CHARACTERS + 1);
+    expect(passages.map((row) => row.chunkIndex)).toEqual(passages.map((_, i) => i));
   });
   it("deletes embeddings with the source and leaves the other patient intact", async () => {
     await persist();

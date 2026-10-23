@@ -10,6 +10,10 @@ const query = new URLSearchParams(
     label: process.env.BAITARI_EVAL_LABEL,
     tasks: process.env.BAITARI_EVAL_TASKS,
     runs: process.env.BAITARI_EVAL_RUNS,
+    public: process.env.BAITARI_EVAL_PUBLIC,
+    sizes: process.env.BAITARI_EVAL_SIZES,
+    setSizes: process.env.BAITARI_EVAL_SET_SIZES,
+    onlySets: process.env.BAITARI_EVAL_ONLY_SETS,
   }).filter((entry): entry is [string, string] => Boolean(entry[1]))
 ).toString();
 

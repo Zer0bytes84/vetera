@@ -18,12 +18,20 @@ import {
 } from "@/modules/consultations/local-ai/embedding-store";
 import {
   documentSearchChunks,
+  managedDocumentSearchChunks,
   matchesSearchTerms,
   MIN_SEARCH_SCORE,
   rankPatientChunks,
   soapSearchChunks,
   type SearchChunk,
+  type SearchScope,
 } from "@/modules/consultations/local-ai/embedding-index";
+import {
+  mergeLexicalFirst,
+  passageChunks,
+  rankPassages,
+} from "@/modules/consultations/local-ai/passage-search";
+import type { PatientDocument } from "@/modules/documents/document-domain";
 import { readDocumentAnswer } from "@/modules/documents/lib/read-document-answer";
 import { readLocalDocument } from "@/modules/documents/lib/read-local-document";
 import type { ReadDocument } from "@/modules/documents/lib/document-reading";
@@ -31,7 +39,6 @@ import type { LocalAiProgress } from "@/modules/consultations/local-ai/worker-pr
 import type { Appointment, ConsultationSoap, Note, Patient } from "@/types/db";
 import {
   citationScores,
-  resultKey,
   retrievalScores,
   scoreSoapDraft,
   type SoapSections,
@@ -42,6 +49,13 @@ interface Bundle {
   appointments: Appointment[];
   soaps: ConsultationSoap[];
   notes: Note[];
+  managedDocuments?: Array<Pick<PatientDocument, "id" | "patientId" | "patientName" | "kind" | "title" | "content" | "status" | "attachment" | "updatedAt">>;
+}
+interface PublicSet {
+  name: string;
+  docs: { id: string; text: string }[];
+  queries: { id: string; text: string }[];
+  relevant: Record<string, string[]>;
 }
 interface SoapCase {
   id: string;
@@ -157,69 +171,184 @@ async function runSoap(
   }
 }
 
-async function patientChunks(bundle: Bundle) {
-  const chunks: SearchChunk[] = [];
+function patientSources(bundle: Bundle) {
+  const sections: SearchChunk[][] = [];
   for (const soap of bundle.soaps)
     try {
-      chunks.push(...soapSearchChunks(soap));
+      sections.push(soapSearchChunks(soap));
     } catch {
       /* Unreviewed notes are never searchable. */
     }
   for (const note of bundle.notes)
     try {
-      chunks.push(...documentSearchChunks(note, plainDocumentText(note.content)));
+      sections.push(documentSearchChunks(note, plainDocumentText(note.content)));
     } catch {
       /* Unreviewed documents are never searchable. */
     }
-  return chunks;
+  const managed = (bundle.managedDocuments ?? []).flatMap((document) => managedDocumentSearchChunks(document));
+  return { sections: sections.filter((group) => group.length), managed };
 }
 
-async function runSearch(corpus: Corpus, models: LocalModelStatus) {
-  const results: unknown[] = [];
-  const indexed = new Map<string, (SearchChunk & { vector: number[] })[]>();
+/** Embeds texts one by one; a text the worker refuses (too long) is counted, not indexed. */
+async function embedEach(models: LocalModelStatus, chunks: SearchChunk[]) {
+  const rows: (SearchChunk & { vector: number[] })[] = [];
   let refused = 0;
-  for (const item of corpus.searchCases) {
-    if (!indexed.has(item.patientId)) {
-      const rows: (SearchChunk & { vector: number[] })[] = [];
-      for (const chunk of await patientChunks(corpus.patients[item.patientId])) {
+  // Small batches: one request must stay well under the engine's 480 s timeout,
+  // even with long texts on a slow computer.
+  for (let start = 0; start < chunks.length; start += 10) {
+    const batch = chunks.slice(start, start + 10);
+    try {
+      const vectors = await embedTexts(models, batch.map((chunk) => chunk.text), new AbortController().signal, quiet);
+      batch.forEach((chunk, index) => rows.push({ ...chunk, vector: vectors[index] }));
+    } catch {
+      for (const chunk of batch)
         try {
           const [vector] = await embedTexts(models, [chunk.text], new AbortController().signal, quiet);
           rows.push({ ...chunk, vector });
         } catch {
           refused++;
         }
-      }
-      indexed.set(item.patientId, rows);
     }
-    const rows = indexed.get(item.patientId)!;
-    const relevant = item.relevant.map(resultKey);
-    const scope = {
-      patientId: item.patientId,
-      sourceTypes: ["soap", "document", "protocol"] as const,
-      sections: ["subjective", "objective", "assessment", "plan", "document", "protocol"] as const,
-    };
-    const lexical = rows
-      .filter((row) => matchesSearchTerms(item.question, row.text))
-      .map(resultKey);
-    const started = performance.now();
-    const [query] = await embedTexts(models, [item.question], new AbortController().signal, quiet, true);
-    const querySeconds = seconds(started);
-    const hybrid = rankPatientChunks(
-      rows,
-      query,
-      { ...scope, sourceTypes: [...scope.sourceTypes], sections: [...scope.sections] },
-      10,
-      MIN_SEARCH_SCORE,
-      item.question
-    ).map(resultKey);
-    results.push({
-      id: item.id,
-      querySeconds,
-      lexical: retrievalScores(lexical, relevant),
-      hybrid: retrievalScores(hybrid, relevant),
+  }
+  return { rows, refused };
+}
+
+const sourceKeyOf = (item: { sourceType: string; sourceId: string }) => `${item.sourceType}:${item.sourceId}`;
+const uniqueSources = (items: { sourceType: string; sourceId: string }[]) => [...new Set(items.map(sourceKeyOf))];
+
+/**
+ * Ranks with each index generation exactly as the app does:
+ * sections (v2) = exact terms first, then whole-section cosine (sections over
+ * 2 048 tokens refused); passages (v3) = best passage per source, cosine + lexical bonus.
+ */
+async function rankBothGenerations(
+  models: LocalModelStatus,
+  scope: SearchScope,
+  sections: SearchChunk[],
+  managed: SearchChunk[],
+  questions: { id: string; text: string }[],
+  passageSizes: number[],
+  limit = 10,
+) {
+  const started = performance.now();
+  log(`  index par rubriques : ${sections.length} textes`);
+  const sectionIndex = await embedEach(models, sections);
+  const sectionSeconds = seconds(started);
+  const passageIndexes: Array<{ size: number; rows: (SearchChunk & { vector: number[] })[]; refused: number; seconds: number }> = [];
+  for (const size of passageSizes) {
+    const t0 = performance.now();
+    log(`  index par extraits ${size}`);
+    const index = await embedEach(models, passageChunks(sections, size));
+    passageIndexes.push({ size, ...index, seconds: seconds(t0) });
+  }
+  const queryMs: number[] = [];
+  const ranked: Array<{ id: string; sections: string[]; passages: Record<number, string[]> }> = [];
+  for (const question of questions) {
+    const t0 = performance.now();
+    const [vector] = await embedTexts(models, [question.text], new AbortController().signal, quiet, true);
+    queryMs.push(performance.now() - t0);
+    const lexical = [...sections, ...managed]
+      .filter((chunk) => matchesSearchTerms(question.text, chunk.text))
+      .map((chunk) => ({ ...chunk, score: 0.95, match: "text" as "text" | "semantic" }));
+    const before = mergeLexicalFirst<SearchChunk & { score: number; match: "text" | "semantic" }>(
+      lexical,
+      rankPatientChunks(sectionIndex.rows, vector, scope, limit, MIN_SEARCH_SCORE, question.text),
+      limit,
+    );
+    ranked.push({
+      id: question.id,
+      sections: uniqueSources(before),
+      passages: Object.fromEntries(
+        passageIndexes.map((index) => [index.size, uniqueSources(rankPassages(index.rows, vector, scope, question.text, limit, managed))]),
+      ),
     });
   }
-  return { results, refusedSections: refused };
+  const median = (values: number[]) => [...values].sort((a, b) => a - b)[values.length >> 1] ?? null;
+  return {
+    ranked,
+    index: {
+      sections: { rows: sectionIndex.rows.length, refused: sectionIndex.refused, total: sections.length, seconds: sectionSeconds },
+      passages: passageIndexes.map(({ size, rows, refused, seconds: s }) => ({ size, rows: rows.length, refused, seconds: s })),
+    },
+    // The first query may include loading the model; the median reflects searches at warm.
+    queryWarmMedianMs: median(queryMs.slice(1).map(Math.round)),
+  };
+}
+
+function scoreGenerations(
+  ranked: Awaited<ReturnType<typeof rankBothGenerations>>["ranked"],
+  relevant: (id: string) => string[],
+  passageSizes: number[],
+) {
+  const mean = (rows: ReturnType<typeof retrievalScores>[], key: "recallAt5" | "mrrAt10" | "ndcgAt10") => {
+    const values = rows.map((row) => row[key]).filter((value): value is number => value !== null);
+    return values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
+  };
+  const summarize = (pick: (row: (typeof ranked)[number]) => string[]) => {
+    const rows = ranked.map((row) => retrievalScores(pick(row), relevant(row.id)));
+    return { recallAt5: mean(rows, "recallAt5"), mrrAt10: mean(rows, "mrrAt10"), ndcgAt10: mean(rows, "ndcgAt10"), perQuestion: rows };
+  };
+  return {
+    sections: summarize((row) => row.sections),
+    passages: Object.fromEntries(passageSizes.map((size) => [size, summarize((row) => row.passages[size])])),
+  };
+}
+
+const passageSizes = (params.get("sizes") ?? "800").split(",").map(Number).filter((size) => size >= 200);
+
+/** Task B: the clinic's annotated questions, per patient, both index generations. */
+async function runSearch(corpus: Corpus, models: LocalModelStatus) {
+  const results: unknown[] = [];
+  const byPatient = new Map<string, Corpus["searchCases"]>();
+  for (const item of corpus.searchCases) byPatient.set(item.patientId, [...(byPatient.get(item.patientId) ?? []), item]);
+  const scope = (patientId: string): SearchScope => ({
+    patientId,
+    sourceTypes: ["soap", "document", "protocol"],
+    sections: ["subjective", "objective", "assessment", "plan", "document", "protocol"],
+  });
+  for (const [patientId, questions] of byPatient) {
+    const { sections, managed } = patientSources(corpus.patients[patientId]);
+    const run = await rankBothGenerations(models, scope(patientId), sections.flat(), managed, questions.map((q) => ({ id: q.id, text: q.question })), passageSizes, 5);
+    const relevant = new Map(questions.map((q) => [q.id, uniqueSources(q.relevant)]));
+    const scores = scoreGenerations(run.ranked, (id) => relevant.get(id) ?? [], passageSizes);
+    results.push({ patient: patientId.slice(0, 4) + "…", questions: questions.length, index: run.index, queryWarmMedianMs: run.queryWarmMedianMs,
+      perQuestion: questions.map((q, i) => ({ id: q.id, sections: scores.sections.perQuestion[i], passages: Object.fromEntries(passageSizes.map((size) => [size, scores.passages[size].perQuestion[i]])) })) });
+  }
+  return { results };
+}
+
+/** Public French sets of the challenge, both index generations, permanent bench. */
+async function runPublic(models: LocalModelStatus, sets: PublicSet[], save: (results: unknown[]) => Promise<void>) {
+  const results: unknown[] = [];
+  // Optional per-set sizes, e.g. "AlloprofRetrieval:800".
+  const override = new Map(
+    (params.get("setSizes") ?? "").split(";").filter(Boolean).map((item) => {
+      const [name, list] = item.split(":");
+      return [name, list.split(",").map(Number)] as const;
+    }),
+  );
+  const only = (params.get("onlySets") ?? "").split(",").filter(Boolean);
+  for (const set of sets.filter((item) => !only.length || only.includes(item.name))) {
+    const sizes = override.get(set.name) ?? passageSizes;
+    log(`jeu public ${set.name} : ${set.docs.length} documents, ${set.queries.length} questions`);
+    const scope: SearchScope = { patientId: "public", sourceTypes: ["document"], sections: ["document"] };
+    const sections = set.docs.map((doc) => ({
+      patientId: "public", sourceId: doc.id, sourceType: "document" as const, documentType: "document" as const,
+      section: "document" as const, chunkIndex: 0, text: doc.text, sourceKey: doc.id,
+    }));
+    const run = await rankBothGenerations(models, scope, sections, [], set.queries, sizes, 10);
+    const relevant = (id: string) => (set.relevant[id] ?? []).map((docId) => `document:${docId}`);
+    const scores = scoreGenerations(run.ranked, relevant, sizes);
+    const strip = ({ perQuestion: _perQuestion, ...summary }: ReturnType<typeof scoreGenerations>["sections"]) => (void _perQuestion, summary);
+    results.push({
+      dataset: set.name, questions: set.queries.length, index: run.index, queryWarmMedianMs: run.queryWarmMedianMs,
+      sections: strip(scores.sections),
+      passages: Object.fromEntries(sizes.map((size) => [size, strip(scores.passages[size])])),
+    });
+    log(`  ${set.name} terminé`);
+    await save(results);
+  }
+  return results;
 }
 
 async function runDocuments(corpus: Corpus, models: LocalModelStatus) {
@@ -318,6 +447,17 @@ async function main() {
       log(`note ${rows.length}/${corpus.soapCases.length} : ${result.accepted ? "acceptée" : "refusée"}, ${result.totalSeconds} s`);
     }
     report.soap = rows;
+  }
+  if (tasks.has("public")) {
+    const publicPath = params.get("public");
+    if (!publicPath) throw new Error("Paramètre public requis pour les jeux publics.");
+    mark("public:start");
+    // Results are saved after each set: a long run never loses what it measured.
+    report.public = await runPublic(models, (JSON.parse(await readTextFile(publicPath)) as { sets: PublicSet[] }).sets, async (partial) => {
+      report.public = partial;
+      await writeTextFile(outPath.replace(/\.json$/, "") + ".partial.json", JSON.stringify(report, null, 2));
+    });
+    mark("public:end");
   }
   if (tasks.has("b") && corpus.searchCases.length) {
     mark("search:start");

@@ -1,0 +1,55 @@
+{
+  "label": "p2",
+  "startedAt": "2026-10-23T09:27:23.603Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "public:start",
+      "at": 1792747643.603
+    },
+    {
+      "what": "public:end",
+      "at": 1792756982.859
+    }
+  ],
+  "public": [
+    {
+      "dataset": "AlloprofRetrieval",
+      "questions": 200,
+      "index": {
+        "sections": {
+          "rows": 613,
+          "refused": 64,
+          "total": 677,
+          "seconds": 4681.27
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 4156,
+            "refused": 0,
+            "seconds": 4445.27
+          }
+        ]
+      },
+      "queryWarmMedianMs": 237,
+      "sections": {
+        "recallAt5": 0.515,
+        "mrrAt10": 0.4274166666666666,
+        "ndcgAt10": 0.45394134008779224
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.565,
+          "mrrAt10": 0.463922619047619,
+          "ndcgAt10": 0.4959292090262544
+        }
+      }
+    }
+  ],
+  "finishedAt": "2026-10-23T12:03:02.859Z"
+}

@@ -72,7 +72,7 @@ if (before.syntheticSearch || after?.syntheticSearch) {
     lines.push(`| Requête ${index + 1} | ${format(at(before, index))} s | ${format(at(after, index))} s | |`);
 }
 for (section of ["search"]) {
-  const pickAll = (report) => report?.search?.results;
+  const pickAll = (report) => (report?.search?.results?.[0]?.lexical ? report.search.results : null);
   if (!pickAll(before) && !pickAll(after)) continue;
   before.search_rows = pickAll(before);
   if (after) after.search_rows = pickAll(after);
@@ -91,6 +91,31 @@ for (section of ["documents"]) {
   row("Réponses obtenues", (r) => (r.answered ? 1 : 0), percent);
   row("Citations pertinentes ou abstention correcte", (r) => r.relevant, percent);
   latency("Durée par question", (r) => r.totalSeconds);
+}
+// Index generations (phase A1): sections (v2) versus passages (v3), from the same run.
+for (const report of [before, after].filter(Boolean)) {
+  if (report.public?.length) {
+    lines.push("", `## Jeux publics : index par rubriques contre index par extraits (${report.label})`, "",
+      "| Jeu | Index | Rappel@5 | MRR@10 | nDCG@10 | Refusés | Lignes d'index | Encodage | Requête à chaud (médiane) |", "|---|---|---|---|---|---|---|---|---|");
+    for (const set of report.public) {
+      const row = (name, scores, index) =>
+        lines.push(`| ${set.dataset} | ${name} | ${percent(scores.recallAt5)} | ${format(scores.mrrAt10 * 100, 1)} | ${format(scores.ndcgAt10 * 100, 1)} | ${index.refused} | ${index.rows} | ${format(index.seconds, 0)} s | ${set.queryWarmMedianMs ?? "—"} ms |`);
+      row("rubriques (avant)", set.sections, set.index.sections);
+      for (const passages of set.index.passages) row(`extraits ${passages.size}`, set.passages[passages.size], passages);
+    }
+  }
+  if (report.search?.results?.length) {
+    const questions = report.search.results.flatMap((patient) => patient.perQuestion);
+    const sizes = Object.keys(questions[0]?.passages ?? {});
+    const avg = (pick) => { const v = questions.map(pick).filter((x) => typeof x === "number"); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+    lines.push("", `## Questions annotées de la clinique (${report.label})`, "", "| Index | Rappel@5 | MRR@10 | Questions |", "|---|---|---|---|");
+    lines.push(`| rubriques (avant) | ${percent(avg((q) => q.sections.recallAt5))} | ${format((avg((q) => q.sections.mrrAt10) ?? 0) * 100, 1)} | ${questions.length} |`);
+    for (const size of sizes) {
+      lines.push(`| extraits ${size} | ${percent(avg((q) => q.passages[size].recallAt5))} | ${format((avg((q) => q.passages[size].mrrAt10) ?? 0) * 100, 1)} | ${questions.length} |`);
+      const regressions = questions.filter((q) => q.passages[size].recallAt5 < q.sections.recallAt5 || (q.passages[size].mrrAt10 ?? 1) < (q.sections.mrrAt10 ?? 1) - 1e-9);
+      lines.push("", `Régressions avec les extraits ${size} : ${regressions.length ? regressions.map((q) => q.id).join(", ") : "aucune"}.`);
+    }
+  }
 }
 lines.push(
   "",

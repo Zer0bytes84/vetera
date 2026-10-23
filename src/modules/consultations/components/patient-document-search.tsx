@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Check,
+  ChevronDown,
   CircleNotch,
   Copy,
   Microphone,
@@ -37,7 +39,19 @@ import type {
   SearchSection,
   SourceType,
 } from "../local-ai/embedding-index";
+import { bestPassage } from "../local-ai/passage-search";
+import { highlightPassage } from "../local-ai/search-highlight";
 import "./assistant-thinking.css";
+
+const SOURCES: Array<{ key: SourceType | "all"; label: string }> = [
+  { key: "all", label: "Toutes les sources" },
+  { key: "soap", label: "Consultations SOAP" },
+  { key: "consultation", label: "Consultations" },
+  { key: "patient", label: "Fiches patients" },
+  { key: "document", label: "Documents validés" },
+  { key: "protocol", label: "Protocoles validés" },
+  { key: "product", label: "Produits" },
+];
 
 const SECTIONS = [
   { key: "all", label: "Toutes les rubriques" },
@@ -62,9 +76,47 @@ const SUGGESTED_QUERIES = [
   "Dermatite atopique",
 ];
 
+const SECTION_LABELS: Record<string, string> = {
+  subjective: "Motif & anamnèse",
+  objective: "Examen clinique",
+  assessment: "Évaluation",
+  plan: "Plan de soins",
+  consultation: "Consultation",
+  patient: "Fiche patient",
+  product: "Produit",
+  document: "Document clinique",
+  protocol: "Protocole",
+};
+
+type SearchResult = SearchChunk & {
+  patientName?: string;
+  score: number;
+  match?: "text" | "semantic";
+};
+
 export interface PatientDocumentSearchProps {
   patientId?: string;
   onInsertExcerpt?: (excerpt: string, section?: SearchSection) => void;
+}
+
+/** Passage with the query terms highlighted. */
+function Passage({ text, query }: { text: string; query: string }) {
+  return (
+    <p className="line-clamp-6 t-13 leading-relaxed text-foreground whitespace-pre-wrap">
+      {highlightPassage(text, query).map((segment, index) =>
+        segment.hit ? (
+          <mark
+            key={index}
+            className="rounded-[3px] bg-primary/12 px-0.5 text-foreground dark:bg-primary/25"
+          >
+            {segment.text}
+          </mark>
+        ) : (
+          <span key={index}>{segment.text}</span>
+        ),
+      )}
+    </p>
+  );
 }
 
 export function PatientDocumentSearch({
@@ -76,23 +128,13 @@ export function PatientDocumentSearch({
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
+  const [searchedQuery, setSearchedQuery] = useState("");
   const [type, setType] = useState<SourceType | "all">("all");
   const [section, setSection] = useState<SearchSection | "all">("all");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  const [results, setResults] = useState<
-    Array<
-      SearchChunk & {
-        patientName?: string;
-        score: number;
-        match?: "text" | "semantic";
-        vector?: number[];
-        embedding?: string;
-      }
-    >
-  >([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const active = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -139,7 +181,7 @@ export function PatientDocumentSearch({
     setBusy(true);
     setError("");
     setResults([]);
-    setMessage(indexOnly ? "Indexation des documents…" : "Recherche clinique en cours…");
+    setMessage(indexOnly ? "Indexation des documents…" : "Recherche en cours…");
 
     try {
       if (indexOnly) {
@@ -229,12 +271,11 @@ export function PatientDocumentSearch({
 
         if (!controller.signal.aborted) {
           setResults(found);
+          setSearchedQuery(searchQuery);
           setMessage(
             found.length
-              ? audience === "all"
-                ? `${found.length} cas similaires trouvés dans l’ensemble des dossiers.`
-                : `${found.length} extraits pertinents trouvés dans ce dossier.`
-              : "Aucun extrait validé suffisamment proche pour cette recherche.",
+              ? `${found.length} passage${found.length > 1 ? "s" : ""} trouvé${found.length > 1 ? "s" : ""}`
+              : "Aucun passage validé suffisamment proche pour cette recherche.",
           );
         }
       }
@@ -257,13 +298,13 @@ export function PatientDocumentSearch({
   const install = async () => {
     setBusy(true);
     setError("");
-    setMessage("Installation du modèle local EmbeddingGemma…");
+    setMessage("Installation de la recherche locale…");
     try {
       const models = await importLocalModel("embeddinggemma");
       if (models) {
         setReady(!!models.embeddingReady);
         setMessage("La recherche locale est prête.");
-        toast.success("Modèle de recherche locale configuré.");
+        toast.success("Recherche locale configurée.");
       } else {
         setMessage("");
       }
@@ -291,382 +332,294 @@ export function PatientDocumentSearch({
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    toast.success("Extrait copié dans le presse-papier");
+    toast.success("Passage copié dans le presse-papier");
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const locked = busy || dictation.busy;
-
-  const getSectionLabel = (sec: string) => {
-    switch (sec) {
-      case "subjective":
-        return "S · Motif & Anamnèse";
-      case "objective":
-        return "O · Examen clinique";
-      case "assessment":
-        return "A · Évaluation";
-      case "plan":
-        return "P · Plan de soins";
-      case "consultation":
-        return "Consultation";
-      case "patient":
-        return "Fiche Patient";
-      case "product":
-        return "Produits";
-      case "document":
-        return "Document clinique";
-      case "protocol":
-        return "Protocole";
-      default:
-        return sec;
-    }
+  const resetResults = () => {
+    active.current?.abort();
+    setResults([]);
+    setMessage("");
+    setError("");
   };
 
-  return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-3 overflow-hidden text-foreground">
-      {/* Scope Selector */}
-      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/60 pb-3">
-        <Tabs
-          value={audience}
-          onValueChange={(val) => {
-            active.current?.abort();
-            setAudience(val as "patient" | "all");
-            setResults([]);
-            setMessage("");
-            setError("");
-          }}
-          className="w-full"
-        >
-          <TabsList aria-label="Périmètre de recherche" className="grid w-full grid-cols-2">
-            <TabsTrigger value="patient" disabled={locked || !patientId} className="t-12">
-              Ce dossier patient
-            </TabsTrigger>
-            <TabsTrigger value="all" disabled={locked} className="t-12">
-              Tous les patients
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+  const locked = busy || dictation.busy;
+  const listening = dictation.phase === "listening";
+  const filterSummary = [
+    audience === "all" || !patientId ? "Tous les patients" : "Ce dossier",
+    SOURCES.find((item) => item.key === type)?.label,
+    type === "soap" && section !== "all"
+      ? SECTIONS.find((item) => item.key === section)?.label
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
-      {!ready ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border p-6 text-center">
-          <div className="rounded-full bg-primary/10 p-3 text-primary">
-            <Sparkle className="size-5" />
-          </div>
-          <div className="space-y-1">
-            <h4 className="t-14 font-medium">Recherche sémantique locale</h4>
-            <p className="t-12 text-muted-foreground">
-              EmbeddingGemma fonctionne à 100% sur cet ordinateur sans connexion internet.
-            </p>
-          </div>
-          <Button
-            size="sm"
-            disabled={locked}
-            onClick={() => void install()}
-            className="gap-2"
-          >
-            {busy ? <CircleNotch className="size-3.5 animate-spin" /> : null}
-            Installer la recherche locale
-          </Button>
+  if (!ready)
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 px-6 py-10 text-center text-foreground">
+        <Sparkle className="size-5 text-muted-foreground" />
+        <div className="space-y-1">
+          <h4 className="t-14 font-medium">Recherche dans les dossiers</h4>
+          <p className="max-w-[300px] t-12 text-muted-foreground">
+            Elle fonctionne entièrement sur cet ordinateur, sans connexion internet.
+          </p>
         </div>
-      ) : (
-        <>
-          {/* Search Input Bar */}
-          <div className="flex shrink-0 items-center gap-1.5">
-            <div className="relative flex flex-1 items-center">
-              <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
-              <Input
-                aria-label="Rechercher un cas similaire"
-                placeholder={
-                  audience === "all"
-                    ? "Symptôme, pathologie, traitement (ex: toux, Metacam)…"
-                    : "Observation passée, antécédent, examen…"
-                }
-                value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value);
-                  setResults([]);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && !locked) {
-                    event.preventDefault();
-                    void run(false);
-                  }
-                }}
-                disabled={locked}
-                className="h-9 pl-9 pr-8 t-13"
-              />
-              {query && !locked && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQuery("");
-                    setResults([]);
-                    setMessage("");
-                  }}
-                  className="absolute right-2.5 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="size-3.5" />
-                </button>
-              )}
-            </div>
+        <Button size="sm" disabled={locked} onClick={() => void install()} className="gap-2">
+          {busy ? <CircleNotch className="size-3.5 animate-spin" /> : null}
+          Installer la recherche locale
+        </Button>
+        {error && (
+          <p role="alert" className="t-12 text-destructive">
+            {error}
+          </p>
+        )}
+      </div>
+    );
 
-            <Button
-              type="button"
-              size="sm"
-              variant={dictation.phase === "listening" ? "destructive" : "outline"}
-              className="h-9 shrink-0 gap-1.5 px-2.5 t-12"
-              disabled={busy || (dictation.busy && dictation.phase !== "listening")}
-              onClick={() => void dictate()}
-              aria-label={dictation.phase === "listening" ? "Arrêter la dictée" : "Dicter la recherche"}
-            >
-              {dictation.phase === "listening" ? (
-                <>
-                  <Stop className="size-3.5 animate-pulse text-white" />
-                  <span>Stop</span>
-                </>
-              ) : (
-                <>
-                  <Microphone className="size-3.5" />
-                  <span className="hidden sm:inline">Dicter</span>
-                </>
-              )}
-            </Button>
-
-            <Button
-              type="button"
-              size="sm"
-              disabled={locked || !query.trim()}
-              onClick={() => void run(false)}
-              className="h-9 shrink-0 px-3 t-12"
-            >
-              Rechercher
-            </Button>
-          </div>
-
-          {/* Filter Bar */}
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-1.5">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <Select
-                value={type}
-                onValueChange={(value) => {
-                  const source = (value ?? "all") as SourceType | "all";
-                  setType(source);
-                  setSection(source === "soap" ? "all" : source === "all" ? "all" : source);
-                  setResults([]);
+  return (
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-2.5 overflow-hidden text-foreground">
+      <form
+        className="flex shrink-0 items-center gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!locked) void run(false);
+        }}
+      >
+        <div className="relative flex min-w-0 flex-1 items-center">
+          <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
+          <Input
+            aria-label="Rechercher dans les dossiers"
+            placeholder={
+              audience === "all" || !patientId
+                ? "Symptôme, pathologie, traitement…"
+                : "Observation, antécédent, examen…"
+            }
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setResults([]);
+            }}
+            disabled={locked}
+            className="h-9 pl-9 pr-16 t-13"
+          />
+          <div className="absolute right-1 flex items-center">
+            {query && !locked && (
+              <button
+                type="button"
+                aria-label="Effacer la recherche"
+                onClick={() => {
+                  setQuery("");
+                  resetResults();
                 }}
-                disabled={locked}
+                className="grid size-7 place-items-center rounded-md text-muted-foreground hover:text-foreground"
               >
-                <SelectTrigger className="h-7 w-auto t-12" aria-label="Source">
-                  <SelectValue>
-                    {type === "all"
-                      ? "Toutes les sources"
-                      : type === "soap"
-                        ? "Consultations SOAP"
-                        : type === "consultation"
-                          ? "Consultations"
-                          : type === "patient"
-                            ? "Fiches Patients"
-                            : type === "protocol"
-                              ? "Protocoles validés"
-                              : type === "product"
-                                ? "Produits"
-                                : "Documents validés"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Toutes les sources</SelectItem>
-                  <SelectItem value="soap">Consultations SOAP</SelectItem>
-                  <SelectItem value="consultation">Consultations</SelectItem>
-                  <SelectItem value="patient">Fiches Patients</SelectItem>
-                  <SelectItem value="document">Documents validés</SelectItem>
-                  <SelectItem value="protocol">Protocoles validés</SelectItem>
-                  <SelectItem value="product">Produits</SelectItem>
-                </SelectContent>
-              </Select>
+                <X className="size-3.5" />
+              </button>
+            )}
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    aria-label={listening ? "Arrêter la dictée" : "Dicter la recherche"}
+                    disabled={busy || (dictation.busy && !listening)}
+                    onClick={() => void dictate()}
+                    className={
+                      listening
+                        ? "grid size-7 place-items-center rounded-md bg-destructive text-white"
+                        : "grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50"
+                    }
+                  />
+                }
+              >
+                {listening ? (
+                  <Stop className="size-3.5 animate-pulse" />
+                ) : (
+                  <Microphone className="size-3.5" />
+                )}
+              </TooltipTrigger>
+              <TooltipContent>{listening ? "Arrêter la dictée" : "Dicter"}</TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
+        <Button
+          type="submit"
+          size="sm"
+          disabled={locked || !query.trim()}
+          className="h-9 shrink-0 px-3 t-12"
+        >
+          Rechercher
+        </Button>
+      </form>
 
-              {type === "soap" && (
-                <Select
+      <div className="flex shrink-0 items-center justify-between gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                disabled={locked}
+                className="-ml-1.5 h-7 min-w-0 gap-1 px-1.5 t-12 font-normal text-muted-foreground hover:text-foreground"
+                aria-label={`Filtres : ${filterSummary}`}
+              >
+                <span className="truncate">{filterSummary}</span>
+                <ChevronDown className="size-3 shrink-0" />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="start" className="w-60">
+            <DropdownMenuLabel>Rechercher dans</DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={patientId ? audience : "all"}
+              onValueChange={(value) => {
+                setAudience(value as "patient" | "all");
+                resetResults();
+              }}
+            >
+              <DropdownMenuRadioItem value="patient" disabled={!patientId} className="t-12">
+                Ce dossier patient
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="all" className="t-12">
+                Tous les patients
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Source</DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={type}
+              onValueChange={(value) => {
+                const source = (value ?? "all") as SourceType | "all";
+                setType(source);
+                setSection(source === "soap" || source === "all" ? "all" : source);
+                setResults([]);
+              }}
+            >
+              {SOURCES.map((item) => (
+                <DropdownMenuRadioItem key={item.key} value={item.key} className="t-12">
+                  {item.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+            {type === "soap" && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Rubrique SOAP</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
                   value={section}
                   onValueChange={(value) => {
                     setSection((value ?? "all") as SearchSection | "all");
                     setResults([]);
                   }}
-                  disabled={locked}
                 >
-                  <SelectTrigger className="h-7 w-auto t-12" aria-label="Rubrique SOAP">
-                    <SelectValue>
-                      {SECTIONS.find((item) => item.key === section)?.label}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SECTIONS.map((item) => (
-                      <SelectItem key={item.key} value={item.key}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
+                  {SECTIONS.map((item) => (
+                    <DropdownMenuRadioItem key={item.key} value={item.key} className="t-12">
+                      {item.label}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2 t-12" onClick={() => void run(true)}>
+              <RefreshCw className="size-3.5" />
+              Actualiser l’index
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-            <Button
-              size="xs"
-              variant="ghost"
-              disabled={locked}
-              onClick={() => void run(true)}
-              className="h-7 gap-1 t-12 text-muted-foreground hover:text-foreground"
-              title="Réindexer les extraits validés dans SQLite"
-            >
-              <RefreshCw className="size-3" />
-              <span>Actualiser l’index</span>
-            </Button>
-          </div>
-
-          {/* Status & Feedback */}
-          {dictation.busy && (
-            <Marker role="status" className="shrink-0 t-12">
-              <MarkerIcon>
-                <CircleNotch className="size-3.5 animate-spin" />
-              </MarkerIcon>
-              <MarkerContent>
-                <span className="assistant-thinking-text">
-                  {dictation.progress.message}
-                </span>
-              </MarkerContent>
-            </Marker>
-          )}
-
-          {busy && (
-            <Marker role="status" className="shrink-0 t-12">
-              <MarkerIcon>
-                <CircleNotch className="size-3.5 animate-spin" />
-              </MarkerIcon>
-              <MarkerContent>
-                <span className="assistant-thinking-text">{message}</span>
-              </MarkerContent>
-            </Marker>
-          )}
-
-          {error && (
-            <div
-              role="alert"
-              className="shrink-0 rounded-lg border border-destructive/30 bg-destructive/10 p-2.5 t-12 text-destructive"
-            >
-              {error}
-            </div>
-          )}
-
-          {!busy && message && !error && (
-            <p role="status" className="shrink-0 t-12 text-muted-foreground">
+        {(busy || dictation.busy) ? (
+          <span role="status" className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground">
+            <CircleNotch className="size-3 shrink-0 animate-spin" />
+            <span className="assistant-thinking-text truncate">
+              {dictation.busy ? dictation.progress.message : message}
+            </span>
+          </span>
+        ) : (
+          message && !error && (
+            <span role="status" className="truncate t-12 text-muted-foreground">
               {message}
+            </span>
+          )
+        )}
+      </div>
+
+      {error && (
+        <div
+          role="alert"
+          className="shrink-0 rounded-lg bg-destructive/10 px-3 py-2 t-12 text-destructive"
+        >
+          {error}
+        </div>
+      )}
+
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {results.length === 0 && !busy && !error && (
+          <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
+            <p className="max-w-[320px] t-12 text-muted-foreground">
+              {query.trim()
+                ? "Aucun passage trouvé. Essayez un synonyme, une reformulation ou élargissez les filtres."
+                : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}
             </p>
-          )}
-
-          {/* Results Area */}
-          <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-0.5">
-            {results.length === 0 && !busy && !error && (
-              <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-                <div className="rounded-full bg-muted/60 p-3 text-muted-foreground">
-                  <Search className="size-4" />
-                </div>
-                <div className="space-y-1">
-                  <p className="t-13 font-medium text-foreground">
-                    {query.trim()
-                      ? "Aucun résultat trouvé"
-                      : "Recherche clinique intelligente"}
-                  </p>
-                  <p className="max-w-[320px] t-12 text-muted-foreground">
-                    {query.trim()
-                      ? "Essayez une reformulation, un synonyme ou élargissez le filtre de rubrique."
-                      : "Retrouvez des cas similaires par similarité sémantique, synonymes DCI ou symptômes."}
-                  </p>
-                </div>
-
-                {!query.trim() && (
-                  <div className="mt-2 flex flex-wrap justify-center gap-1.5">
-                    {SUGGESTED_QUERIES.map((suggested) => (
-                      <button
-                        key={suggested}
-                        type="button"
-                        onClick={() => {
-                          setQuery(suggested);
-                          void run(false, suggested);
-                        }}
-                        className="rounded-full border border-border bg-muted/40 px-2.5 py-1 t-12 font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground"
-                      >
-                        {suggested}
-                      </button>
-                    ))}
-                  </div>
-                )}
+            {!query.trim() && (
+              <div className="flex flex-wrap justify-center gap-1.5">
+                {SUGGESTED_QUERIES.map((suggested) => (
+                  <button
+                    key={suggested}
+                    type="button"
+                    onClick={() => {
+                      setQuery(suggested);
+                      void run(false, suggested);
+                    }}
+                    className="rounded-full border border-border/70 px-2.5 py-1 t-12 text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+                  >
+                    {suggested}
+                  </button>
+                ))}
               </div>
             )}
+          </div>
+        )}
 
-            {results.map((result) => {
-              const uniqueKey = `${result.sourceType}-${result.sourceId}-${result.section}-${result.chunkIndex ?? 0}`;
-              const scorePercent = Math.min(100, Math.round(result.score * 100));
-
-              return (
-                <div
-                  key={uniqueKey}
-                  className="group relative flex flex-col gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors hover:border-border"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-1.5">
-                      {audience === "all" && result.patientName && (
-                        <span className="truncate rounded-md bg-muted px-1.5 py-0.5 t-12 font-semibold text-foreground">
-                          {result.patientName}
-                        </span>
-                      )}
-                      <Badge
-                        variant="secondary"
-                        className="h-5 px-1.5 t-12 font-medium text-muted-foreground"
-                      >
-                        {getSectionLabel(result.section)}
-                      </Badge>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <span className="t-12 font-medium text-muted-foreground tabular-nums">
-                        {result.match === "text" ? "Terme retrouvé" : `${scorePercent} % de proximité`}
-                      </span>
-                    </div>
-                  </div>
-
-                  <p className="border-l-2 border-primary/40 pl-2.5 t-12 leading-relaxed text-foreground whitespace-pre-wrap">
-                    {result.text}
+        <ul className="divide-y divide-border/60">
+          {results.map((result) => {
+            const uniqueKey = `${result.sourceType}-${result.sourceId}-${result.section}-${result.chunkIndex ?? 0}`;
+            const passage = bestPassage(result.text, searchedQuery);
+            return (
+              <li key={uniqueKey} className="group flex flex-col gap-1.5 py-3 first:pt-1">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="min-w-0 truncate t-12 text-muted-foreground">
+                    {(audience === "all" || !patientId) && result.patientName && (
+                      <span className="font-medium text-foreground">{result.patientName} · </span>
+                    )}
+                    {SECTION_LABELS[result.section] ?? result.section}
                   </p>
-
-                  <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <div className="flex shrink-0 items-center gap-0.5 opacity-70 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                     <Button
                       size="xs"
                       variant="ghost"
-                      onClick={() => handleCopy(result.text, uniqueKey)}
-                      className="h-6 gap-1 px-2 t-12"
+                      onClick={() => handleCopy(passage, uniqueKey)}
+                      className="h-6 gap-1 px-1.5 t-12 text-muted-foreground hover:text-foreground"
+                      aria-label="Copier le passage"
                     >
                       {copiedId === uniqueKey ? (
-                        <>
-                          <Check className="size-3 text-emerald-500" />
-                          <span className="text-emerald-500">Copié</span>
-                        </>
+                        <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
                       ) : (
-                        <>
-                          <Copy className="size-3" />
-                          <span>Copier</span>
-                        </>
+                        <Copy className="size-3" />
                       )}
+                      <span>{copiedId === uniqueKey ? "Copié" : "Copier"}</span>
                     </Button>
-
                     {onInsertExcerpt && (
                       <Button
                         size="xs"
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => {
-                          onInsertExcerpt(result.text, result.section);
-                          toast.success("Extrait inséré dans le dossier");
+                          onInsertExcerpt(passage, result.section);
+                          toast.success("Passage inséré dans le dossier");
                         }}
-                        className="h-6 gap-1 px-2 t-12"
+                        className="h-6 gap-1 px-1.5 t-12 text-muted-foreground hover:text-foreground"
+                        aria-label="Insérer le passage dans le dossier"
                       >
                         <Plus className="size-3" />
                         <span>Insérer</span>
@@ -674,11 +627,12 @@ export function PatientDocumentSearch({
                     )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+                <Passage text={passage} query={searchedQuery} />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }
