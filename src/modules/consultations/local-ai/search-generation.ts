@@ -1,8 +1,8 @@
 import type { SearchGeneration } from "./passage-search";
 
-// The passage index is built in parallel; search switches to it only after
-// the draft questions have been reviewed. Rollback = back to "sections".
-export const DEFAULT_SEARCH_GENERATION: SearchGeneration = "sections";
+// Passage index active since phase A1 (validated 23/10/2026). The section
+// index is still kept current: rollback = setActiveSearchGeneration("sections").
+export const DEFAULT_SEARCH_GENERATION: SearchGeneration = "passages";
 const STORAGE_KEY = "baitari.search.generation";
 
 export function getActiveSearchGeneration(): SearchGeneration {

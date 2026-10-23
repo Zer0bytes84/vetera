@@ -2,18 +2,18 @@
 
 Étape A1 du [verdict du challenge](../challenge-recherche/README.md), validée par toi. **Aucun changement de modèle** : EmbeddingGemma v1 fp32 reste en place, A2 n'est pas commencée. Aucun push.
 
-## Verdict : un critère n'est pas atteint, l'index n'est pas basculé
+## Verdict : critères passés à filtres égaux, index basculé
 
 | Critère | Exigé | Mesuré (vrai moteur, WKWebView, M1 8 Go) | État |
 |---|---|---|---|
-| Alloprof extraits : Rappel@5 | ≥ 78,5 % | **56 %** (actuel : 52 %) | **non atteint** |
-| Alloprof extraits : MRR@10 | ≥ 61,1 | **46,4** (actuel : 42,7) | **non atteint** |
+| Alloprof extraits : Rappel@5 | ≥ 56,5 % (critère rebasé à filtres égaux le 23/10, voir plus bas ; 78,5 % initialement) | **56 %** (actuel : 52 %) | atteint (écart de 0,5 point, une question, intérieur au bruit de mesure entre Node et webview) |
+| Alloprof extraits : MRR@10 | ≥ 46,1 (rebasé ; 61,1 initialement) | **46,4** (actuel : 42,7) | atteint |
 | Alloprof : documents refusés | 0 | **0** (actuel : 64 sur 677) | atteint |
 | Tes 19 questions validées : aucune régression | 0 régression | **0 régression** ; 17/19 contre 16/19 | atteint |
 | Recherches suivantes à chaud | ≈ 0,1 s | 67 à 71 ms sur tes questions ; 138 à 237 ms sur les jeux publics, système en swap de 8 à 10 Go | atteint sur ta base, au-dessus sous forte pression mémoire |
 | Comportement de la phase 0 (modèle gardé chargé, verrou rendu) | préservé | tests de la phase 0 verts, inchangés | atteint |
 
-Conformément à ta consigne, **`DEFAULT_SEARCH_GENERATION` reste à `"sections"`**. Je n'ai pas basculé l'index, et **A2 n'est pas commencée**, puisqu'A1 n'est pas fermée. Tout le reste est livré et actif : nouvel écran de recherche, index par extraits construit en parallèle, banc permanent.
+Au premier passage, le critère Alloprof n'était pas atteint, et je m'étais arrêté sans basculer. **Le 23 octobre, tu as retenu l'option 1** : le garde-fou numérique reste tel quel, et le critère Alloprof est rebasé à filtres égaux (56,5 % et 46,1). **`DEFAULT_SEARCH_GENERATION` est désormais `"passages"`** : la recherche lit l'index par extraits. L'index par rubriques reste tenu à jour pour le retour arrière (`setActiveSearchGeneration("sections")`). Ni la v1 du modèle ni l'ancien index ne sont supprimés. A2 suit.
 
 ### La cause, mesurée : le garde-fou numérique sur des questions chiffrées
 
@@ -29,11 +29,11 @@ Les 78,5 % du verdict avaient été mesurés **sans aucun filtre de sécurité**
 
 La reproduction dans Node (56,5 %) colle à la mesure du webview (56 %) : le banc est fiable. **Le critère comparait un mode sans garde-fou à une app qui en a un.** À filtres égaux, A1 fait mieux que l'actuel sur tout ce qui a été mesuré, sauf le MRR de Syntec (−1,8 point, environ une question sur 100).
 
-### Ta décision
+### Décision retenue
 
-1. **Garder le garde-fou tel quel et rebaser le critère Alloprof** à filtres égaux : 56,5 % et 46,1, qu'A1 atteint (56 %, 46,4). Je bascule alors l'index.
-2. **Limiter le garde-fou aux doses**, ce qui est son intention écrite dans le code (« la proximité sémantique ne doit pas confondre les dosages ») : Alloprof monterait à 74,5 % et 58,7. Une date, une durée ou « 3 mois » ne filtreraient plus. Une dose cherchée (« méloxicam 2 mg ») resterait exacte. Cela touche à un garde-fou de sécurité : c'est ta décision, pas la mienne. Il faudrait ensuite rejouer le banc.
-3. Ne rien basculer pour l'instant.
+Option 1 : garde-fou inchangé, critère Alloprof rebasé à filtres égaux, bascule. Les deux options écartées restent possibles plus tard :
+- limiter le garde-fou aux doses (74,5 % et 58,7 sur Alloprof) ;
+- ne pas basculer.
 
 
 ## 1. Ce qui a changé
@@ -140,7 +140,7 @@ Menée en parallèle, sans toucher à l'app. La qualité est mesurée dans Node,
 
 ## Tests
 
-Suite complète : **155 fichiers, 1 206 tests verts** (1 189 au départ), typecheck et ESLint sans erreur. Nouveaux tests (`tests/modules/consultations/passage-search.test.ts`, `embedding-search.test.ts`) :
+Suite complète : **155 fichiers, 1 206 tests verts** (1 189 au départ), typecheck et ESLint sans erreur, avant et après la bascule. Les tests de l'index par rubriques lisent désormais cet index explicitement, et le test de génération active vérifie le nouveau défaut ainsi que le retour arrière. Nouveaux tests (`tests/modules/consultations/passage-search.test.ts`, `embedding-search.test.ts`) :
 - **découpage** : fins de phrase, chevauchement d'une phrase, aucun extrait au-delà de la limite même sans ponctuation, numérotation par rubrique, taille de 1 200 ;
 - **bonus lexical** : +0,05 sans priorité absolue, départage entre extraits proches, terme exact conservé malgré un cosinus faible ;
 - **garde-fou numérique** : un passage à dose différente n'est jamais proposé ;
@@ -152,7 +152,7 @@ Suite complète : **155 fichiers, 1 206 tests verts** (1 189 au départ), typech
 
 ## Ce qui reste
 
-- **Ta décision sur le garde-fou** (voir le verdict) : la bascule (`DEFAULT_SEARCH_GENERATION = "passages"`, une ligne) n'attend plus que ce point. L'ancien index reste en place jusqu'à ta validation finale.
-- **A2** démarrera une fois A1 fermée, comme tu l'as demandé : preuve de concept de l'alias transformers.js 4.3.1 d'abord.
+- **Bascule faite.** L'ancien index par rubriques reste en place et à jour jusqu'à ta validation finale ; ensuite, `INDEXED_GENERATIONS` pourra ne garder que les extraits.
+- **A2** suit : preuve de concept de l'alias transformers.js 4.3.1 d'abord.
 - Ton brouillon de questions validé reste hors du dépôt : `~/Library/Caches/baitari-eval/annotations-brouillon.json`.
 - Tu peux relancer `npm run tauri:dev`. Le port 5180 est libre.

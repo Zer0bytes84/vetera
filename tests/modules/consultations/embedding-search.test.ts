@@ -307,7 +307,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
     await persist();
     fixture.db!.close();
     fixture.db = new DatabaseSync(join(directory, "search.db"));
-    const rows = await readPatientSearchRows(adapter(), scope);
+    const rows = await readPatientSearchRows(adapter(), scope, "sections");
     expect(rows).toHaveLength(1);
     expect(rankPatientChunks(rows, vector(), scope)[0].text).toBe(
       "Infection respiratoire."
@@ -316,7 +316,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
   it("filters patient, source and section in the database", async () => {
     await persist();
     await persist(soap("mocha", "soap-mocha"));
-    const rows = await readPatientSearchRows(adapter(), scope);
+    const rows = await readPatientSearchRows(adapter(), scope, "sections");
     expect(rows).toHaveLength(1);
     expect(rows[0].patientId).toBe("rex");
     expect(rows[0].section).toBe("assessment");
@@ -324,7 +324,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
       await readPatientSearchRows(adapter(), {
         ...scope,
         sourceTypes: ["document"],
-      })
+      }, "sections")
     ).toEqual([]);
   });
   it("defends patient and section scope even if a database adapter returns excess rows", () => {
@@ -419,9 +419,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
     fixture.db!.exec(
       "UPDATE consultation_soaps SET assessment='Nouvelle évaluation' WHERE id='soap-rex'"
     );
-    expect(await readPatientSearchRows(adapter(), scope)).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
-    expect(await readPatientSearchRows(adapter(), scope)).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
     const changed = { ...soap(), assessment: "Nouvelle évaluation" };
     fixture
       .db!.prepare(
@@ -482,8 +482,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
         ]),
       );
       expect(counts).toHaveLength(2);
-      // Par défaut, la recherche lit toujours l’index par rubriques.
-      expect((await readPatientSearchRows(adapter(), scope))[0].text).toBe("Infection respiratoire.");
+      // Depuis la bascule A1, la recherche lit l’index par extraits par défaut.
+      expect((await readPatientSearchRows(adapter(), scope))[0]).toMatchObject({ text: "Infection respiratoire." });
+      expect(await readPatientSearchRows(adapter(), scope, "sections")).toHaveLength(1);
       store.set("baitari.search.generation", "passages");
       const results = await searchPatientDocuments(scope, "infection");
       expect(results[0]).toMatchObject({ sourceId: "soap-rex", text: "Infection respiratoire." });
@@ -491,7 +492,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
       const chunks = passageChunks(soapSearchChunks(soap()));
       await persistSearchChunks(adapter(), chunks, chunks.map(() => vector()), "passages");
       store.set("baitari.search.generation", "sections");
-      expect(await readPatientSearchRows(adapter(), scope)).toHaveLength(1);
+      expect(await readPatientSearchRows(adapter(), scope, "sections")).toHaveLength(1);
       expect(await readPatientSearchRows(adapter(), scope, "passages")).toHaveLength(1);
     } finally {
       vi.unstubAllGlobals();
@@ -511,9 +512,9 @@ describe("Recherche sémantique locale : index et isolation", () => {
     await persist();
     await persist(soap("mocha", "soap-mocha"));
     fixture.db!.exec("DELETE FROM consultation_soaps WHERE id='soap-rex'");
-    expect(await readPatientSearchRows(adapter(), scope)).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
     expect(
-      await readPatientSearchRows(adapter(), { ...scope, patientId: "mocha" })
+      await readPatientSearchRows(adapter(), { ...scope, patientId: "mocha" }, "sections")
     ).toHaveLength(1);
   });
   it("cascades through patient deletion", async () => {
@@ -529,7 +530,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
       "PRAGMA foreign_keys=OFF; DELETE FROM consultation_soaps WHERE id='soap-rex'"
     );
     expect(await detectSearchOrphans(adapter(), "rex")).toHaveLength(4);
-    expect(await readPatientSearchRows(adapter(), scope)).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
     await indexPatientDocuments("rex", new AbortController().signal, () => {});
     expect(await detectSearchOrphans(adapter(), "rex")).toEqual([]);
   });
@@ -542,7 +543,7 @@ describe("Recherche sémantique locale : index et isolation", () => {
     } catch {
       fixture.db!.exec("ROLLBACK");
     }
-    expect(await readPatientSearchRows(adapter(), scope)).toHaveLength(1);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toHaveLength(1);
   });
   it("indexes validated patient-linked protocols separately from clinical notes", async () => {
     const note = {
@@ -560,13 +561,13 @@ describe("Recherche sémantique locale : index et isolation", () => {
       .run(note.id, note.content, note.tags, note.patientId);
     const chunks = documentSearchChunks(note, "Suivi validé", "protocol");
     await persistSearchChunks(adapter(), chunks, [vector()]);
-    expect(await readPatientSearchRows(adapter(), scope)).toEqual([]);
+    expect(await readPatientSearchRows(adapter(), scope, "sections")).toEqual([]);
     expect(
       await readPatientSearchRows(adapter(), {
         patientId: "rex",
         sourceTypes: ["protocol"],
         sections: ["protocol"],
-      })
+      }, "sections")
     ).toHaveLength(1);
     fixture.db!.exec("DELETE FROM notes WHERE id='protocol'");
     expect(

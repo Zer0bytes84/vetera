@@ -116,7 +116,7 @@ describe("classement par score vectoriel avec bonus lexical", () => {
 
 describe("génération active de l’index", () => {
   afterEach(() => vi.unstubAllGlobals());
-  it("reste sur l’index par rubriques tant que la bascule n’est pas faite, et bascule puis revient", async () => {
+  it("lit l’index par extraits par défaut depuis la bascule, et revient sur les rubriques à la demande", async () => {
     const store = new Map<string, string>();
     vi.stubGlobal("localStorage", {
       getItem: (key: string) => store.get(key) ?? null,
@@ -125,13 +125,13 @@ describe("génération active de l’index", () => {
     const { getActiveSearchGeneration, setActiveSearchGeneration } = await import(
       "@/modules/consultations/local-ai/search-generation"
     );
-    expect(getActiveSearchGeneration()).toBe("sections");
-    setActiveSearchGeneration("passages");
     expect(getActiveSearchGeneration()).toBe("passages");
     setActiveSearchGeneration("sections");
     expect(getActiveSearchGeneration()).toBe("sections");
+    setActiveSearchGeneration("passages");
+    expect(getActiveSearchGeneration()).toBe("passages");
     store.set("baitari.search.generation", "inconnue");
-    expect(getActiveSearchGeneration()).toBe("sections");
+    expect(getActiveSearchGeneration()).toBe("passages");
   });
 });
 
