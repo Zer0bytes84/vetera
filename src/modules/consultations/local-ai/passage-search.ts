@@ -10,23 +10,35 @@ import {
   type SearchChunk,
   type SearchScope,
 } from "./embedding-index";
+import type { SearchModel } from "./worker-protocol";
 import {
   matchesExactSearchTerms,
   matchesNumericConstraints,
   matchesSearchTerms,
 } from "./veterinary-lexicon";
 
-export type SearchGeneration = "sections" | "passages";
+export type SearchGeneration = "sections" | "passages" | "passages2";
 /** Chosen on the phase A1 bench: 800 characters ≈ 200 tokens in French. */
 export const PASSAGE_CHARACTERS = 800;
 export const PASSAGE_MODEL_KEY =
   "embeddinggemma-300m-onnx-fp32-wasm-768-passages800-v3";
+/** Phase A2: same passages, EmbeddingGemma 2 text component (q8, WebGPU). */
+export const PASSAGE_V2_MODEL_KEY =
+  "embeddinggemma2-text-q8-webgpu-768-passages800-v4";
 export const SEARCH_INDEX_KEYS: Record<SearchGeneration, string> = {
   sections: EMBEDDING_MODEL_KEY,
   passages: PASSAGE_MODEL_KEY,
+  passages2: PASSAGE_V2_MODEL_KEY,
 };
-/** Both indexes are kept current until the passage index is validated. */
+export const GENERATION_MODEL: Record<SearchGeneration, SearchModel> = {
+  sections: "embeddinggemma",
+  passages: "embeddinggemma",
+  passages2: "embeddinggemma2",
+};
+/** Indexes kept current: v1 ones always (rollback), v2 only once its model is installed. */
 export const INDEXED_GENERATIONS: SearchGeneration[] = ["sections", "passages"];
+export const indexedGenerations = (models: { embedding2Ready?: boolean }): SearchGeneration[] =>
+  models.embedding2Ready ? [...INDEXED_GENERATIONS, "passages2"] : INDEXED_GENERATIONS;
 export const LEXICAL_BONUS = 0.05;
 /** Lexical-only sources (no vector) rank like a borderline semantic hit confirmed by the lexicon. */
 export const LEXICAL_ONLY_SCORE = MIN_SEARCH_SCORE + LEXICAL_BONUS;

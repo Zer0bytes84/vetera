@@ -32,6 +32,9 @@ import {
   rankPassages,
 } from "@/modules/consultations/local-ai/passage-search";
 import type { PatientDocument } from "@/modules/documents/document-domain";
+import { LocalInferenceSession } from "@/modules/consultations/local-ai/inference-client";
+import { getLocalModelUrls } from "@/modules/consultations/local-ai/models";
+import type { SearchModel } from "@/modules/consultations/local-ai/worker-protocol";
 import { readDocumentAnswer } from "@/modules/documents/lib/read-document-answer";
 import { readLocalDocument } from "@/modules/documents/lib/read-local-document";
 import type { ReadDocument } from "@/modules/documents/lib/document-reading";
@@ -190,7 +193,7 @@ function patientSources(bundle: Bundle) {
 }
 
 /** Embeds texts one by one; a text the worker refuses (too long) is counted, not indexed. */
-async function embedEach(models: LocalModelStatus, chunks: SearchChunk[]) {
+async function embedEach(models: LocalModelStatus, chunks: SearchChunk[], model: SearchModel = "embeddinggemma") {
   const rows: (SearchChunk & { vector: number[] })[] = [];
   let refused = 0;
   // Small batches: one request must stay well under the engine's 480 s timeout,
@@ -198,12 +201,12 @@ async function embedEach(models: LocalModelStatus, chunks: SearchChunk[]) {
   for (let start = 0; start < chunks.length; start += 10) {
     const batch = chunks.slice(start, start + 10);
     try {
-      const vectors = await embedTexts(models, batch.map((chunk) => chunk.text), new AbortController().signal, quiet);
+      const vectors = await embedTexts(models, batch.map((chunk) => chunk.text), new AbortController().signal, quiet, false, model);
       batch.forEach((chunk, index) => rows.push({ ...chunk, vector: vectors[index] }));
     } catch {
       for (const chunk of batch)
         try {
-          const [vector] = await embedTexts(models, [chunk.text], new AbortController().signal, quiet);
+          const [vector] = await embedTexts(models, [chunk.text], new AbortController().signal, quiet, false, model);
           rows.push({ ...chunk, vector });
         } catch {
           refused++;
@@ -231,28 +234,34 @@ async function rankBothGenerations(
   limit = 10,
 ) {
   const started = performance.now();
-  log(`  index par rubriques : ${sections.length} textes`);
-  const sectionIndex = await embedEach(models, sections);
+  // A2: the passage index can use EmbeddingGemma 2; the section index (A1 baseline) may be skipped.
+  const passageModel = (params.get("searchModel") ?? "embeddinggemma") as SearchModel;
+  const skipSections = params.get("skipSections") === "1";
+  log(`  index par rubriques : ${skipSections ? "non refait" : sections.length + " textes"}`);
+  const sectionIndex = skipSections ? { rows: [] as (SearchChunk & { vector: number[] })[], refused: 0 } : await embedEach(models, sections);
   const sectionSeconds = seconds(started);
   const passageIndexes: Array<{ size: number; rows: (SearchChunk & { vector: number[] })[]; refused: number; seconds: number }> = [];
   for (const size of passageSizes) {
     const t0 = performance.now();
-    log(`  index par extraits ${size}`);
-    const index = await embedEach(models, passageChunks(sections, size));
+    log(`  index par extraits ${size} (${passageModel})`);
+    const index = await embedEach(models, passageChunks(sections, size), passageModel);
     passageIndexes.push({ size, ...index, seconds: seconds(t0) });
   }
   const queryMs: number[] = [];
   const ranked: Array<{ id: string; sections: string[]; passages: Record<number, string[]> }> = [];
   for (const question of questions) {
     const t0 = performance.now();
-    const [vector] = await embedTexts(models, [question.text], new AbortController().signal, quiet, true);
+    const [vector] = await embedTexts(models, [question.text], new AbortController().signal, quiet, true, passageModel);
     queryMs.push(performance.now() - t0);
+    const sectionVector = skipSections || passageModel === "embeddinggemma"
+      ? vector
+      : (await embedTexts(models, [question.text], new AbortController().signal, quiet, true))[0];
     const lexical = [...sections, ...managed]
       .filter((chunk) => matchesSearchTerms(question.text, chunk.text))
       .map((chunk) => ({ ...chunk, score: 0.95, match: "text" as "text" | "semantic" }));
     const before = mergeLexicalFirst<SearchChunk & { score: number; match: "text" | "semantic" }>(
       lexical,
-      rankPatientChunks(sectionIndex.rows, vector, scope, limit, MIN_SEARCH_SCORE, question.text),
+      skipSections ? [] : rankPatientChunks(sectionIndex.rows, sectionVector, scope, limit, MIN_SEARCH_SCORE, question.text),
       limit,
     );
     ranked.push({
@@ -292,6 +301,66 @@ function scoreGenerations(
     sections: summarize((row) => row.sections),
     passages: Object.fromEntries(passageSizes.map((size) => [size, summarize((row) => row.passages[size])])),
   };
+}
+
+/**
+ * A2 proof of concept: Whisper (transformers.js 3), then EmbeddingGemma 2
+ * (transformers.js 4 alias), then v1 and Whisper again, in the same app.
+ */
+async function runPoc(models: LocalModelStatus) {
+  const urls = getLocalModelUrls(models);
+  const steps: Record<string, unknown>[] = [];
+  const whisper = async (label: string) => {
+    const t0 = performance.now();
+    const session = await LocalInferenceSession.create("whisper", new AbortController().signal, quiet);
+    try {
+      await session.request({ type: "load-whisper", modelRoot: urls.modelRoot, runtimeRoot: urls.runtimeRoot }, "ready");
+      steps.push({ step: label, ok: true, seconds: seconds(t0) });
+    } catch (error) {
+      steps.push({ step: label, ok: false, error: String(error) });
+    } finally {
+      session.close();
+    }
+  };
+  const embedding = async (label: string, model: SearchModel) => {
+    const session = await LocalInferenceSession.create("embedding", new AbortController().signal, quiet);
+    const ask = async (texts: string[], query: boolean) => {
+      const t0 = performance.now();
+      const result = await session.request({ type: "embed", modelRoot: urls.modelRoot, runtimeRoot: urls.runtimeRoot, texts, query, model }, "embedded");
+      return { vectors: result.type === "embedded" ? result.vectors : [], ms: Math.round(performance.now() - t0) };
+    };
+    try {
+      const passages = [
+        "Chien croisé de sept ans, boiterie du membre postérieur droit, douleur à la palpation du grasset, tiroir antérieur douteux.",
+        "Chat de deux ans vacciné contre le typhus et le coryza, aucune anomalie à l'examen.",
+      ];
+      const first = await ask([passages[0]], false); // includes loading the model
+      const second = await ask([passages[1]], false);
+      const queryTimes: number[] = [];
+      let query: number[] = [];
+      for (const term of ["boiterie grasset", "vaccination chat", "douleur patte arrière"]) {
+        const result = await ask([term], true);
+        queryTimes.push(result.ms);
+        if (term === "boiterie grasset") query = result.vectors[0];
+      }
+      const dot = (a: number[], b: number[]) => a.reduce((sum, value, i) => sum + value * b[i], 0);
+      steps.push({
+        step: label, ok: true, dimensions: first.vectors[0]?.length,
+        firstWithLoadMs: first.ms, passageMs: second.ms, queryMs: queryTimes,
+        cosineRelevant: +dot(query, first.vectors[0]).toFixed(3), cosineOther: +dot(query, second.vectors[0]).toFixed(3),
+      });
+    } catch (error) {
+      steps.push({ step: label, ok: false, error: String(error) });
+    } finally {
+      session.close();
+    }
+  };
+  await whisper("dictée (transformers.js 3) avant");
+  await embedding("recherche v2 (transformers.js 4)", "embeddinggemma2");
+  await embedding("recherche v1 (transformers.js 3) après", "embeddinggemma");
+  await whisper("dictée (transformers.js 3) après");
+  for (const item of steps) log(`  ${JSON.stringify(item)}`);
+  return steps;
 }
 
 const passageSizes = (params.get("sizes") ?? "800").split(",").map(Number).filter((size) => size >= 200);
@@ -448,6 +517,7 @@ async function main() {
     }
     report.soap = rows;
   }
+  if (tasks.has("poc")) report.poc = await runPoc(models);
   if (tasks.has("public")) {
     const publicPath = params.get("public");
     if (!publicPath) throw new Error("Paramètre public requis pour les jeux publics.");

@@ -7,6 +7,11 @@ import path from "node:path";
 export function localAiRuntimePlugin() {
   const require = createRequire(import.meta.url);
   const onnx = path.dirname(require.resolve("onnxruntime-web"));
+  // transformers.js 4 (search model v2 only) ships its own onnxruntime-web,
+  // served apart so Whisper keeps the runtime of transformers.js 3.
+  const onnxV4 = path.dirname(
+    require.resolve("onnxruntime-web", { paths: [path.dirname(require.resolve("transformers-v4"))] }),
+  );
   const genai = path.join(
     path.dirname(require.resolve("@mediapipe/tasks-genai")),
     "wasm",
@@ -19,6 +24,14 @@ export function localAiRuntimePlugin() {
       "ort-wasm-simd-threaded.jsep.mjs",
       "ort-wasm-simd-threaded.jsep.wasm",
     ].map((name) => [`onnx/${name}`, path.join(onnx, name)]),
+    ...[
+      "ort-wasm-simd-threaded.jsep.mjs",
+      "ort-wasm-simd-threaded.jsep.wasm",
+      "ort-wasm-simd-threaded.asyncify.mjs",
+      "ort-wasm-simd-threaded.asyncify.wasm",
+      "ort-wasm-simd-threaded.mjs",
+      "ort-wasm-simd-threaded.wasm",
+    ].map((name) => [`onnx-v4/${name}`, path.join(onnxV4, name)]),
     ...[
       "genai_wasm_module_internal.js",
       "genai_wasm_module_internal.wasm",

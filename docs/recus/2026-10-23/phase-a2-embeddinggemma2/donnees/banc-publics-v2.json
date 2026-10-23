@@ -1,0 +1,121 @@
+{
+  "label": "a2p",
+  "startedAt": "2026-10-23T12:53:44.860Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "public:start",
+      "at": 1792760024.86
+    },
+    {
+      "what": "public:end",
+      "at": 1792762073
+    }
+  ],
+  "public": [
+    {
+      "dataset": "PublicHealthQA",
+      "questions": 85,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 85,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 178,
+            "refused": 0,
+            "seconds": 57.47
+          }
+        ]
+      },
+      "queryWarmMedianMs": 129,
+      "sections": {
+        "recallAt5": 0.023529411764705882,
+        "mrrAt10": 0.023529411764705882,
+        "ndcgAt10": 0.023529411764705882
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.9058823529411765,
+          "mrrAt10": 0.8286601307189543,
+          "ndcgAt10": 0.8535386553912461
+        }
+      }
+    },
+    {
+      "dataset": "SyntecRetrieval",
+      "questions": 100,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 90,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 217,
+            "refused": 0,
+            "seconds": 69.73
+          }
+        ]
+      },
+      "queryWarmMedianMs": 130,
+      "sections": {
+        "recallAt5": 0.02,
+        "mrrAt10": 0.0125,
+        "ndcgAt10": 0.01430676558073393
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.87,
+          "mrrAt10": 0.7193968253968255,
+          "ndcgAt10": 0.7781584142424935
+        }
+      }
+    },
+    {
+      "dataset": "AlloprofRetrieval",
+      "questions": 200,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 677,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 4156,
+            "refused": 0,
+            "seconds": 1737.24
+          }
+        ]
+      },
+      "queryWarmMedianMs": 147,
+      "sections": {
+        "recallAt5": 0.005,
+        "mrrAt10": 0.005,
+        "ndcgAt10": 0.005
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.535,
+          "mrrAt10": 0.42027976190476196,
+          "ndcgAt10": 0.4593250327534998
+        }
+      }
+    }
+  ],
+  "finishedAt": "2026-10-23T13:27:53.000Z"
+}

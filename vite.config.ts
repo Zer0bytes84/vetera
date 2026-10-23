@@ -21,7 +21,7 @@ export default defineConfig(({ command, mode }) => ({
   worker: { format: "es" },
   // Warm worker-only dependencies before the first consultation. Lazy discovery
   // during an inference otherwise invalidates the desktop window's module cache.
-  optimizeDeps: { include: ["@huggingface/transformers", "@mediapipe/tasks-genai"] },
+  optimizeDeps: { include: ["@huggingface/transformers", "transformers-v4", "@mediapipe/tasks-genai"] },
   server: {
     port: 5180,
     host: "0.0.0.0",

@@ -1,5 +1,8 @@
 import type { DictationLanguage } from "./whisper-language";
 
+/** Local search model: v1 (EmbeddingGemma 300M fp32) or v2 (EmbeddingGemma 2 text, q8). */
+export type SearchModel = "embeddinggemma" | "embeddinggemma2";
+
 export type LocalAiProgress = {
   message: string;
   progress?: number;
@@ -19,7 +22,7 @@ export type WorkerRequest =
       purpose?: "document";
       attempt?: 1 | 2;
     }
-  | { type: "embed"; modelRoot: string; runtimeRoot: string; texts: string[]; query?: boolean }
+  | { type: "embed"; modelRoot: string; runtimeRoot: string; texts: string[]; query?: boolean; model?: SearchModel }
   | { type: "dispose" };
 export type WorkerResponse =
   | ({ type: "progress" } & LocalAiProgress)

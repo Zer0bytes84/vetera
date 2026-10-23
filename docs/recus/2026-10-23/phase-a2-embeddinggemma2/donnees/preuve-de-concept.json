@@ -1,0 +1,51 @@
+{
+  "label": "poc",
+  "startedAt": "2026-10-23T12:41:37.531Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [],
+  "poc": [
+    {
+      "step": "dictée (transformers.js 3) avant",
+      "ok": true,
+      "seconds": 12.34
+    },
+    {
+      "step": "recherche v2 (transformers.js 4)",
+      "ok": true,
+      "dimensions": 768,
+      "firstWithLoadMs": 7008,
+      "passageMs": 140,
+      "queryMs": [
+        181,
+        120,
+        116
+      ],
+      "cosineRelevant": 0.689,
+      "cosineOther": 0.585
+    },
+    {
+      "step": "recherche v1 (transformers.js 3) après",
+      "ok": true,
+      "dimensions": 768,
+      "firstWithLoadMs": 7732,
+      "passageMs": 179,
+      "queryMs": [
+        97,
+        76,
+        92
+      ],
+      "cosineRelevant": 0.288,
+      "cosineOther": 0.073
+    },
+    {
+      "step": "dictée (transformers.js 3) après",
+      "ok": true,
+      "seconds": 13.18
+    }
+  ],
+  "finishedAt": "2026-10-23T12:42:18.840Z"
+}

@@ -38,6 +38,8 @@ pub struct LocalModelStatus {
     whisper_model: Option<String>,
     pub(crate) generator_ready: bool,
     pub(crate) embedding_ready: bool,
+    /// EmbeddingGemma 2 text component (q8), phase A2; v1 stays installed.
+    pub(crate) embedding2_ready: bool,
 }
 
 fn read_json(path: &Path) -> Result<Value, String> {
@@ -116,10 +118,33 @@ pub(crate) fn validate_embedding(folder: &Path) -> Result<(), String> {
     read_json(&folder.join("tokenizer.json"))?;
     Ok(())
 }
+/// EmbeddingGemma 2, text component only, q8 (onnx-community, revision daa72c5).
+const EMBEDDING2_REQUIRED: &[(&str, u64)] = &[
+    ("tokenizer.json", 32170510),
+    ("tokenizer_config.json", 1599),
+    ("onnx/model_quantized.onnx", 495165),
+    ("onnx/model_quantized.onnx_data", 313724928),
+];
+pub(crate) fn validate_embedding2(folder: &Path) -> Result<(), String> {
+    let config = read_json(&folder.join("config.json"))?;
+    if config["model_type"] != "embedding_gemma2" {
+        return Err("Les fichiers de recherche v2 ne sont pas compatibles.".into());
+    }
+    for (name, expected_size) in EMBEDDING2_REQUIRED {
+        let meta = fs::symlink_metadata(folder.join(name))
+            .map_err(|_| "Un fichier de recherche v2 est manquant.")?;
+        if !meta.is_file() || meta.len() != *expected_size {
+            return Err("Un fichier de recherche v2 est incomplet ou incompatible.".into());
+        }
+    }
+    read_json(&folder.join("tokenizer_config.json"))?;
+    Ok(())
+}
 pub(crate) fn status(root: &Path) -> LocalModelStatus {
     LocalModelStatus {
         root: root.to_string_lossy().into_owned(),
         embedding_ready: validate_embedding(&root.join("embeddinggemma")).is_ok(),
+        embedding2_ready: validate_embedding2(&root.join("embeddinggemma2")).is_ok(),
         whisper_ready: validate_whisper(&root.join("whisper")).is_ok(),
         whisper_model: read_json(&root.join("whisper/config.json"))
             .ok()

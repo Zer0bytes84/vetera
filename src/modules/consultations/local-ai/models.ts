@@ -8,6 +8,8 @@ export interface LocalModelStatus {
   whisperModel?: string | null;
   generatorReady: boolean;
   embeddingReady?: boolean;
+  /** EmbeddingGemma 2 (phase A2), installed alongside v1. */
+  embedding2Ready?: boolean;
 }
 export const EMPTY_MODEL_STATUS: LocalModelStatus = {
   root: null,

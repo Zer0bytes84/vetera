@@ -11,7 +11,7 @@ import {
 } from "./models";
 import { LocalInferenceSession } from "./inference-client";
 import { isSoapReviewed } from "./soap-review";
-import type { LocalAiProgress } from "./worker-protocol";
+import type { LocalAiProgress, SearchModel } from "./worker-protocol";
 import {
   MIN_SEARCH_SCORE,
   assertSearchScope,
@@ -34,7 +34,8 @@ import {
 } from "./embedding-index";
 import type { DocumentAttachment, PatientDocument } from "@/modules/documents/document-domain";
 import {
-  INDEXED_GENERATIONS,
+  GENERATION_MODEL,
+  indexedGenerations,
   LEXICAL_ONLY_SCORE,
   SEARCH_INDEX_KEYS,
   bestPassage,
@@ -46,7 +47,12 @@ import {
 import { getActiveSearchGeneration } from "./search-generation";
 /** Rows of the given index generation for one source. */
 const forGeneration = (chunks: SearchChunk[], generation: SearchGeneration) =>
-  generation === "passages" ? passageChunks(chunks) : chunks;
+  generation === "sections" ? chunks : passageChunks(chunks);
+/** The active index, falling back to the v1 passages while the v2 model is not installed. */
+const effectiveGeneration = (models: LocalModelStatus): SearchGeneration => {
+  const active = getActiveSearchGeneration();
+  return active === "passages2" && !models.embedding2Ready ? "passages" : active;
+};
 export interface SearchDatabase {
   select<T>(query: string, values?: unknown[]): Promise<T>;
   execute(query: string, values?: unknown[]): Promise<unknown>;
@@ -167,8 +173,9 @@ export async function embedTexts(
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void,
   query = false,
+  model: SearchModel = "embeddinggemma",
 ) {
-  if (!models.embeddingReady)
+  if (model === "embeddinggemma" ? !models.embeddingReady : !models.embedding2Ready)
     throw new Error(
       "La recherche locale n’est pas installée. Vos documents restent accessibles.",
     );
@@ -183,6 +190,7 @@ export async function embedTexts(
         runtimeRoot: urls.runtimeRoot,
         texts,
         query,
+        model,
       },
       "embedded",
     );
@@ -202,10 +210,11 @@ async function embedInBatches(
   texts: string[],
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void,
+  model: SearchModel = "embeddinggemma",
 ) {
   const vectors: number[][] = [];
   for (let start = 0; start < texts.length; start += 100)
-    vectors.push(...(await embedTexts(models, texts.slice(start, start + 100), signal, onProgress)));
+    vectors.push(...(await embedTexts(models, texts.slice(start, start + 100), signal, onProgress, false, model)));
   return vectors;
 }
 
@@ -266,13 +275,14 @@ export async function indexReviewedSource(
         );
   if (!chunks.length) return;
   const models = await getLocalModels();
-  for (const generation of INDEXED_GENERATIONS) {
+  for (const generation of indexedGenerations(models)) {
     const rows = forGeneration(chunks, generation);
     const vectors = await embedInBatches(
       models,
       rows.map((chunk) => chunk.text),
       signal,
       onProgress,
+      GENERATION_MODEL[generation],
     );
     await runDbTransaction((db) => persistSearchChunks(db, rows, vectors, generation));
   }
@@ -348,6 +358,7 @@ export async function indexPatientDocuments(
 ) {
   if (!patientId)
     throw new Error("Ouvrez une fiche patient avant de préparer la recherche.");
+  const models = await getLocalModels();
   const sources = await runDbRead(async (db) => {
     const soaps = await db.select<ConsultationSoap[]>(
       `SELECT ${SOAP_COLUMNS} FROM consultation_soaps WHERE patient_id=?`,
@@ -372,7 +383,7 @@ export async function indexPatientDocuments(
       }
     }
     const stale: Array<{ generation: SearchGeneration; chunks: SearchChunk[] }> = [];
-    for (const generation of INDEXED_GENERATIONS)
+    for (const generation of indexedGenerations(models))
       for (const chunks of groups.filter((group) => group.length).map((group) => forGeneration(group, generation))) {
         const first = chunks[0];
         const existing = await db.select<
@@ -400,7 +411,6 @@ export async function indexPatientDocuments(
         ]);
     });
   if (!sources.length) return 0;
-  const models = await getLocalModels();
   // One worker per batch, only one patient's data; split batches at source boundaries.
   let count = 0;
   let batch: Array<{ generation: SearchGeneration; chunks: SearchChunk[] }> = [];
@@ -408,13 +418,13 @@ export async function indexPatientDocuments(
     if (!batch.length) return;
     const groups = batch;
     batch = [];
+    // One model per request: each generation is embedded with its own model.
+    const vectors: number[][] = [];
+    for (const group of groups)
+      vectors.push(
+        ...(await embedInBatches(models, group.chunks.map((chunk) => chunk.text), signal, onProgress, GENERATION_MODEL[group.generation])),
+      );
     const flat = groups.flatMap((group) => group.chunks);
-    const vectors = await embedInBatches(
-      models,
-      flat.map((chunk) => chunk.text),
-      signal,
-      onProgress,
-    );
     let offset = 0;
     await runDbTransaction(async (db) => {
       for (const group of groups) {
@@ -475,9 +485,10 @@ export async function searchPatientDocuments(
 ) {
   assertSearchScope(scope);
   if (!query.trim()) throw new Error("Écrivez ce que vous souhaitez retrouver.");
-  return getActiveSearchGeneration() === "passages"
-    ? searchPatientPassages(scope, query, signal, onProgress)
-    : searchPatientSections(scope, query, signal, onProgress);
+  const generation = effectiveGeneration(await getLocalModels());
+  return generation === "sections"
+    ? searchPatientSections(scope, query, signal, onProgress)
+    : searchPatientPassages(scope, query, signal, onProgress, generation);
 }
 /** Section index (v2), unchanged: exact terms first, then whole-section cosine. */
 async function searchPatientSections(
@@ -510,6 +521,7 @@ async function searchPatientPassages(
   query: string,
   signal: AbortSignal,
   onProgress: (event: LocalAiProgress) => void,
+  generation: Exclude<SearchGeneration, "sections">,
 ) {
   // Final managed documents are not embedded: they join as lexical-only sources.
   const lexicalOnly = () =>
@@ -520,12 +532,12 @@ async function searchPatientPassages(
     rankPassages([], null, scope, query, 5, await runDbRead(db => readPatientLexicalMatches(db, scope, query)));
   try {
     await indexPatientDocuments(scope.patientId, signal, onProgress);
-    const rows = await runDbRead(db => readPatientSearchRows(db, scope, "passages"));
+    const rows = await runDbRead(db => readPatientSearchRows(db, scope, generation));
     if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
     if (!rows.length) return lexicalFallback();
     const models = await getLocalModels();
-    const [vector] = await embedTexts(models, [query], signal, onProgress, true);
-    const currentRows = await runDbRead(db => readPatientSearchRows(db, scope, "passages"));
+    const [vector] = await embedTexts(models, [query], signal, onProgress, true, GENERATION_MODEL[generation]);
+    const currentRows = await runDbRead(db => readPatientSearchRows(db, scope, generation));
     return rankPassages(currentRows, vector, scope, query, 5, await lexicalOnly());
   } catch (error) {
     if (signal.aborted || (error instanceof Error && error.name === "AbortError")) throw error;
@@ -566,13 +578,14 @@ export async function searchAllPatientsDocuments(
     ),
   );
   const models = await getLocalModels();
-  const [vector] = await embedTexts(models, [query], signal, onProgress, true);
-  if (getActiveSearchGeneration() === "passages") {
+  const generation = effectiveGeneration(models);
+  const [vector] = await embedTexts(models, [query], signal, onProgress, true, GENERATION_MODEL[generation]);
+  if (generation !== "sections") {
     const ranked: Array<Awaited<ReturnType<typeof rankPassages>>[number] & { patientName: string }> = [];
     for (const patient of patients) {
       if (signal.aborted) throw new DOMException("Tâche annulée.", "AbortError");
       const scope = { patientId: patient.id, ...filters };
-      const rows = await runDbRead((db) => readPatientSearchRows(db, scope, "passages"));
+      const rows = await runDbRead((db) => readPatientSearchRows(db, scope, generation));
       const lexicalOnly = filters.sourceTypes.includes("document") && filters.sections.includes("document")
         ? await runDbRead(db => managedPatientChunks(db, patient.id))
         : [];
@@ -701,7 +714,7 @@ export async function searchAllPatientsFastLexical(
             AND ((e.source_type = 'soap' AND EXISTS(SELECT 1 FROM consultation_soaps s WHERE s.id = e.source_id AND s.patient_id = e.patient_id))
               OR (e.source_type != 'soap' AND EXISTS(SELECT 1 FROM notes n WHERE n.id = e.source_id AND n.patient_id = e.patient_id)))
           ORDER BY e.patient_id, e.source_id, e.chunk_index`,
-          [SEARCH_INDEX_KEYS[getActiveSearchGeneration()], ...embeddingTypes, ...embeddingSections],
+          [SEARCH_INDEX_KEYS[effectiveGeneration(await getLocalModels())], ...embeddingTypes, ...embeddingSections],
         );
 
         if (!signal.aborted) {
@@ -933,7 +946,7 @@ export async function searchAllPatientsFastLexical(
       }
     }
 
-    if (getActiveSearchGeneration() === "passages") {
+    if (getActiveSearchGeneration() !== "sections") {
       // One result per source, showing the passage that contains the term.
       const seen = new Set<string>();
       return matches
@@ -1024,7 +1037,7 @@ export async function searchAllPatientsClinical(
           });
         }
 
-        if (getActiveSearchGeneration() === "passages") {
+        if (getActiveSearchGeneration() !== "sections") {
           // Vector results already carry cosine + lexical bonus; other lexical
           // matches (profiles, consultations, products…) join at LEXICAL_ONLY_SCORE.
           const sources = new Set(vectorMatches.map((m) => `${m.sourceType}:${m.sourceId}`));

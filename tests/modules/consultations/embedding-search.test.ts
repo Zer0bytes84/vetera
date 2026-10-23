@@ -21,6 +21,7 @@ import type { ConsultationSoap, Note } from "../../../src/types/db";
 import {
   PASSAGE_CHARACTERS,
   PASSAGE_MODEL_KEY,
+  PASSAGE_V2_MODEL_KEY,
   passageChunks,
 } from "../../../src/modules/consultations/local-ai/passage-search";
 const fixture = vi.hoisted(() => ({
@@ -32,11 +33,13 @@ const fixture = vi.hoisted(() => ({
   leases: 0,
   maximum: 0,
   creates: 0,
+  embedding2: false,
+  models: [] as string[],
 }));
 const vector = (index = 0) =>
   Array.from({ length: 768 }, (_, i) => (i === index ? 1 : 0));
 vi.mock("../../../src/modules/consultations/local-ai/models", () => ({
-  getLocalModels: async () => ({ embeddingReady: true, root: "local" }),
+  getLocalModels: async () => ({ embeddingReady: true, embedding2Ready: fixture.embedding2, root: "local" }),
   getLocalModelUrls: () => ({ modelRoot: "local/", runtimeRoot: "runtime/" }),
 }));
 vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
@@ -46,9 +49,10 @@ vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
       fixture.leases++;
       fixture.maximum = Math.max(fixture.maximum, fixture.leases);
       return {
-        request: async (message: { texts: string[] }) => {
+        request: async (message: { texts: string[]; model?: string }) => {
           if (fixture.failEmbedding) throw new Error("Modèle indisponible");
           fixture.embeds++;
+          fixture.models.push(message.model ?? "embeddinggemma");
           return {
             type: "embedded",
             vectors: message.texts.map(() => vector()),
@@ -169,6 +173,8 @@ beforeEach(async () => {
   fixture.maximum = 0;
   fixture.failInsert = false;
   fixture.failEmbedding = false;
+  fixture.embedding2 = false;
+  fixture.models = [];
   await runSqliteMigrations(
     {
       execute: async (sql, params = []) =>
@@ -494,6 +500,36 @@ describe("Recherche sémantique locale : index et isolation", () => {
       store.set("baitari.search.generation", "sections");
       expect(await readPatientSearchRows(adapter(), scope, "sections")).toHaveLength(1);
       expect(await readPatientSearchRows(adapter(), scope, "passages")).toHaveLength(1);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+  it("A2 : tient l’index EmbeddingGemma 2 à jour seulement si son modèle est installé, avec son propre modèle", async () => {
+    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    expect(fixture.models.every((model) => model === "embeddinggemma")).toBe(true);
+    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_V2_MODEL_KEY)!.n).toBe(0);
+    fixture.embedding2 = true;
+    fixture.models = [];
+    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    expect(fixture.models).toEqual(["embeddinggemma2"]);
+    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_V2_MODEL_KEY)!.n).toBe(4);
+    // The v1 indexes are untouched by the v2 one.
+    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_MODEL_KEY)!.n).toBe(4);
+  });
+  it("A2 : la recherche v2 interroge EmbeddingGemma 2, et revient à la v1 tant que la v2 manque", async () => {
+    const store = new Map<string, string>([["baitari.search.generation", "passages2"]]);
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => void store.set(key, value),
+    });
+    try {
+      await searchPatientDocuments(scope, "infection");
+      expect(fixture.models.at(-1)).toBe("embeddinggemma");
+      fixture.embedding2 = true;
+      fixture.models = [];
+      const results = await searchPatientDocuments(scope, "infection");
+      expect(fixture.models.at(-1)).toBe("embeddinggemma2");
+      expect(results[0]).toMatchObject({ sourceId: "soap-rex", text: "Infection respiratoire." });
     } finally {
       vi.unstubAllGlobals();
     }

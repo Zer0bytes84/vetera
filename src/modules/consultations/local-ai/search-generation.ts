@@ -8,7 +8,7 @@ const STORAGE_KEY = "baitari.search.generation";
 export function getActiveSearchGeneration(): SearchGeneration {
   try {
     const stored = globalThis.localStorage?.getItem(STORAGE_KEY);
-    if (stored === "sections" || stored === "passages") return stored;
+    if (stored === "sections" || stored === "passages" || stored === "passages2") return stored;
   } catch {
     /* Storage unavailable: keep the default. */
   }
