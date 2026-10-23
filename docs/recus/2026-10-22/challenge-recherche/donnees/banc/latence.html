@@ -1,0 +1,47 @@
+<!doctype html><meta charset="utf-8"><title>latence</title><pre id=out>prêt</pre>
+<script type="module">
+const out = document.getElementById("out"); const log = (s) => (out.textContent += "\n" + s);
+const EG = { query: "task: search result | query: ", doc: "title: none | text: " };
+const C = {
+  "eg1-fp32": { lib: 3, id: "eg1fp32", dtype: "fp32", kind: "eg", ...EG },
+  "eg1-q8": { lib: 3, id: "eg1", dtype: "q8", kind: "eg", ...EG },
+  "eg1-q4": { lib: 3, id: "eg1", dtype: "q4", kind: "eg", ...EG },
+  "eg2-q8": { lib: 4, id: "eg2", dtype: "q8", kind: "eg2", ...EG },
+  "e5small-q8": { lib: 3, id: "e5small", dtype: "q8", pooling: "mean", query: "query: ", doc: "passage: " },
+  "e5base-q8": { lib: 3, id: "e5base", dtype: "q8", pooling: "mean", query: "query: ", doc: "passage: " },
+  "qwen3-q8": { lib: 3, id: "qwen3", dtype: "q8", pooling: "last_token", query: "Instruct: Given a question, retrieve passages that answer the question\nQuery:", doc: "" },
+  "bgem3-q8": { lib: 3, id: "bgem3", dtype: "q8", pooling: "cls", query: "", doc: "" },
+  "arctic-q8": { lib: 3, id: "arctic", dtype: "q8", pooling: "cls", query: "query: ", doc: "" },
+};
+const passage = "Chien croisé labrador de sept ans, présenté pour boiterie du membre postérieur droit depuis trois jours, apparue après une promenade. Le propriétaire signale un appétit conservé et pas de vomissement. À l'examen, température 38,6, fréquence cardiaque 96, douleur à la palpation du grasset droit, tiroir antérieur douteux, pas d'amyotrophie. Suspicion de rupture partielle du ligament croisé crânial, diagnostic différentiel entorse. Radiographies prévues, repos strict.";
+const median = (a) => [...a].sort((x, y) => x - y)[a.length >> 1];
+window.measure = async (key) => {
+  const c = C[key];
+  const lib = await import(c.lib === 4 ? "./tjs4/transformers.web.js" : "./tjs3/transformers.js");
+  const { env, AutoTokenizer, AutoModel, AutoConfig, pipeline } = lib;
+  env.allowRemoteModels = false; env.allowLocalModels = true; env.useBrowserCache = false;
+  env.localModelPath = new URL("../models/", location.href).href;
+  env.backends.onnx.wasm.wasmPaths = new URL(c.lib === 4 ? "./tjs4/" : "./tjs3/", location.href).href;
+  env.backends.onnx.wasm.numThreads = 1; env.backends.onnx.wasm.proxy = false;
+  const t0 = performance.now();
+  let encode;
+  if (c.kind) {
+    const tokenizer = await AutoTokenizer.from_pretrained(c.id);
+    let config; if (c.kind === "eg2") { config = await AutoConfig.from_pretrained(c.id); config.vision_config = config.audio_config = null; }
+    const model = await AutoModel.from_pretrained(c.id, { device: "wasm", dtype: c.dtype, ...(config ? { config } : {}), ...(c.kind === "eg" ? { use_external_data_format: true } : {}) });
+    encode = async (t) => (await model(await tokenizer(t, { truncation: true, max_length: 2048 }))).sentence_embedding;
+  } else {
+    const ex = await pipeline("feature-extraction", c.id, { device: "wasm", dtype: c.dtype });
+    encode = (t) => ex(t, { pooling: c.pooling, normalize: true, truncation: true, max_length: 2048 });
+  }
+  const load = (performance.now() - t0) / 1000;
+  const q = [], p = [];
+  for (const term of ["boiterie grasset", "vomissements chat", "otite chronique", "insuffisance rénale", "vaccination rage", "plaie patte", "toux sèche", "diarrhée chiot"]) { const s = performance.now(); await encode(c.query + term); q.push(performance.now() - s); }
+  for (let i = 0; i < 5; i++) { const s = performance.now(); await encode(c.doc + passage); p.push(performance.now() - s); }
+  const long = c.doc + Array(6).fill(passage).join(" ");
+  const s = performance.now(); await encode(long); const l = performance.now() - s;
+  const r = { key, load_s: +load.toFixed(2), query_ms: Math.round(median(q.slice(1))), passage200tok_ms: Math.round(median(p)), long1200tok_ms: Math.round(l) };
+  log(JSON.stringify(r)); return r;
+};
+log("chargé");
+</script>

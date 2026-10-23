@@ -1,0 +1,2207 @@
+[
+ {
+  "model": "arctic-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8855042016806723,
+  "ndcg": 0.9108413373203209,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 27.029,
+   "chunks": 26.28
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8486414565826332,
+  "ndcg": 0.8831791292541734,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 27.029,
+   "chunks": 26.28
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 27.029,
+   "chunks": 26.28
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.7907843137254902,
+  "ndcg": 0.8347719132427095,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 27.029,
+   "chunks": 26.28
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.8433333333333334,
+  "ndcg": 0.8762305151432823,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 27.029,
+   "chunks": 26.28
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8427591036414568,
+  "ndcg": 0.878837126355014,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 27.029,
+   "chunks": 26.28
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8941176470588236,
+  "mrr": 0.8366946778711485,
+  "ndcg": 0.8570004052801151,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 27.029,
+   "chunks": 26.28
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.98,
+  "mrr": 0.8495833333333332,
+  "ndcg": 0.8850983454293286,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 38.675,
+   "chunks": 31.061
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 1,
+  "mrr": 0.8588333333333334,
+  "ndcg": 0.894105979460158,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 38.675,
+   "chunks": 31.061
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 38.675,
+   "chunks": 31.061
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.94,
+  "mrr": 0.8207063492063491,
+  "ndcg": 0.8598367003476008,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 38.675,
+   "chunks": 31.061
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.840309523809524,
+  "ndcg": 0.8793448875178486,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 38.675,
+   "chunks": 31.061
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 1,
+  "mrr": 0.8538333333333334,
+  "ndcg": 0.8904152769958726,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 38.675,
+   "chunks": 31.061
+  }
+ },
+ {
+  "model": "arctic-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.94,
+  "mrr": 0.8049166666666666,
+  "ndcg": 0.8415854685731035,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 38.675,
+   "chunks": 31.061
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9176470588235294,
+  "mrr": 0.8313071895424836,
+  "ndcg": 0.85829484959837,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 26.209,
+   "chunks": 28.878
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9176470588235294,
+  "mrr": 0.8329411764705882,
+  "ndcg": 0.8596687731641217,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 26.209,
+   "chunks": 28.878
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 26.209,
+   "chunks": 28.878
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9176470588235294,
+  "mrr": 0.7900280112044817,
+  "ndcg": 0.8280768943988424,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 26.209,
+   "chunks": 28.878
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9058823529411765,
+  "mrr": 0.8170728291316527,
+  "ndcg": 0.8505400449938333,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 26.209,
+   "chunks": 28.878
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.9176470588235294,
+  "mrr": 0.8211764705882353,
+  "ndcg": 0.8509847673658031,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 26.209,
+   "chunks": 28.878
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8823529411764706,
+  "mrr": 0.8018767507002802,
+  "ndcg": 0.8277926147463435,
+  "refused2048": 0,
+  "maxTokens": 1087,
+  "encodeSeconds": {
+   "whole": 26.209,
+   "chunks": 28.878
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.8204166666666666,
+  "ndcg": 0.8579671828811429,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 40.656,
+   "chunks": 34.13
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.94,
+  "mrr": 0.815373015873016,
+  "ndcg": 0.8559681722752557,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 40.656,
+   "chunks": 34.13
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 40.656,
+   "chunks": 34.13
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.93,
+  "mrr": 0.7704285714285715,
+  "ndcg": 0.8194566367538115,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 40.656,
+   "chunks": 34.13
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.94,
+  "mrr": 0.7895119047619048,
+  "ndcg": 0.8389581367808168,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 40.656,
+   "chunks": 34.13
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.93,
+  "mrr": 0.8150396825396825,
+  "ndcg": 0.8556617160739903,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 40.656,
+   "chunks": 34.13
+  }
+ },
+ {
+  "model": "bgem3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.80525,
+  "ndcg": 0.8441446991097341,
+  "refused2048": 0,
+  "maxTokens": 1705,
+  "encodeSeconds": {
+   "whole": 40.656,
+   "chunks": 34.13
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.7964845938375352,
+  "ndcg": 0.8441496793622618,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 22.166,
+   "chunks": 11.328
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.8045378151260506,
+  "ndcg": 0.8502137394515609,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 22.166,
+   "chunks": 11.328
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 22.166,
+   "chunks": 11.328
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8170588235294118,
+  "ndcg": 0.8541911377814144,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 22.166,
+   "chunks": 11.328
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9764705882352941,
+  "mrr": 0.8188235294117648,
+  "ndcg": 0.858657151075556,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 22.166,
+   "chunks": 11.328
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.9176470588235294,
+  "mrr": 0.7790476190476193,
+  "ndcg": 0.830723670366708,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 22.166,
+   "chunks": 11.328
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8823529411764706,
+  "mrr": 0.7437394957983194,
+  "ndcg": 0.7871728669340775,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 22.166,
+   "chunks": 11.328
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.93,
+  "mrr": 0.7008333333333334,
+  "ndcg": 0.7629544364889516,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 8.451,
+   "chunks": 11.162
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.89,
+  "mrr": 0.7166349206349207,
+  "ndcg": 0.7801576415854788,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 8.451,
+   "chunks": 11.162
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 8.451,
+   "chunks": 11.162
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.89,
+  "mrr": 0.7622142857142858,
+  "ndcg": 0.8125454496649374,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 8.451,
+   "chunks": 11.162
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.91,
+  "mrr": 0.7789285714285715,
+  "ndcg": 0.8256474732162641,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 8.451,
+   "chunks": 11.162
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.89,
+  "mrr": 0.7091349206349207,
+  "ndcg": 0.7744644071662126,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 8.451,
+   "chunks": 11.162
+  }
+ },
+ {
+  "model": "e5base-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.91,
+  "mrr": 0.6935952380952383,
+  "ndcg": 0.7550378368213686,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 8.451,
+   "chunks": 11.162
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9058823529411765,
+  "mrr": 0.7868627450980393,
+  "ndcg": 0.8271913480476538,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 6.737,
+   "chunks": 4.51
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9176470588235294,
+  "mrr": 0.7567973856209151,
+  "ndcg": 0.8027402777295111,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 6.737,
+   "chunks": 4.51
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 6.737,
+   "chunks": 4.51
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9058823529411765,
+  "mrr": 0.7708169934640523,
+  "ndcg": 0.8185153275522259,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 6.737,
+   "chunks": 4.51
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9176470588235294,
+  "mrr": 0.7805042016806725,
+  "ndcg": 0.8233397558663724,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 6.737,
+   "chunks": 4.51
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.8941176470588236,
+  "mrr": 0.7305228758169935,
+  "ndcg": 0.7824602985177155,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 6.737,
+   "chunks": 4.51
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8705882352941177,
+  "mrr": 0.7487908496732026,
+  "ndcg": 0.7900809695793161,
+  "refused2048": 0,
+  "maxTokens": 1089,
+  "encodeSeconds": {
+   "whole": 6.737,
+   "chunks": 4.51
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.87,
+  "mrr": 0.6629801587301587,
+  "ndcg": 0.7308941460583673,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 9.88,
+   "chunks": 4.839
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.94,
+  "mrr": 0.7337777777777776,
+  "ndcg": 0.7897301199577345,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 9.88,
+   "chunks": 4.839
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 9.88,
+   "chunks": 4.839
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.91,
+  "mrr": 0.7664841269841272,
+  "ndcg": 0.8119628880393877,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 9.88,
+   "chunks": 4.839
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.7920952380952382,
+  "ndcg": 0.8362603856187948,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 9.88,
+   "chunks": 4.839
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.94,
+  "mrr": 0.7196111111111111,
+  "ndcg": 0.7790368855384684,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 9.88,
+   "chunks": 4.839
+  }
+ },
+ {
+  "model": "e5small-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.86,
+  "mrr": 0.6563134920634921,
+  "ndcg": 0.7229611895412625,
+  "refused2048": 0,
+  "maxTokens": 1707,
+  "encodeSeconds": {
+   "whole": 9.88,
+   "chunks": 4.839
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "AlloprofRetrieval",
+  "mode": "whole",
+  "n": 200,
+  "r5": 0.79,
+  "mrr": 0.6060257936507935,
+  "ndcg": 0.6680125765037753,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 781.414,
+   "chunks": 805.73
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "AlloprofRetrieval",
+  "mode": "chunk",
+  "n": 200,
+  "r5": 0.785,
+  "mrr": 0.6113928571428571,
+  "ndcg": 0.6679434136459045,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 781.414,
+   "chunks": 805.73
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "AlloprofRetrieval",
+  "mode": "bm25",
+  "n": 200,
+  "r5": 0.555,
+  "mrr": 0.4191210317460319,
+  "ndcg": 0.4687497308403063,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 781.414,
+   "chunks": 805.73
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "AlloprofRetrieval",
+  "mode": "hybrid",
+  "n": 200,
+  "r5": 0.735,
+  "mrr": 0.57665873015873,
+  "ndcg": 0.6339357667063513,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 781.414,
+   "chunks": 805.73
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "AlloprofRetrieval",
+  "mode": "hybridW",
+  "n": 200,
+  "r5": 0.765,
+  "mrr": 0.6014325396825396,
+  "ndcg": 0.6547985413609055,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 781.414,
+   "chunks": 805.73
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "AlloprofRetrieval",
+  "mode": "bonus",
+  "n": 200,
+  "r5": 0.785,
+  "mrr": 0.6113928571428571,
+  "ndcg": 0.6679434136459045,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 781.414,
+   "chunks": 805.73
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "AlloprofRetrieval",
+  "mode": "app",
+  "n": 200,
+  "r5": 0.515,
+  "mrr": 0.4275833333333333,
+  "ndcg": 0.45406883854323105,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 781.414,
+   "chunks": 805.73
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8399159663865547,
+  "ndcg": 0.8795376183917509,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 188.152,
+   "chunks": 233.232
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.830700280112045,
+  "ndcg": 0.8718286146797853,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 188.152,
+   "chunks": 233.232
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 188.152,
+   "chunks": 233.232
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8056209150326799,
+  "ndcg": 0.8482330914388295,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 188.152,
+   "chunks": 233.232
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9647058823529412,
+  "mrr": 0.8219607843137255,
+  "ndcg": 0.8606100134007177,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 188.152,
+   "chunks": 233.232
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.830700280112045,
+  "ndcg": 0.8718286146797853,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 188.152,
+   "chunks": 233.232
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8941176470588236,
+  "mrr": 0.7896358543417369,
+  "ndcg": 0.8246356576074374,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 188.152,
+   "chunks": 233.232
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.8606349206349205,
+  "ndcg": 0.8926413113872467,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 33.147,
+   "chunks": 33.19
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.97,
+  "mrr": 0.8176111111111111,
+  "ndcg": 0.8603212891256525,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 33.147,
+   "chunks": 33.19
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 33.147,
+   "chunks": 33.19
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.92,
+  "mrr": 0.8121904761904761,
+  "ndcg": 0.8501392362817328,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 33.147,
+   "chunks": 33.19
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.93,
+  "mrr": 0.810952380952381,
+  "ndcg": 0.8524441814222414,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 33.147,
+   "chunks": 33.19
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.97,
+  "mrr": 0.8109444444444445,
+  "ndcg": 0.8553212891256525,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 33.147,
+   "chunks": 33.19
+  }
+ },
+ {
+  "model": "eg1-fp32",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.92,
+  "mrr": 0.8248015873015873,
+  "ndcg": 0.8582573745036952,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 33.147,
+   "chunks": 33.19
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9647058823529412,
+  "mrr": 0.8448832866479927,
+  "ndcg": 0.8830849438315741,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 18.372,
+   "chunks": 23.43
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.8271895424836602,
+  "ndcg": 0.8667865099353985,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 18.372,
+   "chunks": 23.43
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 18.372,
+   "chunks": 23.43
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8027450980392157,
+  "ndcg": 0.840800885654309,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 18.372,
+   "chunks": 23.43
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8249019607843138,
+  "ndcg": 0.8598852332637195,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 18.372,
+   "chunks": 23.43
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.8271895424836602,
+  "ndcg": 0.8667865099353985,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 18.372,
+   "chunks": 23.43
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.9058823529411765,
+  "mrr": 0.7964985994397761,
+  "ndcg": 0.8298537707532481,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 18.372,
+   "chunks": 23.43
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.856845238095238,
+  "ndcg": 0.8899397593883741,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 26.014,
+   "chunks": 26.973
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.8096944444444445,
+  "ndcg": 0.8540419526656763,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 26.014,
+   "chunks": 26.973
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 26.014,
+   "chunks": 26.973
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.92,
+  "mrr": 0.7966904761904763,
+  "ndcg": 0.8363775279912281,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 26.014,
+   "chunks": 26.973
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.93,
+  "mrr": 0.8139285714285712,
+  "ndcg": 0.8544682172198602,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 26.014,
+   "chunks": 26.973
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.8046944444444445,
+  "ndcg": 0.8503512502013909,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 26.014,
+   "chunks": 26.973
+  }
+ },
+ {
+  "model": "eg1-q4",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.93,
+  "mrr": 0.8293452380952381,
+  "ndcg": 0.8642465249691081,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 26.014,
+   "chunks": 26.973
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "whole",
+  "n": 200,
+  "r5": 0.805,
+  "mrr": 0.608156746031746,
+  "ndcg": 0.6697060839449481,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 905.449,
+   "chunks": 1051.628
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "chunk",
+  "n": 200,
+  "r5": 0.775,
+  "mrr": 0.6070813492063494,
+  "ndcg": 0.6622722907264044,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 905.449,
+   "chunks": 1051.628
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "bm25",
+  "n": 200,
+  "r5": 0.555,
+  "mrr": 0.4191210317460319,
+  "ndcg": 0.4687497308403063,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 905.449,
+   "chunks": 1051.628
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "hybrid",
+  "n": 200,
+  "r5": 0.73,
+  "mrr": 0.5709900793650793,
+  "ndcg": 0.6285210715038964,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 905.449,
+   "chunks": 1051.628
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "hybridW",
+  "n": 200,
+  "r5": 0.76,
+  "mrr": 0.6064325396825396,
+  "ndcg": 0.6615990108425639,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 905.449,
+   "chunks": 1051.628
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "bonus",
+  "n": 200,
+  "r5": 0.775,
+  "mrr": 0.6070813492063494,
+  "ndcg": 0.6622722907264044,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 905.449,
+   "chunks": 1051.628
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "app",
+  "n": 200,
+  "r5": 0.535,
+  "mrr": 0.4298531746031747,
+  "ndcg": 0.459585851730626,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 905.449,
+   "chunks": 1051.628
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8418767507002803,
+  "ndcg": 0.8810779684337682,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 31.463,
+   "chunks": 46.436
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.8207189542483662,
+  "ndcg": 0.8645792562444475,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 31.463,
+   "chunks": 46.436
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 31.463,
+   "chunks": 46.436
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9647058823529412,
+  "mrr": 0.7986274509803922,
+  "ndcg": 0.843176871814136,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 31.463,
+   "chunks": 46.436
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9647058823529412,
+  "mrr": 0.8103921568627451,
+  "ndcg": 0.8545112003599437,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 31.463,
+   "chunks": 46.436
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.8207189542483662,
+  "ndcg": 0.8645792562444475,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 31.463,
+   "chunks": 46.436
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8823529411764706,
+  "mrr": 0.7857142857142859,
+  "ndcg": 0.818753304666261,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 31.463,
+   "chunks": 46.436
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.95,
+  "mrr": 0.8607619047619047,
+  "ndcg": 0.8927503982315328,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 48.361,
+   "chunks": 47.72
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.96,
+  "mrr": 0.8239444444444445,
+  "ndcg": 0.8650148329243873,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 48.361,
+   "chunks": 47.72
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 48.361,
+   "chunks": 47.72
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.92,
+  "mrr": 0.8110952380952381,
+  "ndcg": 0.8492365028918253,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 48.361,
+   "chunks": 47.72
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.93,
+  "mrr": 0.810452380952381,
+  "ndcg": 0.8520059439138531,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 48.361,
+   "chunks": 47.72
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.96,
+  "mrr": 0.8172777777777778,
+  "ndcg": 0.8600148329243873,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 48.361,
+   "chunks": 47.72
+  }
+ },
+ {
+  "model": "eg1-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.92,
+  "mrr": 0.8249285714285715,
+  "ndcg": 0.8583664613479813,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 48.361,
+   "chunks": 47.72
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "whole",
+  "n": 200,
+  "r5": 0.76,
+  "mrr": 0.6040714285714285,
+  "ndcg": 0.6588259115814067,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 1322.754,
+   "chunks": 1364.728
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "chunk",
+  "n": 200,
+  "r5": 0.735,
+  "mrr": 0.5602202380952381,
+  "ndcg": 0.6196031817642284,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 1322.754,
+   "chunks": 1364.728
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "bm25",
+  "n": 200,
+  "r5": 0.555,
+  "mrr": 0.4191210317460319,
+  "ndcg": 0.4687497308403063,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 1322.754,
+   "chunks": 1364.728
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "hybrid",
+  "n": 200,
+  "r5": 0.7,
+  "mrr": 0.532001984126984,
+  "ndcg": 0.5931099423924828,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 1322.754,
+   "chunks": 1364.728
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "hybridW",
+  "n": 200,
+  "r5": 0.74,
+  "mrr": 0.5501309523809523,
+  "ndcg": 0.6110766587809146,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 1322.754,
+   "chunks": 1364.728
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "bonus",
+  "n": 200,
+  "r5": 0.735,
+  "mrr": 0.5602202380952381,
+  "ndcg": 0.6196031817642284,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 1322.754,
+   "chunks": 1364.728
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "AlloprofRetrieval",
+  "mode": "app",
+  "n": 200,
+  "r5": 0.52,
+  "mrr": 0.4411428571428571,
+  "ndcg": 0.4690205134122827,
+  "refused2048": 0.0930576070901034,
+  "maxTokens": 4537,
+  "encodeSeconds": {
+   "whole": 1322.754,
+   "chunks": 1364.728
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9411764705882353,
+  "mrr": 0.8405555555555556,
+  "ndcg": 0.8759178228354233,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 35.045,
+   "chunks": 47.717
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8588235294117649,
+  "ndcg": 0.8902566444823938,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 35.045,
+   "chunks": 47.717
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 35.045,
+   "chunks": 47.717
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.799719887955182,
+  "ndcg": 0.8414115984611619,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 35.045,
+   "chunks": 47.717
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9647058823529412,
+  "mrr": 0.8469607843137256,
+  "ndcg": 0.8793181009683549,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 35.045,
+   "chunks": 47.717
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.9529411764705882,
+  "mrr": 0.8529411764705884,
+  "ndcg": 0.8859146415832346,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 35.045,
+   "chunks": 47.717
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8823529411764706,
+  "mrr": 0.7886414565826332,
+  "ndcg": 0.8201849932656935,
+  "refused2048": 0,
+  "maxTokens": 1037,
+  "encodeSeconds": {
+   "whole": 35.045,
+   "chunks": 47.717
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.94,
+  "mrr": 0.7829285714285716,
+  "ndcg": 0.8269536200380607,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 46.381,
+   "chunks": 67.595
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.88,
+  "mrr": 0.7243968253968255,
+  "ndcg": 0.7844677117782081,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 46.381,
+   "chunks": 67.595
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 46.381,
+   "chunks": 67.595
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.89,
+  "mrr": 0.75875,
+  "ndcg": 0.807259966422869,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 46.381,
+   "chunks": 67.595
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.9,
+  "mrr": 0.761563492063492,
+  "ndcg": 0.8143215985051213,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 46.381,
+   "chunks": 67.595
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.88,
+  "mrr": 0.7177301587301589,
+  "ndcg": 0.7794677117782081,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 46.381,
+   "chunks": 67.595
+  }
+ },
+ {
+  "model": "eg2-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.92,
+  "mrr": 0.7624166666666667,
+  "ndcg": 0.8090870743427486,
+  "refused2048": 0,
+  "maxTokens": 1582,
+  "encodeSeconds": {
+   "whole": 46.381,
+   "chunks": 67.595
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "whole",
+  "n": 85,
+  "r5": 0.9058823529411765,
+  "mrr": 0.729621848739496,
+  "ndcg": 0.7838801020998696,
+  "refused2048": 0,
+  "maxTokens": 1153,
+  "encodeSeconds": {
+   "whole": 72.895,
+   "chunks": 49.74
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "chunk",
+  "n": 85,
+  "r5": 0.8823529411764706,
+  "mrr": 0.7533146591970122,
+  "ndcg": 0.7963844061906589,
+  "refused2048": 0,
+  "maxTokens": 1153,
+  "encodeSeconds": {
+   "whole": 72.895,
+   "chunks": 49.74
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bm25",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7337535014005603,
+  "ndcg": 0.7903726790961394,
+  "refused2048": 0,
+  "maxTokens": 1153,
+  "encodeSeconds": {
+   "whole": 72.895,
+   "chunks": 49.74
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybrid",
+  "n": 85,
+  "r5": 0.9294117647058824,
+  "mrr": 0.7540336134453783,
+  "ndcg": 0.8068395970975331,
+  "refused2048": 0,
+  "maxTokens": 1153,
+  "encodeSeconds": {
+   "whole": 72.895,
+   "chunks": 49.74
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "hybridW",
+  "n": 85,
+  "r5": 0.9058823529411765,
+  "mrr": 0.7986741363211952,
+  "ndcg": 0.8412465394405836,
+  "refused2048": 0,
+  "maxTokens": 1153,
+  "encodeSeconds": {
+   "whole": 72.895,
+   "chunks": 49.74
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "bonus",
+  "n": 85,
+  "r5": 0.8823529411764706,
+  "mrr": 0.7439028944911299,
+  "ndcg": 0.789170909805183,
+  "refused2048": 0,
+  "maxTokens": 1153,
+  "encodeSeconds": {
+   "whole": 72.895,
+   "chunks": 49.74
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "PublicHealthQA",
+  "mode": "app",
+  "n": 85,
+  "r5": 0.8352941176470589,
+  "mrr": 0.7031652661064427,
+  "ndcg": 0.7522079244753651,
+  "refused2048": 0,
+  "maxTokens": 1153,
+  "encodeSeconds": {
+   "whole": 72.895,
+   "chunks": 49.74
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "whole",
+  "n": 100,
+  "r5": 0.76,
+  "mrr": 0.5886746031746035,
+  "ndcg": 0.6566404038103079,
+  "refused2048": 0,
+  "maxTokens": 1778,
+  "encodeSeconds": {
+   "whole": 66.968,
+   "chunks": 54.421
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "chunk",
+  "n": 100,
+  "r5": 0.81,
+  "mrr": 0.6622182539682541,
+  "ndcg": 0.7153508066829705,
+  "refused2048": 0,
+  "maxTokens": 1778,
+  "encodeSeconds": {
+   "whole": 66.968,
+   "chunks": 54.421
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bm25",
+  "n": 100,
+  "r5": 0.82,
+  "mrr": 0.6936071428571428,
+  "ndcg": 0.7435070001055513,
+  "refused2048": 0,
+  "maxTokens": 1778,
+  "encodeSeconds": {
+   "whole": 66.968,
+   "chunks": 54.421
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybrid",
+  "n": 100,
+  "r5": 0.86,
+  "mrr": 0.7189563492063492,
+  "ndcg": 0.7703704897684962,
+  "refused2048": 0,
+  "maxTokens": 1778,
+  "encodeSeconds": {
+   "whole": 66.968,
+   "chunks": 54.421
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "hybridW",
+  "n": 100,
+  "r5": 0.87,
+  "mrr": 0.6971388888888889,
+  "ndcg": 0.7520344458542968,
+  "refused2048": 0,
+  "maxTokens": 1778,
+  "encodeSeconds": {
+   "whole": 66.968,
+   "chunks": 54.421
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "bonus",
+  "n": 100,
+  "r5": 0.81,
+  "mrr": 0.6605515873015874,
+  "ndcg": 0.714041509147256,
+  "refused2048": 0,
+  "maxTokens": 1778,
+  "encodeSeconds": {
+   "whole": 66.968,
+   "chunks": 54.421
+  }
+ },
+ {
+  "model": "qwen3-q8",
+  "dataset": "SyntecRetrieval",
+  "mode": "app",
+  "n": 100,
+  "r5": 0.72,
+  "mrr": 0.5705198412698416,
+  "ndcg": 0.6376036887664046,
+  "refused2048": 0,
+  "maxTokens": 1778,
+  "encodeSeconds": {
+   "whole": 66.968,
+   "chunks": 54.421
+  }
+ }
+]

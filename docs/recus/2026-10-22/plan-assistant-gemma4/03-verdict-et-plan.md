@@ -127,3 +127,7 @@ Ordre des essais : chez toi d'abord, puis chez Aissa. **Le portable d'Aissa (16 
 - **E4B redevient candidat sur 16 Go.** Il avait été écarté sur 8 Go à cause du swap (+3,8 Go) ; sur 16 Go, ses +4,4 à +4,7 Go tiennent. Il reste environ 1,7 fois plus lent qu'E2B (repères officiels WebGPU).
 - **Phase B amendée :** E2B et E4B mesurés tous deux sur le portable d'Aissa (mémoire, latence, jeux A et C) ; E2B seul sur le plancher 8 Go. L'option E4B n'est proposée qu'aux postes de 16 Go et plus, et seulement si son gain de qualité est net avec une note en 15 s au plus.
 - Résultats de la phase 0 et détail du raisonnement : [../eval-phase0/README.md](../eval-phase0/README.md).
+
+## 3.6 Challenge de la phase A (22 octobre, nuit)
+
+Le modèle d'EmbeddingGemma 2 texte q8 est confirmé pour la phase A, faute de gagnant net parmi les modèles à licence permissive. EmbeddingGemma v1, meilleur en texte, relève des conditions Gemma, non permissives. Le challenge ajoute une étape A1, indépendante du modèle et qui apporte l'essentiel du gain : un classement par score vectoriel avec le lexique en bonus, au lieu de la priorité absolue donnée au texte ; un découpage en extraits ; zéro refus. Rappel@5 sur Alloprof : 51,5 % aujourd'hui, 73,5 % attendu. Détail : [../challenge-recherche/README.md](../challenge-recherche/README.md).

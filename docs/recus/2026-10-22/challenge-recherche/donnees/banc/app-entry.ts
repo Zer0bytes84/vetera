@@ -1,0 +1,2 @@
+export { rankPatientChunks, MIN_SEARCH_SCORE, normalizedEmbedding } from "/Users/zohir/Documents/08 - Projets numériques/Projects 2026/BAITARI 2.1/bAItari/src/modules/consultations/local-ai/embedding-index";
+export { matchesSearchTerms, matchesExactSearchTerms, normalizeLexical, stemFrenchWord, expandSearchQuery } from "/Users/zohir/Documents/08 - Projets numériques/Projects 2026/BAITARI 2.1/bAItari/src/modules/consultations/local-ai/veterinary-lexicon";
