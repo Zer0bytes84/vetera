@@ -5,7 +5,7 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant";
+  scenario: "palette" | "assistant" | "reset";
   theme: "light" | "dark";
   generation: "sections" | "passages";
   query: string;
@@ -55,6 +55,13 @@ function restore() {
 const step = (name: string) => writeTextFile(config.signal, `step: ${name}`).catch(() => {});
 
 async function run() {
+  // "reset" writes the viewer's own values back (theme given, no index key).
+  if (config.scenario === "reset") {
+    localStorage.setItem("theme", config.theme);
+    localStorage.removeItem("baitari.search.generation");
+    await writeTextFile(config.signal, "restored");
+    return;
+  }
   if (!(await prepare())) return;
   await step("app");
   await waitFor(() => document.querySelector("[data-sidebar]") ?? document.querySelector("main"));
