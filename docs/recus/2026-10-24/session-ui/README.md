@@ -27,6 +27,8 @@ Deux modes, et l'interrupteur est dans le menu lui-même (« Masquer pendant le 
 
 Le choix est mémorisé sur ce poste (`baitari.quick-actions.retract`).
 
+**Décision (24 octobre) : toujours visible par défaut.** L'option « Masquer pendant le défilement » reste disponible dans le menu pour qui la préfère.
+
 ## Ce qui change, point par point
 
 ### 1. En-tête
