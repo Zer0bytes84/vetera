@@ -1,0 +1,431 @@
+{
+  "label": "v1v",
+  "startedAt": "2026-10-23T20:47:45.519Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "public:start",
+      "at": 1792788465.519
+    },
+    {
+      "what": "public:end",
+      "at": 1792788890.936
+    },
+    {
+      "what": "search:start",
+      "at": 1792788890.936
+    },
+    {
+      "what": "search:end",
+      "at": 1792788895.015
+    }
+  ],
+  "public": [
+    {
+      "dataset": "PublicHealthQA",
+      "questions": 85,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 85,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 178,
+            "refused": 0,
+            "seconds": 166.27
+          }
+        ]
+      },
+      "queryWarmMedianMs": 180,
+      "sections": {
+        "recallAt5": 0.023529411764705882,
+        "mrrAt10": 0.023529411764705882,
+        "ndcgAt10": 0.023529411764705882
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.9176470588235294,
+          "mrrAt10": 0.8108963585434175,
+          "ndcgAt10": 0.843358090210499
+        }
+      }
+    },
+    {
+      "dataset": "SyntecRetrieval",
+      "questions": 100,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 90,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 217,
+            "refused": 0,
+            "seconds": 189.85
+          }
+        ]
+      },
+      "queryWarmMedianMs": 143,
+      "sections": {
+        "recallAt5": 0.02,
+        "mrrAt10": 0.0125,
+        "ndcgAt10": 0.01430676558073393
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.94,
+          "mrrAt10": 0.7992777777777778,
+          "ndcgAt10": 0.8390119915899379
+        }
+      }
+    }
+  ],
+  "search": {
+    "results": [
+      {
+        "patient": "mnq1…",
+        "questions": 11,
+        "index": {
+          "sections": {
+            "rows": 0,
+            "refused": 0,
+            "total": 4,
+            "seconds": 0
+          },
+          "passages": [
+            {
+              "size": 800,
+              "rows": 4,
+              "refused": 0,
+              "seconds": 0.7
+            }
+          ]
+        },
+        "queryWarmMedianMs": 70,
+        "perQuestion": [
+          {
+            "id": "q1",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q2",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q3",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q4",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q5",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q6",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q7",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 0.6131471927654584
+              }
+            }
+          },
+          {
+            "id": "q8",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 0,
+                "mrrAt10": 0,
+                "ndcgAt10": 0
+              }
+            }
+          },
+          {
+            "id": "q9",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q10",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q11",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": null,
+              "ndcgAt10": null
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": null,
+                "ndcgAt10": null
+              }
+            }
+          }
+        ]
+      },
+      {
+        "patient": "mqh9…",
+        "questions": 8,
+        "index": {
+          "sections": {
+            "rows": 0,
+            "refused": 0,
+            "total": 8,
+            "seconds": 0
+          },
+          "passages": [
+            {
+              "size": 800,
+              "rows": 8,
+              "refused": 0,
+              "seconds": 0.69
+            }
+          ]
+        },
+        "queryWarmMedianMs": 70,
+        "perQuestion": [
+          {
+            "id": "q12",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q13",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 0,
+                "mrrAt10": 0,
+                "ndcgAt10": 0
+              }
+            }
+          },
+          {
+            "id": "q14",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q15",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q16",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q17",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q18",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q19",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "finishedAt": "2026-10-23T20:54:55.016Z"
+}

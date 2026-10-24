@@ -22,6 +22,7 @@ import {
   PASSAGE_CHARACTERS,
   PASSAGE_MODEL_KEY,
   PASSAGE_V2_MODEL_KEY,
+  PASSAGE_ARCTIC_MODEL_KEY,
   passageChunks,
 } from "../../../src/modules/consultations/local-ai/passage-search";
 const fixture = vi.hoisted(() => ({
@@ -34,12 +35,13 @@ const fixture = vi.hoisted(() => ({
   maximum: 0,
   creates: 0,
   embedding2: false,
+  arctic: false,
   models: [] as string[],
 }));
 const vector = (index = 0) =>
   Array.from({ length: 768 }, (_, i) => (i === index ? 1 : 0));
 vi.mock("../../../src/modules/consultations/local-ai/models", () => ({
-  getLocalModels: async () => ({ embeddingReady: true, embedding2Ready: fixture.embedding2, root: "local" }),
+  getLocalModels: async () => ({ embeddingReady: true, embedding2Ready: fixture.embedding2, arcticReady: fixture.arctic, root: "local" }),
   getLocalModelUrls: () => ({ modelRoot: "local/", runtimeRoot: "runtime/" }),
 }));
 vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
@@ -55,7 +57,8 @@ vi.mock("../../../src/modules/consultations/local-ai/inference-client", () => ({
           fixture.models.push(message.model ?? "embeddinggemma");
           return {
             type: "embedded",
-            vectors: message.texts.map(() => vector()),
+            // arctic answers in 1 024 dimensions, with a tail that truncation must drop.
+            vectors: message.texts.map(() => (message.model === "arctic" ? [...vector(), ...Array.from({ length: 256 }, () => 3)] : vector())),
           };
         },
         // Parking hands the lease back; the next search resumes it.
@@ -174,6 +177,7 @@ beforeEach(async () => {
   fixture.failInsert = false;
   fixture.failEmbedding = false;
   fixture.embedding2 = false;
+  fixture.arctic = false;
   fixture.models = [];
   await runSqliteMigrations(
     {
@@ -514,6 +518,20 @@ describe("Recherche sémantique locale : index et isolation", () => {
     expect(fixture.models).toEqual(["embeddinggemma2"]);
     expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_V2_MODEL_KEY)!.n).toBe(4);
     // The v1 indexes are untouched by the v2 one.
+    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_MODEL_KEY)!.n).toBe(4);
+  });
+  it("A2 : l’index arctic, tronqué à 768 dimensions, n’existe que si arctic est installé", async () => {
+    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_ARCTIC_MODEL_KEY)!.n).toBe(0);
+    fixture.arctic = true;
+    fixture.models = [];
+    await indexPatientDocuments("rex", new AbortController().signal, () => {});
+    expect(fixture.models).toEqual(["arctic"]);
+    const rows = fixture.db!.prepare("SELECT embedding AS vector FROM embeddings WHERE model_key=?").all(PASSAGE_ARCTIC_MODEL_KEY) as { vector: Uint8Array }[];
+    expect(rows).toHaveLength(4);
+    expect(rows.every((row) => row.vector.byteLength === 3072)).toBe(true);
+    const stored = new Float32Array(rows[0].vector.buffer, rows[0].vector.byteOffset, 768);
+    expect(stored[0]).toBeCloseTo(1);
     expect(fixture.db!.prepare("SELECT COUNT(*) AS n FROM embeddings WHERE model_key=?").get(PASSAGE_MODEL_KEY)!.n).toBe(4);
   });
   it("A2 : la recherche v2 interroge EmbeddingGemma 2, et revient à la v1 tant que la v2 manque", async () => {

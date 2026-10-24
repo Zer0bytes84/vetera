@@ -1,0 +1,55 @@
+{
+  "label": "arca",
+  "startedAt": "2026-10-24T02:02:22.603Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "public:start",
+      "at": 1792807342.603
+    },
+    {
+      "what": "public:end",
+      "at": 1792820755.972
+    }
+  ],
+  "public": [
+    {
+      "dataset": "AlloprofRetrieval",
+      "questions": 200,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 677,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 4156,
+            "refused": 0,
+            "seconds": 12936.66
+          }
+        ]
+      },
+      "queryWarmMedianMs": 676,
+      "sections": {
+        "recallAt5": 0.005,
+        "mrrAt10": 0.005,
+        "ndcgAt10": 0.005
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.545,
+          "mrrAt10": 0.4802261904761903,
+          "ndcgAt10": 0.5090442088016315
+        }
+      }
+    }
+  ],
+  "finishedAt": "2026-10-24T05:45:55.972Z"
+}

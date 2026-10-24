@@ -1,7 +1,7 @@
 import type { DictationLanguage } from "./whisper-language";
 
-/** Local search model: v1 (EmbeddingGemma 300M fp32) or v2 (EmbeddingGemma 2 text, q8). */
-export type SearchModel = "embeddinggemma" | "embeddinggemma2";
+/** Local search model: v1 (EmbeddingGemma 300M fp32), v2 (EmbeddingGemma 2 text, q8) or arctic-embed-l-v2 (q8). */
+export type SearchModel = "embeddinggemma" | "embeddinggemma2" | "arctic";
 
 export type LocalAiProgress = {
   message: string;

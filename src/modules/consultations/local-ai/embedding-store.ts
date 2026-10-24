@@ -35,8 +35,8 @@ import {
 import type { DocumentAttachment, PatientDocument } from "@/modules/documents/document-domain";
 import {
   GENERATION_MODEL,
+  MODEL_CALIBRATION,
   indexedGenerations,
-  LEXICAL_ONLY_SCORE,
   SEARCH_INDEX_KEYS,
   bestPassage,
   mergeLexicalFirst,
@@ -51,7 +51,9 @@ const forGeneration = (chunks: SearchChunk[], generation: SearchGeneration) =>
 /** The active index, falling back to the v1 passages while the v2 model is not installed. */
 const effectiveGeneration = (models: LocalModelStatus): SearchGeneration => {
   const active = getActiveSearchGeneration();
-  return active === "passages2" && !models.embedding2Ready ? "passages" : active;
+  if (active === "passages2" && !models.embedding2Ready) return "passages";
+  if (active === "passages3" && !models.arcticReady) return "passages";
+  return active;
 };
 export interface SearchDatabase {
   select<T>(query: string, values?: unknown[]): Promise<T>;
@@ -175,7 +177,8 @@ export async function embedTexts(
   query = false,
   model: SearchModel = "embeddinggemma",
 ) {
-  if (model === "embeddinggemma" ? !models.embeddingReady : !models.embedding2Ready)
+  const ready = { embeddinggemma: models.embeddingReady, embeddinggemma2: models.embedding2Ready, arctic: models.arcticReady };
+  if (!ready[model])
     throw new Error(
       "La recherche locale n’est pas installée. Vos documents restent accessibles.",
     );
@@ -197,7 +200,9 @@ export async function embedTexts(
     if (result.type !== "embedded")
       throw new Error("La préparation de la recherche a échoué.");
     succeeded = true;
-    return result.vectors.map(normalizedEmbedding);
+    // Vectors are stored in SQLite as 768 dimensions. arctic (1 024, trained for
+    // truncation) keeps its first 768; measured equal or better on the bench (A2).
+    return result.vectors.map((vector) => normalizedEmbedding(model === "arctic" ? vector.slice(0, 768) : vector));
   } finally {
     if (succeeded) parkEmbeddingSession(session, urls.modelRoot);
     else session.close();
@@ -538,7 +543,7 @@ async function searchPatientPassages(
     const models = await getLocalModels();
     const [vector] = await embedTexts(models, [query], signal, onProgress, true, GENERATION_MODEL[generation]);
     const currentRows = await runDbRead(db => readPatientSearchRows(db, scope, generation));
-    return rankPassages(currentRows, vector, scope, query, 5, await lexicalOnly());
+    return rankPassages(currentRows, vector, scope, query, 5, await lexicalOnly(), MODEL_CALIBRATION[GENERATION_MODEL[generation]]);
   } catch (error) {
     if (signal.aborted || (error instanceof Error && error.name === "AbortError")) throw error;
     const current = await lexicalFallback();
@@ -589,7 +594,7 @@ export async function searchAllPatientsDocuments(
       const lexicalOnly = filters.sourceTypes.includes("document") && filters.sections.includes("document")
         ? await runDbRead(db => managedPatientChunks(db, patient.id))
         : [];
-      ranked.push(...rankPassages(rows, vector, scope, query, 5, lexicalOnly).map((row) => ({ ...row, patientName: patient.name })));
+      ranked.push(...rankPassages(rows, vector, scope, query, 5, lexicalOnly, MODEL_CALIBRATION[GENERATION_MODEL[generation]]).map((row) => ({ ...row, patientName: patient.name })));
     }
     return ranked
       .sort((a, b) => b.score - a.score || a.patientId.localeCompare(b.patientId) || a.sourceId.localeCompare(b.sourceId))
@@ -1050,7 +1055,7 @@ export async function searchAllPatientsClinical(
                 sources.add(source);
                 return true;
               })
-              .map((m) => ({ ...m, text: bestPassage(m.text, trimmed), score: LEXICAL_ONLY_SCORE })),
+              .map((m) => ({ ...m, text: bestPassage(m.text, trimmed), score: MODEL_CALIBRATION[GENERATION_MODEL[effectiveGeneration(models)]].lexicalOnly })),
           ]
             .sort((a, b) => b.score - a.score || a.patientId.localeCompare(b.patientId))
             .slice(0, 15);

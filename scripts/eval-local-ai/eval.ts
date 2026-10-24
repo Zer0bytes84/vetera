@@ -192,25 +192,47 @@ function patientSources(bundle: Bundle) {
   return { sections: sections.filter((group) => group.length), managed };
 }
 
-/** Embeds texts one by one; a text the worker refuses (too long) is counted, not indexed. */
-async function embedEach(models: LocalModelStatus, chunks: SearchChunk[], model: SearchModel = "embeddinggemma") {
-  const rows: (SearchChunk & { vector: number[] })[] = [];
+const errorText = (error: unknown) => (error instanceof Error ? error.message : String(error)).slice(0, 300);
+
+/**
+ * Embeds texts one by one; a text the worker refuses (too long) is counted, not indexed.
+ * With a checkpoint path, vectors are saved every 500 texts and a rerun resumes from them.
+ */
+async function embedEach(models: LocalModelStatus, chunks: SearchChunk[], model: SearchModel = "embeddinggemma", checkpoint = "") {
+  let rows: (SearchChunk & { vector: number[] })[] = [];
   let refused = 0;
+  let start = 0;
+  if (checkpoint)
+    try {
+      const saved = JSON.parse(await readTextFile(checkpoint)) as { next: number; refused: number; rows: typeof rows };
+      ({ rows, refused, next: start } = saved);
+      log(`    reprise au texte ${start} sur ${chunks.length}`);
+    } catch {
+      /* No checkpoint yet. */
+    }
+  const t0 = performance.now();
   // Small batches: one request must stay well under the engine's 480 s timeout,
   // even with long texts on a slow computer.
-  for (let start = 0; start < chunks.length; start += 10) {
+  for (; start < chunks.length; start += 10) {
     const batch = chunks.slice(start, start + 10);
     try {
       const vectors = await embedTexts(models, batch.map((chunk) => chunk.text), new AbortController().signal, quiet, false, model);
       batch.forEach((chunk, index) => rows.push({ ...chunk, vector: vectors[index] }));
-    } catch {
+    } catch (error) {
+      log(`    lot ${start} refusé : ${errorText(error)}`);
       for (const chunk of batch)
         try {
           const [vector] = await embedTexts(models, [chunk.text], new AbortController().signal, quiet, false, model);
           rows.push({ ...chunk, vector });
-        } catch {
+        } catch (single) {
           refused++;
+          log(`    texte refusé (${chunk.text.length} caractères) : ${errorText(single)}`);
         }
+    }
+    const done = start + batch.length;
+    if (checkpoint && (done % 500 === 0 || done === chunks.length)) {
+      await writeTextFile(checkpoint, JSON.stringify({ next: done, refused, rows }));
+      log(`    ${done}/${chunks.length} textes, ${seconds(t0)} s depuis le départ`);
     }
   }
   return { rows, refused };
@@ -232,6 +254,7 @@ async function rankBothGenerations(
   questions: { id: string; text: string }[],
   passageSizes: number[],
   limit = 10,
+  dumpName = "",
 ) {
   const started = performance.now();
   // A2: the passage index can use EmbeddingGemma 2; the section index (A1 baseline) may be skipped.
@@ -244,7 +267,8 @@ async function rankBothGenerations(
   for (const size of passageSizes) {
     const t0 = performance.now();
     log(`  index par extraits ${size} (${passageModel})`);
-    const index = await embedEach(models, passageChunks(sections, size), passageModel);
+    const checkpoint = dumpName ? `${params.get("out")!.replace(/\.json$/, "")}.ckpt-${dumpName}-${size}.json` : "";
+    const index = await embedEach(models, passageChunks(sections, size), passageModel, checkpoint);
     passageIndexes.push({ size, ...index, seconds: seconds(t0) });
   }
   const queryMs: number[] = [];
@@ -271,6 +295,18 @@ async function rankBothGenerations(
         passageIndexes.map((index) => [index.size, uniqueSources(rankPassages(index.rows, vector, scope, question.text, limit, managed))]),
       ),
     });
+  }
+  // Real-engine vectors for offline calibration sweeps (stays on this computer).
+  if (params.get("dumpVectors") === "1" && dumpName) {
+    const round = (vector: number[]) => vector.map((value) => Math.round(value * 1e5) / 1e5);
+    const questionVectors: { id: string; text: string; vector: number[] }[] = [];
+    for (const question of questions)
+      questionVectors.push({ id: question.id, text: question.text, vector: round((await embedTexts(models, [question.text], new AbortController().signal, quiet, true, passageModel))[0]) });
+    for (const index of passageIndexes)
+      await writeTextFile(
+        `${params.get("out")!.replace(/\.json$/, "")}.vectors-${dumpName}-${index.size}.json`,
+        JSON.stringify({ model: passageModel, scope, passages: index.rows.map((row) => ({ ...row, vector: round(row.vector) })), lexicalOnly: managed, questions: questionVectors }),
+      );
   }
   const median = (values: number[]) => [...values].sort((a, b) => a - b)[values.length >> 1] ?? null;
   return {
@@ -377,7 +413,7 @@ async function runSearch(corpus: Corpus, models: LocalModelStatus) {
   });
   for (const [patientId, questions] of byPatient) {
     const { sections, managed } = patientSources(corpus.patients[patientId]);
-    const run = await rankBothGenerations(models, scope(patientId), sections.flat(), managed, questions.map((q) => ({ id: q.id, text: q.question })), passageSizes, 5);
+    const run = await rankBothGenerations(models, scope(patientId), sections.flat(), managed, questions.map((q) => ({ id: q.id, text: q.question })), passageSizes, 5, `b-${patientId.slice(0, 4)}`);
     const relevant = new Map(questions.map((q) => [q.id, uniqueSources(q.relevant)]));
     const scores = scoreGenerations(run.ranked, (id) => relevant.get(id) ?? [], passageSizes);
     results.push({ patient: patientId.slice(0, 4) + "…", questions: questions.length, index: run.index, queryWarmMedianMs: run.queryWarmMedianMs,
@@ -405,7 +441,7 @@ async function runPublic(models: LocalModelStatus, sets: PublicSet[], save: (res
       patientId: "public", sourceId: doc.id, sourceType: "document" as const, documentType: "document" as const,
       section: "document" as const, chunkIndex: 0, text: doc.text, sourceKey: doc.id,
     }));
-    const run = await rankBothGenerations(models, scope, sections, [], set.queries, sizes, 10);
+    const run = await rankBothGenerations(models, scope, sections, [], set.queries, sizes, 10, set.name);
     const relevant = (id: string) => (set.relevant[id] ?? []).map((docId) => `document:${docId}`);
     const scores = scoreGenerations(run.ranked, relevant, sizes);
     const strip = ({ perQuestion: _perQuestion, ...summary }: ReturnType<typeof scoreGenerations>["sections"]) => (void _perQuestion, summary);

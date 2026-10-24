@@ -12,7 +12,13 @@ import type {
 } from "../local-ai/worker-protocol";
 
 /** Longest text each model reads without truncation, in tokens. */
-const MAX_TOKENS: Record<SearchModel, number> = { embeddinggemma: 2048, embeddinggemma2: 8192 };
+const MAX_TOKENS: Record<SearchModel, number> = { embeddinggemma: 2048, embeddinggemma2: 8192, arctic: 8192 };
+/** Folder and query/document prefixes of each model (arctic: CLS pooling, "query: " prefix only). */
+const PREFIX: Record<SearchModel, { query: string; document: string }> = {
+  embeddinggemma: { query: "task: search result | query: ", document: "title: none | text: " },
+  embeddinggemma2: { query: "task: search result | query: ", document: "title: none | text: " },
+  arctic: { query: "query: ", document: "" },
+};
 /** Precision and engine of v2 in the webview (q8 needs an operator the WASM engine lacks). */
 const V2_ENGINE = { dtype: "q8", device: "webgpu" } as const;
 
@@ -40,6 +46,7 @@ const load = async (modelRoot: string, runtimeRoot: string, name: SearchModel) =
   // v2 needs transformers.js 4 (alias), with its own ONNX runtime files;
   // v1 and Whisper stay on transformers.js 3.
   if (name === "embeddinggemma2") return loadV2(modelRoot, runtimeRoot);
+  if (name === "arctic") return loadArctic(modelRoot, runtimeRoot);
   const { env, AutoTokenizer, AutoModel } = await import(
     "@huggingface/transformers"
   );
@@ -68,6 +75,24 @@ const load = async (modelRoot: string, runtimeRoot: string, name: SearchModel) =
     use_external_data_format: true,
   });
   loaded = { root: modelRoot, name, tokenizer, model };
+  return loaded;
+};
+const loadArctic = async (modelRoot: string, runtimeRoot: string) => {
+  const { env, AutoTokenizer, AutoModel } = await import("@huggingface/transformers");
+  env.allowRemoteModels = false;
+  env.allowLocalModels = true;
+  env.useBrowserCache = false;
+  env.useFSCache = false;
+  env.localModelPath = modelRoot;
+  const wasm = env.backends.onnx.wasm;
+  if (!wasm) throw new Error("Runtime indisponible.");
+  wasm.wasmPaths = runtimeRoot + "onnx/";
+  wasm.numThreads = 1;
+  wasm.proxy = false;
+  send({ type: "progress", message: "Préparation de la recherche locale…", stage: "loading" });
+  const tokenizer = await AutoTokenizer.from_pretrained("arctic-embed-l-v2", { local_files_only: true });
+  const model = await AutoModel.from_pretrained("arctic-embed-l-v2", { local_files_only: true, device: "wasm", dtype: "q8" });
+  loaded = { root: modelRoot, name: "arctic", tokenizer, model };
   return loaded;
 };
 const loadV2 = async (modelRoot: string, runtimeRoot: string) => {
@@ -121,9 +146,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
     const { tokenizer, model } = await load(data.modelRoot, data.runtimeRoot, name);
     const vectors: number[][] = [];
     for (const text of data.texts) {
-      const prefix = data.query
-        ? "task: search result | query: "
-        : "title: none | text: ";
+      const prefix = data.query ? PREFIX[name].query : PREFIX[name].document;
       const inputs = await tokenizer(prefix + text, {
         padding: true,
         truncation: false,
@@ -133,11 +156,23 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           "La rubrique dépasse la capacité de lecture locale. Aucun texte n’a été tronqué."
         );
       const output = await model(inputs);
-      const tensor = output.sentence_embedding;
-      if (!tensor) throw new Error("Sortie incompatible.");
-      vectors.push(
-        normalizedEmbedding(Array.from(tensor.data as Float32Array))
-      );
+      if (name === "arctic") {
+        // CLS pooling (first token), unless the export already pools it, then L2.
+        const pooled = output.sentence_embedding;
+        const hidden = output.last_hidden_state ?? output.token_embeddings;
+        const source = pooled ?? hidden;
+        if (!source) throw new Error(`Sortie incompatible (${Object.keys(output).join(", ")}).`);
+        const size = Number(source.dims.at(-1));
+        const cls = Array.from((source.data as Float32Array).subarray(0, size));
+        const norm = Math.hypot(...cls);
+        vectors.push(cls.map((value) => value / norm));
+      } else {
+        const tensor = output.sentence_embedding;
+        if (!tensor) throw new Error("Sortie incompatible.");
+        vectors.push(
+          normalizedEmbedding(Array.from(tensor.data as Float32Array))
+        );
+      }
       send({
         type: "progress",
         message: "Lecture des extraits validés…",

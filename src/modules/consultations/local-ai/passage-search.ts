@@ -6,7 +6,6 @@ import {
   MIN_LEXICAL_FLOOR_SCORE,
   MIN_SEARCH_SCORE,
   assertSearchScope,
-  normalizedEmbedding,
   type SearchChunk,
   type SearchScope,
 } from "./embedding-index";
@@ -17,7 +16,7 @@ import {
   matchesSearchTerms,
 } from "./veterinary-lexicon";
 
-export type SearchGeneration = "sections" | "passages" | "passages2";
+export type SearchGeneration = "sections" | "passages" | "passages2" | "passages3";
 /** Chosen on the phase A1 bench: 800 characters ≈ 200 tokens in French. */
 export const PASSAGE_CHARACTERS = 800;
 export const PASSAGE_MODEL_KEY =
@@ -25,20 +24,27 @@ export const PASSAGE_MODEL_KEY =
 /** Phase A2: same passages, EmbeddingGemma 2 text component (q8, WebGPU). */
 export const PASSAGE_V2_MODEL_KEY =
   "embeddinggemma2-text-q8-webgpu-768-passages800-v4";
+/** Candidate measured for A2: arctic-embed-l-v2 (q8, WASM), truncated to 768 dimensions. */
+export const PASSAGE_ARCTIC_MODEL_KEY = "arctic-embed-l-v2-q8-wasm-768-passages800-v5";
 export const SEARCH_INDEX_KEYS: Record<SearchGeneration, string> = {
   sections: EMBEDDING_MODEL_KEY,
   passages: PASSAGE_MODEL_KEY,
   passages2: PASSAGE_V2_MODEL_KEY,
+  passages3: PASSAGE_ARCTIC_MODEL_KEY,
 };
 export const GENERATION_MODEL: Record<SearchGeneration, SearchModel> = {
   sections: "embeddinggemma",
   passages: "embeddinggemma",
   passages2: "embeddinggemma2",
+  passages3: "arctic",
 };
-/** Indexes kept current: v1 ones always (rollback), v2 only once its model is installed. */
+/** Indexes kept current: v1 ones always (rollback), each A2 candidate only once its model is installed. */
 export const INDEXED_GENERATIONS: SearchGeneration[] = ["sections", "passages"];
-export const indexedGenerations = (models: { embedding2Ready?: boolean }): SearchGeneration[] =>
-  models.embedding2Ready ? [...INDEXED_GENERATIONS, "passages2"] : INDEXED_GENERATIONS;
+export const indexedGenerations = (models: { embedding2Ready?: boolean; arcticReady?: boolean }): SearchGeneration[] => [
+  ...INDEXED_GENERATIONS,
+  ...(models.embedding2Ready ? (["passages2"] as const) : []),
+  ...(models.arcticReady ? (["passages3"] as const) : []),
+];
 export const LEXICAL_BONUS = 0.05;
 /** Lexical-only sources (no vector) rank like a borderline semantic hit confirmed by the lexicon. */
 export const LEXICAL_ONLY_SCORE = MIN_SEARCH_SCORE + LEXICAL_BONUS;
@@ -112,6 +118,37 @@ export function focusExcerpt(text: string, query: string, lead = 90) {
   return text;
 }
 
+/**
+ * Score calibration of one embedding model: cosine distributions differ from
+ * one model to another, so the semantic threshold and the lexical scores do too.
+ */
+export interface SearchCalibration {
+  minimum: number;
+  lexicalFloor: number;
+  bonus: number;
+  lexicalOnly: number;
+}
+/** v1 values (EmbeddingGemma 300M), calibrated on whole sections then kept for passages. */
+export const V1_CALIBRATION: SearchCalibration = {
+  minimum: MIN_SEARCH_SCORE,
+  lexicalFloor: MIN_LEXICAL_FLOOR_SCORE,
+  bonus: LEXICAL_BONUS,
+  lexicalOnly: LEXICAL_ONLY_SCORE,
+};
+export const MODEL_CALIBRATION: Record<SearchModel, SearchCalibration> = {
+  embeddinggemma: V1_CALIBRATION,
+  embeddinggemma2: V1_CALIBRATION,
+  arctic: V1_CALIBRATION,
+};
+/** Unit vector of any dimension (rankPassages compares query and passages of the same model). */
+const unitVector = (vector: number[]) => {
+  if (!vector.length || vector.some((value) => !Number.isFinite(value)))
+    throw new Error("L’extrait n’a pas pu être préparé pour la recherche.");
+  const norm = Math.hypot(...vector);
+  if (!norm) throw new Error("L’extrait de recherche est vide.");
+  return vector.map((value) => value / norm);
+};
+
 export type RankedPassage<T extends SearchChunk> = T & {
   score: number;
   match: "text" | "semantic";
@@ -130,9 +167,10 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
   queryText: string,
   limit = 5,
   lexicalOnly: SearchChunk[] = [],
+  calibration: SearchCalibration = V1_CALIBRATION,
 ): RankedPassage<SearchChunk>[] {
   assertSearchScope(scope);
-  const unit = query ? normalizedEmbedding(query) : null;
+  const unit = query ? unitVector(query) : null;
   const inScope = (row: SearchChunk) =>
     row.patientId === scope.patientId &&
     scope.sourceTypes.includes(row.sourceType) &&
@@ -143,19 +181,19 @@ export function rankPassages<T extends SearchChunk & { vector: number[] }>(
     if (!inScope(row)) continue;
     const lexical = matchesSearchTerms(queryText, row.text);
     const cosine = unit
-      ? normalizedEmbedding(row.vector).reduce((sum, value, i) => sum + value * unit[i], 0)
-      : lexical ? MIN_SEARCH_SCORE : 0;
+      ? unitVector(row.vector).reduce((sum, value, i) => sum + value * unit[i], 0)
+      : lexical ? calibration.minimum : 0;
     const eligible =
-      cosine >= MIN_SEARCH_SCORE ||
-      (lexical && (cosine >= MIN_LEXICAL_FLOOR_SCORE || matchesExactSearchTerms(queryText, row.text)));
+      cosine >= calibration.minimum ||
+      (lexical && (cosine >= calibration.lexicalFloor || matchesExactSearchTerms(queryText, row.text)));
     if (!eligible) continue;
     const { vector: _vector, ...chunk } = row;
     void _vector;
-    scored.push({ ...chunk, score: cosine + (lexical ? LEXICAL_BONUS : 0), match: lexical ? "text" : "semantic" });
+    scored.push({ ...chunk, score: cosine + (lexical ? calibration.bonus : 0), match: lexical ? "text" : "semantic" });
   }
   for (const chunk of lexicalOnly) {
     if (!inScope(chunk) || !matchesSearchTerms(queryText, chunk.text)) continue;
-    scored.push({ ...chunk, text: bestPassage(chunk.text, queryText), score: LEXICAL_ONLY_SCORE, match: "text" });
+    scored.push({ ...chunk, text: bestPassage(chunk.text, queryText), score: calibration.lexicalOnly, match: "text" });
   }
   const best = new Map<string, RankedPassage<SearchChunk>>();
   for (const row of scored) {

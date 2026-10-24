@@ -10,6 +10,8 @@ export interface LocalModelStatus {
   embeddingReady?: boolean;
   /** EmbeddingGemma 2 (phase A2), installed alongside v1. */
   embedding2Ready?: boolean;
+  /** arctic-embed-l-v2 (A2 candidate). */
+  arcticReady?: boolean;
 }
 export const EMPTY_MODEL_STATUS: LocalModelStatus = {
   root: null,

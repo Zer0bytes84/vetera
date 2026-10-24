@@ -40,6 +40,8 @@ pub struct LocalModelStatus {
     pub(crate) embedding_ready: bool,
     /// EmbeddingGemma 2 text component (q8), phase A2; v1 stays installed.
     pub(crate) embedding2_ready: bool,
+    /// arctic-embed-l-v2 q8, candidate measured in phase A2.
+    pub(crate) arctic_ready: bool,
 }
 
 fn read_json(path: &Path) -> Result<Value, String> {
@@ -140,11 +142,32 @@ pub(crate) fn validate_embedding2(folder: &Path) -> Result<(), String> {
     read_json(&folder.join("tokenizer_config.json"))?;
     Ok(())
 }
+/// arctic-embed-l-v2 (Snowflake, Apache 2.0, revision ac6544c), q8 ONNX.
+const ARCTIC_REQUIRED: &[(&str, u64)] = &[
+    ("tokenizer.json", 17083074),
+    ("tokenizer_config.json", 1339),
+    ("onnx/model_quantized.onnx", 569721975),
+];
+pub(crate) fn validate_arctic(folder: &Path) -> Result<(), String> {
+    let config = read_json(&folder.join("config.json"))?;
+    if config["model_type"] != "xlm-roberta" {
+        return Err("Les fichiers de recherche arctic ne sont pas compatibles.".into());
+    }
+    for (name, expected_size) in ARCTIC_REQUIRED {
+        let meta = fs::symlink_metadata(folder.join(name))
+            .map_err(|_| "Un fichier de recherche arctic est manquant.")?;
+        if !meta.is_file() || meta.len() != *expected_size {
+            return Err("Un fichier de recherche arctic est incomplet ou incompatible.".into());
+        }
+    }
+    Ok(())
+}
 pub(crate) fn status(root: &Path) -> LocalModelStatus {
     LocalModelStatus {
         root: root.to_string_lossy().into_owned(),
         embedding_ready: validate_embedding(&root.join("embeddinggemma")).is_ok(),
         embedding2_ready: validate_embedding2(&root.join("embeddinggemma2")).is_ok(),
+        arctic_ready: validate_arctic(&root.join("arctic-embed-l-v2")).is_ok(),
         whisper_ready: validate_whisper(&root.join("whisper")).is_ok(),
         whisper_model: read_json(&root.join("whisper/config.json"))
             .ok()
