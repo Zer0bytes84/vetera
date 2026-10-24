@@ -208,3 +208,31 @@ describe("dictation fidelity boundary", () => {
     expect(onRetry).toHaveBeenCalledWith(expect.any(SoapFidelityError));
   });
 });
+
+describe("intitulés S · O · A · P de l'app (option D)", () => {
+  it("retrouve les rubriques d'une dictée guidée conservée, intitulés retirés", async () => {
+    const { guidedTranscript } = await import("@/modules/consultations/local-ai/guided-soap");
+    const answers = {
+      subjective: "Fièvre et vomissements depuis hier.",
+      objective: "Température 39,6, abdomen souple.",
+      assessment: "Gastro-entérite probable.",
+      plan: "Contrôle dans trois jours.",
+    };
+    const trace = guidedTranscript(answers);
+    expect(trace).toContain("S · Motif et antécédents");
+    expect(buildDictationScaffold(trace)).toEqual(answers);
+    // Une fois les retours à la ligne retirés (texte transmis au modèle), le découpage tient.
+    expect(buildDictationScaffold(trace.replace(/\s+/g, " "))).toEqual(answers);
+  });
+  it("reconnaît la lettre seule et ignore un « A » ordinaire", () => {
+    expect(buildDictationScaffold("Toux. O · Auscultation normale. P · Contrôle demain.")).toEqual({
+      subjective: "Toux.", objective: "Auscultation normale.", assessment: "", plan: "Contrôle demain.",
+    });
+    expect(buildDictationScaffold("Vitamine A et fièvre.").subjective).toBe("Vitamine A et fièvre.");
+  });
+  it("ne change aucun garde-fou : posologie écartée, fait déplacé refusé", () => {
+    const scaffold = buildDictationScaffold("S · Motif et antécédents Toux. P · Plan de soins Amoxicilline 20 mg/kg deux fois par jour. Contrôle dans sept jours.");
+    expect(scaffold.plan).toBe("Contrôle dans sept jours.");
+    expect(() => assertFaithfulSoap({ ...scaffold, subjective: "", objective: "Toux." }, scaffold)).toThrow(SoapFidelityError);
+  });
+});

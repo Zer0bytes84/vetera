@@ -1,0 +1,397 @@
+{
+  "label": "pbD3",
+  "startedAt": "2026-10-24T21:48:03.909Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "synthetic:fictif-boiterie:1:start",
+      "at": 1792878483.909
+    },
+    {
+      "what": "synthetic:fictif-boiterie:1:end",
+      "at": 1792878495.329
+    },
+    {
+      "what": "synthetic:fictif-boiterie:2:start",
+      "at": 1792878495.33
+    },
+    {
+      "what": "synthetic:fictif-boiterie:2:end",
+      "at": 1792878506.8
+    },
+    {
+      "what": "synthetic:fictif-boiterie:3:start",
+      "at": 1792878506.8
+    },
+    {
+      "what": "synthetic:fictif-boiterie:3:end",
+      "at": 1792878517.58
+    },
+    {
+      "what": "synthetic:search:start",
+      "at": 1792878517.581
+    },
+    {
+      "what": "synthetic:search:end",
+      "at": 1792878524.564
+    },
+    {
+      "what": "soap:718548fda7ba:1:start",
+      "at": 1792878524.565
+    },
+    {
+      "what": "soap:718548fda7ba:1:end",
+      "at": 1792878530.349
+    },
+    {
+      "what": "soap:718548fda7ba:2:start",
+      "at": 1792878530.35
+    },
+    {
+      "what": "soap:718548fda7ba:2:end",
+      "at": 1792878535.564
+    },
+    {
+      "what": "soap:718548fda7ba:3:start",
+      "at": 1792878535.564
+    },
+    {
+      "what": "soap:718548fda7ba:3:end",
+      "at": 1792878540.488
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:1:start",
+      "at": 1792878540.489
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:1:end",
+      "at": 1792878547.471
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:2:start",
+      "at": 1792878547.471
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:2:end",
+      "at": 1792878554.423
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:3:start",
+      "at": 1792878554.424
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:3:end",
+      "at": 1792878561.719
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:1:start",
+      "at": 1792878561.72
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:1:end",
+      "at": 1792878566.098
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:2:start",
+      "at": 1792878566.099
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:2:end",
+      "at": 1792878570.731
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:3:start",
+      "at": 1792878570.732
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:3:end",
+      "at": 1792878575.168
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "synthetic": [
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "generators": [
+        "gemma3",
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        7.75,
+        11.41
+      ],
+      "totalSeconds": 11.42,
+      "loadedAtSeconds": 3.82,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "run": 1
+    },
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "generators": [
+        "gemma3",
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        7.8,
+        11.47
+      ],
+      "totalSeconds": 11.47,
+      "loadedAtSeconds": 3.95,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "run": 2
+    },
+    {
+      "id": "fictif-boiterie",
+      "origin": "fictif (latence et mémoire seulement)",
+      "accepted": false,
+      "attempts": 2,
+      "generators": [
+        "gemma3",
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        7.11,
+        10.78
+      ],
+      "totalSeconds": 10.78,
+      "loadedAtSeconds": 3.25,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "run": 3
+    }
+  ],
+  "syntheticSearch": [
+    {
+      "query": 1,
+      "seconds": 6.66
+    },
+    {
+      "query": 2,
+      "seconds": 0.07
+    },
+    {
+      "query": 3,
+      "seconds": 0.08
+    },
+    {
+      "query": 4,
+      "seconds": 0.09
+    },
+    {
+      "query": 5,
+      "seconds": 0.08
+    }
+  ],
+  "generator": "gemma3",
+  "soap": [
+    {
+      "id": "718548fda7ba",
+      "origin": "dictée conservée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        5.77
+      ],
+      "totalSeconds": 5.78,
+      "loadedAtSeconds": 3.75,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 1,
+      "inventedDosages": 0,
+      "run": 1
+    },
+    {
+      "id": "718548fda7ba",
+      "origin": "dictée conservée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        5.21
+      ],
+      "totalSeconds": 5.21,
+      "loadedAtSeconds": 3.11,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 1,
+      "inventedDosages": 0,
+      "run": 2
+    },
+    {
+      "id": "718548fda7ba",
+      "origin": "dictée conservée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        4.91
+      ],
+      "totalSeconds": 4.92,
+      "loadedAtSeconds": 2.87,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 1,
+      "inventedDosages": 0,
+      "run": 3
+    },
+    {
+      "id": "mvd2ea1m4la1w8qb0v",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 2,
+      "generators": [
+        "gemma3",
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        5.03,
+        6.98
+      ],
+      "totalSeconds": 6.98,
+      "loadedAtSeconds": 2.69,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.25,
+      "inventedDosages": 0,
+      "run": 1
+    },
+    {
+      "id": "mvd2ea1m4la1w8qb0v",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 2,
+      "generators": [
+        "gemma3",
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        4.98,
+        6.95
+      ],
+      "totalSeconds": 6.95,
+      "loadedAtSeconds": 2.59,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.25,
+      "inventedDosages": 0,
+      "run": 2
+    },
+    {
+      "id": "mvd2ea1m4la1w8qb0v",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 2,
+      "generators": [
+        "gemma3",
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        5.35,
+        7.29
+      ],
+      "totalSeconds": 7.29,
+      "loadedAtSeconds": 2.96,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.25,
+      "inventedDosages": 0,
+      "run": 3
+    },
+    {
+      "id": "mvebpaavaccmnojxh1p",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        4.37
+      ],
+      "totalSeconds": 4.38,
+      "loadedAtSeconds": 2.86,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.5,
+      "inventedDosages": 0,
+      "run": 1
+    },
+    {
+      "id": "mvebpaavaccmnojxh1p",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        4.61
+      ],
+      "totalSeconds": 4.63,
+      "loadedAtSeconds": 3.09,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.5,
+      "inventedDosages": 0,
+      "run": 2
+    },
+    {
+      "id": "mvebpaavaccmnojxh1p",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        4.41
+      ],
+      "totalSeconds": 4.43,
+      "loadedAtSeconds": 2.88,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.5,
+      "inventedDosages": 0,
+      "run": 3
+    }
+  ],
+  "engine": {
+    "threads": 1,
+    "isolated": true,
+    "sharedMemory": true
+  },
+  "finishedAt": "2026-10-24T21:49:35.171Z"
+}

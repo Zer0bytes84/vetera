@@ -13,7 +13,7 @@ import {
   type AIProvisioningProgress,
 } from "@/modules/consultations/services/ai-model-provisioning";
 import { createAIModelInstallation } from "@/modules/consultations/services/ai-model-installation";
-import { AIModelSettings } from "@/modules/consultations/components/ai-model-settings";
+import { AIModelSettings, NewAssistantCard } from "@/modules/consultations/components/ai-model-settings";
 
 const missing = {root: "/local-models", whisperReady: false, generatorReady: false, embeddingReady: false};
 const ready = {...missing, whisperReady: true, generatorReady: true, embeddingReady: true};
@@ -201,5 +201,25 @@ describe("Nouvelle version de l’assistant (phase B)", () => {
     expect(NEW_ASSISTANT.name).toBe("Nouvelle version de l’Assistant IA");
     expect(`${NEW_ASSISTANT.name} ${NEW_ASSISTANT.description}`).not.toMatch(/Gemma|MediaPipe|LiteRT|E2B/);
     expect(NEW_ASSISTANT.sizeLabel).toBe("2 Go");
+  });
+});
+
+describe("Carte de la nouvelle version dans les Paramètres", () => {
+  const card = (props: Partial<Parameters<typeof NewAssistantCard>[0]>) =>
+    renderToStaticMarkup(createElement(NewAssistantCard, {installed: true, downloading: false, busy: false, enabled: false, fellBack: false, onEnable: () => {}, ...props})).replace(/<[^>]*>/g, " ");
+  it("propose le téléchargement tant qu’elle n’est pas installée", () => {
+    const text = card({installed: false});
+    expect(text).toContain("Télécharger (2 Go)");
+    expect(text).not.toContain("Utiliser la nouvelle version");
+  });
+  it("donne l’interrupteur une fois installée, sans nom technique", () => {
+    const text = card({});
+    expect(text).toContain("Utiliser la nouvelle version");
+    expect(text).not.toMatch(/Gemma|E2B|MediaPipe|LiteRT/);
+    expect(text).not.toContain("a pris le relais");
+  });
+  it("indique sans erreur que l’assistant actuel a pris le relais", () => {
+    expect(card({enabled: true, fellBack: true})).toContain("l’assistant actuel a pris le relais");
+    expect(card({enabled: false, fellBack: true})).not.toContain("a pris le relais");
   });
 });

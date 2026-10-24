@@ -10,6 +10,7 @@ const capture = {
   query: process.env.BAITARI_CAPTURE_QUERY ?? "",
   patientId: process.env.BAITARI_CAPTURE_PATIENT,
   signal: process.env.BAITARI_CAPTURE_SIGNAL ?? "",
+  toggle: process.env.BAITARI_CAPTURE_TOGGLE,
 };
 
 const scenario = (): Plugin => ({

@@ -1,0 +1,52 @@
+{
+  "label": "ipc",
+  "startedAt": "2026-10-24T21:59:11.664Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "isolationCheck": {
+    "ipc": {
+      "ok": true,
+      "result": {
+        "reached": true,
+        "status": 500
+      },
+      "seconds": 0
+    },
+    "ocr": {
+      "ok": true,
+      "result": "Vaccin rage 2026",
+      "seconds": 1.41
+    },
+    "pdf": {
+      "ok": true,
+      "result": "Ordonnance de controle Baitari",
+      "seconds": 0.55
+    },
+    "whisper": {
+      "ok": true,
+      "result": "ready",
+      "seconds": 13.19
+    },
+    "generator": {
+      "ok": true,
+      "result": {
+        "text": "Bonjour ! 😊",
+        "generator": "gemma3",
+        "fellBack": false
+      },
+      "seconds": 5.92
+    }
+  },
+  "engine": null,
+  "finishedAt": "2026-10-24T21:59:32.780Z"
+}

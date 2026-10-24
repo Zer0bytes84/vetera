@@ -398,6 +398,16 @@ async function runIsolationCheck(models: LocalModelStatus) {
     }
     log(`  ${name} : ${JSON.stringify(out[name]).slice(0, 160)}`);
   };
+  await step("ipc", async () => {
+    // Tauri falls back to postMessage if its ipc:// fetch is refused. A direct
+    // request (CORS preflight included) must get an HTTP answer under COEP.
+    try {
+      const response = await fetch("ipc://localhost/plugin%3Aapp%7Cversion", { method: "POST", body: "{}", headers: { "Content-Type": "application/json", "Tauri-Callback": "0", "Tauri-Error": "1" } });
+      return { reached: true, status: response.status };
+    } catch (error) {
+      return { reached: false, error: String(error) };
+    }
+  });
   await step("ocr", async () => {
     const canvas = Object.assign(document.createElement("canvas"), { width: 900, height: 220 });
     const context = canvas.getContext("2d")!;

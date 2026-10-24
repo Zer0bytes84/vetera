@@ -5,7 +5,9 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant" | "reset";
+  scenario: "palette" | "assistant" | "outils-ia" | "reset";
+  /** "outils-ia": position the switch must reach ("on" = new assistant version). */
+  toggle?: "on" | "off";
   theme: "light" | "dark";
   generation: "sections" | "passages";
   query: string;
@@ -59,6 +61,8 @@ async function run() {
   if (config.scenario === "reset") {
     localStorage.setItem("theme", config.theme);
     localStorage.removeItem("baitari.search.generation");
+    // Generator choice made by an "outils-ia" capture: back to the app default.
+    localStorage.removeItem("baitari.generator");
     await writeTextFile(config.signal, "restored");
     return;
   }
@@ -67,6 +71,27 @@ async function run() {
   await waitFor(() => document.querySelector("[data-sidebar]") ?? document.querySelector("main"));
   await step("palette");
   await sleep(1500);
+  if (config.scenario === "outils-ia") {
+    // The real Settings card: the switch writes the generator preference that
+    // the next notes use (kept after the capture; the shell restores it at the end).
+    await writeTextFile(config.signal + ".generator-before", localStorage.getItem("baitari.generator") ?? "(absente)");
+    sessionStorage.setItem("baitari:pending-ai-settings", "true");
+    location.hash = "#/parametres";
+    const title = await waitFor(() => byText("h4", "Nouvelle version de l’Assistant IA"));
+    title.scrollIntoView({ block: "center" });
+    await sleep(1500);
+    await writeTextFile(config.signal, "ready");
+    for (let i = 0; i < 600 && (await readTextFile(config.signal).catch(() => "")).trim() !== "done"; i++) await sleep(500);
+    const card = title.closest("article")!;
+    const toggle = await waitFor(() => card.querySelector<HTMLElement>('[role="switch"]'));
+    if ((toggle.getAttribute("aria-checked") === "true") !== (config.toggle === "on")) toggle.click();
+    await sleep(1200);
+    await writeTextFile(config.signal, `ready-2 ${localStorage.getItem("baitari.generator") ?? "(absente)"} ${toggle.getAttribute("aria-checked")}`);
+    for (let i = 0; i < 600 && (await readTextFile(config.signal).catch(() => "")).trim() !== "done-2"; i++) await sleep(500);
+    restore();
+    await writeTextFile(config.signal, "restored");
+    return;
+  }
   if (config.scenario === "palette") {
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
     const input = await waitFor(() => {

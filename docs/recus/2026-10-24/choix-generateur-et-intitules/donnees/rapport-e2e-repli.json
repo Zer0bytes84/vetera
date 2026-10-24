@@ -1,0 +1,108 @@
+{
+  "label": "e2e-repli",
+  "startedAt": "2026-10-24T21:46:41.040Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "soap:718548fda7ba:1:start",
+      "at": 1792878401.04
+    },
+    {
+      "what": "soap:718548fda7ba:1:end",
+      "at": 1792878409.605
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:1:start",
+      "at": 1792878409.606
+    },
+    {
+      "what": "soap:mvd2ea1m4la1w8qb0v:1:end",
+      "at": 1792878416.872
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:1:start",
+      "at": 1792878416.873
+    },
+    {
+      "what": "soap:mvebpaavaccmnojxh1p:1:end",
+      "at": 1792878421.74
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "generator": "préférence de l'app",
+  "soap": [
+    {
+      "id": "718548fda7ba",
+      "origin": "dictée conservée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": true,
+      "attemptSeconds": [
+        8.55
+      ],
+      "totalSeconds": 8.56,
+      "loadedAtSeconds": 6.49,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 1,
+      "inventedDosages": 0,
+      "run": 1
+    },
+    {
+      "id": "mvd2ea1m4la1w8qb0v",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 2,
+      "generators": [
+        "gemma3",
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        5.29,
+        7.26
+      ],
+      "totalSeconds": 7.27,
+      "loadedAtSeconds": 2.98,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.25,
+      "inventedDosages": 0,
+      "run": 1
+    },
+    {
+      "id": "mvebpaavaccmnojxh1p",
+      "origin": "note validée relue comme dictée",
+      "accepted": true,
+      "attempts": 1,
+      "generators": [
+        "gemma3"
+      ],
+      "fellBack": false,
+      "attemptSeconds": [
+        4.86
+      ],
+      "totalSeconds": 4.87,
+      "loadedAtSeconds": 3.32,
+      "fidelity": 1,
+      "alteredWords": 0,
+      "sectionAgreement": 0.5,
+      "inventedDosages": 0,
+      "run": 1
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-24T21:47:01.741Z"
+}

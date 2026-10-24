@@ -1,4 +1,9 @@
-import { EMPTY_SOAP, containsDosage, type LocalSoapNote } from "./soap-schema";
+import {
+  EMPTY_SOAP,
+  SOAP_SECTIONS,
+  containsDosage,
+  type LocalSoapNote,
+} from "./soap-schema";
 import { parsePatientMentions } from "./patient-mentions";
 
 // Only explicit section labels and stated care intentions are recognized here.
@@ -6,6 +11,17 @@ import { parsePatientMentions } from "./patient-mentions";
 // No diagnosis, finding or prescription is inferred from the patient history.
 const marker =
   /(?<![\p{L}\p{N}])(?:(subjectif|motif|antécédents|objectif|examen(?:\s+clinique)?|évaluations?|analyses?|diagnostics?|plan(?:\s+de\s+soins)?)\s*[:,-]|(à\s+l[’']examen)\s*[:,]?|((?:^\s*(?:ne\s+pas\s+)?(?:prévoir|prévu|contrôle)|(?:ne\s+)?nécessite|besoin(?=\s+(?:de|d[’']))))(?![\p{L}\p{N}]))/giu;
+// The app's own section headings ("S · Motif et antécédents", "O · …"), written
+// by the guided dictation and still present once line breaks are gone. They are
+// explicit labels: the section changes and the heading itself is not an observation.
+const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const heading = new RegExp(
+  `(?<![\\p{L}\\p{N}])([SOAP])\\s*·(?:\\s*(?:${SOAP_SECTIONS.map(({ title }) => escape(title.slice(title.indexOf("·") + 1).trim())).join("|")})(?![\\p{L}\\p{N}]))?`,
+  "gu",
+);
+const headingSection: Record<string, keyof LocalSoapNote> = Object.fromEntries(
+  SOAP_SECTIONS.map(({ key, title }) => [title[0], key]),
+);
 const sectionFor = (label: string): keyof LocalSoapNote => {
   label = label.trim().replace(/^ne\s+(?:pas\s+)?/iu, "");
   if (/^(?:objectif|examen|à)/iu.test(label)) return "objective";
@@ -18,7 +34,7 @@ const sectionFor = (label: string): keyof LocalSoapNote => {
 // observation propre rejoint le segment de plan au lieu de rester seul en S.
 const isSubjectFragment = (text: string) =>
   /^(?:le|la|l[’'])\s+(?:patient(?:e)?|animal|chat(?:te)?|chien(?:ne)?)\s+(?:a|ont|est|sont|présente|présentent)\s*$/iu.test(
-    text.trim()
+    text.trim(),
   );
 
 export function buildDictationScaffold(transcript: string): LocalSoapNote {
@@ -29,7 +45,7 @@ export function buildDictationScaffold(transcript: string): LocalSoapNote {
   // mentions, and apostrophes or quoted compound names must be removed whole.
   for (const mention of parsePatientMentions(transcript).reverse()) {
     const prefix = /\b(?:pour|patient)\s+$/iu.exec(
-      text.slice(0, mention.start)
+      text.slice(0, mention.start),
     );
     const start = prefix?.index ?? mention.start;
     text =
@@ -47,24 +63,36 @@ export function buildDictationScaffold(transcript: string): LocalSoapNote {
     if (containsDosage(value)) return;
     result[current] = [result[current], value].filter(Boolean).join(" ");
   };
-  for (const sentence of text.split(/(?<=[.!?])\s+|\n+/u)) {
-    let offset = 0;
-    // A new RegExp per sentence avoids state shared across concurrent calls.
-    for (const match of sentence.matchAll(new RegExp(marker))) {
-      const before = sentence.slice(offset, match.index);
-      const section = sectionFor(match[1] ?? match[2] ?? match[3]);
-      if (match[3] && section === "plan" && isSubjectFragment(before)) {
-        // « Le patient a besoin de… » reste entier : le fragment de sujet
-        // rejoint le segment de plan au lieu de rester seul en S.
-        current = section;
-      } else {
-        append(before);
-        current = section;
-        // Keep action verbs: they distinguish a plan from a completed finding.
-        offset = match[3] ? match.index : match.index + match[0].length;
+  const segments: { section: keyof LocalSoapNote; text: string }[] = [];
+  let start = 0;
+  let section: keyof LocalSoapNote = "subjective";
+  for (const match of text.matchAll(new RegExp(heading))) {
+    segments.push({ section, text: text.slice(start, match.index) });
+    section = headingSection[match[1]];
+    start = match.index + match[0].length;
+  }
+  segments.push({ section, text: text.slice(start) });
+  for (const segment of segments) {
+    current = segment.section;
+    for (const sentence of segment.text.split(/(?<=[.!?])\s+|\n+/u)) {
+      let offset = 0;
+      // A new RegExp per sentence avoids state shared across concurrent calls.
+      for (const match of sentence.matchAll(new RegExp(marker))) {
+        const before = sentence.slice(offset, match.index);
+        const section = sectionFor(match[1] ?? match[2] ?? match[3]);
+        if (match[3] && section === "plan" && isSubjectFragment(before)) {
+          // « Le patient a besoin de… » reste entier : le fragment de sujet
+          // rejoint le segment de plan au lieu de rester seul en S.
+          current = section;
+        } else {
+          append(before);
+          current = section;
+          // Keep action verbs: they distinguish a plan from a completed finding.
+          offset = match[3] ? match.index : match.index + match[0].length;
+        }
       }
+      append(sentence.slice(offset));
     }
-    append(sentence.slice(offset));
   }
   return result;
 }
@@ -102,7 +130,7 @@ export function removeDosageSentences(transcript: string): {
 // jamais de posologie ; la vérification stricte de sa sortie est inchangée.
 export function mergeDosageIntoPlan(
   note: LocalSoapNote,
-  dosageSentences: string[]
+  dosageSentences: string[],
 ): LocalSoapNote {
   if (!dosageSentences.length) return note;
   return {
@@ -126,7 +154,7 @@ const evidence = (text: string) =>
 export class SoapFidelityError extends Error {
   constructor() {
     super(
-      "La réponse de l’assistant ne reprend pas fidèlement les observations dictées. Votre dictée est conservée ; aucune note n’a été enregistrée."
+      "La réponse de l’assistant ne reprend pas fidèlement les observations dictées. Votre dictée est conservée ; aucune note n’a été enregistrée.",
     );
     this.name = "SoapFidelityError";
   }
