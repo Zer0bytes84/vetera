@@ -3,6 +3,10 @@ import { MedicalActReminderPrompt } from "@/modules/patient-reminders/medical-ac
 import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
+import { AccountMenu } from "./components/account-menu";
+import { QuickActionsFab } from "./components/quick-actions-fab";
+import { roleLabel } from "@/lib/user-role";
+import type { PremiumShortcut } from "@/lib/visual-style";
 import { getThemeConfig } from "@/lib/theme-store";
 import { useSidebarTone } from "@/lib/sidebar-tone";
 import { HeroPattern } from "@/components/HeroPattern";
@@ -302,6 +306,16 @@ function AppShellInner() {
     window.addEventListener("vetera:quick-consultation", openPicker);
     return () => window.removeEventListener("vetera:quick-consultation", openPicker);
   }, []);
+
+  const handleQuickAction = useCallback((action: PremiumShortcut) => {
+    if (action === "patient") { setPaletteOpen(true); return; }
+    if (action === "consultation") { setConsultationPickerOpen(true); return; }
+    if (action === "care") sessionStorage.setItem("vetera:pending-care-form", "true");
+    else prepareAppointment();
+    handleNavigate(action === "care" ? "soins" : "agenda");
+    const event = action === "care" ? "vetera:plan-care" : "vetera:new-appointment";
+    window.setTimeout(() => window.dispatchEvent(new Event(event)), 150);
+  }, [handleNavigate]);
   const [cachedAvatarUrl, setCachedAvatarUrl] = useState(
     () => readCachedProfile(currentUser?.email)?.avatarUrl ?? ""
   );
@@ -532,21 +546,8 @@ function AppShellInner() {
       {consultationPickerOpen && <Suspense fallback={null}><QuickConsultation open onOpenChange={setConsultationPickerOpen} onNavigate={handleNavigate}/></Suspense>}
       <AppSidebar
         collapsible={collapsible}
-        currentUserAvatar={currentUser?.avatarUrl ?? null}
-        currentUserEmail={userEmail}
-        currentUserName={userDisplayName}
-        currentUserRole={currentUser?.role}
         currentView={currentView}
         onNavigate={handleNavigate}
-        onQuickAction={(action) => {
-          if (action === "patient") { setPaletteOpen(true); return; }
-          if (action === "consultation") { setConsultationPickerOpen(true); return; }
-          if (action === "care") sessionStorage.setItem("vetera:pending-care-form", "true");
-          else prepareAppointment();
-          handleNavigate(action === "care" ? "soins" : "agenda");
-          const event = action === "care" ? "vetera:plan-care" : "vetera:new-appointment";
-          window.setTimeout(() => window.dispatchEvent(new Event(event)), 150);
-        }}
         side={isRtl ? "right" : "left"}
         variant={variant}
       />
@@ -725,6 +726,24 @@ function AppShellInner() {
                 </div>
               )}
 
+              {/* 2 bis. CENTRE (Premium et Clean) : le champ de recherche, centré sur l'en-tête */}
+              {isPremium && (
+                <div className="shell-header-search-slot">
+                  <button
+                    type="button"
+                    aria-label="Rechercher un patient, une page ou une commande"
+                    aria-haspopup="dialog"
+                    aria-keyshortcuts="Meta+K Control+K"
+                    onClick={() => setPaletteOpen(true)}
+                    className="shell-header-search-field"
+                  >
+                    <ToolbarIcon name="search" size={16} className="shell-header-search-icon" />
+                    <span className="shell-header-search-placeholder">Rechercher un patient, une page…</span>
+                    <kbd className="shell-header-search-key">⌘ K</kbd>
+                  </button>
+                </div>
+              )}
+
               {saveState !== "idle" && <div className="premium-header-save-indicator" data-slot="premium-header-save-indicator"><SaveIndicator state={saveState} /></div>}
 
               {/* 3. DROITE : Actions */}
@@ -734,7 +753,7 @@ function AppShellInner() {
                     {/* 1. Theme toggle */}
                     <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
 
-                    {/* 2. Search */}
+                    {/* 2. Search, when the header is too narrow for the field */}
                     <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
                       <button
                         type="button"
@@ -742,7 +761,7 @@ function AppShellInner() {
                         aria-haspopup="dialog"
                         aria-keyshortcuts="Meta+K Control+K"
                         onClick={() => setPaletteOpen(true)}
-                        className="topIcon"
+                        className="topIcon shell-header-search-compact"
                       >
                         <ToolbarIcon name="search" />
                       </button>
@@ -777,92 +796,6 @@ function AppShellInner() {
                         {unreadCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 t-12 text-primary-foreground">{unreadCount > 9 ? "9+" : unreadCount}</span>}
                       </button>
                     </ShortcutTooltip>
-
-                    {/* 4. Settings dropdown */}
-                    <DropdownMenu>
-                      <ShortcutTooltip label="Paramètres et compte">
-                        <DropdownMenuTrigger
-                          ref={settingsButtonRef}
-                          aria-label="Paramètres et compte"
-                          className="topIcon"
-                        >
-                          <ToolbarIcon name="settings" />
-                        </DropdownMenuTrigger>
-                      </ShortcutTooltip>
-
-                      <DropdownMenuContent
-                        align="end"
-                        className="w-64 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/95"
-                        sideOffset={8}
-                      >
-                        {/* User info header */}
-                        <div className="mb-1 flex items-center gap-3 px-3 py-2.5">
-                          <Avatar
-                            className="size-10 shrink-0"
-                            name={userDisplayName}
-                            size="md"
-                            src={resolvedAvatarUrl}
-                          />
-                          <div className="min-w-0">
-                            <p className="truncate font-semibold text-sm text-zinc-900 dark:text-white">
-                              {userDisplayName}
-                            </p>
-                            <p className="truncate text-muted-foreground text-xs">
-                              {userEmail}
-                            </p>
-                          </div>
-                        </div>
-
-                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                          onClick={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
-                        >
-                          <ToolbarIcon name="notifications" />
-                          <span className="font-medium text-sm">Notifications</span>
-                          {unreadCount > 0 && (
-                            <span className="ml-auto rounded-full bg-primary px-1.5 py-0.5 t-12 font-semibold text-primary-foreground">
-                              {unreadCount}
-                            </span>
-                          )}
-                        </DropdownMenuItem>
-
-                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5"
-                          onClick={() => handleNavigate("parametres")}
-                        >
-                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-white/10">
-                            <HugeiconsIcon
-                              className="size-4 text-zinc-600 dark:text-zinc-400"
-                              icon={Settings01Icon}
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          <span className="font-medium text-sm">Paramètres</span>
-                        </DropdownMenuItem>
-
-                        <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-white/10" />
-
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-rose-600 focus:bg-rose-50 focus:text-rose-600 dark:text-rose-400 dark:focus:bg-rose-500/10"
-                          onClick={async () => {
-                            await logout();
-                          }}
-                        >
-                          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/20">
-                            <HugeiconsIcon
-                              className="size-4 text-rose-600 dark:text-rose-400"
-                              icon={Logout01Icon}
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          <span className="font-medium text-sm">Déconnexion</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
 
                     <NotificationCenter
                       hideTrigger
@@ -1104,6 +1037,22 @@ function AppShellInner() {
                   </>
                 )}
               </div>
+
+              {/* 4. Le compte : l'avatar, en haut à droite, ouvre le menu du compte */}
+              {isPremium && (
+                <AccountMenu
+                  avatarUrl={resolvedAvatarUrl}
+                  email={userEmail}
+                  name={userDisplayName}
+                  onFinances={() => handleNavigate("finances")}
+                  onLogout={logout}
+                  onNotifications={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
+                  onProfile={() => handleNavigate("parametres")}
+                  onSettings={() => handleNavigate("parametres")}
+                  role={roleLabel(currentUser?.role, currentUser?.email)}
+                  unreadCount={unreadCount}
+                />
+              )}
             </div>
           </motion.header>
 
@@ -1136,6 +1085,7 @@ function AppShellInner() {
             </div>
           </div>
         </div>
+        <QuickActionsFab onAction={handleQuickAction} scrollRef={sidebarScrollRef} />
       </SidebarInset>
 
       {/* Command Palette */}

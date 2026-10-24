@@ -341,6 +341,29 @@
   box-shadow: 0 0 0 2px var(--clean-sheet);
 }
 
+/* Header search: a white field on the glass at the buttons' 32 px, one quiet
+   hairline, the placeholder in the quiet grey; hovering only warms the fill. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field {
+  height: var(--clean-control);
+  border-color: var(--clean-line);
+  border-radius: var(--clean-control-radius);
+  background: var(--clean-surface);
+  color: var(--clean-ink-quiet);
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-key {
+  background: var(--clean-segment-track);
+  color: var(--clean-ink-quiet);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field:hover {
+    border-color: var(--clean-line);
+    background: var(--clean-hover);
+    color: var(--clean-ink);
+  }
+}
+/* The account avatar ends the header on the page's 24 px margin. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-account-trigger) { padding-inline-end: 24px !important; }
+
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
 :root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) { color-scheme: dark; }
 /* The account avatar sets its dark look with Tailwind "dark:" classes, which
@@ -405,6 +428,48 @@
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"][data-skin][data-skin] .sidebar-account-frame .sidebar-user-card:is(:hover, [aria-expanded="true"]) {
     background: var(--clean-nav-hover) !important;
+  }
+}
+
+/* Rhythm: 28 px rows on a 34 px pitch, 28 px between groups, so the pages
+   fill the column at a calm reading pace instead of huddling at its top. */
+:root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar [data-slot="sidebar-content"] > div { gap: 28px; }
+:root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar [data-slot="sidebar-menu"] { gap: 6px; }
+:root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar [data-slot="sidebar-group-label"] { margin-bottom: 8px; }
+:root[data-skin="clean"][data-skin][data-skin] [data-state="expanded"] .app-sidebar .sidebar-subpages { gap: 6px; margin-top: 6px; }
+
+/* Sub-pages: the chevron stays quiet; a sub-page is a 28 px row under its
+   page's label, the active one on the same pill as the pages. */
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-subpages-toggle {
+  border-radius: var(--clean-segment-radius);
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+}
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-subpages-toggle { color: var(--clean-ink-quiet); }
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-subpage-link {
+  height: var(--clean-nav-item);
+  border-radius: var(--clean-control-radius);
+  color: var(--clean-ink);
+  font-weight: 500;
+  letter-spacing: -0.006em;
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+}
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-subpage-link[data-active] {
+  background: var(--clean-nav-active);
+  color: var(--clean-ink-strong);
+}
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-settings-button {
+  color: var(--clean-ink-quiet);
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+}
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-settings-button[data-active] {
+  background: var(--clean-nav-active);
+  color: var(--clean-ink-strong);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"][data-skin][data-skin] .app-sidebar :is(.sidebar-subpages-toggle, .sidebar-subpage-link, .sidebar-settings-button):hover {
+    background: var(--clean-nav-hover);
+    color: var(--clean-ink-strong);
+    transition-duration: var(--speed-highlight-in);
   }
 }
 
@@ -665,6 +730,12 @@
 /* Rows are flat: the hover step fills the whole row, without a floating pill. */
 :root[data-skin="clean"] .patients-table-wrap .medical-data-table tbody td {
   border-radius: 0 !important;
+}
+
+/* Patients rows are records to open: the current row takes a step of ink
+   firm enough to read in the dark declension too. */
+:root[data-skin="clean"] .patients-table-wrap tr[data-list-row][data-current] > td {
+  background-color: color-mix(in oklab, var(--clean-ink-strong) 6%, var(--clean-surface)) !important;
 }
 
 /* ---------- Agenda month, after Tailwind Plus "month view" ----------
@@ -1243,7 +1314,7 @@
    clinical day view is a day of care, not a second "new consultation". */
 :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
 :root[data-skin="clean"] [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg { --clean-icon: var(--clean-icon-paw-print); }
-:root[data-skin="clean"] .premium-shortcuts [data-tone="orange"] svg { --clean-icon: var(--clean-icon-syringe); }
+:root[data-skin="clean"] .quick-actions-menu [data-tone="orange"] svg { --clean-icon: var(--clean-icon-syringe); }
 :root[data-skin="clean"] [data-kpi="Urgences ouvertes"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-siren); }
 :root[data-skin="clean"] [data-kpi="Relances à prévoir"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-calendar-clock); }
 :root[data-skin="clean"] [data-kpi="En retard"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-clock-alert); }
@@ -1252,7 +1323,7 @@
 :root[data-skin="clean"] :is(
   .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
   [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
-  .premium-shortcuts [data-tone="orange"] svg,
+  .quick-actions-menu [data-tone="orange"] svg,
   [data-kpi="Urgences ouvertes"] .section-atlas-title-icon,
   [data-kpi="Relances à prévoir"] .section-atlas-title-icon,
   [data-kpi="En retard"] .section-atlas-title-icon,
@@ -1265,7 +1336,7 @@
 :root[data-skin="clean"] :is(
   .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
   [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg,
-  .premium-shortcuts [data-tone="orange"] svg,
+  .quick-actions-menu [data-tone="orange"] svg,
   [data-kpi="Urgences ouvertes"] .section-atlas-title-icon,
   [data-kpi="Relances à prévoir"] .section-atlas-title-icon,
   [data-kpi="En retard"] .section-atlas-title-icon,

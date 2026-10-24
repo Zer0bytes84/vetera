@@ -9,6 +9,11 @@ import { MedicalRemindersModule } from "@/modules/patient-reminders/medical-remi
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFocus, type FocusRequest } from "@/contexts/focus-provider";
 import type { View } from "@/types";
+import {
+  CLINIC_TAB_EVENT,
+  CLINIC_TAB_OPEN_EVENT,
+  takePendingClinicTab,
+} from "@/modules/clinique/clinic-tab-events";
 export default function ClinicalWorkspace({
   onNavigate,
   onNavigateToPatient,
@@ -26,8 +31,17 @@ export default function ClinicalWorkspace({
       ? "hospitalisation"
       : focus?.kind === "care_patient" || focus?.kind === "care_task"
         ? "soins"
-        : initialTab,
+        : (takePendingClinicTab() ?? initialTab),
   );
+  // The sidebar opens a section from outside, and marks the one shown.
+  useEffect(() => {
+    const open = (event: Event) => setTab((event as CustomEvent<string>).detail);
+    window.addEventListener(CLINIC_TAB_OPEN_EVENT, open);
+    return () => window.removeEventListener(CLINIC_TAB_OPEN_EVENT, open);
+  }, []);
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(CLINIC_TAB_EVENT, { detail: tab }));
+  }, [tab]);
   const [patientId, setPatientId] = useState<string | undefined>(() =>
     focus?.kind === "care_patient" ? focus.id : undefined,
   );

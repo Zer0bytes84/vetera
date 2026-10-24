@@ -480,3 +480,114 @@
   }
   .shell-toolbar-actions,:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background:var(--background); }
 }
+
+/* Header search field (Premium and Clean): centred on the header, at the
+   height of the buttons beside it. It gives way to the search icon when the
+   header is too narrow to hold it beside the title and the tools. */
+.shell-header-search-slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(240px, calc(100cqi - 560px), 380px);
+  transform: translate(-50%, -50%);
+}
+.shell-header-search-field {
+  display: flex;
+  width: 100%;
+  height: 36px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-muted, var(--muted-foreground));
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--speed-highlight-out) ease,
+    border-color var(--speed-highlight-out) ease,
+    color var(--speed-highlight-out) ease;
+}
+.shell-header-search-field:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.shell-header-search-icon { width: 16px; height: 16px; flex: none; }
+.shell-header-search-placeholder {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shell-header-search-key {
+  flex: none;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--surface-hover, var(--muted));
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--ink-muted, var(--muted-foreground));
+}
+@media (hover: hover) and (pointer: fine) {
+  .shell-header-search-field:hover {
+    border-color: var(--border-hover, var(--border));
+    color: var(--ink, var(--foreground));
+    transition-duration: var(--speed-highlight-in);
+  }
+}
+[data-slot="app-header"] .shell-toolbar-actions .shell-header-search-compact { display: none !important; }
+@container shell-toolbar (max-width: 819px) {
+  .shell-header-search-slot { display: none; }
+  [data-slot="app-header"] .shell-toolbar-actions .shell-header-search-compact { display: grid !important; }
+}
+
+/* The account: the avatar alone, at the header's right end. */
+.shell-account-trigger {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: box-shadow var(--speed-highlight-out) ease;
+}
+.shell-account-trigger .shell-account-avatar { width: 28px; height: 28px; font-size: 14px; }
+.shell-account-trigger:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.shell-account-trigger[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--border); }
+@media (hover: hover) and (pointer: fine) {
+  .shell-account-trigger:hover {
+    box-shadow: 0 0 0 2px var(--border);
+    transition-duration: var(--speed-highlight-in);
+  }
+}
+.shell-account-menu .shell-account-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  font-weight: 400;
+}
+.shell-account-menu .shell-account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink, var(--foreground));
+}
+.shell-account-menu .shell-account-detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--ink-muted, var(--muted-foreground));
+}
+.shell-account-menu .shell-account-item { min-height: 32px; gap: 10px; padding-inline: 8px; }
+.shell-account-menu .shell-account-item svg { width: 16px; height: 16px; }
+.shell-account-menu .shell-account-count { letter-spacing: 0; font-variant-numeric: tabular-nums; }

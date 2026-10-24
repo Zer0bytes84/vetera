@@ -1,0 +1,175 @@
+/* Patients: a full-width table of records, after Tailwind Plus's "with
+   avatars and multi-line content". The identity column is the widest and
+   carries species, sex and age on its second line; status is a tinted badge
+   with an inset ring; a light grey rule runs between rows across the whole
+   width; every row ends on a plain "Ouvrir". Narrower sheets
+   drop the next appointment, then the last visit. Hues come from the status
+   tokens of the charter (--premium-*), mixed with the surface. */
+.patients-table-wrap { container: patients-list / inline-size !important; }
+:root .patients-table-wrap .patients-table {
+  --row-rule: color-mix(in oklab, var(--ink, var(--foreground)) 10%, var(--surface, var(--card)));
+  table-layout: fixed !important;
+  width: 100% !important;
+}
+:root .patients-table-wrap .patients-table .patients-col-patient { width: 33% !important; }
+:root .patients-table-wrap .patients-table .patients-col-owner { width: 20% !important; }
+:root .patients-table-wrap .patients-table .patients-col-status { width: 14% !important; }
+:root .patients-table-wrap .patients-table .patients-col-last { width: 11% !important; }
+:root .patients-table-wrap .patients-table .patients-col-next { width: 14% !important; }
+:root .patients-table-wrap .patients-table .patients-col-open { width: 8% !important; min-width: 112px !important; }
+
+/* Header: the column names in ink, semibold, on the sheet, one rule below. */
+:root .patients-table-wrap .patients-table thead th {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  background: var(--surface, var(--card)) !important;
+  box-shadow: inset 0 -1px 0 var(--row-rule) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-variant-numeric: normal !important;
+  color: var(--ink, var(--foreground)) !important;
+}
+:root .patients-table-wrap .patients-table td {
+  overflow: hidden !important;
+  vertical-align: middle !important;
+  box-shadow: inset 0 -1px 0 var(--row-rule) !important;
+}
+:root .patients-table-wrap .patients-table tbody tr:last-child td { box-shadow: none !important; }
+
+:root .patients-table-wrap .patients-table .patients-cell-stack {
+  display: grid !important;
+  min-width: 0 !important;
+  row-gap: 2px !important;
+}
+:root .patients-table-wrap .patients-table .patients-cell-stack > * { display: block !important; min-width: 0 !important; }
+:root .patients-table-wrap .patients-table .patients-name-line {
+  display: flex !important;
+  min-width: 0 !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+:root .patients-table-wrap .patients-table .patients-name {
+  min-width: 0 !important;
+  flex: 0 1 auto !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--ink, var(--foreground)) !important;
+}
+:root .patients-table-wrap .patients-table .patients-cell-main {
+  font-size: 14px !important;
+  color: var(--ink, var(--foreground)) !important;
+}
+:root .patients-table-wrap .patients-table .patients-cell-sub {
+  font-size: 13px !important;
+  color: var(--ink-muted, var(--muted-foreground)) !important;
+}
+
+/* Species: a round avatar tinted with its family's hue. */
+:root .patients-table-wrap .patients-table .patients-species {
+  --species: var(--ink-muted, var(--muted-foreground));
+  display: grid !important;
+  width: 40px !important;
+  height: 40px !important;
+  flex: none !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+  background: color-mix(in oklab, var(--species) 14%, var(--surface, var(--card))) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--species) 22%, transparent) !important;
+  color: var(--species) !important;
+}
+:root .patients-table-wrap .patients-table .patients-species svg { width: 20px !important; height: 20px !important; }
+:root .patients-table-wrap .patients-table .patients-species[data-tone="dog"] { --species: var(--premium-orange, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .patients-species[data-tone="cat"] { --species: var(--premium-green, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .patients-species[data-tone="nac"] { --species: var(--premium-blue, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .patients-species[data-tone="wild"] { --species: var(--premium-red, var(--muted-foreground)); }
+
+/* Status and alerts: Tailwind Plus badges, a pale fill, the hue's ink and an
+   inset ring of the same hue. */
+:root .patients-table-wrap .patients-table .medical-status-tag[data-status],
+:root .patients-table-wrap .patients-table .patients-flag {
+  --tag: var(--ink-muted, var(--muted-foreground));
+  display: inline-flex !important;
+  max-width: 100% !important;
+  height: 22px !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 8px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: color-mix(in oklab, var(--tag) 12%, var(--surface, var(--card))) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tag) 26%, transparent) !important;
+  color: var(--tag) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 22px !important;
+  white-space: nowrap !important;
+}
+:root .patients-table-wrap .patients-table .medical-status-tag[data-status]::before {
+  width: 6px !important;
+  height: 6px !important;
+  flex: none !important;
+  border-radius: 999px !important;
+  background: currentColor !important;
+  content: "" !important;
+}
+:root .patients-table-wrap .patients-table .medical-status-tag[data-status="sante"] { --tag: var(--premium-green, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .medical-status-tag[data-status="traitement"] { --tag: var(--premium-blue, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .medical-status-tag[data-status="hospitalise"] { --tag: var(--premium-orange, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .medical-status-tag[data-status="decede"] { --tag: var(--ink-muted, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .patients-flags {
+  display: inline-flex !important;
+  min-width: 0 !important;
+  flex: 0 1 auto !important;
+  gap: 4px !important;
+}
+:root .patients-table-wrap .patients-table .patients-flag { display: block !important; height: 20px !important; padding: 0 6px !important; line-height: 20px !important; }
+:root .patients-table-wrap .patients-table .patients-flag[data-kind="allergy"] { --tag: var(--premium-red, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .patients-flag[data-kind="chronic"] { --tag: var(--premium-orange, var(--muted-foreground)); }
+:root .patients-table-wrap .patients-table .patients-flag[data-kind="more"] { flex: none !important; }
+
+/* The way in: "Ouvrir" and its arrow, quiet at rest, full ink on the current
+   row (mouse or keyboard), the arrow nudged towards the record. */
+:root .patients-table-wrap .patients-table .patients-open-link {
+  display: inline-flex !important;
+  height: 32px !important;
+  align-items: center !important;
+  gap: 2px !important;
+  padding: 0 6px 0 8px !important;
+  border-radius: 8px !important;
+  color: var(--ink-muted, var(--muted-foreground)) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: color var(--speed-highlight-out) ease, background-color var(--speed-highlight-out) ease !important;
+}
+:root .patients-table-wrap .patients-table .patients-open-link:focus-visible { outline: 2px solid var(--ring) !important; outline-offset: 2px !important; }
+:root .patients-table-wrap .patients-table .patients-open-arrow { transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1) !important; }
+:root .patients-table-wrap .patients-table tr[data-current] .patients-open-link { color: var(--ink, var(--foreground)) !important; transition-duration: var(--speed-highlight-in) !important; }
+:root .patients-table-wrap .patients-table tr[data-current] .patients-open-arrow { transform: translateX(2px) !important; }
+@media (hover: hover) and (pointer: fine) {
+  :root .patients-table-wrap .patients-table .patients-open-link:hover { background: var(--surface-hover, var(--muted)) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root .patients-table-wrap .patients-table tr[data-current] .patients-open-arrow { transform: none !important; }
+}
+
+@container patients-list (max-width: 900px) {
+  :root .patients-table-wrap .patients-table .patients-col-next { display: none !important; }
+}
+@container patients-list (max-width: 720px) {
+  :root .patients-table-wrap .patients-table .patients-col-last { display: none !important; }
+}
+
+/* One rhythm in every theme: 12 px cells, the sheet's 16 px gutter at the
+   row's ends, two-line rows on a 64 px pitch. */
+:root .patients-table-wrap .patients-table :is(th, td) { height: auto !important; padding: 12px !important; }
+:root .patients-table-wrap .patients-table :is(th, td):first-child { padding-inline-start: 16px !important; }
+:root .patients-table-wrap .patients-table :is(th, td):last-child { padding-inline-end: 16px !important; text-align: end !important; }
+:root .patients-table-wrap .patients-table tbody td { height: 64px !important; }
+/* The row's buttons stay ghosts: no box from the shared table rule. */
+:root .patients-table-wrap .patients-table td:last-child button { border: 0 !important; background: transparent !important; box-shadow: none !important; }
+@media (hover: hover) and (pointer: fine) {
+  :root .patients-table-wrap .patients-table td:last-child button:hover { background: var(--surface-hover, var(--muted)) !important; }
+}

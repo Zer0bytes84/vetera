@@ -605,3 +605,39 @@
   }
 }
 }
+
+/* ---------- Folding: the sub-pages ----------
+   At rest the sidebar shows the pages; sub-pages unfold with their page or
+   on their chevron. */
+.app-sidebar .sidebar-disclosure {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.app-sidebar .sidebar-disclosure[data-open="true"] { transform: rotate(90deg); }
+.app-sidebar .sidebar-subpages-toggle,
+[data-visual-style="premium"] .app-sidebar .sidebar-subpages-toggle[data-slot="sidebar-menu-action"] {
+  top: calc(var(--premium-nav-row, 32px) / 2 - 10px);
+  transform: none;
+  color: var(--nav-muted, currentColor);
+}
+.app-sidebar .sidebar-subpages {
+  margin: 2px 0 2px;
+  padding: 0 0 0 33px;
+  border: 0;
+  gap: 2px;
+  transform: none;
+}
+.app-sidebar .sidebar-subpage-link {
+  width: 100%;
+  height: 28px;
+  padding-inline: 8px;
+  transform: none;
+  font-size: 13px;
+  color: var(--nav-text, currentColor);
+}
+.app-sidebar .sidebar-subpage-link[data-active] { color: var(--nav-ink, currentColor); }
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar .sidebar-disclosure { transition: none; }
+}

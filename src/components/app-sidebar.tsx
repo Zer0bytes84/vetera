@@ -1,21 +1,14 @@
 "use client";
 
-import { CalendarPlus, Stethoscope, Search, ClipboardList } from "@/lib/icons";
-import { PREMIUM_SHORTCUTS, type PremiumShortcut } from "@/lib/visual-style";
-
 import { SidebarIcon } from "@/modules/shell/components/sidebar-icon";
 import { PremiumSidebarIcon } from "@/modules/shell/components/premium-sidebar-icon";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
-import { CalendarPlus as PremiumCalendarPlus, Stethoscope as PremiumStethoscope, Search as PremiumSearch, ClipboardList as PremiumClipboardList } from "lucide-react";
 import "@/modules/shell/premium-sidebar.css";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { navigationSections } from "@/app/config/navigation";
 import { SidebarBrand } from "@/components/mascot/sidebar-brand";
-import { NavDocuments } from "@/components/nav-documents";
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
+import { NavMain, type NavItem } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -24,34 +17,36 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useUsersRepository } from "@/data/repositories";
-import {
-  readCachedProfile,
-  subscribeToCachedProfile,
-} from "@/lib/profile-cache";
+import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { cn } from "@/lib/utils";
-import { roleLabel } from "@/lib/user-role";
+import {
+  CLINIC_TAB_EVENT,
+  CLINIC_TAB_OPEN_EVENT,
+  CLINIC_TAB_PENDING_KEY,
+} from "@/modules/clinique/clinic-tab-events";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { View } from "@/types";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-  onQuickAction?: (action: PremiumShortcut) => void;
   currentView: View;
   onNavigate: (view: View) => void;
-  currentUserName: string;
-  currentUserEmail: string;
-  currentUserAvatar?: string | null;
-  currentUserRole?: string | null;
 };
+
+type ClinicTab = "soins" | "hospitalisation";
+
+/** Opens a section of Soins & hospitalisation, mounted or not. */
+function openClinicTab(tab: ClinicTab, currentView: View, onNavigate: (view: View) => void) {
+  if (currentView === "clinique" || currentView === "soins") {
+    window.dispatchEvent(new CustomEvent(CLINIC_TAB_OPEN_EVENT, { detail: tab }));
+    return;
+  }
+  sessionStorage.setItem(CLINIC_TAB_PENDING_KEY, tab);
+  onNavigate("clinique");
+}
 
 export function AppSidebar({
   currentView,
-  onQuickAction,
   onNavigate,
-  currentUserName,
-  currentUserEmail,
-  currentUserAvatar,
-  currentUserRole,
   variant = "sidebar",
   ...props
 }: AppSidebarProps) {
@@ -82,42 +77,17 @@ export function AppSidebar({
       observer.disconnect();
     };
   }, [currentView, isCollapsed]);
-  const { data: users } = useUsersRepository();
-  const [cachedProfile, setCachedProfile] = React.useState(() =>
-    readCachedProfile(currentUserEmail)
-  );
 
+  // The section shown inside Soins & hospitalisation, reported by the workspace.
+  const [clinicTab, setClinicTab] = React.useState<ClinicTab>("soins");
   React.useEffect(() => {
-    setCachedProfile(readCachedProfile(currentUserEmail));
-  }, [currentUserEmail]);
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    return subscribeToCachedProfile((event) => {
-      if (event.detail.email === currentUserEmail) {
-        setCachedProfile(event.detail.profile);
-      }
-    });
-  }, [currentUserEmail]);
-
-  const currentUserRecord = users.find(
-    (user) => user.email === currentUserEmail
-  );
-  const resolvedUserName =
-    currentUserRecord?.displayName ||
-    cachedProfile?.displayName ||
-    (currentUserName && currentUserName !== currentUserEmail
-      ? currentUserName
-      : null) ||
-    currentUserEmail ||
-    "Utilisateur";
-  const resolvedUserAvatar =
-    currentUserRecord?.avatarUrl ||
-    currentUserAvatar ||
-    cachedProfile?.avatarUrl;
+    const onTab = (event: Event) => setClinicTab((event as CustomEvent<ClinicTab>).detail);
+    window.addEventListener(CLINIC_TAB_EVENT, onTab);
+    return () => window.removeEventListener(CLINIC_TAB_EVENT, onTab);
+  }, []);
+  // Sub-pages unfold with their page; a toggle overrides that until the next visit.
+  const [toggled, setToggled] = React.useState<{ view: View; open: Partial<Record<View, boolean>> }>({ view: currentView, open: {} });
+  const unfolded = toggled.view === currentView ? toggled.open : {};
 
   const isDesktopRuntime = isTauriRuntime();
   let sidebarSeparatorWidth = "-left-4 w-[calc(100%+32px)]";
@@ -134,43 +104,54 @@ export function AppSidebar({
   const overviewSection = navigationSections[0];
   const patientSection = navigationSections[1];
   const operationsSection = navigationSections[2];
-  const configSection = navigationSections[3];
+
+  const inClinic = currentView === "clinique" || currentView === "soins";
+  const subPages: Partial<Record<View, { open: boolean; children: NavItem["children"] }>> = {
+    clinique: {
+      open: inClinic,
+      children: [
+        { title: "Soins", isActive: inClinic && clinicTab === "soins", onClick: () => openClinicTab("soins", currentView, onNavigate) },
+        { title: "Hospitalisation", isActive: inClinic && clinicTab === "hospitalisation", onClick: () => openClinicTab("hospitalisation", currentView, onNavigate) },
+      ],
+    },
+    finances: {
+      open: currentView === "finances" || currentView === "finances_analytics",
+      children: [
+        { title: t("views.finances_analytics"), isActive: currentView === "finances_analytics", onClick: () => onNavigate("finances_analytics") },
+      ],
+    },
+  };
+
+  const toNavItem = (item: { view: View; labelKey: string }): NavItem => {
+    const sub = subPages[item.view];
+    const expanded = unfolded[item.view] ?? sub?.open ?? false;
+    return {
+      title: item.view === "notes" ? "Documents" : t(item.labelKey),
+      icon: (
+        <NavigationIcon className={isCollapsed ? "size-6!" : "size-[22px]!"} view={item.view} />
+      ),
+      isActive:
+        currentView === item.view ||
+        (item.view === "clinique" && currentView === "soins") ||
+        (item.view === "finances" && currentView === "finances_analytics"),
+      onClick: () => onNavigate(item.view),
+      children: sub?.children,
+      expanded,
+      onToggle: () => setToggled({ view: currentView, open: { ...unfolded, [item.view]: !expanded } }),
+    };
+  };
 
   const mainItems = [
     ...(overviewSection?.items ?? []),
     ...(patientSection?.items.slice(0, 5) ?? []),
-  ].map((item) => ({
-    title: t(item.labelKey),
-    icon: (
-      <NavigationIcon className={isCollapsed ? "size-6!" : "size-[22px]!"} view={item.view} />
-    ),
-    isActive: currentView === item.view,
-    onClick: () => onNavigate(item.view),
-  }));
+  ].map(toNavItem);
 
-  const documents = [
+  const managementItems = [
     ...(patientSection?.items.slice(5) ?? []),
     ...(operationsSection?.items ?? []),
-  ].map((item) => ({
-    name: item.view === "notes" ? "Documents" : t(item.labelKey),
-    icon: (
-      <NavigationIcon
-        className={isCollapsed ? "size-6!" : "size-[22px]!"}
-        view={item.view}
-      />
-    ),
-    isActive: currentView === item.view || (item.view === "finances" && currentView === "finances_analytics"),
-    onClick: () => onNavigate(item.view),
-  }));
+  ].map(toNavItem);
 
-  const secondaryItems = (configSection?.items ?? []).map((item) => ({
-    title: t(item.labelKey),
-    icon: (
-      <NavigationIcon className="size-[22px]!" view={item.view} />
-    ),
-    isActive: currentView === item.view,
-    onClick: () => onNavigate(item.view),
-  }));
+  const settingsActive = currentView === "parametres";
 
   return (
     <Sidebar
@@ -239,81 +220,38 @@ export function AppSidebar({
 
           <NavMain items={mainItems} title={t("nav.sections.patientJourney")} premiumTitle="Espace de travail" />
 
-          <NavDocuments
-            items={documents.map((item) => ({
-              name: item.name,
-              icon: item.icon,
-              isActive: item.isActive,
-              onClick: item.onClick,
-            }))}
+          <NavMain
+            items={managementItems}
             title={t("nav.sections.operations")}
             premiumTitle="Gestion du cabinet"
           />
-
-          {secondaryItems.length > 0 && (
-            <NavSecondary className="mt-auto" items={secondaryItems} />
-          )}
-          {!isCollapsed && (
-            <nav aria-label="Raccourcis rapides" className="premium-shortcuts">
-              <p className="premium-shortcuts-heading">Accès rapides</p>
-              {PREMIUM_SHORTCUTS.map((shortcut) => {
-                const Icon = (isPremium
-                  ? { appointment: PremiumCalendarPlus, consultation: PremiumStethoscope, patient: PremiumSearch, care: PremiumClipboardList }
-                  : { appointment: CalendarPlus, consultation: Stethoscope, patient: Search, care: ClipboardList })[shortcut.id];
-                return <button key={shortcut.id} type="button" data-tone={shortcut.tone}
-                  onClick={() => onQuickAction?.(shortcut.id)}>
-                  <Icon className="premium-shortcut-icon" aria-hidden="true" strokeWidth={1} />
-                  <span>{shortcut.label}</span>
-                  <span className="premium-shortcut-dot" aria-hidden="true" />
-                </button>;
-              })}
-            </nav>
-          )}
         </div>
       </SidebarContent>
+      {/* Settings alone in the footer: no rule, the spacing sets it apart. */}
       <SidebarFooter
         className={cn(
-          "relative z-10 shrink-0 transition-[padding,margin] duration-200",
+          "sidebar-settings-footer relative z-10 shrink-0",
           isCollapsed
             ? "mx-0 mt-auto mb-0 flex flex-col items-center gap-2 px-0 py-3"
-            : "mx-0 mt-auto mb-0 bg-transparent px-3 py-3"
+            : "mx-0 mt-auto mb-0 bg-transparent px-4 pt-2 pb-4"
         )}
       >
-        <div
-          className={cn(
-            "transition-[width] duration-200",
-            isPremium && "sidebar-account-frame",
-            !isCollapsed && "w-full"
-          )}
-        >
-          <NavUser
-            onFinances={() => onNavigate("finances")}
-            onNotifications={() => onNavigate("taches")}
-            onProfile={() => onNavigate("parametres")}
-            onSettings={() => onNavigate("parametres")}
-            user={{
-              name: resolvedUserName,
-              email: currentUserEmail,
-              avatar: resolvedUserAvatar,
-              role: roleLabel(currentUserRole, currentUserEmail),
-            }}
-          />
-        </div>
-        {isCollapsed && (
+        <ShortcutTooltip label="Paramètres" shortcut="⌘ ,">
           <button
             aria-label="Paramètres"
-            aria-current={currentView === "parametres" ? "page" : undefined}
+            aria-current={settingsActive ? "page" : undefined}
             className={cn(
-              "flex size-11 items-center justify-center rounded-xl text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-              currentView === "parametres" && "bg-sidebar-accent text-sidebar-foreground"
+              "sidebar-settings-button flex items-center justify-center text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+              isCollapsed ? "size-11 rounded-xl" : "ms-1.5 size-7 rounded-lg",
+              settingsActive && "bg-sidebar-accent text-sidebar-foreground"
             )}
+            data-active={settingsActive ? "true" : undefined}
             onClick={() => onNavigate("parametres")}
-            title="Paramètres"
             type="button"
           >
-            <NavigationIcon view="parametres" className="size-6" />
+            <NavigationIcon view="parametres" className={isCollapsed ? "size-6" : "size-4"} />
           </button>
-        )}
+        </ShortcutTooltip>
       </SidebarFooter>
     </Sidebar>
   );

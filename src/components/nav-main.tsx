@@ -1,11 +1,34 @@
+import { ChevronRight } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+
+export type NavSubItem = {
+  title: string;
+  isActive?: boolean;
+  onClick?: () => void;
+};
+
+export type NavItem = {
+  title: string;
+  badge?: number;
+  icon?: React.ReactNode;
+  isActive?: boolean;
+  onClick?: () => void;
+  /** Sub-pages, folded under the item until it is opened or toggled. */
+  children?: NavSubItem[];
+  expanded?: boolean;
+  onToggle?: () => void;
+};
 
 export function NavMain({
   title,
@@ -14,22 +37,24 @@ export function NavMain({
 }: {
   title?: string;
   premiumTitle?: string;
-  items: {
-    title: string;
-    badge?: number;
-    icon?: React.ReactNode;
-    isActive?: boolean;
-    onClick?: () => void;
-  }[];
+  items: NavItem[];
 }) {
+  const label = premiumTitle ? (
+    <>
+      <span className="classic-sidebar-label">{title}</span>
+      <span className="premium-sidebar-label">{premiumTitle}</span>
+    </>
+  ) : (
+    title
+  );
+  const groupLabelClass =
+    "mb-1.5 px-2.5 font-medium t-12 text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden";
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:p-0">
       <SidebarGroupContent>
         <SidebarMenu className="gap-1 group-data-[collapsible=icon]:gap-2">
           {title ? (
-            <SidebarGroupLabel className="mb-1.5 px-2.5 font-medium t-12 text-muted-foreground uppercase tracking-[0.08em] antialiased group-data-[collapsible=icon]:hidden">
-              {premiumTitle ? <><span className="classic-sidebar-label">{title}</span><span className="premium-sidebar-label">{premiumTitle}</span></> : title}
-            </SidebarGroupLabel>
+            <SidebarGroupLabel className={groupLabelClass}>{label}</SidebarGroupLabel>
           ) : null}
           {items.map((item) => (
             <SidebarMenuItem className="group/item" key={item.title}>
@@ -50,6 +75,36 @@ export function NavMain({
                 </span>
                 {!!item.badge && <span className="ml-auto grid min-w-5 shrink-0 place-items-center rounded-full bg-rose-600 px-1 t-12 font-medium text-white group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:top-0" aria-hidden="true">{item.badge}</span>}
               </SidebarMenuButton>
+              {item.children?.length ? (
+                <>
+                  <SidebarMenuAction
+                    aria-expanded={!!item.expanded}
+                    aria-label={`${item.expanded ? "Replier" : "Déplier"} les sous-pages de ${item.title}`}
+                    className="sidebar-subpages-toggle"
+                    data-open={item.expanded ? "true" : undefined}
+                    onClick={item.onToggle}
+                    showOnHover={!item.expanded}
+                  >
+                    <ChevronRight aria-hidden="true" className="sidebar-disclosure" data-open={item.expanded ? "true" : undefined} />
+                  </SidebarMenuAction>
+                  {item.expanded ? (
+                    <SidebarMenuSub className="sidebar-subpages">
+                      {item.children.map((child) => (
+                        <SidebarMenuSubItem key={child.title}>
+                          <SidebarMenuSubButton
+                            aria-current={child.isActive ? "page" : undefined}
+                            className="sidebar-subpage-link"
+                            isActive={child.isActive}
+                            render={<button onClick={child.onClick} type="button" />}
+                          >
+                            <span>{child.title}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  ) : null}
+                </>
+              ) : null}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

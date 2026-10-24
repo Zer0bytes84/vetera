@@ -3,12 +3,13 @@ import {
   Add01Icon,
   BirdIcon,
   Calendar01Icon,
+  ArrowRight01Icon,
   CheckmarkCircle02Icon,
-  Folder01Icon,
   StethoscopeIcon,
   ViewIcon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Rat, Turtle } from "lucide-react";
 
 import React from "react";
 
@@ -38,17 +39,18 @@ import { cn } from "@/lib/utils";
 import {
   formatOwnerName,
   formatPatientDate,
-  getSpeciesIcon,
+  formatVisitTimeRange,
+  getAgeLabel,
   PatientStatusBadge,
   PatientDetailsDialog,
   PatientCreateDialog,
 } from "@/modules/patients/components/patients-shared";
-import { getSpeciesTheme } from "@/lib/species-theme";
 import { useListCursor } from "@/hooks/useListCursor";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import { Kbd } from "@/components/ui/kbd";
 import type { PatientsViewProps } from "../hooks/use-patients-page-model";
+import "../patients-list.css";
 import {
   clinicalFlags,
   PATIENT_SORT_OPTIONS,
@@ -56,39 +58,49 @@ import {
 } from "../lib/patient-list";
 import type { Patient } from "@/types/db";
 
-const VISIBLE_FLAGS = 2;
-
-/** Allergies and chronic conditions already entered, under the name. */
+/** Allergies and chronic conditions already entered, beside the name. */
 function ClinicalFlagPills({ patient }: { patient: Patient }) {
   const flags = clinicalFlags(patient);
   if (flags.length === 0) {
     return null;
   }
-  const hidden = flags.slice(VISIBLE_FLAGS);
+  const [first, ...hidden] = flags;
   return (
-    <span className="mt-1.5 flex max-w-[320px] flex-wrap gap-1 font-normal normal-case">
-      {flags.slice(0, VISIBLE_FLAGS).map((flag) => (
-        <span
-          className={cn(
-            "max-w-[200px] truncate rounded-md px-1.5 py-px t-12",
-            flag.kind === "allergy"
-              ? "bg-signal-critical/10 text-signal-critical"
-              : "bg-signal-watch/15 text-amber-800 dark:text-signal-watch"
-          )}
-          key={`${flag.kind}:${flag.label}`}
-          title={flag.label}
-        >
-          {flag.kind === "allergy" ? `Allergie : ${flag.label}` : flag.label}
-        </span>
-      ))}
+    <span className="patients-flags">
+      <span
+        className="patients-flag truncate"
+        data-kind={first.kind}
+        title={first.label}
+      >
+        {first.kind === "allergy" ? `Allergie : ${first.label}` : first.label}
+      </span>
       {hidden.length > 0 ? (
-        <span
-          className="rounded-md bg-zinc-100 px-1.5 py-px t-12 text-muted-foreground dark:bg-white/[0.06]"
-          title={hidden.map((flag) => flag.label).join(", ")}
-        >
+        <span className="patients-flag" data-kind="more" title={hidden.map((flag) => flag.label).join(", ")}>
           +{hidden.length}
         </span>
       ) : null}
+    </span>
+  );
+}
+
+const SPECIES = [
+  { match: /chien|canin/, icon: Dog, tone: "dog" },
+  { match: /chat|f[ée]lin/, icon: Cat, tone: "cat" },
+  { match: /lapin/, icon: Rabbit, tone: "nac" },
+  { match: /rongeur|hamster|cobaye|cochon d'inde|rat|souris|furet/, icon: Rat, tone: "nac" },
+  { match: /oiseau|perroquet|canari|perruche|volaille|poule/, icon: Bird, tone: "wild" },
+  { match: /poisson/, icon: Fish, tone: "wild" },
+  { match: /tortue|reptile|serpent|l[ée]zard/, icon: Turtle, tone: "wild" },
+] as const;
+
+/** The species as a round, tinted avatar, one hue per family. */
+function SpeciesAvatar({ species }: { species?: string }) {
+  const normalized = (species ?? "").toLocaleLowerCase("fr-FR");
+  const found = SPECIES.find((entry) => entry.match.test(normalized));
+  const Icon = found?.icon ?? PawPrint;
+  return (
+    <span aria-hidden="true" className="patients-species" data-tone={found?.tone ?? "other"}>
+      <Icon strokeWidth={1.5} />
     </span>
   );
 }
@@ -240,197 +252,163 @@ export function PatientsView(props: PatientsViewProps) {
             ) : (
               <div className="flex min-h-0 flex-1 flex-col px-6 pt-2 pb-6">
                 <div className="patients-table-wrap flex-1 overflow-auto bg-surface" ref={listRef}>
-                  <table className="medical-data-table min-w-full border-separate border-spacing-0 text-left">
-                    <thead className="bg-zinc-50/50 dark:bg-zinc-900/30">
-                      <tr className="font-medium text-xs text-muted-foreground">
-                        <th
-                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 py-3.5 pr-3 pl-6 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
-                          scope="col"
-                        >
-                          Patient
-                        </th>
-                        <th
-                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 px-3 py-3.5 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
-                          scope="col"
-                        >
-                          Propriétaire
-                        </th>
-                        <th
-                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 px-3 py-3.5 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
-                          scope="col"
-                        >
-                          Statut
-                        </th>
-                        <th
-                          className="sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 px-3 py-3.5 backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
-                          scope="col"
-                        >
-                          Dernière visite
-                        </th>
-                        <th
-                          className="relative sticky top-0 z-10 whitespace-nowrap border-zinc-200/50 border-b bg-zinc-50/95 py-3.5 pr-6 pl-3 text-right backdrop-blur-sm dark:border-white/[0.04] dark:bg-zinc-900/90"
-                          scope="col"
-                        >
-                          <span className="sr-only">Actions</span>
+                  <table className="medical-data-table patients-table min-w-full border-separate border-spacing-0 text-left">
+                    <colgroup>
+                      <col className="patients-col-patient" />
+                      <col className="patients-col-owner" />
+                      <col className="patients-col-status" />
+                      <col className="patients-col-last" />
+                      <col className="patients-col-next" />
+                      <col className="patients-col-open" />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        {[
+                          ["Patient", "patients-col-patient"],
+                          ["Propriétaire", "patients-col-owner"],
+                          ["Statut", "patients-col-status"],
+                          ["Dernière visite", "patients-col-last"],
+                          ["Prochain rendez-vous", "patients-col-next"],
+                        ].map(([label, column]) => (
+                          <th className={cn("sticky top-0 z-10 whitespace-nowrap px-3 py-3", column)} key={label} scope="col">
+                            {label}
+                          </th>
+                        ))}
+                        <th className="patients-col-open sticky top-0 z-10 py-3 pr-6 pl-3" scope="col">
+                          <span className="sr-only">Ouvrir</span>
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="">
-                      {paginatedPatients.map((entry, index) => {
-                        const isLast = index === paginatedPatients.length - 1;
-                        const borderClass = isLast
-                          ? ""
-                          : "border-b border-zinc-200/50 dark:border-white/[0.04]";
+                    <tbody>
+                      {paginatedPatients.map((entry) => {
+                        const { patient } = entry;
+                        const details = [
+                          patient.species,
+                          patient.breed,
+                          patient.sex === "F" ? "Femelle" : "Mâle",
+                          patient.dateOfBirth ? getAgeLabel(patient.dateOfBirth) : null,
+                        ].filter(Boolean).join(" · ");
+                        const openRecord = () => {
+                          if (onNavigateToPatient) {
+                            onNavigateToPatient(patient.id);
+                          } else {
+                            openPatientDetails(patient, "info");
+                          }
+                        };
 
                         return (
                           <tr
-                            aria-label={`Ouvrir le dossier de ${entry.patient.name}`}
+                            aria-label={`Ouvrir le dossier de ${patient.name}`}
                             className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                             data-list-row=""
-                            data-row-id={entry.patient.id}
-                            key={entry.patient.id}
-                            onClick={() => {
-                              if (onNavigateToPatient) {
-                                onNavigateToPatient(entry.patient.id);
-                              } else {
-                                openPatientDetails(entry.patient, "info");
-                              }
-                            }}
+                            data-row-id={patient.id}
+                            key={patient.id}
+                            onClick={openRecord}
                             onKeyDown={(event) => {
                               if (event.target !== event.currentTarget) {
                                 return;
                               }
                               if (event.key === "Enter" || event.key === " ") {
                                 event.preventDefault();
-                                if (onNavigateToPatient) {
-                                  onNavigateToPatient(entry.patient.id);
-                                } else {
-                                  openPatientDetails(entry.patient, "info");
-                                }
+                                openRecord();
                               }
                             }}
                             tabIndex={0}
                           >
-                            {/* Col 1: Patient Details */}
-                            <td
-                              className={cn(
-                                "whitespace-nowrap py-4 pr-3 pl-6",
-                                borderClass
-                              )}
-                            >
-                              <div className="flex items-center gap-3">
-                                {(() => {
-                                  const spTheme = getSpeciesTheme(entry.patient.species);
-                                  return (
-                                    <div
-                                      className={cn(
-                                        "flex size-10 shrink-0 items-center justify-center rounded-xl border shadow-2xs",
-                                        spTheme.avatarBg,
-                                        spTheme.avatarBorder,
-                                        spTheme.avatarIconColor
-                                      )}
-                                    >
-                                      <HugeiconsIcon
-                                        icon={getSpeciesIcon(entry.patient.species)}
-                                        size={22}
-                                        strokeWidth={1.5}
-                                      />
-                                    </div>
-                                  );
-                                })()}
-                                <span className="font-semibold text-sm text-zinc-950 capitalize tracking-tight dark:text-white">
-                                  {entry.patient.name}{" "}
-                                  <span className="mt-0.5 block font-normal text-xs text-zinc-500 normal-case dark:text-zinc-400">
-                                    {entry.patient.species}
-                                    {entry.patient.breed
-                                      ? ` · ${entry.patient.breed}`
-                                      : ""}
+                            {/* Patient : espèce, nom et alertes, puis race, sexe et âge */}
+                            <td className="patients-col-patient py-4 pr-3 pl-6">
+                              <div className="flex min-w-0 items-center gap-3">
+                                <SpeciesAvatar species={patient.species} />
+                                <span className="patients-cell-stack min-w-0">
+                                  <span className="patients-name-line">
+                                    <span className="patients-name truncate capitalize">{patient.name}</span>
+                                    <ClinicalFlagPills patient={patient} />
                                   </span>
-                                  <ClinicalFlagPills patient={entry.patient} />
+                                  <span className="patients-cell-sub truncate">{details}</span>
                                 </span>
                               </div>
                             </td>
 
-                            {/* Col 2: Owner Contact */}
-                            <td
-                              className={cn(
-                                "whitespace-nowrap px-3 py-4 font-medium text-sm text-zinc-800 capitalize dark:text-zinc-200",
-                                borderClass
-                              )}
-                            >
-                              {formatOwnerName(entry.owner)}
+                            {/* Propriétaire et téléphone */}
+                            <td className="patients-col-owner px-3 py-4">
+                              <span className="patients-cell-stack">
+                                <span className="patients-cell-main truncate capitalize">
+                                  {formatOwnerName(entry.owner)}
+                                </span>
+                                {entry.owner?.phone ? (
+                                  <span className="patients-cell-sub truncate tabular-nums">{entry.owner.phone}</span>
+                                ) : null}
+                              </span>
                             </td>
 
-                            {/* Col 3: Statut */}
-                            <td
-                              className={cn(
-                                "whitespace-nowrap px-3 py-4",
-                                borderClass
-                              )}
-                            >
-                              <PatientStatusBadge
-                                status={entry.patient.status}
-                              />
+                            {/* Statut */}
+                            <td className="patients-col-status whitespace-nowrap px-3 py-4">
+                              <PatientStatusBadge status={patient.status} />
                             </td>
 
-                            {/* Col 4: Last Visit */}
-                            <td
-                              className={cn(
-                                "whitespace-nowrap px-3 py-4 font-medium text-sm text-zinc-800 dark:text-zinc-200",
-                                borderClass
-                              )}
-                            >
+                            {/* Dernière visite */}
+                            <td className="patients-col-last whitespace-nowrap px-3 py-4 tabular-nums">
                               {entry.lastVisit ? (
-                                formatPatientDate(entry.lastVisit)
+                                <span className="patients-cell-main">{formatPatientDate(entry.lastVisit)}</span>
                               ) : (
-                                <span className="font-normal text-muted-foreground">Aucune</span>
+                                <span className="patients-cell-sub">Aucune</span>
                               )}
                             </td>
 
-                            {/* Col 5: Actions */}
-                            <td
-                              className={cn(
-                                "relative whitespace-nowrap py-4 pr-6 pl-3 text-right font-medium text-sm",
-                                borderClass
+                            {/* Prochain rendez-vous : la date, l'heure dessous */}
+                            <td className="patients-col-next whitespace-nowrap px-3 py-4 tabular-nums">
+                              {entry.upcomingAppointment ? (
+                                <span className="patients-cell-stack">
+                                  <span className="patients-cell-main">
+                                    {formatPatientDate(entry.upcomingAppointment.startTime)}
+                                  </span>
+                                  <span className="patients-cell-sub">
+                                    {formatVisitTimeRange(entry.upcomingAppointment.startTime)}
+                                  </span>
+                                </span>
+                              ) : (
+                                <span className="patients-cell-sub">Aucun</span>
                               )}
-                            >
-                              <div className="flex items-center justify-end gap-1" data-row-reveal="">
-                                <ShortcutTooltip label="Aperçu du dossier" shortcut="Espace ou A">
-                                  <Button
-                                    className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
-                                    onClick={(event) => {
-                                      event.stopPropagation();
-                                      openPatientPeek(entry.patient.id, { follow: true });
-                                    }}
-                                    size="icon"
-                                    variant="ghost"
-                                  >
-                                    <HugeiconsIcon
-                                      className="size-4"
-                                      icon={ViewIcon}
-                                      strokeWidth={1.5}
-                                    />
-                                    <span className="sr-only">Aperçu du dossier médical</span>
-                                  </Button>
-                                </ShortcutTooltip>
-                                {onNavigateToPatient && (
-                                  <ShortcutTooltip label="Ouvrir le dossier" shortcut="Entrée">
+                            </td>
+
+                            {/* Ouvrir : l'aperçu au survol, et le dossier lui-même */}
+                            <td className="patients-col-open whitespace-nowrap py-4 pr-6 pl-3">
+                              <div className="flex items-center justify-end gap-1">
+                                <span data-row-reveal="">
+                                  <ShortcutTooltip label="Aperçu du dossier" shortcut="Espace ou A">
                                     <Button
-                                      className="size-8 rounded-full bg-transparent text-muted-foreground hover:bg-zinc-100 hover:text-foreground dark:hover:bg-white/[0.04]"
+                                      className="size-8 rounded-full bg-transparent text-muted-foreground"
                                       onClick={(event) => {
                                         event.stopPropagation();
-                                        onNavigateToPatient(entry.patient.id);
+                                        openPatientPeek(patient.id, { follow: true });
                                       }}
                                       size="icon"
                                       variant="ghost"
                                     >
+                                      <HugeiconsIcon className="size-4" icon={ViewIcon} strokeWidth={1.5} />
+                                      <span className="sr-only">Aperçu du dossier médical</span>
+                                    </Button>
+                                  </ShortcutTooltip>
+                                </span>
+                                {onNavigateToPatient && (
+                                  <ShortcutTooltip label="Ouvrir le dossier" shortcut="Entrée">
+                                    <button
+                                      className="patients-open-link"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        onNavigateToPatient(patient.id);
+                                      }}
+                                      type="button"
+                                    >
+                                      Ouvrir
                                       <HugeiconsIcon
-                                        className="size-4"
-                                        icon={Folder01Icon}
+                                        aria-hidden="true"
+                                        className="patients-open-arrow size-4"
+                                        icon={ArrowRight01Icon}
                                         strokeWidth={1.5}
                                       />
-                                      <span className="sr-only">Dossier</span>
-                                    </Button>
+                                      <span className="sr-only"> le dossier de {patient.name}</span>
+                                    </button>
                                   </ShortcutTooltip>
                                 )}
                               </div>
