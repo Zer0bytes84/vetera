@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { EMPTY_MODEL_STATUS, type LocalModelStatus } from "../local-ai/models";
-import { allAIModelsReady, checkAIModelsStatus, provisionAllAIModels, type AIProvisioningProgress } from "./ai-model-provisioning";
+import { allAIModelsReady, checkAIModelsStatus, provisionAllAIModels, provisionNewAssistant, type AIProvisioningProgress } from "./ai-model-provisioning";
 
 export interface AIInstallationState {
   status: LocalModelStatus;
@@ -8,11 +8,13 @@ export interface AIInstallationState {
   progress: AIProvisioningProgress | null;
   error: string | null;
   errorCode: string | null;
+  /** What the running or last installation was: the base tools or the new assistant. */
+  target: "base" | "generator4";
 }
-type Dependencies = {check: typeof checkAIModelsStatus; provision: typeof provisionAllAIModels};
+type Dependencies = {check: typeof checkAIModelsStatus; provision: typeof provisionAllAIModels; provisionNewAssistant?: typeof provisionNewAssistant};
 
 export function createAIModelInstallation(dependencies: Dependencies) {
-  let state: AIInstallationState = {status: EMPTY_MODEL_STATUS, running: false, progress: null, error: null, errorCode: null};
+  let state: AIInstallationState = {status: EMPTY_MODEL_STATUS, running: false, progress: null, error: null, errorCode: null, target: "base"};
   const listeners = new Set<() => void>();
   let pending: Promise<void> | null = null;
   let statusRequest = 0;
@@ -26,13 +28,14 @@ export function createAIModelInstallation(dependencies: Dependencies) {
     if (request === statusRequest) update({status, ...(allAIModelsReady(status) ? {error: null, errorCode: null} : {})});
     return status;
   };
-  const start = (accessToken?: string) => {
+  // One installation at a time (the native side holds a single lock).
+  const run = (target: AIInstallationState["target"], install: () => Promise<LocalModelStatus>, installed: (status: LocalModelStatus) => boolean) => {
     if (pending) return pending;
-    update({running: true, progress: null, error: null, errorCode: null});
+    update({running: true, progress: null, error: null, errorCode: null, target});
     pending = (async () => {
       try {
-        const status = await dependencies.provision(progress => update({progress}), {accessToken});
-        if (!allAIModelsReady(status)) throw new Error("L’installation n’a pas pu être vérifiée. Réessayez depuis les paramètres.");
+        const status = await install();
+        if (!installed(status)) throw new Error("L’installation n’a pas pu être vérifiée. Réessayez depuis les paramètres.");
         ++statusRequest;
         update({status});
       } catch (error) {
@@ -47,10 +50,14 @@ export function createAIModelInstallation(dependencies: Dependencies) {
     })();
     return pending;
   };
+  const start = (accessToken?: string) =>
+    run("base", () => dependencies.provision(progress => update({progress}), {accessToken}), allAIModelsReady);
+  const startNewAssistant = () =>
+    run("generator4", () => (dependencies.provisionNewAssistant ?? provisionNewAssistant)(progress => update({progress})), status => Boolean(status.generator4Ready));
   return {
     getSnapshot: () => state,
     subscribe: (listener: () => void) => {listeners.add(listener); return () => {listeners.delete(listener);};},
-    refresh, start,
+    refresh, start, startNewAssistant,
   };
 }
 

@@ -113,6 +113,10 @@ async function runSoap(
   const started = performance.now();
   const marks: Record<string, number> = {};
   let attempts = 1;
+  // Raw output of each attempt, with the model that actually produced it (no silent fallback in a measure).
+  const outputs: { number: 1 | 2; seconds: number; generator?: string; fellBack?: boolean; text: string }[] = [];
+  const onAttempt = (attempt: { number: 1 | 2; text: string; generator?: string; fellBack?: boolean }) =>
+    outputs.push({ ...attempt, seconds: seconds(started) });
   const onProgress = (event: LocalAiProgress) => {
     if (event.stage && !(event.stage in marks)) {
       marks[event.stage] = seconds(started);
@@ -136,6 +140,7 @@ async function runSoap(
       context,
       signal: new AbortController().signal,
       onProgress,
+      onAttempt,
     });
     const score = scoreSoapDraft(
       item.transcript,
@@ -150,6 +155,9 @@ async function runSoap(
         origin: item.origin,
         accepted: true,
         attempts,
+        generators: outputs.map((output) => output.generator ?? null),
+        fellBack: outputs.some((output) => output.fellBack),
+        attemptSeconds: outputs.map((output) => output.seconds),
         totalSeconds: seconds(started),
         loadedAtSeconds: marks.generating ?? null,
         fidelity: score.fidelity,
@@ -157,7 +165,7 @@ async function runSoap(
         sectionAgreement: score.sectionAgreement,
         inventedDosages: score.inventedDosages.length,
       },
-      details: { id: item.id, alteredWords: score.alteredWords, inventedDosages: score.inventedDosages },
+      details: { id: item.id, alteredWords: score.alteredWords, inventedDosages: score.inventedDosages, note: draft, outputs },
     };
   } catch (error) {
     return {
@@ -166,11 +174,14 @@ async function runSoap(
         origin: item.origin,
         accepted: false,
         attempts,
+        generators: outputs.map((output) => output.generator ?? null),
+        fellBack: outputs.some((output) => output.fellBack),
+        attemptSeconds: outputs.map((output) => output.seconds),
         totalSeconds: seconds(started),
         loadedAtSeconds: marks.generating ?? null,
         error: error instanceof Error ? error.message : String(error),
       },
-      details: null,
+      details: { id: item.id, error: error instanceof Error ? error.message : String(error), outputs },
     };
   }
 }
@@ -417,8 +428,8 @@ async function runIsolationCheck(models: LocalModelStatus) {
   await step("generator", async () => {
     const session = await LocalInferenceSession.create("soap", new AbortController().signal, quiet);
     try {
-      const result = await session.request({ type: "generate", modelUrl: urls.modelUrl, runtimeRoot: urls.runtimeRoot, prompt: "Réponds seulement : bonjour." }, "generated");
-      return result.type === "generated" ? result.text.trim().slice(0, 40) : result.type;
+      const result = await session.request({ type: "generate", generators: urls.generators, runtimeRoot: urls.runtimeRoot, prompt: "Réponds seulement : bonjour." }, "generated");
+      return result.type === "generated" ? { text: result.text.trim().slice(0, 40), generator: result.generator, fellBack: result.fellBack ?? false } : result.type;
     } finally {
       session.close();
     }
@@ -614,9 +625,10 @@ async function main() {
     for (const item of corpus.synthetic)
       for (let run = 1; run <= runs; run++) {
         mark(`synthetic:${item.id}:${run}:start`);
-        const { result } = await runSoap(item, item.bundle!, models);
+        const { result, details: detail } = await runSoap(item, item.bundle!, models);
         mark(`synthetic:${item.id}:${run}:end`);
         rows.push({ ...result, run });
+        if (detail && run === 1) details.push(detail);
         log(`fictif ${run}/${runs} : ${result.totalSeconds} s, ${result.attempts} essai(s)`);
       }
     report.synthetic = rows;
@@ -636,15 +648,19 @@ async function main() {
     }
   }
   if (tasks.has("a")) {
+    // Generation is deterministic (topK 1, temperature 0): repeated runs measure latency only.
+    const runsA = Number(params.get("runsA") ?? 1);
+    report.generator = params.get("generator") ?? "préférence de l'app";
     const rows: unknown[] = [];
-    for (const item of corpus.soapCases) {
-      mark(`soap:${item.id}:start`);
-      const { result, details: detail } = await runSoap(item, corpus.patients[item.patientId], models);
-      mark(`soap:${item.id}:end`);
-      rows.push(result);
-      if (detail) details.push(detail);
-      log(`note ${rows.length}/${corpus.soapCases.length} : ${result.accepted ? "acceptée" : "refusée"}, ${result.totalSeconds} s`);
-    }
+    for (const item of corpus.soapCases)
+      for (let run = 1; run <= runsA; run++) {
+        mark(`soap:${item.id}:${run}:start`);
+        const { result, details: detail } = await runSoap(item, corpus.patients[item.patientId], models);
+        mark(`soap:${item.id}:${run}:end`);
+        rows.push({ ...result, run });
+        if (detail && run === 1) details.push(detail);
+        log(`note ${item.id} ${run}/${runsA} : ${result.accepted ? "acceptée" : "refusée"}, ${result.attempts} essai(s), ${result.totalSeconds} s, ${JSON.stringify(result.generators)}`);
+      }
     report.soap = rows;
   }
   if (tasks.has("poc")) report.poc = await runPoc(models);

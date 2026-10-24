@@ -42,6 +42,8 @@ pub struct LocalModelStatus {
     pub(crate) embedding2_ready: bool,
     /// arctic-embed-l-v2 q8, candidate measured in phase A2.
     pub(crate) arctic_ready: bool,
+    /// Gemma 4 E2B (phase B), optional, installed next to Gemma 3 which stays the fallback.
+    pub(crate) generator4_ready: bool,
 }
 
 fn read_json(path: &Path) -> Result<Value, String> {
@@ -188,7 +190,19 @@ pub(crate) fn status(root: &Path) -> LocalModelStatus {
             .join("generator/gemma3.task")
             .metadata()
             .is_ok_and(|meta| meta.is_file() && meta.len() > 1024 * 1024),
+        generator4_ready: validate_generator4(&root.join("generator4")).is_ok(),
     }
+}
+/// Gemma 4 E2B web file, exact size of the published revision (its SHA-256 is
+/// checked at download time).
+pub(crate) const GENERATOR4_FILE: (&str, u64) = ("gemma4-e2b.task", 2_003_697_664);
+pub(crate) fn validate_generator4(folder: &Path) -> Result<(), String> {
+    let meta = fs::symlink_metadata(folder.join(GENERATOR4_FILE.0))
+        .map_err(|_| "Le fichier de la nouvelle version de l’assistant est manquant.")?;
+    if !meta.is_file() || meta.len() != GENERATOR4_FILE.1 {
+        return Err("Le fichier de la nouvelle version de l’assistant est incomplet.".into());
+    }
+    Ok(())
 }
 pub(crate) fn replace_directory(stage: &Path, destination: &Path) -> Result<(), String> {
     let backup = destination.with_extension("previous");

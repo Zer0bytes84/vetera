@@ -1,4 +1,5 @@
 import { parkIdleModel, reserveClinicalModel } from "./model-lease";
+import { recordGeneratorFallback } from "./generator-choice";
 import type {
   LocalAiProgress,
   WorkerRequest,
@@ -17,12 +18,20 @@ export class LocalInferenceSession {
   private closed = false;
   private unpark: (() => void) | null = null;
   private readonly onAbort = () => this.close();
+  // Generation models that failed to load during this session (silent fallback).
+  private readonly unavailable = new Set<string>();
+  private lastRequest: WorkerRequest | null = null;
   private constructor(
-    private readonly worker: Worker,
+    private worker: Worker,
     private release: () => void,
     private signal: AbortSignal,
-    private onProgress: (event: LocalAiProgress) => void
+    private onProgress: (event: LocalAiProgress) => void,
+    private readonly spawn: () => Worker = () => worker
   ) {
+    this.attach(worker);
+    signal.addEventListener("abort", this.onAbort, { once: true });
+  }
+  private attach(worker: Worker) {
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
       if (this.closed) return;
       if (data.type === "progress") {
@@ -33,6 +42,11 @@ export class LocalInferenceSession {
         this.reject(new Error(data.message));
         return;
       }
+      if (data.type === "generator-unavailable") {
+        this.retryWithout(data.url);
+        return;
+      }
+      if (data.type === "generated" && data.fellBack) recordGeneratorFallback();
       if (this.pending && data.type === this.pending.expected) {
         const { resolve, timer } = this.pending;
         this.pending = null;
@@ -53,7 +67,24 @@ export class LocalInferenceSession {
         )
       );
     };
-    signal.addEventListener("abort", this.onAbort, { once: true });
+  }
+  /** Same request, fresh worker, without the generation model that failed. */
+  private retryWithout(url: string) {
+    const request = this.lastRequest;
+    if (!this.pending || request?.type !== "generate") return;
+    this.unavailable.add(url);
+    this.worker.terminate();
+    this.worker = this.spawn();
+    this.attach(this.worker);
+    this.post(request, []);
+  }
+  private post(message: WorkerRequest, transfer: Transferable[]) {
+    const request =
+      message.type === "generate" && message.generators.some((candidate) => this.unavailable.has(candidate.url))
+        ? { ...message, generators: message.generators.filter((candidate) => !this.unavailable.has(candidate.url)), fellBack: true }
+        : message;
+    this.lastRequest = message;
+    this.worker.postMessage(request, transfer);
   }
   static async create(
     kind: "whisper" | "soap" | "embedding",
@@ -81,7 +112,9 @@ export class LocalInferenceSession {
                   type: "module",
                 }
               );
-      return new LocalInferenceSession(worker, release, signal, onProgress);
+      const spawn = () =>
+        new Worker(new URL("../workers/soap.worker.ts", import.meta.url), { type: "module" });
+      return new LocalInferenceSession(worker, release, signal, onProgress, kind === "soap" ? spawn : undefined);
     } catch (error) {
       release();
       throw error;
@@ -107,7 +140,7 @@ export class LocalInferenceSession {
       }, 480_000);
       this.pending = { resolve, reject, expected, timer };
       try {
-        this.worker.postMessage(message, transfer);
+        this.post(message, transfer);
       } catch (error) {
         this.reject(
           error instanceof Error

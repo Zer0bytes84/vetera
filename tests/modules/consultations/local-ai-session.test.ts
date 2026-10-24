@@ -82,7 +82,7 @@ describe("exclusive clinical inference session", () => {
         {
           type: "load-whisper",
           modelRoot: "asset://localhost/models/",
-          modelUrl: "asset://localhost/models/gemma3.task",
+          generators: [{ family: "gemma3", url: "asset://localhost/models/gemma3.task" }],
           runtimeRoot: "http://localhost/runtime/",
         },
         "ready"
@@ -112,7 +112,7 @@ describe("exclusive clinical inference session", () => {
       session.request(
         {
           type: "generate",
-          modelUrl: "asset://localhost/models/gemma3.task",
+          generators: [{ family: "gemma3", url: "asset://localhost/models/gemma3.task" }],
           runtimeRoot: "http://localhost/runtime/",
           prompt: "SOAP",
         },
@@ -218,4 +218,29 @@ describe("engine capacity before the tokenizer is loaded", () => {
     expect(estimate).toBeGreaterThanOrEqual(542 + 256);
     expect(estimate).toBeLessThan(2 * (542 + 256));
   });
+  it("relance la note dans un worker neuf, sans le modèle qui n'a pas pu se charger, et s'en souvient au second essai", async () => {
+    const { LocalInferenceSession } = await import("@/modules/consultations/local-ai/inference-client");
+    const { hasGeneratorFallenBack } = await import("@/modules/consultations/local-ai/generator-choice");
+    const session = await LocalInferenceSession.create("soap", new AbortController().signal, vi.fn());
+    const generators = [
+      { family: "gemma4" as const, url: "asset://localhost/models/generator4/gemma4-e2b.task" },
+      { family: "gemma3" as const, url: "asset://localhost/models/generator/gemma3.task" },
+    ];
+    const request = { type: "generate" as const, generators, runtimeRoot: "asset://localhost/runtime/", prompt: "Note" };
+    const first = session.request(request, "generated");
+    workers[0].emit({ type: "generator-unavailable", url: generators[0].url });
+    expect(workers[0].terminate).toHaveBeenCalledOnce();
+    expect(workers).toHaveLength(2);
+    expect(workers[1].postMessage).toHaveBeenCalledWith({ ...request, generators: [generators[1]], fellBack: true }, []);
+    workers[1].emit({ type: "generated", text: "{}", generator: "gemma3", fellBack: true });
+    await expect(first).resolves.toMatchObject({ generator: "gemma3" });
+    expect(hasGeneratorFallenBack()).toBe(true);
+    const second = session.request({ ...request, prompt: "Recopie" }, "generated");
+    expect(workers[1].postMessage).toHaveBeenLastCalledWith({ ...request, prompt: "Recopie", generators: [generators[1]], fellBack: true }, []);
+    workers[1].emit({ type: "generated", text: "{}", generator: "gemma3", fellBack: true });
+    await second;
+    expect(workers).toHaveLength(2);
+    session.close();
+  });
 });
+

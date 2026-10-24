@@ -28,6 +28,8 @@ interface SoapDraftOptions {
   onProgress: (event: LocalAiProgress) => void;
   /** Receives the session as soon as it exists, so the caller can cancel it. */
   onSession?: (session: LocalInferenceSession) => void;
+  /** Each raw model output and the model that produced it (evaluation bench). */
+  onAttempt?: (attempt: { number: 1 | 2; text: string; generator?: string; fellBack?: boolean }) => void;
 }
 
 /**
@@ -42,6 +44,7 @@ export async function prepareSoapDraft({
   signal,
   onProgress,
   onSession,
+  onAttempt,
 }: SoapDraftOptions): Promise<LocalSoapNote> {
   const protectedInput = prepareModelDictation(transcript);
   const routed = guidedSource ? routeGuidedTreatments(guidedSource) : null;
@@ -88,7 +91,7 @@ export async function prepareSoapDraft({
         const result = await session.request(
           {
             type: "generate",
-            modelUrl: urls.modelUrl,
+            generators: urls.generators,
             runtimeRoot: urls.runtimeRoot,
             prompt: nextPrompt,
             responseTemplate: JSON.stringify(scaffold),
@@ -98,6 +101,7 @@ export async function prepareSoapDraft({
         );
         if (result.type !== "generated")
           throw new Error("La préparation locale de la note a échoué.");
+        onAttempt?.({ number, text: result.text, generator: result.generator, fellBack: result.fellBack });
         onProgress({
           message: "Vérification des quatre sections…",
           stage: "validating",

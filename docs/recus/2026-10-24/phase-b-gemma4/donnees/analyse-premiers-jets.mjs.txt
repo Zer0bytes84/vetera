@@ -1,0 +1,46 @@
+// node analyse.mjs : rejoue chaque sortie brute avec le vrai code de l'app (analyse JSON, contrôle de fidélité),
+// puis avec une règle « reclassement autorisé » : mêmes phrases, mot pour mot, rubrique libre.
+import { readFileSync } from "node:fs";
+import * as app from "./app-soap.mjs";
+const W = process.env.HOME + "/Library/Caches/baitari-eval/";
+const cases = JSON.parse(readFileSync(W + "cases-phaseb.json", "utf8"));
+const synthetic = JSON.parse(readFileSync("scripts/eval-local-ai/synthetic-latency-case.json", "utf8"));
+const transcripts = Object.fromEntries([...cases.soapCases, synthetic].map((c) => [c.id, c.transcript]));
+const tok = (t) => (t.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase("fr-FR").replaceAll("−", "-").match(/[+-]?\d+(?:[.,]\d+)?|\p{L}+|[<>≤≥=%/]/gu) ?? []).map((x) => x.replace(/(\d),(?=\d)/gu, "$1."));
+const KEYS = ["subjective", "objective", "assessment", "plan"];
+const sentences = (t) => t.split(/(?<=[.!?])\s+|\n+/u).map((s) => tok(s).join(" ")).filter(Boolean);
+function relaxed(note, scaffold) {
+  const all = (n) => KEYS.flatMap((k) => tok(n[k])).sort().join(" ");
+  if (all(note) !== all(scaffold)) return "mots ajoutés, retirés ou altérés";
+  for (const k of KEYS) for (const s of sentences(scaffold[k])) if (!KEYS.some((h) => (" " + tok(note[h]).join(" ") + " ").includes(" " + s + " "))) return "phrase coupée ou réécrite";
+  return null;
+}
+for (const label of (process.env.LABELS ?? "pb3,pb4").split(",")) {
+  console.log("=====", label);
+  for (const d of JSON.parse(readFileSync(W + `report-${label}.details-local.json`, "utf8"))) {
+    const transcript = transcripts[d.id];
+    const scaffold = app.buildDictationScaffold(app.prepareModelDictation(transcript).text);
+    for (const o of d.outputs.filter((o) => o.number === 1)) {
+      let note, verdict, relax, altered = [];
+      try { note = app.parseGeneratedSoap(o.text); } catch (e) { verdict = "format : " + e.message.slice(0, 50); }
+      if (note) {
+        try { app.assertFaithfulSoap(note, scaffold); verdict = "acceptée"; } catch { verdict = "refusée (fidélité stricte)"; }
+        relax = relaxed(note, scaffold) ?? "acceptée";
+        const known = new Set([...tok(transcript), ...KEYS.flatMap((k) => tok(scaffold[k]))]);
+        altered = [...new Set(KEYS.flatMap((k) => tok(note[k])))].filter((w) => !known.has(w));
+      }
+      console.log(d.id.slice(0, 8).padEnd(9), "1er essai :", verdict.padEnd(28), "| reclassement autorisé :", (relax ?? "—").padEnd(32), "| mots absents de la dictée :", JSON.stringify(altered));
+    }
+  }
+}
+// Niveau des mots seulement : aucun mot ajouté, retiré ou altéré, rubrique libre.
+for (const label of (process.env.LABELS ?? "pb3,pb4").split(",")) {
+  let ok = 0, n = 0;
+  for (const d of JSON.parse(readFileSync(W + `report-${label}.details-local.json`, "utf8"))) {
+    const scaffold = app.buildDictationScaffold(app.prepareModelDictation(transcripts[d.id]).text);
+    let note; try { note = app.parseGeneratedSoap(d.outputs[0].text); } catch {}
+    const all = (x) => KEYS.flatMap((k) => tok(x[k])).sort().join(" ");
+    n++; if (note && all(note) === all(scaffold)) ok++;
+  }
+  console.log(label, "mêmes mots, rubrique libre :", ok + "/" + n);
+}

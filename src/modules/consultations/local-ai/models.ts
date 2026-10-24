@@ -1,6 +1,7 @@
 import { Channel, convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { isTauriRuntime } from "@/services/browser-store";
 import type { AIProvisioningProgress } from "../services/ai-model-provisioning";
+import { generatorCandidates } from "./generator-choice";
 
 export interface LocalModelStatus {
   root: string | null;
@@ -12,6 +13,8 @@ export interface LocalModelStatus {
   embedding2Ready?: boolean;
   /** arctic-embed-l-v2 (A2 candidate). */
   arcticReady?: boolean;
+  /** New assistant version (Gemma 4 E2B), installed next to Gemma 3. */
+  generator4Ready?: boolean;
 }
 export const EMPTY_MODEL_STATUS: LocalModelStatus = {
   root: null,
@@ -25,14 +28,16 @@ export async function getLocalModels(): Promise<LocalModelStatus> {
 }
 export async function downloadLocalModels(
   onProgress?: (progress: AIProvisioningProgress) => void,
-  accessToken?: string
+  accessToken?: string,
+  /** Optional tools to install by id (the new assistant); omitted = the base tools. */
+  only?: string[]
 ): Promise<LocalModelStatus> {
   if (!isTauriRuntime()) {
     throw new Error("Le téléchargement des outils locaux se fait dans l’application de bureau. Vous pouvez continuer à utiliser la version web.");
   }
   const channel = new Channel<AIProvisioningProgress>();
   channel.onmessage = progress => onProgress?.(progress);
-  return invoke("download_local_ai_models", { onProgress: channel, accessToken: accessToken?.trim() || null });
+  return invoke("download_local_ai_models", { onProgress: channel, accessToken: accessToken?.trim() || null, only: only ?? null });
 }
 export async function cancelLocalModelDownload() {
   if (isTauriRuntime()) await invoke("cancel_local_ai_download");
@@ -75,6 +80,7 @@ export function getLocalModelUrls(status: LocalModelStatus) {
   return {
     modelRoot,
     modelUrl: `${modelRoot}generator/gemma3.task`,
+    generators: generatorCandidates(status, modelRoot),
     runtimeRoot: new URL(
       `${import.meta.env.BASE_URL}local-ai-runtime/`,
       window.location.href

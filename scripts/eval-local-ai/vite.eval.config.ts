@@ -18,6 +18,8 @@ const query = new URLSearchParams(
     skipSections: process.env.BAITARI_EVAL_SKIP_SECTIONS,
     dumpVectors: process.env.BAITARI_EVAL_DUMP_VECTORS,
     searchThreads: process.env.BAITARI_EVAL_SEARCH_THREADS,
+    generator: process.env.BAITARI_EVAL_GENERATOR,
+    runsA: process.env.BAITARI_EVAL_RUNS_A,
   }).filter((entry): entry is [string, string] => Boolean(entry[1]))
 ).toString();
 

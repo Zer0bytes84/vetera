@@ -130,5 +130,18 @@
         "sha256": "74f37adc3f94af1eaa0be70875b10060b2a2e45d533bfb7d5e2c08d3e4050cfe"
       }
     ]
+  },
+  {
+    "id": "generator4",
+    "name": "Assistant IA, nouvelle version",
+    "optional": true,
+    "files": [
+      {
+        "path": "gemma4-e2b.task",
+        "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/1caa527c1e88b55f046fcd8d2b4265606680663d/gemma-4-E2B-it-web.task",
+        "size": 2003697664,
+        "sha256": "2cbff161177a4d51c9d04360016185976f504517ba5758cd10c1564e5421c5a5"
+      }
+    ]
   }
 ]

@@ -29,6 +29,9 @@ struct Model {
     id: String,
     name: String,
     files: Vec<ModelFile>,
+    /// Offered separately, in one tap, once the base tools are installed.
+    #[serde(default)]
+    optional: bool,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -85,7 +88,7 @@ fn manifest() -> Result<Vec<Model>, DownloadError> {
     for model in &models {
         if !matches!(
             model.id.as_str(),
-            "whisper" | "generator" | "embeddinggemma"
+            "whisper" | "generator" | "embeddinggemma" | "generator4"
         ) {
             return Err(DownloadError::new(
                 "configuration",
@@ -110,6 +113,17 @@ fn manifest() -> Result<Vec<Model>, DownloadError> {
         }
     }
     Ok(models)
+}
+
+/// Base tools by default; optional ones (the new assistant) only when asked by id.
+fn selected(models: Vec<Model>, only: Option<&[String]>) -> Vec<Model> {
+    models
+        .into_iter()
+        .filter(|model| match only {
+            Some(ids) => ids.contains(&model.id),
+            None => !model.optional,
+        })
+        .collect()
 }
 
 fn disk_error() -> DownloadError {
@@ -248,6 +262,7 @@ fn ready(status: &LocalModelStatus, id: &str) -> bool {
     match id {
         "whisper" => status.whisper_ready,
         "generator" => status.generator_ready,
+        "generator4" => status.generator4_ready,
         _ => status.embedding_ready,
     }
 }
@@ -256,6 +271,7 @@ fn validate_model(id: &str, folder: &Path) -> Result<(), DownloadError> {
     let result = match id {
         "whisper" => local_ai_models::validate_whisper(folder),
         "embeddinggemma" => local_ai_models::validate_embedding(folder),
+        "generator4" => local_ai_models::validate_generator4(folder),
         _ => {
             if folder
                 .join("gemma3.task")
@@ -436,6 +452,7 @@ pub async fn download_local_ai_models(
     app: tauri::AppHandle,
     on_progress: Channel<DownloadProgress>,
     access_token: Option<String>,
+    only: Option<Vec<String>>,
 ) -> Result<LocalModelStatus, DownloadError> {
     let root = app
         .path()
@@ -450,7 +467,7 @@ pub async fn download_local_ai_models(
             )
         })?;
         CANCELLED.store(false, Ordering::Relaxed);
-        let models = manifest()?;
+        let models = selected(manifest()?, only.as_deref());
         let client = network_client(true)?;
         install_models(
             &root,
@@ -536,14 +553,26 @@ mod tests {
     #[test]
     fn pinned_manifest_only_contains_known_https_sources_and_real_sizes() {
         let models = manifest().unwrap();
-        assert_eq!(models.len(), 3);
+        assert_eq!(models.len(), 4);
+        // The base installation is unchanged; the new assistant is offered on its own.
+        let base = selected(manifest().unwrap(), None);
         assert_eq!(
-            models
-                .iter()
+            base.iter().map(|model| model.id.as_str()).collect::<Vec<_>>(),
+            ["whisper", "embeddinggemma", "generator"]
+        );
+        assert_eq!(
+            base.iter()
                 .flat_map(|model| &model.files)
                 .map(|file| file.size)
                 .sum::<u64>(),
             2_215_021_763
+        );
+        let extra = selected(manifest().unwrap(), Some(&["generator4".to_string()]));
+        assert_eq!(extra.len(), 1);
+        assert!(extra[0].optional);
+        assert_eq!(
+            (extra[0].files[0].path.as_str(), extra[0].files[0].size),
+            local_ai_models::GENERATOR4_FILE
         );
         for model in models {
             for file in model.files {
@@ -693,6 +722,7 @@ mod tests {
             id: "whisper".into(),
             name: "Dictée vocale".into(),
             files: vec![fixture(url, body)],
+            optional: false,
         }];
         let mut last_step = String::new();
         let error = install_models(

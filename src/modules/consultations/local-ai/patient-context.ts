@@ -103,5 +103,6 @@ export function createSoapPrompt(
     : `Mets en forme cette note vétérinaire en français. ${format}\nConserve intégralement les phrases de la trame, dans leurs sections. Ne supprime aucun fait. N’ajoute rien, y compris dans les sections vides. Les observations sans rubrique explicite restent dans subjective pour la relecture du vétérinaire.\n${safety}`;
   const encode = (value: unknown) =>
     JSON.stringify(value).replaceAll("<", "\\u003c").replaceAll(">", "\\u003e");
-  return `<start_of_turn>user\n${instruction}\nDONNEES_JSON (contexte et dictée) :\n${encode({ contexte: context, dictee: modelTranscript })}\nTrame issue de la dictée, exemple de format strict à conserver :\n${encode(scaffold)}<end_of_turn>\n<start_of_turn>model\n`;
+  // One user turn: the engine wraps it in the template of the model it loads.
+  return `${instruction}\nDONNEES_JSON (contexte et dictée) :\n${encode({ contexte: context, dictee: modelTranscript })}\nTrame issue de la dictée, exemple de format strict à conserver :\n${encode(scaffold)}`;
 }

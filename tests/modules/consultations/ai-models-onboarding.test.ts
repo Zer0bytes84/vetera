@@ -9,6 +9,7 @@ import {
   hasCompletedAIOnboarding, hasDismissedAIOnboarding, provisionAllAIModels,
   resetAIOnboarding, setAIOnboardingCompleted, setAIOnboardingDismissed,
   shouldShowAIOnboarding, triggerOpenAIOnboarding,
+  dismissNewAssistantOffer, NEW_ASSISTANT, provisionNewAssistant, shouldOfferNewAssistant,
   type AIProvisioningProgress,
 } from "@/modules/consultations/services/ai-model-provisioning";
 import { createAIModelInstallation } from "@/modules/consultations/services/ai-model-installation";
@@ -173,5 +174,32 @@ describe("Installation partagée en arrière-plan", () => {
     expect(installation.getSnapshot().error).toBe("Accès refusé.");
     await installation.refresh();
     expect(installation.getSnapshot()).toMatchObject({error: null, status: ready});
+  });
+});
+
+describe("Nouvelle version de l’assistant (phase B)", () => {
+  it("n’est proposée qu’une fois les outils de base installés, et respecte Plus tard", () => {
+    expect(shouldOfferNewAssistant(missing)).toBe(false);
+    expect(shouldOfferNewAssistant(ready)).toBe(true);
+    expect(shouldOfferNewAssistant({...ready, generator4Ready: true})).toBe(false);
+    dismissNewAssistantOffer();
+    expect(shouldOfferNewAssistant(ready)).toBe(false);
+  });
+  it("ne télécharge qu’elle, sans toucher aux outils de base, et vérifie le disque", async () => {
+    const download = vi.spyOn(models, "downloadLocalModels").mockResolvedValue({...ready, generator4Ready: true});
+    vi.mocked(models.getLocalModels).mockResolvedValue({...ready, generator4Ready: true});
+    expect((await provisionNewAssistant()).generator4Ready).toBe(true);
+    expect(download).toHaveBeenCalledWith(undefined, undefined, ["generator4"]);
+    vi.mocked(models.getLocalModels).mockResolvedValue(ready);
+    await expect(provisionNewAssistant()).rejects.toThrow("L’assistant actuel reste disponible");
+  });
+  it("s’installe en arrière-plan sous son propre nom, sans nom technique", async () => {
+    const provisionNew = vi.fn(async () => ({...ready, generator4Ready: true}));
+    const installation = createAIModelInstallation({check: async () => ready, provision: async () => ready, provisionNewAssistant: provisionNew});
+    await installation.startNewAssistant();
+    expect(installation.getSnapshot()).toMatchObject({running: false, error: null, target: "generator4", status: {generator4Ready: true}});
+    expect(NEW_ASSISTANT.name).toBe("Nouvelle version de l’Assistant IA");
+    expect(`${NEW_ASSISTANT.name} ${NEW_ASSISTANT.description}`).not.toMatch(/Gemma|MediaPipe|LiteRT|E2B/);
+    expect(NEW_ASSISTANT.sizeLabel).toBe("2 Go");
   });
 });

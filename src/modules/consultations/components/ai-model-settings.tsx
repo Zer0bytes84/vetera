@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDown, Microphone, MessageSquarePlus, Search, Check, FolderOpen } from "@/lib/icons";
+import { Switch } from "@/components/ui/switch";
+import { ArrowDown, Microphone, MessageSquarePlus, Search, Check, FolderOpen, Sparkles } from "@/lib/icons";
 import { isTauriRuntime } from "@/services/browser-store";
 import { importLocalModel } from "../local-ai/models";
 import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
-import { AI_MODELS_CATALOG, AI_MODELS_CHANGED_EVENT, allAIModelsReady, type AIModelId, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
+import { AI_MODELS_CATALOG, AI_MODELS_CHANGED_EVENT, allAIModelsReady, type AIModelId, NEW_ASSISTANT, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
+import { getGeneratorPreference, hasGeneratorFallenBack, setGeneratorPreference } from "../local-ai/generator-choice";
 
 const icons = {whisper: Microphone, generator: MessageSquarePlus, embeddinggemma: Search};
 
@@ -19,6 +21,7 @@ export function AIModelSettings() {
   const [accessKey, setAccessKey] = useState("");
   const [importing, setImporting] = useState<AIModelId | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const [useNewAssistant, setUseNewAssistant] = useState(() => getGeneratorPreference() === "gemma4");
   useEffect(() => {
     if (!desktop) return;
     const refresh = () => { void aiModelInstallation.refresh(); };
@@ -67,6 +70,13 @@ export function AIModelSettings() {
         </article>;
       })}
     </div>
+    {desktop && state.status.generatorReady && <NewAssistantCard
+      installed={Boolean(state.status.generator4Ready)}
+      downloading={state.running && state.target === "generator4"}
+      busy={state.running || importing !== null}
+      enabled={useNewAssistant}
+      onEnable={enabled => { setGeneratorPreference(enabled ? "gemma4" : "gemma3"); setUseNewAssistant(enabled); }}
+    />}
     {desktop && <div className="space-y-4 px-4 pb-4">
       {state.running && <div role="status" aria-live="polite" className="space-y-2 rounded-xl border p-4">
         <div className="flex items-center justify-between gap-3 text-sm"><span>{state.progress?.stepMessage || "Préparation du téléchargement…"}</span><span className="tabular-nums">{state.progress?.percentage ?? 0} %</span></div>
@@ -95,4 +105,25 @@ export function AIModelSettings() {
       </div>
     </div>}
   </section>;
+}
+
+/** The new assistant version: one-tap download, then an explicit choice; the current one stays the fallback. */
+function NewAssistantCard({installed, downloading, busy, enabled, onEnable}: {
+  installed: boolean; downloading: boolean; busy: boolean; enabled: boolean; onEnable: (enabled: boolean) => void;
+}) {
+  return <article className="mx-4 mb-4 flex flex-col gap-3 rounded-xl border bg-background p-4 sm:flex-row sm:items-center sm:gap-4">
+    <div className="min-w-0 flex-1 space-y-1">
+      <div className="flex items-center gap-2"><Sparkles className="size-4 shrink-0 text-muted-foreground"/><h4 className="text-sm font-medium">{NEW_ASSISTANT.name}</h4></div>
+      <p className="text-xs leading-relaxed text-muted-foreground">{NEW_ASSISTANT.description}</p>
+      {installed && enabled && hasGeneratorFallenBack() && <p role="status" className="text-xs text-muted-foreground">Cet ordinateur n’a pas pu la charger : l’assistant actuel a pris le relais.</p>}
+    </div>
+    {installed
+      ? <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm">
+          <Switch checked={enabled} onCheckedChange={onEnable} aria-label="Utiliser la nouvelle version de l’assistant"/>
+          Utiliser la nouvelle version
+        </label>
+      : <Button variant="outline" size="sm" type="button" className="shrink-0" disabled={busy} onClick={() => { void aiModelInstallation.startNewAssistant(); }}>
+          <ArrowDown className="size-4"/>{downloading ? "Téléchargement…" : `Télécharger (${NEW_ASSISTANT.sizeLabel})`}
+        </Button>}
+  </article>;
 }

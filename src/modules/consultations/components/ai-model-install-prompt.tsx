@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { isTauriRuntime } from "@/services/browser-store";
 import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
-import { allAIModelsReady, shouldShowAIOnboarding, setAIOnboardingDismissed, triggerOpenAIOnboarding, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
+import { allAIModelsReady, checkAIModelsStatus, dismissNewAssistantOffer, NEW_ASSISTANT, shouldOfferNewAssistant, shouldShowAIOnboarding, setAIOnboardingDismissed, triggerOpenAIOnboarding, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
+import { setGeneratorPreference } from "../local-ai/generator-choice";
 
 const TOAST_ID = "baitari-local-tools-installation";
 
@@ -16,14 +17,26 @@ export function AIModelInstallPrompt() {
   useEffect(() => {
     if (!isTauriRuntime()) return;
     let alive = true;
-    void shouldShowAIOnboarding().then(show => {
-      if (!alive || !show || offered.current || aiModelInstallation.getSnapshot().running) return;
+    void shouldShowAIOnboarding().then(async show => {
+      if (!alive || offered.current || aiModelInstallation.getSnapshot().running) return;
+      if (show) {
+        offered.current = true;
+        toast.info("Vos outils IA locaux", {
+          id: TOAST_ID, duration: 20_000,
+          description: `Dictée, notes et recherche (${TOTAL_AI_MODELS_SIZE_LABEL}).`,
+          action: {label: "Télécharger", onClick: () => { void aiModelInstallation.start(); }},
+          cancel: {label: "Plus tard", onClick: setAIOnboardingDismissed},
+        });
+        return;
+      }
+      // Base tools installed first; only then the new assistant, in one tap.
+      if (!shouldOfferNewAssistant(await checkAIModelsStatus()) || !alive) return;
       offered.current = true;
-      toast.info("Vos outils IA locaux", {
+      toast.info(NEW_ASSISTANT.name, {
         id: TOAST_ID, duration: 20_000,
-        description: `Dictée, notes et recherche (${TOTAL_AI_MODELS_SIZE_LABEL}).`,
-        action: {label: "Télécharger", onClick: () => { void aiModelInstallation.start(); }},
-        cancel: {label: "Plus tard", onClick: setAIOnboardingDismissed},
+        description: `Plus fidèle à vos dictées (${NEW_ASSISTANT.sizeLabel}), en arrière-plan.`,
+        action: {label: "Télécharger", onClick: () => { void aiModelInstallation.startNewAssistant(); }},
+        cancel: {label: "Plus tard", onClick: dismissNewAssistantOffer},
       });
     }).catch(() => { /* Optional installation must never interrupt startup. */ });
     return () => { alive = false; };
@@ -53,6 +66,12 @@ export function AIModelInstallPrompt() {
           ? {label: "Gérer l’accès", onClick: triggerOpenAIOnboarding}
           : {label: "Réessayer", onClick: () => { void aiModelInstallation.start(); }},
         cancel: state.errorCode === "access_required" ? undefined : {label: "Paramètres", onClick: triggerOpenAIOnboarding},
+      });
+    } else if (state.target === "generator4" && state.status.generator4Ready) {
+      toast.success("Nouvelle version installée", {
+        id: TOAST_ID, duration: 10_000,
+        description: "L’assistant actuel reste en place. Essayez la nouvelle version, ou activez-la plus tard dans les paramètres.",
+        action: {label: "Essayer", onClick: () => setGeneratorPreference("gemma4")},
       });
     } else if (allAIModelsReady(state.status)) {
       toast.success("Vos outils IA sont prêts", {id: TOAST_ID, description: "Vous pouvez désormais les utiliser hors ligne.", duration: 6000});

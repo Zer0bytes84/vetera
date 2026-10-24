@@ -1,0 +1,44 @@
+{
+  "label": "repli",
+  "startedAt": "2026-10-24T19:53:54.653Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "isolationCheck": {
+    "ocr": {
+      "ok": true,
+      "result": "Vaccin rage 2026",
+      "seconds": 0.48
+    },
+    "pdf": {
+      "ok": true,
+      "result": "Ordonnance de controle Baitari",
+      "seconds": 1.34
+    },
+    "whisper": {
+      "ok": true,
+      "result": "ready",
+      "seconds": 12.5
+    },
+    "generator": {
+      "ok": true,
+      "result": {
+        "text": "Bonjour ! 😊",
+        "generator": "gemma3",
+        "fellBack": true
+      },
+      "seconds": 7.88
+    }
+  },
+  "engine": null,
+  "finishedAt": "2026-10-24T19:54:16.883Z"
+}
