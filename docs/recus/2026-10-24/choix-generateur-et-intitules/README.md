@@ -41,4 +41,4 @@ Suite complète : **158 fichiers, 1 231 tests unitaires verts** (6 nouveaux : 3 
 
 [donnees/](donnees/) contient les rapports du banc : avant D (`pb3f`, `pb4f`), après D (`pbD3`, `pbD4`), bout en bout (`e2e-on`, `e2e-repli`, `e2e-off`) et contrôle IPC (`ipc`). On y trouve des identifiants, des durées et des scores, sans texte clinique.
 
-Commit : COMMIT_LIGNE
+Commit : `f60af59` (local, aucun push).
