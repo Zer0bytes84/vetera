@@ -113,4 +113,4 @@ Suite complète : **158 fichiers, 1 225 tests unitaires verts**, typecheck et ES
 
 Dans [donnees/](donnees/) : les rapports du banc des deux séries et le test de repli. On y trouve des identifiants, des durées et des scores, sans texte clinique. Les notes produites figurent seulement dans [notes-cote-a-cote.md](notes-cote-a-cote.md), sans nom de patient ni de propriétaire.
 
-Commit : COMMIT_LIGNE
+Commit : `92d98d0` (local, aucun push). Le hash est ajouté par un second commit, qui ne touche que cette ligne.
