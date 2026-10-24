@@ -217,4 +217,4 @@ Dans [donnees/](donnees/) :
 - les 16 questions figées, sans nom de patient ;
 - les balayages des 35 questions (arctic et v1) et le rejeu des jeux publics au seuil final.
 
-Commit : COMMIT_LIGNE
+Commit : `ac02c6a` (local, aucun push). Le hash est ajouté par un second commit, qui ne touche que cette ligne.
