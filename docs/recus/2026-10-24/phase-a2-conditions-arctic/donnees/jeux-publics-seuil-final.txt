@@ -1,0 +1,5 @@
+contrôle de fidélité : 39/39 classements identiques à rankPassages
+seuil 0.12 bonus 0.05 | Allopr  55.5/ 49.3 | Public  91.8/ 84.5 | Syntec  99.0/ 86.1 | B 19/19 régr aucune
+seuil 0.13 bonus 0.05 | Allopr  55.5/ 49.3 | Public  91.8/ 84.5 | Syntec  99.0/ 86.1 | B 19/19 régr aucune
+seuil 0.14 bonus 0.05 | Allopr  55.5/ 49.3 | Public  91.8/ 84.5 | Syntec  99.0/ 86.1 | B 19/19 régr aucune
+seuil 0.30 bonus 0.05 | Allopr  55.0/ 48.6 | Public  91.8/ 84.5 | Syntec  98.0/ 85.8 | B 15/19 régr q5,q7

@@ -1,12 +1,32 @@
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { loadEnv } from "vite";
+import { loadEnv, type Plugin } from "vite";
 import { defineConfig, configDefaults } from "vitest/config";
 // @ts-expect-error Shared Node build helper.
 import { localAiRuntimePlugin } from "./scripts/local-ai-runtime-plugin.mjs";
 // @ts-expect-error Build helper is shared with Node integration tests.
 import { licenseBuildConfig } from "./scripts/license-build-config.mjs";
+
+// Cross-origin isolation (SharedArrayBuffer) lets the local search engine run
+// on several threads. Production gets the same headers from tauri.conf.json.
+export const CROSS_ORIGIN_ISOLATION_HEADERS = {
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Embedder-Policy": "require-corp",
+};
+// On every dev response, plugin middlewares (local AI runtime) included: workers
+// and WASM files must carry the policy of the page that loads them.
+const crossOriginIsolation = (): Plugin => {
+  const apply = (_request: unknown, response: { setHeader(name: string, value: string): void }, next: () => void) => {
+    for (const [name, value] of Object.entries(CROSS_ORIGIN_ISOLATION_HEADERS)) response.setHeader(name, value);
+    next();
+  };
+  return {
+    name: "baitari-cross-origin-isolation",
+    configureServer: (server) => void server.middlewares.use(apply),
+    configurePreviewServer: (server) => void server.middlewares.use(apply),
+  };
+};
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => ({
@@ -17,7 +37,7 @@ export default defineConfig(({ command, mode }) => ({
   // Tauri desktop bundles should resolve assets relative to index.html.
   // Keeping "/" here breaks packaged builds with "Importing a module script failed".
   base: process.env.TAURI_ENV_PLATFORM ? "./" : "/",
-  plugins: [react(), tailwindcss(), localAiRuntimePlugin()],
+  plugins: [crossOriginIsolation(), react(), tailwindcss(), localAiRuntimePlugin()],
   worker: { format: "es" },
   // Warm worker-only dependencies before the first consultation. Lazy discovery
   // during an inference otherwise invalidates the desktop window's module cache.

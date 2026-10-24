@@ -1,0 +1,151 @@
+{
+ "origin": "tauri://localhost",
+ "crossOriginIsolated": true,
+ "sharedArrayBuffer": false,
+ "secureContext": true,
+ "wasmMemoryShared": "SharedArrayBuffer",
+ "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+ "assetFetch": {
+  "ok": true,
+  "result": {
+   "status": 200,
+   "bytes": 1339
+  },
+  "seconds": 0
+ },
+ "searchV1": {
+  "ok": true,
+  "result": {
+   "first": {
+    "ms": 11093,
+    "engine": {
+     "threads": 1,
+     "isolated": true,
+     "sharedMemory": false
+    },
+    "dims": 768,
+    "vector": "[768 valeurs]"
+   },
+   "warm": [
+    {
+     "ms": 98,
+     "engine": {
+      "threads": 1,
+      "isolated": true,
+      "sharedMemory": false
+     },
+     "dims": 768,
+     "vector": "[768 valeurs]"
+    },
+    {
+     "ms": 202,
+     "engine": {
+      "threads": 1,
+      "isolated": true,
+      "sharedMemory": false
+     },
+     "dims": 768,
+     "vector": "[768 valeurs]"
+    }
+   ]
+  },
+  "seconds": 11.4
+ },
+ "searchArctic1": {
+  "ok": true,
+  "result": {
+   "first": {
+    "ms": 8917,
+    "engine": {
+     "threads": 1,
+     "isolated": true,
+     "sharedMemory": false
+    },
+    "dims": 1024,
+    "vector": "[1024 valeurs]"
+   },
+   "warm": [
+    {
+     "ms": 294,
+     "engine": {
+      "threads": 1,
+      "isolated": true,
+      "sharedMemory": false
+     },
+     "dims": 1024,
+     "vector": "[1024 valeurs]"
+    },
+    {
+     "ms": 694,
+     "engine": {
+      "threads": 1,
+      "isolated": true,
+      "sharedMemory": false
+     },
+     "dims": 1024,
+     "vector": "[1024 valeurs]"
+    }
+   ]
+  },
+  "seconds": 9.91
+ },
+ "searchArctic4": {
+  "ok": true,
+  "result": {
+   "first": {
+    "ms": 4339,
+    "engine": {
+     "threads": 4,
+     "isolated": true,
+     "sharedMemory": true
+    },
+    "dims": 1024,
+    "vector": "[1024 valeurs]"
+   },
+   "warm": [
+    {
+     "ms": 124,
+     "engine": {
+      "threads": 4,
+      "isolated": true,
+      "sharedMemory": true
+     },
+     "dims": 1024,
+     "vector": "[1024 valeurs]"
+    },
+    {
+     "ms": 193,
+     "engine": {
+      "threads": 4,
+      "isolated": true,
+      "sharedMemory": true
+     },
+     "dims": 1024,
+     "vector": "[1024 valeurs]"
+    }
+   ]
+  },
+  "seconds": 4.66
+ },
+ "whisper": {
+  "ok": true,
+  "result": "ready",
+  "seconds": 15.22
+ },
+ "generator": {
+  "ok": true,
+  "result": "\n\nBonjour !\n\nEst-ce que vous avez des qu",
+  "seconds": 8.36
+ },
+ "page": {
+  "ok": true,
+  "result": {
+   "images": [],
+   "fonts": "loaded",
+   "failedResources": []
+  },
+  "seconds": 0.01
+ },
+ "done": true,
+ "errors": []
+}

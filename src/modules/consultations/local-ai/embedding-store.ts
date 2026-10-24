@@ -169,6 +169,18 @@ export function plainDocumentText(html: string) {
     .replace(/\s+/g, " ")
     .trim();
 }
+/**
+ * ONNX threads of arctic: half the logical cores, at most 4. Measured on an
+ * 8-core M1 (A2 conditions): 4 threads ≈ 2.7× faster than 1, 6 slower than 4.
+ */
+export const arcticThreadCount = (cores = globalThis.navigator?.hardwareConcurrency ?? 1) =>
+  Math.max(1, Math.min(4, Math.floor(cores / 2)));
+/** Engine of the last encoding: threads actually used and page isolation. */
+let lastEngine: { threads: number; isolated: boolean; sharedMemory: boolean } | null = null;
+export const searchEngineInfo = () => lastEngine;
+// Development builds let the bench compare thread counts (?searchThreads=N).
+const arcticThreads = () =>
+  (import.meta.env.DEV && Number(new URLSearchParams(globalThis.location?.search ?? "").get("searchThreads"))) || arcticThreadCount();
 export async function embedTexts(
   models: LocalModelStatus,
   texts: string[],
@@ -194,12 +206,14 @@ export async function embedTexts(
         texts,
         query,
         model,
+        threads: model === "arctic" ? arcticThreads() : 1,
       },
       "embedded",
     );
     if (result.type !== "embedded")
       throw new Error("La préparation de la recherche a échoué.");
     succeeded = true;
+    lastEngine = result.engine ?? null;
     // Vectors are stored in SQLite as 768 dimensions. arctic (1 024, trained for
     // truncation) keeps its first 768; measured equal or better on the bench (A2).
     return result.vectors.map((vector) => normalizedEmbedding(model === "arctic" ? vector.slice(0, 768) : vector));

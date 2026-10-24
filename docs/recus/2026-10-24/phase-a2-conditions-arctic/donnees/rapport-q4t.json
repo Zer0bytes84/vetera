@@ -1,0 +1,67 @@
+{
+  "label": "q4t",
+  "startedAt": "2026-10-24T15:48:48.443Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "queries": {
+    "model": "arctic",
+    "firstWithLoadMs": 5170,
+    "short": {
+      "n": 30,
+      "medianMs": 105,
+      "p95Ms": 204,
+      "maxMs": 214,
+      "characters": [
+        12,
+        12,
+        6,
+        19,
+        20,
+        13,
+        8,
+        11,
+        19,
+        8
+      ]
+    },
+    "long": {
+      "n": 30,
+      "medianMs": 319,
+      "p95Ms": 504,
+      "maxMs": 544,
+      "characters": [
+        255,
+        255,
+        254,
+        213,
+        185,
+        181,
+        174,
+        162,
+        160,
+        159
+      ]
+    },
+    "engine": {
+      "threads": 4,
+      "isolated": true,
+      "sharedMemory": true
+    }
+  },
+  "engine": {
+    "threads": 4,
+    "isolated": true,
+    "sharedMemory": true
+  },
+  "finishedAt": "2026-10-24T15:49:06.896Z"
+}

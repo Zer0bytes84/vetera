@@ -1,0 +1,654 @@
+{
+  "label": "thr2",
+  "startedAt": "2026-10-24T12:27:26.357Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "public:start",
+      "at": 1792844846.357
+    },
+    {
+      "what": "public:end",
+      "at": 1792845437.005
+    },
+    {
+      "what": "search:start",
+      "at": 1792845437.005
+    },
+    {
+      "what": "search:end",
+      "at": 1792845442.556
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": "2"
+  },
+  "public": [
+    {
+      "dataset": "PublicHealthQA",
+      "questions": 85,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 85,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 178,
+            "refused": 0,
+            "seconds": 233.95
+          }
+        ]
+      },
+      "queryWarmMedianMs": 258,
+      "queryWarmMaxMs": 574,
+      "queryWarmMs": [
+        149,
+        171,
+        191,
+        213,
+        254,
+        259,
+        188,
+        169,
+        175,
+        181,
+        212,
+        268,
+        183,
+        162,
+        183,
+        214,
+        246,
+        190,
+        208,
+        270,
+        202,
+        303,
+        316,
+        320,
+        337,
+        350,
+        330,
+        320,
+        401,
+        540,
+        305,
+        574,
+        234,
+        566,
+        335,
+        319,
+        350,
+        445,
+        481,
+        238,
+        326,
+        336,
+        341,
+        158,
+        148,
+        147,
+        179,
+        138,
+        215,
+        246,
+        349,
+        301,
+        273,
+        223,
+        336,
+        335,
+        344,
+        258,
+        394,
+        265,
+        219,
+        244,
+        253,
+        274,
+        268,
+        374,
+        207,
+        241,
+        262,
+        330,
+        361,
+        271,
+        219,
+        188,
+        227,
+        271,
+        203,
+        313,
+        185,
+        249,
+        280,
+        226,
+        227,
+        223
+      ],
+      "sections": {
+        "recallAt5": 0.023529411764705882,
+        "mrrAt10": 0.023529411764705882,
+        "ndcgAt10": 0.023529411764705882
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.9176470588235294,
+          "mrrAt10": 0.8448179271708686,
+          "ndcgAt10": 0.8663838925770342
+        }
+      }
+    },
+    {
+      "dataset": "SyntecRetrieval",
+      "questions": 100,
+      "index": {
+        "sections": {
+          "rows": 0,
+          "refused": 0,
+          "total": 90,
+          "seconds": 0
+        },
+        "passages": [
+          {
+            "size": 800,
+            "rows": 217,
+            "refused": 0,
+            "seconds": 262.54
+          }
+        ]
+      },
+      "queryWarmMedianMs": 205,
+      "queryWarmMaxMs": 409,
+      "queryWarmMs": [
+        204,
+        111,
+        116,
+        199,
+        183,
+        156,
+        187,
+        141,
+        138,
+        173,
+        140,
+        156,
+        195,
+        285,
+        211,
+        150,
+        158,
+        198,
+        214,
+        236,
+        223,
+        221,
+        117,
+        212,
+        155,
+        172,
+        219,
+        172,
+        213,
+        218,
+        211,
+        179,
+        219,
+        259,
+        201,
+        202,
+        189,
+        305,
+        175,
+        247,
+        282,
+        234,
+        249,
+        278,
+        144,
+        214,
+        205,
+        142,
+        396,
+        156,
+        174,
+        139,
+        242,
+        237,
+        163,
+        114,
+        133,
+        187,
+        179,
+        166,
+        224,
+        140,
+        265,
+        235,
+        226,
+        227,
+        209,
+        235,
+        158,
+        156,
+        158,
+        242,
+        149,
+        151,
+        239,
+        271,
+        290,
+        316,
+        235,
+        265,
+        253,
+        303,
+        191,
+        388,
+        169,
+        213,
+        409,
+        277,
+        397,
+        220,
+        236,
+        213,
+        142,
+        350,
+        143,
+        205,
+        191,
+        143,
+        180
+      ],
+      "sections": {
+        "recallAt5": 0.02,
+        "mrrAt10": 0.0125,
+        "ndcgAt10": 0.01430676558073393
+      },
+      "passages": {
+        "800": {
+          "recallAt5": 0.98,
+          "mrrAt10": 0.8584999999999999,
+          "ndcgAt10": 0.888928153852098
+        }
+      }
+    }
+  ],
+  "search": {
+    "results": [
+      {
+        "patient": "mnq1…",
+        "questions": 11,
+        "index": {
+          "sections": {
+            "rows": 0,
+            "refused": 0,
+            "total": 4,
+            "seconds": 0
+          },
+          "passages": [
+            {
+              "size": 800,
+              "rows": 4,
+              "refused": 0,
+              "seconds": 0.96
+            }
+          ]
+        },
+        "queryWarmMedianMs": 98,
+        "queryWarmMaxMs": 118,
+        "queryWarmMs": [
+          86,
+          86,
+          93,
+          98,
+          101,
+          88,
+          110,
+          93,
+          117,
+          118
+        ],
+        "perQuestion": [
+          {
+            "id": "q1",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q2",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q3",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q4",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q5",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 0,
+                "mrrAt10": 0,
+                "ndcgAt10": 0
+              }
+            }
+          },
+          {
+            "id": "q6",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q7",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 0,
+                "mrrAt10": 0,
+                "ndcgAt10": 0
+              }
+            }
+          },
+          {
+            "id": "q8",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 0,
+                "mrrAt10": 0,
+                "ndcgAt10": 0
+              }
+            }
+          },
+          {
+            "id": "q9",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q10",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q11",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": null,
+              "ndcgAt10": null
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": null,
+                "ndcgAt10": null
+              }
+            }
+          }
+        ]
+      },
+      {
+        "patient": "mqh9…",
+        "questions": 8,
+        "index": {
+          "sections": {
+            "rows": 0,
+            "refused": 0,
+            "total": 8,
+            "seconds": 0
+          },
+          "passages": [
+            {
+              "size": 800,
+              "rows": 8,
+              "refused": 0,
+              "seconds": 0.8
+            }
+          ]
+        },
+        "queryWarmMedianMs": 94,
+        "queryWarmMaxMs": 117,
+        "queryWarmMs": [
+          79,
+          86,
+          94,
+          109,
+          93,
+          117,
+          95
+        ],
+        "perQuestion": [
+          {
+            "id": "q12",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q13",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 0,
+                "mrrAt10": 0,
+                "ndcgAt10": 0
+              }
+            }
+          },
+          {
+            "id": "q14",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q15",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q16",
+            "sections": {
+              "recallAt5": 1,
+              "mrrAt10": 1,
+              "ndcgAt10": 1
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q17",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q18",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          },
+          {
+            "id": "q19",
+            "sections": {
+              "recallAt5": 0,
+              "mrrAt10": 0,
+              "ndcgAt10": 0
+            },
+            "passages": {
+              "800": {
+                "recallAt5": 1,
+                "mrrAt10": 1,
+                "ndcgAt10": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "engine": {
+    "threads": 2,
+    "isolated": true,
+    "sharedMemory": true
+  },
+  "finishedAt": "2026-10-24T12:37:22.557Z"
+}

@@ -15,6 +15,7 @@ import { containsDosage } from "@/modules/consultations/local-ai/soap-schema";
 import {
   embedTexts,
   plainDocumentText,
+  searchEngineInfo,
 } from "@/modules/consultations/local-ai/embedding-store";
 import {
   documentSearchChunks,
@@ -230,6 +231,8 @@ async function embedEach(models: LocalModelStatus, chunks: SearchChunk[], model:
         }
     }
     const done = start + batch.length;
+    // Heartbeat: if the engine freezes again, the log says at which text and after how long.
+    if (done % 100 === 0) log(`    … ${done} textes, ${seconds(t0)} s, moteur ${JSON.stringify(searchEngineInfo())}`);
     if (checkpoint && (done % 500 === 0 || done === chunks.length)) {
       await writeTextFile(checkpoint, JSON.stringify({ next: done, refused, rows }));
       log(`    ${done}/${chunks.length} textes, ${seconds(t0)} s depuis le départ`);
@@ -317,6 +320,8 @@ async function rankBothGenerations(
     },
     // The first query may include loading the model; the median reflects searches at warm.
     queryWarmMedianMs: median(queryMs.slice(1).map(Math.round)),
+    queryWarmMaxMs: queryMs.length > 1 ? Math.round(Math.max(...queryMs.slice(1))) : null,
+    queryWarmMs: queryMs.slice(1).map(Math.round),
   };
 }
 
@@ -343,6 +348,84 @@ function scoreGenerations(
  * A2 proof of concept: Whisper (transformers.js 3), then EmbeddingGemma 2
  * (transformers.js 4 alias), then v1 and Whisper again, in the same app.
  */
+/**
+ * Latency only (no corpus, no patient data): model loading, then short and long
+ * queries, three rounds each. Used on the Windows floor computer as well.
+ */
+async function runQueries(models: LocalModelStatus, publicPath: string | null) {
+  const model = (params.get("searchModel") ?? "arctic") as SearchModel;
+  const short = ["antibiotique", "vomissements", "fièvre", "insuffisance rénale", "allergie pénicilline", "rappel vaccin", "diarrhée", "bilan rénal", "réaction allergique", "boiterie"];
+  const long = publicPath
+    ? (JSON.parse(await readTextFile(publicPath)) as { sets: PublicSet[] }).sets
+        .find((set) => set.name === "PublicHealthQA")!.queries.map((query) => query.text).sort((a, b) => b.length - a.length).slice(0, 10)
+    : [];
+  const time = async (text: string) => {
+    const t0 = performance.now();
+    await embedTexts(models, [text], new AbortController().signal, quiet, true, model);
+    return Math.round(performance.now() - t0);
+  };
+  const firstWithLoadMs = await time("premier chargement");
+  const measure = async (texts: string[]) => {
+    const ms: number[] = [];
+    for (let round = 0; round < 3; round++) for (const text of texts) ms.push(await time(text));
+    const sorted = [...ms].sort((a, b) => a - b);
+    return { n: ms.length, medianMs: sorted[sorted.length >> 1] ?? null, p95Ms: sorted[Math.floor(0.95 * (sorted.length - 1))] ?? null, maxMs: sorted.at(-1) ?? null, characters: texts.map((text) => text.length) };
+  };
+  return { model, firstWithLoadMs, short: await measure(short), long: await measure(long), engine: searchEngineInfo() };
+}
+
+/** Under cross-origin isolation, every local engine still loads and answers (OCR, PDF, dictation, generator). */
+async function runIsolationCheck(models: LocalModelStatus) {
+  const urls = getLocalModelUrls(models);
+  const out: Record<string, unknown> = {};
+  const step = async (name: string, run: () => Promise<unknown>) => {
+    const t0 = performance.now();
+    try {
+      out[name] = { ok: true, result: await run(), seconds: seconds(t0) };
+    } catch (error) {
+      out[name] = { ok: false, error: String(error) };
+    }
+    log(`  ${name} : ${JSON.stringify(out[name]).slice(0, 160)}`);
+  };
+  await step("ocr", async () => {
+    const canvas = Object.assign(document.createElement("canvas"), { width: 900, height: 220 });
+    const context = canvas.getContext("2d")!;
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, 900, 220);
+    context.fillStyle = "#000";
+    context.font = "64px sans-serif";
+    context.fillText("Vaccin rage 2026", 40, 130);
+    const blob = await new Promise<Blob>((resolve) => canvas.toBlob((value) => resolve(value!), "image/png"));
+    const read = await readLocalDocument(new File([blob], "essai.png", { type: "image/png" }), new AbortController().signal, quiet);
+    return read.pages.map((page) => page.text).join(" ");
+  });
+  await step("pdf", async () => {
+    const { jsPDF } = await import("jspdf");
+    const pdf = new jsPDF();
+    pdf.text("Ordonnance de controle Baitari", 20, 20);
+    const read = await readLocalDocument(new File([pdf.output("arraybuffer")], "essai.pdf", { type: "application/pdf" }), new AbortController().signal, quiet);
+    return read.pages.map((page) => page.text).join(" ");
+  });
+  await step("whisper", async () => {
+    const session = await LocalInferenceSession.create("whisper", new AbortController().signal, quiet);
+    try {
+      return (await session.request({ type: "load-whisper", modelRoot: urls.modelRoot, runtimeRoot: urls.runtimeRoot }, "ready")).type;
+    } finally {
+      session.close();
+    }
+  });
+  await step("generator", async () => {
+    const session = await LocalInferenceSession.create("soap", new AbortController().signal, quiet);
+    try {
+      const result = await session.request({ type: "generate", modelUrl: urls.modelUrl, runtimeRoot: urls.runtimeRoot, prompt: "Réponds seulement : bonjour." }, "generated");
+      return result.type === "generated" ? result.text.trim().slice(0, 40) : result.type;
+    } finally {
+      session.close();
+    }
+  });
+  return out;
+}
+
 async function runPoc(models: LocalModelStatus) {
   const urls = getLocalModelUrls(models);
   const steps: Record<string, unknown>[] = [];
@@ -416,7 +499,7 @@ async function runSearch(corpus: Corpus, models: LocalModelStatus) {
     const run = await rankBothGenerations(models, scope(patientId), sections.flat(), managed, questions.map((q) => ({ id: q.id, text: q.question })), passageSizes, 5, `b-${patientId.slice(0, 4)}`);
     const relevant = new Map(questions.map((q) => [q.id, uniqueSources(q.relevant)]));
     const scores = scoreGenerations(run.ranked, (id) => relevant.get(id) ?? [], passageSizes);
-    results.push({ patient: patientId.slice(0, 4) + "…", questions: questions.length, index: run.index, queryWarmMedianMs: run.queryWarmMedianMs,
+    results.push({ patient: patientId.slice(0, 4) + "…", questions: questions.length, index: run.index, queryWarmMedianMs: run.queryWarmMedianMs, queryWarmMaxMs: run.queryWarmMaxMs, queryWarmMs: run.queryWarmMs,
       perQuestion: questions.map((q, i) => ({ id: q.id, sections: scores.sections.perQuestion[i], passages: Object.fromEntries(passageSizes.map((size) => [size, scores.passages[size].perQuestion[i]])) })) });
   }
   return { results };
@@ -446,7 +529,7 @@ async function runPublic(models: LocalModelStatus, sets: PublicSet[], save: (res
     const scores = scoreGenerations(run.ranked, relevant, sizes);
     const strip = ({ perQuestion: _perQuestion, ...summary }: ReturnType<typeof scoreGenerations>["sections"]) => (void _perQuestion, summary);
     results.push({
-      dataset: set.name, questions: set.queries.length, index: run.index, queryWarmMedianMs: run.queryWarmMedianMs,
+      dataset: set.name, questions: set.queries.length, index: run.index, queryWarmMedianMs: run.queryWarmMedianMs, queryWarmMaxMs: run.queryWarmMaxMs, queryWarmMs: run.queryWarmMs,
       sections: strip(scores.sections),
       passages: Object.fromEntries(sizes.map((size) => [size, strip(scores.passages[size])])),
     });
@@ -500,9 +583,13 @@ async function main() {
     throw new Error("Le banc s’exécute dans l’application de bureau (tauri:dev) pour mesurer le vrai moteur.");
   const casesPath = params.get("cases");
   const outPath = params.get("out");
-  if (!casesPath || !outPath) throw new Error("Paramètres cases et out requis.");
-  log("lecture du corpus");
-  const corpus = JSON.parse(await readTextFile(casesPath)) as Corpus;
+  if (!outPath) throw new Error("Paramètre out requis.");
+  // The clinic corpus is read only by the tasks that use it: latency and public
+  // sets run on a computer that holds no patient record (Windows floor kit).
+  const needsCorpus = ["a", "b", "c", "synthetic"].some((task) => tasks.has(task));
+  if (needsCorpus && !casesPath) throw new Error("Paramètre cases requis pour les tâches a, b, c et synthetic.");
+  log(needsCorpus ? "lecture du corpus" : "sans corpus clinique");
+  const corpus = needsCorpus ? (JSON.parse(await readTextFile(casesPath!)) as Corpus) : ({ patients: {}, soapCases: [], searchCases: [], documentCases: [], synthetic: [] } as unknown as Corpus);
   const models = await getLocalModels();
   log(`modèles : génération ${models.generatorReady}, recherche ${Boolean(models.embeddingReady)}`);
   const report: Record<string, unknown> = {
@@ -512,6 +599,13 @@ async function main() {
     models: { generator: models.generatorReady, embedding: Boolean(models.embeddingReady) },
     marks: [] as { what: string; at: number }[],
   };
+  // Proof of cross-origin isolation in the real engine (needed for ONNX threads).
+  report.isolation = { crossOriginIsolated: self.crossOriginIsolated, sharedArrayBuffer: typeof SharedArrayBuffer === "function", cores: navigator.hardwareConcurrency, searchThreads: params.get("searchThreads") ?? null };
+  log(`isolation : ${JSON.stringify(report.isolation)}`);
+  // Page heartbeat, independent of the engine: if a run freezes, it tells a stuck
+  // engine (heartbeat goes on) from a suspended page (heartbeat stops too).
+  let beats = 0;
+  setInterval(() => log(`pouls ${++beats}`), 60_000);
   const details: unknown[] = [];
   const mark = (what: string) =>
     (report.marks as { what: string; at: number }[]).push({ what, at: Date.now() / 1000 });
@@ -554,6 +648,8 @@ async function main() {
     report.soap = rows;
   }
   if (tasks.has("poc")) report.poc = await runPoc(models);
+  if (tasks.has("isolation")) report.isolationCheck = await runIsolationCheck(models);
+  if (tasks.has("queries")) report.queries = await runQueries(models, params.get("public"));
   if (tasks.has("public")) {
     const publicPath = params.get("public");
     if (!publicPath) throw new Error("Paramètre public requis pour les jeux publics.");
@@ -577,6 +673,7 @@ async function main() {
     mark("documents:end");
     log(`documents : ${corpus.documentCases.length} question(s)`);
   }
+  report.engine = searchEngineInfo();
   report.finishedAt = new Date().toISOString();
   await writeTextFile(outPath, JSON.stringify(report, null, 2));
   // Words and sentences to reread on this computer only: never in the report.

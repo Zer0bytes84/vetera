@@ -27,10 +27,29 @@ const V2_ENGINE = { dtype: "q8", device: "webgpu" } as const;
 let loaded: {
   root: string;
   name: SearchModel;
+  threads?: number;
   tokenizer: PreTrainedTokenizer;
   model: PreTrainedModel;
 } | null = null;
 const send = (event: WorkerResponse) => self.postMessage(event);
+// WebKit isolates the tauri:// page and shares WebAssembly memory, but does not
+// expose the SharedArrayBuffer global that ONNX checks before using threads.
+const exposeSharedMemory = () => {
+  if (typeof SharedArrayBuffer === "function" || !self.crossOriginIsolated) return;
+  try {
+    const shared = new WebAssembly.Memory({ initial: 1, maximum: 1, shared: true }).buffer.constructor;
+    Object.defineProperty(globalThis, "SharedArrayBuffer", { value: shared, configurable: true, writable: true });
+  } catch {
+    /* No shared memory: ONNX stays on one thread. */
+  }
+};
+// Threads ONNX actually runs with: none without SharedArrayBuffer, whatever was asked.
+let onnxWasm: { numThreads?: number } | undefined;
+const engineState = () => ({
+  threads: typeof SharedArrayBuffer === "function" ? (onnxWasm?.numThreads ?? 1) : 1,
+  isolated: self.crossOriginIsolated,
+  sharedMemory: typeof SharedArrayBuffer === "function",
+});
 const release = async () => {
   const current = loaded;
   loaded = null;
@@ -40,13 +59,13 @@ const release = async () => {
     /* Worker disposal still releases memory. */
   }
 };
-const load = async (modelRoot: string, runtimeRoot: string, name: SearchModel) => {
-  if (loaded?.root === modelRoot && loaded.name === name) return loaded;
+const load = async (modelRoot: string, runtimeRoot: string, name: SearchModel, threads = 1) => {
+  if (loaded?.root === modelRoot && loaded.name === name && (name !== "arctic" || loaded.threads === threads)) return loaded;
   await release();
   // v2 needs transformers.js 4 (alias), with its own ONNX runtime files;
   // v1 and Whisper stay on transformers.js 3.
   if (name === "embeddinggemma2") return loadV2(modelRoot, runtimeRoot);
-  if (name === "arctic") return loadArctic(modelRoot, runtimeRoot);
+  if (name === "arctic") return loadArctic(modelRoot, runtimeRoot, threads);
   const { env, AutoTokenizer, AutoModel } = await import(
     "@huggingface/transformers"
   );
@@ -77,7 +96,7 @@ const load = async (modelRoot: string, runtimeRoot: string, name: SearchModel) =
   loaded = { root: modelRoot, name, tokenizer, model };
   return loaded;
 };
-const loadArctic = async (modelRoot: string, runtimeRoot: string) => {
+const loadArctic = async (modelRoot: string, runtimeRoot: string, threads: number) => {
   const { env, AutoTokenizer, AutoModel } = await import("@huggingface/transformers");
   env.allowRemoteModels = false;
   env.allowLocalModels = true;
@@ -87,12 +106,15 @@ const loadArctic = async (modelRoot: string, runtimeRoot: string) => {
   const wasm = env.backends.onnx.wasm;
   if (!wasm) throw new Error("Runtime indisponible.");
   wasm.wasmPaths = runtimeRoot + "onnx/";
-  wasm.numThreads = 1;
+  // Threads need SharedArrayBuffer, i.e. a cross-origin isolated page.
+  if (threads > 1) exposeSharedMemory();
+  wasm.numThreads = typeof SharedArrayBuffer === "function" ? threads : 1;
+  onnxWasm = wasm;
   wasm.proxy = false;
   send({ type: "progress", message: "Préparation de la recherche locale…", stage: "loading" });
   const tokenizer = await AutoTokenizer.from_pretrained("arctic-embed-l-v2", { local_files_only: true });
   const model = await AutoModel.from_pretrained("arctic-embed-l-v2", { local_files_only: true, device: "wasm", dtype: "q8" });
-  loaded = { root: modelRoot, name: "arctic", tokenizer, model };
+  loaded = { root: modelRoot, name: "arctic", threads, tokenizer, model };
   return loaded;
 };
 const loadV2 = async (modelRoot: string, runtimeRoot: string) => {
@@ -143,7 +165,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
       throw new Error("Lot trop long.");
     enforceOfflineWorker([data.modelRoot, data.runtimeRoot]);
     const name = data.model ?? "embeddinggemma";
-    const { tokenizer, model } = await load(data.modelRoot, data.runtimeRoot, name);
+    const { tokenizer, model } = await load(data.modelRoot, data.runtimeRoot, name, data.threads);
     const vectors: number[][] = [];
     for (const text of data.texts) {
       const prefix = data.query ? PREFIX[name].query : PREFIX[name].document;
@@ -180,7 +202,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         progress: vectors.length / data.texts.length,
       });
     }
-    send({ type: "embedded", vectors });
+    send({ type: "embedded", vectors, engine: engineState() });
   } catch (error) {
     // A too-long section is a property of the input: keep the loaded model.
     const tooLong =

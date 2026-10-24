@@ -22,13 +22,14 @@ export type WorkerRequest =
       purpose?: "document";
       attempt?: 1 | 2;
     }
-  | { type: "embed"; modelRoot: string; runtimeRoot: string; texts: string[]; query?: boolean; model?: SearchModel }
+  // threads: ONNX threads asked for arctic (applied only in a cross-origin isolated page).
+  | { type: "embed"; modelRoot: string; runtimeRoot: string; texts: string[]; query?: boolean; model?: SearchModel; threads?: number }
   | { type: "dispose" };
 export type WorkerResponse =
   | ({ type: "progress" } & LocalAiProgress)
   | { type: "ready" }
   | { type: "transcript"; text: string; language?: string }
   | { type: "generated"; text: string }
-  | { type: "embedded"; vectors: number[][] }
+  | { type: "embedded"; vectors: number[][]; engine?: { threads: number; isolated: boolean; sharedMemory: boolean } }
   | { type: "disposed" }
   | { type: "error"; message: string };

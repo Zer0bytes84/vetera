@@ -1,0 +1,147 @@
+{
+ "figéesLe": "2026-10-24T12:28:33.911Z",
+ "questions": [
+  {
+   "id": "n1",
+   "patientId": "mnq1…",
+   "question": "anesthésie générale",
+   "relevant": [],
+   "_pourquoi": "voisin de la chirurgie évoquée hors des sources indexées ; aucune note n'en parle"
+  },
+  {
+   "id": "n2",
+   "patientId": "mnq1…",
+   "question": "insuffisance rénale",
+   "relevant": [],
+   "_pourquoi": "piège inter-patients : présent chez patient B, absent chez patient A"
+  },
+  {
+   "id": "n3",
+   "patientId": "mnq1…",
+   "question": "otite",
+   "relevant": [],
+   "_pourquoi": "affection courante chez le lapin, absente du dossier"
+  },
+  {
+   "id": "n4",
+   "patientId": "mnq1…",
+   "question": "parasites intestinaux",
+   "relevant": [],
+   "_pourquoi": "voisin des troubles digestifs (diarrhée, vomissement) sans réponse"
+  },
+  {
+   "id": "n5",
+   "patientId": "mnq1…",
+   "question": "allergie à la pénicilline",
+   "relevant": [],
+   "_pourquoi": "piège voisin de l'antibiotique, présent chez patient B seulement"
+  },
+  {
+   "id": "n6",
+   "patientId": "mqh9…",
+   "question": "vaccin contre la rage",
+   "relevant": [],
+   "_pourquoi": "voisin de « maladie infectieuse » ; aucune note de vaccination indexée pour ce chien"
+  },
+  {
+   "id": "n7",
+   "patientId": "mqh9…",
+   "question": "diabète",
+   "relevant": [],
+   "_pourquoi": "voisin métabolique du bilan rénal, absent"
+  },
+  {
+   "id": "n8",
+   "patientId": "mqh9…",
+   "question": "insuffisance cardiaque",
+   "relevant": [],
+   "_pourquoi": "piège lexical : partage « insuffisance » avec l'insuffisance rénale"
+  },
+  {
+   "id": "n9",
+   "patientId": "mqh9…",
+   "question": "calculs urinaires",
+   "relevant": [],
+   "_pourquoi": "voisin de l'appareil urinaire, sans réponse"
+  },
+  {
+   "id": "n10",
+   "patientId": "mqh9…",
+   "question": "dysplasie de la hanche",
+   "relevant": [],
+   "_pourquoi": "plausible chez un malinois, absente du dossier"
+  },
+  {
+   "id": "p1",
+   "patientId": "mnq1…",
+   "question": "le lapin a maigri",
+   "relevant": [
+    {
+     "sourceType": "soap",
+     "sourceId": "mv1a…"
+    }
+   ],
+   "_pourquoi": "paraphrase de « perte de poids »"
+  },
+  {
+   "id": "p2",
+   "patientId": "mnq1…",
+   "question": "troubles digestifs",
+   "relevant": [
+    {
+     "sourceType": "soap",
+     "sourceId": "mv1a…"
+    }
+   ],
+   "_pourquoi": "terme englobant pour vomissement et diarrhée, absent du texte"
+  },
+  {
+   "id": "p3",
+   "patientId": "mnq1…",
+   "question": "température élevée",
+   "relevant": [
+    {
+     "sourceType": "soap",
+     "sourceId": "mv1a…"
+    }
+   ],
+   "_pourquoi": "paraphrase de « fièvre aiguë »"
+  },
+  {
+   "id": "p4",
+   "patientId": "mqh9…",
+   "question": "problème aux reins",
+   "relevant": [
+    {
+     "sourceType": "soap",
+     "sourceId": "mvd2…"
+    }
+   ],
+   "_pourquoi": "langage courant pour l'insuffisance rénale"
+  },
+  {
+   "id": "p5",
+   "patientId": "mqh9…",
+   "question": "éruption sur la face",
+   "relevant": [
+    {
+     "sourceType": "soap",
+     "sourceId": "mveb…"
+    }
+   ],
+   "_pourquoi": "paraphrase de « boutons sur le visage »"
+  },
+  {
+   "id": "p6",
+   "patientId": "mqh9…",
+   "question": "intolérance aux antibiotiques",
+   "relevant": [
+    {
+     "sourceType": "soap",
+     "sourceId": "mveb…"
+    }
+   ],
+   "_pourquoi": "les pénicillines sont des antibiotiques ; lien indirect"
+  }
+ ]
+}

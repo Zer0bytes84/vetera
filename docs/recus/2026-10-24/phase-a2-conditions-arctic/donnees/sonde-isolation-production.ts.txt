@@ -1,0 +1,77 @@
+// TEMPORARY (A2 conditions): proves cross-origin isolation in a production build.
+// Compiled only when VITE_ISOLATION_PROBE gives an output path at build time.
+import { writeTextFile } from "@tauri-apps/plugin-fs";
+import { getLocalModels, getLocalModelUrls } from "@/modules/consultations/local-ai/models";
+import { LocalInferenceSession } from "@/modules/consultations/local-ai/inference-client";
+
+export async function runIsolationProbe(out: string) {
+  const report: Record<string, unknown> = {
+    origin: location.origin,
+    crossOriginIsolated: self.crossOriginIsolated,
+    sharedArrayBuffer: typeof SharedArrayBuffer === "function",
+    secureContext: isSecureContext,
+    wasmMemoryShared: (() => { try { return new WebAssembly.Memory({ initial: 1, maximum: 1, shared: true }).buffer.constructor.name; } catch (error) { return String(error); } })(),
+    userAgent: navigator.userAgent,
+  };
+  const errors: string[] = [];
+  addEventListener("error", (event) => errors.push(String((event as ErrorEvent).message ?? event.type)), true);
+  const save = () => writeTextFile(out, JSON.stringify({ ...report, errors }, null, 2));
+  const step = async (name: string, run: () => Promise<unknown>) => {
+    const t0 = performance.now();
+    try {
+      report[name] = { ok: true, result: await run(), seconds: +((performance.now() - t0) / 1000).toFixed(2) };
+    } catch (error) {
+      report[name] = { ok: false, error: String(error) };
+    }
+    await save();
+  };
+  await save();
+  const models = await getLocalModels();
+  const urls = getLocalModelUrls(models);
+  await step("assetFetch", async () => {
+    const response = await fetch(`${urls.modelRoot}arctic-embed-l-v2/tokenizer_config.json`);
+    return { status: response.status, bytes: (await response.text()).length };
+  });
+  const embed = (model: "embeddinggemma" | "arctic", threads: number) => async () => {
+    const session = await LocalInferenceSession.create("embedding", new AbortController().signal, () => {});
+    try {
+      const ask = async (text: string) => {
+        const t0 = performance.now();
+        const result = await session.request({ type: "embed", modelRoot: urls.modelRoot, runtimeRoot: urls.runtimeRoot, texts: [text], query: true, model, threads }, "embedded");
+        return { ms: Math.round(performance.now() - t0), engine: result.type === "embedded" ? result.engine : null, dims: result.type === "embedded" ? result.vectors[0]?.length : 0, vector: result.type === "embedded" ? result.vectors[0] : [] };
+      };
+      const first = await ask("boiterie du membre postérieur droit");
+      const warm = [await ask("vaccination du chat"), await ask("douleur à la palpation du grasset chez un chien âgé de sept ans")];
+      return { first, warm };
+    } finally {
+      session.close();
+    }
+  };
+  await step("searchV1", embed("embeddinggemma", 1));
+  await step("searchArctic1", embed("arctic", 1));
+  await step("searchArctic4", embed("arctic", 4));
+  await step("whisper", async () => {
+    const session = await LocalInferenceSession.create("whisper", new AbortController().signal, () => {});
+    try {
+      return (await session.request({ type: "load-whisper", modelRoot: urls.modelRoot, runtimeRoot: urls.runtimeRoot }, "ready")).type;
+    } finally {
+      session.close();
+    }
+  });
+  await step("generator", async () => {
+    const session = await LocalInferenceSession.create("soap", new AbortController().signal, () => {});
+    try {
+      const result = await session.request({ type: "generate", modelUrl: urls.modelUrl, runtimeRoot: urls.runtimeRoot, prompt: "Réponds seulement : bonjour." }, "generated");
+      return result.type === "generated" ? result.text.slice(0, 40) : result.type;
+    } finally {
+      session.close();
+    }
+  });
+  await step("page", async () => ({
+    images: [...document.images].map((image) => ({ src: image.src.slice(0, 60), loaded: image.complete && image.naturalWidth > 0 })),
+    fonts: document.fonts.status,
+    failedResources: performance.getEntriesByType("resource").filter((entry) => (entry as PerformanceResourceTiming).responseStatus === 0 && (entry as PerformanceResourceTiming).transferSize === 0 && (entry as PerformanceResourceTiming).decodedBodySize === 0).map((entry) => entry.name.slice(0, 100)),
+  }));
+  report.done = true;
+  await save();
+}

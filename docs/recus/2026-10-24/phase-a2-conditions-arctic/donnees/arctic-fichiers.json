@@ -1,0 +1,32 @@
+{
+ "source": "Snowflake/snowflake-arctic-embed-l-v2.0",
+ "revision": "ac6544c (forme courte)",
+ "licence": "Apache-2.0",
+ "files": [
+  {
+   "path": "config.json",
+   "size": 818,
+   "sha256": "706f5d1eb9ddf64b5d3067c562b893b80ad1022db7f68c20eb07ff24d33b6c15"
+  },
+  {
+   "path": "tokenizer.json",
+   "size": 17083074,
+   "sha256": "39feb9863a378165ab9c5c689047203d789422966c0c58721c5309fd039a8edc"
+  },
+  {
+   "path": "tokenizer_config.json",
+   "size": 1339,
+   "sha256": "cb058b4c5c0c08738eb028c2ae82ed55cd84ce8999ece76b13472af80f0f77f1"
+  },
+  {
+   "path": "special_tokens_map.json",
+   "size": 964,
+   "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+  },
+  {
+   "path": "onnx/model_quantized.onnx",
+   "size": 569721975,
+   "sha256": "4b164a8bd09dd9806e035bdf3c34a2d81848b3db9642ba2e342b8367c00872d8"
+  }
+ ]
+}

@@ -1,0 +1,89 @@
+{
+  "label": "isoc",
+  "startedAt": "2026-10-24T17:12:42.502Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "isolationCheck": {
+    "ocr": {
+      "ok": true,
+      "result": "Vaccin rage 2026",
+      "seconds": 0.58
+    },
+    "pdf": {
+      "ok": true,
+      "result": "Ordonnance de controle Baitari",
+      "seconds": 7.07
+    },
+    "whisper": {
+      "ok": true,
+      "result": "ready",
+      "seconds": 17.94
+    },
+    "generator": {
+      "ok": true,
+      "result": "Bonjour !\n\nEst-ce que vous avez des ques",
+      "seconds": 4.35
+    }
+  },
+  "queries": {
+    "model": "arctic",
+    "firstWithLoadMs": 6467,
+    "short": {
+      "n": 30,
+      "medianMs": 74,
+      "p95Ms": 172,
+      "maxMs": 201,
+      "characters": [
+        12,
+        12,
+        6,
+        19,
+        20,
+        13,
+        8,
+        11,
+        19,
+        8
+      ]
+    },
+    "long": {
+      "n": 30,
+      "medianMs": 285,
+      "p95Ms": 396,
+      "maxMs": 507,
+      "characters": [
+        255,
+        255,
+        254,
+        213,
+        185,
+        181,
+        174,
+        162,
+        160,
+        159
+      ]
+    },
+    "engine": {
+      "threads": 4,
+      "isolated": true,
+      "sharedMemory": true
+    }
+  },
+  "engine": {
+    "threads": 4,
+    "isolated": true,
+    "sharedMemory": true
+  },
+  "finishedAt": "2026-10-24T17:13:30.728Z"
+}
