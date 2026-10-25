@@ -49,6 +49,7 @@ import {
 } from "./metrics";
 import { runDictation, type DictationClip } from "./dictation-bench";
 import { runReference, type ReferenceCase } from "./reference-bench";
+import { runProgressive } from "./progressive-bench";
 
 interface Bundle {
   patient: Patient;
@@ -698,6 +699,27 @@ async function main() {
         }
       : undefined);
     mark("dictation:end");
+  }
+  if (tasks.has("progressive")) {
+    // segments: target lengths in seconds; 0 = one segment at the end (today's full transcription).
+    const clips = JSON.parse(await readTextFile(params.get("dictation")!)) as DictationClip[];
+    mark("progressive:start");
+    await runProgressive(models, clips, {
+      segments: (params.get("segments") ?? "0,10,20").split(",").map((value) => Number(value) || 1000),
+      threads: Number(params.get("whisperThreads") ?? 4),
+      realUse: params.get("parkSearch") === "1",
+      loadDuringSpeech: params.get("loadDuringSpeech") === "1",
+    }, log, (row) => writeTextFile(outPath.replace(/\.json$/, "") + ".rows.jsonl", `${JSON.stringify(row)}\n`, { append: true }),
+    params.get("reference") && params.get("noteAfterPlan") === "1"
+      ? async (clip) => {
+          if (!clip.name.startsWith("plan")) return;
+          const item = JSON.parse(await readTextFile(params.get("reference")!)) as ReferenceCase;
+          const started = performance.now();
+          const [row] = (await runReference(models, item, { generators: [params.get("generator") ?? "gemma4"], variants: ["guidee"], cases: ["reference"] }, log)) as { accepted: boolean }[];
+          await writeTextFile(outPath.replace(/\.json$/, "") + ".rows.jsonl", `${JSON.stringify({ note: true, after: clip.name, accepted: row.accepted, totalSeconds: seconds(started) })}\n`, { append: true });
+        }
+      : undefined);
+    mark("progressive:end");
   }
   if (tasks.has("reference")) {
     mark("reference:start");

@@ -29,6 +29,8 @@ const query = new URLSearchParams(
     whisperKeep: process.env.BAITARI_EVAL_WHISPER_KEEP,
     whisperDtype: process.env.BAITARI_EVAL_WHISPER_DTYPE,
     noteAfterPlan: process.env.BAITARI_EVAL_NOTE_AFTER_PLAN,
+    segments: process.env.BAITARI_EVAL_SEGMENTS,
+    loadDuringSpeech: process.env.BAITARI_EVAL_LOAD_DURING_SPEECH,
     reference: process.env.BAITARI_EVAL_REFERENCE,
     generators: process.env.BAITARI_EVAL_GENERATORS,
     variants: process.env.BAITARI_EVAL_VARIANTS,

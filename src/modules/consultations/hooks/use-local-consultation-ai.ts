@@ -34,6 +34,8 @@ type Attempt = {
   capture?: Awaited<ReturnType<typeof captureAudio>>;
   /** Model and threads of the dictation session, to reuse it for the next rubric. */
   whisperKey?: string;
+  /** Model load started with the microphone; awaited before transcribing. */
+  loading?: Promise<void>;
 };
 export function useLocalConsultationAi() {
   const [phase, setPhase] = useState<LocalAiPhase>("idle");
@@ -112,11 +114,17 @@ export function useLocalConsultationAi() {
         attempt.whisperKey = `${urls.modelRoot}#${threads}`;
         const taken = await takeWhisperSession(attempt.whisperKey, signal, update);
         attempt.session = taken.session;
-        if (!taken.loaded)
-          await attempt.session.request(
-            { type: "load-whisper", ...urls, threads },
-            "ready"
-          );
+        // The microphone opens at once; the model loads while the vet speaks
+        // (12 to 18 s on an M1 with 8 GB after a search evicted it).
+        attempt.loading = taken.loaded
+          ? Promise.resolve()
+          : attempt.session
+              .request({ type: "load-whisper", ...urls, threads }, "ready")
+              .then(() => undefined);
+        attempt.loading.catch((failure) => {
+          // A load failure while listening stops the dictation and says why.
+          if (attempt.capture) reportFailure(attempt, failure);
+        });
         if (signal.aborted) throw abortError();
         attempt.capture = await captureAudio(
           attempt.microphone.stream,
@@ -152,6 +160,8 @@ export function useLocalConsultationAi() {
     try {
       const audio = capture.stop();
       attempt.microphone?.close();
+      // A dictation shorter than the load waits for the model here.
+      await attempt.loading;
       const result = await attempt.session.request(
         { type: "transcribe", audio, language: attempt.language ?? "fr", keep: true },
         "transcript",

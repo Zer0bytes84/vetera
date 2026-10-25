@@ -1,0 +1,31 @@
+{
+  "label": "p-chargement-parole",
+  "startedAt": "2026-10-25T19:39:15.160Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "progressive:start",
+      "at": 1792957155.168
+    },
+    {
+      "what": "progressive:end",
+      "at": 1792957404.211
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "engine": {
+    "threads": 1,
+    "isolated": true,
+    "sharedMemory": true
+  },
+  "finishedAt": "2026-10-25T19:43:24.213Z"
+}

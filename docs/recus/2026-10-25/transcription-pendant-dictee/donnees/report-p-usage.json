@@ -1,0 +1,31 @@
+{
+  "label": "p-usage",
+  "startedAt": "2026-10-25T19:11:16.390Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "progressive:start",
+      "at": 1792955476.396
+    },
+    {
+      "what": "progressive:end",
+      "at": 1792956709.956
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "engine": {
+    "threads": 1,
+    "isolated": true,
+    "sharedMemory": true
+  },
+  "finishedAt": "2026-10-25T19:31:49.958Z"
+}
