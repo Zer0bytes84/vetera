@@ -1278,6 +1278,108 @@
 }
 :root[data-skin="clean"] .cardNote { font-size: 12px !important; font-weight: 450; color: var(--clean-ink-quiet) !important; }
 
+/* ---------- Clinical view of the dashboard: the same paper cards ----------
+   Premium draws this view as an engraved lattice (frames overshooting by
+   10 px, crossed corners, double rules). In Clean every block is a white card
+   with one line and 10 px corners, like the analytics view: a 16 px gutter
+   inside, quiet section lines, titles at 14 px. */
+:root[data-skin="clean"] .premium-clinical-overview > .flex { gap: 24px !important; }
+:root[data-skin="clean"] .premium-clinical-overview :is(.visit-flow-board, .grid) { gap: 16px !important; }
+:root[data-skin="clean"] .premium-clinical-overview :is(.visit-flow-card, .clinical-module) {
+  overflow: hidden;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: var(--clean-card-radius) !important;
+  background: var(--clean-surface) !important;
+  box-shadow: 0 0 0 1px var(--clean-line) !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview :is(.visit-flow-card, .clinical-module)::before { display: none !important; }
+:root[data-skin="clean"] .premium-clinical-overview :is(.visit-flow-card, .clinical-module) > div {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview :is(.visit-flow-main, .visit-flow-queue) { padding: var(--clean-card-pad) !important; }
+/* Card heads: title and subtitle on 16 px, one quiet line below. */
+:root[data-skin="clean"] .premium-clinical-overview .clinical-module:not(.clinical-trends-module) > div > :first-child {
+  min-height: 0 !important;
+  padding: var(--clean-card-pad) var(--clean-card-pad) 12px !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview .clinical-module:not(.clinical-trends-module) > div > :not(:first-child) { margin-inline: var(--clean-card-pad) !important; }
+:root[data-skin="clean"] .premium-clinical-overview .clinical-module:not(.clinical-trends-module) > div > :last-child { margin-bottom: var(--clean-card-pad) !important; }
+/* The first block under a head keeps 16 px of air (totals bring their own). */
+:root[data-skin="clean"] .premium-clinical-overview .clinical-module:not(.clinical-trends-module) > div > :nth-child(2):not(.module-totals-grid) { margin-top: var(--clean-card-pad) !important; }
+:root[data-skin="clean"] .premium-clinical-overview .clinical-trends-module > div > button { padding: var(--clean-card-pad) !important; }
+:root[data-skin="clean"] .premium-clinical-overview :is(.clinical-module h2, .visit-flow-head-title h2) {
+  font-family: var(--clean-font-heading) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  font-weight: 600 !important;
+  letter-spacing: var(--clean-tracking-heading) !important;
+  color: var(--clean-ink-strong) !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview .visit-flow-head { padding-inline: 0 !important; }
+/* Figures: one row of totals, separated by quiet lines, numbers at 24 px. */
+:root[data-skin="clean"] .premium-clinical-overview :is(.module-totals-grid, .premium-widget-metrics) {
+  border: 0 !important;
+  box-shadow: inset 0 -1px 0 var(--clean-line-subtle) !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview .premium-widget-metrics { box-shadow: inset 0 1px 0 var(--clean-line-subtle) !important; }
+:root[data-skin="clean"] .premium-clinical-overview .premium-widget-metrics > div + div { box-shadow: inset 1px 0 0 var(--clean-line-subtle) !important; }
+:root[data-skin="clean"] .premium-clinical-overview :is(.module-totals-item dd, .premium-widget-metrics dd) {
+  font-family: var(--clean-font-ui) !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  letter-spacing: var(--clean-tracking-title) !important;
+}
+/* Rows and inner rules: the quiet line, never the engraved pair. */
+:root[data-skin="clean"] .premium-clinical-overview :is(.border-hairline, .visit-flow-details, .visit-flow-day-progress) { border-color: var(--clean-line-subtle) !important; }
+:root[data-skin="clean"] .premium-clinical-overview .clinical-day-module [data-row-id] { border-bottom-color: var(--clean-line-subtle) !important; }
+/* The patient tile and the day's progress take the segmented track's tone. */
+:root[data-skin="clean"] .premium-clinical-overview .visit-flow-symbol {
+  width: 44px !important;
+  height: 44px !important;
+  border: 0 !important;
+  border-radius: var(--clean-control-radius) !important;
+  background: var(--clean-segment-track) !important;
+  color: var(--clean-ink-strong) !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview .visit-flow-name {
+  font-family: var(--clean-font-heading) !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  letter-spacing: var(--clean-tracking-title) !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview .visit-flow-track { background: var(--clean-segment-track) !important; }
+/* Filters: the segmented switch of every other Clean screen. */
+:root[data-skin="clean"] .premium-clinical-overview :is(.clinical-filter-tabs, .clinical-trends-module [role="group"]) {
+  width: max-content;
+  max-width: 100%;
+  height: var(--clean-control) !important;
+  gap: 2px !important;
+  padding: 2px !important;
+  border-radius: var(--clean-control-radius) !important;
+  background: var(--clean-segment-track) !important;
+  box-shadow: none !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview :is(.clinical-filter-tabs, .clinical-trends-module [role="group"]) button {
+  min-height: 0 !important;
+  height: var(--clean-segment-item) !important;
+  padding: 0 10px !important;
+  border-radius: var(--clean-segment-radius) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--clean-ink) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+:root[data-skin="clean"] .premium-clinical-overview :is(.clinical-filter-tabs, .clinical-trends-module [role="group"]) button[aria-pressed="true"] {
+  background: var(--clean-segment-active) !important;
+  box-shadow: var(--clean-segment-active-shadow) !important;
+  color: var(--clean-ink-strong) !important;
+}
+
 /* Page icon: sits on the title's line, at the title's size, without a box.
    It was a 40 px tile pinned to the top of the title block, so it floated
    between title and subtitle (7.6 px low), or above the title when a date
