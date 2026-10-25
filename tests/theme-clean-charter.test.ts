@@ -267,7 +267,7 @@ describe("thème Clean : interrupteurs segmentés", () => {
 
 describe("thème Clean : icônes", () => {
   const SUBSTITUTIONS: [target: RegExp, icon: string][] = [
-    [/aria-label="Patients"\] svg/, "paw-print"],
+    [/aria-label="Patients"\] svg/, "book-heart"],
     [/data-tone="orange"\] svg/, "syringe"],
     [/data-kpi="Urgences ouvertes"\]/, "siren"],
     [/data-kpi="Relances à prévoir"\]/, "calendar-clock"],

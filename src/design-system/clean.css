@@ -77,7 +77,7 @@
   /* Icon substitutions (Lucide, drawn as masks over the original icon, so no
      component changes per theme). Each one is listed in the review and can be
      vetoed alone by deleting its line in the substitution block below. */
---clean-icon-paw-print: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='4' r='2'/%3E%3Ccircle cx='18' cy='8' r='2'/%3E%3Ccircle cx='20' cy='16' r='2'/%3E%3Cpath d='M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z'/%3E%3C/svg%3E");
+--clean-icon-book-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 8.2A2.22 2.22 0 0 0 13.8 6c-.8 0-1.4.3-1.8.9-.4-.6-1-.9-1.8-.9A2.22 2.22 0 0 0 8 8.2c0 .6.3 1.2.7 1.6A226.652 226.652 0 0 0 12 13a404 404 0 0 0 3.3-3.1 2.413 2.413 0 0 0 .7-1.7'/%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/%3E%3C/svg%3E");
   --clean-icon-syringe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 2 4 4'/%3E%3Cpath d='m17 7 3-3'/%3E%3Cpath d='M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5'/%3E%3Cpath d='m9 11 4 4'/%3E%3Cpath d='m5 19-3 3'/%3E%3Cpath d='m14 4 6 6'/%3E%3C/svg%3E");
   --clean-icon-siren: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18v-6a5 5 0 1 1 10 0v6'/%3E%3Cpath d='M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z'/%3E%3Cpath d='M21 12h1'/%3E%3Cpath d='M18.5 4.5 18 5'/%3E%3Cpath d='M2 12h1'/%3E%3Cpath d='M12 2v1'/%3E%3Cpath d='m4.929 4.929.707.707'/%3E%3Cpath d='M12 12v6'/%3E%3C/svg%3E");
   --clean-icon-calendar-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5'/%3E%3Cpath d='M16 2v4'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M3 10h5'/%3E%3Cpath d='M17.5 17.5 16 16.3V14'/%3E%3Ccircle cx='16' cy='16' r='6'/%3E%3C/svg%3E");
@@ -1541,13 +1541,14 @@
 }
 
 /* ---------- Icon substitutions: one meaning, one icon ----------
-   Patients are animals: a paw, not the stethoscope that also means
-   consultation. Care is a syringe, as on the Soins page, not the clipboard of
+   Patients are their health records: a health book with a heart (chosen with
+   the vet on 2026-10-24 over the paw, whose filled pads clashed with the
+   line icons), not the stethoscope that also means consultation. Care is a syringe, as on the Soins page, not the clipboard of
    Rappels. Emergencies are a siren, not a security shield. Recalls are a due
    date. Everything late is the same clock with an alert, on every page. The
    clinical day view is a day of care, not a second "new consultation". */
 :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][aria-label="Patients"] svg,
-:root[data-skin="clean"] [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg { --clean-icon: var(--clean-icon-paw-print); }
+:root[data-skin="clean"] [data-slot="page-header"][data-page-title="Patients"] .premium-page-icon svg { --clean-icon: var(--clean-icon-book-heart); }
 :root[data-skin="clean"] .quick-actions-menu [data-tone="orange"] svg { --clean-icon: var(--clean-icon-syringe); }
 :root[data-skin="clean"] [data-kpi="Urgences ouvertes"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-siren); }
 :root[data-skin="clean"] [data-kpi="Relances à prévoir"] .section-atlas-title-icon { --clean-icon: var(--clean-icon-calendar-clock); }
