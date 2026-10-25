@@ -2,6 +2,7 @@ import { analyzeTreatmentDictation } from "../local-ai/treatment-routing";
 import {
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -163,6 +164,7 @@ export default function LocalConsultationAssistant({
   const [notice, setNotice] = useState<string | null>(null);
   const [discardOpen, setDiscardOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const dictationScrollRef = useRef<HTMLDivElement>(null);
   const id = useId();
 
   const patient = patients.data.find((entry) => entry.id === effectivePatientId);
@@ -560,6 +562,14 @@ export default function LocalConsultationAssistant({
 
   const hasNoteContent = Object.values(activeSoapDraft).some((val) => val.trim().length > 0);
 
+  // The guided dictation reads like a conversation: the current question and
+  // its field sit at the bottom, so the list opens there and follows each
+  // rubric (and the models card opening or closing above it).
+  useLayoutEffect(() => {
+    const list = dictationScrollRef.current;
+    if (list) list.scrollTop = list.scrollHeight;
+  }, [activeTab, sectionIndex, setupOpen]);
+
   const assistantMood: MascotMood = saved
     ? "happy"
     : (ai.busy || saving)
@@ -795,7 +805,7 @@ export default function LocalConsultationAssistant({
       {/* 4. Tab 1: Dictée Libre Flow */}
       {activeTab === "dictation" && (
         <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
-          <div className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
+          <div ref={dictationScrollRef} className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
             {/* Assistant Welcome Card: the mascot speaks once, in the header. */}
             <div className="assistant-welcome-card flex items-start gap-3 rounded-2xl border border-border/70 bg-card p-3.5 shadow-xs">
               <div className="min-w-0 flex-1">

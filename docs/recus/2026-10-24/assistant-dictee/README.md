@@ -31,9 +31,15 @@ La mascotte reste uniquement dans l'en-tête du panneau.
 
 Textes, texte indicatif, boutons Dicter et langue, compteurs, navigation des rubriques, dictée, validation SOAP et cas similaires : inchangés. Seules les variables de la charte sont utilisées.
 
-## Point connu, non traité ici
+## Le champ entier dès l'ouverture
 
-À 900 px de haut, quand le bloc « Modèles IA sur cet ordinateur » est affiché, le bas du champ passe sous le bord de la zone qui défile jusqu'à ce qu'on fasse défiler. C'était déjà le cas avant.
+Avant, à 900 px de haut et avec le bloc « Modèles IA sur cet ordinateur » affiché, le bas du champ passait sous le bord de la zone qui défile tant qu'on ne faisait pas défiler.
+
+La zone s'ouvrait en haut, et rien ne la ramenait vers le champ. La dictée guidée se lit comme une conversation : la zone se place désormais en bas à l'ouverture, à chaque changement de rubrique et quand le bloc des modèles s'ouvre ou se ferme, sans animation.
+
+La question en cours, le champ, Dicter, la langue et les compteurs sont donc entiers. L'accueil reste accessible en remontant, et rien ne bouge quand tout tient à l'écran.
+
+Mesuré à 1440 × 900 : bas du champ à 743 px pour un bord de zone à 787 px, à l'ouverture comme après « Passer cette rubrique ». Captures dans `champ-entier/` : `avant` coupé, `apres` entier, en clair et en sombre.
 
 ## Captures
 
