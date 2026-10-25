@@ -330,13 +330,15 @@
   box-shadow: 0 0 0 2px var(--clean-sheet);
 }
 
-/* Header search: the pill on the segmented track's soft grey, the ⌘K mark
-   in a small white disc, like the chosen item of a segmented switch. */
+/* Header search: the segmented switch itself, the track's soft grey and its
+   corners, the ⌘K mark as its chosen item. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field {
+  border-radius: var(--clean-control-radius);
   background: var(--clean-segment-track);
   color: var(--clean-ink-quiet);
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-key {
+  border-radius: var(--clean-segment-radius);
   background: var(--clean-segment-active);
   box-shadow: var(--clean-segment-active-shadow);
   color: var(--clean-ink);
@@ -348,8 +350,27 @@
   }
   :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field:hover .shell-header-search-key { color: var(--clean-ink-strong); }
 }
-/* The account avatar ends the header on the page's 24 px margin. */
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-account-trigger) { padding-inline-end: 24px !important; }
+/* The slide-out toggle: a ghost like the tools on the right, its glyph on the
+   page's 24 px margin; the rule beside it is the header's quiet line. */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-sidebar-toggle) { padding-inline-start: 16px !important; }
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-sidebar-toggle {
+  border: 0 !important;
+  border-radius: var(--clean-control-radius) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--clean-ink) !important;
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-divider { background: var(--clean-line); }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-sidebar-toggle:hover {
+    background: var(--clean-hover) !important;
+    color: var(--clean-ink-strong) !important;
+    transition-duration: var(--speed-highlight-in);
+  }
+}
+/* The avatar's disc (28 px in a 32 px button) ends on the page's 24 px margin, measured from the sheet edge like the cards (a classic scrollbar is taken back). */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-account-trigger) { padding-inline-end: calc(22px - var(--shell-scrollbar-width, 0px)) !important; }
 
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
 :root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) { color-scheme: dark; }

@@ -4,6 +4,7 @@ import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
 import { AccountMenu } from "./components/account-menu";
+import { HeaderSidebarToggle } from "./components/header-sidebar-toggle";
 import { QuickActionsFab } from "./components/quick-actions-fab";
 import { roleLabel } from "@/lib/user-role";
 import type { PremiumShortcut } from "@/lib/visual-style";
@@ -663,10 +664,8 @@ function AppShellInner() {
               {/* 1. GAUCHE : Logo & Titre classique de page OU recherche (Premium et Clean) */}
               {isPremium ? (
                 <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
-                  <SidebarTrigger
-                    aria-label="Menu"
-                    className="shell-toolbar-control size-8 shrink-0 md:!hidden"
-                  />
+                  <HeaderSidebarToggle />
+                  <span aria-hidden="true" className="shell-header-divider" />
                   {/* La recherche, en pilule, à gauche : le titre vit déjà dans chaque page. */}
                   <div className="shell-header-search-slot">
                     <button

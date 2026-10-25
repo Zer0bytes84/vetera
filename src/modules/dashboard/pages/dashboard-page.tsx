@@ -311,7 +311,7 @@ export function DashboardPage({
     />
   );
     return (
-      <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-6 pb-12 lg:px-8 premium-analytics-dashboard">
+      <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-6 pb-12 lg:px-6 premium-analytics-dashboard">
         <PremiumAnalytics
           clinicalView={version === "clinical" ? clinicalView : undefined}
           model={buildPremiumAnalytics({ ...presentation, alerts }, analyticsPeriod, now)}

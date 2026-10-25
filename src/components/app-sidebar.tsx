@@ -14,7 +14,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
@@ -193,13 +192,7 @@ export function AppSidebar({
           )}
         >
           <SidebarBrand collapsed={isCollapsed} onHome={() => onNavigate("dashboard")} />
-          {!isCollapsed && (
-            <SidebarTrigger aria-label="Réduire la barre latérale" className="sidebar-logo-toggle size-8 rounded-lg text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground" />
-          )}
         </div>
-        {isCollapsed && (
-          <SidebarTrigger aria-label="Déployer la barre latérale" title="Déployer la barre latérale" className="sidebar-icon-mode-toggle absolute size-8 text-sidebar-foreground/65 hover:text-sidebar-foreground" />
-        )}
       </SidebarHeader>
       <SidebarContent
         ref={navigationRef}

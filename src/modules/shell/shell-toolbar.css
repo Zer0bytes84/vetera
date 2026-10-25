@@ -481,9 +481,10 @@
   .shell-toolbar-actions,:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background:var(--background); }
 }
 
-/* Header search (Premium and Clean), after Dribbble's: a pill on a soft
-   grey, the placeholder on the left, and inside it on the right a small
-   round mark carrying ⌘K. It sits at the header's left, where the title used
+/* Header search (Premium and Clean): the segmented switch's geometry, a
+   32 px field with 8 px corners on a soft grey, the placeholder on the left,
+   and inside it on the right a 28 px mark with 6 px corners carrying ⌘K, 2 px
+   from the edge so both curves are concentric. It sits at the header's left, where the title used
    to be, and gives way to the search icon when the header is narrow. */
 .shell-header-search-slot {
   width: clamp(220px, 32cqi, 300px);
@@ -492,12 +493,12 @@
 .shell-header-search-field {
   display: flex;
   width: 100%;
-  height: 36px;
+  height: 32px;
   align-items: center;
   gap: 8px;
-  padding: 0 4px 0 16px;
+  padding: 0 2px 0 12px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--surface-hover, var(--muted));
   color: var(--ink-muted, var(--muted-foreground));
   font-size: 13px;
@@ -526,7 +527,7 @@
   height: 28px;
   flex: none;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--surface, var(--card));
   box-shadow: 0 0 0 1px var(--border);
   font-family: inherit;
@@ -598,3 +599,30 @@
 .shell-account-menu .shell-account-item { min-height: 32px; gap: 10px; padding-inline: 8px; }
 .shell-account-menu .shell-account-item svg { width: 16px; height: 16px; }
 .shell-account-menu .shell-account-count { letter-spacing: 0; font-variant-numeric: tabular-nums; }
+
+/* The sidebar's slide-out toggle opens the header, then a short rule, then the
+   search pill: one group at the header's left edge. */
+.shell-sidebar-toggle {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--ink-muted, var(--muted-foreground));
+  cursor: pointer;
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+}
+.shell-sidebar-toggle:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.shell-header-divider {
+  width: 1px;
+  height: 16px;
+  flex: none;
+  background: var(--border);
+}
+@media (hover: hover) and (pointer: fine) {
+  .shell-sidebar-toggle:hover {
+    background: var(--surface-hover, var(--muted));
+    color: var(--ink, var(--foreground));
+  }
+}
