@@ -735,7 +735,7 @@ export default function CommandPalette({
     <CommandDialog
       title="Palette de commandes"
       description="Recherche rapide, navigation et dossiers patients."
-      className="sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px] rounded-3xl! border-border/80 bg-popover/95 p-0 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.22)] backdrop-blur-2xl dark:bg-zinc-900/95 dark:border-white/10 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.8)]"
+      className="command-palette sm:!top-[15%] sm:!-translate-y-0 !max-w-[680px] rounded-3xl! border-border/80 bg-popover/95 p-0 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.22)] backdrop-blur-2xl dark:bg-zinc-900/95 dark:border-white/10 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.8)]"
       onOpenChange={(open) => !open && onClose()}
       open={isOpen}
       overlayClassName="data-closed:!animate-none data-open:!animate-none bg-black/40 backdrop-blur-sm dark:bg-black/60"
@@ -757,7 +757,7 @@ export default function CommandPalette({
             autoFocus={isOpen}
             data-command-palette-input="true"
             onValueChange={setQuery}
-            placeholder="Un patient, son propriétaire, une page ou une action…"
+            placeholder="Rechercher un patient, une page…"
             value={query}
             endAddon={
               query ? (
@@ -770,9 +770,7 @@ export default function CommandPalette({
                   <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
                 </button>
               ) : (
-                <div className="flex items-center gap-1">
-                  <Kbd className="h-5 px-1.5 t-12">esc</Kbd>
-                </div>
+                <Kbd className="command-palette-esc h-5 px-1.5 t-12">esc</Kbd>
               )
             }
           />
@@ -1604,9 +1602,6 @@ export default function CommandPalette({
               {t("commandPalette.footer.close", { defaultValue: "Fermer" })}
             </span>
           </div>
-          <span className="hidden font-mono tracking-wide text-muted-foreground/70 sm:inline t-12">
-            Baitari ⌘K
-          </span>
         </div>
       </Command>
     </CommandDialog>
