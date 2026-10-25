@@ -9,7 +9,7 @@ import {
   ViewIcon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Bird, Cat, Dog, Fish, PawPrint, Rabbit, Rat, Turtle } from "lucide-react";
+import { speciesIcon } from "@/lib/species-icon";
 
 import React from "react";
 
@@ -83,23 +83,11 @@ function ClinicalFlagPills({ patient }: { patient: Patient }) {
   );
 }
 
-const SPECIES = [
-  { match: /chien|canin/, icon: Dog, tone: "dog" },
-  { match: /chat|f[ée]lin/, icon: Cat, tone: "cat" },
-  { match: /lapin/, icon: Rabbit, tone: "nac" },
-  { match: /rongeur|hamster|cobaye|cochon d'inde|rat|souris|furet/, icon: Rat, tone: "nac" },
-  { match: /oiseau|perroquet|canari|perruche|volaille|poule/, icon: Bird, tone: "wild" },
-  { match: /poisson/, icon: Fish, tone: "wild" },
-  { match: /tortue|reptile|serpent|l[ée]zard/, icon: Turtle, tone: "wild" },
-] as const;
-
 /** The species as a round, tinted avatar, one hue per family. */
 function SpeciesAvatar({ species }: { species?: string }) {
-  const normalized = (species ?? "").toLocaleLowerCase("fr-FR");
-  const found = SPECIES.find((entry) => entry.match.test(normalized));
-  const Icon = found?.icon ?? PawPrint;
+  const { icon: Icon, tone } = speciesIcon(species);
   return (
-    <span aria-hidden="true" className="patients-species" data-tone={found?.tone ?? "other"}>
+    <span aria-hidden="true" className="patients-species" data-tone={tone}>
       <Icon strokeWidth={1.5} />
     </span>
   );

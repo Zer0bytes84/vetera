@@ -1512,6 +1512,48 @@
   color: var(--clean-ink-quiet) !important;
 }
 
+/* ---------- Assistant panel, guided dictation ----------
+   In Clean the welcome and dictation cards have no border or fill, so their
+   inner padding only shifted the label and the field off the column. The
+   rubric's bubble, the "Section" label and the field now share the panel
+   column's two edges. */
+:root[data-skin="clean"] .assistant-welcome-card,
+:root[data-skin="clean"] .assistant-dictation-workspace {
+  padding-inline: 0;
+}
+:root[data-skin="clean"] .assistant-dictation-workspace > :first-child { padding-inline: 0; }
+:root[data-skin="clean"] .assistant-dictation-scroll {
+  padding-right: 0;
+  scrollbar-width: none;
+}
+:root[data-skin="clean"] .assistant-dictation-scroll::-webkit-scrollbar { display: none; }
+/* "Précédent" and "Passer cette rubrique": their words sit on the column's
+   edges, their hover pill reaching 8 px beyond. */
+:root[data-skin="clean"] .assistant-section-nav > [data-slot="button"] {
+  padding-inline: 8px !important;
+  border-width: 0 !important;
+}
+:root[data-skin="clean"] .assistant-section-nav > [data-slot="button"]:first-child { margin-inline-start: -8px; }
+:root[data-skin="clean"] .assistant-section-nav > [data-slot="button"]:last-child { margin-inline-end: -8px; }
+:root[data-skin="clean"] .assistant-section-prompt {
+  width: 100%;
+  max-width: 100%;
+}
+/* The field: one line only (the shared field halo is dropped), the cards'
+   10 px corners, a fixed height; focus only firms the same line. The scope
+   is repeated to outweigh fields.css, whose :is() lists weigh (0,7,1). */
+:root[data-skin="clean"][data-skin][data-skin][data-skin][data-skin] .assistant-dictation-field[data-slot="textarea"] {
+  border: 1px solid var(--clean-line) !important;
+  border-radius: var(--clean-card-radius) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  resize: none !important;
+}
+:root[data-skin="clean"][data-skin][data-skin][data-skin][data-skin] .assistant-dictation-field[data-slot="textarea"]:focus-visible {
+  border-color: var(--clean-ink-quiet) !important;
+  box-shadow: none !important;
+}
+
 /* Page icon: sits on the title's line, at the title's size, without a box.
    It was a 40 px tile pinned to the top of the title block, so it floated
    between title and subtitle (7.6 px low), or above the title when a date

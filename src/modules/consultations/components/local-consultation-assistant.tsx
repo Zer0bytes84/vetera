@@ -71,6 +71,7 @@ import { assembleGuidedNote } from "../local-ai/guided-soap";
 import { buildFreeDictationDraft } from "../local-ai/free-dictation";
 import { EMPTY_SOAP } from "../local-ai/soap-schema";
 import { Mascot, type MascotMood } from "@/components/mascot";
+import { speciesIcon } from "@/lib/species-icon";
 import {
   AssistantSlideoutIcon,
   useAssistantPanelControls,
@@ -91,6 +92,12 @@ interface Props {
   existingNote?: LocalSoapNote;
   onClose: () => void;
   onValidate?: (note: LocalSoapNote, transcript: string) => Promise<void>;
+}
+
+/** The patient's species, as the small fine-line icon of the patient list. */
+function PatientSpeciesGlyph({ species }: { species?: string }) {
+  const { icon: Icon } = speciesIcon(species);
+  return <Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" strokeWidth={1.5} />;
 }
 
 export default function LocalConsultationAssistant({
@@ -597,8 +604,15 @@ export default function LocalConsultationAssistant({
                 </Select>
               )}
             </div>
-            <p className="truncate t-12 text-muted-foreground">
-              {patient?.name ? `${patient.name} · ` : ""}Traitement local
+            <p className="flex min-w-0 items-center gap-1 t-12 text-muted-foreground">
+              {patient?.name ? (
+                <>
+                  <PatientSpeciesGlyph species={patient.species} />
+                  <span className="truncate">{patient.name} · Traitement local</span>
+                </>
+              ) : (
+                <span className="truncate">Traitement local</span>
+              )}
             </p>
           </div>
         </div>
@@ -781,9 +795,9 @@ export default function LocalConsultationAssistant({
       {/* 4. Tab 1: Dictée Libre Flow */}
       {activeTab === "dictation" && (
         <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
+          <div className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
             {/* Assistant Welcome Card: the mascot speaks once, in the header. */}
-            <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-card p-3.5 shadow-xs">
+            <div className="assistant-welcome-card flex items-start gap-3 rounded-2xl border border-border/70 bg-card p-3.5 shadow-xs">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="t-13 font-semibold text-foreground">
@@ -802,7 +816,7 @@ export default function LocalConsultationAssistant({
             {sectionPrompts.slice(0, sectionIndex + 1).map((step, index) => (
               <div key={step.letter} className="flex flex-col gap-2">
                 <Message align="start"><MessageContent>
-                  <Bubble className="max-w-[92%]"><BubbleContent className="bg-blue-600 text-white">
+                  <Bubble className="assistant-section-prompt max-w-[92%]"><BubbleContent className="bg-blue-600 text-white">
                     <p className="mb-1 text-xs text-blue-100">{step.letter} · {step.title}</p>
                     <p className="text-sm leading-relaxed">{step.question}</p>
                   </BubbleContent></Bubble>
@@ -865,7 +879,7 @@ export default function LocalConsultationAssistant({
             )}
 
             {/* Dictation Workspace Container */}
-            <div className="flex min-h-0 flex-1 flex-col gap-2 rounded-2xl border border-border/80 bg-card p-3 shadow-xs">
+            <div className="assistant-dictation-workspace flex min-h-0 flex-1 flex-col gap-2 rounded-2xl border border-border/80 bg-card p-3 shadow-xs">
               {/* Mentions tags & patient autocomplete */}
               <div className="flex items-center justify-between gap-2 px-0.5">
                 <span className="t-12 font-medium text-foreground">
@@ -935,7 +949,7 @@ export default function LocalConsultationAssistant({
                 maxLength={MAX_TRANSCRIPT_LENGTH}
                 disabled={ai.busy && ai.phase !== "listening" || importing}
                 placeholder={`Vos observations · ${sectionPrompts[sectionIndex].title}…`}
-                className="min-h-[170px] flex-1 resize-y bg-background px-3 py-2.5 t-13 leading-relaxed"
+                className="assistant-dictation-field min-h-[170px] flex-1 resize-none rounded-[10px] border-border bg-background px-3 py-2.5 t-13 leading-relaxed shadow-none focus-visible:border-muted-foreground focus-visible:ring-0"
                 onChange={(e) => {
                   setTranscript(e.target.value);
                   setCaret(e.target.selectionStart);
@@ -1055,7 +1069,7 @@ export default function LocalConsultationAssistant({
             </div>
           </div>
 
-          <div className="flex items-center justify-between py-2">
+          <div className="assistant-section-nav flex items-center justify-between py-2">
             <Button variant="ghost" size="sm" disabled={sectionIndex === 0 || ai.busy || importing} onClick={() => changeSection(sectionIndex - 1)}>Précédent</Button>
             {sectionIndex < 3 && <Button variant="ghost" size="sm" disabled={ai.busy || importing} onClick={() => changeSection(sectionIndex + 1)}>Passer cette rubrique</Button>}
           </div>
@@ -1069,8 +1083,10 @@ export default function LocalConsultationAssistant({
                   </span>
                 )}
                 {patient && (
-                  <span className="truncate">
-                    Patient : <strong className="text-foreground">{patient.name}</strong>
+                  <span className="flex min-w-0 items-center gap-1">
+                    <span className="shrink-0">Patient :</span>
+                    <PatientSpeciesGlyph species={patient.species} />
+                    <strong className="truncate text-foreground">{patient.name}</strong>
                   </span>
                 )}
               </div>
