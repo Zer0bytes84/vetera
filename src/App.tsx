@@ -2,13 +2,12 @@ import { ActivationOwnerUnlock } from "@/components/activation-owner-unlock";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { requireActivationOwner } from "@/services/adminAccess";
-import Logo from "@/components/Logo";
-import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { appSettingsRepository } from "@/data/repositories";
 import i18n, { isRtlLanguage } from "@/i18n/config";
 import { acceptLicenseActivation } from "@/services/licenseRuntime";
 import { LicenseGate } from "@/components/LicenseGate";
+import { StartupSplash } from "@/components/startup-splash";
 import { checkAutoBackup } from "@/services/backupService";
 import { isTauriRuntime } from "@/services/browser-store";
 import {
@@ -252,21 +251,7 @@ export function App() {
 }
 
 function AppLoadingState() {
-  return (
-    <div
-      className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#f4f5f1] text-zinc-950"
-      style={{ colorScheme: "light" }}
-    >
-      <div className="absolute -top-40 left-1/2 size-[32rem] -translate-x-1/2 rounded-full bg-[#d7eee5]/75 blur-3xl" />
-      <div className="relative flex flex-col items-center gap-5">
-        <Logo size="xl" />
-        <div className="flex items-center gap-2.5 rounded-full border border-white/80 bg-white/75 px-4 py-2 text-sm text-zinc-600 shadow-sm backdrop-blur-xl">
-          <Spinner className="size-4 text-emerald-700" />
-          Préparation de votre espace
-        </div>
-      </div>
-    </div>
-  );
+  return <StartupSplash />;
 }
 
 function AppStartupRecoveryState({ error }: { error: Error }) {

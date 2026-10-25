@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import Logo from "@/components/Logo";
+import { StartupSplash } from "@/components/startup-splash";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -128,6 +129,10 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
         {children}
       </>
     );
+
+  // While the check runs, the same quiet wait as the rest of startup; the
+  // licence screen below only appears once there is something to say.
+  if (!access) return <StartupSplash />;
 
   return (
     <main className="relative flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">
