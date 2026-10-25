@@ -68,3 +68,19 @@ describe("dictée guidée transmise par rubriques", () => {
     ).toBe("Motif et antécédents : Gémit.\nPlan de soins : Contrôle.");
   });
 });
+
+describe("note de référence assemblée par le code", () => {
+  it("intitulés complets dans le texte, listes nettes, mêmes mots et mêmes chiffres que la dictée", async () => {
+    const { assembleGuidedNote } = await import("@/modules/consultations/local-ai/guided-soap");
+    const { evidenceTokens } = await import("@/modules/consultations/local-ai/dictation-scaffold");
+    const cas = (await import("../../../scripts/eval-local-ai/cas-reference/otite-max.json")).default;
+    const note = assembleGuidedNote(EMPTY_SOAP, cas.rubriques);
+    const text = soapNoteText(layoutSoapNote(note));
+    for (const heading of Object.values(SOAP_FULL_HEADINGS)) expect(text).toContain(heading);
+    expect(text).toContain("\n1. Soins au cabinet");
+    expect(text).toContain("\n- Température 38.5 °C, normale.");
+    const words = (value: string) => evidenceTokens(value).sort().join(" ");
+    const canvas = new RegExp(`^(?:${Object.values(SOAP_FULL_HEADINGS).map((h) => h.replace(/[()/]/g, "\\$&")).join("|")})$|^(?:- |\\d+\\. )`, "gmu");
+    expect(words(text.replace(canvas, ""))).toBe(words(Object.values(cas.rubriques).join(" ")));
+  });
+});

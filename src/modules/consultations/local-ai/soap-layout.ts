@@ -67,14 +67,3 @@ export function stripSoapLayout(key: keyof LocalSoapNote, text: string) {
     .map((line) => line.replace(LIST_MARKER, ""))
     .join("\n");
 }
-
-/** Each section laid out under its own full heading: the canvas shown to the model. */
-export function headedLayout(note: LocalSoapNote): LocalSoapNote {
-  const laidOut = layoutSoapNote(note);
-  return Object.fromEntries(
-    SOAP_SECTIONS.map(({ key }) => [
-      key,
-      laidOut[key] ? `${SOAP_FULL_HEADINGS[key]}\n${laidOut[key]}` : "",
-    ])
-  ) as LocalSoapNote;
-}

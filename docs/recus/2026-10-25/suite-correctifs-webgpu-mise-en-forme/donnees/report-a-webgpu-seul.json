@@ -1,0 +1,177 @@
+{
+  "label": "a-webgpu-seul",
+  "startedAt": "2026-10-25T17:54:16.933Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "dictation:start",
+      "at": 1792950856.941
+    },
+    {
+      "what": "dictation:end",
+      "at": 1792951176.194
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "dictation": [
+    {
+      "order": 1,
+      "folder": "whisper-fp16-banc",
+      "device": "webgpu",
+      "dtype": "fp16",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 62.93,
+      "firstTextSeconds": 23.26,
+      "transcribeSeconds": 29.71,
+      "realTimeFactor": 1.04,
+      "wordErrorRate": 0.984,
+      "missingNumbers": [
+        "2",
+        "38.5",
+        "92",
+        "20"
+      ],
+      "text": "Le propri- T- R,"
+    },
+    {
+      "order": 2,
+      "folder": "whisper-fp16-banc",
+      "device": "webgpu",
+      "dtype": "fp16",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 9.09,
+      "transcribeSeconds": 93.7,
+      "realTimeFactor": 5.45,
+      "wordErrorRate": 11.385,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "N C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C"
+    },
+    {
+      "order": 3,
+      "folder": "whisper-fp16-banc",
+      "device": "webgpu",
+      "dtype": "fp16",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 10.24,
+      "transcribeSeconds": 14.23,
+      "realTimeFactor": 0.37,
+      "wordErrorRate": 1,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "So é"
+    },
+    {
+      "order": 4,
+      "folder": "whisper-fp16-banc",
+      "device": "webgpu",
+      "dtype": "fp16",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 8.15,
+      "transcribeSeconds": 9.41,
+      "realTimeFactor": 0.33,
+      "wordErrorRate": 0.984,
+      "missingNumbers": [
+        "2",
+        "38.5",
+        "92",
+        "20"
+      ],
+      "text": "Le propri- T- R,"
+    },
+    {
+      "order": 5,
+      "folder": "whisper-fp16-banc",
+      "device": "webgpu",
+      "dtype": "fp16",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 7.73,
+      "transcribeSeconds": 92.33,
+      "realTimeFactor": 5.37,
+      "wordErrorRate": 11.385,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "N C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C"
+    },
+    {
+      "order": 6,
+      "folder": "whisper-fp16-banc",
+      "device": "webgpu",
+      "dtype": "fp16",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 11.3,
+      "transcribeSeconds": 16.28,
+      "realTimeFactor": 0.43,
+      "wordErrorRate": 1,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "So é"
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-25T17:59:36.195Z"
+}

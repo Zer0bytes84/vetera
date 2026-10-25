@@ -71,10 +71,12 @@ export interface DictationClip {
 export async function runDictation(
   models: LocalModelStatus,
   clips: DictationClip[],
-  options: { threads: number[]; runs: number; parkSearch: boolean; folders: string[]; device?: "wasm" | "webgpu"; keep?: boolean },
+  options: { threads: number[]; runs: number; parkSearch: boolean; folders: string[]; device?: "wasm" | "webgpu" | "hybride"; dtype?: "q8" | "fp16"; keep?: boolean },
   log: (line: string) => void,
   // Each row as soon as it is measured: a crash of the page keeps what was measured.
   save: (row: unknown) => Promise<void>,
+  // Real use: what the vet does after a dictation (e.g. a note after the Plan).
+  afterClip?: (clip: DictationClip) => Promise<void>,
 ) {
   const urls = getLocalModelUrls(models);
   const rows: unknown[] = [];
@@ -105,7 +107,7 @@ export async function runDictation(
         try {
           const ready = taken.loaded
             ? ({ type: "ready", threads } as const)
-            : await session.request({ type: "load-whisper", ...urls, threads, folder, device: options.device }, "ready");
+            : await session.request({ type: "load-whisper", ...urls, threads, folder, device: options.device, dtype: options.dtype }, "ready");
           const loadSeconds = seconds(started);
           const transcribeStart = performance.now();
           const result = await session.request({ type: "transcribe", audio, language: "fr", keep: options.keep }, "transcript", [audio.buffer]);
@@ -115,6 +117,7 @@ export async function runDictation(
             order,
             folder,
             device: options.device ?? "wasm",
+            dtype: options.dtype ?? "q8",
             clip: clip.name,
             audioSeconds,
             threadsAsked: threads,
@@ -142,6 +145,7 @@ export async function runDictation(
         } finally {
           if (!parked) session.close();
         }
+        await afterClip?.(clip);
       }
   releaseWhisperSession();
   return rows;

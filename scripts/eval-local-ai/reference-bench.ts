@@ -3,8 +3,9 @@
 // generator, and keeps the full texts (fictional case) to explain each refusal.
 import { modelScaffold, prepareSoapDraft } from "@/modules/consultations/local-ai/soap-pipeline";
 import { evidenceTokens } from "@/modules/consultations/local-ai/dictation-scaffold";
-import { guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
-import { SOAP_FULL_HEADINGS } from "@/modules/consultations/local-ai/soap-layout";
+import { assembleGuidedNote, guidedDictationTranscript } from "@/modules/consultations/local-ai/guided-soap";
+import { EMPTY_SOAP } from "@/modules/consultations/local-ai/soap-schema";
+import { SOAP_FULL_HEADINGS, layoutSoapNote, soapNoteText, stripSoapLayout } from "@/modules/consultations/local-ai/soap-layout";
 import type { LocalModelStatus } from "@/modules/consultations/local-ai/models";
 import type { LocalPatientContext } from "@/modules/consultations/local-ai/patient-context";
 import type { LocalSoapNote } from "@/modules/consultations/local-ai/soap-schema";
@@ -44,19 +45,28 @@ export function tokenDiff(source: string, output: string) {
   return { removed, added, reorderedOnly: removed.length > 0 && sorted(removed) === sorted(added), identical: removed.length === 0 && added.length === 0 };
 }
 
-/** Per non-empty section: full heading on the first line, every other line a bullet (plan: numbered 1, 2, 3…). */
-export function modelLayout(note: Record<string, string>) {
-  return Object.fromEntries(
-    KEYS.filter((key) => String(note[key] ?? "").trim()).map((key) => {
-      const lines = String(note[key]).trim().split("\n").map((line) => line.trim()).filter(Boolean);
-      const heading = lines[0]?.replace(/\s*:$/u, "") === SOAP_FULL_HEADINGS[key];
-      const body = lines.slice(1);
-      const listed =
-        body.length > 0 &&
-        body.every((line, index) => (key === "plan" ? line.startsWith(`${index + 1}. `) : line.startsWith("- ")));
-      return [key, { heading, listed, lines: body.length }];
-    })
-  );
+/**
+ * The note as the vet validates it: skeleton laid by code (full headings in the
+ * text, bullets, numbered plan) around the accepted content. Checks that the
+ * canvas adds no word, keeps every dictated number, and writes every heading.
+ */
+export function assembledChecks(note: LocalSoapNote, answers: LocalSoapNote) {
+  const laidOut = layoutSoapNote(note);
+  const text = soapNoteText(laidOut);
+  const sorted = (tokens: string[]) => [...tokens].sort().join(" ");
+  const numbers = (value: string) => evidenceTokens(value).filter((token) => /^[+-]?\d/.test(token));
+  const dictated = KEYS.map((key) => answers[key]).join(" ");
+  const textNumbers = numbers(text);
+  return {
+    text,
+    headings: KEYS.filter((key) => note[key].trim()).every((key) => text.includes(SOAP_FULL_HEADINGS[key])),
+    // Canvas only: each section's words are those of the accepted content, in the same order.
+    canvasOnly: KEYS.every((key) => evidenceTokens(stripSoapLayout(key, laidOut[key])).join(" ") === evidenceTokens(note[key]).join(" ")),
+    // Same words as the dictation, whatever the rubric they were routed to.
+    sameWordsAsDictation: sorted(evidenceTokens(KEYS.map((key) => note[key]).join(" "))) === sorted(evidenceTokens(dictated)),
+    numbersKept: numbers(dictated).every((value) => textNumbers.includes(value)),
+    lists: KEYS.filter((key) => laidOut[key]).every((key) => laidOut[key].split("\n").every((line, index) => (key === "plan" ? line.startsWith(`${index + 1}. `) : line.startsWith("- ")))),
+  };
 }
 
 // Context the panel builds when it is opened without an appointment.
@@ -88,8 +98,7 @@ export async function runReference(
         // "panneau": what the panel sent on the test day (one text, rubric titles inline);
         // "guidee": the rubric answers as the panel now passes them.
         const transcript = guidedDictationTranscript(answers);
-        const guidedSource = variant.startsWith("guidee") ? answers : undefined;
-        const layout = variant === "guidee-forme";
+        const guidedSource = variant === "panneau" ? undefined : answers;
         const scaffold = modelScaffold(transcript, guidedSource);
         const outputs: { number: 1 | 2; seconds: number; generator?: string; text: string }[] = [];
         const started = performance.now();
@@ -100,7 +109,8 @@ export async function runReference(
         let note: LocalSoapNote | null = null;
         let error: string | null = null;
         try {
-          note = await prepareSoapDraft({
+          // "dictee": the way out after a refusal, no model (the panel's own assembly).
+          note = variant === "dictee" ? assembleGuidedNote(EMPTY_SOAP, answers) : await prepareSoapDraft({
             models,
             transcript,
             context: contextWithoutVisit(),
@@ -108,7 +118,6 @@ export async function runReference(
             signal: new AbortController().signal,
             onProgress,
             onAttempt: (attempt) => outputs.push({ ...attempt, seconds: seconds(started) }),
-            layout,
           });
         } catch (failure) {
           error = failure instanceof Error ? failure.message : String(failure);
@@ -124,14 +133,13 @@ export async function runReference(
             attempt: output.number,
             generator: output.generator,
             seconds: output.seconds,
-            // Layout written by the model itself, before any code touches it.
-            layout: parsed ? modelLayout(parsed) : null,
             sections: parsed
               ? Object.fromEntries(KEYS.map((key) => [key, tokenDiff(scaffold[key], String(parsed![key] ?? ""))]))
               : null,
           };
         });
-        rows.push({ generator, case: caseName, variant, accepted: Boolean(note), error, totalSeconds: seconds(started), transcript, scaffold, outputs, diffs, note });
+        const assembled = note ? assembledChecks(note, answers) : null;
+        rows.push({ generator, case: caseName, variant, accepted: Boolean(note), error, totalSeconds: seconds(started), transcript, scaffold, outputs, diffs, note, assembled });
         log(`référence ${caseName} · ${variant} · ${generator} : ${note ? "acceptée" : `refusée (${error})`}, ${outputs.length} essai(s), ${seconds(started)} s`);
       }
   return rows;

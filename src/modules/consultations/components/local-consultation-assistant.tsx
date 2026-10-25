@@ -499,7 +499,9 @@ export default function LocalConsultationAssistant({
       setReviewSource(source);
       setAssistantProposal(proposal);
       setNoteOrigin(origin);
-      setNote(origin === "dictee" ? layoutSoapNote(proposal) : proposal);
+      // The note's skeleton is laid by code once the content is accepted: one
+      // bullet per observation, numbered plan. Words and order are unchanged.
+      setNote(layoutSoapNote(proposal));
       setActiveTab("soap");
     } catch (error) {
       setMessage(

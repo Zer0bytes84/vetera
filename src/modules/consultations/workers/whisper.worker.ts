@@ -42,8 +42,12 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         "automatic-speech-recognition",
         data.folder ?? "whisper",
         {
-          device: data.device ?? "wasm",
-          dtype: "q8",
+          ...(data.device === "hybride"
+            ? {
+                device: { encoder_model: "webgpu", decoder_model_merged: "wasm" },
+                dtype: { encoder_model: data.dtype ?? "q8", decoder_model_merged: "q8" },
+              }
+            : { device: data.device ?? "wasm", dtype: data.dtype ?? "q8" }),
           local_files_only: true,
           progress_callback: (event) => {
             if (event.status === "progress")

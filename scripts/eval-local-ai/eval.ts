@@ -684,9 +684,19 @@ async function main() {
       runs: Number(params.get("runsDictation") ?? 2),
       parkSearch: params.get("parkSearch") === "1",
       folders: (params.get("whisperFolders") ?? "whisper").split(","),
-      device: params.get("whisperDevice") === "webgpu" ? "webgpu" : "wasm",
+      device: (["webgpu", "hybride"] as const).find((device) => device === params.get("whisperDevice")) ?? "wasm",
       keep: params.get("whisperKeep") === "1",
-    }, log, (row) => writeTextFile(outPath.replace(/\.json$/, "") + ".rows.jsonl", `${JSON.stringify(row)}\n`, { append: true }));
+      dtype: params.get("whisperDtype") === "fp16" ? "fp16" : "q8",
+    }, log, (row) => writeTextFile(outPath.replace(/\.json$/, "") + ".rows.jsonl", `${JSON.stringify(row)}\n`, { append: true }),
+    // Real use: after each Plan dictation, the note is generated (reference case, guided).
+    params.get("reference") && params.get("noteAfterPlan") === "1"
+      ? async (clip) => {
+          if (!clip.name.startsWith("plan")) return;
+          const item = JSON.parse(await readTextFile(params.get("reference")!)) as ReferenceCase;
+          const [row] = (await runReference(models, item, { generators: [params.get("generator") ?? "gemma4"], variants: ["guidee"], cases: ["reference"] }, log)) as { accepted: boolean; totalSeconds: number }[];
+          await writeTextFile(outPath.replace(/\.json$/, "") + ".rows.jsonl", `${JSON.stringify({ note: true, after: clip.name, accepted: row.accepted, totalSeconds: row.totalSeconds })}\n`, { append: true });
+        }
+      : undefined);
     mark("dictation:end");
   }
   if (tasks.has("reference")) {

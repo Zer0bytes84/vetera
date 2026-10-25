@@ -14,8 +14,9 @@ export type LocalAiProgress = {
 export type WorkerRequest =
   // threads: ONNX threads for Whisper (applied only in a cross-origin isolated page).
   // folder: model folder under modelRoot, "whisper" unless the bench compares another one.
-  // device: "webgpu" is only compared by the bench; the app runs Whisper on WASM.
-  | { type: "load-whisper"; modelRoot: string; runtimeRoot: string; threads?: number; folder?: string; device?: "wasm" | "webgpu" }
+  // device and dtype: "webgpu", "hybride" (encoder on WebGPU, decoder on WASM) and "fp16"
+  // are only compared by the bench; the app runs Whisper q8 on WASM.
+  | { type: "load-whisper"; modelRoot: string; runtimeRoot: string; threads?: number; folder?: string; device?: "wasm" | "webgpu" | "hybride"; dtype?: "q8" | "fp16" }
   // keep: the model stays loaded after the transcript (the session is parked).
   | { type: "transcribe"; audio: Float32Array; language?: DictationLanguage; keep?: boolean }
   | {

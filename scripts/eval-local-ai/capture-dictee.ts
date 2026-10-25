@@ -101,6 +101,8 @@ export async function captureDictation(signal: string, casePath: string) {
     }
   } else {
     await shot("note-generee");
+    document.getElementById("soap-field-plan")?.scrollIntoView({ block: "center" });
+    await shot("note-generee-plan");
   }
   await writeTextFile(signal, "restored");
 }
