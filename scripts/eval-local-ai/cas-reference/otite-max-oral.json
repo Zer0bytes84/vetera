@@ -1,0 +1,10 @@
+{
+  "source": "Cas de référence « Max » dicté comme à l'oral, non relu : hésitations, mots répétés, autocorrection. Sert à provoquer un refus réaliste du contrôle de fidélité pour la capture.",
+  "rubriques": {
+    "subjective": "Euh, le le propriétaire remarque que Max gémit, euh, lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée.",
+    "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+    "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+    "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain, enfin, collier élisabéthain conseillé si le grattage persiste. Contrôle dans 10 à 14 jours."
+  },
+  "gabaritPlanTest": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours."
+}

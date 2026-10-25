@@ -5,6 +5,7 @@ import type {
 } from "@huggingface/transformers";
 import { enforceOfflineWorker } from "../local-ai/offline-policy";
 import { normalizedEmbedding } from "../local-ai/embedding-index";
+import { exposeSharedMemory } from "../local-ai/shared-memory";
 import type {
   SearchModel,
   WorkerRequest,
@@ -32,17 +33,6 @@ let loaded: {
   model: PreTrainedModel;
 } | null = null;
 const send = (event: WorkerResponse) => self.postMessage(event);
-// WebKit isolates the tauri:// page and shares WebAssembly memory, but does not
-// expose the SharedArrayBuffer global that ONNX checks before using threads.
-const exposeSharedMemory = () => {
-  if (typeof SharedArrayBuffer === "function" || !self.crossOriginIsolated) return;
-  try {
-    const shared = new WebAssembly.Memory({ initial: 1, maximum: 1, shared: true }).buffer.constructor;
-    Object.defineProperty(globalThis, "SharedArrayBuffer", { value: shared, configurable: true, writable: true });
-  } catch {
-    /* No shared memory: ONNX stays on one thread. */
-  }
-};
 // Threads ONNX actually runs with: none without SharedArrayBuffer, whatever was asked.
 let onnxWasm: { numThreads?: number } | undefined;
 const engineState = () => ({

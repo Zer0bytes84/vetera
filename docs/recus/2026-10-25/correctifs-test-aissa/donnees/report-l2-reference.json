@@ -1,0 +1,1848 @@
+{
+  "label": "l2-reference",
+  "startedAt": "2026-10-25T16:31:21.832Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "reference:start",
+      "at": 1792945881.833
+    },
+    {
+      "what": "reference:end",
+      "at": 1792946643.897
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "reference": [
+    {
+      "generator": "gemma4",
+      "case": "reference",
+      "variant": "panneau",
+      "accepted": false,
+      "error": "La réponse de l’assistant ne reprend pas fidèlement les observations dictées. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "totalSeconds": 222.24,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.",
+      "scaffold": {
+        "subjective": "Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "{\"subjective\":\"Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 204.32
+        },
+        {
+          "number": 2,
+          "text": "{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 222.21
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma4",
+          "seconds": 204.32,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [
+                "antecedents"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        },
+        {
+          "attempt": 2,
+          "generator": "gemma4",
+          "seconds": 222.21,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [
+                "motif",
+                "et"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": null
+    },
+    {
+      "generator": "gemma4",
+      "case": "reference",
+      "variant": "guidee",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 95.64,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 95.62
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma4",
+          "seconds": 95.62,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\n\nTraitement antiparasitaire à jour, administré il y a 2 semaines.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\n\nPrescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma4",
+      "case": "reference",
+      "variant": "guidee-forme",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 80.42,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "{\"subjective\":\"S — Subjectif (Ce que le propriétaire rapporte)\\n- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\\n- Aucun vomissement ni diarrhée.\\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"O — Objectif (Ce que le vétérinaire observe et mesure)\\n- Température 38.5 °C, normale.\\n- Fréquence cardiaque 92 bpm.\\n- Fréquence respiratoire 20 mouvements par minute.\\n- Poids 32.5 kg, stable.\\n- Score corporel 5 sur 9.\\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\\n- Oreille gauche : aspect normal, propre, non douloureuse.\\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"A — Évaluation (Diagnostic / Analyse)\\n- Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia.\\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"P — Plan (Actions et suivi)\\n1. Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée.\\n2. Collier élisabéthain conseillé si le grattage persiste.\\n3. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit.\\n4. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement.\\n5. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 80.39
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma4",
+          "seconds": 80.39,
+          "layout": {
+            "subjective": {
+              "heading": true,
+              "listed": true,
+              "lines": 4
+            },
+            "objective": {
+              "heading": true,
+              "listed": true,
+              "lines": 10
+            },
+            "assessment": {
+              "heading": true,
+              "listed": true,
+              "lines": 2
+            },
+            "plan": {
+              "heading": true,
+              "listed": true,
+              "lines": 5
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [
+                "s",
+                "subjectif",
+                "ce",
+                "que",
+                "rapporte",
+                "le",
+                "proprietaire"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [],
+              "added": [
+                "o",
+                "objectif",
+                "ce",
+                "que",
+                "le",
+                "veterinaire",
+                "observe",
+                "et",
+                "mesure"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "assessment": {
+              "removed": [],
+              "added": [
+                "a",
+                "evaluation",
+                "diagnostic",
+                "/",
+                "analyse"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "plan": {
+              "removed": [],
+              "added": [
+                "p",
+                "plan",
+                "actions",
+                "et",
+                "suivi",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\n- Aucun vomissement ni diarrhée.\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\n- Traitement antiparasitaire à jour, administré il y a 2 semaines.",
+        "objective": "- Température 38.5 °C, normale.\n- Fréquence cardiaque 92 bpm.\n- Fréquence respiratoire 20 mouvements par minute.\n- Poids 32.5 kg, stable.\n- Score corporel 5 sur 9.\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\n- Oreille gauche : aspect normal, propre, non douloureuse.\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "- Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia.\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "1. Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée.\n2. Collier élisabéthain conseillé si le grattage persiste.\n3. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit.\n4. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement.\n5. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\n6. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma4",
+      "case": "gabarit",
+      "variant": "panneau",
+      "accepted": false,
+      "error": "La réponse de l’assistant ne reprend pas fidèlement les observations dictées. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "totalSeconds": 86.47,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Nettoyage du canal auriculaire droit à la solution céruminolytique. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.",
+      "scaffold": {
+        "subjective": "Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "{\"subjective\":\"Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 71.05
+        },
+        {
+          "number": 2,
+          "text": "{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 86.45
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma4",
+          "seconds": 71.05,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [
+                "antecedents"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        },
+        {
+          "attempt": 2,
+          "generator": "gemma4",
+          "seconds": 86.45,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [
+                "motif",
+                "et"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": null
+    },
+    {
+      "generator": "gemma4",
+      "case": "gabarit",
+      "variant": "guidee",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 67.61,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Nettoyage du canal auriculaire droit à la solution céruminolytique. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 67.58
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma4",
+          "seconds": 67.58,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\n\nTraitement antiparasitaire à jour, administré il y a 2 semaines.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\n\nGouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma4",
+      "case": "gabarit",
+      "variant": "guidee-forme",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 69.74,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Nettoyage du canal auriculaire droit à la solution céruminolytique. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "{\"subjective\":\"S — Subjectif (Ce que le propriétaire rapporte)\\n- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\\n- Aucun vomissement ni diarrhée.\\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"O — Objectif (Ce que le vétérinaire observe et mesure)\\n- Température 38.5 °C, normale.\\n- Fréquence cardiaque 92 bpm.\\n- Fréquence respiratoire 20 mouvements par minute.\\n- Poids 32.5 kg, stable.\\n- Score corporel 5 sur 9.\\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\\n- Oreille gauche : aspect normal, propre, non douloureuse.\\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"A — Évaluation (Diagnostic / Analyse)\\n- Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia.\\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"P — Plan (Actions et suivi)\\n1. Nettoyage du canal auriculaire droit à la solution céruminolytique.\\n2. Collier élisabéthain.\\n3. Éducation du client.\\n4. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma4",
+          "fellBack": false,
+          "seconds": 69.7
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma4",
+          "seconds": 69.7,
+          "layout": {
+            "subjective": {
+              "heading": true,
+              "listed": true,
+              "lines": 4
+            },
+            "objective": {
+              "heading": true,
+              "listed": true,
+              "lines": 10
+            },
+            "assessment": {
+              "heading": true,
+              "listed": true,
+              "lines": 2
+            },
+            "plan": {
+              "heading": true,
+              "listed": true,
+              "lines": 4
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [
+                "s",
+                "subjectif",
+                "ce",
+                "que",
+                "rapporte",
+                "le",
+                "proprietaire"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [],
+              "added": [
+                "o",
+                "objectif",
+                "ce",
+                "que",
+                "le",
+                "veterinaire",
+                "observe",
+                "et",
+                "mesure"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "assessment": {
+              "removed": [],
+              "added": [
+                "a",
+                "evaluation",
+                "diagnostic",
+                "/",
+                "analyse"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "plan": {
+              "removed": [],
+              "added": [
+                "p",
+                "plan",
+                "actions",
+                "et",
+                "suivi",
+                "1",
+                "2",
+                "3",
+                "4"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\n- Aucun vomissement ni diarrhée.\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\n- Traitement antiparasitaire à jour, administré il y a 2 semaines.",
+        "objective": "- Température 38.5 °C, normale.\n- Fréquence cardiaque 92 bpm.\n- Fréquence respiratoire 20 mouvements par minute.\n- Poids 32.5 kg, stable.\n- Score corporel 5 sur 9.\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\n- Oreille gauche : aspect normal, propre, non douloureuse.\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "- Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia.\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "1. Nettoyage du canal auriculaire droit à la solution céruminolytique.\n2. Collier élisabéthain.\n3. Éducation du client.\n4. Contrôle dans 10 à 14 jours.\n5. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma3",
+      "case": "reference",
+      "variant": "panneau",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 36.7,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.",
+      "scaffold": {
+        "subjective": "Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 36.67
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 36.67,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\n\nTraitement antiparasitaire à jour, administré il y a 2 semaines.\n\nPrescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma3",
+      "case": "reference",
+      "variant": "guidee",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 18.05,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 18.04
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 18.04,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\n\nTraitement antiparasitaire à jour, administré il y a 2 semaines.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\n\nPrescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma3",
+      "case": "reference",
+      "variant": "guidee-forme",
+      "accepted": false,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "totalSeconds": 24.71,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Collier élisabéthain conseillé si le grattage persiste. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"S — Subjectif (Ce que le propriétaire rapporte)\\n- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\\n- Aucun vomissement ni diarrhée.\\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\\n- Évaluation clinique : Température 38.5 °C, normale.\\n- Fréquence cardiaque 92 bpm.\\n- Fréquence respiratoire 20 mouvements par minute.\\n- Poids 32.5 kg, stable.\\n- Score corporel 5 sur 9.\\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\\n- Oreille gauche : aspect normal, propre, non douloureuse.\\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 14.84
+        },
+        {
+          "number": 2,
+          "text": "```json\n{\"subjective\":\"S — Subjectif (Ce que le propriétaire rapporte)\\n- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\\n- Aucun vomissement ni diarrhée.\\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\\n- Évaluation clinique : Température 38.5 °C, normale.\\n- Fréquence cardiaque 92 bpm.\\n- Fréquence respiratoire 20 mouvements par minute.\\n- Poids 32.5 kg, stable.\\n- Score corporel 5 sur 9.\\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\\n- Oreille gauche : aspect normal, propre, non douloureuse.\\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 24.7
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 14.84,
+          "layout": {
+            "subjective": {
+              "heading": true,
+              "listed": true,
+              "lines": 15
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [
+                "s",
+                "subjectif",
+                "ce",
+                "que",
+                "rapporte",
+                "le",
+                "proprietaire",
+                "evaluation",
+                "clinique",
+                "temperature",
+                "38.5",
+                "c",
+                "normale",
+                "frequence",
+                "cardiaque",
+                "92",
+                "bpm",
+                "frequence",
+                "respiratoire",
+                "20",
+                "mouvements",
+                "par",
+                "minute",
+                "poids",
+                "32.5",
+                "kg",
+                "stable",
+                "score",
+                "corporel",
+                "5",
+                "sur",
+                "9",
+                "chien",
+                "eveille",
+                "alerte",
+                "et",
+                "reactif",
+                "muqueuses",
+                "roses",
+                "et",
+                "humides",
+                "trc",
+                "inferieur",
+                "a",
+                "2",
+                "secondes",
+                "oreille",
+                "droite",
+                "erytheme",
+                "modere",
+                "du",
+                "pavillon",
+                "cerumen",
+                "brun",
+                "fonce",
+                "abondant",
+                "odeur",
+                "legerement",
+                "cerumineuse",
+                "douleur",
+                "a",
+                "la",
+                "palpation",
+                "de",
+                "la",
+                "base",
+                "de",
+                "l",
+                "oreille",
+                "otoscopie",
+                "tympan",
+                "difficilement",
+                "visualise",
+                "en",
+                "raison",
+                "de",
+                "l",
+                "œdeme",
+                "du",
+                "canal",
+                "et",
+                "des",
+                "secretions",
+                "oreille",
+                "gauche",
+                "aspect",
+                "normal",
+                "propre",
+                "non",
+                "douloureuse",
+                "cytologie",
+                "auriculaire",
+                "presence",
+                "massive",
+                "de",
+                "malassezia",
+                "et",
+                "quelques",
+                "coques",
+                "bacteriennes",
+                "staphylocoques",
+                "diagnostic",
+                "differentiel",
+                "allergie",
+                "sous",
+                "jacente",
+                "alimentaire",
+                "ou",
+                "environnementale",
+                "a",
+                "investiguer",
+                "si",
+                "les",
+                "recidives",
+                "persistent"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [
+                "temperature",
+                "38.5",
+                "c",
+                "normale",
+                "frequence",
+                "cardiaque",
+                "92",
+                "bpm",
+                "frequence",
+                "respiratoire",
+                "20",
+                "mouvements",
+                "par",
+                "minute",
+                "poids",
+                "32.5",
+                "kg",
+                "stable",
+                "score",
+                "corporel",
+                "5",
+                "sur",
+                "9",
+                "chien",
+                "eveille",
+                "alerte",
+                "et",
+                "reactif",
+                "muqueuses",
+                "roses",
+                "et",
+                "humides",
+                "trc",
+                "inferieur",
+                "a",
+                "2",
+                "secondes",
+                "oreille",
+                "droite",
+                "erytheme",
+                "modere",
+                "du",
+                "pavillon",
+                "cerumen",
+                "brun",
+                "fonce",
+                "abondant",
+                "odeur",
+                "legerement",
+                "cerumineuse",
+                "douleur",
+                "a",
+                "la",
+                "palpation",
+                "de",
+                "la",
+                "base",
+                "de",
+                "l",
+                "oreille",
+                "otoscopie",
+                "tympan",
+                "difficilement",
+                "visualise",
+                "en",
+                "raison",
+                "de",
+                "l",
+                "œdeme",
+                "du",
+                "canal",
+                "et",
+                "des",
+                "secretions",
+                "oreille",
+                "gauche",
+                "aspect",
+                "normal",
+                "propre",
+                "non",
+                "douloureuse",
+                "cytologie",
+                "auriculaire",
+                "presence",
+                "massive",
+                "de",
+                "malassezia",
+                "et",
+                "quelques",
+                "coques",
+                "bacteriennes",
+                "staphylocoques"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "assessment": {
+              "removed": [
+                "otite",
+                "externe",
+                "droite",
+                "d",
+                "origine",
+                "tres",
+                "probablement",
+                "secondaire",
+                "a",
+                "une",
+                "proliferation",
+                "de",
+                "levures",
+                "malassezia",
+                "diagnostic",
+                "differentiel",
+                "allergie",
+                "sous",
+                "jacente",
+                "alimentaire",
+                "ou",
+                "environnementale",
+                "a",
+                "investiguer",
+                "si",
+                "les",
+                "recidives",
+                "persistent"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "plan": {
+              "removed": [
+                "soins",
+                "au",
+                "cabinet",
+                "nettoyage",
+                "minutieux",
+                "du",
+                "canal",
+                "auriculaire",
+                "droit",
+                "avec",
+                "une",
+                "solution",
+                "ceruminolytique",
+                "adaptee",
+                "collier",
+                "elisabethain",
+                "conseille",
+                "si",
+                "le",
+                "grattage",
+                "persiste",
+                "education",
+                "du",
+                "client",
+                "expliquer",
+                "la",
+                "technique",
+                "d",
+                "instillation",
+                "des",
+                "gouttes",
+                "sans",
+                "enfoncer",
+                "l",
+                "embout",
+                "dans",
+                "le",
+                "conduit",
+                "interdire",
+                "les",
+                "baignades",
+                "et",
+                "les",
+                "nettoyages",
+                "agressifs",
+                "avec",
+                "des",
+                "cotons",
+                "tiges",
+                "pendant",
+                "le",
+                "traitement",
+                "suivi",
+                "planifier",
+                "une",
+                "visite",
+                "de",
+                "controle",
+                "dans",
+                "10",
+                "a",
+                "14",
+                "jours",
+                "ou",
+                "appeler",
+                "plus",
+                "tot",
+                "si",
+                "aggravation",
+                "ou",
+                "douleur",
+                "accrue"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            }
+          }
+        },
+        {
+          "attempt": 2,
+          "generator": "gemma3",
+          "seconds": 24.7,
+          "layout": {
+            "subjective": {
+              "heading": true,
+              "listed": true,
+              "lines": 15
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [
+                "s",
+                "subjectif",
+                "ce",
+                "que",
+                "rapporte",
+                "le",
+                "proprietaire",
+                "evaluation",
+                "clinique",
+                "temperature",
+                "38.5",
+                "c",
+                "normale",
+                "frequence",
+                "cardiaque",
+                "92",
+                "bpm",
+                "frequence",
+                "respiratoire",
+                "20",
+                "mouvements",
+                "par",
+                "minute",
+                "poids",
+                "32.5",
+                "kg",
+                "stable",
+                "score",
+                "corporel",
+                "5",
+                "sur",
+                "9",
+                "chien",
+                "eveille",
+                "alerte",
+                "et",
+                "reactif",
+                "muqueuses",
+                "roses",
+                "et",
+                "humides",
+                "trc",
+                "inferieur",
+                "a",
+                "2",
+                "secondes",
+                "oreille",
+                "droite",
+                "erytheme",
+                "modere",
+                "du",
+                "pavillon",
+                "cerumen",
+                "brun",
+                "fonce",
+                "abondant",
+                "odeur",
+                "legerement",
+                "cerumineuse",
+                "douleur",
+                "a",
+                "la",
+                "palpation",
+                "de",
+                "la",
+                "base",
+                "de",
+                "l",
+                "oreille",
+                "otoscopie",
+                "tympan",
+                "difficilement",
+                "visualise",
+                "en",
+                "raison",
+                "de",
+                "l",
+                "œdeme",
+                "du",
+                "canal",
+                "et",
+                "des",
+                "secretions",
+                "oreille",
+                "gauche",
+                "aspect",
+                "normal",
+                "propre",
+                "non",
+                "douloureuse",
+                "cytologie",
+                "auriculaire",
+                "presence",
+                "massive",
+                "de",
+                "malassezia",
+                "et",
+                "quelques",
+                "coques",
+                "bacteriennes",
+                "staphylocoques",
+                "diagnostic",
+                "differentiel",
+                "allergie",
+                "sous",
+                "jacente",
+                "alimentaire",
+                "ou",
+                "environnementale",
+                "a",
+                "investiguer",
+                "si",
+                "les",
+                "recidives",
+                "persistent"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "objective": {
+              "removed": [
+                "temperature",
+                "38.5",
+                "c",
+                "normale",
+                "frequence",
+                "cardiaque",
+                "92",
+                "bpm",
+                "frequence",
+                "respiratoire",
+                "20",
+                "mouvements",
+                "par",
+                "minute",
+                "poids",
+                "32.5",
+                "kg",
+                "stable",
+                "score",
+                "corporel",
+                "5",
+                "sur",
+                "9",
+                "chien",
+                "eveille",
+                "alerte",
+                "et",
+                "reactif",
+                "muqueuses",
+                "roses",
+                "et",
+                "humides",
+                "trc",
+                "inferieur",
+                "a",
+                "2",
+                "secondes",
+                "oreille",
+                "droite",
+                "erytheme",
+                "modere",
+                "du",
+                "pavillon",
+                "cerumen",
+                "brun",
+                "fonce",
+                "abondant",
+                "odeur",
+                "legerement",
+                "cerumineuse",
+                "douleur",
+                "a",
+                "la",
+                "palpation",
+                "de",
+                "la",
+                "base",
+                "de",
+                "l",
+                "oreille",
+                "otoscopie",
+                "tympan",
+                "difficilement",
+                "visualise",
+                "en",
+                "raison",
+                "de",
+                "l",
+                "œdeme",
+                "du",
+                "canal",
+                "et",
+                "des",
+                "secretions",
+                "oreille",
+                "gauche",
+                "aspect",
+                "normal",
+                "propre",
+                "non",
+                "douloureuse",
+                "cytologie",
+                "auriculaire",
+                "presence",
+                "massive",
+                "de",
+                "malassezia",
+                "et",
+                "quelques",
+                "coques",
+                "bacteriennes",
+                "staphylocoques"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "assessment": {
+              "removed": [
+                "otite",
+                "externe",
+                "droite",
+                "d",
+                "origine",
+                "tres",
+                "probablement",
+                "secondaire",
+                "a",
+                "une",
+                "proliferation",
+                "de",
+                "levures",
+                "malassezia",
+                "diagnostic",
+                "differentiel",
+                "allergie",
+                "sous",
+                "jacente",
+                "alimentaire",
+                "ou",
+                "environnementale",
+                "a",
+                "investiguer",
+                "si",
+                "les",
+                "recidives",
+                "persistent"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "plan": {
+              "removed": [
+                "soins",
+                "au",
+                "cabinet",
+                "nettoyage",
+                "minutieux",
+                "du",
+                "canal",
+                "auriculaire",
+                "droit",
+                "avec",
+                "une",
+                "solution",
+                "ceruminolytique",
+                "adaptee",
+                "collier",
+                "elisabethain",
+                "conseille",
+                "si",
+                "le",
+                "grattage",
+                "persiste",
+                "education",
+                "du",
+                "client",
+                "expliquer",
+                "la",
+                "technique",
+                "d",
+                "instillation",
+                "des",
+                "gouttes",
+                "sans",
+                "enfoncer",
+                "l",
+                "embout",
+                "dans",
+                "le",
+                "conduit",
+                "interdire",
+                "les",
+                "baignades",
+                "et",
+                "les",
+                "nettoyages",
+                "agressifs",
+                "avec",
+                "des",
+                "cotons",
+                "tiges",
+                "pendant",
+                "le",
+                "traitement",
+                "suivi",
+                "planifier",
+                "une",
+                "visite",
+                "de",
+                "controle",
+                "dans",
+                "10",
+                "a",
+                "14",
+                "jours",
+                "ou",
+                "appeler",
+                "plus",
+                "tot",
+                "si",
+                "aggravation",
+                "ou",
+                "douleur",
+                "accrue"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            }
+          }
+        }
+      ],
+      "note": null
+    },
+    {
+      "generator": "gemma3",
+      "case": "gabarit",
+      "variant": "panneau",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 15.59,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Nettoyage du canal auriculaire droit à la solution céruminolytique. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.",
+      "scaffold": {
+        "subjective": "Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 15.58
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 15.58,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Motif et Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\n\nTraitement antiparasitaire à jour, administré il y a 2 semaines.\n\nGouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma3",
+      "case": "gabarit",
+      "variant": "guidee",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 14.81,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Nettoyage du canal auriculaire droit à la solution céruminolytique. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\",\"objective\":\"Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\",\"assessment\":\"Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 14.81
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 14.81,
+          "layout": {
+            "subjective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "objective": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "assessment": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            },
+            "plan": {
+              "heading": false,
+              "listed": false,
+              "lines": 0
+            }
+          },
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.\n\nTraitement antiparasitaire à jour, administré il y a 2 semaines.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.\n\nGouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "generator": "gemma3",
+      "case": "gabarit",
+      "variant": "guidee-forme",
+      "accepted": false,
+      "error": "La réponse de l’assistant n’est pas un JSON SOAP valide. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "totalSeconds": 29.87,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a 2 semaines.\nExamen clinique : Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\nÉvaluation : Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Nettoyage du canal auriculaire droit à la solution céruminolytique. Gouttes antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade, alimentation habituelle inchangée.",
+        "objective": "Température 38.5 °C, normale. Fréquence cardiaque 92 bpm. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg, stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes. Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille. Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions. Oreille gauche : aspect normal, propre, non douloureuse. Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.",
+        "assessment": "Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia. Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Nettoyage du canal auriculaire droit à la solution céruminolytique. Collier élisabéthain. Éducation du client. Contrôle dans 10 à 14 jours."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"S — Subjectif (Ce que le propriétaire rapporte)\\n- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\\n- Aucun vomissement ni diarrhée.\\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\\nobjective\":\"O — Objectif (Ce que le vétérinaire observe et mesure)\\n- Température 38.5 °C, normale.\\n- Fréquence cardiaque 92 bpm.\\n- Fréquence respiratoire 20 mouvements par minute.\\n- Poids 32.5 kg, stable.\\n- Score corporel 5 sur 9.\\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\\n- Oreille gauche : aspect normal, propre, non douloureuse.\\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\\nassessment\":\"A — Évaluation (Diagnostic / Analyse)\\n- Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia.\\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\\nplan\":\"P — Plan (Actions et suivi)\\n1. Nettoyage du canal auriculaire droit à la solution céruminolytique.\\n2. Collier élisabéthain.\\n3. Éducation du client.\\n4. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 17.25
+        },
+        {
+          "number": 2,
+          "text": "```json\n{\"subjective\":\"S — Subjectif (Ce que le propriétaire rapporte)\\n- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé.\\n- Aucun vomissement ni diarrhée.\\n- Pas d'historique récent de baignade, alimentation habituelle inchangée.\\nobjective\":\"O — Objectif (Ce que le vétérinaire observe et mesure)\\n- Température 38.5 °C, normale.\\n- Fréquence cardiaque 92 bpm.\\n- Fréquence respiratoire 20 mouvements par minute.\\n- Poids 32.5 kg, stable.\\n- Score corporel 5 sur 9.\\n- Chien éveillé, alerte et réactif, muqueuses roses et humides, TRC inférieur à 2 secondes.\\n- Oreille droite : érythème modéré du pavillon, cérumen brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille.\\n- Otoscopie : tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions.\\n- Oreille gauche : aspect normal, propre, non douloureuse.\\n- Cytologie auriculaire : présence massive de Malassezia et quelques coques bactériennes, staphylocoques.\\nassessment\":\"A — Évaluation (Diagnostic / Analyse)\\n- Otite externe droite d'origine très probablement secondaire à une prolifération de levures, Malassezia.\\n- Diagnostic différentiel : allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\\nplan\":\"P — Plan (Actions et suivi)\\n1. Nettoyage du canal auriculaire droit à la solution céruminolytique.\\n2. Collier élisabéthain.\\n3. Éducation du client.\\n4. Contrôle dans 10 à 14 jours.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 29.87
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 17.25,
+          "layout": null,
+          "sections": null
+        },
+        {
+          "attempt": 2,
+          "generator": "gemma3",
+          "seconds": 29.87,
+          "layout": null,
+          "sections": null
+        }
+      ],
+      "note": null
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-25T16:44:03.899Z"
+}

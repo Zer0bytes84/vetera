@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import type { AutomaticSpeechRecognitionPipeline } from "@huggingface/transformers";
 import { enforceOfflineWorker } from "../local-ai/offline-policy";
+import { exposeSharedMemory } from "../local-ai/shared-memory";
 import { selectWhisperLanguage } from "../local-ai/whisper-language";
 import type {
   WorkerRequest,
@@ -22,7 +23,10 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
       const wasm = env.backends.onnx.wasm;
       if (!wasm) throw new Error("Runtime WASM indisponible.");
       wasm.wasmPaths = `${data.runtimeRoot}onnx/`;
-      wasm.numThreads = 1;
+      // Threads need SharedArrayBuffer, i.e. a cross-origin isolated page.
+      const threads = data.threads ?? 1;
+      if (threads > 1) exposeSharedMemory();
+      wasm.numThreads = typeof SharedArrayBuffer === "function" ? threads : 1;
       wasm.proxy = false;
       send({
         type: "progress",
@@ -36,9 +40,9 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
       ) => Promise<AutomaticSpeechRecognitionPipeline>;
       transcriber = await createTranscriber(
         "automatic-speech-recognition",
-        "whisper",
+        data.folder ?? "whisper",
         {
-          device: "wasm",
+          device: data.device ?? "wasm",
           dtype: "q8",
           local_files_only: true,
           progress_callback: (event) => {
@@ -51,7 +55,7 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
           },
         }
       );
-      send({ type: "ready" });
+      send({ type: "ready", threads: wasm.numThreads ?? 1 });
     } else if (data.type === "transcribe") {
       if (!transcriber) throw new Error("Whisper n’est pas chargé.");
       const { Tensor, WhisperTextStreamer } = await import(
@@ -122,10 +126,13 @@ self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
         throw new Error(
           "Aucune parole reconnue. Vérifiez le micro et réessayez."
         );
-      // Complete disposal before acknowledging the result. The client also
-      // terminates this worker before any generation worker may start.
-      await transcriber.dispose();
-      transcriber = null;
+      // Complete disposal before acknowledging the result, unless the client
+      // keeps the model for the next rubric: it then parks this worker, and
+      // terminates it before any generation worker may start.
+      if (!data.keep) {
+        await transcriber.dispose();
+        transcriber = null;
+      }
       send({ type: "transcript", text, language });
     } else if (data.type === "dispose") {
       await transcriber?.dispose();

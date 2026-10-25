@@ -11,6 +11,7 @@ const capture = {
   patientId: process.env.BAITARI_CAPTURE_PATIENT,
   signal: process.env.BAITARI_CAPTURE_SIGNAL ?? "",
   toggle: process.env.BAITARI_CAPTURE_TOGGLE,
+  generator: process.env.BAITARI_CAPTURE_GENERATOR,
 };
 
 const scenario = (): Plugin => ({
@@ -22,10 +23,25 @@ const scenario = (): Plugin => ({
     ),
 });
 
+// BAITARI_CAPTURE_FORCE_REFUS=1: every generated note is refused by the fidelity
+// check, to photograph the refusal screen and its way out. Captures only.
+const forcedRefusal = (): Plugin => ({
+  name: "baitari-capture-forced-refusal",
+  // Before the TypeScript transform, which rewrites the matched signature.
+  enforce: "pre",
+  transform: (code, id) =>
+    process.env.BAITARI_CAPTURE_FORCE_REFUS === "1" && id.endsWith("local-ai/dictation-scaffold.ts")
+      ? code.replace(
+          "export function assertFaithfulSoap(note: LocalSoapNote, source: LocalSoapNote) {",
+          "export function assertFaithfulSoap(note: LocalSoapNote, source: LocalSoapNote) {\n  throw new SoapFidelityError();",
+        )
+      : undefined,
+});
+
 export default async (env: ConfigEnv) => {
   const base =
     typeof appConfig === "function"
       ? await (appConfig as (env: ConfigEnv) => UserConfig | Promise<UserConfig>)(env)
       : appConfig;
-  return mergeConfig(base, { plugins: [scenario()] });
+  return mergeConfig(base, { plugins: [scenario(), forcedRefusal()] });
 };

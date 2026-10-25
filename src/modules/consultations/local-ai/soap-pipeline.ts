@@ -12,10 +12,12 @@ import {
   type LocalSoapNote,
 } from "./soap-schema";
 import {
+  mergeGuidedProtected,
   mergeProtectedDictation,
   prepareModelDictation,
   routeGuidedTreatments,
 } from "./treatment-routing";
+import { dropSoapHeading, headedLayout, layoutSoapNote } from "./soap-layout";
 import { createSoapPrompt, type LocalPatientContext } from "./patient-context";
 import type { LocalAiProgress } from "./worker-protocol";
 
@@ -30,6 +32,24 @@ interface SoapDraftOptions {
   onSession?: (session: LocalInferenceSession) => void;
   /** Each raw model output and the model that produced it (evaluation bench). */
   onAttempt?: (attempt: { number: 1 | 2; text: string; generator?: string; fellBack?: boolean }) => void;
+  /** Asks the model for the note's layout (full headings, bullets, numbered plan). */
+  layout?: boolean;
+}
+
+/** The sections the model receives and the fidelity check compares against. */
+export function modelScaffold(
+  transcript: string,
+  guidedSource?: LocalSoapNote
+): LocalSoapNote {
+  if (!guidedSource)
+    return buildDictationScaffold(prepareModelDictation(transcript).text);
+  const routed = routeGuidedTreatments(guidedSource);
+  return Object.fromEntries(
+    SOAP_SECTIONS.map(({ key }) => [
+      key,
+      prepareModelDictation(routed[key]).text,
+    ])
+  ) as LocalSoapNote;
 }
 
 /**
@@ -45,27 +65,31 @@ export async function prepareSoapDraft({
   onProgress,
   onSession,
   onAttempt,
+  layout = false,
 }: SoapDraftOptions): Promise<LocalSoapNote> {
   const protectedInput = prepareModelDictation(transcript);
+  const scaffold = modelScaffold(transcript, guidedSource);
+  // Guided: the rubric answers are the sections; kept sentences return to their own rubric.
   const routed = guidedSource ? routeGuidedTreatments(guidedSource) : null;
-  const scaffold = routed
-    ? (Object.fromEntries(
-        SOAP_SECTIONS.map(({ key }) => [
-          key,
-          prepareModelDictation(routed[key]).text,
-        ])
-      ) as LocalSoapNote)
-    : buildDictationScaffold(protectedInput.text);
+  const restore = (note: LocalSoapNote) =>
+    routed
+      ? mergeGuidedProtected(note, routed)
+      : mergeProtectedDictation(note, protectedInput);
+  const nothingForModel = routed
+    ? SOAP_SECTIONS.every(({ key }) => !scaffold[key].trim())
+    : !protectedInput.text;
+  const somethingKept = routed
+    ? SOAP_SECTIONS.some(({ key }) => routed[key].trim())
+    : protectedInput.planSentences.length || protectedInput.protectedSections;
   // Treatment-only dictations need no model: still only a draft for review.
-  if (
-    !protectedInput.text &&
-    (protectedInput.planSentences.length || protectedInput.protectedSections)
-  )
-    return localSoapSchema.parse(
-      mergeProtectedDictation(scaffold, protectedInput)
-    );
-  const prompt = createSoapPrompt(transcript, context, false, scaffold);
-  const retryPrompt = createSoapPrompt(transcript, context, true, scaffold);
+  if (nothingForModel && somethingKept) {
+    const draft = restore(scaffold);
+    return localSoapSchema.parse(layout ? layoutSoapNote(draft) : draft);
+  }
+  const prompt = createSoapPrompt(transcript, context, false, scaffold, layout);
+  const retryPrompt = createSoapPrompt(transcript, context, true, scaffold, layout);
+  // What the model must write back: sizes the engine's reply reserve.
+  const expected = layout ? headedLayout(scaffold) : scaffold;
   const urls = getLocalModelUrls(models);
   if (!models.generatorReady)
     throw new Error(
@@ -94,7 +118,7 @@ export async function prepareSoapDraft({
             generators: urls.generators,
             runtimeRoot: urls.runtimeRoot,
             prompt: nextPrompt,
-            responseTemplate: JSON.stringify(scaffold),
+            responseTemplate: JSON.stringify(expected),
             attempt: number,
           },
           "generated"
@@ -122,7 +146,13 @@ export async function prepareSoapDraft({
       validate: (note) => assertFaithfulSoap(note, scaffold),
     });
     // Merge only after strict format, dosage and fidelity validation of LLM output.
-    return localSoapSchema.parse(mergeProtectedDictation(note, protectedInput));
+    if (!layout) return localSoapSchema.parse(restore(note));
+    // Headings are carried by the note's labels and text, not by each field;
+    // kept sentences join the list with the same markers.
+    const withoutHeadings = Object.fromEntries(
+      SOAP_SECTIONS.map(({ key }) => [key, dropSoapHeading(key, note[key])])
+    ) as LocalSoapNote;
+    return localSoapSchema.parse(layoutSoapNote(restore(withoutHeadings)));
   } finally {
     session.close();
   }

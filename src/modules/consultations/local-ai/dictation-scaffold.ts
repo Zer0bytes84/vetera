@@ -5,6 +5,7 @@ import {
   type LocalSoapNote,
 } from "./soap-schema";
 import { parsePatientMentions } from "./patient-mentions";
+import { stripSoapLayout } from "./soap-layout";
 
 // Only explicit section labels and stated care intentions are recognized here.
 // Unlabelled observations stay in S for the veterinarian to classify at review.
@@ -139,7 +140,8 @@ export function mergeDosageIntoPlan(
   };
 }
 
-const evidence = (text: string) =>
+/** The words, numbers and signs the fidelity check compares, in order. */
+export const evidenceTokens = (text: string) =>
   (
     text
       .normalize("NFD")
@@ -147,9 +149,8 @@ const evidence = (text: string) =>
       .toLocaleLowerCase("fr-FR")
       .replaceAll("−", "-")
       .match(/[+-]?\d+(?:[.,]\d+)?|\p{L}+|[<>≤≥=%/]/gu) ?? []
-  )
-    .map((token) => token.replace(/(\d),(?=\d)/gu, "$1."))
-    .join(" ");
+  ).map((token) => token.replace(/(\d),(?=\d)/gu, "$1."));
+const evidence = (text: string) => evidenceTokens(text).join(" ");
 
 export class SoapFidelityError extends Error {
   constructor() {
@@ -164,8 +165,9 @@ export function assertFaithfulSoap(note: LocalSoapNote, source: LocalSoapNote) {
   // This phase is extractive. Only capitalization, accents, whitespace and
   // prose punctuation may change; numbers, signs, omissions, additions and
   // moved facts are refused. Decimal commas and points are equivalent.
+  // The layout canvas (the section's own heading, list markers) is not content.
   for (const key of Object.keys(source) as (keyof LocalSoapNote)[]) {
-    if (evidence(note[key]) !== evidence(source[key]))
+    if (evidence(stripSoapLayout(key, note[key])) !== evidence(source[key]))
       throw new SoapFidelityError();
   }
 }

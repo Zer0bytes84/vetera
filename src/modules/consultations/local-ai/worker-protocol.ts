@@ -12,8 +12,12 @@ export type LocalAiProgress = {
   attempt?: 1 | 2;
 };
 export type WorkerRequest =
-  | { type: "load-whisper"; modelRoot: string; runtimeRoot: string }
-  | { type: "transcribe"; audio: Float32Array; language?: DictationLanguage }
+  // threads: ONNX threads for Whisper (applied only in a cross-origin isolated page).
+  // folder: model folder under modelRoot, "whisper" unless the bench compares another one.
+  // device: "webgpu" is only compared by the bench; the app runs Whisper on WASM.
+  | { type: "load-whisper"; modelRoot: string; runtimeRoot: string; threads?: number; folder?: string; device?: "wasm" | "webgpu" }
+  // keep: the model stays loaded after the transcript (the session is parked).
+  | { type: "transcribe"; audio: Float32Array; language?: DictationLanguage; keep?: boolean }
   | {
       type: "generate";
       /** Models to try in order: a load failure moves on to the next one (Gemma 3). */
@@ -32,7 +36,7 @@ export type WorkerRequest =
   | { type: "dispose" };
 export type WorkerResponse =
   | ({ type: "progress" } & LocalAiProgress)
-  | { type: "ready" }
+  | { type: "ready"; threads?: number }
   | { type: "transcript"; text: string; language?: string }
   | { type: "generated"; text: string; generator?: GeneratorFamily; fellBack?: boolean }
   // The engine cannot load this model here; MediaPipe is unusable in that worker

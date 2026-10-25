@@ -42,6 +42,7 @@ import { SoapSectionEditor } from "./soap-section-editor";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
 import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
 import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
+import type { SoapNoteOrigin } from "./local-consultation-assistant";
 
 const ConsultationDocumentsAssistant = lazy(
   () =>
@@ -220,7 +221,11 @@ export function SoapPanel({
     [clearTimer]
   );
 
-  const validateNote = async (note: LocalSoapNote, transcript: string) => {
+  const validateNote = async (
+    note: LocalSoapNote,
+    transcript: string,
+    origin: SoapNoteOrigin
+  ) => {
     clearTimer();
     await pendingSave.current?.catch(() => undefined);
     // Preserve extensible clinical metadata already stored on the SOAP row.
@@ -244,6 +249,8 @@ export function SoapPanel({
           ...content,
           localAi: {
             pipeline: "whisper-fr+mediapipe",
+            // "dictee": the vet's own dictation, reread and validated without generated wording.
+            source: origin === "assistant" ? "assistant" : "dictee-relue",
             reviewedAt: new Date().toISOString(),
             reviewedBy: currentUser?.id ?? null,
           },

@@ -169,6 +169,28 @@ export function prepareModelDictation(transcript: string) {
     ...(Object.keys(protectedSections).length ? { protectedSections } : {}),
   };
 }
+/**
+ * Guided dictation: the sentences kept away from the model (doses, treatments,
+ * history) go back word for word into the rubric they were dictated in, once
+ * treatments have been routed to the plan. Nothing moves to another rubric.
+ */
+export function mergeGuidedProtected(
+  note: LocalSoapNote,
+  routed: LocalSoapNote
+): LocalSoapNote {
+  const result = { ...note };
+  for (const key of ["subjective", "objective", "assessment", "plan"] as const) {
+    const input = prepareModelDictation(routed[key]);
+    result[key] = [
+      result[key],
+      ...input.planSentences,
+      ...Object.values(input.protectedSections ?? {}),
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+  }
+  return result;
+}
 export function mergeProtectedDictation(
   note: LocalSoapNote,
   input: ReturnType<typeof prepareModelDictation>

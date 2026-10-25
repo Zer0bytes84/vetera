@@ -24,6 +24,25 @@ export function assembleGuidedNote(
   );
 }
 
+/** Rubric titles of the assistant's guided dictation, in S, O, A, P order. */
+export const GUIDED_RUBRIC_TITLES = [
+  "Motif et antécédents",
+  "Examen clinique",
+  "Évaluation",
+  "Plan de soins",
+] as const;
+
+/** The guided dictation as one text: one "Title : answer" line per answered rubric. */
+export function guidedDictationTranscript(answers: LocalSoapNote): string {
+  return SOAP_SECTIONS.map(({ key }, index) =>
+    answers[key].trim()
+      ? `${GUIDED_RUBRIC_TITLES[index]} : ${answers[key].trim()}`
+      : ""
+  )
+    .filter(Boolean)
+    .join("\n");
+}
+
 /** Trace of human input only; headings keep the selected section explicit. */
 export function guidedTranscript(answers: LocalSoapNote): string {
   return SOAP_SECTIONS.filter(({ key }) => answers[key].trim())

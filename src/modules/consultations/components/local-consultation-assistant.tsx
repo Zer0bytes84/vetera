@@ -68,9 +68,16 @@ import {
 } from "../local-ai/soap-schema";
 import { PatientDocumentSearch } from "./patient-document-search";
 import { AssistantActivity } from "./assistant-activity";
-import { assembleGuidedNote } from "../local-ai/guided-soap";
-import { buildFreeDictationDraft } from "../local-ai/free-dictation";
+import {
+  assembleGuidedNote,
+  guidedDictationTranscript,
+} from "../local-ai/guided-soap";
 import { EMPTY_SOAP } from "../local-ai/soap-schema";
+import {
+  SOAP_FULL_HEADINGS,
+  layoutSoapNote,
+  soapNoteText,
+} from "../local-ai/soap-layout";
 import { Mascot, type MascotMood } from "@/components/mascot";
 import { speciesIcon } from "@/lib/species-icon";
 import {
@@ -92,8 +99,19 @@ interface Props {
   patientId?: string;
   existingNote?: LocalSoapNote;
   onClose: () => void;
-  onValidate?: (note: LocalSoapNote, transcript: string) => Promise<void>;
+  /** origin "dictee": the note is the dictation itself, reviewed and validated by the vet. */
+  onValidate?: (
+    note: LocalSoapNote,
+    transcript: string,
+    origin: SoapNoteOrigin
+  ) => Promise<void>;
 }
+
+export type SoapNoteOrigin = "assistant" | "dictee";
+
+// Same text once line breaks and spacing are set aside: nothing was reworded.
+const sameWords = (a: string, b: string) =>
+  a.replace(/\s+/gu, " ").trim() === b.replace(/\s+/gu, " ").trim();
 
 /** The patient's species, as the small fine-line icon of the patient list. */
 function PatientSpeciesGlyph({ species }: { species?: string }) {
@@ -141,7 +159,14 @@ export default function LocalConsultationAssistant({
     { letter: "P", title: "Plan de soins", question: "Quel est le plan de soins ? Précisez les traitements, examens et consignes de suivi. Aucune posologie ne sera calculée." },
   ];
   const responses = sectionResponses.map((value, index) => index === sectionIndex ? transcript : value);
-  const fullTranscript = responses.map((value, index) => value.trim() ? `${sectionPrompts[index].title} : ${value.trim()}` : "").filter(Boolean).join("\n");
+  // The rubric the vet answered is the section: it is passed as such, never re-guessed.
+  const guidedAnswers: LocalSoapNote = {
+    subjective: responses[0],
+    objective: responses[1],
+    assessment: responses[2],
+    plan: responses[3],
+  };
+  const fullTranscript = guidedDictationTranscript(guidedAnswers);
   const changeSection = (next: number) => {
     setSectionResponses(responses);
     setTranscript(responses[next]);
@@ -157,6 +182,10 @@ export default function LocalConsultationAssistant({
   const [reviewSource, setReviewSource] = useState<LocalSoapNote | null>(null);
   const [assistantProposal, setAssistantProposal] =
     useState<LocalSoapNote | null>(null);
+  // Who wrote the note under review: the accepted assistant draft, or the dictation itself.
+  const [noteOrigin, setNoteOrigin] = useState<SoapNoteOrigin>("dictee");
+  // Dictation the assistant's draft was refused for: generating again would give the same answer.
+  const [refusedFor, setRefusedFor] = useState<string | null>(null);
 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -173,19 +202,39 @@ export default function LocalConsultationAssistant({
     Boolean(resolvedExistingNote[key]?.trim())
   );
 
+  // The dictation as a note, rubric by rubric, word for word (existing note kept
+  // for the rubrics left empty).
+  const dictationNote = (): LocalSoapNote => {
+    const existing = hasExistingNote ? resolvedExistingNote : EMPTY_SOAP;
+    try {
+      return assembleGuidedNote(existing, guidedAnswers);
+    } catch {
+      return existing;
+    }
+  };
   const activeSoapDraft: LocalSoapNote = useMemo(() => {
     if (note) return note;
     if (!fullTranscript.trim()) return hasExistingNote ? resolvedExistingNote : EMPTY_SOAP;
-    try {
-      const scaffold = buildFreeDictationDraft(fullTranscript);
-      if (hasExistingNote) {
-        return assembleGuidedNote(resolvedExistingNote, scaffold);
-      }
-      return scaffold;
-    } catch {
-      return hasExistingNote ? resolvedExistingNote : EMPTY_SOAP;
-    }
+    return dictationNote();
+    // dictationNote reads the same rubric answers as fullTranscript.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note, fullTranscript, hasExistingNote, resolvedExistingNote]);
+  const refused =
+    refusedFor !== null && refusedFor === fullTranscript && !!ai.error && !ai.busy;
+  // Way out of a refusal: the dictation becomes the note, laid out, for the vet to
+  // reread and validate. It is traced as the vet's own note, not as a generated one.
+  const reviewDictation = () => {
+    ai.clearError();
+    setMessage(null);
+    setReviewSource(null);
+    setAssistantProposal(null);
+    setNoteOrigin("dictee");
+    setNote(layoutSoapNote(dictationNote()));
+    setNotice(
+      "Note reprise mot pour mot de votre dictée, sans reformulation par l’assistant. Relisez chaque rubrique : en la validant, vous l’enregistrez comme votre note relue."
+    );
+    setActiveTab("soap");
+  };
 
   const dataUnavailable =
     patients.loading ||
@@ -413,23 +462,23 @@ export default function LocalConsultationAssistant({
         );
       if (notices.length) setNotice(notices.join("\n\n"));
 
-      let source: LocalSoapNote;
-      try {
-        const scaffold = buildFreeDictationDraft(fullTranscript);
-        source = hasExistingNote
-          ? assembleGuidedNote(resolvedExistingNote, scaffold)
-          : scaffold;
-      } catch {
-        source = resolvedExistingNote;
-      }
+      const source = dictationNote();
       let proposal = source;
+      let origin: SoapNoteOrigin = "dictee";
       if (models.generatorReady) {
+        setRefusedFor(null);
         const generated = await ai.generate(
           models,
           fullTranscript,
-          context
+          context,
+          guidedAnswers
         );
-        if (!generated) return;
+        if (!generated) {
+          // Shown only if it failed (a cancellation leaves no error).
+          setRefusedFor(fullTranscript);
+          return;
+        }
+        origin = "assistant";
         try {
           proposal = hasExistingNote
             ? assembleGuidedNote(resolvedExistingNote, generated)
@@ -449,7 +498,8 @@ export default function LocalConsultationAssistant({
       }
       setReviewSource(source);
       setAssistantProposal(proposal);
-      setNote(proposal);
+      setNoteOrigin(origin);
+      setNote(origin === "dictee" ? layoutSoapNote(proposal) : proposal);
       setActiveTab("soap");
     } catch (error) {
       setMessage(
@@ -494,15 +544,10 @@ export default function LocalConsultationAssistant({
       }
       setSaving(true);
       if (onValidate) {
-        await onValidate(parsed.data, fullTranscript);
+        await onValidate(parsed.data, fullTranscript, noteOrigin);
         toast.success("Note relue et enregistrée dans la base locale.");
       } else {
-        const lines: string[] = [];
-        if (parsed.data.subjective) lines.push(`S · MOTIF :\n${parsed.data.subjective}`);
-        if (parsed.data.objective) lines.push(`O · EXAMEN CLINIQUE :\n${parsed.data.objective}`);
-        if (parsed.data.assessment) lines.push(`A · ÉVALUATION :\n${parsed.data.assessment}`);
-        if (parsed.data.plan) lines.push(`P · PLAN DE SOINS :\n${parsed.data.plan}`);
-        const formatted = lines.join("\n\n");
+        const formatted = soapNoteText(parsed.data);
         if (typeof navigator !== "undefined" && navigator.clipboard) {
           await navigator.clipboard.writeText(formatted);
           toast.success("Note validée et copiée dans le presse-papier.");
@@ -834,6 +879,17 @@ export default function LocalConsultationAssistant({
                 {index < sectionIndex && responses[index].trim() && (
                   <Message align="end"><MessageContent><Bubble variant="muted"><BubbleContent className="whitespace-pre-wrap">{responses[index]}</BubbleContent></Bubble></MessageContent></Message>
                 )}
+                {index < sectionIndex && (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    disabled={ai.busy || importing}
+                    onClick={() => changeSection(index)}
+                    className="self-end t-12"
+                  >
+                    Modifier « {step.title} »
+                  </Button>
+                )}
               </div>
             ))}
 
@@ -881,10 +937,38 @@ export default function LocalConsultationAssistant({
             {visibleError && (
               <div
                 role="alert"
-                className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                className="flex flex-col gap-2.5 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
               >
-                <XCircle className="size-4 shrink-0" />
-                <span>{visibleError}</span>
+                <div className="flex items-center gap-2">
+                  <XCircle className="size-4 shrink-0" />
+                  <span>{visibleError}</span>
+                </div>
+                {refused && (
+                  <div className="flex flex-col gap-2 border-t border-destructive/20 pt-2.5 text-foreground">
+                    <p className="t-12 text-muted-foreground">
+                      Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.
+                    </p>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Button size="xs" onClick={reviewDictation} className="t-12">
+                        Relire ma dictée comme note
+                      </Button>
+                      {sectionPrompts.map((step, index) => (
+                        <Button
+                          key={step.letter}
+                          size="xs"
+                          variant="outline"
+                          onClick={() => {
+                            ai.clearError();
+                            changeSection(index);
+                          }}
+                          className="t-12"
+                        >
+                          Modifier « {step.title} »
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -990,7 +1074,8 @@ export default function LocalConsultationAssistant({
                   }
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault();
-                    void generate();
+                    if (refused && sectionIndex === 3) reviewDictation();
+                    else void generate();
                   }
                 }}
               />
@@ -1080,7 +1165,12 @@ export default function LocalConsultationAssistant({
           </div>
 
           <div className="assistant-section-nav flex items-center justify-between py-2">
-            <Button variant="ghost" size="sm" disabled={sectionIndex === 0 || ai.busy || importing} onClick={() => changeSection(sectionIndex - 1)}>Précédent</Button>
+            {sectionIndex > 0 ? (
+              <Button variant="outline" size="sm" disabled={ai.busy || importing} onClick={() => changeSection(sectionIndex - 1)} className="gap-1 t-12">
+                <ArrowRight className="size-3.5 rotate-180" />
+                Revenir à « {sectionPrompts[sectionIndex - 1].title} »
+              </Button>
+            ) : <span />}
             {sectionIndex < 3 && <Button variant="ghost" size="sm" disabled={ai.busy || importing} onClick={() => changeSection(sectionIndex + 1)}>Passer cette rubrique</Button>}
           </div>
           {/* Dictation Bottom Action Bar */}
@@ -1110,12 +1200,12 @@ export default function LocalConsultationAssistant({
                   (sectionIndex === 3 && !fullTranscript.trim() && !hasExistingNote) ||
                   !!mentionError
                 }
-                onClick={() => void generate()}
+                onClick={() => (refused && sectionIndex === 3 ? reviewDictation() : void generate())}
                 title="Structurer la consultation en note SOAP (⌘+Entrée)"
                 className="h-9 gap-1.5 px-4 t-13 font-semibold tracking-[-0.01em] shadow-sm hover:shadow active:scale-[0.98] transition"
               >
                 <Sparkle className="size-3.5 stroke-[2.2]" />
-                <span>{sectionIndex < 3 ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}` : "Relire la note SOAP"}</span>
+                <span>{sectionIndex < 3 ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}` : refused ? "Relire ma dictée comme note" : "Relire la note SOAP"}</span>
                 <ArrowRight className="size-3.5 stroke-[2.2]" />
               </Button>
             </div>
@@ -1148,7 +1238,7 @@ export default function LocalConsultationAssistant({
                 </Badge>
               </div>
 
-              {models.generatorReady && !assistantProposal && fullTranscript.trim() && (
+              {models.generatorReady && !assistantProposal && fullTranscript.trim() && refusedFor !== fullTranscript && (
                 <div className="mt-3 flex items-center justify-between gap-2 border-t border-border/60 pt-2.5">
                   <span className="t-12 text-muted-foreground">
                     Améliorer la formulation avec l’assistant ?
@@ -1186,7 +1276,7 @@ export default function LocalConsultationAssistant({
             )}
 
             {/* 4 SOAP Section Cards */}
-            {SOAP_SECTIONS.map(({ key, title }) => {
+            {SOAP_SECTIONS.map(({ key }) => {
               const currentValue = activeSoapDraft[key] ?? "";
 
               return (
@@ -1199,7 +1289,7 @@ export default function LocalConsultationAssistant({
                       htmlFor={`soap-field-${key}`}
                       className="t-13 font-semibold text-foreground"
                     >
-                      {title}
+                      {SOAP_FULL_HEADINGS[key]}
                     </label>
                     <span className="t-12 text-muted-foreground tabular-nums">
                       {currentValue.length} / 6 000
@@ -1232,7 +1322,7 @@ export default function LocalConsultationAssistant({
                   {/* Comparative diff if assistant generated proposal */}
                   {reviewSource && assistantProposal && (
                     <div className="rounded-lg border border-border/60 bg-muted/30 p-2.5 t-12 leading-relaxed">
-                      {reviewSource[key] === assistantProposal[key] ? (
+                      {sameWords(reviewSource[key], assistantProposal[key]) ? (
                         <p className="text-muted-foreground">
                           Aucune modification proposée par l’assistant.
                         </p>

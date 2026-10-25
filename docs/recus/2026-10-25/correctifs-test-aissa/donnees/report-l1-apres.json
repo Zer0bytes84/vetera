@@ -1,0 +1,147 @@
+{
+  "label": "l1-apres",
+  "startedAt": "2026-10-25T16:49:45.788Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "dictation:start",
+      "at": 1792946985.793
+    },
+    {
+      "what": "dictation:end",
+      "at": 1792947320.714
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "dictation": [
+    {
+      "order": 1,
+      "folder": "whisper",
+      "device": "wasm",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 26.86,
+      "firstTextSeconds": 21.66,
+      "transcribeSeconds": 55.24,
+      "realTimeFactor": 1.93,
+      "wordErrorRate": 0.033,
+      "missingNumbers": [
+        "2"
+      ],
+      "text": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade. Alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a deux semaines. Température 38.5°C, normale. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvement par minute."
+    },
+    {
+      "order": 2,
+      "folder": "whisper",
+      "device": "wasm",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 16.7,
+      "transcribeSeconds": 29.17,
+      "realTimeFactor": 1.7,
+      "wordErrorRate": 0.154,
+      "missingNumbers": [],
+      "text": "nettoyage du canal auriculaire droit à la solution séruminolytique. Gouttes antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Élisabeth 1. Éducation du client. Contrôle dans 10 à 14 jours."
+    },
+    {
+      "order": 3,
+      "folder": "whisper",
+      "device": "wasm",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 16.7,
+      "transcribeSeconds": 89.01,
+      "realTimeFactor": 2.34,
+      "wordErrorRate": 0.16,
+      "missingNumbers": [
+        "5",
+        "2"
+      ],
+      "text": "Soins au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution séruminolytique adaptée. Prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, seins de gouttes dans l'oreille droite, deux fois par jour pendant dix jours. Collier Élisabeth un conseiller si le grattage persiste. Éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons tiches pendant le traitement. Suivi. Planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue."
+    },
+    {
+      "order": 4,
+      "folder": "whisper",
+      "device": "wasm",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 16.01,
+      "transcribeSeconds": 36.17,
+      "realTimeFactor": 1.26,
+      "wordErrorRate": 0.033,
+      "missingNumbers": [
+        "2"
+      ],
+      "text": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade. Alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a deux semaines. Température 38.5°C, normale. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvement par minute."
+    },
+    {
+      "order": 5,
+      "folder": "whisper",
+      "device": "wasm",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 14.52,
+      "transcribeSeconds": 25.61,
+      "realTimeFactor": 1.49,
+      "wordErrorRate": 0.154,
+      "missingNumbers": [],
+      "text": "nettoyage du canal auriculaire droit à la solution séruminolytique. Gouttes antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Élisabeth 1. Éducation du client. Contrôle dans 10 à 14 jours."
+    },
+    {
+      "order": 6,
+      "folder": "whisper",
+      "device": "wasm",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 0,
+      "firstTextSeconds": 17.64,
+      "transcribeSeconds": 72.25,
+      "realTimeFactor": 1.9,
+      "wordErrorRate": 0.16,
+      "missingNumbers": [
+        "5",
+        "2"
+      ],
+      "text": "Soins au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution séruminolytique adaptée. Prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, seins de gouttes dans l'oreille droite, deux fois par jour pendant dix jours. Collier Élisabeth un conseiller si le grattage persiste. Éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons tiches pendant le traitement. Suivi. Planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue."
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-25T16:55:20.719Z"
+}

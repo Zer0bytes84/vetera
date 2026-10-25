@@ -47,6 +47,8 @@ import {
   scoreSoapDraft,
   type SoapSections,
 } from "./metrics";
+import { runDictation, type DictationClip } from "./dictation-bench";
+import { runReference, type ReferenceCase } from "./reference-bench";
 
 interface Bundle {
   patient: Patient;
@@ -672,6 +674,29 @@ async function main() {
         log(`note ${item.id} ${run}/${runsA} : ${result.accepted ? "acceptée" : "refusée"}, ${result.attempts} essai(s), ${result.totalSeconds} s, ${JSON.stringify(result.generators)}`);
       }
     report.soap = rows;
+  }
+  if (tasks.has("dictation")) {
+    // dictation = JSON list of { name, wav, text } (fictional reference recordings).
+    const clips = JSON.parse(await readTextFile(params.get("dictation")!)) as DictationClip[];
+    mark("dictation:start");
+    report.dictation = await runDictation(models, clips, {
+      threads: (params.get("whisperThreads") ?? "1").split(",").map(Number),
+      runs: Number(params.get("runsDictation") ?? 2),
+      parkSearch: params.get("parkSearch") === "1",
+      folders: (params.get("whisperFolders") ?? "whisper").split(","),
+      device: params.get("whisperDevice") === "webgpu" ? "webgpu" : "wasm",
+      keep: params.get("whisperKeep") === "1",
+    }, log, (row) => writeTextFile(outPath.replace(/\.json$/, "") + ".rows.jsonl", `${JSON.stringify(row)}\n`, { append: true }));
+    mark("dictation:end");
+  }
+  if (tasks.has("reference")) {
+    mark("reference:start");
+    report.reference = await runReference(models, JSON.parse(await readTextFile(params.get("reference")!)) as ReferenceCase, {
+      generators: (params.get("generators") ?? "gemma3,gemma4").split(","),
+      variants: (params.get("variants") ?? "panneau").split(","),
+      cases: (params.get("referenceCases") ?? "reference,gabarit").split(","),
+    }, log);
+    mark("reference:end");
   }
   if (tasks.has("poc")) report.poc = await runPoc(models);
   if (tasks.has("isolation")) report.isolationCheck = await runIsolationCheck(models);

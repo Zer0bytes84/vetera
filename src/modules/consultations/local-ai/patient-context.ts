@@ -1,7 +1,8 @@
 import { prepareModelDictation } from "./treatment-routing";
 import type { Appointment, ConsultationSoap, Patient } from "@/types/db";
 import type { LocalSoapNote } from "./soap-schema";
-import { containsDosage } from "./soap-schema";
+import { containsDosage, SOAP_SECTIONS } from "./soap-schema";
+import { headedLayout, SOAP_FULL_HEADINGS } from "./soap-layout";
 import { buildDictationScaffold } from "./dictation-scaffold";
 
 export const MAX_TRANSCRIPT_LENGTH = 6000;
@@ -87,7 +88,8 @@ export function createSoapPrompt(
   transcript: string,
   context: LocalPatientContext,
   simplified = false,
-  guidedSource?: LocalSoapNote
+  guidedSource?: LocalSoapNote,
+  layout = false
 ) {
   if (!transcript.trim()) throw new Error("La dictée est vide.");
   if (transcript.length > MAX_TRANSCRIPT_LENGTH)
@@ -101,8 +103,12 @@ export function createSoapPrompt(
   const instruction = simplified
     ? `Recopie exactement la trame JSON finale en conservant ses quatre clés et toutes ses valeurs. Aucune réécriture. ${format}\n${safety}`
     : `Mets en forme cette note vétérinaire en français. ${format}\nConserve intégralement les phrases de la trame, dans leurs sections. Ne supprime aucun fait. N’ajoute rien, y compris dans les sections vides. Les observations sans rubrique explicite restent dans subjective pour la relecture du vétérinaire.\n${safety}`;
+  // The layout is a canvas around the dictated words: headings and list markers only.
+  const canvas = layout
+    ? `\nMise en forme imposée, identique à la trame : chaque valeur non vide commence par l’intitulé complet de sa rubrique, seul sur sa ligne (${SOAP_SECTIONS.map(({ key }) => `${key} : « ${SOAP_FULL_HEADINGS[key]} »`).join(", ")}). Ensuite une observation par ligne, précédée de « - ». Dans plan, chaque action est numérotée « 1. », « 2. », « 3. »… Les intitulés, les tirets et les numéros sont les seuls ajouts permis ; les mots et les chiffres de la trame restent identiques et dans le même ordre.`
+    : "";
   const encode = (value: unknown) =>
     JSON.stringify(value).replaceAll("<", "\\u003c").replaceAll(">", "\\u003e");
   // One user turn: the engine wraps it in the template of the model it loads.
-  return `${instruction}\nDONNEES_JSON (contexte et dictée) :\n${encode({ contexte: context, dictee: modelTranscript })}\nTrame issue de la dictée, exemple de format strict à conserver :\n${encode(scaffold)}`;
+  return `${instruction}${canvas}\nDONNEES_JSON (contexte et dictée) :\n${encode({ contexte: context, dictee: modelTranscript })}\nTrame issue de la dictée, exemple de format strict à conserver :\n${encode(layout ? headedLayout(scaffold) : scaffold)}`;
 }

@@ -20,6 +20,17 @@ const query = new URLSearchParams(
     searchThreads: process.env.BAITARI_EVAL_SEARCH_THREADS,
     generator: process.env.BAITARI_EVAL_GENERATOR,
     runsA: process.env.BAITARI_EVAL_RUNS_A,
+    dictation: process.env.BAITARI_EVAL_DICTATION,
+    whisperThreads: process.env.BAITARI_EVAL_WHISPER_THREADS,
+    runsDictation: process.env.BAITARI_EVAL_RUNS_DICTATION,
+    parkSearch: process.env.BAITARI_EVAL_PARK_SEARCH,
+    whisperFolders: process.env.BAITARI_EVAL_WHISPER_FOLDERS,
+    whisperDevice: process.env.BAITARI_EVAL_WHISPER_DEVICE,
+    whisperKeep: process.env.BAITARI_EVAL_WHISPER_KEEP,
+    reference: process.env.BAITARI_EVAL_REFERENCE,
+    generators: process.env.BAITARI_EVAL_GENERATORS,
+    variants: process.env.BAITARI_EVAL_VARIANTS,
+    referenceCases: process.env.BAITARI_EVAL_REFERENCE_CASES,
   }).filter((entry): entry is [string, string] => Boolean(entry[1]))
 ).toString();
 

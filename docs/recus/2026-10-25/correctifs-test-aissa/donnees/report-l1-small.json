@@ -1,0 +1,285 @@
+{
+  "label": "l1-small",
+  "startedAt": "2026-10-25T16:13:04.932Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "dictation:start",
+      "at": 1792944784.942
+    },
+    {
+      "what": "dictation:end",
+      "at": 1792945088.671
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "dictation": [
+    {
+      "order": 1,
+      "folder": "whisper-small-banc",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 5.76,
+      "firstTextSeconds": 8.07,
+      "transcribeSeconds": 17.17,
+      "realTimeFactor": 0.6,
+      "wordErrorRate": 0.148,
+      "missingNumbers": [
+        "2"
+      ],
+      "text": "Le propriétaire remarque que Max Gémy lorsqu'il se gratte l'oreille droite, légère baisse d'activités liées à l'inconfort, mais appétit conservé, aucun vomissement ni diaré, pas d'historique récent de béniades, alimentation habituelle inchangée, traitement anti-parasitaire à jour, administré il y a deux semaines, température 38.5°C, normale, fréquence cardiac 92 BPM, fréquence respiratoire 20 mouvements par minute."
+    },
+    {
+      "order": 2,
+      "folder": "whisper-small-banc",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 6.91,
+      "firstTextSeconds": 8.33,
+      "transcribeSeconds": 13.06,
+      "realTimeFactor": 0.76,
+      "wordErrorRate": 0.256,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "nettoyage du canal auriculaire droit à la solution séruminolétique. Goutte antibiotique, antifongique et anti-inflammatoire, sainte goutte dans l'oreille droite, deux fois par jour pendant dix jours. Collier Elisabeth I. Education du client, contrôle dans dix à quatorze jours."
+    },
+    {
+      "order": 3,
+      "folder": "whisper-small-banc",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 4.53,
+      "firstTextSeconds": 12.36,
+      "transcribeSeconds": 28.05,
+      "realTimeFactor": 0.74,
+      "wordErrorRate": 0.479,
+      "missingNumbers": [
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "soit au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution séruminolitique adaptée. Prescription médicale, goûte auriculaire anti-biothique, anti-fongique et anti-inflammatoire, 5 sans enfoncer l'embout dans le conduit, interdire les baignées des nettoyages agressifs avec des cotons tiches pendant le traitement suivi, planifier une visite de contrôle dans dix à quatorze jours, ou appeler plutôt si aggravation ou douleur accrue."
+    },
+    {
+      "order": 4,
+      "folder": "whisper-small-banc",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 5.15,
+      "firstTextSeconds": 9.89,
+      "transcribeSeconds": 18.51,
+      "realTimeFactor": 0.65,
+      "wordErrorRate": 0.148,
+      "missingNumbers": [
+        "2"
+      ],
+      "text": "Le propriétaire remarque que Max Gémy lorsqu'il se gratte l'oreille droite, légère baisse d'activités liées à l'inconfort, mais appétit conservé, aucun vomissement ni diaré, pas d'historique récent de béniades, alimentation habituelle inchangée, traitement anti-parasitaire à jour, administré il y a deux semaines, température 38.5°C, normale, fréquence cardiac 92 BPM, fréquence respiratoire 20 mouvements par minute."
+    },
+    {
+      "order": 5,
+      "folder": "whisper-small-banc",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 4.44,
+      "firstTextSeconds": 5.34,
+      "transcribeSeconds": 9.09,
+      "realTimeFactor": 0.53,
+      "wordErrorRate": 0.256,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "nettoyage du canal auriculaire droit à la solution séruminolétique. Goutte antibiotique, antifongique et anti-inflammatoire, sainte goutte dans l'oreille droite, deux fois par jour pendant dix jours. Collier Elisabeth I. Education du client, contrôle dans dix à quatorze jours."
+    },
+    {
+      "order": 6,
+      "folder": "whisper-small-banc",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 4,
+      "threads": 4,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 4.89,
+      "firstTextSeconds": 7.05,
+      "transcribeSeconds": 19.08,
+      "realTimeFactor": 0.5,
+      "wordErrorRate": 0.479,
+      "missingNumbers": [
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "soit au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution séruminolitique adaptée. Prescription médicale, goûte auriculaire anti-biothique, anti-fongique et anti-inflammatoire, 5 sans enfoncer l'embout dans le conduit, interdire les baignées des nettoyages agressifs avec des cotons tiches pendant le traitement suivi, planifier une visite de contrôle dans dix à quatorze jours, ou appeler plutôt si aggravation ou douleur accrue."
+    },
+    {
+      "order": 7,
+      "folder": "whisper-small-banc",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 1,
+      "threads": 1,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 3.88,
+      "firstTextSeconds": 12.37,
+      "transcribeSeconds": 19.59,
+      "realTimeFactor": 0.68,
+      "wordErrorRate": 0.148,
+      "missingNumbers": [
+        "2"
+      ],
+      "text": "Le propriétaire remarque que Max Gémy lorsqu'il se gratte l'oreille droite, légère baisse d'activités liées à l'inconfort, mais appétit conservé, aucun vomissement ni diaré, pas d'historique récent de béniades, alimentation habituelle inchangée, traitement anti-parasitaire à jour, administré il y a deux semaines, température 38.5°C, normale, fréquence cardiac 92 BPM, fréquence respiratoire 20 mouvements par minute."
+    },
+    {
+      "order": 8,
+      "folder": "whisper-small-banc",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 1,
+      "threads": 1,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 3.82,
+      "firstTextSeconds": 13.64,
+      "transcribeSeconds": 17.68,
+      "realTimeFactor": 1.03,
+      "wordErrorRate": 0.256,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "nettoyage du canal auriculaire droit à la solution séruminolétique. Goutte antibiotique, antifongique et anti-inflammatoire, sainte goutte dans l'oreille droite, deux fois par jour pendant dix jours. Collier Elisabeth I. Education du client, contrôle dans dix à quatorze jours."
+    },
+    {
+      "order": 9,
+      "folder": "whisper-small-banc",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 1,
+      "threads": 1,
+      "run": 1,
+      "parkSearch": false,
+      "loadSeconds": 3.93,
+      "firstTextSeconds": 15.39,
+      "transcribeSeconds": 34.52,
+      "realTimeFactor": 0.91,
+      "wordErrorRate": 0.479,
+      "missingNumbers": [
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "soit au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution séruminolitique adaptée. Prescription médicale, goûte auriculaire anti-biothique, anti-fongique et anti-inflammatoire, 5 sans enfoncer l'embout dans le conduit, interdire les baignées des nettoyages agressifs avec des cotons tiches pendant le traitement suivi, planifier une visite de contrôle dans dix à quatorze jours, ou appeler plutôt si aggravation ou douleur accrue."
+    },
+    {
+      "order": 10,
+      "folder": "whisper-small-banc",
+      "clip": "passage30",
+      "audioSeconds": 28.6,
+      "threadsAsked": 1,
+      "threads": 1,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 3.87,
+      "firstTextSeconds": 13,
+      "transcribeSeconds": 20.54,
+      "realTimeFactor": 0.72,
+      "wordErrorRate": 0.148,
+      "missingNumbers": [
+        "2"
+      ],
+      "text": "Le propriétaire remarque que Max Gémy lorsqu'il se gratte l'oreille droite, légère baisse d'activités liées à l'inconfort, mais appétit conservé, aucun vomissement ni diaré, pas d'historique récent de béniades, alimentation habituelle inchangée, traitement anti-parasitaire à jour, administré il y a deux semaines, température 38.5°C, normale, fréquence cardiac 92 BPM, fréquence respiratoire 20 mouvements par minute."
+    },
+    {
+      "order": 11,
+      "folder": "whisper-small-banc",
+      "clip": "plan-gabarit",
+      "audioSeconds": 17.2,
+      "threadsAsked": 1,
+      "threads": 1,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 3.86,
+      "firstTextSeconds": 12.67,
+      "transcribeSeconds": 17.02,
+      "realTimeFactor": 0.99,
+      "wordErrorRate": 0.256,
+      "missingNumbers": [
+        "5",
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "nettoyage du canal auriculaire droit à la solution séruminolétique. Goutte antibiotique, antifongique et anti-inflammatoire, sainte goutte dans l'oreille droite, deux fois par jour pendant dix jours. Collier Elisabeth I. Education du client, contrôle dans dix à quatorze jours."
+    },
+    {
+      "order": 12,
+      "folder": "whisper-small-banc",
+      "clip": "plan-reference",
+      "audioSeconds": 38,
+      "threadsAsked": 1,
+      "threads": 1,
+      "run": 2,
+      "parkSearch": false,
+      "loadSeconds": 3.79,
+      "firstTextSeconds": 13.8,
+      "transcribeSeconds": 33.58,
+      "realTimeFactor": 0.88,
+      "wordErrorRate": 0.479,
+      "missingNumbers": [
+        "2",
+        "10",
+        "10",
+        "14"
+      ],
+      "text": "soit au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution séruminolitique adaptée. Prescription médicale, goûte auriculaire anti-biothique, anti-fongique et anti-inflammatoire, 5 sans enfoncer l'embout dans le conduit, interdire les baignées des nettoyages agressifs avec des cotons tiches pendant le traitement suivi, planifier une visite de contrôle dans dix à quatorze jours, ou appeler plutôt si aggravation ou douleur accrue."
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-25T16:18:08.672Z"
+}

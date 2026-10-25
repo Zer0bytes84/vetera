@@ -11,6 +11,12 @@ import type { LocalSoapNote } from "../local-ai/soap-schema";
 import type { LocalPatientContext } from "../local-ai/patient-context";
 import type { LocalAiProgress } from "../local-ai/worker-protocol";
 import type { DictationLanguage } from "../local-ai/whisper-language";
+import { whisperThreads } from "../local-ai/whisper-threads";
+import {
+  parkWhisperSession,
+  releaseWhisperSession,
+  takeWhisperSession,
+} from "../local-ai/whisper-session";
 
 export type LocalAiPhase =
   | "idle"
@@ -26,6 +32,8 @@ type Attempt = {
   session?: LocalInferenceSession;
   microphone?: Awaited<ReturnType<typeof prepareMicrophone>>;
   capture?: Awaited<ReturnType<typeof captureAudio>>;
+  /** Model and threads of the dictation session, to reuse it for the next rubric. */
+  whisperKey?: string;
 };
 export function useLocalConsultationAi() {
   const [phase, setPhase] = useState<LocalAiPhase>("idle");
@@ -67,6 +75,7 @@ export function useLocalConsultationAi() {
   useEffect(
     () => () => {
       if (active.current) dispose(active.current);
+      releaseWhisperSession();
     },
     [dispose]
   );
@@ -99,15 +108,15 @@ export function useLocalConsultationAi() {
         attempt.microphone = await prepareMicrophone(signal);
         setPhase("loading-whisper");
         setProgress({ message: "Préparation de la dictée…" });
-        attempt.session = await LocalInferenceSession.create(
-          "whisper",
-          signal,
-          update
-        );
-        await attempt.session.request(
-          { type: "load-whisper", ...urls },
-          "ready"
-        );
+        const threads = whisperThreads();
+        attempt.whisperKey = `${urls.modelRoot}#${threads}`;
+        const taken = await takeWhisperSession(attempt.whisperKey, signal, update);
+        attempt.session = taken.session;
+        if (!taken.loaded)
+          await attempt.session.request(
+            { type: "load-whisper", ...urls, threads },
+            "ready"
+          );
         if (signal.aborted) throw abortError();
         attempt.capture = await captureAudio(
           attempt.microphone.stream,
@@ -144,7 +153,7 @@ export function useLocalConsultationAi() {
       const audio = capture.stop();
       attempt.microphone?.close();
       const result = await attempt.session.request(
-        { type: "transcribe", audio, language: attempt.language ?? "fr" },
+        { type: "transcribe", audio, language: attempt.language ?? "fr", keep: true },
         "transcript",
         [audio.buffer as ArrayBuffer]
       );
@@ -154,6 +163,11 @@ export function useLocalConsultationAi() {
         throw abortError();
       const text = normalizeSpokenMentions(result.text);
       setTranscription(text);
+      // The model stays loaded for the next rubric; any other local task evicts it.
+      const session = attempt.session;
+      attempt.session = undefined;
+      if (attempt.whisperKey) parkWhisperSession(session, attempt.whisperKey);
+      else session.close();
       dispose(attempt);
       setPhase("idle");
       setProgress({
@@ -217,9 +231,11 @@ export function useLocalConsultationAi() {
     },
     [dispose, reportFailure]
   );
+  const clearError = useCallback(() => setError(null), []);
   return {
     phase,
     error,
+    clearError,
     progress,
     seconds,
     transcription,

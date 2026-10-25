@@ -5,7 +5,9 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant" | "outils-ia" | "reset";
+  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee";
+  /** "dictee": generator preference set before the dictation (gemma3 or gemma4). */
+  generator?: string;
   /** "outils-ia": position the switch must reach ("on" = new assistant version). */
   toggle?: "on" | "off";
   theme: "light" | "dark";
@@ -64,6 +66,15 @@ async function run() {
     // Generator choice made by an "outils-ia" capture: back to the app default.
     localStorage.removeItem("baitari.generator");
     await writeTextFile(config.signal, "restored");
+    return;
+  }
+  // No reload here: the first launch on an empty folder is still creating its database.
+  if (config.scenario === "dictee") {
+    // Field test path: generator chosen on that computer, note dictated by rubric.
+    if (config.generator) localStorage.setItem("baitari.generator", config.generator);
+    localStorage.setItem("baitari:ai-models-onboarding-completed", "true");
+    const { captureDictation } = await import("./capture-dictee");
+    await captureDictation(config.signal, config.query);
     return;
   }
   if (!(await prepare())) return;
