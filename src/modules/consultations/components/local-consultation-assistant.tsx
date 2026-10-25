@@ -70,7 +70,6 @@ import { AssistantActivity } from "./assistant-activity";
 import { assembleGuidedNote } from "../local-ai/guided-soap";
 import { buildFreeDictationDraft } from "../local-ai/free-dictation";
 import { EMPTY_SOAP } from "../local-ai/soap-schema";
-import { AssistantBrandAvatar } from "./assistant-brand-avatar";
 import { Mascot, type MascotMood } from "@/components/mascot";
 import {
   AssistantSlideoutIcon,
@@ -783,9 +782,8 @@ export default function LocalConsultationAssistant({
       {activeTab === "dictation" && (
         <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
-            {/* Assistant Welcome Card */}
+            {/* Assistant Welcome Card: the mascot speaks once, in the header. */}
             <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-card p-3.5 shadow-xs">
-              <AssistantBrandAvatar size={36} mood={assistantMood} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="t-13 font-semibold text-foreground">
