@@ -267,17 +267,6 @@
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar {
   padding-inline: 24px 16px !important;
 }
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .crumbs {
-  gap: 6px;
-  font-size: 13px;
-  line-height: 16px;
-  letter-spacing: -0.006em;
-  color: var(--clean-ink-quiet);
-}
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .crumbs > strong {
-  font-weight: 500;
-  color: var(--clean-ink-strong);
-}
 :root[data-skin="clean"][data-skin][data-skin] :is(th, thead)[class*="backdrop-blur"] {
   -webkit-backdrop-filter: blur(12px) saturate(1.6) !important;
   backdrop-filter: blur(12px) saturate(1.6) !important;
@@ -341,25 +330,23 @@
   box-shadow: 0 0 0 2px var(--clean-sheet);
 }
 
-/* Header search: a white field on the glass at the buttons' 32 px, one quiet
-   hairline, the placeholder in the quiet grey; hovering only warms the fill. */
+/* Header search: the pill on the segmented track's soft grey, the ⌘K mark
+   in a small white disc, like the chosen item of a segmented switch. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field {
-  height: var(--clean-control);
-  border-color: var(--clean-line);
-  border-radius: var(--clean-control-radius);
-  background: var(--clean-surface);
-  color: var(--clean-ink-quiet);
-}
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-key {
   background: var(--clean-segment-track);
   color: var(--clean-ink-quiet);
 }
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-key {
+  background: var(--clean-segment-active);
+  box-shadow: var(--clean-segment-active-shadow);
+  color: var(--clean-ink);
+}
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field:hover {
-    border-color: var(--clean-line);
-    background: var(--clean-hover);
+    background: color-mix(in oklab, var(--clean-segment-track), var(--clean-ink-strong) 5%);
     color: var(--clean-ink);
   }
+  :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field:hover .shell-header-search-key { color: var(--clean-ink-strong); }
 }
 /* The account avatar ends the header on the page's 24 px margin. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-account-trigger) { padding-inline-end: 24px !important; }

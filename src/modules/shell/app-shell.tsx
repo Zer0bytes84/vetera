@@ -660,19 +660,26 @@ function AppShellInner() {
                 boxSizing: "border-box",
               }}
             >
-              {/* 1. GAUCHE : Logo & Titre classique de page OU fil d'Ariane minimal */}
+              {/* 1. GAUCHE : Logo & Titre classique de page OU recherche (Premium et Clean) */}
               {isPremium ? (
-                <div className="shell-toolbar-leading flex min-w-0 flex-1 sm:flex-initial items-center gap-2.5">
+                <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
                   <SidebarTrigger
                     aria-label="Menu"
                     className="shell-toolbar-control size-8 shrink-0 md:!hidden"
                   />
-                  <div className="crumbs flex items-center gap-1.5 t-13 tracking-[-0.02em] text-[#8f8f8f] dark:text-[#8a8a8a]">
-                    <span>Cabinet</span>
-                    <span className="text-[#a3a3a3] dark:text-[#525252]">/</span>
-                    <strong className="font-medium text-[#191919] dark:text-[#f3f3f3]">
-                      {pageTitle}
-                    </strong>
+                  {/* La recherche, en pilule, à gauche : le titre vit déjà dans chaque page. */}
+                  <div className="shell-header-search-slot">
+                    <button
+                      type="button"
+                      aria-label="Rechercher un patient, une page ou une commande"
+                      aria-haspopup="dialog"
+                      aria-keyshortcuts="Meta+K Control+K"
+                      onClick={() => setPaletteOpen(true)}
+                      className="shell-header-search-field"
+                    >
+                      <span className="shell-header-search-placeholder">Rechercher un patient, une page…</span>
+                      <kbd className="shell-header-search-key">⌘K</kbd>
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -722,24 +729,6 @@ function AppShellInner() {
                     <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-md border border-black/8 bg-white/75 px-1.5 py-0.5 font-mono t-12 font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/15 dark:border-white/10 dark:bg-white/[0.08] dark:group-hover:border-white/20 shadow-2xs">
                       ⌘K
                     </kbd>
-                  </button>
-                </div>
-              )}
-
-              {/* 2 bis. CENTRE (Premium et Clean) : le champ de recherche, centré sur l'en-tête */}
-              {isPremium && (
-                <div className="shell-header-search-slot">
-                  <button
-                    type="button"
-                    aria-label="Rechercher un patient, une page ou une commande"
-                    aria-haspopup="dialog"
-                    aria-keyshortcuts="Meta+K Control+K"
-                    onClick={() => setPaletteOpen(true)}
-                    className="shell-header-search-field"
-                  >
-                    <ToolbarIcon name="search" size={16} className="shell-header-search-icon" />
-                    <span className="shell-header-search-placeholder">Rechercher un patient, une page…</span>
-                    <kbd className="shell-header-search-key">⌘ K</kbd>
                   </button>
                 </div>
               )}

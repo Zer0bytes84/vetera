@@ -481,15 +481,13 @@
   .shell-toolbar-actions,:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background:var(--background); }
 }
 
-/* Header search field (Premium and Clean): centred on the header, at the
-   height of the buttons beside it. It gives way to the search icon when the
-   header is too narrow to hold it beside the title and the tools. */
+/* Header search (Premium and Clean), after Dribbble's: a pill on a soft
+   grey, the placeholder on the left, and inside it on the right a small
+   round mark carrying ⌘K. It sits at the header's left, where the title used
+   to be, and gives way to the search icon when the header is narrow. */
 .shell-header-search-slot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: clamp(240px, calc(100cqi - 560px), 380px);
-  transform: translate(-50%, -50%);
+  width: clamp(220px, 32cqi, 300px);
+  min-width: 0;
 }
 .shell-header-search-field {
   display: flex;
@@ -497,24 +495,24 @@
   height: 36px;
   align-items: center;
   gap: 8px;
-  padding: 0 6px 0 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
+  padding: 0 4px 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-hover, var(--muted));
   color: var(--ink-muted, var(--muted-foreground));
   font-size: 13px;
   text-align: left;
   cursor: pointer;
   transition:
     background-color var(--speed-highlight-out) ease,
-    border-color var(--speed-highlight-out) ease,
-    color var(--speed-highlight-out) ease;
+    color var(--speed-highlight-out) ease,
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
+.shell-header-search-field:active { transform: scale(0.99); }
 .shell-header-search-field:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
-.shell-header-search-icon { width: 16px; height: 16px; flex: none; }
 .shell-header-search-placeholder {
   min-width: 0;
   flex: 1;
@@ -523,25 +521,34 @@
   white-space: nowrap;
 }
 .shell-header-search-key {
+  display: grid;
+  width: 28px;
+  height: 28px;
   flex: none;
-  padding: 0 6px;
-  border-radius: 4px;
-  background: var(--surface-hover, var(--muted));
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface, var(--card));
+  box-shadow: 0 0 0 1px var(--border);
   font-family: inherit;
   font-size: 12px;
-  line-height: 20px;
+  font-weight: 500;
+  line-height: 1;
   letter-spacing: 0;
-  color: var(--ink-muted, var(--muted-foreground));
+  color: var(--ink, var(--foreground));
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
 @media (hover: hover) and (pointer: fine) {
   .shell-header-search-field:hover {
-    border-color: var(--border-hover, var(--border));
+    background: color-mix(in oklab, var(--surface-hover, var(--muted)), var(--ink, var(--foreground)) 5%);
     color: var(--ink, var(--foreground));
-    transition-duration: var(--speed-highlight-in);
+    transition-duration: var(--speed-highlight-in), var(--speed-highlight-in), 160ms;
   }
 }
+@media (prefers-reduced-motion: reduce) {
+  .shell-header-search-field:active { transform: none; }
+}
 [data-slot="app-header"] .shell-toolbar-actions .shell-header-search-compact { display: none !important; }
-@container shell-toolbar (max-width: 819px) {
+@container shell-toolbar (max-width: 559px) {
   .shell-header-search-slot { display: none; }
   [data-slot="app-header"] .shell-toolbar-actions .shell-header-search-compact { display: grid !important; }
 }
