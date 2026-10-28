@@ -1,5 +1,6 @@
 import { isTauriRuntime } from "@/services/browser-store";
 import manifest from "../../../../resources/local-ai/download-manifest.json";
+import { nativeDictationEnabled } from "../local-ai/native-dictation";
 import {
   type LocalModelStatus, EMPTY_MODEL_STATUS, getLocalModels,
   downloadLocalModels, cancelLocalModelDownload,
@@ -25,12 +26,13 @@ export const AI_ONBOARDING_OPEN_EVENT = "baitari:open-ai-models-onboarding";
 export const AI_MODELS_CHANGED_EVENT = "baitari:local-ai-models-changed";
 export const AI_SETTINGS_PENDING_KEY = "baitari:pending-ai-settings";
 
-const sizeOf = (id: AIModelId | "generator4") => manifest.find(model => model.id === id)!.files.reduce((bytes, file) => bytes + file.size, 0);
+const sizeOf = (id: AIModelId | "generator4" | "whisper-turbo") => manifest.find(model => model.id === id)!.files.reduce((bytes, file) => bytes + file.size, 0);
 const sizeLabel = (bytes: number) => bytes < 1_000_000_000
   ? `${Math.ceil(bytes / 1_000_000)} Mo`
   : `${(bytes / 1_000_000_000).toLocaleString("fr-FR", {maximumFractionDigits: 1})} Go`;
 export const AI_MODELS_CATALOG = [
-  {id: "whisper" as const, name: "Dictée vocale", sizeBytes: sizeOf("whisper"), description: "Dictez vos observations, puis relisez leur transcription.", badge: "Français et multilingue"},
+  // On the macOS desktop app the dictation also installs its native model.
+  {id: "whisper" as const, name: "Dictée vocale", sizeBytes: sizeOf("whisper") + (nativeDictationEnabled() ? sizeOf("whisper-turbo") : 0), description: "Dictez vos observations, puis relisez leur transcription.", badge: "Français et multilingue"},
   {id: "generator" as const, name: "Assistant IA", sizeBytes: sizeOf("generator"), description: "Préparez une note SOAP à relire et à valider.", badge: "Rédaction locale"},
   {id: "embeddinggemma" as const, name: "Recherche clinique", sizeBytes: sizeOf("embeddinggemma"), description: "Retrouvez vos observations et documents par leur sens clinique.", badge: "Recherche locale"},
 ].map(model => ({...model, sizeLabel: sizeLabel(model.sizeBytes)}));
@@ -64,8 +66,12 @@ export function triggerOpenAIOnboarding() {
     window.dispatchEvent(new CustomEvent(AI_ONBOARDING_OPEN_EVENT));
   }
 }
+/** Dictation ready: on the macOS desktop app it is the native model that transcribes. */
+export function dictationModelReady(status: LocalModelStatus, native = nativeDictationEnabled()) {
+  return Boolean(status.whisperReady && (!native || status.whisperTurboReady));
+}
 export function allAIModelsReady(status: LocalModelStatus) {
-  return Boolean(status.whisperReady && status.generatorReady && status.embeddingReady);
+  return Boolean(dictationModelReady(status) && status.generatorReady && status.embeddingReady);
 }
 export async function checkAIModelsStatus(): Promise<LocalModelStatus> {
   try { return await getLocalModels(); }

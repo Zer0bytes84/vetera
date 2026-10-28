@@ -10,7 +10,7 @@ import { ArrowDown, Microphone, MessageSquarePlus, Search, Check, FolderOpen, Sp
 import { isTauriRuntime } from "@/services/browser-store";
 import { importLocalModel } from "../local-ai/models";
 import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
-import { AI_MODELS_CATALOG, AI_MODELS_CHANGED_EVENT, allAIModelsReady, type AIModelId, NEW_ASSISTANT, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
+import { AI_MODELS_CATALOG, AI_MODELS_CHANGED_EVENT, allAIModelsReady, type AIModelId, dictationModelReady, NEW_ASSISTANT, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
 import { getGeneratorPreference, hasGeneratorFallenBack, setGeneratorPreference } from "../local-ai/generator-choice";
 
 const icons = {whisper: Microphone, generator: MessageSquarePlus, embeddinggemma: Search};
@@ -42,7 +42,7 @@ export function AIModelSettings() {
     finally { setImporting(null); }
   }
   const allReady = allAIModelsReady(state.status);
-  const ready = {whisper: state.status.whisperReady, generator: state.status.generatorReady, embeddinggemma: state.status.embeddingReady};
+  const ready = {whisper: dictationModelReady(state.status), generator: state.status.generatorReady, embeddinggemma: state.status.embeddingReady};
 
   return <section className="settings-panel" aria-label="Outils IA locaux">
     <div className="settings-panel-heading">
@@ -55,7 +55,10 @@ export function AIModelSettings() {
     <div className="grid gap-3 p-4 sm:grid-cols-3">
       {AI_MODELS_CATALOG.map(model => {
         const Icon = icons[model.id];
-        const stage = state.running ? state.progress?.models[model.id] : undefined;
+        const stages = state.progress?.models as Record<string, string | undefined> | undefined;
+        // The dictation card follows its native model while that one is being installed.
+        const stage = !state.running ? undefined
+          : model.id === "whisper" && stages?.["whisper-turbo"] && stages["whisper-turbo"] !== "ready" ? stages["whisper-turbo"] : stages?.[model.id];
         const installed = ready[model.id] || stage === "ready";
         return <article key={model.id} className="flex min-w-0 flex-col gap-3 rounded-xl border bg-background p-4">
           <div className="flex items-center gap-2"><Icon className="size-4 shrink-0 text-muted-foreground"/><h4 className="text-sm font-medium">{model.name}</h4></div>

@@ -15,6 +15,8 @@ export interface LocalModelStatus {
   arcticReady?: boolean;
   /** New assistant version (Gemma 4 E2B), installed next to Gemma 3. */
   generator4Ready?: boolean;
+  /** Native dictation model (whisper.cpp large-v3-turbo q8), desktop macOS. */
+  whisperTurboReady?: boolean;
 }
 export const EMPTY_MODEL_STATUS: LocalModelStatus = {
   root: null,

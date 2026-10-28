@@ -44,6 +44,8 @@ pub struct LocalModelStatus {
     pub(crate) arctic_ready: bool,
     /// Gemma 4 E2B (phase B), optional, installed next to Gemma 3 which stays the fallback.
     pub(crate) generator4_ready: bool,
+    /// Native dictation model (whisper.cpp, large-v3-turbo q8), where the dictation reads it.
+    pub(crate) whisper_turbo_ready: bool,
 }
 
 fn read_json(path: &Path) -> Result<Value, String> {
@@ -191,7 +193,19 @@ pub(crate) fn status(root: &Path) -> LocalModelStatus {
             .metadata()
             .is_ok_and(|meta| meta.is_file() && meta.len() > 1024 * 1024),
         generator4_ready: validate_generator4(&root.join("generator4")).is_ok(),
+        whisper_turbo_ready: validate_whisper_turbo(&root.join(crate::dictation::MODEL_DIR))
+            .is_ok(),
     }
+}
+/// Exact size of the pinned large-v3-turbo q8 revision (SHA-256 checked at download).
+pub(crate) const WHISPER_TURBO_SIZE: u64 = 874_188_075;
+pub(crate) fn validate_whisper_turbo(folder: &Path) -> Result<(), String> {
+    let meta = fs::symlink_metadata(folder.join(crate::dictation::MODEL_FILE))
+        .map_err(|_| "Le modèle de dictée est manquant.")?;
+    if !meta.is_file() || meta.len() != WHISPER_TURBO_SIZE {
+        return Err("Le modèle de dictée est incomplet.".into());
+    }
+    Ok(())
 }
 /// Gemma 4 E2B web file, exact size of the published revision (its SHA-256 is
 /// checked at download time).

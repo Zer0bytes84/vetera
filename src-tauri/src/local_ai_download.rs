@@ -32,6 +32,9 @@ struct Model {
     /// Offered separately, in one tap, once the base tools are installed.
     #[serde(default)]
     optional: bool,
+    /// Only where its companion is bundled (the native dictation, macOS).
+    #[serde(default, rename = "macosOnly")]
+    macos_only: bool,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -88,7 +91,7 @@ fn manifest() -> Result<Vec<Model>, DownloadError> {
     for model in &models {
         if !matches!(
             model.id.as_str(),
-            "whisper" | "generator" | "embeddinggemma" | "generator4"
+            "whisper" | "whisper-turbo" | "generator" | "embeddinggemma" | "generator4"
         ) {
             return Err(DownloadError::new(
                 "configuration",
@@ -117,8 +120,13 @@ fn manifest() -> Result<Vec<Model>, DownloadError> {
 
 /// Base tools by default; optional ones (the new assistant) only when asked by id.
 fn selected(models: Vec<Model>, only: Option<&[String]>) -> Vec<Model> {
+    selected_for(models, only, crate::dictation::NATIVE_PLATFORM)
+}
+
+fn selected_for(models: Vec<Model>, only: Option<&[String]>, native: bool) -> Vec<Model> {
     models
         .into_iter()
+        .filter(|model| native || !model.macos_only)
         .filter(|model| match only {
             Some(ids) => ids.contains(&model.id),
             None => !model.optional,
@@ -261,6 +269,7 @@ fn download_file(
 fn ready(status: &LocalModelStatus, id: &str) -> bool {
     match id {
         "whisper" => status.whisper_ready,
+        "whisper-turbo" => status.whisper_turbo_ready,
         "generator" => status.generator_ready,
         "generator4" => status.generator4_ready,
         _ => status.embedding_ready,
@@ -270,6 +279,7 @@ fn ready(status: &LocalModelStatus, id: &str) -> bool {
 fn validate_model(id: &str, folder: &Path) -> Result<(), DownloadError> {
     let result = match id {
         "whisper" => local_ai_models::validate_whisper(folder),
+        "whisper-turbo" => local_ai_models::validate_whisper_turbo(folder),
         "embeddinggemma" => local_ai_models::validate_embedding(folder),
         "generator4" => local_ai_models::validate_generator4(folder),
         _ => {
@@ -553,9 +563,10 @@ mod tests {
     #[test]
     fn pinned_manifest_only_contains_known_https_sources_and_real_sizes() {
         let models = manifest().unwrap();
-        assert_eq!(models.len(), 4);
-        // The base installation is unchanged; the new assistant is offered on its own.
-        let base = selected(manifest().unwrap(), None);
+        assert_eq!(models.len(), 5);
+        // Without the native companion (Windows), the base installation is unchanged;
+        // the new assistant is offered on its own.
+        let base = selected_for(manifest().unwrap(), None, false);
         assert_eq!(
             base.iter().map(|model| model.id.as_str()).collect::<Vec<_>>(),
             ["whisper", "embeddinggemma", "generator"]
@@ -566,6 +577,17 @@ mod tests {
                 .map(|file| file.size)
                 .sum::<u64>(),
             2_215_021_763
+        );
+        // On macOS the native dictation model joins the base tools.
+        let native = selected_for(manifest().unwrap(), None, true);
+        assert_eq!(
+            native.iter().map(|model| model.id.as_str()).collect::<Vec<_>>(),
+            ["whisper", "whisper-turbo", "embeddinggemma", "generator"]
+        );
+        let turbo = &native[1].files[0];
+        assert_eq!(
+            (turbo.path.as_str(), turbo.size),
+            (crate::dictation::MODEL_FILE, local_ai_models::WHISPER_TURBO_SIZE)
         );
         let extra = selected(manifest().unwrap(), Some(&["generator4".to_string()]));
         assert_eq!(extra.len(), 1);
@@ -580,6 +602,53 @@ mod tests {
                 assert!(file.url.contains("/resolve/"));
             }
         }
+    }
+
+    /// End to end: the real installer lands the real turbo file where the dictation
+    /// reads it (`local-ai/whisper-turbo/ggml-large-v3-turbo-q8_0.bin`), size and
+    /// SHA-256 checked. Served from disk by a local server (874 MB, no internet):
+    /// BAITARI_TURBO_SOURCE=<file> cargo test installs_turbo -- --ignored
+    #[test]
+    #[ignore]
+    fn installs_turbo_where_the_dictation_reads_it() {
+        let source = PathBuf::from(
+            std::env::var("BAITARI_TURBO_SOURCE").expect("BAITARI_TURBO_SOURCE"),
+        );
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = format!("http://{}/model", listener.local_addr().unwrap());
+        let length = fs::metadata(&source).unwrap().len();
+        let served = source.clone();
+        let worker = thread::spawn(move || {
+            let (mut connection, _) = listener.accept().unwrap();
+            let mut buffer = [0u8; 4096];
+            let _ = connection.read(&mut buffer).unwrap();
+            let header = format!(
+                "HTTP/1.1 200 OK\r\nContent-Length: {length}\r\nConnection: close\r\n\r\n"
+            );
+            connection.write_all(header.as_bytes()).unwrap();
+            std::io::copy(&mut File::open(served).unwrap(), &mut connection).unwrap();
+        });
+        let mut models = selected_for(manifest().unwrap(), Some(&["whisper-turbo".to_string()]), true);
+        assert_eq!(models.len(), 1);
+        models[0].files[0].url = address;
+        let root = temporary();
+        let status = install_models(
+            &root,
+            &network_client(false).unwrap(),
+            &models,
+            None,
+            &AtomicBool::new(false),
+            |_| {},
+        )
+        .unwrap();
+        worker.join().unwrap();
+        assert!(status.whisper_turbo_ready);
+        let installed = root
+            .join(crate::dictation::MODEL_DIR)
+            .join(crate::dictation::MODEL_FILE);
+        assert_eq!(fs::metadata(&installed).unwrap().len(), 874_188_075);
+        assert!(!root.join(".downloads").join("whisper-turbo").exists());
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]
@@ -723,6 +792,7 @@ mod tests {
             name: "Dictée vocale".into(),
             files: vec![fixture(url, body)],
             optional: false,
+            macos_only: false,
         }];
         let mut last_step = String::new();
         let error = install_models(
