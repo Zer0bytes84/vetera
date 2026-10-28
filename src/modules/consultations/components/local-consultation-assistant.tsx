@@ -44,6 +44,7 @@ import {
 import { useSQLite } from "@/hooks/useSQLite";
 import type { Appointment, ConsultationSoap, Owner, Patient } from "@/types/db";
 import { useLocalConsultationAi } from "../hooks/use-local-consultation-ai";
+import { nativeDictationEnabled } from "../local-ai/native-dictation";
 import {
   EMPTY_MODEL_STATUS,
   getLocalModels,
@@ -146,6 +147,10 @@ export default function LocalConsultationAssistant({
   );
   const [models, setModels] = useState<LocalModelStatus>(EMPTY_MODEL_STATUS);
   const [checkingModels, setCheckingModels] = useState(true);
+  // Desktop: the companion's status decides, not the installed WASM model,
+  // and the Dicter button does not wait for the models check: a dictation
+  // start re-verifies the companion itself and reports why if unavailable.
+  const dictationReady = ai.native ? ai.nativeReady !== false : models.whisperReady;
   const [importing, setImporting] = useState(false);
   const [setupOpen, setSetupOpen] = useState(false);
 
@@ -286,7 +291,7 @@ export default function LocalConsultationAssistant({
         if (!alive) return;
         setModels(status);
         setCheckingModels(false);
-        if (!status.whisperReady) setSetupOpen(true);
+        if (!nativeDictationEnabled() && !status.whisperReady) setSetupOpen(true);
       })
       .catch(() => {
         if (alive) {
@@ -1092,8 +1097,8 @@ export default function LocalConsultationAssistant({
                     disabled={
                       ai.busy && ai.phase !== "listening" ||
                       importing ||
-                      checkingModels ||
-                      !models.whisperReady
+                      (!ai.native && checkingModels) ||
+                      !dictationReady
                     }
                     onClick={() => {
                       if (ai.phase === "listening") {

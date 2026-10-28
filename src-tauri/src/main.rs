@@ -8,6 +8,7 @@ mod clinic_network;
 mod license_installation;
 mod local_ai_models;
 mod local_ai_download;
+mod dictation;
 
 fn main() {
     tauri::Builder::default()
@@ -15,14 +16,16 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(clinic_network::ClinicNetwork::new())
         .setup(|_app| {
             clinic_network::init(_app.handle());
 
-            // DevTools only in debug mode
+            // DevTools only in debug mode. Measurements close it (the
+            // inspector is a multi-GB WebKit process that is not the product).
             #[cfg(debug_assertions)]
-            {
+            if std::env::var_os("BAITARI_NO_DEVTOOLS").is_none() {
                 let window = _app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
@@ -49,6 +52,8 @@ fn main() {
             local_ai_models::import_local_ai_model,
             local_ai_download::download_local_ai_models,
             local_ai_download::cancel_local_ai_download,
+            dictation::dictee_status,
+            dictation::transcrire_dictee,
             greet,
             test_sqlite_write,
             test_sqlite_read

@@ -53,6 +53,11 @@ const DocumentComposer = lazy(() => import("@/modules/documents/components/docum
 const LocalConsultationAssistant = lazy(
   () => import("./local-consultation-assistant")
 );
+/** Warms the assistant chunk while the consultation is open, so clicking
+ * « Assistant » does not pay the load before the Dicter button appears. */
+const preloadLocalConsultationAssistant = () => {
+  void import("./local-consultation-assistant");
+};
 type SaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
 type Payload = Pick<
   ConsultationSoap,
@@ -107,6 +112,10 @@ export function SoapPanel({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSave = useRef<Promise<void> | null>(null);
   const repoRef = useRef(repo);
+  // The assistant is the consultation's main tool: warm its chunk on mount.
+  useEffect(() => {
+    preloadLocalConsultationAssistant();
+  }, []);
   useEffect(() => {
     repoRef.current = repo;
   }, [repo]);

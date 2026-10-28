@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "externalBin": ["binaries/whisper-cli"],
+    "resources": {
+      "binaries/whisper-cli-dylibs/libwhisper.1.9.5.dylib": "dylibs/libwhisper.1.dylib",
+      "binaries/whisper-cli-dylibs/libggml.0.27.0.dylib": "dylibs/libggml.0.dylib",
+      "binaries/whisper-cli-dylibs/libggml-base.0.27.0.dylib": "dylibs/libggml-base.0.dylib",
+      "binaries/whisper-cli-dylibs/libggml-cpu.0.27.0.dylib": "dylibs/libggml-cpu.0.dylib",
+      "binaries/whisper-cli-dylibs/libggml-blas.0.27.0.dylib": "dylibs/libggml-blas.0.dylib",
+      "binaries/whisper-cli-dylibs/libggml-metal.0.27.0.dylib": "dylibs/libggml-metal.0.dylib"
+    }
+  }
+}

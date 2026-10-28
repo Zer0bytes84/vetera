@@ -12,6 +12,12 @@ import type { LocalPatientContext } from "../local-ai/patient-context";
 import type { LocalAiProgress } from "../local-ai/worker-protocol";
 import type { DictationLanguage } from "../local-ai/whisper-language";
 import { whisperThreads } from "../local-ai/whisper-threads";
+import { normalizeTemperatureSymbols } from "../local-ai/dictation-text";
+import {
+  nativeDictationEnabled,
+  nativeDictationStatus,
+  transcribeNatively,
+} from "../local-ai/native-dictation";
 import {
   parkWhisperSession,
   releaseWhisperSession,
@@ -36,6 +42,8 @@ type Attempt = {
   whisperKey?: string;
   /** Model load started with the microphone; awaited before transcribing. */
   loading?: Promise<void>;
+  /** Native companion path: no WASM session, no parked model. */
+  native?: boolean;
 };
 export function useLocalConsultationAi() {
   const [phase, setPhase] = useState<LocalAiPhase>("idle");
@@ -43,7 +51,23 @@ export function useLocalConsultationAi() {
   const [progress, setProgress] = useState<LocalAiProgress>({ message: "" });
   const [seconds, setSeconds] = useState(0);
   const [transcription, setTranscription] = useState<string | null>(null);
+  const [native] = useState(nativeDictationEnabled);
+  const [nativeReady, setNativeReady] = useState<boolean | null>(null);
   const active = useRef<Attempt | null>(null);
+  useEffect(() => {
+    if (!native) return;
+    let alive = true;
+    nativeDictationStatus()
+      .then((status) => {
+        if (alive) setNativeReady(status.disponible);
+      })
+      .catch(() => {
+        if (alive) setNativeReady(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [native]);
   const stopRef = useRef<() => Promise<string | null>>(async () => null);
   const dispose = useCallback((attempt: Attempt) => {
     attempt.controller.abort();
@@ -93,38 +117,58 @@ export function useLocalConsultationAi() {
       setError(null);
       setSeconds(0);
       setTranscription(null);
-      const attempt: Attempt = { controller: new AbortController(), language };
+      const attempt: Attempt = {
+        controller: new AbortController(),
+        language,
+        native,
+      };
       active.current = attempt;
       const signal = attempt.controller.signal;
       const update = (event: LocalAiProgress) => {
         if (active.current === attempt) setProgress(event);
       };
       try {
-        const urls = getLocalModelUrls(models);
-        if (!models.whisperReady)
-          throw new Error(
-            "Installez la dictée sur cet ordinateur avant de commencer."
+        if (native) {
+          // No silent WASM fallback in the desktop app: a missing companion or
+          // model is said before the microphone opens.
+          const status = await nativeDictationStatus();
+          setNativeReady(status.disponible);
+          if (!status.disponible)
+            throw new Error(
+              status.raison ??
+                "Le moteur de dictée natif n’est pas disponible sur cet ordinateur."
+            );
+        } else {
+          const urls = getLocalModelUrls(models);
+          if (!models.whisperReady)
+            throw new Error(
+              "Installez la dictée sur cet ordinateur avant de commencer."
+            );
+          setPhase("loading-whisper");
+          setProgress({ message: "Préparation de la dictée…" });
+          const threads = whisperThreads();
+          attempt.whisperKey = `${urls.modelRoot}#${threads}`;
+          const taken = await takeWhisperSession(
+            attempt.whisperKey,
+            signal,
+            update
           );
+          attempt.session = taken.session;
+          // The microphone opens at once; the model loads while the vet speaks
+          // (12 to 18 s on an M1 with 8 GB after a search evicted it).
+          attempt.loading = taken.loaded
+            ? Promise.resolve()
+            : attempt.session
+                .request({ type: "load-whisper", ...urls, threads }, "ready")
+                .then(() => undefined);
+          attempt.loading.catch((failure) => {
+            // A load failure while listening stops the dictation and says why.
+            if (attempt.capture) reportFailure(attempt, failure);
+          });
+        }
         setPhase("microphone");
         setProgress({ message: "Autorisation du microphone…" });
         attempt.microphone = await prepareMicrophone(signal);
-        setPhase("loading-whisper");
-        setProgress({ message: "Préparation de la dictée…" });
-        const threads = whisperThreads();
-        attempt.whisperKey = `${urls.modelRoot}#${threads}`;
-        const taken = await takeWhisperSession(attempt.whisperKey, signal, update);
-        attempt.session = taken.session;
-        // The microphone opens at once; the model loads while the vet speaks
-        // (12 to 18 s on an M1 with 8 GB after a search evicted it).
-        attempt.loading = taken.loaded
-          ? Promise.resolve()
-          : attempt.session
-              .request({ type: "load-whisper", ...urls, threads }, "ready")
-              .then(() => undefined);
-        attempt.loading.catch((failure) => {
-          // A load failure while listening stops the dictation and says why.
-          if (attempt.capture) reportFailure(attempt, failure);
-        });
         if (signal.aborted) throw abortError();
         attempt.capture = await captureAudio(
           attempt.microphone.stream,
@@ -145,12 +189,14 @@ export function useLocalConsultationAi() {
         reportFailure(attempt, failure);
       }
     },
-    [reportFailure]
+    // `native` fixes the engine for the life of the hook (a state, not a prop):
+    // it is stable, and naming it keeps the branch honest for the linter.
+    [reportFailure, native]
   );
   const stop = useCallback(async () => {
     const attempt = active.current;
-    if (!attempt?.capture || !attempt.session || phase !== "listening")
-      return null;
+    if (!attempt?.capture || phase !== "listening") return null;
+    if (!attempt.native && !attempt.session) return null;
     // Synchronously detach the capture so repeated clicks/limit events cannot
     // request a second transcription with the same transferred buffer.
     const capture = attempt.capture;
@@ -160,24 +206,38 @@ export function useLocalConsultationAi() {
     try {
       const audio = capture.stop();
       attempt.microphone?.close();
-      // A dictation shorter than the load waits for the model here.
-      await attempt.loading;
-      const result = await attempt.session.request(
-        { type: "transcribe", audio, language: attempt.language ?? "fr", keep: true },
-        "transcript",
-        [audio.buffer as ArrayBuffer]
-      );
-      if (result.type !== "transcript")
-        throw new Error("Échec de transcription.");
-      if (active.current !== attempt || attempt.controller.signal.aborted)
-        throw abortError();
-      const text = normalizeSpokenMentions(result.text);
+      let raw: string;
+      if (attempt.native) {
+        // One companion process per dictation; it exits when the text is read.
+        const result = await transcribeNatively(
+          audio,
+          attempt.language ?? "fr"
+        );
+        if (active.current !== attempt || attempt.controller.signal.aborted)
+          throw abortError();
+        raw = result.texte;
+      } else {
+        const session = attempt.session;
+        if (!session) throw new Error("Session de dictée absente.");
+        // A dictation shorter than the load waits for the model here.
+        await attempt.loading;
+        const result = await session.request(
+          { type: "transcribe", audio, language: attempt.language ?? "fr", keep: true },
+          "transcript",
+          [audio.buffer as ArrayBuffer]
+        );
+        if (result.type !== "transcript")
+          throw new Error("Échec de transcription.");
+        if (active.current !== attempt || attempt.controller.signal.aborted)
+          throw abortError();
+        raw = result.text;
+        // The model stays loaded for the next rubric; any other local task evicts it.
+        attempt.session = undefined;
+        if (attempt.whisperKey) parkWhisperSession(session, attempt.whisperKey);
+        else session.close();
+      }
+      const text = normalizeSpokenMentions(normalizeTemperatureSymbols(raw));
       setTranscription(text);
-      // The model stays loaded for the next rubric; any other local task evicts it.
-      const session = attempt.session;
-      attempt.session = undefined;
-      if (attempt.whisperKey) parkWhisperSession(session, attempt.whisperKey);
-      else session.close();
       dispose(attempt);
       setPhase("idle");
       setProgress({
@@ -254,5 +314,8 @@ export function useLocalConsultationAi() {
     generate,
     cancel,
     busy: phase !== "idle",
+    /** Desktop: the companion transcribes; elsewhere the WASM engine remains. */
+    native,
+    nativeReady,
   };
 }
