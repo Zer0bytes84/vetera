@@ -1,0 +1,9 @@
+app pid 77668
+17:25:48 1a-formulaire-patient
+17:25:50 1b-patient-cree
+17:25:55 2a-formulaire-rdv
+17:25:58 2b-rdv-agenda
+17:26:02 3-consultation-flux
+17:26:04 3b-cloture-bloquee
+17:26:37 echec-4-dictee
+17:26:37 failed: 4-dictee: dictée refusée : Baitari n’a pas reçu l’autorisation du micro. Si aucune fenêtre ne s’est affichée, ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter.

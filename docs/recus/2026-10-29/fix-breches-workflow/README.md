@@ -139,3 +139,44 @@ Si tu ne l'autorises pas, le panneau affiche désormais l'attente avec « Annule
   - `scripts/eval-local-ai/capture-workflow.ts` : sondes B1 et B3 ajoutées ;
   - `capture-etats-dictee.ts` (nouveau) ;
   - `capture-scenario.ts` : enchaînement des deux.
+
+## 7. Test au vrai micro (29/10 au soir, après ton autorisation)
+
+Même test complet, sans `ECRIT=1`. Les quatre rubriques du cas de référence sont jouées par les haut-parleurs, et le micro du Mac les écoute. Les preuves sont dans `micro-reel/`.
+
+### micro1 : B2a vérifié en conditions réelles
+
+L'autorisation que tu avais donnée ne couvrait pas cette copie de l'app de test. Elle est signée « ad hoc », avec une identité propre à ce build (`vetera-818aa3d9…`), et macOS la considère comme une autre app. Au bout de 30 s, le panneau ne reste pas bloqué : il s'arrête sur « Baitari n'a pas reçu l'autorisation du micro… » et rend « Dicter » disponible (`micro1-echec-4-dictee`). **C'est la correction B2a, observée avec le vrai micro.**
+
+### micro2 : tu as cliqué « Autoriser »
+
+| Étape | Résultat |
+|---|---|
+| 1 à 3, puis clôture bloquée sans note | Passe (`micro2-3b-cloture-bloquee`) |
+| 4. Dictée au micro, quatre rubriques | **Passe.** Le micro écoute, et chaque rubrique est transcrite (`micro2-mesures.json`, champ `dictated`). |
+| 5. Note générée par l'assistant | **Échec, arrêt ici.** Après 28,9 s, l'assistant rejette sa propre réponse : « La réponse de l'assistant n'est pas un JSON SOAP valide ». Le panneau propose « Relire ma dictée comme note » ou de corriger une rubrique (`micro2-echec-5-note`). |
+| 6. Facture et PDF | Non jouée. Ce chemin est passé au rejeu en notes écrites (§ 1 à 4). |
+
+**Ce que l'échec de l'étape 5 n'est pas :** une des trois brèches. C'est la sortie du générateur local, qui n'est pas dans le périmètre de cette session. Avec les mêmes rubriques saisies au clavier, la génération passait en 15 s. Ici, le texte transcrit diffère, et le générateur produit une réponse illisible. Le garde-fou refuse cette réponse, ne l'enregistre pas, et laisse une issue.
+
+### Observation : le début des premières rubriques est perdu
+
+Comparaison des textes joués (`rubrique-N-texte-joue.txt`) avec les transcriptions :
+
+| Rubrique | Début joué | Début transcrit |
+|---|---|---|
+| R1 | « Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse… » | « Légère baisse… ». **La première phrase manque, soit environ 4 s.** |
+| R2 | « Température 38.5 °C, normale. Fréquence cardiaque… » | « Normal. Fréquence cardiaque… ». **« Température 38.5 °C » manque, soit environ 2 s.** |
+| R3 | « Otite externe droite… » | « Autite externe droite… » : tout est là, avec une erreur de reconnaissance sur le premier mot. |
+| R4 | « Soins au cabinet… » | « Soin au cabinet… » : tout est là. |
+
+- **Ce qui est sûr :** dans ce montage, les premières secondes des deux premières rubriques ne sont pas dans la transcription.
+- **Ce qui ne l'est pas :** la cause. Il peut s'agir d'un démarrage de la capture plus tardif que l'affichage « Écoute en cours », ou d'un retard du haut-parleur ou du micro de ce Mac au réveil du périphérique audio.
+- **Pourquoi ça compte :** un vétérinaire qui commence à parler dès le clic perdrait ses premiers mots. **À vérifier dans une session dédiée.** Rien n'a été corrigé ici, puisque c'est hors des trois brèches.
+
+### Autres écarts de reconnaissance (pour mémoire)
+
+- « mes appétits conservés » au lieu de « mais appétit conservé » ;
+- « malassozia » au lieu de « Malassezia » ;
+- « Collier Elisabeth » au lieu de « Collier élisabéthain » ;
+- « installation des gouttes » au lieu de « instillation ».

@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "name": "1a-formulaire-patient"
+    },
+    {
+      "name": "1b-patient-cree",
+      "patientId": "mvu21jpckngfc5go4mj",
+      "owner": {
+        "last_name": "Testeur",
+        "first_name": "Camille"
+      }
+    },
+    {
+      "name": "2a-formulaire-rdv"
+    },
+    {
+      "name": "2b-rdv-agenda",
+      "appointment": {
+        "id": "mvu21p2mlpbozt5d1nk",
+        "status": "scheduled",
+        "start_time": "2026-10-29T13:00:00.000Z"
+      }
+    },
+    {
+      "name": "3-consultation-flux",
+      "status": "in_progress"
+    },
+    {
+      "name": "3b-cloture-bloquee",
+      "blockerShown": true,
+      "enabled": false,
+      "statusAfterClick": "in_progress"
+    },
+    {
+      "name": "4-dictee",
+      "path": "micro",
+      "dictated": [
+        "Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+        "Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "Soin au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée, prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Elisabeth, conseiller si le grattage persiste, éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit, interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement, suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue."
+      ]
+    },
+    {
+      "name": "echec-5-note",
+      "reason": "génération refusée par l’assistant après 28.9 s : La réponse de l’assistant n’est pas un JSON SOAP valide. Votre dictée est conservée ; aucune note n’a été enregistrée.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »"
+    }
+  ],
+  "breaches": [
+    {
+      "id": "facture-sans-note",
+      "found": false,
+      "probe": "« Clôturer et facturer » sans note validée",
+      "enabled": false,
+      "blockerShown": true,
+      "statusAfterClick": "in_progress",
+      "billingOpened": false
+    }
+  ]
+}

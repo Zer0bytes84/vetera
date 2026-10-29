@@ -1,0 +1,14 @@
+app pid 78377
+17:27:59 1a-formulaire-patient
+17:28:01 1b-patient-cree
+17:28:06 2a-formulaire-rdv
+17:28:09 2b-rdv-agenda
+17:28:13 3-consultation-flux
+17:28:16 3b-cloture-bloquee
+17:28:17 lecture rubrique-1
+17:28:42 lecture rubrique-2
+17:29:39 lecture rubrique-3
+17:29:59 lecture rubrique-4
+17:30:46 4-dictee
+17:31:16 echec-5-note
+17:31:16 failed: 5-note: génération refusée par l’assistant après 28.9 s : La réponse de l’assistant n’est pas un JSON SOAP valide. Votre dictée est conservée ; aucune note n’a été enregistrée.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »
