@@ -2,6 +2,8 @@ import { formatNumber, formatPersonName } from "@/utils/display-format";
 import { TERMINAL_APPOINTMENT_STATUSES } from "@/domain/clinical/scheduling";
 import type { BusySlot } from "../components/agenda-shared";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
+import { startInFlux } from "@/modules/flow-board/open-in-flux";
+import type { View } from "@/types";
 import { agendaDayStats, isActiveBooking } from "../components/agenda-slots";
 import { findDossiers, selectedDossierSearchLabel } from "../quick-search";
 import {
@@ -60,7 +62,7 @@ import {
   getAppointmentPresentation,
 } from "@/modules/agenda/components/agenda-shared";
 
-export function useAgendaPageModel() {
+export function useAgendaPageModel(onNavigate?: (view: View) => void) {
   const { t } = useTranslation();
   const { focus, clearFocus } = useFocus();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -143,6 +145,14 @@ export function useAgendaPageModel() {
           ? error.message
           : "Impossible de mettre à jour le rendez-vous."
       );
+    }
+  };
+
+  // « Ouvrir » in the list starts the visit in Flux: Flux is the one place
+  // where a visit moves on (see modules/flow-board/open-in-flux).
+  const openAppointmentInFlux = (appointment: Appointment) => {
+    if (onNavigate) {
+      startInFlux(appointment.id, onNavigate);
     }
   };
 
@@ -1127,6 +1137,7 @@ export function useAgendaPageModel() {
     loadingAppointments,
     monthDays,
     ownerSearchTerm,
+    openAppointmentInFlux,
     ownersById,
     patientSearchTerm,
     patientsById,

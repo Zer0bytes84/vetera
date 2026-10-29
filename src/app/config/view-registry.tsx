@@ -121,7 +121,7 @@ export function renderView(view: View, props: ViewRegistryProps) {
     case "soins":
       return renderLazyView(<ClinicalWorkspace initialTab="soins" onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
     case "agenda":
-      return renderLazyView(<AgendaPage />);
+      return renderLazyView(<AgendaPage onNavigate={props.onNavigate} />);
     case "clinique":
       return renderLazyView(<ClinicalWorkspace onNavigate={props.onNavigate} onNavigateToPatient={props.onNavigateToPatient} />);
     case "flux":

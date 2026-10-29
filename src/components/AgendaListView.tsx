@@ -40,6 +40,8 @@ interface AgendaListViewProps {
   formatTime: (date?: string | Date | null) => string;
   onDeleteAppointment: (appointment: Appointment) => void;
   onEditAppointment: (appointment: Appointment) => void;
+  /** « Ouvrir » in the row menu: start the visit in Flux. */
+  onOpenAppointment?: (appointment: Appointment) => void;
   onSelectAppointment: (appointment: Appointment) => void;
   onTransitionStatus: (
     appointment: Appointment,
@@ -86,6 +88,7 @@ export function AgendaListView({
   formatTime,
   onDeleteAppointment,
   onEditAppointment,
+  onOpenAppointment,
   onSelectAppointment,
   onTransitionStatus,
   resetKey,
@@ -123,6 +126,7 @@ export function AgendaListView({
             key={row.appointment.id}
             onDelete={onDeleteAppointment}
             onEdit={onEditAppointment}
+            onOpenAppointment={onOpenAppointment}
             onSelectAppointment={onSelectAppointment}
             onTransitionStatus={onTransitionStatus}
             row={row}
@@ -172,6 +176,7 @@ function AppointmentListItem({
   isSelected,
   onDelete,
   onEdit,
+  onOpenAppointment,
   onSelectAppointment,
   onTransitionStatus,
   row,
@@ -181,6 +186,7 @@ function AppointmentListItem({
   isSelected: boolean;
   onDelete: (appointment: Appointment) => void;
   onEdit: (appointment: Appointment) => void;
+  onOpenAppointment?: (appointment: Appointment) => void;
   onSelectAppointment: (appointment: Appointment) => void;
   onTransitionStatus: (
     appointment: Appointment,
@@ -318,7 +324,11 @@ function AppointmentListItem({
               <MoreHorizontal className="size-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuItem onClick={() => onSelectAppointment(appointment)}>
+              <DropdownMenuItem
+                onClick={() =>
+                  (onOpenAppointment ?? onSelectAppointment)(appointment)
+                }
+              >
                 Ouvrir
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(appointment)}>

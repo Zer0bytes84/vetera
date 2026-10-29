@@ -150,6 +150,7 @@ export function AgendaView(props: AgendaViewProps) {
     isSubmitting,
     loadingAppointments,
     monthDays,
+    openAppointmentInFlux,
     ownerSearchTerm,
     ownersById,
     patientSearchTerm,
@@ -476,6 +477,7 @@ export function AgendaView(props: AgendaViewProps) {
                   formatTime={formatTime}
                   onDeleteAppointment={deleteAppointment}
                   onEditAppointment={handleOpenEdit}
+                  onOpenAppointment={openAppointmentInFlux}
                   onSelectAppointment={(appointment) => selectAppointment(appointment)}
                   onTransitionStatus={handleAppointmentStatusTransition}
                   resetKey={`${tableTab}:${selectedDate.toDateString()}:${searchTerm}:${vetFilter}:${statusFilter}`}

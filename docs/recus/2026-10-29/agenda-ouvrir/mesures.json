@@ -1,0 +1,30 @@
+[
+  {
+    "name": "termine-agenda-menu",
+    "appointmentId": "mvobh28ucx90o35kklv",
+    "patient": "Dora"
+  },
+  {
+    "name": "termine-flux",
+    "hash": "#/flux",
+    "pendingStart": null,
+    "pendingShow": null,
+    "consultationOpen": false,
+    "focusedCard": "DoraMohammed Zemmouri90 h 37Boitement du chevalDr Karim Abdou",
+    "appointmentId": "mvobh28ucx90o35kklv"
+  },
+  {
+    "name": "neuf-agenda-menu",
+    "appointmentId": "muvlpnqedkqqa8alyg",
+    "patient": "Mocha"
+  },
+  {
+    "name": "neuf-flux",
+    "hash": "#/flux",
+    "pendingStart": null,
+    "pendingShow": null,
+    "consultationOpen": true,
+    "focusedCard": "BaitariRechercher⌘KParcours patientEspace de travailTableau de bordPatientsAgend",
+    "appointmentId": "muvlpnqedkqqa8alyg"
+  }
+]
