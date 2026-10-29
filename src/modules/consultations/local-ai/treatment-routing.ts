@@ -1,4 +1,6 @@
 import { containsDosage, type LocalSoapNote } from "./soap-schema";
+import { evidenceTokens } from "./dictation-scaffold";
+import { stripSoapLayout } from "./soap-layout";
 
 // Decimal doses (2.5 mg) are not sentence boundaries.
 const sentences = (text: string) =>
@@ -191,6 +193,152 @@ export function mergeGuidedProtected(
   }
   return result;
 }
+// A clause ends on a comma or semicolon followed by a space (38,5 stays whole).
+const clauses = (sentence: string) =>
+  sentence.split(/(?<=[,;])\s+/u).filter((part) => part.trim());
+// Same words, numbers and signs as the fidelity check (evidenceTokens), counted
+// on the text as written so that positions can be found again in it.
+const EVIDENCE = /[+\-−]?\d+(?:[.,]\d+)?|\p{L}+|[<>≤≥=%/]/gu;
+const evidenceCount = (text: string) => text.match(EVIDENCE)?.length ?? 0;
+const sameEvidence = (a: string, b: string) =>
+  evidenceTokens(a).join(" ") === evidenceTokens(b).join(" ");
+
+interface Piece {
+  text: string;
+  /** First clause of its sentence: it starts a sentence again once restored. */
+  opens: boolean;
+  /** Kept away from the model, restored word for word at its own place. */
+  kept: boolean;
+}
+
+/** The text the model receives: the clauses it may see, sentence by sentence. */
+function modelText(pieces: Piece[]) {
+  const groups: string[][] = [];
+  for (const piece of pieces) {
+    if (piece.opens) groups.push([]);
+    if (!piece.kept) groups[groups.length - 1].push(piece.text);
+  }
+  return groups
+    .filter((parts) => parts.length)
+    .map((parts) =>
+      [...parts.slice(0, -1), parts[parts.length - 1].replace(/[,;]$/u, ".")].join(" ")
+    )
+    .join(" ");
+}
+
+// Puts each group of clauses kept from the model back after the same number of
+// words as in the dictation. Punctuation follows the model where it can.
+function restoreClauses(output: string, pieces: Piece[]) {
+  let text = output.trim();
+  let seen = 0;
+  const groups: { at: number; opens: boolean; parts: string[] }[] = [];
+  for (const piece of pieces) {
+    if (!piece.kept) {
+      seen += evidenceCount(piece.text);
+      continue;
+    }
+    const last = groups[groups.length - 1];
+    if (last && last.at === seen) last.parts.push(piece.text);
+    else groups.push({ at: seen, opens: piece.opens, parts: [piece.text] });
+  }
+  // From the end, so earlier positions stay valid.
+  for (const group of groups.reverse()) {
+    const ends = [...text.matchAll(EVIDENCE)].map((match) => match.index + match[0].length);
+    const cut = group.at === 0 ? 0 : ends[group.at - 1];
+    const head = text.slice(0, cut);
+    const after = text.slice(cut);
+    const insert = group.parts.join(" ");
+    if (group.opens) {
+      // A sentence of its own: after the model's end of the previous sentence.
+      const stop = /^[.!?]*/u.exec(after)![0];
+      text = [head + stop, insert, after.slice(stop.length).trim()].filter(Boolean).join(" ");
+    } else if (/^\s*[.,;:!?]/u.test(after)) {
+      // Inside a sentence: the model's own punctuation follows the clauses.
+      text = head + (head ? ", " : "") + insert.replace(/[.,;:!?]+$/u, "") + after.trimStart();
+    } else {
+      const rest = after.trim();
+      const tail = rest ? (/[.!?,;]$/u.test(insert) ? " " : ", ") + rest : "";
+      text = head + (head ? ", " : "") + insert + tail;
+    }
+  }
+  return text;
+}
+
+export interface GuidedSection {
+  /** Text of this rubric sent to the model; empty when the model gets none of it. */
+  model: string;
+  /** "phrase": whole sentences kept away (punctuated dictation, unchanged);
+   * "proposition": clauses kept away, because whole sentences emptied the rubric;
+   * "exclue": nothing left for the model, the rubric is not sent to it at all. */
+  mode: "phrase" | "proposition" | "exclue";
+  /** Final rubric from the model's validated text. */
+  restore: (output: string) => string;
+}
+
+/**
+ * Guided dictation, rubric by rubric. A punctuated rubric keeps the sentence
+ * filter. A rubric that this filter would empty (a transcription that links
+ * sentences with commas) is filtered clause by clause instead; doses, routed
+ * statements, and any clause that would let a dose pattern span the text the
+ * model sees stay away from it and return word for word at their own place.
+ * A rubric with nothing left is never sent to the model.
+ */
+export function prepareGuidedSections(
+  routed: LocalSoapNote,
+  /** The rubrics as dictated, before routing: a rubric routing emptied is not sent either. */
+  dictated: LocalSoapNote = routed
+): Record<keyof LocalSoapNote, GuidedSection> {
+  const sections = {} as Record<keyof LocalSoapNote, GuidedSection>;
+  for (const key of ["subjective", "objective", "assessment", "plan"] as const) {
+    const source = routed[key];
+    const input = prepareModelDictation(source);
+    if (!source.trim() && dictated[key].trim()) {
+      sections[key] = { model: "", mode: "exclue", restore: () => source };
+      continue;
+    }
+    if (input.text.trim() || !source.trim()) {
+      sections[key] = {
+        model: input.text,
+        mode: "phrase",
+        restore: (output) =>
+          [output, ...input.planSentences, ...Object.values(input.protectedSections ?? {})]
+            .filter(Boolean)
+            .join("\n\n"),
+      };
+      continue;
+    }
+    const pieces: Piece[] = sentences(source).flatMap((sentence) =>
+      clauses(sentence.trim()).map((text, index) => {
+        const [part] = analyzeTreatmentDictation(text);
+        return {
+          text,
+          opens: index === 0,
+          kept: !part || part.kind !== "observation" || containsDosage(text),
+        };
+      })
+    );
+    // A dose pattern may span clauses the model sees ("traitement, …, une visite
+    // dans 10 jours"): the clause that completes it stays away from the model too.
+    pieces.forEach((piece, index) => {
+      if (!piece.kept && containsDosage(modelText(pieces.slice(0, index + 1))))
+        piece.kept = true;
+    });
+    const model = modelText(pieces);
+    sections[key] = model
+      ? {
+          model,
+          mode: "proposition",
+          restore: (output) => {
+            const restored = restoreClauses(stripSoapLayout(key, output), pieces);
+            // Word for word or the dictation itself: never a lost or moved word.
+            return sameEvidence(restored, source) ? restored : source;
+          },
+        }
+      : { model: "", mode: "exclue", restore: () => source };
+  }
+  return sections;
+}
+
 export function mergeProtectedDictation(
   note: LocalSoapNote,
   input: ReturnType<typeof prepareModelDictation>

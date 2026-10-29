@@ -1,0 +1,29 @@
+{
+  "rubriques": {
+    "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+    "objective": "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympans difficilement visualisés en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+    "assessment": "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylocopes.",
+    "plan": "Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines."
+  },
+  "gabaritPlanTest": "",
+  "contexte": {
+    "patient": {
+      "id": "mvu2h7qonjw9n55hau",
+      "nom": "Max",
+      "espece": "Chien",
+      "race": "Berger Allemand",
+      "sexe": "M",
+      "naissance": null,
+      "statut": "sante",
+      "allergies": "",
+      "affectionsChroniques": "",
+      "notes": "",
+      "poids": null
+    },
+    "consultation": {
+      "motif": "Se gratte l’oreille droite depuis trois jours.",
+      "date": "2026-10-29T13:00:00.000Z"
+    },
+    "dernieresConsultations": []
+  }
+}

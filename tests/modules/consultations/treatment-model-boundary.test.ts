@@ -114,7 +114,9 @@ describe("frontière du modèle local pour les traitements", () => {
     const draft = await setup().generate(models, Object.values(selected).join("\n"), context, selected);
     expect(draft).toEqual(selected);
     expect(JSON.stringify(fixture.requests)).not.toContain("Metacam");
-    expect(JSON.parse(String(fixture.requests[0].responseTemplate))).toEqual({ ...selected, plan: "" });
+    // Le plan, vidé par la protection du traitement, n'est pas envoyé du tout.
+    const { plan: _plan, ...sent } = selected;
+    expect(JSON.parse(String(fixture.requests[0].responseTemplate))).toEqual(sent);
   });
 
 });

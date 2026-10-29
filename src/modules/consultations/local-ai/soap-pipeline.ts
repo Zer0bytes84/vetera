@@ -12,11 +12,12 @@ import {
   type LocalSoapNote,
 } from "./soap-schema";
 import {
-  mergeGuidedProtected,
   mergeProtectedDictation,
+  prepareGuidedSections,
   prepareModelDictation,
   routeGuidedTreatments,
 } from "./treatment-routing";
+import { guidedDictationTranscript } from "./guided-soap";
 import { createSoapPrompt, type LocalPatientContext } from "./patient-context";
 import type { LocalAiProgress } from "./worker-protocol";
 
@@ -40,12 +41,9 @@ export function modelScaffold(
 ): LocalSoapNote {
   if (!guidedSource)
     return buildDictationScaffold(prepareModelDictation(transcript).text);
-  const routed = routeGuidedTreatments(guidedSource);
+  const sections = prepareGuidedSections(routeGuidedTreatments(guidedSource), guidedSource);
   return Object.fromEntries(
-    SOAP_SECTIONS.map(({ key }) => [
-      key,
-      prepareModelDictation(routed[key]).text,
-    ])
+    SOAP_SECTIONS.map(({ key }) => [key, sections[key].model])
   ) as LocalSoapNote;
 }
 
@@ -67,10 +65,28 @@ export async function prepareSoapDraft({
   const scaffold = modelScaffold(transcript, guidedSource);
   // Guided: the rubric answers are the sections; kept sentences return to their own rubric.
   const routed = guidedSource ? routeGuidedTreatments(guidedSource) : null;
+  const sections = routed && guidedSource ? prepareGuidedSections(routed, guidedSource) : null;
   const restore = (note: LocalSoapNote) =>
-    routed
-      ? mergeGuidedProtected(note, routed)
+    sections
+      ? (Object.fromEntries(
+          SOAP_SECTIONS.map(({ key }) => [key, sections[key].restore(note[key])])
+        ) as LocalSoapNote)
       : mergeProtectedDictation(note, protectedInput);
+  // A rubric the code emptied is never sent: the model would fill it.
+  const omitted = sections
+    ? SOAP_SECTIONS.filter(({ key }) => sections[key].mode === "exclue").map(({ key }) => key)
+    : [];
+  // Clause filtering: the model reads the same filtered rubrics as the frame.
+  const promptOptions = {
+    omitted,
+    dictation:
+      sections && SOAP_SECTIONS.some(({ key }) => sections[key].mode === "proposition")
+        ? guidedDictationTranscript(scaffold)
+        : undefined,
+  };
+  const template = Object.fromEntries(
+    SOAP_SECTIONS.filter(({ key }) => !omitted.includes(key)).map(({ key }) => [key, scaffold[key]])
+  );
   const nothingForModel = routed
     ? SOAP_SECTIONS.every(({ key }) => !scaffold[key].trim())
     : !protectedInput.text;
@@ -82,8 +98,8 @@ export async function prepareSoapDraft({
     const draft = restore(scaffold);
     return localSoapSchema.parse(draft);
   }
-  const prompt = createSoapPrompt(transcript, context, false, scaffold);
-  const retryPrompt = createSoapPrompt(transcript, context, true, scaffold);
+  const prompt = createSoapPrompt(transcript, context, false, scaffold, promptOptions);
+  const retryPrompt = createSoapPrompt(transcript, context, true, scaffold, promptOptions);
   const urls = getLocalModelUrls(models);
   if (!models.generatorReady)
     throw new Error(
@@ -104,6 +120,7 @@ export async function prepareSoapDraft({
     const note = await generateValidatedSoap({
       prompt,
       retryPrompt,
+      omittedKeys: omitted,
       signal,
       generate: async (nextPrompt, number) => {
         const result = await session.request(
@@ -112,7 +129,7 @@ export async function prepareSoapDraft({
             generators: urls.generators,
             runtimeRoot: urls.runtimeRoot,
             prompt: nextPrompt,
-            responseTemplate: JSON.stringify(scaffold),
+            responseTemplate: JSON.stringify(template),
             attempt: number,
           },
           "generated"

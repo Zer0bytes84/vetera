@@ -60,7 +60,10 @@ export class SoapFormatError extends Error {
     this.name = "SoapFormatError";
   }
 }
-export function parseGeneratedSoap(raw: string): LocalSoapNote {
+export function parseGeneratedSoap(
+  raw: string,
+  omitted: readonly (keyof LocalSoapNote)[] = []
+): LocalSoapNote {
   // A single JSON object (optionally fenced), never a best-effort coercion.
   const text = raw
     .trim()
@@ -74,6 +77,11 @@ export function parseGeneratedSoap(raw: string): LocalSoapNote {
       "La réponse de l’assistant n’est pas un JSON SOAP valide. Votre dictée est conservée ; aucune note n’a été enregistrée."
     );
   }
+  // Rubrics the model was not sent come back empty; it may not fill them (the
+  // fidelity check refuses any text there), and no other key is accepted.
+  if (omitted.length && parsed && typeof parsed === "object" && !Array.isArray(parsed))
+    for (const key of omitted)
+      if (!(key in parsed)) (parsed as Record<string, unknown>)[key] = "";
   const result = localSoapSchema.safeParse(parsed);
   if (!result.success)
     throw new SoapFormatError(

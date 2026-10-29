@@ -1,0 +1,29 @@
+{
+  "rubriques": {
+    "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé. Aucun vomissement ni diarrhée. Pas d'historique récent de baignade. Alimentation habituelle inchangée. Traitement antiparasitaire à jour, administré il y a deux semaines.",
+    "objective": "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement sainte, cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malasseusia et quelques coques bactériennes, staphylococques.",
+    "assessment": "Petite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostique différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+    "plan": "Nettoyage minutieux du canal auriculaire droit avec une solution séruminolytique adaptée. Prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Elisabeth est un conseiller si le grattage persiste. Éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue."
+  },
+  "gabaritPlanTest": "",
+  "contexte": {
+    "patient": {
+      "id": "mvu2mogsvutquzu2e1k",
+      "nom": "Max",
+      "espece": "Chien",
+      "race": "Berger Allemand",
+      "sexe": "M",
+      "naissance": null,
+      "statut": "sante",
+      "allergies": "",
+      "affectionsChroniques": "",
+      "notes": "",
+      "poids": null
+    },
+    "consultation": {
+      "motif": "Se gratte l’oreille droite depuis trois jours.",
+      "date": "2026-10-29T13:00:00.000Z"
+    },
+    "dernieresConsultations": []
+  }
+}
