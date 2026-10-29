@@ -11,6 +11,7 @@ vi.mock("@/modules/consultations/local-ai/models", () => ({
 }));
 vi.mock("@/modules/consultations/local-ai/audio-capture", () => ({
   prepareMicrophone: async () => ({ stream: {}, audio: {}, close: () => {} }),
+  createLevelMeter: () => ({ read: () => 0, close: () => {} }),
   captureAudio: async () => {
     fixture.events.push("capture");
     return { stop: () => new Float32Array(16000), cancel: () => {} };

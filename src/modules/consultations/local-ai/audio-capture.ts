@@ -1,6 +1,15 @@
 import { abortError } from "./inference-client";
 
 export const MAX_RECORDING_SECONDS = 180;
+/**
+ * How long the microphone permission may stay unanswered (macOS waits for a
+ * click that may never come) before the panel says what to do instead.
+ */
+export const MICROPHONE_PERMISSION_TIMEOUT_MS = 30_000;
+const PERMISSION_STEPS =
+  "Ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter.";
+export const MICROPHONE_REFUSED = `L’accès au micro est refusé. ${PERMISSION_STEPS}`;
+export const MICROPHONE_NO_ANSWER = `Baitari n’a pas reçu l’autorisation du micro. Si aucune fenêtre ne s’est affichée, ${PERMISSION_STEPS[0].toLowerCase()}${PERMISSION_STEPS.slice(1)}`;
 export const WHISPER_SAMPLE_RATE = 16000;
 
 export function normalizeMicrophoneAudio(input: Float32Array) {
@@ -58,7 +67,10 @@ export function resampleAudio(
   }
   return output;
 }
-export async function prepareMicrophone(signal: AbortSignal) {
+export async function prepareMicrophone(
+  signal: AbortSignal,
+  { permissionTimeoutMs = MICROPHONE_PERMISSION_TIMEOUT_MS } = {}
+) {
   if (!navigator.mediaDevices?.getUserMedia)
     throw new Error(
       "Micro indisponible dans cette fenêtre. Ouvrez Baitari sur le bureau et vérifiez les autorisations du microphone."
@@ -73,23 +85,50 @@ export async function prepareMicrophone(signal: AbortSignal) {
   };
   let stream: MediaStream;
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        channelCount: 1,
-        sampleRate: { ideal: WHISPER_SAMPLE_RATE },
-        autoGainControl: false,
-        echoCancellation: true,
-        noiseSuppression: true,
-      },
-      video: false,
+    // The permission request cannot be withdrawn: the wait ends on its answer,
+    // on Annuler, or after the delay. A microphone granted too late is closed.
+    stream = await new Promise<MediaStream>((resolve, reject) => {
+      let settled = false;
+      const settle = (finish: () => void) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        signal.removeEventListener("abort", onAbort);
+        finish();
+      };
+      const onAbort = () => settle(() => reject(abortError()));
+      const timer = setTimeout(
+        () => settle(() => reject(new Error(MICROPHONE_NO_ANSWER))),
+        permissionTimeoutMs
+      );
+      signal.addEventListener("abort", onAbort, { once: true });
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: {
+            channelCount: 1,
+            sampleRate: { ideal: WHISPER_SAMPLE_RATE },
+            autoGainControl: false,
+            echoCancellation: true,
+            noiseSuppression: true,
+          },
+          video: false,
+        })
+        .then(
+          (granted) => {
+            if (settled) granted.getTracks().forEach((track) => track.stop());
+            else settle(() => resolve(granted));
+          },
+          (error: unknown) => settle(() => reject(error))
+        );
     });
   } catch (error) {
     closeAudio();
     if (signal.aborted) throw abortError();
+    if (error instanceof Error && error.message === MICROPHONE_NO_ANSWER) throw error;
     const name = error instanceof DOMException ? error.name : "";
     throw new Error(
       name === "NotAllowedError" || name === "SecurityError"
-        ? "L’accès au micro est refusé. Autorisez Baitari dans les réglages Confidentialité → Microphone."
+        ? MICROPHONE_REFUSED
         : "Micro indisponible. Branchez un microphone et vérifiez qu’aucune autre application ne le bloque."
     );
   }
@@ -110,6 +149,36 @@ export async function prepareMicrophone(signal: AbortSignal) {
       signal.removeEventListener("abort", stop);
       stop();
     },
+  };
+}
+/**
+ * Loudness 0..1 from an RMS amplitude, for the recording indicator: about
+ * -55 dBFS (a quiet room) reads 0, about -15 dBFS (a voice close by) reads 1.
+ */
+export function levelFromRms(rms: number) {
+  if (!(rms > 0)) return 0;
+  return Math.min(1, Math.max(0, (20 * Math.log10(rms) + 55) / 40));
+}
+
+/**
+ * Reads the live microphone level from its own analyser, beside the
+ * recording (a second source on the same stream; nothing is recorded here).
+ */
+export function createLevelMeter(audio: AudioContext | null, stream: MediaStream) {
+  if (!audio || typeof audio.createAnalyser !== "function") return { read: () => 0, close: () => {} };
+  const source = audio.createMediaStreamSource(stream);
+  const analyser = audio.createAnalyser();
+  analyser.fftSize = 1024;
+  source.connect(analyser);
+  const samples = new Float32Array(analyser.fftSize);
+  return {
+    read: () => {
+      analyser.getFloatTimeDomainData(samples);
+      let sum = 0;
+      for (const sample of samples) sum += sample * sample;
+      return levelFromRms(Math.sqrt(sum / samples.length));
+    },
+    close: () => source.disconnect(),
   };
 }
 export async function captureAudio(

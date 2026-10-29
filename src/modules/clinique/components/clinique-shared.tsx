@@ -53,6 +53,7 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 import { SoapPanel } from "@/modules/consultations/components/soap-panel";
+import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
 import { ConsultationProducts } from "@/modules/stock/components/consultation-products";
 import {
   CLINIQUE_STATUS_META,
@@ -407,6 +408,7 @@ export const generatePrescriptionPDF = (data: {
 export function ConsultationSessionDialog({
   appointment,
   closeLabel = "Retour aux consultations",
+  closingBlocker = null,
   patient,
   owner,
   patientName,
@@ -424,6 +426,8 @@ export function ConsultationSessionDialog({
   appointment: Appointment;
   /** Where closing leads back to, named by the host view. */
   closeLabel?: string;
+  /** Why closing and billing must wait (no validated note), or null. */
+  closingBlocker?: string | null;
   patient: Patient;
   owner?: Owner;
   patientName: string;
@@ -441,6 +445,16 @@ export function ConsultationSessionDialog({
   onUploadDocument: (file: File, description?: string) => Promise<void>;
   onDeleteDocument: (documentId: string) => Promise<void>;
 }) {
+  const soapPanelRef = useRef<HTMLDivElement>(null);
+  const writeNote = () => {
+    const field = soapPanelRef.current?.querySelector<HTMLTextAreaElement>('[data-soap-section="subjective"] textarea');
+    field?.scrollIntoView({ block: "center", behavior: "smooth" });
+    field?.focus({ preventScroll: true });
+  };
+  const dictateNote = () => {
+    soapPanelRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    window.dispatchEvent(new CustomEvent(OPEN_SOAP_ASSISTANT_EVENT, { detail: { appointmentId: appointment.id } }));
+  };
   const [patientNameValue, setPatientNameValue] = useState(patient.name);
   const [patientSpecies, setPatientSpecies] = useState(
     patient.species || "Chien"
@@ -731,11 +745,13 @@ export function ConsultationSessionDialog({
         </Button>
       </header>
 
-      <SoapPanel
-        appointmentId={appointment.id}
-        key={appointment.id}
-        patientId={patient.id}
-      />
+      <div ref={soapPanelRef}>
+        <SoapPanel
+          appointmentId={appointment.id}
+          key={appointment.id}
+          patientId={patient.id}
+        />
+      </div>
       <ConsultationProducts key={`products:${appointment.id}`} appointmentId={appointment.id} patientId={patient.id} />
 
       <details className="rounded-xl border border-border bg-card">
@@ -1095,6 +1111,22 @@ export function ConsultationSessionDialog({
         </div>
       </details>
 
+      {closingBlocker ? (
+        <div
+          className="consultation-closing-blocker flex flex-col gap-2 rounded-xl border border-amber-500/30 bg-amber-500/8 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+          role="status"
+        >
+          <p className="text-sm text-foreground">{closingBlocker}</p>
+          <div className="flex shrink-0 gap-2">
+            <Button onClick={writeNote} size="sm" type="button" variant="outline">
+              Écrire la note
+            </Button>
+            <Button onClick={dictateNote} size="sm" type="button">
+              Dicter la note
+            </Button>
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-col gap-3 border-t border-border py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-h-5 text-muted-foreground text-sm">
           {autosaveStatus === "saving" ? (
@@ -1140,8 +1172,9 @@ export function ConsultationSessionDialog({
           </Button>
           <Button
             className="min-w-[188px]"
-            disabled={isSavingDraft || isCompleting}
+            disabled={isSavingDraft || isCompleting || Boolean(closingBlocker)}
             onClick={() => void handleCompleteClick()}
+            title={closingBlocker ?? undefined}
           >
             {isCompleting ? (
               <Spinner className="size-4" />

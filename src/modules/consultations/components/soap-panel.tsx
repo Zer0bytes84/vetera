@@ -42,6 +42,7 @@ import { SoapSectionEditor } from "./soap-section-editor";
 import { AssistantBrandAvatar } from "./assistant-brand-avatar";
 import { ConsultationAssistantPanel } from "./consultation-assistant-panel";
 import { isSoapReviewed, reviewedSoapContent } from "../local-ai/soap-review";
+import { OPEN_SOAP_ASSISTANT_EVENT } from "@/modules/consultation-workspace/consultation-closure";
 import type { SoapNoteOrigin } from "./local-consultation-assistant";
 
 const ConsultationDocumentsAssistant = lazy(
@@ -116,6 +117,14 @@ export function SoapPanel({
   useEffect(() => {
     preloadLocalConsultationAssistant();
   }, []);
+  // « Dicter la note » from the closing bar of this consultation.
+  useEffect(() => {
+    const open = (event: Event) => {
+      if ((event as CustomEvent<{ appointmentId: string }>).detail?.appointmentId === appointmentId) setAssistantOpen(true);
+    };
+    window.addEventListener(OPEN_SOAP_ASSISTANT_EVENT, open);
+    return () => window.removeEventListener(OPEN_SOAP_ASSISTANT_EVENT, open);
+  }, [appointmentId]);
   useEffect(() => {
     repoRef.current = repo;
   }, [repo]);

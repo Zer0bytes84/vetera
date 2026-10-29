@@ -51,6 +51,7 @@ export function ConsultationWorkspace({
     anesthesiaOpen,
     billingAppointment,
     billingInvoice,
+    closingBlocker,
     currentUser,
     getOwner,
     handleBillingConfirm,
@@ -85,6 +86,7 @@ export function ConsultationWorkspace({
         <ConsultationSessionDialog
           appointment={activeConsultation}
           closeLabel={closeLabel}
+          closingBlocker={closingBlocker}
           key={activeConsultation.id}
           documents={activeConsultationDocuments}
           historyAppointments={activeConsultationHistory}

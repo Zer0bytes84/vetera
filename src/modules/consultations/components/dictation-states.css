@@ -1,0 +1,54 @@
+/* Recording indicator: five bars on the recording colour, their height set by
+   the live microphone level (--bar-N, 0..1, written each frame). In silence
+   they rest low and breathe slowly, so a glance tells "recording, nothing
+   heard" from "recording, hearing you". Same tokens in both themes. */
+.dictation-level {
+  --dictation-level-ink: var(--destructive);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+  padding: 0 2px;
+}
+
+.dictation-level > span {
+  width: 4px;
+  height: calc(5px + var(--bar) * 23px);
+  border-radius: 999px;
+  background: var(--dictation-level-ink);
+  transition: height 60ms linear;
+}
+
+.dictation-level[data-silent] > span {
+  opacity: 0.55;
+  animation: dictation-level-breath 1.8s ease-in-out infinite;
+}
+
+.dictation-level[data-silent] > span:nth-child(2),
+.dictation-level[data-silent] > span:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.dictation-level[data-silent] > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dictation-level-breath {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* The level itself stays: it is information, not decoration. */
+@media (prefers-reduced-motion: reduce) {
+  .dictation-level > span {
+    transition: none;
+  }
+  .dictation-level[data-silent] > span {
+    animation: none;
+  }
+}

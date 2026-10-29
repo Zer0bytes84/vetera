@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { captureAudio, prepareMicrophone } from "../local-ai/audio-capture";
+import { captureAudio, createLevelMeter, prepareMicrophone } from "../local-ai/audio-capture";
 import {
   LocalInferenceSession,
   abortError,
@@ -38,6 +38,8 @@ type Attempt = {
   session?: LocalInferenceSession;
   microphone?: Awaited<ReturnType<typeof prepareMicrophone>>;
   capture?: Awaited<ReturnType<typeof captureAudio>>;
+  /** Live microphone level for the recording indicator. */
+  meter?: ReturnType<typeof createLevelMeter>;
   /** Model and threads of the dictation session, to reuse it for the next rubric. */
   whisperKey?: string;
   /** Model load started with the microphone; awaited before transcribing. */
@@ -72,10 +74,13 @@ export function useLocalConsultationAi() {
   const dispose = useCallback((attempt: Attempt) => {
     attempt.controller.abort();
     attempt.capture?.cancel();
+    attempt.meter?.close();
     attempt.microphone?.close();
     attempt.session?.close();
     if (active.current === attempt) active.current = null;
   }, []);
+  /** Current microphone level (0..1), read by the indicator outside React renders. */
+  const readLevel = useCallback(() => active.current?.meter?.read() ?? 0, []);
   const cancel = useCallback(() => {
     if (active.current) dispose(active.current);
     setPhase("idle");
@@ -178,6 +183,7 @@ export function useLocalConsultationAi() {
           },
           attempt.microphone.audio
         );
+        attempt.meter = createLevelMeter(attempt.microphone.audio, attempt.microphone.stream);
         setPhase("listening");
         setProgress({
           message:
@@ -201,6 +207,8 @@ export function useLocalConsultationAi() {
     // request a second transcription with the same transferred buffer.
     const capture = attempt.capture;
     attempt.capture = undefined;
+    attempt.meter?.close();
+    attempt.meter = undefined;
     setPhase("transcribing");
     setProgress({ message: "Transcription locale en cours…" });
     try {
@@ -313,6 +321,7 @@ export function useLocalConsultationAi() {
     stop,
     generate,
     cancel,
+    readLevel,
     busy: phase !== "idle",
     /** Desktop: the companion transcribes; elsewhere the WASM engine remains. */
     native,

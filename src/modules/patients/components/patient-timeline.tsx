@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/empty";
 import {
   useAppointmentsRepository,
+  useConsultationSoapsRepository,
   useNotesRepository,
   useVaccinationsRepository,
   useWeightEntriesRepository,
@@ -27,7 +28,8 @@ import {
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import { OFF_VISIT_KINDS, readOffVisitNote } from "@/modules/consultations/off-visit-note";
-import type { Appointment, Note, Vaccination, WeightEntry } from "@/types/db";
+import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
+import type { Appointment, ConsultationSoap, Note, Vaccination, WeightEntry } from "@/types/db";
 
 type TimelineKind = "consultation" | "note" | "vaccination" | "weight";
 
@@ -116,11 +118,49 @@ function formatDateParts(iso: string, includeTime: boolean) {
   };
 }
 
+export const NO_REPORT = "Compte rendu non renseigné";
+
+const oneLine = (value?: string | null) => value?.replace(/\s+/g, " ").trim() || "";
+
+/**
+ * What the chronology says about a visit: its consultation note first (the
+ * assessment, as the Synthèse shows it, then the plan), the visit's own
+ * report fields for older visits, and « non renseigné » only when neither
+ * exists.
+ */
+export function consultationSummary(
+  apt: Pick<Appointment, "diagnosis" | "treatment" | "notes">,
+  soap?: ConsultationSoap | null
+): { summary: string; summaryDetail?: string } {
+  const assessment = oneLine(soap?.assessment);
+  const plan = oneLine(soap?.plan);
+  const subjective = oneLine(soap?.subjective);
+  const objective = oneLine(soap?.objective);
+  const lead = assessment || subjective || objective || plan;
+  if (soap && lead) {
+    const detail = [
+      plan && plan !== lead ? `Plan · ${plan}` : "",
+      isSoapReviewed(soap) ? "" : "Note non validée",
+    ].filter(Boolean).join(" · ");
+    return { summary: lead, summaryDetail: detail || undefined };
+  }
+  return {
+    summary: apt.diagnosis?.trim() || apt.treatment?.trim() || apt.notes?.trim() || NO_REPORT,
+    summaryDetail:
+      apt.diagnosis?.trim() && apt.treatment?.trim()
+        ? `Traitement · ${apt.treatment.trim()}`
+        : apt.diagnosis?.trim() && apt.notes?.trim()
+          ? apt.notes.trim()
+          : undefined,
+  };
+}
+
 function buildEntries(
   appointments: Appointment[],
   vaccinations: Vaccination[],
   weights: WeightEntry[],
-  notes: Note[] = []
+  notes: Note[] = [],
+  getSoap: (appointmentId: string) => ConsultationSoap | null = () => null
 ): TimelineEntry[] {
   const items: TimelineEntry[] = [];
 
@@ -155,17 +195,7 @@ function buildEntries(
       kind: "consultation",
       label: TYPE_LABEL[apt.type],
       context: apt.reason?.trim() || undefined,
-      summary:
-        apt.diagnosis?.trim() ||
-        apt.treatment?.trim() ||
-        apt.notes?.trim() ||
-        "Compte rendu non renseigné",
-      summaryDetail:
-        apt.diagnosis?.trim() && apt.treatment?.trim()
-          ? `Traitement · ${apt.treatment.trim()}`
-          : apt.diagnosis?.trim() && apt.notes?.trim()
-            ? apt.notes.trim()
-            : undefined,
+      ...consultationSummary(apt, getSoap(apt.id)),
       statusBadge: { label: status.label, className: status.className },
     });
   }
@@ -222,6 +252,8 @@ export function PatientTimeline({
   const vaccinationsRepo = useVaccinationsRepository();
   const weightsRepo = useWeightEntriesRepository();
   const notesRepo = useNotesRepository();
+  // The same source as the Synthèse tab: the visit's consultation note.
+  const soapsRepo = useConsultationSoapsRepository();
 
   const entries = useMemo(
     () =>
@@ -229,9 +261,10 @@ export function PatientTimeline({
         appointmentsRepo.data.filter((apt) => apt.patientId === patientId),
         vaccinationsRepo.forPatient(patientId),
         weightsRepo.forPatient(patientId),
-        notesRepo.data.filter((note) => note.patientId === patientId)
+        notesRepo.data.filter((note) => note.patientId === patientId),
+        soapsRepo.forAppointment
       ),
-    [appointmentsRepo.data, vaccinationsRepo, weightsRepo, notesRepo.data, patientId]
+    [appointmentsRepo.data, vaccinationsRepo, weightsRepo, notesRepo.data, soapsRepo.forAppointment, patientId]
   );
 
   return (
@@ -335,7 +368,7 @@ export function PatientTimeline({
                         <p
                           className={cn(
                             "break-words text-sm leading-5",
-                            entry.summary === "Compte rendu non renseigné"
+                            entry.summary === NO_REPORT
                               ? "text-muted-foreground"
                               : "font-medium text-foreground/85"
                           )}

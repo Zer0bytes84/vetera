@@ -69,6 +69,7 @@ import {
 } from "../local-ai/soap-schema";
 import { PatientDocumentSearch } from "./patient-document-search";
 import { AssistantActivity } from "./assistant-activity";
+import { DictationLevelMeter, MicrophonePermissionWait } from "./dictation-states";
 import {
   assembleGuidedNote,
   guidedDictationTranscript,
@@ -904,10 +905,7 @@ export default function LocalConsultationAssistant({
             {ai.phase === "listening" && (
               <div className="flex items-center justify-between rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 t-13 text-destructive shadow-xs animate-in fade-in">
                 <div className="flex items-center gap-2.5">
-                  <span className="relative flex size-2.5">
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-75" />
-                    <span className="relative inline-flex size-2.5 rounded-full bg-destructive" />
-                  </span>
+                  <DictationLevelMeter read={ai.readLevel} />
                   <span className="font-medium">
                     Écoute en cours · {Math.floor(ai.seconds / 60)}:
                     {String(ai.seconds % 60).padStart(2, "0")}
@@ -928,8 +926,11 @@ export default function LocalConsultationAssistant({
               </div>
             )}
 
+            {/* Waiting for the microphone permission: always a way out. */}
+            {ai.phase === "microphone" && <MicrophonePermissionWait onCancel={ai.cancel} />}
+
             {/* AI Activity progress */}
-            {ai.busy && ai.phase !== "listening" && (
+            {ai.busy && ai.phase !== "listening" && ai.phase !== "microphone" && (
               <AssistantActivity
                 phase={ai.phase}
                 progress={ai.progress}

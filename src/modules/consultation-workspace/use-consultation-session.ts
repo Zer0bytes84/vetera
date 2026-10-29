@@ -17,7 +17,7 @@ import {
   getDocumentCategory,
   readFileAsDataUrl,
 } from "@/modules/clinique/components/clinique-shared";
-import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
+import { closureBlocker } from "./consultation-closure";
 import { localToday, medicalReminderTypeForAct } from "@/modules/patient-reminders/domain";
 import { announceMedicalActRecorded } from "@/modules/patient-reminders/medical-act-events";
 import { useFlowUndo } from "@/modules/visit-flow/use-flow-undo";
@@ -155,16 +155,11 @@ export function useConsultationSession({
     }
 
     // B1 : une consultation ne peut être clôturée que si la note SOAP a
-    // été relue et validée (risque médico-légal sinon).
-    const soap = soapsRepo.forAppointment(activeConsultation.id);
-    if (!soap || !isSoapReviewed(soap)) {
-      toast.error(
-        "Validez la note SOAP avant de clôturer la consultation.",
-        {
-          description:
-            "Ouvrez la note clinique, relisez-la puis cliquez sur Valider.",
-        }
-      );
+    // été relue et validée (risque médico-légal sinon). Même règle que le
+    // bouton, pour qu'aucun chemin ne la contourne.
+    const blocker = closureBlocker(soapsRepo.forAppointment(activeConsultation.id));
+    if (blocker) {
+      toast.error(blocker);
       return;
     }
 
@@ -278,9 +273,15 @@ export function useConsultationSession({
     ? getOwner(activeConsultation)
     : undefined;
 
+  // Closing and billing wait for a validated note: the same rule as the closing itself.
+  const closingBlocker = activeConsultation
+    ? closureBlocker(soapsRepo.forAppointment(activeConsultation.id))
+    : null;
+
   return {
     activeConsultation,
     activeConsultationDocuments,
+    closingBlocker,
     activeConsultationHistory,
     activeConsultationOwner,
     activeConsultationPatient,
