@@ -1,0 +1,109 @@
+{
+  "label": "temoin-rejeu1-O-micro2",
+  "startedAt": "2026-10-29T22:25:56.432Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "reference:start",
+      "at": 1793312756.433
+    },
+    {
+      "what": "reference:end",
+      "at": 1793312769.6
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "reference": [
+    {
+      "generator": "gemma3",
+      "case": "reference",
+      "variant": "guidee",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 13.14,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.\nExamen clinique : Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.\nÉvaluation : Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.",
+        "objective": "Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "assessment": "Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": ""
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\",\"objective\":\"Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.\",\"assessment\":\"Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 13.11
+        }
+      ],
+      "tokens": [
+        {
+          "inputTokens": 900,
+          "templateTokens": 250,
+          "capacity": 2252,
+          "outputTokens": 253,
+          "characters": 981
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 13.11,
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\n\nLégère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.\n\nLégère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+        "objective": "Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "assessment": "Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": ""
+      },
+      "assembled": {
+        "text": "S — Subjectif (Ce que le propriétaire rapporte)\n- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\n- Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.\n- Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.\n\nO — Objectif (Ce que le vétérinaire observe et mesure)\n- Normal.\n- Fréquence cardiaque 92 BPM.\n- Fréquence respiratoire 20 mouvements par minute.\n- Poids 32.5 kg.\n- Stable.\n- Score corporel 5 sur 9.\n- Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes.\n- Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.\n\nA — Évaluation (Diagnostic / Analyse)\n- Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "headings": true,
+        "canvasOnly": true,
+        "sameWordsAsDictation": true,
+        "numbersKept": true,
+        "lists": true
+      }
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-29T22:26:09.601Z"
+}

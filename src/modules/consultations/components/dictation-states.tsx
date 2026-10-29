@@ -90,3 +90,28 @@ export function MicrophonePermissionWait({ onCancel }: { onCancel: () => void })
     </div>
   );
 }
+
+/**
+ * Microphone opened, level not settled yet: a new capture reaches the page
+ * attenuated for its first seconds. The vet waits for « Écoute en cours ».
+ */
+export function MicrophoneWarmup({ onCancel }: { onCancel: () => void }) {
+  return (
+    <div
+      aria-live="polite"
+      className="microphone-warmup flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3.5 py-2.5 t-13 shadow-xs"
+      role="status"
+    >
+      <span className="flex items-center gap-2 font-medium text-foreground">
+        <Spinner className="size-3.5" />
+        Préparation du micro…
+        <span className="hidden font-normal text-muted-foreground sm:inline">
+          Parlez dès « Écoute en cours ».
+        </span>
+      </span>
+      <Button className="h-7 px-2.5 t-12" onClick={onCancel} size="xs" variant="outline">
+        Annuler
+      </Button>
+    </div>
+  );
+}

@@ -185,7 +185,16 @@ export async function captureAudio(
   stream: MediaStream,
   signal: AbortSignal,
   onLimit: () => void,
-  preparedAudio: AudioContext | null = null
+  preparedAudio: AudioContext | null = null,
+  {
+    keepOpen = false,
+    onLevel,
+  }: {
+    /** The stream and its audio context outlive this capture: their owner closes them. */
+    keepOpen?: boolean;
+    /** RMS of each recorded chunk and the recorded seconds at its end. */
+    onLevel?: (rms: number, seconds: number) => void;
+  } = {}
 ) {
   if (!preparedAudio && typeof AudioContext !== "function")
     throw new Error(
@@ -206,6 +215,7 @@ export async function captureAudio(
       processor.disconnect();
     }
     source?.disconnect();
+    if (keepOpen) return;
     stream.getTracks().forEach((track) => track.stop());
     if (audio.state !== "closed") void audio.close().catch(() => undefined);
   };
@@ -230,6 +240,11 @@ export async function captureAudio(
       const chunk = event.inputBuffer.getChannelData(0).slice(0, room);
       buffers.push(chunk);
       count += chunk.length;
+      if (onLevel) {
+        let sum = 0;
+        for (const sample of chunk) sum += sample * sample;
+        onLevel(Math.sqrt(sum / (chunk.length || 1)), count / audio.sampleRate);
+      }
       if (count >= MAX_RECORDING_SECONDS * audio.sampleRate) onLimit();
     };
     source.connect(processor);

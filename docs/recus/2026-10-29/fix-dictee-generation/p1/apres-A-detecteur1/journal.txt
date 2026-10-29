@@ -1,0 +1,53 @@
+1793314120.903 app pid 37054
+1793314126.321 1a-formulaire-patient
+1793314128.488 1b-patient-cree
+1793314133.192 2a-formulaire-rdv
+1793314136.774 2b-rdv-agenda
+1793314140.190 3-consultation-flux
+1793314142.621 3b-cloture-bloquee
+1793314146.745 vu play:rubrique-1
+1793314146.755 afplay-debut rubrique-1
+1793314146.768 afplay-lance rubrique-1
+1793314166.178 afplay-fin rubrique-1
+1793314166.993 wav 1 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-37054-1793314166707101000-0/audio.wav
+1793314172.057 vu play:rubrique-2
+1793314172.070 afplay-debut rubrique-2
+1793314172.085 afplay-lance rubrique-2
+1793314219.954 afplay-fin rubrique-2
+1793314220.833 wav 2 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-37054-1793314220554846000-1/audio.wav
+1793314228.897 vu play:rubrique-3
+1793314228.907 afplay-debut rubrique-3
+1793314228.920 afplay-lance rubrique-3
+1793314244.762 afplay-fin rubrique-3
+1793314245.557 wav 3 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-37054-1793314245312988000-2/audio.wav
+1793314250.139 vu play:rubrique-4
+1793314250.150 afplay-debut rubrique-4
+1793314250.164 afplay-lance rubrique-4
+1793314289.087 afplay-fin rubrique-4
+1793314289.945 wav 4 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-37054-1793314289687016000-3/audio.wav
+1793314297.707 4-dictee
+1793314317.521 5a-relecture
+1793314320.767 5b-note-validee
+1793314322.860 6a-facturation
+1793314326.820 6b-facture-emise
+1793314330.557 7a-flux-apres
+1793314335.007 7b-agenda-apres
+1793314339.485 7c-reouverture
+1793314343.604 7d-dossier-synthese
+1793314346.023 7e-dossier-chronologie
+1793314396.453 8a-recherche-mot
+1793314417.997 8b-recherche-sens
+1793314424.313 8c-recherche-patient
+1793314431.302 8d-autre-dossier
+1793314436.103 light-attente-micro
+1793314442.644 light-attente-micro-aide
+1793314466.103 light-micro-sans-reponse
+1793314468.117 light-attente-annulee
+1793314469.444 light-micro-refuse
+1793314473.655 light-ecoute-voix
+1793314477.636 light-ecoute-silence
+1793314478.161 wav 5 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-37054-1793314477903487000-4/audio.wav
+1793314482.028 light-transcription
+1793314494.232 dark-ecoute-voix
+1793314498.215 dark-ecoute-silence
+1793314498.477 fin

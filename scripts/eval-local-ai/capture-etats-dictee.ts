@@ -85,7 +85,8 @@ export async function captureDictationStates(signal: string) {
     return destination.stream;
   };
   dicter()!.click();
-  await waitFor(() => bodyHas("Écoute en cours") || alertText(), 60_000);
+  // The listening banner itself, not the warm-up hint that names it.
+  await waitFor(() => bodyHas("Écoute en cours ·") || alertText(), 60_000);
   if (alertText()) {
     await shot("echec-ecoute", { message: alertText() });
     await writeTextFile(signal, `failed: écoute impossible : ${alertText()}`);

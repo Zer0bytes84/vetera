@@ -1,0 +1,13 @@
+R1 préparation 3.08 s | écoute 8.12 s après le clic, +5.00 s après le début de capture | lecture +5.09 s
+   fenêtres 250 ms : -77 -68 -47 -67 -67 -67 -67 -65 -64 -65 -67 -68 -67 -68 -45 -45 -44 -44 -44 -45 -43 -36 -17 -21
+   texte : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l
+R2 sans préparation | écoute 0.26 s après le clic, +0.01 s après le début de capture | lecture +0.05 s
+   fenêtres 250 ms : -45 -45 -45 -19 -19 -21 -21 -21 -17 -19 -19 -17 -18 -18 -20 -20 -17 -19 -34 -21 -19 -20 -18 -21
+   texte : Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poi
+R3 sans préparation | écoute 0.25 s après le clic, +0.08 s après le début de capture | lecture +0.15 s
+   fenêtres 250 ms : -49 -48 -20 -19 -20 -17 -18 -18 -16 -21 -20 -17 -18 -18 -18 -17 -20 -18 -18 -17 -17 -18 -18 -43
+   texte : Otite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnos
+R4 sans préparation | écoute 0.25 s après le clic, -0.00 s après le début de capture | lecture +0.08 s
+   fenêtres 250 ms : -46 -51 -22 -17 -19 -18 -27 -18 -18 -17 -17 -17 -22 -17 -17 -20 -19 -18 -20 -18 -17 -18 -18 -18
+   texte : Soins au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Pr
+['8b-recherche-sens', '8c-recherche-patient', '8d-autre-dossier', 'fin']

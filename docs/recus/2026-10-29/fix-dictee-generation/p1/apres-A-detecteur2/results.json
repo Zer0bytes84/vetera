@@ -1,0 +1,270 @@
+{
+  "results": [
+    {
+      "name": "1a-formulaire-patient"
+    },
+    {
+      "name": "1b-patient-cree",
+      "patientId": "mvu5c1vf0iqlcsvcrdo",
+      "owner": {
+        "last_name": "Testeur",
+        "first_name": "Camille"
+      }
+    },
+    {
+      "name": "2a-formulaire-rdv"
+    },
+    {
+      "name": "2b-rdv-agenda",
+      "appointment": {
+        "id": "mvu5c7b8dzxfzefijlq",
+        "status": "scheduled",
+        "start_time": "2026-10-29T13:00:00.000Z"
+      }
+    },
+    {
+      "name": "3-consultation-flux",
+      "status": "in_progress"
+    },
+    {
+      "name": "3b-cloture-bloquee",
+      "blockerShown": true,
+      "enabled": false,
+      "statusAfterClick": "in_progress"
+    },
+    {
+      "name": "4-dictee",
+      "path": "micro",
+      "dictated": [
+        "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mais appétit conservé, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+        "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "Otite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "Soins au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Elisabethin conseiller si le grattage persiste. Éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue."
+      ],
+      "timings": [
+        {
+          "clic": 1793314825453,
+          "preparation": 1793314828530,
+          "ecoute": 1793314833574
+        },
+        {
+          "clic": 1793314859221,
+          "preparation": null,
+          "ecoute": 1793314859477
+        },
+        {
+          "clic": 1793314916811,
+          "preparation": null,
+          "ecoute": 1793314917065
+        },
+        {
+          "clic": 1793314937836,
+          "preparation": null,
+          "ecoute": 1793314938088
+        }
+      ]
+    },
+    {
+      "name": "5a-relecture",
+      "seconds": 17.1,
+      "generated": {
+        "subjective": "- Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\n- Légère baisse d'activité liée à l'inconfort, mais appétit conservé, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+        "objective": "- Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "assessment": "- Otite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "1. Soins au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée.\n2. Collier Elisabethin conseiller si le grattage persiste.\n3. Éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit.\n4. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement.\n5. Suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue.\n6. Prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+      }
+    },
+    {
+      "name": "5b-note-validee",
+      "soapAssessment": "- Otite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer ",
+      "reviewed": true
+    },
+    {
+      "name": "6a-facturation"
+    },
+    {
+      "name": "6b-facture-emise",
+      "invoice": {
+        "id": "appointment-invoice-mvu5c7b8dzxfzefijlq",
+        "number": "INV-2026-000018",
+        "document_status": "issued",
+        "issued_at": "2026-10-29 23:03:29",
+        "gross_amount": 300000
+      },
+      "appointmentStatus": "completed",
+      "saves": [
+        {
+          "defaultPath": "Facture-INV-2026-000018-1vm1xt8.pdf",
+          "answered": "/Users/zohir/Library/Caches/baitari-eval/workflow-home/Desktop/Facture-INV-2026-000018-1vm1xt8.pdf"
+        }
+      ]
+    },
+    {
+      "name": "7a-flux-apres",
+      "fluxCard": true,
+      "fluxLane": "Terminé1"
+    },
+    {
+      "name": "7b-agenda-apres",
+      "agendaStatus": null
+    },
+    {
+      "name": "7c-reouverture",
+      "status": "completed"
+    },
+    {
+      "name": "7d-dossier-synthese"
+    },
+    {
+      "name": "7e-dossier-chronologie"
+    },
+    {
+      "name": "8a-recherche-mot",
+      "query": "Malassezia"
+    },
+    {
+      "name": "8b-recherche-sens",
+      "query": "infection de l’oreille due à des levures"
+    },
+    {
+      "name": "8c-recherche-patient"
+    },
+    {
+      "name": "8d-autre-dossier"
+    },
+    {
+      "name": "fin",
+      "before": {
+        "patients": 11,
+        "appointments": 52,
+        "invoices": {
+          "n": 17,
+          "max": "INV-2026-000017"
+        },
+        "sequence": {
+          "next_value": 18
+        }
+      },
+      "after": {
+        "patients": 12,
+        "appointments": 53,
+        "invoices": {
+          "n": 18,
+          "max": "INV-2026-000018"
+        },
+        "sequence": {
+          "next_value": 19
+        }
+      }
+    }
+  ],
+  "breaches": [
+    {
+      "id": "facture-sans-note",
+      "found": false,
+      "probe": "« Clôturer et facturer » sans note validée",
+      "enabled": false,
+      "blockerShown": true,
+      "statusAfterClick": "in_progress",
+      "billingOpened": false
+    },
+    {
+      "id": "cloture-bloquee-apres-note",
+      "found": false,
+      "enabled": true,
+      "blockerShown": false
+    },
+    {
+      "id": "nom-instable",
+      "found": false,
+      "first": "Facture-INV-2026-000018-1vm1xt8.pdf",
+      "again": "Facture-INV-2026-000018-1vm1xt8.pdf"
+    },
+    {
+      "id": "reouverture-relance",
+      "found": false,
+      "before": "completed",
+      "after": "completed",
+      "workspaceOpen": false
+    },
+    {
+      "id": "note-absente-synthese",
+      "found": false,
+      "overviewExcerpt": "Dernière consultationOuvrir la consultation29 oct. 2026 à 09:00ConsultationSe gratte l’oreille droite depuis trois jours.Évaluation- Otite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou e"
+    },
+    {
+      "id": "statut-chronologie",
+      "found": false,
+      "timelineExcerpt": "Historique clinique complet du patientDateÉvénementRésumé cliniqueStatutAction29 oct. 202609:00ConsultationSe gratte l’oreille droite depuis trois jours.- Otite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jac"
+    },
+    {
+      "id": "note-absente-chronologie",
+      "found": false,
+      "synthese": true,
+      "chronologie": true,
+      "nonRenseigne": false
+    },
+    {
+      "id": "recherche-8a-recherche-mot",
+      "found": false,
+      "query": "Malassezia",
+      "hit": {
+        "section": "assessment",
+        "match": "text",
+        "score": 0.31238344213030933,
+        "patientName": "Max"
+      },
+      "top": [
+        [
+          "Max",
+          "assessment",
+          "text"
+        ]
+      ]
+    },
+    {
+      "id": "attribution-8a-recherche-mot",
+      "found": false,
+      "foreign": []
+    },
+    {
+      "id": "recherche-8b-recherche-sens",
+      "found": false,
+      "query": "infection de l’oreille due à des levures",
+      "hit": {
+        "section": "assessment",
+        "match": "semantic",
+        "score": 0.4609555426038242,
+        "patientName": "Max"
+      },
+      "top": [
+        [
+          "Max",
+          "assessment",
+          "semantic"
+        ]
+      ]
+    },
+    {
+      "id": "attribution-8b-recherche-sens",
+      "found": false,
+      "foreign": []
+    },
+    {
+      "id": "patient-introuvable",
+      "found": false,
+      "probe": "palette « Max » propose le dossier de Max (propriétaire Testeur)"
+    },
+    {
+      "id": "fuite-autre-dossier",
+      "found": false,
+      "patient": "mnma3iqx51fr51th3ta"
+    },
+    {
+      "id": "incoherence-base",
+      "found": false,
+      "soapsOtherPatient": 0,
+      "invoicesOtherPatient": 0
+    }
+  ]
+}

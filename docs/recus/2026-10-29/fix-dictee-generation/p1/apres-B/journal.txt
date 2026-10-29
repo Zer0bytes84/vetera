@@ -1,0 +1,30 @@
+1793315850.543 app pid 91622
+1793315853.400 1a-formulaire-patient
+1793315855.527 1b-patient-cree
+1793315860.249 2a-formulaire-rdv
+1793315863.813 2b-rdv-agenda
+1793315867.245 3-consultation-flux
+1793315869.681 3b-cloture-bloquee
+1793315875.297 vu play:rubrique-1
+1793315875.307 afplay-debut rubrique-1
+1793315875.321 afplay-lance rubrique-1
+1793315900.256 afplay-fin rubrique-1
+1793315901.174 wav 1 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-91622-1793315900886836000-0/audio.wav
+1793315908.256 vu play:rubrique-2
+1793315908.267 afplay-debut rubrique-2
+1793315908.280 afplay-lance rubrique-2
+1793315956.323 afplay-fin rubrique-2
+1793315957.223 wav 2 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-91622-1793315956940049000-1/audio.wav
+1793315965.287 vu play:rubrique-3
+1793315965.298 afplay-debut rubrique-3
+1793315965.312 afplay-lance rubrique-3
+1793316018.650 afplay-fin rubrique-3
+1793316019.577 wav 3 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-91622-1793316019311090000-2/audio.wav
+1793316027.676 vu play:rubrique-4
+1793316027.703 afplay-debut rubrique-4
+1793316027.716 afplay-lance rubrique-4
+1793316046.977 afplay-fin rubrique-4
+1793316047.743 wav 4 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-91622-1793316047478099000-3/audio.wav
+1793316052.519 4-dictee
+1793316076.212 echec-5-note
+1793316076.358 failed: 5-note: génération refusée par l’assistant après 22.4 s : Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »

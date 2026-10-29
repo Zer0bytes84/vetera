@@ -69,7 +69,7 @@ import {
 } from "../local-ai/soap-schema";
 import { PatientDocumentSearch } from "./patient-document-search";
 import { AssistantActivity } from "./assistant-activity";
-import { DictationLevelMeter, MicrophonePermissionWait } from "./dictation-states";
+import { DictationLevelMeter, MicrophonePermissionWait, MicrophoneWarmup } from "./dictation-states";
 import {
   assembleGuidedNote,
   guidedDictationTranscript,
@@ -140,7 +140,8 @@ export default function LocalConsultationAssistant({
   const owners = useSQLite<Owner>("owners");
   const appointments = useSQLite<Appointment>("appointments");
   const soaps = useSQLite<ConsultationSoap>("consultation_soaps");
-  const ai = useLocalConsultationAi();
+  // One microphone for the four rubrics; listening once its level has settled.
+  const ai = useLocalConsultationAi({ holdMicrophone: true });
 
   const [activeTab, setActiveTab] = useState<AssistantTab>("dictation");
   const [dictationLanguage, setDictationLanguage] = useState(
@@ -931,8 +932,11 @@ export default function LocalConsultationAssistant({
             {/* Waiting for the microphone permission: always a way out. */}
             {ai.phase === "microphone" && <MicrophonePermissionWait onCancel={ai.cancel} />}
 
+            {/* New capture: the first seconds arrive attenuated, so speech waits for « Écoute en cours ». */}
+            {ai.phase === "warming" && <MicrophoneWarmup onCancel={ai.cancel} />}
+
             {/* AI Activity progress */}
-            {ai.busy && ai.phase !== "listening" && ai.phase !== "microphone" && (
+            {ai.busy && ai.phase !== "listening" && ai.phase !== "microphone" && ai.phase !== "warming" && (
               <AssistantActivity
                 phase={ai.phase}
                 progress={ai.progress}

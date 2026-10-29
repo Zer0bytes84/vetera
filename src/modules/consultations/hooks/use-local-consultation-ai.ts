@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { captureAudio, createLevelMeter, prepareMicrophone } from "../local-ai/audio-capture";
+import { createWarmupDetector } from "../local-ai/microphone-warmup";
 import {
   LocalInferenceSession,
   abortError,
@@ -27,6 +28,8 @@ import {
 export type LocalAiPhase =
   | "idle"
   | "microphone"
+  /** Microphone open, its level not settled yet: listening is not announced. */
+  | "warming"
   | "loading-whisper"
   | "listening"
   | "transcribing"
@@ -47,7 +50,26 @@ type Attempt = {
   /** Native companion path: no WASM session, no parked model. */
   native?: boolean;
 };
-export function useLocalConsultationAi() {
+type PreparedMicrophone = Awaited<ReturnType<typeof prepareMicrophone>>;
+/** Microphone kept open between the dictations of one guided note. */
+type HeldMicrophone = {
+  microphone: PreparedMicrophone;
+  controller: AbortController;
+  /** Its level has settled once: later dictations listen at once. */
+  settled: boolean;
+  idle?: ReturnType<typeof setTimeout>;
+};
+/** A held microphone left unused this long is closed. */
+export const MICROPHONE_HOLD_MS = 120_000;
+export function useLocalConsultationAi({
+  holdMicrophone = false,
+}: {
+  /**
+   * Guided dictation: one microphone for the four rubrics, and "listening"
+   * only once its level has settled (a new capture starts attenuated).
+   */
+  holdMicrophone?: boolean;
+} = {}) {
   const [phase, setPhase] = useState<LocalAiPhase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<LocalAiProgress>({ message: "" });
@@ -56,6 +78,15 @@ export function useLocalConsultationAi() {
   const [native] = useState(nativeDictationEnabled);
   const [nativeReady, setNativeReady] = useState<boolean | null>(null);
   const active = useRef<Attempt | null>(null);
+  const held = useRef<HeldMicrophone | null>(null);
+  const releaseMicrophone = useCallback(() => {
+    const current = held.current;
+    held.current = null;
+    if (!current) return;
+    clearTimeout(current.idle);
+    current.controller.abort();
+    current.microphone.close();
+  }, []);
   useEffect(() => {
     if (!native) return;
     let alive = true;
@@ -83,9 +114,10 @@ export function useLocalConsultationAi() {
   const readLevel = useCallback(() => active.current?.meter?.read() ?? 0, []);
   const cancel = useCallback(() => {
     if (active.current) dispose(active.current);
+    releaseMicrophone();
     setPhase("idle");
     setProgress({ message: "" });
-  }, [dispose]);
+  }, [dispose, releaseMicrophone]);
   const reportFailure = useCallback(
     (attempt: Attempt, failure: unknown) => {
       if (active.current !== attempt) return;
@@ -93,6 +125,7 @@ export function useLocalConsultationAi() {
         attempt.controller.signal.aborted ||
         (failure instanceof Error && failure.name === "AbortError");
       dispose(attempt);
+      releaseMicrophone();
       setPhase("idle");
       if (!aborted)
         setError(
@@ -101,14 +134,15 @@ export function useLocalConsultationAi() {
             : "Le traitement local a échoué. Réessayez."
         );
     },
-    [dispose]
+    [dispose, releaseMicrophone]
   );
   useEffect(
     () => () => {
       if (active.current) dispose(active.current);
+      releaseMicrophone();
       releaseWhisperSession();
     },
-    [dispose]
+    [dispose, releaseMicrophone]
   );
   useEffect(() => {
     if (phase !== "listening") return;
@@ -171,19 +205,74 @@ export function useLocalConsultationAi() {
             if (attempt.capture) reportFailure(attempt, failure);
           });
         }
-        setPhase("microphone");
-        setProgress({ message: "Autorisation du microphone…" });
-        attempt.microphone = await prepareMicrophone(signal);
+        let microphone: PreparedMicrophone;
+        const kept = held.current;
+        if (
+          holdMicrophone &&
+          kept &&
+          kept.microphone.stream.getAudioTracks().every((track) => track.readyState === "live") &&
+          kept.microphone.audio?.state !== "closed"
+        ) {
+          clearTimeout(kept.idle);
+          microphone = kept.microphone;
+        } else {
+          releaseMicrophone();
+          setPhase("microphone");
+          setProgress({ message: "Autorisation du microphone…" });
+          if (holdMicrophone) {
+            // Its own lifetime: the dictation ends, the microphone stays open.
+            const controller = new AbortController();
+            const follow = () => controller.abort();
+            signal.addEventListener("abort", follow, { once: true });
+            try {
+              microphone = await prepareMicrophone(controller.signal);
+            } finally {
+              signal.removeEventListener("abort", follow);
+            }
+            held.current = { microphone, controller, settled: false };
+          } else {
+            microphone = await prepareMicrophone(signal);
+            attempt.microphone = microphone;
+          }
+        }
         if (signal.aborted) throw abortError();
+        const warmup = holdMicrophone && !held.current?.settled ? createWarmupDetector() : null;
+        let settle = () => {};
+        const settled = new Promise<void>((resolve) => {
+          settle = resolve;
+        });
         attempt.capture = await captureAudio(
-          attempt.microphone.stream,
+          microphone.stream,
           signal,
           () => {
             void stopRef.current();
           },
-          attempt.microphone.audio
+          microphone.audio,
+          {
+            keepOpen: holdMicrophone,
+            onLevel: warmup
+              ? (rms, recorded) => {
+                  if (warmup.push(rms, recorded).state === "stable") settle();
+                }
+              : undefined,
+          }
         );
-        attempt.meter = createLevelMeter(attempt.microphone.audio, attempt.microphone.stream);
+        attempt.meter = createLevelMeter(microphone.audio, microphone.stream);
+        if (warmup) {
+          // Recording already runs; the vet is asked to wait for "listening".
+          setPhase("warming");
+          setProgress({ message: "Préparation du micro…" });
+          await new Promise<void>((resolve, reject) => {
+            const onAbort = () => reject(abortError());
+            if (signal.aborted) return onAbort();
+            signal.addEventListener("abort", onAbort, { once: true });
+            void settled.then(() => {
+              signal.removeEventListener("abort", onAbort);
+              resolve();
+            });
+          });
+          if (held.current) held.current.settled = true;
+        }
         setPhase("listening");
         setProgress({
           message:
@@ -197,7 +286,7 @@ export function useLocalConsultationAi() {
     },
     // `native` fixes the engine for the life of the hook (a state, not a prop):
     // it is stable, and naming it keeps the branch honest for the linter.
-    [reportFailure, native]
+    [reportFailure, native, holdMicrophone, releaseMicrophone]
   );
   const stop = useCallback(async () => {
     const attempt = active.current;
@@ -247,6 +336,7 @@ export function useLocalConsultationAi() {
       const text = normalizeSpokenMentions(normalizeTemperatureSymbols(raw));
       setTranscription(text);
       dispose(attempt);
+      if (held.current) held.current.idle = setTimeout(releaseMicrophone, MICROPHONE_HOLD_MS);
       setPhase("idle");
       setProgress({
         message: "Transcription terminée. Vous pouvez relire votre dictée.",
@@ -256,7 +346,7 @@ export function useLocalConsultationAi() {
       reportFailure(attempt, failure);
       return null;
     }
-  }, [dispose, phase, reportFailure]);
+  }, [dispose, phase, reportFailure, releaseMicrophone]);
   useEffect(() => {
     stopRef.current = stop;
   }, [stop]);
@@ -269,6 +359,8 @@ export function useLocalConsultationAi() {
     ) => {
       if (active.current) return null;
       setError(null);
+      // The dictation is over: the microphone closes before the note is written.
+      releaseMicrophone();
       const attempt: Attempt = { controller: new AbortController() };
       active.current = attempt;
       try {
@@ -307,7 +399,7 @@ export function useLocalConsultationAi() {
         return null;
       }
     },
-    [dispose, reportFailure]
+    [dispose, reportFailure, releaseMicrophone]
   );
   const clearError = useCallback(() => setError(null), []);
   return {

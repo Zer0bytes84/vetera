@@ -1,0 +1,57 @@
+#!/bin/zsh
+# Usage: diag-p1.sh <label> <clips-dir>
+# Copy of workflow.sh (NOCOPY: the app already authorised for the microphone),
+# with millisecond timestamps, 50 ms polling, own clips, and a grabber that
+# hard-links every WAV the app hands to whisper-cli before it is deleted.
+set -u
+LABEL=$1; CLIPS=$2
+S=/private/tmp/claude-501/-Users-zohir-Documents-08---Projets-num-riques-Projects-2026-BAITARI-2-1-bAItari/e8fe063d-0ea9-4d6c-b7fd-64f74740032c/scratchpad
+M=/private/tmp/claude-501/-Users-zohir-Documents-08---Projets-num-riques-Projects-2026-BAITARI-2-1-bAItari/eabe251d-d3a7-4ef9-b590-f667c2c45758/scratchpad
+APP=$HOME/Library/Caches/baitari-eval/mesure/Baitari.app
+REAL="$HOME/Library/Application Support/com.baitari.vetera"
+FH=$HOME/Library/Caches/baitari-eval/workflow-home
+OUT=$M/p1/$LABEL
+T=$(getconf DARWIN_USER_TEMP_DIR)
+now() { perl -MTime::HiRes=time -e 'printf "%.3f\n", time'; }
+mkdir -p "$OUT"
+rm -rf "${FH:?}"; D="$FH/Library/Application Support/com.baitari.vetera"; mkdir -p "$D/local-ai" "$FH/Desktop"
+sqlite3 "file:$REAL/baitari.db?mode=ro" ".backup '$D/baitari.db'"
+cp "$REAL/license-installation-id" "$D/"
+for m in whisper whisper-turbo generator generator4 embeddinggemma; do [ -d "$REAL/local-ai/$m" ] && cp -cR "$REAL/local-ai/$m" "$D/local-ai/"; done
+afconvert -f WAVE -d LEI16@16000 -c 1 "$S/workflow/rubrique-1.aiff" "$FH/clip.wav"
+open -n -a "$APP" --env HOME="$FH"
+sleep 4
+PID=$(pgrep -f "$APP/Contents/MacOS/vetera" | head -1)
+echo "$(now) app pid $PID" > $OUT/journal.txt
+# WAV grabber: the companion's temporary folder lives a few seconds.
+( n=0; typeset -A seen; while kill -0 $PID 2>/dev/null; do
+    for w in $T/baitari-dictee-$PID-*/audio.wav(N); do
+      [ -n "${seen[$w]:-}" ] && continue
+      sleep 0.2; n=$((n+1)); ln "$w" "$OUT/envoye-$n.wav" 2>/dev/null && seen[$w]=1 && echo "$(now) wav $n $w" >> $OUT/journal.txt
+    done; sleep 0.05; done ) &
+GRAB=$!
+start=$(date +%s)
+while kill -0 $PID 2>/dev/null; do
+  state=$(cat "$FH/signal" 2>/dev/null)
+  case "$state" in
+    ready:*)
+      name=${state#ready:}
+      screencapture -x -o -l $($S/winid $PID) $OUT/$name.png
+      echo "$(now) $name" >> $OUT/journal.txt
+      echo -n "done:$name" > "$FH/signal" ;;
+    play:*)
+      clip=${state#play:}
+      echo "$(now) vu $state" >> $OUT/journal.txt
+      echo "$(now) afplay-debut $clip" >> $OUT/journal.txt
+      sleep ${DELAY:-0}; echo "$(now) afplay-lance $clip" >> $OUT/journal.txt; afplay "$CLIPS/$clip.aiff"
+      echo "$(now) afplay-fin $clip" >> $OUT/journal.txt
+      echo -n "played:$clip" > "$FH/signal" ;;
+    failed*) echo "$(now) $state" >> $OUT/journal.txt; screencapture -x -o -l $($S/winid $PID) $OUT/echec.png; break ;;
+    restored) echo "$(now) fin" >> $OUT/journal.txt; break ;;
+  esac
+  [ $(( $(date +%s) - start )) -gt 1800 ] && { echo "délai dépassé ($state)" >> $OUT/journal.txt; break; }
+  sleep 0.05
+done
+cp "$FH/signal.results.json" $OUT/results.json 2>/dev/null
+kill $PID 2>/dev/null; sleep 1; kill $GRAB 2>/dev/null
+cat $OUT/journal.txt

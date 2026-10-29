@@ -1,0 +1,336 @@
+{
+  "label": "apres-rejeu1",
+  "startedAt": "2026-10-29T22:27:38.847Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "reference:start",
+      "at": 1793312858.847
+    },
+    {
+      "what": "reference:end",
+      "at": 1793312878.177
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "reference": [
+    {
+      "generator": "gemma3",
+      "case": "reference",
+      "variant": "guidee",
+      "accepted": false,
+      "error": "Le format de réponse de l’assistant n’est pas conforme aux quatre sections SOAP attendues. Votre dictée est conservée ; aucune note n’a été enregistrée.",
+      "totalSeconds": 19.29,
+      "transcript": "Motif et antécédents : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.\nExamen clinique : Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympans difficilement visualisés en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.\nÉvaluation : Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylocopes.\nPlan de soins : Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+      "scaffold": {
+        "subjective": "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.",
+        "objective": "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympans difficilement visualisés en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "assessment": "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylocopes.",
+        "plan": ""
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\",\"objective\":\"Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l’oreille, otoscopie, tympans difficilement visualisés en raison de l’œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylocopes.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 12.8
+        },
+        {
+          "number": 2,
+          "text": "```json\n{\"subjective\":\"Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite.\",\"objective\":\"Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympans difficilement visualisés en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylocopes.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 19.28
+        }
+      ],
+      "tokens": [
+        {
+          "inputTokens": 1156,
+          "templateTokens": 379,
+          "capacity": 2544,
+          "outputTokens": 204,
+          "characters": 760
+        },
+        {
+          "inputTokens": 1115,
+          "templateTokens": 379,
+          "capacity": 2544,
+          "outputTokens": 204,
+          "characters": 760
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 12.8,
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [
+                "staphylococques"
+              ],
+              "added": [
+                "staphylocopes"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "assessment": {
+              "removed": [
+                "temperature",
+                "38.5",
+                "c",
+                "normale",
+                "frequence",
+                "cardiaque",
+                "92",
+                "bpm",
+                "frequence",
+                "respiratoire",
+                "20",
+                "mouvements",
+                "par",
+                "minute",
+                "poids",
+                "32.5",
+                "kg",
+                "stable",
+                "score",
+                "corporel",
+                "5",
+                "sur",
+                "9",
+                "chien",
+                "eveille",
+                "alerte",
+                "et",
+                "reactif",
+                "muqueuse",
+                "rose",
+                "et",
+                "humide",
+                "trc",
+                "inferieur",
+                "a",
+                "2",
+                "secondes",
+                "oreille",
+                "droite",
+                "erytheme",
+                "modere",
+                "du",
+                "pavillon",
+                "cerumene",
+                "brun",
+                "fonce",
+                "abondant",
+                "odeur",
+                "legerement",
+                "cerumineuse",
+                "douleur",
+                "a",
+                "la",
+                "palpation",
+                "de",
+                "la",
+                "base",
+                "de",
+                "l",
+                "oreille",
+                "otoscopie",
+                "tympan",
+                "difficilement",
+                "visualise",
+                "en",
+                "raison",
+                "de",
+                "l",
+                "œdeme",
+                "du",
+                "canal",
+                "et",
+                "des",
+                "secretions",
+                "oreille",
+                "gauche",
+                "aspect",
+                "normal",
+                "propre",
+                "non",
+                "douloureuse",
+                "cytologie",
+                "auriculaire",
+                "presence",
+                "massive",
+                "de",
+                "malassozia",
+                "et",
+                "quelques",
+                "coques",
+                "bacteriennes",
+                "staphylocopes"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        },
+        {
+          "attempt": 2,
+          "generator": "gemma3",
+          "seconds": 19.28,
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [
+                "staphylococques"
+              ],
+              "added": [
+                "staphylocopes"
+              ],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "assessment": {
+              "removed": [
+                "temperature",
+                "38.5",
+                "c",
+                "normale",
+                "frequence",
+                "cardiaque",
+                "92",
+                "bpm",
+                "frequence",
+                "respiratoire",
+                "20",
+                "mouvements",
+                "par",
+                "minute",
+                "poids",
+                "32.5",
+                "kg",
+                "stable",
+                "score",
+                "corporel",
+                "5",
+                "sur",
+                "9",
+                "chien",
+                "eveille",
+                "alerte",
+                "et",
+                "reactif",
+                "muqueuse",
+                "rose",
+                "et",
+                "humide",
+                "trc",
+                "inferieur",
+                "a",
+                "2",
+                "secondes",
+                "oreille",
+                "droite",
+                "erytheme",
+                "modere",
+                "du",
+                "pavillon",
+                "cerumene",
+                "brun",
+                "fonce",
+                "abondant",
+                "odeur",
+                "legerement",
+                "cerumineuse",
+                "douleur",
+                "a",
+                "la",
+                "palpation",
+                "de",
+                "la",
+                "base",
+                "de",
+                "l",
+                "oreille",
+                "otoscopie",
+                "tympan",
+                "difficilement",
+                "visualise",
+                "en",
+                "raison",
+                "de",
+                "l",
+                "œdeme",
+                "du",
+                "canal",
+                "et",
+                "des",
+                "secretions",
+                "oreille",
+                "gauche",
+                "aspect",
+                "normal",
+                "propre",
+                "non",
+                "douloureuse",
+                "cytologie",
+                "auriculaire",
+                "presence",
+                "massive",
+                "de",
+                "malassozia",
+                "et",
+                "quelques",
+                "coques",
+                "bacteriennes",
+                "staphylocopes"
+              ],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": false
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": null,
+      "assembled": null
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-29T22:27:58.177Z"
+}

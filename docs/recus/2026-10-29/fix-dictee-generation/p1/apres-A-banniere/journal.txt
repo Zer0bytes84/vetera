@@ -1,0 +1,33 @@
+1793313621.998 app pid 25878
+1793313624.676 1a-formulaire-patient
+1793313626.879 1b-patient-cree
+1793313631.601 2a-formulaire-rdv
+1793313635.225 2b-rdv-agenda
+1793313638.690 3-consultation-flux
+1793313641.009 3b-cloture-bloquee
+1793313642.229 vu play:rubrique-1
+1793313642.242 afplay-debut rubrique-1
+1793313642.258 afplay-lance rubrique-1
+1793313662.175 afplay-fin rubrique-1
+1793313662.983 wav 1 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-25878-1793313662715800000-0/audio.wav
+1793313667.772 vu play:rubrique-2
+1793313667.784 afplay-debut rubrique-2
+1793313667.798 afplay-lance rubrique-2
+1793313715.717 afplay-fin rubrique-2
+1793313716.696 wav 2 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-25878-1793313716434460000-1/audio.wav
+1793313724.749 vu play:rubrique-3
+1793313724.760 afplay-debut rubrique-3
+1793313724.775 afplay-lance rubrique-3
+1793313740.396 afplay-fin rubrique-3
+1793313741.247 wav 3 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-25878-1793313740987230000-2/audio.wav
+1793313745.770 vu play:rubrique-4
+1793313745.786 afplay-debut rubrique-4
+1793313745.802 afplay-lance rubrique-4
+1793313784.736 afplay-fin rubrique-4
+1793313785.610 wav 4 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-25878-1793313785373906000-3/audio.wav
+1793313793.432 4-dictee
+1793313813.096 5a-relecture
+1793313816.251 5b-note-validee
+1793313818.222 6a-facturation
+1793313879.440 echec-6-facture
+1793313879.581 failed: 6-facture: aucun export PDF proposé après l’encaissement

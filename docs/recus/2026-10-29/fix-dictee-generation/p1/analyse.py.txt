@@ -1,0 +1,15 @@
+import json,sys,re,wave,struct,math
+d=sys.argv[1]; r=json.load(open(d+"/results.json"))["results"]
+x=[y for y in r if "dictated" in y][0]
+J=open(d+"/journal.txt").read().splitlines()
+ws=[l for l in J if " wav " in l][:4]
+la=[float(l.split()[0]) for l in J if "afplay-lance" in l]
+for i,(t,txt) in enumerate(zip(x["timings"],x["dictated"]),1):
+  ns=int(re.search(r"-(\d{19})-\d+/audio",ws[i-1]).group(1))/1e9; w=wave.open(f"{d}/envoye-{i}.wav"); n=w.getnframes(); dur=n/16000
+  s=struct.unpack(f"<{n}h",w.readframes(n)); start=ns-dur
+  lv=[10*math.log10(max(sum(v*v for v in s[k*4000:(k+1)*4000])/4000/32768**2,1e-12)) for k in range(int(min(dur,6)*4))]
+  p=t['preparation']
+  print(f"R{i}", f"préparation {(p-t['clic'])/1000:.2f} s" if p else "sans préparation", f"| écoute {(t['ecoute']-t['clic'])/1000:.2f} s après le clic, {t['ecoute']/1000-start:+.2f} s après le début de capture | lecture {la[i-1]-start:+.2f} s")
+  print("   fenêtres 250 ms :", " ".join(f"{v:.0f}" for v in lv))
+  print("   texte :", txt[:110])
+print([y.get("name") for y in r][-4:])

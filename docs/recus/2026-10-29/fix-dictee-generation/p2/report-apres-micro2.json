@@ -1,0 +1,109 @@
+{
+  "label": "apres-micro2",
+  "startedAt": "2026-10-29T22:28:22.018Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+  "models": {
+    "generator": true,
+    "embedding": true
+  },
+  "marks": [
+    {
+      "what": "reference:start",
+      "at": 1793312902.019
+    },
+    {
+      "what": "reference:end",
+      "at": 1793312918.208
+    }
+  ],
+  "isolation": {
+    "crossOriginIsolated": true,
+    "sharedArrayBuffer": true,
+    "cores": 8,
+    "searchThreads": null
+  },
+  "reference": [
+    {
+      "generator": "gemma3",
+      "case": "reference",
+      "variant": "guidee",
+      "accepted": true,
+      "error": null,
+      "totalSeconds": 16.12,
+      "transcript": "Motif et antécédents : Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.\nExamen clinique : Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.\nÉvaluation : Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\nPlan de soins : Soin au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée, prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Elisabeth, conseiller si le grattage persiste, éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit, interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement, suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue.",
+      "scaffold": {
+        "subjective": "Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour.",
+        "objective": "Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "assessment": "Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soin au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée, prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires. Collier Elisabeth, conseiller si le grattage persiste, éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit, interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement, suivi, ou appeler plutôt si aggravation ou douleur accrue."
+      },
+      "outputs": [
+        {
+          "number": 1,
+          "text": "```json\n{\"subjective\":\"Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour.\",\"objective\":\"Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.\",\"assessment\":\"Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\",\"plan\":\"Soin au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée, prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires. Collier Elisabeth, conseiller si le grattage persiste, éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit, interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement, suivi, ou appeler plutôt si aggravation ou douleur accrue.\"}",
+          "generator": "gemma3",
+          "fellBack": false,
+          "seconds": 16.08
+        }
+      ],
+      "tokens": [
+        {
+          "inputTokens": 1208,
+          "templateTokens": 402,
+          "capacity": 2702,
+          "outputTokens": 405,
+          "characters": 1646
+        }
+      ],
+      "diffs": [
+        {
+          "attempt": 1,
+          "generator": "gemma3",
+          "seconds": 16.08,
+          "sections": {
+            "subjective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "objective": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "assessment": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            },
+            "plan": {
+              "removed": [],
+              "added": [],
+              "reorderedOnly": false,
+              "identical": true
+            }
+          }
+        }
+      ],
+      "note": {
+        "subjective": "Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+        "objective": "Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "assessment": "Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+        "plan": "Soin au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée, prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Elisabeth, conseiller si le grattage persiste, éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit, interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement, suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue."
+      },
+      "assembled": {
+        "text": "S — Subjectif (Ce que le propriétaire rapporte)\n- Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.\n\nO — Objectif (Ce que le vétérinaire observe et mesure)\n- Normal.\n- Fréquence cardiaque 92 BPM.\n- Fréquence respiratoire 20 mouvements par minute.\n- Poids 32.5 kg.\n- Stable.\n- Score corporel 5 sur 9.\n- Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes.\n- Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.\n\nA — Évaluation (Diagnostic / Analyse)\n- Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.\n\nP — Plan (Actions et suivi)\n1. Soin au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée, prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours.\n2. Collier Elisabeth, conseiller si le grattage persiste, éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit, interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement, suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue.",
+        "headings": true,
+        "canvasOnly": true,
+        "sameWordsAsDictation": true,
+        "numbersKept": true,
+        "lists": true
+      }
+    }
+  ],
+  "engine": null,
+  "finishedAt": "2026-10-29T22:28:38.208Z"
+}
