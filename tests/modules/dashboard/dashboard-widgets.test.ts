@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDayUnits, buildMonthForecast, shares } from "@/modules/dashboard/model/dashboard-widgets";
+import { buildDayUnits, buildMonthForecast, buildSpeciesSplit, shares } from "@/modules/dashboard/model/dashboard-widgets";
 import type { ScheduleEntry } from "@/modules/dashboard/v2/model";
 import type { Transaction } from "@/types/db";
 
@@ -118,5 +118,40 @@ describe("phrase de prévision", () => {
     expect(await sentence([paid("2026-10-02", 1_000_000)], new Date(2026, 9, 3))).toBe(
       "10 000 DA encaissés en 3 jours : trop tôt pour prévoir, prévision dès le 7 octobre.",
     );
+  });
+});
+
+describe("patients par espèce", () => {
+  const now = new Date(2026, 9, 29);
+  const patient = (species: string, status = "sante", createdAt = "2026-01-01") => ({ species, status, createdAt });
+
+  it("compte les patients actifs par espèce, la plus fréquente d'abord, parts justes", () => {
+    const split = buildSpeciesSplit(
+      [patient("Chien"), patient("chien "), patient("Chat"), patient("Chien", "decede"), patient("Lapin", "traitement", "2026-10-20")],
+      now,
+    );
+    expect(split.total).toBe(4);
+    expect(split.deceased).toBe(1);
+    expect(split.recent).toBe(1);
+    expect(split.rows).toEqual([
+      { key: "chien", name: "Chien", count: 2, share: 50 },
+      { key: "chat", name: "Chat", count: 1, share: 25 },
+      { key: "lapin", name: "Lapin", count: 1, share: 25 },
+    ]);
+  });
+
+  it("regroupe les plus petites espèces au-delà de quatre, et nomme l'espèce absente", () => {
+    const split = buildSpeciesSplit(
+      ["Chien", "Chien", "Chat", "Cheval", "Lapin", "Oiseau", "Tortue", ""].map((s) => patient(s)),
+      now,
+    );
+    expect(split.rows.map((row) => row.name)).toEqual(["Chien", "Chat", "Cheval", "Lapin", "Autres (3)"]);
+    expect(split.rows.at(-1)?.count).toBe(3);
+    expect(split.rows.reduce((sum, row) => sum + row.share, 0)).toBe(100);
+    expect(buildSpeciesSplit([patient("")], now).rows[0].name).toBe("Non renseignée");
+  });
+
+  it("reste vide sans patient actif", () => {
+    expect(buildSpeciesSplit([patient("Chien", "decede")], now)).toMatchObject({ total: 0, rows: [] });
   });
 });

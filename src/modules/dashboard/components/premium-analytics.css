@@ -885,13 +885,11 @@
 }
 
 /* The hovered day, written over the regular labels it may cover. */
+/* The hovered day replaces its regular label (no halo: WebKit paints an SVG
+   text stroke over the glyphs, whatever paint-order says). */
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTickXActive {
   fill: var(--ink);
   font-weight: 500;
-  stroke: var(--canvas);
-  stroke-width: 10px;
-  stroke-linejoin: round;
-  paint-order: stroke;
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .chartLine {
@@ -1891,4 +1889,14 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
 
 .premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > :is(.split, .watchGrid) {
   gap: 16px;
+}
+
+/* The tooltip's last line: the difference the two periods lead to. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartTipDelta {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }

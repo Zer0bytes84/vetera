@@ -1,7 +1,9 @@
-import { ArrowRight, BedDouble, Bell, Package } from "lucide-react";
+import { BedDouble, Bell, Package, PawPrint } from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { WatchList, WatchRow } from "../model/dashboard-watch";
+import type { SpeciesRow } from "../model/dashboard-widgets";
+import { SpeciesSplit, WidgetFooter } from "./widget-units";
 import "./dashboard-watch.css";
 import "./widget-units.css";
 
@@ -48,18 +50,9 @@ function WatchCard({
               {icon}
             </span>
             {title}
-            {summary ? (
-              <span className="watchSummary" data-tone={list.critical ? "critical" : "neutral"}>
-                {summary}
-              </span>
-            ) : null}
           </h2>
           <p className="cardNote">{note}</p>
         </div>
-        {/* The card's single action. */}
-        <button className="pillAction" onClick={onMore} type="button">
-          {moreLabel} <ArrowRight aria-hidden="true" size={13} />
-        </button>
       </div>
       <div className="cardFlush">
         {aside}
@@ -102,6 +95,16 @@ function WatchCard({
           </ul>
         )}
       </div>
+      {/* What to know, then the card's single action. */}
+      <WidgetFooter action={moreLabel} onAction={onMore}>
+        {error || loading ? null : summary ? (
+          <span className="watchSummary" data-tone={list.critical ? "critical" : "neutral"}>
+            {summary}
+          </span>
+        ) : (
+          "Rien à traiter"
+        )}
+      </WidgetFooter>
     </section>
   );
 }
@@ -119,6 +122,9 @@ export interface DashboardWatchProps {
   remindersLoading?: boolean;
   onRemindersRetry?: () => void;
   stock: WatchList;
+  /** Active patients by species; omitted while the patients load. */
+  species?: { total: number; recent: number; rows: SpeciesRow[] };
+  onPatients?: () => void;
 }
 
 /** Rangée « À surveiller » : trois listes courtes, issues des vraies données. */
@@ -134,6 +140,8 @@ export function DashboardWatch({
   remindersError,
   remindersLoading,
   stock,
+  species,
+  onPatients,
 }: DashboardWatchProps) {
   return (
     <div className="watchGrid">
@@ -174,6 +182,43 @@ export function DashboardWatch({
         summary={hospitalized.total ? `${hospitalized.total} en cours` : null}
         title="Hospitalisés"
       />
+      {species ? <SpeciesCard onPatients={onPatients} species={species} /> : null}
     </div>
+  );
+}
+
+/** Patients par espèce: the donut and its rows, then the plain-language share. */
+function SpeciesCard({
+  onPatients,
+  species,
+}: {
+  onPatients?: () => void;
+  species: { total: number; recent: number; rows: SpeciesRow[] };
+}) {
+  const first = species.rows[0];
+  return (
+    <section aria-label="Patients par espèce" className="card frame watchCard speciesCard">
+      <div className="cardHead">
+        <div>
+          <h2 className="cardTitle watchTitle">
+            <span aria-hidden="true" className="watchIcon">
+              <PawPrint size={15} strokeWidth={1.5} />
+            </span>
+            Patients par espèce
+          </h2>
+          <p className="cardNote">
+            {species.total} patient{species.total > 1 ? "s" : ""} actif{species.total > 1 ? "s" : ""}, décédés exclus
+          </p>
+        </div>
+      </div>
+      <div className="cardFlush">
+        {species.total ? <SpeciesSplit split={species} /> : <p className="watchEmpty">Aucun patient actif pour l’instant.</p>}
+      </div>
+      <WidgetFooter action="Patients" onAction={() => onPatients?.()}>
+        {first
+          ? `${first.name} : ${first.share} % des patients actifs${species.recent ? ` · ${species.recent} nouveau${species.recent > 1 ? "x" : ""} sur 30 jours` : ""}`
+          : null}
+      </WidgetFooter>
+    </section>
   );
 }

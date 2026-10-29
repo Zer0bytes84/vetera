@@ -36,7 +36,7 @@ import { PageDate } from "@/components/PageDate";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { WidgetState } from "./clinical/shared";
 import { buildDayUnits, buildMonthForecast } from "../model/dashboard-widgets";
-import { DayUnits, ForecastBar } from "./widget-units";
+import { DayUnits, ForecastBar, WidgetFooter } from "./widget-units";
 import type { View } from "@/types";
 import "./premium-analytics.css";
 
@@ -310,10 +310,10 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
   };
 
   const hot = activeIdx !== null ? points[activeIdx] : null;
-  const tipLeft =
-    activeIdx !== null
-      ? Math.min(Math.max(x(activeIdx) + 12, 10), Math.max(10, width - 210))
-      : 0;
+  // The tooltip opens on the side with room: right of the cursor on the left
+  // half, left of it on the right half, so it never leaves the card.
+  const tipFlip = activeIdx !== null && x(activeIdx) > width / 2;
+  const tipLeft = activeIdx !== null ? (tipFlip ? x(activeIdx) - 12 : x(activeIdx) + 12) : 0;
 
   return (
     <div className="chartWrap">
@@ -374,8 +374,9 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
             ))}
 
             {/* X-axis labels */}
+            {/* The hovered day replaces its regular label, never stacks on it. */}
             {points.map((p, k) =>
-              shownLabels.has(k) ? (
+              shownLabels.has(k) && k !== activeIdx ? (
                 <text
                   key={k}
                   x={x(k)}
@@ -522,7 +523,7 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
         {hot && (
           <div
             className="chartTip"
-            style={{ left: 0, top: 10, transform: `translateX(${tipLeft}px)` }}
+            style={{ left: 0, top: 10, transform: `translateX(${tipLeft}px)${tipFlip ? " translateX(-100%)" : ""}` }}
             aria-hidden="true"
           >
             <div className="chartTipHead">{hot.long}</div>
@@ -560,6 +561,14 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
                 </span>
               </div>
             ) : null}
+            {hot.previousReceipts !== undefined && hot.receipts !== hot.previousReceipts ? (
+              // The answer the two lines lead to, written out.
+              <div className="chartTipDelta">
+                {hot.receipts > hot.previousReceipts ? "+" : "−"}
+                {formatNumber(Math.abs(hot.receipts - hot.previousReceipts))} DA sur la même tranche
+              </div>
+            ) : null}
+
           </div>
         )}
       </div>
@@ -1164,9 +1173,7 @@ export function PremiumAnalytics({
                 })}
               </p>
             </div>
-            <button type="button" className="pillAction" onClick={() => onNavigate?.("agenda")}>
-              Agenda <ArrowRight size={13} aria-hidden="true" />
-            </button>
+
           </div>
           <div className="cardFlush">
             <dl className="facts">
@@ -1269,6 +1276,16 @@ export function PremiumAnalytics({
             ) : (
               <p className="dayEmpty">Aucun rendez-vous aujourd’hui.</p>
             )}
+            {/* What comes next, then the card's single action. */}
+            <WidgetFooter action="Agenda" onAction={() => onNavigate?.("agenda")}>
+              {(() => {
+                const next = today?.find((row) => row.appointment.id === nextUpId);
+                if (next) {
+                  return `Prochain : ${next.start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${next.patientName || "Patient"}`;
+                }
+                return dayUnits.total ? "Plus de rendez-vous à venir aujourd’hui" : "Journée libre dans l’agenda";
+              })()}
+            </WidgetFooter>
           </div>
         </div>
       </div>

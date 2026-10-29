@@ -72,7 +72,7 @@ Le petit format est la même fenêtre avec les outils de développement ouverts 
 
 Quatre preuves :
 - les chiffres recalculés en SQL, égaux à l'écran ;
-- 1 274 tests ;
+- 1 277 tests ;
 - les mesures de chevauchement et de débordement (fichiers `mesures.json`) ;
 - les captures.
 
@@ -156,7 +156,7 @@ Les parts sont des entiers qui somment toujours à 100 (plus grand reste) : jama
 - grand et petit format ;
 - Clean clair, Clean sombre et Premium.
 
-Soit 45 mesures, toutes vides.
+Soit 45 mesures, toutes vides, et 72 après la deuxième passe, survols compris (§ 9).
 
 **Avant la passe,** la mesure relevait :
 - en Premium, le texte de comparaison qui passe à la ligne sous la pastille (« +106 % contre 25 000 DA la période / précédente ») ;
@@ -183,7 +183,7 @@ Ces relevés « avant » viennent d'une première version de la mesure, qui comp
 ## 4. Ce qui n'a pas été fait faute de donnée réelle
 
 - **Taux de remplissage (créneaux occupés et libres sur 22) :** aucun horaire d'ouverture, aucune durée ni aucun nombre de créneaux dans la base. Il faudrait d'abord un réglage « horaires et créneaux » dans l'Agenda, donc toucher l'Agenda et le schéma : hors périmètre.
-- **Répartition des patients actifs (donut) :** le widget n'existe pas sur le tableau de bord actuel. L'espèce existe dans la base (Chien 8, Chat 1, Cheval 1, Lapin 1), mais créer un nouveau widget sortait du « tableau de bord actuel seulement ». Les lignes de catégories (`CategoryRows`) sont prêtes si tu le veux.
+- **Répartition des patients actifs (donut) :** pas faite dans la première passe, car le widget n'existait pas. Créée dans la deuxième, à ta demande (§ 9).
 - **Prévision de rupture de stock :** pas assez de mouvements réels (§ 2.2).
 
 ## 5. Ce qui n'a pas été touché
@@ -244,7 +244,7 @@ Ses mesures sont dans `mesures.json`.
 
 ## 8. Tests
 
-**1 274 verts** (1 263 avant). Typecheck et ESLint à zéro.
+**1 277 verts** (1 263 avant la session). Typecheck et ESLint à zéro.
 
 Nouveaux tests, dans `tests/modules/dashboard/dashboard-widgets.test.ts` :
 - unités du jour : ordre, états, annulations et absences exclues, journée vide ;
@@ -257,3 +257,75 @@ Nouveaux tests, dans `tests/modules/dashboard/dashboard-widgets.test.ts` :
 - phrase de prévision écrite depuis les chiffres. Ce test a attrapé un double point après « 30 oct. ».
 
 `theme-clean-charter` vérifie désormais le pointillé dans `premium-analytics.css`, où il vit pour tous les thèmes.
+
+## 9. Deuxième passe : patients par espèce et finition des références
+
+Tu m'as envoyé des captures de référence pour fixer le niveau de finition attendu :
+- Snowflake ;
+- Net profit ;
+- Rollout ;
+- A/B test ;
+- Deploy ;
+- Time tracking ;
+- Disk usage ;
+- AI assistant.
+
+Puis tu as demandé le widget « Répartition des patients » par espèce.
+
+### Ce que je retiens des références
+
+Les mêmes gestes reviennent d'une capture à l'autre :
+- un chiffre héros suivi de son libellé en gris ;
+- des lignes alignées : pastille, nom, valeurs en colonnes ;
+- un pied de carte avec une phrase d'état à gauche et une seule action à droite ;
+- des marqueurs étiquetés au-dessus des barres ;
+- des infobulles qui finissent par la conclusion (« B ahead by 0.86 pts ») ;
+- des cases vides en pointillé pour ce qui n'est pas encore là.
+
+Tout passe par nos jetons :
+- tailles 12, 13 et 24 px au plus ;
+- l'encre et ses paliers, la couleur d'accent `series-1` ;
+- Clean et Premium.
+
+### Ce qui est fait
+
+| Mécanique de référence | Chez nous |
+|---|---|
+| Donut et légende alignée (Net profit, Disk usage) | **Nouvelle carte « Patients par espèce »**, à côté de « Hospitalisés ». Elle compte les patients actifs, décédés exclus. Les espèces sont classées de la plus fréquente à la moins fréquente : au-delà de quatre, les plus petites se regroupent en « Autres (n) », et une espèce non renseignée reste comptée. La plus fréquente prend la couleur d'accent, les suivantes des paliers d'encre. Les parts sont entières et somment à 100. |
+| Le centre qui répond au survol (Time tracking, Rollout) | Survoler un arc ou une ligne allume les deux ensemble, éteint les autres et affiche au centre « 8 · Chien · 73 % ». Le centre est mis en page en flex, jamais positionné : le chiffre et son libellé ne peuvent pas se chevaucher, même en Premium. C'est le défaut « 32.2 % sur 100 % » du prototype, mesuré puis évité. |
+| Pied de carte : phrase d'état et action unique (Disk usage, Rollout, A/B) | Sur les cartes Rappels, Stock, Hospitalisés, Espèces et « Cette semaine » : phrase à gauche (« 1 à traiter », « Prochain : 11:00 · Mocha », « Chien : 73 % des patients actifs · 1 nouveau sur 30 jours »), pilule à droite. Les pieds de carte sont alignés dans la grille 2 × 2. |
+| Cases encore libres en pointillé (Disk usage) | Les rendez-vous à venir sont des cases en pointillé. Les cases font 20 px, arrondies à 5 px. |
+| Marqueur étiqueté sur la barre (Disk usage « Oct 24 · 90% ») | « Septembre · 25 000 DA » s'affiche au-dessus du repère, avec un axe « 0 … 55 052 DA » sous la barre. L'étiquette reste dans la carte, quelle que soit la position du repère. |
+| Infobulle qui finit par la conclusion (A/B test) | L'infobulle de la courbe se termine, sous un filet, par l'écart de la tranche : « +8 000 DA sur la même tranche ». Elle s'ouvre du côté où il y a de la place : avant, elle sortait de la carte sur la droite, et la mesure l'a relevé. |
+
+**Corrigé en passant :** la date survolée sous l'axe s'affichait brouillée (« 27 ((. »). Deux causes :
+- l'étiquette normale restait dessous ;
+- WebKit peint le contour du texte SVG par-dessus les lettres, quoi que dise `paint-order`.
+
+L'étiquette normale s'efface désormais au survol, et le contour est retiré.
+
+**Disposition :** la rangée du bas passe de 3 colonnes à une grille 2 × 2 :
+- Rappels et Stock ;
+- Hospitalisés et Espèces.
+
+Le donut a besoin de la largeur d'une demi-rangée. Sous 1 100 px, les cartes passent sur une colonne.
+
+### Ce qui n'est pas repris, et pourquoi
+
+| Élément | Pourquoi |
+|---|---|
+| Chiffres héros de 60 à 80 px | Ta charte plafonne à 24 px. Le chiffre héros reste à 24 px, le contraste vient du libellé gris à côté. |
+| Police mono pour les valeurs | Geist Mono n'est pas chargée dans l'app. Les valeurs sont en chiffres tabulaires de Geist, alignés en colonnes. |
+| Thème sombre télémétrie et vert « profit » | Les couleurs du design system l'emportent. |
+| Waterfall, jauge, chronologie de déploiement, heatmap 24 × 7 | Aucune donnée réelle n'y correspond sur ce tableau de bord. Une heatmap des consultations par heure et par jour serait possible sur les rendez-vous réels, mais avec 52 rendez-vous elle serait presque vide. |
+
+### Preuve
+
+- **Mesures :** 72 au total, toutes vides, sur 5 jeux, dont les survols de la courbe et du donut, en Clean clair, Clean sombre et Premium, grand et petit format.
+  - Les captures sont dans `apres/` ; les fichiers `*-survol.jpg` montrent l'infobulle et le donut allumé.
+  - La mesure a trouvé trois défauts, corrigés avant ce commit : l'infobulle hors de sa carte, la date d'axe en double, le centre du donut en Premium.
+- **Tests :** 3 nouveaux sur la répartition par espèce :
+  - patients actifs seulement, noms regroupés ;
+  - « Autres (n) » et espèce non renseignée ;
+  - aucun patient actif.
+- **Chiffres :** ceux de la base réelle, soit 11 patients actifs : Chien 8 (73 %), Chat 1, Cheval 1 et Lapin 1 (9 % chacun).

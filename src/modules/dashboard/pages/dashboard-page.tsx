@@ -49,6 +49,7 @@ import {
   buildStockWatch,
   buildUpcomingReminders,
 } from "../model/dashboard-watch";
+import { buildSpeciesSplit } from "../model/dashboard-widgets";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 
 export interface DashboardPageProps {
@@ -362,6 +363,8 @@ export function DashboardPage({
               remindersError={medicalReminders.error}
               remindersLoading={medicalReminders.loading}
               stock={buildStockWatch({ now, products: presentation.products })}
+              species={patients.loading ? undefined : buildSpeciesSplit(presentation.patients, now)}
+              onPatients={() => navigate("patients")}
             />
           }
           today={today}

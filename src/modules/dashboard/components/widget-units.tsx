@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { ArrowRight, Bird, Cat, Dog, Horse, PawPrint, Rabbit, Turtle } from "@/lib/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatNumber } from "@/utils/display-format";
 import { formatCentimes } from "../v2/model";
-import type { DayUnit, DayUnitState, MonthForecast } from "../model/dashboard-widgets";
+import type { DayUnit, DayUnitState, MonthForecast, SpeciesRow } from "../model/dashboard-widgets";
 import { shares } from "../model/dashboard-widgets";
 import "./widget-units.css";
 
@@ -15,11 +16,27 @@ export interface CategoryRow {
   share?: number;
 }
 
-export function CategoryRows({ rows, label }: { rows: CategoryRow[]; label: string }) {
+export function CategoryRows({
+  rows,
+  label,
+  active,
+  onActive,
+}: {
+  rows: CategoryRow[];
+  label: string;
+  /** The row lit by a hover elsewhere (the donut's arc). */
+  active?: string | null;
+  onActive?: (key: string | null) => void;
+}) {
   return (
-    <ul aria-label={label} className="widgetRows">
+    <ul aria-label={label} className="widgetRows" data-dimmed={active ? "" : undefined}>
       {rows.map((row) => (
-        <li key={row.key}>
+        <li
+          data-active={active === row.key || undefined}
+          key={row.key}
+          onPointerEnter={onActive ? () => onActive(row.key) : undefined}
+          onPointerLeave={onActive ? () => onActive(null) : undefined}
+        >
           <span aria-hidden="true" className="widgetRowMark">
             {row.mark}
           </span>
@@ -116,9 +133,23 @@ export function ForecastBar({ forecast }: { forecast: MonthForecast }) {
   const percent = (value: number) => `${Math.min(100, (value / scale) * 100)}%`;
   const remaining = Math.max(0, forecast.projected - forecast.collected);
   const previousName = `${forecast.previousLabel[0].toUpperCase()}${forecast.previousLabel.slice(1)}`;
+  // The mark's label sits over the mark, kept inside the card at either end.
+  const markAt = (forecast.previousTotal / scale) * 100;
+  const markLabelStyle =
+    markAt > 70
+      ? { right: `${100 - markAt}%` }
+      : markAt < 30
+        ? { left: `${markAt}%` }
+        : { left: `${markAt}%`, transform: "translateX(-50%)" };
   return (
     <section aria-label="Prévision du mois" className="forecast">
       <p className="forecastLine">{sentence}</p>
+      <div className="forecastScale">
+      {forecast.previousTotal ? (
+        <span aria-hidden="true" className="forecastMarkLabel" style={markLabelStyle}>
+          {previousName} · {formatCentimes(forecast.previousTotal)}
+        </span>
+      ) : null}
       <div aria-label={sentence} className="forecastBar" role="img">
         <i data-part="collected" style={{ width: percent(forecast.collected) }} />
         <i data-part="projected" style={{ width: percent(remaining) }} />
@@ -132,6 +163,11 @@ export function ForecastBar({ forecast }: { forecast: MonthForecast }) {
             </TooltipContent>
           </Tooltip>
         ) : null}
+      </div>
+      <div aria-hidden="true" className="forecastAxis">
+        <span>0</span>
+        <span>{formatCentimes(scale)}</span>
+      </div>
       </div>
       <CategoryRows
         label="Détail de la prévision"
@@ -147,5 +183,109 @@ export function ForecastBar({ forecast }: { forecast: MonthForecast }) {
         Prévision linéaire, au rythme des {forecast.daysElapsed} premiers jours de {forecast.monthLabel}.
       </p>
     </section>
+  );
+}
+
+/** A card's last line: what to know, then its single action as a pill. */
+export function WidgetFooter({ children, action, onAction }: { children?: ReactNode; action: string; onAction: () => void }) {
+  return (
+    <div className="widgetFooter">
+      <p>{children}</p>
+      <button className="pillAction" onClick={onAction} type="button">
+        {action} <ArrowRight aria-hidden="true" size={13} />
+      </button>
+    </div>
+  );
+}
+
+function speciesGlyph(name: string) {
+  const norm = name.toLocaleLowerCase("fr-FR");
+  if (norm.includes("chien")) return Dog;
+  if (norm.includes("chat")) return Cat;
+  if (norm.includes("lapin") || norm.includes("nac") || norm.includes("rongeur")) return Rabbit;
+  if (norm.includes("oiseau")) return Bird;
+  if (norm.includes("tortue") || norm.includes("reptile")) return Turtle;
+  if (norm.includes("cheval")) return Horse;
+  return PawPrint;
+}
+
+const DONUT = { size: 120, radius: 50, stroke: 14, gap: 3 };
+
+/**
+ * Active patients by species: a donut whose centre reads the hovered species,
+ * and the category rows beside it, lit together.
+ */
+export function SpeciesSplit({ split }: { split: { total: number; rows: SpeciesRow[] } }) {
+  const [active, setActive] = useState<string | null>(null);
+  const circumference = 2 * Math.PI * DONUT.radius;
+  const gap = split.rows.length > 1 ? DONUT.gap : 0;
+  const lengths = split.rows.map((row) => (row.count / Math.max(1, split.total)) * circumference);
+  const arcs = split.rows.map((row, index) => ({
+    row,
+    index,
+    start: lengths.slice(0, index).reduce((sum, length) => sum + length, 0),
+    length: Math.max(0.5, lengths[index] - gap),
+  }));
+  const hot = split.rows.find((row) => row.key === active);
+  return (
+    <div className="speciesSplit">
+      <div className="speciesDonutBox">
+      <svg
+        aria-label={split.rows.map((row) => `${row.name} : ${row.count} (${row.share} %)`).join(", ")}
+        className="speciesDonut"
+        height={DONUT.size}
+        role="img"
+        viewBox={`0 0 ${DONUT.size} ${DONUT.size}`}
+        width={DONUT.size}
+      >
+        <g transform={`rotate(-90 ${DONUT.size / 2} ${DONUT.size / 2})`}>
+          <circle className="speciesTrack" cx={DONUT.size / 2} cy={DONUT.size / 2} fill="none" r={DONUT.radius} strokeWidth={DONUT.stroke} />
+          {arcs.map(({ row, index, start, length }) => (
+            <circle
+              className="speciesArc"
+              cx={DONUT.size / 2}
+              cy={DONUT.size / 2}
+              data-active={active === row.key || undefined}
+              data-tone={index}
+              fill="none"
+              key={row.key}
+              onPointerEnter={() => setActive(row.key)}
+              onPointerLeave={() => setActive(null)}
+              r={DONUT.radius}
+              strokeDasharray={`${length} ${circumference - length}`}
+              strokeDashoffset={-start}
+              strokeWidth={DONUT.stroke}
+            >
+              <title>{`${row.name} : ${row.count} (${row.share} %)`}</title>
+            </circle>
+          ))}
+        </g>
+      </svg>
+      {/* The centre is laid out, not positioned: figure and label can never overlap. */}
+      <p aria-hidden="true" className="speciesCenter">
+        <strong>{formatNumber(hot ? hot.count : split.total)}</strong>
+        <span>{hot ? `${hot.name} · ${hot.share} %` : "actifs"}</span>
+      </p>
+      </div>
+      <CategoryRows
+        active={active}
+        label="Patients actifs par espèce"
+        onActive={setActive}
+        rows={split.rows.map((row, index) => {
+          const Glyph = speciesGlyph(row.name);
+          return {
+            key: row.key,
+            mark: (
+              <span className="speciesMark" data-tone={index}>
+                <Glyph size={13} strokeWidth={1.5} />
+              </span>
+            ),
+            name: row.name,
+            value: formatNumber(row.count),
+            share: row.share,
+          };
+        })}
+      />
+    </div>
   );
 }

@@ -1036,10 +1036,9 @@
   stroke-linejoin: round;
 }
 
-/* Watch cards: an empty card keeps its natural height, the sentence quiet and
-   aligned with the title, instead of a tall centred band; cards with rows do
-   not change. */
-:root[data-skin="clean"] .watchCard:has(.cardFlush > .watchEmpty) { align-self: start; }
+/* Watch cards: an empty card's sentence stays quiet and aligned with the
+   title, instead of a tall centred band. Every card keeps the row's height so
+   the footers line up. */
 :root[data-skin="clean"] .watchCard .watchEmpty {
   flex: 0 0 auto;
   padding: 12px 22px 16px;

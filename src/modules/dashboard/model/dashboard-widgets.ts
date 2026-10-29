@@ -130,3 +130,51 @@ export function buildMonthForecast(transactions: Transaction[], now: Date): Mont
     passed,
   };
 }
+
+export interface SpeciesRow {
+  key: string;
+  name: string;
+  count: number;
+  share: number;
+}
+
+/** Above this many species, the smallest ones share one "Autres" line. */
+export const SPECIES_SHOWN = 4;
+
+/**
+ * Active patients (deceased excluded) by species, largest first. Names are
+ * grouped regardless of case or spaces; patients without a species count as
+ * "Non renseignée" rather than disappearing.
+ */
+export function buildSpeciesSplit(patients: { species?: string; status?: string; createdAt?: string }[], now: Date) {
+  const active = patients.filter((patient) => patient.status !== "decede");
+  const groups = new Map<string, { name: string; count: number }>();
+  for (const patient of active) {
+    const raw = (patient.species ?? "").trim();
+    const key = raw.toLocaleLowerCase("fr-FR") || "non-renseignee";
+    const name = raw ? raw[0].toLocaleUpperCase("fr-FR") + raw.slice(1) : "Non renseignée";
+    const group = groups.get(key) ?? { name, count: 0 };
+    group.count += 1;
+    groups.set(key, group);
+  }
+  const sorted = [...groups.entries()]
+    .map(([key, group]) => ({ key, ...group }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "fr"));
+  const kept = sorted.length > SPECIES_SHOWN + 1 ? sorted.slice(0, SPECIES_SHOWN) : sorted;
+  const rest = sorted.slice(kept.length);
+  const lines = rest.length
+    ? [...kept, { key: "autres", name: `Autres (${rest.length})`, count: rest.reduce((sum, row) => sum + row.count, 0) }]
+    : kept;
+  const parts = shares(lines.map((row) => row.count));
+  const since = new Date(now.getTime() - 30 * 86_400_000);
+  const recent = active.filter((patient) => {
+    const created = parseDashboardDate(patient.createdAt);
+    return Boolean(created && created >= since && created <= now);
+  }).length;
+  return {
+    total: active.length,
+    deceased: patients.length - active.length,
+    recent,
+    rows: lines.map((row, index): SpeciesRow => ({ key: row.key, name: row.name, count: row.count, share: parts[index] })),
+  };
+}
