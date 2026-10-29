@@ -1864,3 +1864,31 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   color: var(--faint);
   font-variant-numeric: tabular-nums;
 }
+
+/* ------------------------------------------------------------ Previous period on the chart */
+/* A reference, not a second subject: the previous period's receipts as a fine
+   grey dash, never a second solid curve. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .chartLinePrevious {
+  fill: none;
+  stroke-width: 1.25;
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.chartLegendKeyPrevious, .chartTipKeyPrevious) {
+  background: repeating-linear-gradient(90deg, var(--faint) 0 2px, transparent 2px 4px) !important;
+}
+
+/* ------------------------------------------------------------ Density (one bento screen) */
+.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) {
+  row-gap: 20px;
+}
+
+.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > .filters {
+  margin-bottom: -8px;
+}
+
+.premium-analytics-dashboard .premium-overview-shell:has(> .kpis) > :is(.split, .watchGrid) {
+  gap: 16px;
+}

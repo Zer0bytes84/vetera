@@ -1061,21 +1061,8 @@
   gap: 6px !important;
 }
 
-/* Consultations chart: the previous period as a dashed line under the
-   current one (Performance dashboard reference). */
-/* A reference, not a second subject: a fine, light, sparse dash, so the
-   current period's solid curves stay the main reading. */
-:root[data-skin="clean"] .chartLinePrevious {
-  fill: none;
-  stroke-width: 1;
-  stroke-dasharray: 2 5;
-  stroke-linecap: round;
-  opacity: 0.35;
-}
-:root[data-skin="clean"] :is(.chartLegendKeyPrevious, .chartTipKeyPrevious) {
-  background: repeating-linear-gradient(90deg, var(--series-2) 0 2px, transparent 2px 5px) !important;
-  opacity: 0.45;
-}
+/* The chart's previous period (grey dash) is styled for every skin in
+   premium-analytics.css. */
 
 /* Hospital capacity as a grid of units (Disk usage reference): one square per
    active location, the figure first, the legend, then the forecast sentence

@@ -35,6 +35,8 @@ import { cn } from "@/lib/utils";
 import { PageDate } from "@/components/PageDate";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { WidgetState } from "./clinical/shared";
+import { buildDayUnits, buildMonthForecast } from "../model/dashboard-widgets";
+import { DayUnits, ForecastBar } from "./widget-units";
 import type { View } from "@/types";
 import "./premium-analytics.css";
 
@@ -231,6 +233,8 @@ interface TrendPoint {
   visits: number;
   /** Consultations in the matching bucket of the previous period. */
   previousVisits?: number;
+  /** Receipts (DA) in the matching bucket of the previous period. */
+  previousReceipts?: number;
 }
 
 const T_CHART = { h: 220, top: 16, bottom: 28, left: 54, right: 34 };
@@ -261,11 +265,12 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
   const gradientId = useId().replace(/:/g, "");
   const lineReceipts = monotonePath(points.map((p, k) => [x(k), yReceipts(p.receipts)]));
   const lineVisits = monotonePath(points.map((p, k) => [x(k), yVisits(p.visits)]));
-  // The previous period keeps the current scale, so the drawn axis never moves;
-  // a higher value stops at the top of the plot and reads in full in the tooltip.
-  const hasPrevious = points.some((p) => p.previousVisits !== undefined);
-  const linePreviousVisits = hasPrevious
-    ? monotonePath(points.map((p, k) => [x(k), yVisits(Math.min(p.previousVisits ?? 0, topVisits))]))
+  // The previous period's receipts, dashed in grey under the current curve. They keep
+  // the current scale, so the drawn axis never moves; a higher value stops at the top
+  // of the plot and reads in full in the tooltip.
+  const hasPrevious = points.some((p) => p.previousReceipts !== undefined);
+  const linePreviousReceipts = hasPrevious
+    ? monotonePath(points.map((p, k) => [x(k), yReceipts(Math.min(p.previousReceipts ?? 0, topReceipts))]))
     : "";
   const closeArea = (line: string) =>
     n ? `${line} L${x(n - 1).toFixed(1)},${yReceipts(0)} L${x(0).toFixed(1)},${yReceipts(0)} Z` : "";
@@ -322,9 +327,9 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
           <span>Consultations (échelle de droite)</span>
         </span>
         {hasPrevious ? (
-          <span className="chartLegendItem" data-clean-only="">
+          <span className="chartLegendItem">
             <i className="chartLegendKey chartLegendKeyPrevious" />
-            <span>Consultations, période précédente</span>
+            <span>Recettes, période précédente</span>
           </span>
         ) : null}
       </div>
@@ -420,13 +425,12 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
             <path className="chartGlow" d={lineVisits} stroke="var(--series-2)" />
             <path className="chartGlow" d={lineReceipts} stroke="var(--series-1)" />
 
-            {/* Previous period's consultations, dashed under the current curve. */}
+            {/* Previous period's receipts, dashed in grey under the current curves. */}
             {hasPrevious ? (
               <path
-                d={linePreviousVisits}
+                d={linePreviousReceipts}
                 className="chartLine chartLinePrevious"
-                data-clean-only=""
-                stroke="var(--series-2)"
+                stroke="var(--faint)"
               />
             ) : null}
 
@@ -540,11 +544,19 @@ function TrendChartCurve({ points }: { points: TrendPoint[] }) {
                 <strong>{hot.visits}</strong> consultations
               </span>
             </div>
-            {hot.previousVisits !== undefined ? (
-              <div className="chartTipRow" data-clean-only="">
+            {hot.previousReceipts !== undefined ? (
+              <div className="chartTipRow">
                 <i className="chartTipKey chartTipKeyPrevious" />
                 <span>
-                  <strong>{hot.previousVisits}</strong> la période précédente
+                  <strong>{formatNumber(hot.previousReceipts)} DA</strong> la période précédente
+                </span>
+              </div>
+            ) : null}
+            {hot.previousVisits !== undefined ? (
+              <div className="chartTipRow">
+                <i className="chartTipKey chartTipKeyPrevious" />
+                <span>
+                  <strong>{hot.previousVisits}</strong> consultations la période précédente
                 </span>
               </div>
             ) : null}
@@ -575,6 +587,7 @@ export function PremiumAnalytics({
   model,
   period,
   onPeriod,
+  states,
   onFinances,
   onPatients,
   onActions,
@@ -689,6 +702,13 @@ export function PremiumAnalytics({
         const time = new Date(a.startTime).getTime();
         return time >= previousFrom && time <= previousTo;
       }).length;
+      const previousReceipts = transactions
+        .filter((t) => {
+          if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
+          const time = new Date(t.date).getTime();
+          return time >= previousFrom && time <= previousTo;
+        })
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
 
       points.push({
         label,
@@ -696,6 +716,7 @@ export function PremiumAnalytics({
         receipts: receiptsSum / 100, // into standard DA
         visits: visitsCount,
         previousVisits,
+        previousReceipts: previousReceipts / 100,
       });
 
       cursor.setDate(cursor.getDate() + step);
@@ -712,11 +733,19 @@ export function PremiumAnalytics({
     return points;
   }, [ranges, presentation?.transactions, presentation?.appointments]);
 
+  // The month's receipts and where their pace leads (Recettes card).
+  const forecast = useMemo(
+    () => buildMonthForecast(presentation?.transactions ?? [], now ?? new Date()),
+    [presentation?.transactions, now]
+  );
+  // The day's appointments as units (Cette semaine card).
+  const dayUnits = useMemo(() => buildDayUnits(today ?? []), [today]);
+
   // Compute "Cette semaine" stats
   // Premier rendez-vous du jour encore à venir ou en cours : simple repère visuel.
   const nextUpId = useMemo(() => {
     const nowMs = now?.getTime();
-    return today?.slice(0, 3).find((row) => {
+    return today?.find((row) => {
       if (["completed", "cancelled", "no_show"].includes(row.appointment.status)) return false;
       if (nowMs === undefined) return true;
       const end = new Date(row.appointment.endTime ?? row.appointment.startTime).getTime();
@@ -1116,6 +1145,8 @@ export function PremiumAnalytics({
           </div>
           <div className="cardFlush">
             <TrendChartCurve points={chartPoints} />
+            {/* No forecast from a journal still loading. */}
+            {states.cash.loading ? null : <ForecastBar forecast={forecast} />}
           </div>
         </div>
 
@@ -1133,11 +1164,7 @@ export function PremiumAnalytics({
                 })}
               </p>
             </div>
-            <button
-              type="button"
-              className="moreLink"
-              onClick={() => onNavigate?.("agenda")}
-            >
+            <button type="button" className="pillAction" onClick={() => onNavigate?.("agenda")}>
               Agenda <ArrowRight size={13} aria-hidden="true" />
             </button>
           </div>
@@ -1180,20 +1207,16 @@ export function PremiumAnalytics({
               </div>
             </dl>
 
-            {/* Upcoming Appointments Table */}
-            {today && today.length > 0 ? (
-              <div style={{ overflowX: "auto" }}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Quand</th>
-                      <th>Patient</th>
-                      <th>Motif</th>
-                      <th style={{ width: 44, textAlign: "right" }} aria-label="Action" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {today.slice(0, 3).map((row) => {
+            {/* Rendez-vous du jour: units that count at a glance, then the next visits. */}
+            <h3 className="daySectionTitle">Rendez-vous du jour</h3>
+            {dayUnits.total ? (
+              <>
+                <DayUnits day={dayUnits} />
+                <ul className="dayList">
+                  {today!
+                    .filter((row) => !["completed", "cancelled", "no_show"].includes(row.appointment.status))
+                    .slice(0, 3)
+                    .map((row) => {
                       const isNext = row.appointment.id === nextUpId;
                       const timeStr = row.appointment.startTime
                         ? new Date(row.appointment.startTime).toLocaleTimeString("fr-FR", {
@@ -1201,68 +1224,50 @@ export function PremiumAnalytics({
                             minute: "2-digit",
                           })
                         : "Aujourd'hui";
+                      const type = row.appointment.type || "Consultation";
                       return (
-                        <tr data-next={isNext || undefined} key={row.appointment.id}>
-                          <td>
-                            <strong className="whenTime">{timeStr}</strong>
-                            {isNext ? <span className="whenNext">À suivre</span> : null}
-                          </td>
-                          <td>
-                            <div className="flex flex-col">
-                              <span style={{ fontWeight: 500, color: "var(--ink)" }}>
-                                {row.patientName || "Patient"}
+                        <li key={row.appointment.id}>
+                          {/* The row follows the visit in Flux, where visits move on. */}
+                          <button
+                            type="button"
+                            className="dayRow"
+                            data-next={isNext || undefined}
+                            aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
+                            onClick={() => onStartConsultation?.(row.appointment.id)}
+                          >
+                            <span className="dayRowTime">{timeStr}</span>
+                            <span className="dayRowText">
+                              <strong>{row.patientName || "Patient"}</strong>
+                              <span>
+                                {[
+                                  ["arrived", "waiting", "in_progress"].includes(row.appointment.status)
+                                    ? "En cours"
+                                    : isNext
+                                      ? "Prochain"
+                                      : null,
+                                  row.ownerName ? `avec ${row.ownerName}` : null,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ") || "Rendez-vous à venir"}
                               </span>
-                              {row.ownerName && (
-                                <span style={{ fontSize: 12, color: "var(--faint)" }}>
-                                  {row.ownerName}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td>
+                            </span>
                             <Badge
-                              className={cn(
-                                "border-transparent",
-                                getAppointmentTypeMeta(row.appointment.type).badgeClassName
-                              )}
+                              className={cn("border-transparent", getAppointmentTypeMeta(row.appointment.type).badgeClassName)}
                               variant="outline"
                             >
-                              {row.appointment.type || "Consultation"}
+                              {type}
                             </Badge>
-                          </td>
-                          <td style={{ textAlign: "right" }}>
-                            <ShortcutTooltip label="Suivre dans Flux">
-                              <button
-                                type="button"
-                                className="iconBtn"
-                                aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
-                                onClick={() =>
-                                  onStartConsultation?.(row.appointment.id)
-                                }
-                              >
-                                <ArrowRight size={13} strokeWidth={1.5} aria-hidden="true" />
-                              </button>
-                            </ShortcutTooltip>
-                          </td>
-                        </tr>
+                          </button>
+                        </li>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
+                </ul>
+                {dayUnits.done === dayUnits.total ? (
+                  <p className="dayEmpty">Tous les rendez-vous du jour sont terminés.</p>
+                ) : null}
+              </>
             ) : (
-              <p
-                style={{
-                  margin: 0,
-                  padding: "24px 20px",
-                  background: "var(--band)",
-                  fontSize: 13,
-                  textAlign: "center",
-                  color: "var(--faint)",
-                }}
-              >
-                Aucun rendez-vous restant aujourd'hui.
-              </p>
+              <p className="dayEmpty">Aucun rendez-vous aujourd’hui.</p>
             )}
           </div>
         </div>

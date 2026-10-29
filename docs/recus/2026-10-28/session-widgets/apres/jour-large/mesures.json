@@ -1,0 +1,65 @@
+[
+  {
+    "appearance": "clean-light",
+    "row": "kpi",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "surveiller",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "kpi",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "surveiller",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "kpi",
+    "width": 1104,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes",
+    "width": 1104,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "surveiller",
+    "width": 1104,
+    "clipped": [],
+    "overlaps": []
+  }
+]

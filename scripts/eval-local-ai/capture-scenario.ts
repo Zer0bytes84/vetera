@@ -5,7 +5,7 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro";
+  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro" | "tableau";
   /** "dictee": generator preference set before the dictation (gemma3 or gemma4). */
   generator?: string;
   /** "outils-ia": position the switch must reach ("on" = new assistant version). */
@@ -73,6 +73,12 @@ async function run() {
     localStorage.setItem("baitari:ai-models-onboarding-completed", "true");
     const { captureMicro } = await import("./capture-micro");
     await captureMicro(config.signal, config.query.split(","), (config.generator ?? "gemma3").split(","));
+    return;
+  }
+  // Dashboard widgets: one pass per appearance listed in the query.
+  if (config.scenario === "tableau") {
+    const { captureDashboard } = await import("./capture-tableau");
+    await captureDashboard(config.signal, config.query.split(","));
     return;
   }
   // No reload here: the first launch on an empty folder is still creating its database.

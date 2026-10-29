@@ -321,7 +321,9 @@ describe("thème Clean : widgets", () => {
   it("porte la comparaison sous le chiffre et la période précédente en pointillé", () => {
     const chip = rulesFor(/\.kpiSub \.delta > span:not/).map((rule) => rule.toString()).join("");
     expect(chip).toContain("border-radius: 999px");
-    expect(rulesFor(/\.chartLinePrevious$/)[0]?.toString()).toMatch(/stroke-dasharray/);
+    // The previous period's grey dash is drawn in every skin (premium-analytics.css).
+    const analytics = readFileSync("src/modules/dashboard/components/premium-analytics.css", "utf8");
+    expect(analytics).toMatch(/\.chartLinePrevious \{[^}]*stroke-dasharray/);
   });
 
   it("varie la première rangée : une aire pour la trésorerie, les barres pour un seul indicateur, la même ligne de base", () => {

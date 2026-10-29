@@ -1,0 +1,290 @@
+/* Countable widgets of the dashboard: units, category rows, forecast bar.
+   Chart tokens only (ink, soft, faint, series-1), sizes 12, 13 and 24 px. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetHero {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetHero strong {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetHero span {
+  font-size: 13px;
+  color: var(--soft);
+}
+
+/* ------------------------------------------------------------ Units */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayUnits {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .unitGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14px, 18px));
+  gap: 4px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .unit {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: var(--series-1);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .unitGrid .unit {
+  cursor: default;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .unit[data-state="underway"] {
+  background: color-mix(in srgb, var(--series-1) 45%, transparent);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .unit[data-state="upcoming"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+/* ------------------------------------------------------------ Category rows */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRows li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 8px;
+  min-height: 24px;
+  font-size: 13px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowMark {
+  display: inline-flex;
+  width: 10px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowMark > i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowValue,
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowShare {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowValue {
+  color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .widgetRowShare {
+  min-width: 40px;
+  color: var(--faint);
+}
+
+/* ------------------------------------------------------------ Forecast bar */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecast {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 20px 16px;
+  box-shadow: var(--hair-t);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastLine {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastBar {
+  position: relative;
+  display: flex;
+  height: 12px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastBar > i:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.forecastBar > i, .forecastKey)[data-part="collected"] {
+  background: var(--series-1);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) :is(.forecastBar > i, .forecastKey)[data-part="projected"] {
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--series-1) 55%, transparent) 0 2px,
+    color-mix(in srgb, var(--series-1) 12%, transparent) 2px 5px
+  );
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastKey[data-part="previous"] {
+  width: 2px !important;
+  margin-left: 4px;
+  border-radius: 1px !important;
+  background: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastMark {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .forecastNote {
+  margin: 0;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* ------------------------------------------------------------ The widget's single action */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .pillAction {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--btn-primary-fg);
+  background: var(--btn-primary-bg);
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out-quint);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .pillAction:hover {
+    background: var(--btn-primary-hover);
+  }
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .pillAction:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------ Rendez-vous du jour */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .daySectionTitle {
+  margin: 0;
+  padding: 14px 20px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--soft);
+  box-shadow: var(--hair-t);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayUnits {
+  padding-top: 10px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRow {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 20px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--hair-t);
+  transition: background-color 180ms var(--ease-out-quint);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRow:hover {
+    background: var(--lift, var(--muted));
+  }
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRow:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRowTime {
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRow[data-next] .dayRowTime {
+  color: var(--series-1);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRowText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRowText > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRowText strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayRowText span {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .dayEmpty {
+  margin: 0;
+  padding: 16px 20px 20px;
+  font-size: 13px;
+  color: var(--faint);
+}

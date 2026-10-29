@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import type { WatchList, WatchRow } from "../model/dashboard-watch";
 import "./dashboard-watch.css";
+import "./widget-units.css";
 
 interface WatchCardProps {
   /** Shown above the list or the empty sentence (the hospital capacity). */
@@ -55,7 +56,8 @@ function WatchCard({
           </h2>
           <p className="cardNote">{note}</p>
         </div>
-        <button className="moreLink" onClick={onMore} type="button">
+        {/* The card's single action. */}
+        <button className="pillAction" onClick={onMore} type="button">
           {moreLabel} <ArrowRight aria-hidden="true" size={13} />
         </button>
       </div>
@@ -94,9 +96,7 @@ function WatchCard({
             ))}
             {hidden > 0 ? (
               <li className="watchMore">
-                <button onClick={onMore} type="button">
-                  + {hidden} autre{hidden > 1 ? "s" : ""}
-                </button>
+                + {hidden} autre{hidden > 1 ? "s" : ""} dans {moreLabel}
               </li>
             ) : null}
           </ul>

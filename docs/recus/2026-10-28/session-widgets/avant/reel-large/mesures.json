@@ -1,0 +1,75 @@
+[
+  {
+    "appearance": "clean-light",
+    "row": "kpi",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "surveiller",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "kpi",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "surveiller",
+    "width": 1096,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "kpi",
+    "width": 1104,
+    "clipped": [],
+    "overlaps": [
+      "« +106 % » × « contre 25 000 DA la période pr »",
+      "« +85,7 % » × « contre 7 la période précédente »"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes",
+    "width": 1104,
+    "clipped": [
+      "card frame (666 > 656) « Recettes & activitéEncaissements en DA e »",
+      "card frame (434 > 424) « Cette semaineDepuis lundi 26 oct.Agenda  »"
+    ],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "surveiller",
+    "width": 1104,
+    "clipped": [
+      "card frame watchCard (362 > 352) « Rappels à venirEn retard et sous 14 jour »",
+      "card frame watchCard (362 > 352) « Stock à surveiller1 à traiterSeuils et p »",
+      "card frame watchCard (362 > 352) « HospitalisésAnimaux admis en ce momentSo »"
+    ],
+    "overlaps": []
+  }
+]
