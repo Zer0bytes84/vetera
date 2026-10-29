@@ -1,0 +1,134 @@
+[
+  {
+    "name": "1-dossier",
+    "before": {
+      "appointments": 52,
+      "patientAppointments": 0,
+      "notes": [],
+      "embeddings": []
+    }
+  },
+  {
+    "name": "2-note-vide"
+  },
+  {
+    "name": "3-dictee",
+    "dictated": "Appel de la propriétaire ce matin. Max vomit depuis hier soir, trois fois, après avoir mangé de l'herbe. Il boit et mange encore un peu. Pas de diarrhée, il reste le joueur.",
+    "path": "transcription whisper du clip",
+    "error": null
+  },
+  {
+    "name": "generation",
+    "seconds": 10.5,
+    "refusal": "La réponse de l’assistant ne reprend pas fidèlement les observations dictées. Votre dictée est conservée ; aucune note n’a été enregistrée.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »",
+    "verbatim": false
+  },
+  {
+    "name": "4-relecture",
+    "notesBeforeValidation": 0
+  },
+  {
+    "name": "5-note-validee",
+    "after": {
+      "appointments": 52,
+      "patientAppointments": 0,
+      "notes": [
+        {
+          "id": "mvtt4z06ycvrr2fg6e",
+          "title": "Note hors visite · Appel du propriétaire",
+          "created_at": "2026-10-29T17:18:42.486Z",
+          "tags": "{\"offVisitNote\":{\"kind\":\"call\",\"soap\":{\"subjective\":\"- Appel de la propriétaire ce matin.\\n- Max vomit depuis hier soir, trois fois, après avoir mangé de l'herbe.\\n- Il boit et mange encore un peu.\\n- Pas de diarrhée, il reste le joueur.\",\"objective\":\"\",\"assessment\":\"- Probable gastrite simple.\",\"plan\":\"1. Je conseille une diète de 24 heures puis une alimentation légère en petite quantité, et de rappeler ou de venir en consultation si les vomissements continuent demain ou si du sang apparaît.\"},\"transcript\":\"Motif et antécédents : Appel de la propriétaire ce matin. Max vomit depuis hier soir, trois fois, après avoir mangé de l'herbe. Il boit et mange encore un peu. Pas de diarrhée, il reste le joueur.\\nÉvaluation : Probable gastrite simple.\\nPlan de soins : Je conseille une diète de 24 heures puis une alimentation légère en petite quantité, et de rappeler ou de venir en consultation si les vomissements continuent demain ou si du sang apparaît.\",\"origin\":\"dictee\",\"reviewedAt\":\"2026-10-29T17:18:42.486Z\",\"reviewedBy\":\"mvtt4fe8tl9xikejpd\"}}"
+        }
+      ],
+      "embeddings": []
+    }
+  },
+  {
+    "name": "6-chronologie"
+  },
+  {
+    "name": "7-flux",
+    "fluxMentionsMax": false
+  },
+  {
+    "name": "8-recherche-mot",
+    "query": "gastrite",
+    "noteId": "mvtt4z06ycvrr2fg6e",
+    "hit": {
+      "sourceId": "mvtt4z06ycvrr2fg6e",
+      "sourceType": "document",
+      "section": "document",
+      "match": "text",
+      "score": 0.3877990137977535,
+      "patientName": "Max"
+    },
+    "top": [
+      {
+        "sourceId": "mvtt4z06ycvrr2fg6e",
+        "sourceType": "document",
+        "match": "text",
+        "score": 0.3877990137977535
+      },
+      {
+        "sourceId": "mvqyrkg2a5ggfbfjvxm",
+        "sourceType": "soap",
+        "match": "semantic",
+        "score": 0.34669533999123303
+      }
+    ]
+  },
+  {
+    "name": "9-recherche-sens",
+    "query": "il rejette sa nourriture, estomac irrité",
+    "noteId": "mvtt4z06ycvrr2fg6e",
+    "hit": {
+      "sourceId": "mvtt4z06ycvrr2fg6e",
+      "sourceType": "document",
+      "section": "document",
+      "match": "semantic",
+      "score": 0.47503624081800555,
+      "patientName": "Max"
+    },
+    "top": [
+      {
+        "sourceId": "mvtt4z06ycvrr2fg6e",
+        "sourceType": "document",
+        "match": "semantic",
+        "score": 0.47503624081800555
+      },
+      {
+        "sourceId": "mvqyrkg2a5ggfbfjvxm",
+        "sourceType": "soap",
+        "match": "semantic",
+        "score": 0.37790568726201634
+      }
+    ]
+  },
+  {
+    "name": "index",
+    "final": {
+      "appointments": 52,
+      "patientAppointments": 0,
+      "notes": [
+        {
+          "id": "mvtt4z06ycvrr2fg6e",
+          "title": "Note hors visite · Appel du propriétaire",
+          "created_at": "2026-10-29T17:18:42.486Z",
+          "tags": "{\"offVisitNote\":{\"kind\":\"call\",\"soap\":{\"subjective\":\"- Appel de la propriétaire ce matin.\\n- Max vomit depuis hier soir, trois fois, après avoir mangé de l'herbe.\\n- Il boit et mange encore un peu.\\n- Pas de diarrhée, il reste le joueur.\",\"objective\":\"\",\"assessment\":\"- Probable gastrite simple.\",\"plan\":\"1. Je conseille une diète de 24 heures puis une alimentation légère en petite quantité, et de rappeler ou de venir en consultation si les vomissements continuent demain ou si du sang apparaît.\"},\"transcript\":\"Motif et antécédents : Appel de la propriétaire ce matin. Max vomit depuis hier soir, trois fois, après avoir mangé de l'herbe. Il boit et mange encore un peu. Pas de diarrhée, il reste le joueur.\\nÉvaluation : Probable gastrite simple.\\nPlan de soins : Je conseille une diète de 24 heures puis une alimentation légère en petite quantité, et de rappeler ou de venir en consultation si les vomissements continuent demain ou si du sang apparaît.\",\"origin\":\"dictee\",\"reviewedAt\":\"2026-10-29T17:18:42.486Z\",\"reviewedBy\":\"mvtt4fe8tl9xikejpd\"}}"
+        }
+      ],
+      "embeddings": [
+        {
+          "note_id": "mvtt4z06ycvrr2fg6e",
+          "source_type": "document",
+          "section": "document"
+        },
+        {
+          "note_id": "mvtt4z06ycvrr2fg6e",
+          "source_type": "document",
+          "section": "document"
+        }
+      ]
+    }
+  }
+]
