@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { buildInvoicePdf, type InvoicePdfData, type InvoiceSettings } from "@/lib/invoice-pdf";
+import { buildInvoicePdf, invoicePdfFileName, type InvoicePdfData, type InvoiceSettings } from "@/lib/invoice-pdf";
+import { isTestDataFolder } from "@/lib/test-data-folder";
 import { savePdf } from "@/lib/save-pdf";
 
 export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
@@ -13,10 +14,12 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
   const [rendering, setRendering] = useState(true);
   const [renderError, setRenderError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [test, setTest] = useState(false);
+  useEffect(() => { void isTestDataFolder().then(setTest); }, []);
   const result = useMemo(() => {
-    try { return { doc: buildInvoicePdf(data, settings), error: "" }; }
+    try { return { doc: buildInvoicePdf(data, settings, { test }), error: "" }; }
     catch (error) { return { doc: null, error: error instanceof Error ? error.message : "Impossible de générer la facture." }; }
-  }, [data, settings]);
+  }, [data, settings, test]);
   useEffect(() => {
     if (!result.doc) return;
     let cancelled = false;
@@ -52,8 +55,7 @@ export function InvoicePdfPreview({ data, settings, onClose, sample = false }: {
     if (!result.doc) return;
     setSaving(true);
     try {
-      const name = data.number.replace(/[^\p{L}\p{N}_-]/gu, "_");
-      if (await savePdf(result.doc, `${sample ? "Exemple-" : ""}Facture-${name}.pdf`)) toast.success("PDF enregistré.");
+      if (await savePdf(result.doc, invoicePdfFileName(data, { test, sample }))) toast.success("PDF enregistré.");
     } catch (error) { toast.error(error instanceof Error ? error.message : "Impossible d’enregistrer le PDF."); }
     finally { setSaving(false); }
   };

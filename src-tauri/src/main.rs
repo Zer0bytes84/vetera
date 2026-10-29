@@ -35,6 +35,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             license_installation::license_installation_id,
             clinic_database::open_clinic_database,
+            clinic_database::is_test_data_folder,
             clinic_network::clinic_network_status,
             clinic_network::clinic_network_launch_mode,
             clinic_network::clinic_network_start_host,

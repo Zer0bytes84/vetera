@@ -1,6 +1,6 @@
 import type { InvoiceDetail } from "@/types/db";
 import { DEFAULT_INVOICE_SETTINGS, normalizeInvoiceSettings } from "@/services/invoiceSettingsService";
-import type { InvoicePdfData } from "./invoice-pdf";
+import { invoiceFileKey, type InvoicePdfData } from "./invoice-pdf";
 
 /** Re-exports use the identity frozen at issue time, not today's settings. */
 export function invoiceDocument(invoice: InvoiceDetail, patientName: string) {
@@ -21,6 +21,7 @@ export function invoiceDocument(invoice: InvoiceDetail, patientName: string) {
     balanceAmount: invoice.balanceAmount,
     creditAmount: invoice.creditAmount,
     refundAmount: invoice.completedRefundAmount,
+    fileKey: invoiceFileKey(invoice.id, invoice.issuedAt || invoice.createdAt),
   };
   const settings = normalizeInvoiceSettings({ ...DEFAULT_INVOICE_SETTINGS, ...invoice.clinicSnapshot, name: invoice.clinicSnapshot?.name || "Cabinet vétérinaire", address: invoice.clinicSnapshot?.address || "", phone: invoice.clinicSnapshot?.phone || "", email: invoice.clinicSnapshot?.email || "", registrationNumber: invoice.clinicSnapshot?.registrationNumber || "", logoDataUrl: invoice.clinicSnapshot?.logoDataUrl || "", footer: invoice.clinicSnapshot?.footer ?? DEFAULT_INVOICE_SETTINGS.footer });
   return { data, settings };

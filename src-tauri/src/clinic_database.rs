@@ -34,6 +34,45 @@ pub(crate) fn clinic_data_dir(app: &tauri::AppHandle) -> Result<std::path::PathB
     app.path().app_config_dir().map_err(|e| e.to_string())
 }
 
+/// Debug builds running on a folder other than the account's own clinic data:
+/// the folder given by BAITARI_DATA_DIR, or the default one under a borrowed
+/// HOME. Such folders hold copies made for tests, which number invoices on
+/// their own: what they issue is marked TEST. Release builds never are.
+#[tauri::command]
+pub fn is_test_data_folder(app: tauri::AppHandle) -> bool {
+    #[cfg(debug_assertions)]
+    {
+        if std::env::var_os("BAITARI_DATA_DIR").is_some() {
+            return true;
+        }
+        if let (Some(own), Ok(current)) = (account_home(), app.path().home_dir()) {
+            return current != own;
+        }
+    }
+    let _ = app;
+    false
+}
+
+/// The account's home folder from the user database, whatever HOME says.
+#[cfg(all(debug_assertions, unix))]
+fn account_home() -> Option<std::path::PathBuf> {
+    use std::os::unix::ffi::OsStrExt;
+    // SAFETY: getpwuid returns null or a record valid until the next call; it is copied at once.
+    unsafe {
+        let entry = libc::getpwuid(libc::getuid());
+        if entry.is_null() || (*entry).pw_dir.is_null() {
+            return None;
+        }
+        let dir = std::ffi::CStr::from_ptr((*entry).pw_dir).to_bytes();
+        Some(std::ffi::OsStr::from_bytes(dir).into())
+    }
+}
+
+#[cfg(all(debug_assertions, not(unix)))]
+fn account_home() -> Option<std::path::PathBuf> {
+    None
+}
+
 #[tauri::command]
 pub async fn open_clinic_database(app: tauri::AppHandle) -> Result<(), String> {
     let directory = clinic_data_dir(&app)?;
@@ -56,6 +95,13 @@ pub async fn open_clinic_database(app: tauri::AppHandle) -> Result<(), String> {
 mod tests {
     use super::*;
     use sqlx::Executor;
+
+    // The account's own HOME is not a test folder: only a borrowed one is.
+    #[cfg(unix)]
+    #[test]
+    fn account_home_is_the_unborrowed_home() {
+        assert_eq!(account_home(), std::env::var_os("HOME").map(Into::into));
+    }
 
     #[test]
     fn separate_requests_share_transaction_and_rollback() {

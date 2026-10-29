@@ -1,7 +1,8 @@
-import { jsPDF } from "jspdf";
+import { GState, jsPDF } from "jspdf";
 import { formatPhone } from "@/utils/display-format";
 import { INVOICE_ACCENTS, type InvoiceSettings } from "@/services/invoiceSettingsService";
 import { savePdf } from "./save-pdf";
+import { isTestDataFolder } from "./test-data-folder";
 
 export type { InvoiceSettings };
 
@@ -18,21 +19,45 @@ export interface InvoicePdfData {
   balanceAmount: number;
   creditAmount?: number;
   refundAmount?: number;
+  /**
+   * Short fingerprint of the invoice's internal id and issue time, added to the
+   * file name: two invoices never offer the same name, even when two copies of
+   * one database give them the same official number.
+   */
+  fileKey?: string;
 }
+
+/** 7 base-36 characters (FNV-1a), stable for one invoice across exports. */
+export function invoiceFileKey(id: string, issuedAt: string): string {
+  let hash = 0x811c9dc5;
+  for (const char of `${id}|${issuedAt}`) {
+    hash ^= char.codePointAt(0)!;
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(36).padStart(7, "0");
+}
+
+/** "Facture-INV-2026-000017-1k3f9zq.pdf"; TEST- first for a test data folder. */
+export function invoicePdfFileName(data: InvoicePdfData, { test = false, sample = false } = {}): string {
+  const safeNumber = data.number.replace(/[^\p{L}\p{N}_-]/gu, "_");
+  return `${test ? "TEST-" : ""}${sample ? "Exemple-" : ""}Facture-${safeNumber}${data.fileKey ? `-${data.fileKey}` : ""}.pdf`;
+}
+
+export const TEST_INVOICE_MARK = "TEST — sans valeur : émise depuis un dossier de données de test";
 
 export function invoiceMoney(amount: number): string {
   if (!Number.isSafeInteger(amount) || amount < 0) throw new Error("Montant de facture invalide.");
   return `${(amount / 100).toLocaleString("fr-FR", { minimumFractionDigits: amount % 100 ? 2 : 0, maximumFractionDigits: 2 }).replace(/[\u00a0\u202f]/g, " ")} DA`;
 }
 
-export function buildInvoicePdf(data: InvoicePdfData, settings: InvoiceSettings): jsPDF {
+export function buildInvoicePdf(data: InvoicePdfData, settings: InvoiceSettings, { test = false } = {}): jsPDF {
   [data.totalAmount, data.paidAmount, data.balanceAmount, data.creditAmount ?? 0, data.refundAmount ?? 0, ...data.items.map((item) => item.amount)].forEach(invoiceMoney);
   if (data.items.reduce((sum, item) => sum + item.amount, 0) !== data.totalAmount || data.balanceAmount !== Math.max(0, data.totalAmount - (data.creditAmount ?? 0) - data.paidAmount + (data.refundAmount ?? 0))) {
     throw new Error("Les montants de la facture ne sont pas cohérents.");
   }
   if (!Number.isFinite(data.date.getTime())) throw new Error("Date de facture invalide.");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  doc.setProperties({ title: `Facture ${data.number}`, author: settings.name, subject: "Facture vétérinaire" });
+  doc.setProperties({ title: `${test ? "TEST - " : ""}Facture ${data.number}`, author: settings.name, subject: "Facture vétérinaire" });
   const accent = INVOICE_ACCENTS[settings.accent].color;
   doc.setFontSize(8); doc.setFont("helvetica", "normal");
   const footer: string[] = doc.splitTextToSize(settings.footer, 148);
@@ -113,11 +138,20 @@ export function buildInvoicePdf(data: InvoicePdfData, settings: InvoiceSettings)
     doc.setFontSize(8); doc.setFont("helvetica", "normal");
     footer.forEach((line, i) => text(line, left, footerTop + 6 + i * 3.5, 8, false, "#71717a"));
     text(`${page} / ${pages}`, right, footerTop + 6, 8, false, "#71717a", "right");
+    if (test) {
+      // A test copy numbers on its own: its pages must never pass for real ones.
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor("#dc2626");
+      doc.text(TEST_INVOICE_MARK, 105, 10, { align: "center" });
+      doc.setGState(new GState({ opacity: 0.12 }));
+      doc.setFont("helvetica", "bold"); doc.setFontSize(110); doc.setTextColor("#dc2626");
+      doc.text("TEST", 105, 165, { align: "center", angle: 30 });
+      doc.setGState(new GState({ opacity: 1 }));
+    }
   }
   return doc;
 }
 
 export async function exportInvoicePdf(data: InvoicePdfData, settings: InvoiceSettings) {
-  const safeNumber = data.number.replace(/[^\p{L}\p{N}_-]/gu, "_");
-  return savePdf(buildInvoicePdf(data, settings), `Facture-${safeNumber}.pdf`);
+  const test = await isTestDataFolder();
+  return savePdf(buildInvoicePdf(data, settings, { test }), invoicePdfFileName(data, { test }));
 }

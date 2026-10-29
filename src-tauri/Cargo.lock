@@ -5269,6 +5269,7 @@ dependencies = [
  "getrandom 0.2.16",
  "if-addrs",
  "indexmap 2.12.1",
+ "libc",
  "libsqlite3-sys",
  "mdns-sd",
  "reqwest",
