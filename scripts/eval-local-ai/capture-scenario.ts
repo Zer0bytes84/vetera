@@ -5,7 +5,7 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro" | "tableau" | "ports" | "agenda" | "factures" | "lot3";
+  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro" | "tableau" | "ports" | "agenda" | "factures" | "lot3" | "workflow";
   /** "dictee": generator preference set before the dictation (gemma3 or gemma4). */
   generator?: string;
   /** "outils-ia": position the switch must reach ("on" = new assistant version). */
@@ -79,6 +79,12 @@ async function run() {
   if (config.scenario === "ports") {
     const { capturePorts } = await import("./capture-ports");
     await capturePorts(config.signal, config.query.split(","), config.patientId ?? "");
+    return;
+  }
+  // End-to-end clinic case in the packaged measuring app (real microphone).
+  if (config.scenario === "workflow") {
+    const { captureWorkflow } = await import("./capture-workflow");
+    await captureWorkflow(config.signal);
     return;
   }
   // Lot 3: a note kept without a visit, dictated, validated, found again (query = clip).

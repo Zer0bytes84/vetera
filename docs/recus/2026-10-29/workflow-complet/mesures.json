@@ -1,0 +1,42 @@
+{
+  "results": [
+    {
+      "name": "1a-formulaire-patient"
+    },
+    {
+      "name": "1b-patient-cree",
+      "patientId": "mvtuaj9z7yuqyygyyjd",
+      "owner": {
+        "last_name": "Testeur",
+        "first_name": "Camille"
+      }
+    },
+    {
+      "name": "2a-formulaire-rdv"
+    },
+    {
+      "name": "2b-rdv-agenda",
+      "appointment": {
+        "id": "mvtuaon9n45jqcozoqj",
+        "status": "scheduled",
+        "start_time": "2026-10-29T13:00:00.000Z"
+      }
+    },
+    {
+      "name": "3-consultation-flux",
+      "status": "in_progress"
+    },
+    {
+      "name": "echec-4-dictee",
+      "reason": "le micro n’écoute pas"
+    }
+  ],
+  "breaches": [
+    {
+      "id": "facture-sans-note",
+      "found": true,
+      "probe": "« Clôturer et facturer » avant toute note",
+      "enabled": true
+    }
+  ]
+}

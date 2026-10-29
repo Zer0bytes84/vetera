@@ -1,0 +1,8 @@
+app pid 60149
+13:51:01 1a-formulaire-patient
+13:51:03 1b-patient-cree
+13:51:08 2a-formulaire-rdv
+13:51:12 2b-rdv-agenda
+13:51:15 3-consultation-flux
+13:53:18 echec-4-dictee
+13:53:18 failed: 4-dictee: le micro n’écoute pas
