@@ -105,4 +105,55 @@ describe("validated local SOAP generation", () => {
     ).rejects.toMatchObject({ name: "AbortError" });
     expect(generate).toHaveBeenCalledOnce();
   });
+  describe("dictée guidée : second essai rubrique par rubrique", () => {
+    const parts = [
+      { key: "subjective" as const, prompt: "S seule", template: "{}" },
+      { key: "plan" as const, prompt: "P seule", template: "{}" },
+    ];
+    const run = (generate: (prompt: string, attempt: 1 | 2) => Promise<string>) =>
+      generateValidatedSoap({
+        prompt: "strict",
+        retryPrompt: "simplified",
+        retryParts: parts,
+        signal: new AbortController().signal,
+        generate,
+        onRetry: vi.fn(),
+      });
+    it("une clé omise au premier essai : chaque rubrique dictée est redemandée seule, puis la note est réassemblée", async () => {
+      const generate = vi
+        .fn()
+        .mockResolvedValueOnce(JSON.stringify({ subjective: note.subjective, objective: "" }))
+        .mockResolvedValueOnce(JSON.stringify({ subjective: note.subjective }))
+        .mockResolvedValueOnce("```json\n" + JSON.stringify({ plan: note.plan }) + "\n```");
+      expect(await run(generate)).toEqual(note);
+      expect(generate.mock.calls.map(([prompt, attempt]) => [prompt, attempt])).toEqual([
+        ["strict", 1],
+        ["S seule", 2],
+        ["P seule", 2],
+      ]);
+    });
+    it("un premier essai accepté ne déclenche aucun appel de plus", async () => {
+      const generate = vi.fn().mockResolvedValue(raw);
+      expect(await run(generate)).toEqual(note);
+      expect(generate).toHaveBeenCalledOnce();
+    });
+    it("seule la rubrique demandée est gardée ; une posologie ailleurs est refusée", async () => {
+      const kept = vi
+        .fn()
+        .mockResolvedValueOnce("invalide")
+        .mockResolvedValueOnce(JSON.stringify({ subjective: note.subjective, objective: "Inventé." }))
+        .mockResolvedValueOnce(JSON.stringify({ plan: note.plan }));
+      expect((await run(kept)).objective).toBe("");
+      const dose = vi
+        .fn()
+        .mockResolvedValueOnce("invalide")
+        .mockResolvedValueOnce(JSON.stringify({ subjective: note.subjective, plan: "Administrer 5 mg/kg." }));
+      await expect(run(dose)).rejects.toThrow("posologie");
+    });
+    it("une rubrique au mauvais format au second essai refuse la note", async () => {
+      const generate = vi.fn().mockResolvedValueOnce("invalide").mockResolvedValueOnce("tronqué {");
+      await expect(run(generate)).rejects.toThrow(SoapFormatError);
+      expect(generate).toHaveBeenCalledTimes(2);
+    });
+  });
 });

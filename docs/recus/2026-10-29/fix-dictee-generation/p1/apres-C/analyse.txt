@@ -1,0 +1,13 @@
+R1 préparation 0.25 s | écoute 4.83 s après le clic, +4.24 s après le début de capture | lecture +4.33 s
+   fenêtres 250 ms : -70 -60 -59 -68 -68 -69 -68 -70 -67 -67 -69 -67 -67 -68 -52 -46 -46 -46 -47 -45 -48 -46 -47 -47
+   texte : le propriétaire remarque que max gémit lorsqu'il se gratte l'oreille droite légère baisse d'activité liée à l'
+R2 sans préparation | écoute 0.26 s après le clic, +0.04 s après le début de capture | lecture +0.14 s
+   fenêtres 250 ms : -48 -48 -36 -19 -20 -22 -21 -22 -18 -20 -18 -18 -17 -18 -21 -19 -18 -20 -39 -22 -18 -21 -19 -21
+   texte : Température 38.5 °C, normal, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poid
+R3 sans préparation | écoute 0.25 s après le clic, +0.01 s après le début de capture | lecture +0.07 s
+   fenêtres 250 ms : -41 -42 -45 -47 -47 -46 -46 -47 -48 -47 -46 -45 -46 -45 -47 -46 -45 -45 -46 -44 -46 -46 -21 -18
+   texte : Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poi
+R4 sans préparation | écoute 0.26 s après le clic, +0.12 s après le début de capture | lecture +0.18 s
+   fenêtres 250 ms : -49 -47 -20 -23 -18 -19 -18 -22 -19 -19 -17 -17 -22 -18 -19 -19 -19 -19 -26 -47 -18 -17 -18 -21
+   texte : Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite, légère baisse d'activité liée à l
+['8b-recherche-sens', '8c-recherche-patient', '8d-autre-dossier', 'fin']

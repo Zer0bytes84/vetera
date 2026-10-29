@@ -2,10 +2,10 @@
 
 Ce bilan suit le diagnostic `../diag-dictee/README.md` (commit `55d5bac`). Il couvre deux volets, chacun rejoué avec les cas du diagnostic.
 
-- **P2, la génération : corrigée.** Commit `ca7d145`. La trame micro2 et le rejeu 2 sont acceptés, et le cas tapé au clavier est inchangé octet pour octet. **Le rejeu 1 reste refusé**, pour une autre cause, isolée plus bas.
+- **P2, la génération : corrigée.** Commit `ca7d145`, complété par un second essai rubrique par rubrique (§ « Suite »). Les trois cas du diagnostic sont acceptés : trame micro2, rejeu 1 et rejeu 2. Le cas tapé au clavier est inchangé octet pour octet.
 - **P1, le début de dictée : corrigé.** Commit qui suit ce bilan. Au vrai micro, les quatre rubriques sont complètes : « Le propriétaire remarque… », « Température 38.5 °C… », « Otite… » et « Soins au cabinet… ».
 - **Test complet au vrai micro : passe.** Les étapes 1 à 5 passent, puis aussi 6 à 8 (facture, PDF, recherche) et les états du panneau de dictée.
-- **Portes à zéro :** `tsc -b`, `eslint .` et `npm test` (1 321 tests, 171 fichiers).
+- **Portes à zéro :** `tsc -b`, `eslint .` et `npm test` (1 325 tests).
 
 Gemma 4 reste grisé. Ni schéma ni identifiant d'app ne changent. Les commits restent locaux.
 
@@ -50,7 +50,7 @@ Un test existant (`treatment-model-boundary.test.ts`) attendait l'ancien comport
 
 Les rapports complets sont dans [p2/](p2/) : trame, sorties brutes et comptes de jetons.
 
-### Ce qui n'est pas réglé : le rejeu 1
+### Ce que le premier correctif laissait : le rejeu 1 (réglé par la suite ci-dessous)
 
 - **Une entrée artificielle.** Le rejeu 1 vient du protocole du diagnostic : R2 a été dictée en O **et** en A, et R1 en P.
 - **Ce qui est corrigé.** Le plan était vidé par le routage : la phrase niée de R1 part en S. Il n'est plus envoyé, et Gemma n'invente plus de plan.
@@ -72,6 +72,34 @@ Témoins au banc, un seul paramètre changé à chaque fois :
 - **Piste, non faite :** dans la dictée guidée, ne demander au modèle qu'une rubrique à la fois.
 
 **Constaté aussi, hors du périmètre demandé.** Une rubrique que le vétérinaire **n'a pas dictée** est toujours envoyée vide, et Gemma peut la remplir : c'est le témoin « P non dicté ». La règle demandée ne couvre que les rubriques vidées par le code, donc je n'ai pas changé ce comportement.
+
+### Suite : second essai rubrique par rubrique (rejeu 1 accepté)
+
+**Ce qui change.** Le premier essai ne bouge pas : les quatre rubriques en une seule réponse. Les cas déjà acceptés au 1er essai (tapé, micro2, rejeu 2) sont donc identiques octet pour octet au passage précédent. Seul le second essai de la dictée guidée change, après un refus de format ou de fidélité. Le changement est dans `generate-soap.ts` (`retryParts`) et `soap-pipeline.ts`.
+- **Une rubrique à la fois.** Chaque rubrique dictée est redemandée seule, avec sa seule dictée et une réponse JSON à une clé.
+- **Les mêmes contrôles.** Chaque réponse passe le même analyseur strict, avec le même refus des posologies. Seule la clé demandée est gardée.
+- **Une seule vérification de fidélité,** sur la note réassemblée.
+- **Rien n'est redemandé pour une rubrique vide :** non dictée, ou vidée par le code.
+- **Pour la dictée libre,** le second essai reste l'ancien.
+
+**Banc (Gemma 3) :**
+
+| Cas | Avant ce complément | Après |
+|---|---|---|
+| Rejeu 1 | refus, `assessment` omis | **acceptée en 24,7 s** (1er essai refusé, puis 3 rubriques redemandées) |
+| Trame micro2, rejeu 2, tapé | acceptés au 1er essai | acceptés au 1er essai, **notes identiques octet pour octet** |
+| Témoin « P non dicté, envoyé vide » | refus, plan inventé | **acceptée en 28,8 s, plan vide** : plus rien d'inventé |
+| Témoin « tapé avec A = copie de O » | refus | **acceptée en 38,6 s** (4 rubriques redemandées) |
+| Témoin « rejeu 1 avec A distinct » | refus | acceptée au 1er essai, 12,2 s |
+
+Le dernier témoin passait déjà grâce à la consigne alignée sur la dictée d'origine, ajoutée plus haut. Je ne l'avais pas rejoué à ce moment-là.
+
+**Au vrai micro, protocole du rejeu 1** ([p1/apres-C](p1/apres-C/analyse.txt)). Ce protocole échouait à l'étape 5 avec le build précédent. Cette fois :
+- la note est générée, relue et validée ([5a-relecture](p1/apres-C/5a-relecture.jpg), [5b-note-validee](p1/apres-C/5b-note-validee.jpg)) ;
+- la facture est émise, et le parcours va jusqu'au bout ;
+- les quatre transcriptions sont complètes, et l'écoute est annoncée sur R1 à +4,24 s, à la marche.
+
+**Le coût.** Un refus au 1er essai coûte maintenant un appel par rubrique dictée au lieu d'un : au banc, de 25 à 39 s au lieu d'environ 19 à 31 s.
 
 ## P1 : un micro pour les quatre rubriques, et l'écoute annoncée sur le niveau réel
 
@@ -131,7 +159,7 @@ Captures du passage final : [4-dictee](p1/apres-A/4-dictee.jpg), [5a-relecture](
 - **Une voix pendant la préparation.** Si le vétérinaire parle pendant la préparation, sa voix atténuée ressemble à une montée. L'annonce arrive alors environ 0,25 s trop tôt (trois profils du diagnostic, gardés comme tests). La bannière demande d'attendre.
 - **L'origine exacte de l'atténuation,** dans WebKit ou Core Audio. Elle n'est pas isolée, comme au diagnostic. Le produit garde `echoCancellation: true`, alors que la mesure tourne sans. L'effet de l'annulation d'écho sur la marche n'est pas mesuré.
 - **Le micro reste ouvert entre les rubriques** (voyant orange de macOS), au plus 2 min après la dernière dictée. C'est voulu, mais pas encore validé avec toi.
-- **Le rejeu 1 côté génération,** voir plus haut.
+- **La robustesse générale du second essai.** Le second essai rubrique par rubrique n'est validé que sur ces cas, une rubrique copiée seule restant plus facile pour Gemma 3. Un cas où même une rubrique seule échoue reste refusé, sans danger : rien n'est enregistré, et « Relire ma dictée comme note » est proposé.
 - **Le délai du clic jusqu'à la préparation.** Il est de 2,8 à 3,1 s au premier clic (statut du compagnon et `getUserMedia`), puis de 0,25 s. Il n'a pas changé, et ne coupe rien puisque l'écoute n'est pas annoncée avant.
 
 ## Rejouer

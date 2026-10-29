@@ -1,0 +1,258 @@
+{
+  "results": [
+    {
+      "name": "1a-formulaire-patient"
+    },
+    {
+      "name": "1b-patient-cree",
+      "patientId": "mvu745tv2ez0az8qwdt",
+      "owner": {
+        "last_name": "Testeur",
+        "first_name": "Camille"
+      }
+    },
+    {
+      "name": "2a-formulaire-rdv"
+    },
+    {
+      "name": "2b-rdv-agenda",
+      "appointment": {
+        "id": "mvu74b6u1wwz2ihj5ls",
+        "status": "scheduled",
+        "start_time": "2026-10-29T13:00:00.000Z"
+      }
+    },
+    {
+      "name": "3-consultation-flux",
+      "status": "in_progress"
+    },
+    {
+      "name": "3b-cloture-bloquee",
+      "blockerShown": true,
+      "enabled": false,
+      "statusAfterClick": "in_progress"
+    },
+    {
+      "name": "4-dictee",
+      "path": "micro",
+      "dictated": [
+        "le propriétaire remarque que max gémit lorsqu'il se gratte l'oreille droite légère baisse d'activité liée à l'inconfort mais appétit conservé aucun vomissement ni diarrhée pas d'historique récent de baignade alimentation habituelle inchangée traitement antiparasitaire à jour administré il y a deux semaines",
+        "Température 38.5 °C, normal, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococque.",
+        "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite, légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines."
+      ],
+      "timings": [
+        {
+          "clic": 1793317816582,
+          "preparation": 1793317816836,
+          "ecoute": 1793317821408
+        },
+        {
+          "clic": 1793317851288,
+          "preparation": null,
+          "ecoute": 1793317851544
+        },
+        {
+          "clic": 1793317908254,
+          "preparation": null,
+          "ecoute": 1793317908507
+        },
+        {
+          "clic": 1793317969352,
+          "preparation": null,
+          "ecoute": 1793317969607
+        }
+      ]
+    },
+    {
+      "name": "5a-relecture",
+      "seconds": 25.1,
+      "generated": {
+        "subjective": "- le propriétaire remarque que max gémit lorsqu'il se gratte l'oreille droite légère baisse d'activité liée à l'inconfort mais appétit conservé aucun vomissement ni diarrhée pas d'historique récent de baignade alimentation habituelle inchangée traitement antiparasitaire à jour administré il y a deux semaines Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite, légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+        "objective": "- Température 38.5 °C, normal, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l’oreille, otoscopie, tympan difficilement visualisé en raison de l’œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "assessment": "- Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l’oreille, otoscopie, tympan difficilement visualisé en raison de l’œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococque.",
+        "plan": ""
+      }
+    },
+    {
+      "name": "5b-note-validee",
+      "soapAssessment": "- Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse r",
+      "reviewed": true
+    },
+    {
+      "name": "6a-facturation"
+    },
+    {
+      "name": "6b-facture-emise",
+      "invoice": {
+        "id": "appointment-invoice-mvu74b6u1wwz2ihj5ls",
+        "number": "INV-2026-000018",
+        "document_status": "issued",
+        "issued_at": "2026-10-29 23:53:46",
+        "gross_amount": 300000
+      },
+      "appointmentStatus": "completed",
+      "saves": [
+        {
+          "defaultPath": "Facture-INV-2026-000018-1sf1n32.pdf",
+          "answered": "/Users/zohir/Library/Caches/baitari-eval/workflow-home/Desktop/Facture-INV-2026-000018-1sf1n32.pdf"
+        }
+      ]
+    },
+    {
+      "name": "7a-flux-apres",
+      "fluxCard": true,
+      "fluxLane": "Terminé1"
+    },
+    {
+      "name": "7b-agenda-apres",
+      "agendaStatus": null
+    },
+    {
+      "name": "7c-reouverture",
+      "status": "completed"
+    },
+    {
+      "name": "7d-dossier-synthese"
+    },
+    {
+      "name": "7e-dossier-chronologie"
+    },
+    {
+      "name": "8a-recherche-mot",
+      "query": "Malassezia"
+    },
+    {
+      "name": "8b-recherche-sens",
+      "query": "infection de l’oreille due à des levures"
+    },
+    {
+      "name": "8c-recherche-patient"
+    },
+    {
+      "name": "8d-autre-dossier"
+    },
+    {
+      "name": "fin",
+      "before": {
+        "patients": 11,
+        "appointments": 52,
+        "invoices": {
+          "n": 17,
+          "max": "INV-2026-000017"
+        },
+        "sequence": {
+          "next_value": 18
+        }
+      },
+      "after": {
+        "patients": 12,
+        "appointments": 53,
+        "invoices": {
+          "n": 18,
+          "max": "INV-2026-000018"
+        },
+        "sequence": {
+          "next_value": 19
+        }
+      }
+    }
+  ],
+  "breaches": [
+    {
+      "id": "facture-sans-note",
+      "found": false,
+      "probe": "« Clôturer et facturer » sans note validée",
+      "enabled": false,
+      "blockerShown": true,
+      "statusAfterClick": "in_progress",
+      "billingOpened": false
+    },
+    {
+      "id": "cloture-bloquee-apres-note",
+      "found": false,
+      "enabled": true,
+      "blockerShown": false
+    },
+    {
+      "id": "nom-instable",
+      "found": false,
+      "first": "Facture-INV-2026-000018-1sf1n32.pdf",
+      "again": "Facture-INV-2026-000018-1sf1n32.pdf"
+    },
+    {
+      "id": "reouverture-relance",
+      "found": false,
+      "before": "completed",
+      "after": "completed",
+      "workspaceOpen": false
+    },
+    {
+      "id": "note-absente-synthese",
+      "found": true,
+      "overviewExcerpt": "Dernière consultationOuvrir la consultation29 oct. 2026 à 09:00ConsultationSe gratte l’oreille droite depuis trois jours.Évaluation- Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé"
+    },
+    {
+      "id": "statut-chronologie",
+      "found": false,
+      "timelineExcerpt": "Historique clinique complet du patientDateÉvénementRésumé cliniqueStatutAction29 oct. 202609:00ConsultationSe gratte l’oreille droite depuis trois jours.- Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel "
+    },
+    {
+      "id": "note-absente-chronologie",
+      "found": true,
+      "synthese": false,
+      "chronologie": false,
+      "nonRenseigne": false
+    },
+    {
+      "id": "recherche-8a-recherche-mot",
+      "found": true,
+      "query": "Malassezia",
+      "top": []
+    },
+    {
+      "id": "attribution-8a-recherche-mot",
+      "found": false,
+      "foreign": []
+    },
+    {
+      "id": "recherche-8b-recherche-sens",
+      "found": false,
+      "query": "infection de l’oreille due à des levures",
+      "hit": {
+        "section": "subjective",
+        "match": "semantic",
+        "score": 0.3041110704297321,
+        "patientName": "Max"
+      },
+      "top": [
+        [
+          "Max",
+          "subjective",
+          "semantic"
+        ]
+      ]
+    },
+    {
+      "id": "attribution-8b-recherche-sens",
+      "found": false,
+      "foreign": []
+    },
+    {
+      "id": "patient-introuvable",
+      "found": false,
+      "probe": "palette « Max » propose le dossier de Max (propriétaire Testeur)"
+    },
+    {
+      "id": "fuite-autre-dossier",
+      "found": false,
+      "patient": "mnma3iqx51fr51th3ta"
+    },
+    {
+      "id": "incoherence-base",
+      "found": false,
+      "soapsOtherPatient": 0,
+      "invoicesOtherPatient": 0
+    }
+  ]
+}

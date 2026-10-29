@@ -17,7 +17,8 @@ import {
   prepareModelDictation,
   routeGuidedTreatments,
 } from "./treatment-routing";
-import { guidedDictationTranscript } from "./guided-soap";
+import { GUIDED_RUBRIC_TITLES, guidedDictationTranscript } from "./guided-soap";
+import type { SoapRetryPart } from "./generate-soap";
 import { createSoapPrompt, type LocalPatientContext } from "./patient-context";
 import type { LocalAiProgress } from "./worker-protocol";
 
@@ -98,6 +99,23 @@ export async function prepareSoapDraft({
     const draft = restore(scaffold);
     return localSoapSchema.parse(draft);
   }
+  // Retry of a guided note: each dictated rubric alone, with its own dictation.
+  const retryParts: SoapRetryPart[] | undefined = sections
+    ? SOAP_SECTIONS.flatMap(({ key }, index) =>
+        omitted.includes(key) || !scaffold[key].trim()
+          ? []
+          : [
+              {
+                key,
+                prompt: createSoapPrompt(transcript, context, true, scaffold, {
+                  omitted: SOAP_SECTIONS.map((section) => section.key).filter((other) => other !== key),
+                  dictation: `${GUIDED_RUBRIC_TITLES[index]} : ${scaffold[key]}`,
+                }),
+                template: JSON.stringify({ [key]: scaffold[key] }),
+              },
+            ]
+      )
+    : undefined;
   const prompt = createSoapPrompt(transcript, context, false, scaffold, promptOptions);
   const retryPrompt = createSoapPrompt(transcript, context, true, scaffold, promptOptions);
   const urls = getLocalModelUrls(models);
@@ -121,15 +139,16 @@ export async function prepareSoapDraft({
       prompt,
       retryPrompt,
       omittedKeys: omitted,
+      retryParts,
       signal,
-      generate: async (nextPrompt, number) => {
+      generate: async (nextPrompt, number, part) => {
         const result = await session.request(
           {
             type: "generate",
             generators: urls.generators,
             runtimeRoot: urls.runtimeRoot,
             prompt: nextPrompt,
-            responseTemplate: JSON.stringify(template),
+            responseTemplate: part?.template ?? JSON.stringify(template),
             attempt: number,
           },
           "generated"
