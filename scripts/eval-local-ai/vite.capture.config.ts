@@ -16,11 +16,15 @@ const capture = {
 
 const scenario = (): Plugin => ({
   name: "baitari-capture-scenario",
-  transformIndexHtml: (html) =>
-    html.replace(
-      "</body>",
-      `<script>window.__CAPTURE__=${JSON.stringify(capture)}</script><script type="module" src="/scripts/eval-local-ai/capture-scenario.ts"></script></body>`,
-    ),
+  // "pre": in a production build (packaged app), the injected module is bundled too.
+  transformIndexHtml: {
+    order: "pre",
+    handler: (html) =>
+      html.replace(
+        "</body>",
+        `<script>window.__CAPTURE__=${JSON.stringify(capture)}</script><script type="module" src="/scripts/eval-local-ai/capture-scenario.ts"></script></body>`,
+      ),
+  },
 });
 
 // BAITARI_CAPTURE_FORCE_REFUS=1: every generated note is refused by the fidelity
@@ -38,10 +42,22 @@ const forcedRefusal = (): Plugin => ({
       : undefined,
 });
 
+// BAITARI_CAPTURE_NO_AEC=1: the measuring app plays the recordings through this
+// Mac's own speakers, which macOS echo cancellation removes from the microphone
+// by design. Measures only; the product keeps its echo cancellation.
+const noEchoCancellation = (): Plugin => ({
+  name: "baitari-capture-no-aec",
+  enforce: "pre",
+  transform: (code, id) =>
+    process.env.BAITARI_CAPTURE_NO_AEC === "1" && id.endsWith("local-ai/audio-capture.ts")
+      ? code.replace("echoCancellation: true", "echoCancellation: false")
+      : undefined,
+});
+
 export default async (env: ConfigEnv) => {
   const base =
     typeof appConfig === "function"
       ? await (appConfig as (env: ConfigEnv) => UserConfig | Promise<UserConfig>)(env)
       : appConfig;
-  return mergeConfig(base, { plugins: [scenario(), forcedRefusal()] });
+  return mergeConfig(base, { plugins: [scenario(), forcedRefusal(), noEchoCancellation()] });
 };

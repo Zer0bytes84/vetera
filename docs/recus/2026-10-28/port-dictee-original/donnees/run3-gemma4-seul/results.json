@@ -1,0 +1,15 @@
+[
+  {
+    "step": "panneau",
+    "dicterActifApres": 0.5
+  },
+  {
+    "step": "note",
+    "generator": "gemma4",
+    "chargementAssistant": 28.48,
+    "redaction": 20.69,
+    "total": 49.16,
+    "erreur": null,
+    "plan": "1. Soins au cabinet : nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée.\n2. Collier élisabéthain conseillé si le grattage persiste.\n3. Éducation du client : expliquer la technique d'instillation des gouttes sans enfoncer l'embout dans le conduit.\n4. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement.\n5. Suivi : planifier une visite de contrôle dans 10 à 14 jours, ou appeler plus tôt si aggravation ou douleur accrue.\n6. Prescription médicale : gouttes auriculaires antibiotique, antifongique et anti-inflammatoire, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+  }
+]

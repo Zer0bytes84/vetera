@@ -1,0 +1,4 @@
+avant : 0 compagnon(s)
+app pid 55720
+après : 0 compagnon(s) au chemin /Users/zohir/Library/Caches/baitari-eval/mesure/Baitari.app/Contents/MacOS/whisper-cli
+WAV temporaires restants : 0

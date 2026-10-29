@@ -1,0 +1,48 @@
+[
+  {
+    "step": "panneau",
+    "dicterActifApres": 0.5
+  },
+  {
+    "clip": "passage30",
+    "dicterVersEcoute": 2.77,
+    "arretVersTexte": 4.13,
+    "dicterVersTexte": 36.8,
+    "texte": "L'oreille droite, légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines, température 38.5 °C, normal, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute.",
+    "erreur": null
+  },
+  {
+    "clip": "plan-gabarit",
+    "dicterVersEcoute": 0.26,
+    "arretVersTexte": 3.59,
+    "dicterVersTexte": 22.55,
+    "texte": "Ruminolithique, gouttes antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours, collier Elisabeth 1, éducation du client, contrôle dans 10 à 14 jours.",
+    "erreur": null
+  },
+  {
+    "clip": "plan-reference",
+    "dicterVersEcoute": 0.25,
+    "arretVersTexte": 6.66,
+    "dicterVersTexte": 46.5,
+    "texte": "Soin au cabinet, nettoyage minutieux du cas. A l'auriculaire droit avec une solution céruminolytique adaptée. Prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Elisabeth est un conseiller si le grattage persiste. Éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement. Suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue.",
+    "erreur": null
+  },
+  {
+    "step": "note",
+    "generator": "gemma3",
+    "chargementAssistant": 3.6,
+    "redaction": 12.38,
+    "total": 15.97,
+    "erreur": null,
+    "plan": "1. Soin au cabinet, nettoyage minutieux du cas.\n2. A l'auriculaire droit avec une solution céruminolytique adaptée.\n3. Collier Elisabeth est un conseiller si le grattage persiste.\n4. Éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit.\n5. Interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement.\n6. Suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue.\n7. Prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours."
+  },
+  {
+    "step": "note",
+    "generator": "gemma4",
+    "chargementAssistant": 480.24,
+    "redaction": 0,
+    "total": 480.24,
+    "erreur": "Le traitement local n’a pas répondu dans le délai prévu. Votre dictée est conservée ; vous pouvez réessayer.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »",
+    "plan": null
+  }
+]

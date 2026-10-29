@@ -48,3 +48,4 @@ preview/
 .impeccable/hook.cache.json
 .taste-skill/
 *.tsbuildinfo
+dist-capture

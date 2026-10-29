@@ -1,0 +1,57 @@
+#!/bin/zsh
+# Usage: micro.sh <label>
+# Acceptance of the native dictation in the packaged measuring app (release
+# build + capture scenario "micro"): isolated HOME (copy of the clinic database,
+# APFS clones of the installed models), real microphone, recordings played
+# through the speakers when the page asks, companion memory sampled by exact
+# executable path, orphan check at the end.
+set -u
+LABEL=$1
+S=/private/tmp/claude-501/-Users-zohir-Documents-08---Projets-num-riques-Projects-2026-BAITARI-2-1-bAItari/e8fe063d-0ea9-4d6c-b7fd-64f74740032c/scratchpad
+REPO="/Users/zohir/Documents/08 - Projets numériques/Projects 2026/BAITARI 2.1/bAItari"
+APP=$HOME/Library/Caches/baitari-eval/mesure/Baitari.app
+REAL="$HOME/Library/Application Support/com.baitari.vetera"
+FH=$HOME/Library/Caches/baitari-eval/micro-home
+OUT=$S/micro/$LABEL
+COMPANION="$APP/Contents/MacOS/whisper-cli"
+mkdir -p $OUT
+rm -rf "$FH"; mkdir -p "$FH/Library/Application Support/com.baitari.vetera/local-ai"
+D="$FH/Library/Application Support/com.baitari.vetera"
+sqlite3 "file:$REAL/baitari.db?mode=ro" ".backup '$D/baitari.db'"
+cp "$REAL/license-installation-id" "$D/"
+for m in whisper whisper-turbo generator generator4 embeddinggemma; do cp -cR "$REAL/local-ai/$m" "$D/local-ai/"; done
+cp "${CASE:-$REPO/scripts/eval-local-ai/cas-reference/otite-max.json}" "$FH/signal.case.json"
+rm -f "$FH/signal" "$FH/signal.results.json"
+echo -e "t\tpid_compagnon\tcompagnon_mb\tapp_mb\tswap_mb" > $OUT/memoire.tsv
+fp() { footprint -p $1 2>/dev/null | sed -nE 's/.*Footprint: ([0-9.]+) (KB|MB|GB).*/\1 \2/p' | head -1 | awk '{print ($2=="GB") ? $1*1024 : ($2=="KB") ? $1/1024 : $1}'; }
+companions() { ps -axo pid=,comm= | awk -v c="$COMPANION" '{p=$1; sub(/^ *[0-9]+ /,""); if ($0 == c) print p}'; }
+echo "avant : $(companions | wc -l | tr -d ' ') compagnon(s)" > $OUT/processus.txt
+open -n -a "$APP" --env HOME="$FH"
+sleep 3
+PID=$(pgrep -f "$APP/Contents/MacOS/vetera" | head -1)
+echo "app pid $PID" >> $OUT/processus.txt
+start=$(date +%s)
+while kill -0 $PID 2>/dev/null; do
+  for c in $(companions); do
+    echo -e "$(date +%H:%M:%S)\t$c\t$(fp $c)\t$(fp $PID)\t$(sysctl -n vm.swapusage | sed -E 's/.*used = ([0-9.]+)M.*/\1/')" >> $OUT/memoire.tsv
+    ps -o pid=,ppid=,comm= -p $c >> $OUT/filiation.txt
+  done
+  [ -z "$(companions)" ] && echo -e "$(date +%H:%M:%S)\t-\t0\t$(fp $PID)\t$(sysctl -n vm.swapusage | sed -E 's/.*used = ([0-9.]+)M.*/\1/')" >> $OUT/memoire.tsv
+  state=$(cat "$FH/signal" 2>/dev/null)
+  case "$state" in
+    play:*)
+      clip=${state#play:}
+      echo "$(date +%H:%M:%S) lecture $clip" >> $OUT/journal.txt
+      afplay "$S/micro/$clip.aiff"
+      echo -n "played:$clip" > "$FH/signal" ;;
+    restored) echo "$(date +%H:%M:%S) fin du scénario" >> $OUT/journal.txt; break ;;
+    failed*) echo "$(date +%H:%M:%S) $state" >> $OUT/journal.txt; break ;;
+  esac
+  [ $(( $(date +%s) - start )) -gt 2400 ] && { echo "délai dépassé ($state)" >> $OUT/journal.txt; break; }
+  sleep 0.5
+done
+cp "$FH/signal.results.json" $OUT/results.json 2>/dev/null
+kill $PID 2>/dev/null; sleep 3
+echo "après : $(companions | wc -l | tr -d ' ') compagnon(s) au chemin $COMPANION" >> $OUT/processus.txt
+ls -d $TMPDIR/baitari-dictee-* 2>/dev/null | wc -l | xargs echo "WAV temporaires restants :" >> $OUT/processus.txt
+cat $OUT/journal.txt $OUT/processus.txt

@@ -4,8 +4,8 @@
 // state is photographed by the shell (signal file "ready:<name>" → "done:<name>").
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const waitFor = async <T>(probe: () => T | null | undefined | false, timeout = 30_000) => {
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const waitFor = async <T>(probe: () => T | null | undefined | false, timeout = 30_000) => {
   const started = Date.now();
   for (;;) {
     const value = probe();
@@ -15,8 +15,8 @@ const waitFor = async <T>(probe: () => T | null | undefined | false, timeout = 3
   }
 };
 const buttons = () => [...document.querySelectorAll<HTMLButtonElement>("button")];
-const button = (text: string) => buttons().find((element) => element.textContent?.includes(text) && !element.disabled);
-const setTextarea = (area: HTMLTextAreaElement, value: string) => {
+export const button = (text: string) => buttons().find((element) => element.textContent?.includes(text) && !element.disabled);
+export const setTextarea = (area: HTMLTextAreaElement, value: string) => {
   Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")!.set!.call(area, value);
   area.dispatchEvent(new Event("input", { bubbles: true }));
 };
@@ -28,7 +28,7 @@ const setInput = (input: HTMLInputElement, value: string) => {
 
 // The capture runs on an empty, temporary data folder: a test account with a
 // generated password (never shown, discarded with the folder) opens the session.
-async function ensureSession() {
+export async function ensureSession() {
   await waitFor(() => document.querySelector("#email") || document.querySelector("[data-sidebar]"));
   if (!document.querySelector("#email")) return;
   button("Créer un compte")?.click();
@@ -43,7 +43,7 @@ async function ensureSession() {
 }
 
 /** The fictional patient of the reference case, created once in the temporary database. */
-async function ensurePatient() {
+export async function ensurePatient() {
   const { generateId, runDbOperation, runDbRead } = await import("@/services/sqlite/database");
   const found = await runDbRead((db) => db.select<{ id: string }[]>("SELECT id FROM patients WHERE name = 'Max'"));
   if (found[0]) return found[0].id;

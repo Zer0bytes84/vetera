@@ -1,0 +1,36 @@
+== arborescence
+69a0f040230b72540289d5901a128aa3e02447b594446df346562eb751144c7c  Contents/MacOS/vetera
+eff60f292d5dd10537599d92a51c7ba8154ad2cc8b127908e40f12e4b80acfb3  Contents/MacOS/whisper-cli
+964118f993b4dc5b7790356cfa1cb6a209e3172a2683db5b7dc0c933ed3cae1c  Contents/Resources/dylibs/libggml.0.dylib
+bf7c431d4e5b07f82bb04bf2023b939987fb41c5f1a06e0589d9913f85bb8f75  Contents/Resources/dylibs/libggml-metal.0.dylib
+acdc73e29d26f2d6ff87918bc1c0caaecb68d402a315e8fdf8dbbb67e786640c  Contents/Resources/dylibs/libwhisper.1.dylib
+b2b2e070945941e483a5ce34ff8d4c4adedb47cd290e692585991b48040af40d  Contents/Resources/dylibs/libggml-base.0.dylib
+800f31b1ead12f202ec29dc7cdb4d4082444237db9176d9a5963f9a5e0202cd0  Contents/Resources/dylibs/libggml-blas.0.dylib
+173949bd8d65b01effe8e140c78360a95288c0d4fbad6906dee39cddb7277e80  Contents/Resources/dylibs/libggml-cpu.0.dylib
+== dylibs du dépôt
+acdc73e29d26f2d6ff87918bc1c0caaecb68d402a315e8fdf8dbbb67e786640c libwhisper.1.9.5
+964118f993b4dc5b7790356cfa1cb6a209e3172a2683db5b7dc0c933ed3cae1c libggml.0.27.0
+b2b2e070945941e483a5ce34ff8d4c4adedb47cd290e692585991b48040af40d libggml-base.0.27.0
+173949bd8d65b01effe8e140c78360a95288c0d4fbad6906dee39cddb7277e80 libggml-cpu.0.27.0
+800f31b1ead12f202ec29dc7cdb4d4082444237db9176d9a5963f9a5e0202cd0 libggml-blas.0.27.0
+bf7c431d4e5b07f82bb04bf2023b939987fb41c5f1a06e0589d9913f85bb8f75 libggml-metal.0.27.0
+== otool -L whisper-cli
+/Users/zohir/Documents/08 - Projets numériques/Projects 2026/BAITARI 2.1/bAItari/src-tauri/target/release/bundle/macos/Baitari.app/Contents/MacOS/whisper-cli:
+	@rpath/libwhisper.1.dylib (compatibility version 1.0.0, current version 0.0.0)
+	@rpath/libggml.0.dylib (compatibility version 0.0.0, current version 0.27.0)
+	@rpath/libggml-cpu.0.dylib (compatibility version 0.0.0, current version 0.27.0)
+	@rpath/libggml-blas.0.dylib (compatibility version 0.0.0, current version 0.27.0)
+	@rpath/libggml-metal.0.dylib (compatibility version 0.0.0, current version 0.27.0)
+	@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.27.0)
+	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)
+== rpath
+         path @executable_path (offset 12)
+         path @executable_path/../Resources/dylibs (offset 12)
+== codesign
+Identifier=vetera-56c3c2f62deb06be
+CodeDirectory v=20400 size=597776 flags=0x20002(adhoc,linker-signed) hashes=18677+0 location=embedded
+TeamIdentifier=not set
+Sealed Resources=none
+/Users/zohir/Documents/08 - Projets numériques/Projects 2026/BAITARI 2.1/bAItari/src-tauri/target/release/bundle/macos/Baitari.app: code has no resources but signature indicates they must be present
+verify exit=0

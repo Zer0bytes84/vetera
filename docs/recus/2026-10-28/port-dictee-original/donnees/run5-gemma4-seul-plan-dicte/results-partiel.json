@@ -1,0 +1,15 @@
+[
+  {
+    "step": "panneau",
+    "dicterActifApres": 0.51
+  },
+  {
+    "step": "note",
+    "generator": "gemma4",
+    "chargementAssistant": 16.14,
+    "redaction": 463.99,
+    "total": 480.14,
+    "erreur": "Le traitement local n’a pas répondu dans le délai prévu. Votre dictée est conservée ; vous pouvez réessayer.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »",
+    "plan": null
+  }
+]

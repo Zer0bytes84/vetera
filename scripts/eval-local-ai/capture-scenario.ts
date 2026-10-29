@@ -5,7 +5,7 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee";
+  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro";
   /** "dictee": generator preference set before the dictation (gemma3 or gemma4). */
   generator?: string;
   /** "outils-ia": position the switch must reach ("on" = new assistant version). */
@@ -66,6 +66,13 @@ async function run() {
     // Generator choice made by an "outils-ia" capture: back to the app default.
     localStorage.removeItem("baitari.generator");
     await writeTextFile(config.signal, "restored");
+    return;
+  }
+  // Native dictation acceptance: real panel, real microphone (query = clips, generator = generators).
+  if (config.scenario === "micro") {
+    localStorage.setItem("baitari:ai-models-onboarding-completed", "true");
+    const { captureMicro } = await import("./capture-micro");
+    await captureMicro(config.signal, config.query.split(","), (config.generator ?? "gemma3").split(","));
     return;
   }
   // No reload here: the first launch on an empty folder is still creating its database.

@@ -1,0 +1,48 @@
+[
+  {
+    "step": "panneau",
+    "dicterActifApres": 0.5
+  },
+  {
+    "clip": "passage30",
+    "dicterVersEcoute": 3.28,
+    "arretVersTexte": 19.31,
+    "dicterVersTexte": 52.35,
+    "texte": "Sous-titrage Société Radio-Canada",
+    "erreur": null
+  },
+  {
+    "clip": "plan-gabarit",
+    "dicterVersEcoute": 0.26,
+    "arretVersTexte": 3.65,
+    "dicterVersTexte": 22.19,
+    "texte": "Sous-titrage Société Radio-Canada",
+    "erreur": null
+  },
+  {
+    "clip": "plan-reference",
+    "dicterVersEcoute": 0.26,
+    "arretVersTexte": 5.2,
+    "dicterVersTexte": 44.8,
+    "texte": "Sous-titrage Société Radio-Canada Sous-titrage Société Radio-Canada",
+    "erreur": null
+  },
+  {
+    "step": "note",
+    "generator": "gemma3",
+    "chargementAssistant": 29.03,
+    "redaction": 49.72,
+    "total": 78.75,
+    "erreur": null,
+    "plan": "1. Sous-titrage Société Radio-Canada Sous-titrage Société Radio-Canada"
+  },
+  {
+    "step": "note",
+    "generator": "gemma4",
+    "chargementAssistant": 81.19,
+    "redaction": 0,
+    "total": 81.19,
+    "erreur": null,
+    "plan": "1. Sous-titrage Société Radio-Canada Sous-titrage Société Radio-Canada"
+  }
+]
