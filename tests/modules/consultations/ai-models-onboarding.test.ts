@@ -179,10 +179,13 @@ describe("Installation partagée en arrière-plan", () => {
 
 describe("Nouvelle version de l’assistant (phase B)", () => {
   it("n’est proposée qu’une fois les outils de base installés, et respecte Plus tard", () => {
-    expect(shouldOfferNewAssistant(missing)).toBe(false);
-    expect(shouldOfferNewAssistant(ready)).toBe(true);
-    expect(shouldOfferNewAssistant({...ready, generator4Ready: true})).toBe(false);
+    expect(shouldOfferNewAssistant(missing, false)).toBe(false);
+    expect(shouldOfferNewAssistant(ready, false)).toBe(true);
+    expect(shouldOfferNewAssistant({...ready, generator4Ready: true}, false)).toBe(false);
     dismissNewAssistantOffer();
+    expect(shouldOfferNewAssistant(ready, false)).toBe(false);
+  });
+  it("n’est pas proposée tant qu’elle est suspendue", () => {
     expect(shouldOfferNewAssistant(ready)).toBe(false);
   });
   it("ne télécharge qu’elle, sans toucher aux outils de base, et vérifie le disque", async () => {
@@ -213,13 +216,20 @@ describe("Carte de la nouvelle version dans les Paramètres", () => {
     expect(text).not.toContain("Utiliser la nouvelle version");
   });
   it("donne l’interrupteur une fois installée, sans nom technique", () => {
-    const text = card({});
+    const text = card({suspended: false});
     expect(text).toContain("Utiliser la nouvelle version");
     expect(text).not.toMatch(/Gemma|E2B|MediaPipe|LiteRT/);
     expect(text).not.toContain("a pris le relais");
   });
   it("indique sans erreur que l’assistant actuel a pris le relais", () => {
-    expect(card({enabled: true, fellBack: true})).toContain("l’assistant actuel a pris le relais");
-    expect(card({enabled: false, fellBack: true})).not.toContain("a pris le relais");
+    expect(card({enabled: true, fellBack: true, suspended: false})).toContain("l’assistant actuel a pris le relais");
+    expect(card({enabled: false, fellBack: true, suspended: false})).not.toContain("a pris le relais");
+  });
+  it("suspendue : interrupteur grisé, non coché, mention « Temporairement indisponible »", () => {
+    const html = renderToStaticMarkup(createElement(NewAssistantCard, {installed: true, downloading: false, busy: false, enabled: true, fellBack: false, onEnable: () => {}}));
+    expect(html).toContain("Temporairement indisponible");
+    expect(html).toMatch(/role="switch"[^>]*(aria-disabled="true"|disabled)/);
+    expect(html).toMatch(/role="switch"[^>]*aria-checked="false"/);
+    expect(html).toContain("Utiliser la nouvelle version");
   });
 });

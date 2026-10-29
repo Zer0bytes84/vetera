@@ -12,6 +12,13 @@ export interface GeneratorCandidate {
  * next to Gemma 3 and only becomes the default once its criteria are met.
  */
 export const DEFAULT_GENERATOR: GeneratorFamily = "gemma3";
+/**
+ * Gemma 4 is suspended until its generation is fixed: on the dictated Plan it
+ * returns no token before the 480 s timeout (docs/recus/2026-10-28/port-dictee-original).
+ * Its download and the stored preference stay in place; every computer writes
+ * with Gemma 3 meanwhile. Set to false to bring it back.
+ */
+export const GEMMA4_SUSPENDED = true;
 export const GENERATOR_PREFERENCE_KEY = "baitari.generator";
 export const GENERATOR_FILES: Record<GeneratorFamily, string> = {
   gemma3: "generator/gemma3.task",
@@ -25,14 +32,20 @@ const storage = () => {
     return null;
   }
 };
-export function getGeneratorPreference(): GeneratorFamily {
-  // Development builds let the bench compare both models (?generator=…).
+// Development builds let the bench compare both models (?generator=…), suspended or not.
+function benchGenerator(): GeneratorFamily | null {
   const forced = import.meta.env.DEV
     ? new URLSearchParams(globalThis.location?.search ?? "").get("generator")
     : null;
-  if (forced === "gemma3" || forced === "gemma4") return forced;
+  return forced === "gemma3" || forced === "gemma4" ? forced : null;
+}
+/** The generator that writes the notes; a stored Gemma 4 choice gives way while it is suspended. */
+export function getGeneratorPreference(suspended = GEMMA4_SUSPENDED): GeneratorFamily {
+  const forced = benchGenerator();
+  if (forced) return forced;
   const stored = storage()?.getItem(GENERATOR_PREFERENCE_KEY);
-  return stored === "gemma3" || stored === "gemma4" ? stored : DEFAULT_GENERATOR;
+  if (stored === "gemma4") return suspended ? DEFAULT_GENERATOR : stored;
+  return stored === "gemma3" ? stored : DEFAULT_GENERATOR;
 }
 export function setGeneratorPreference(family: GeneratorFamily) {
   storage()?.setItem(GENERATOR_PREFERENCE_KEY, family);
@@ -50,11 +63,12 @@ export const hasGeneratorFallenBack = () => generatorFellBack;
 /** Models to try, in order: the preferred one first, Gemma 3 as the fallback. */
 export function generatorCandidates(
   status: Pick<LocalModelStatus, "generatorReady" | "generator4Ready">,
-  modelRoot: string
+  modelRoot: string,
+  suspended = GEMMA4_SUSPENDED
 ): GeneratorCandidate[] {
   const candidate = (family: GeneratorFamily) => ({ family, url: modelRoot + GENERATOR_FILES[family] });
   const fallback = status.generatorReady ? [candidate("gemma3")] : [];
-  if (status.generator4Ready && getGeneratorPreference() === "gemma4" && !generatorFellBack)
+  if (status.generator4Ready && getGeneratorPreference(suspended) === "gemma4" && !generatorFellBack)
     return [candidate("gemma4"), ...fallback];
   return fallback;
 }

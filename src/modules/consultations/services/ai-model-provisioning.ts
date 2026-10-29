@@ -1,6 +1,7 @@
 import { isTauriRuntime } from "@/services/browser-store";
 import manifest from "../../../../resources/local-ai/download-manifest.json";
 import { nativeDictationEnabled } from "../local-ai/native-dictation";
+import { GEMMA4_SUSPENDED } from "../local-ai/generator-choice";
 import {
   type LocalModelStatus, EMPTY_MODEL_STATUS, getLocalModels,
   downloadLocalModels, cancelLocalModelDownload,
@@ -87,8 +88,9 @@ export async function shouldShowAIOnboarding() {
   return true;
 }
 
-export function shouldOfferNewAssistant(status: LocalModelStatus) {
-  return isTauriRuntime() && allAIModelsReady(status) && !status.generator4Ready
+/** Not offered while the new version is suspended: it could not be used. */
+export function shouldOfferNewAssistant(status: LocalModelStatus, suspended = GEMMA4_SUSPENDED) {
+  return isTauriRuntime() && !suspended && allAIModelsReady(status) && !status.generator4Ready
     && storage()?.getItem(NEW_ASSISTANT_DISMISSED_KEY) !== "true";
 }
 export function dismissNewAssistantOffer() { storage()?.setItem(NEW_ASSISTANT_DISMISSED_KEY, "true"); }

@@ -11,7 +11,7 @@ import { isTauriRuntime } from "@/services/browser-store";
 import { importLocalModel } from "../local-ai/models";
 import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
 import { AI_MODELS_CATALOG, AI_MODELS_CHANGED_EVENT, allAIModelsReady, type AIModelId, dictationModelReady, NEW_ASSISTANT, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
-import { getGeneratorPreference, hasGeneratorFallenBack, setGeneratorPreference } from "../local-ai/generator-choice";
+import { GEMMA4_SUSPENDED, getGeneratorPreference, hasGeneratorFallenBack, setGeneratorPreference } from "../local-ai/generator-choice";
 
 const icons = {whisper: Microphone, generator: MessageSquarePlus, embeddinggemma: Search};
 
@@ -112,17 +112,20 @@ export function AIModelSettings() {
 }
 
 /** The new assistant version: one-tap download, then an explicit choice; the current one stays the fallback. */
-export function NewAssistantCard({installed, downloading, busy, enabled, fellBack, onEnable}: {
+export function NewAssistantCard({installed, downloading, busy, enabled, fellBack, onEnable, suspended = GEMMA4_SUSPENDED}: {
   installed: boolean; downloading: boolean; busy: boolean; enabled: boolean; fellBack: boolean; onEnable: (enabled: boolean) => void;
+  /** Kept installed but not selectable until its generation is fixed. */
+  suspended?: boolean;
 }) {
   return <article className="mx-4 mb-4 flex min-w-0 flex-col gap-3 rounded-xl border bg-background p-4">
     <div className="flex items-center gap-2"><Sparkles className="size-4 shrink-0 text-muted-foreground"/><h4 className="text-sm font-medium">{NEW_ASSISTANT.name}</h4></div>
     <p className="text-xs leading-relaxed text-muted-foreground">{NEW_ASSISTANT.description}</p>
-    {installed && enabled && fellBack && <p role="status" className="text-xs text-muted-foreground">Cet ordinateur n’a pas pu la charger : l’assistant actuel a pris le relais.</p>}
+    {suspended && <p role="status" className="text-xs text-muted-foreground">Temporairement indisponible : cette version est en cours de correction. L’assistant actuel rédige vos notes.</p>}
+    {!suspended && installed && enabled && fellBack && <p role="status" className="text-xs text-muted-foreground">Cet ordinateur n’a pas pu la charger : l’assistant actuel a pris le relais.</p>}
     <div className="flex flex-wrap items-center justify-between gap-3">
       {installed
-        ? <label className="flex cursor-pointer items-center gap-2 text-sm">
-            <Switch checked={enabled} onCheckedChange={onEnable} aria-label="Utiliser la nouvelle version de l’assistant"/>
+        ? <label className={suspended ? "flex cursor-not-allowed items-center gap-2 text-sm text-muted-foreground opacity-60" : "flex cursor-pointer items-center gap-2 text-sm"}>
+            <Switch checked={enabled && !suspended} disabled={suspended} onCheckedChange={onEnable} aria-label="Utiliser la nouvelle version de l’assistant"/>
             Utiliser la nouvelle version
           </label>
         : <Badge variant="outline">{downloading ? "Téléchargement…" : "Non installée"}</Badge>}

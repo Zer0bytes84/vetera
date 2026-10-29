@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_GENERATOR,
+  GEMMA4_SUSPENDED,
   generatorCandidates,
+  getGeneratorPreference,
   recordGeneratorFallback,
   setGeneratorPreference,
   wrapUserTurn,
@@ -23,20 +25,27 @@ describe("Choix du modèle de rédaction (phase B)", () => {
     expect(DEFAULT_GENERATOR).toBe("gemma3");
     expect(generatorCandidates(both, "asset://m/")).toEqual([{ family: "gemma3", url: "asset://m/generator/gemma3.task" }]);
   });
-  it("essaie Gemma 4 d'abord quand elle est choisie, avec Gemma 3 en repli", () => {
+  it("Gemma 4 suspendue : un poste qui l'avait choisie rédige avec Gemma 3, sa préférence est gardée", () => {
+    expect(GEMMA4_SUSPENDED).toBe(true);
     setGeneratorPreference("gemma4");
-    expect(generatorCandidates(both, "asset://m/").map((candidate) => candidate.url)).toEqual([
+    expect(getGeneratorPreference()).toBe("gemma3");
+    expect(generatorCandidates(both, "asset://m/").map((candidate) => candidate.family)).toEqual(["gemma3"]);
+    expect(store.get("baitari.generator")).toBe("gemma4");
+  });
+  it("réactivée, essaie Gemma 4 d'abord quand elle est choisie, avec Gemma 3 en repli", () => {
+    setGeneratorPreference("gemma4");
+    expect(generatorCandidates(both, "asset://m/", false).map((candidate) => candidate.url)).toEqual([
       "asset://m/generator4/gemma4-e2b.task",
       "asset://m/generator/gemma3.task",
     ]);
-    expect(generatorCandidates({ generatorReady: true, generator4Ready: false }, "asset://m/").map((candidate) => candidate.family)).toEqual(["gemma3"]);
+    expect(generatorCandidates({ generatorReady: true, generator4Ready: false }, "asset://m/", false).map((candidate) => candidate.family)).toEqual(["gemma3"]);
   });
   it("après un échec de chargement, va droit à Gemma 3 jusqu'à un nouveau choix", () => {
     setGeneratorPreference("gemma4");
     recordGeneratorFallback();
-    expect(generatorCandidates(both, "asset://m/").map((candidate) => candidate.family)).toEqual(["gemma3"]);
+    expect(generatorCandidates(both, "asset://m/", false).map((candidate) => candidate.family)).toEqual(["gemma3"]);
     setGeneratorPreference("gemma4");
-    expect(generatorCandidates(both, "asset://m/")[0].family).toBe("gemma4");
+    expect(generatorCandidates(both, "asset://m/", false)[0].family).toBe("gemma4");
   });
   it("enveloppe le tour dans le gabarit du modèle chargé", () => {
     expect(wrapUserTurn("Bonjour", "gemma3")).toBe("<start_of_turn>user\nBonjour<end_of_turn>\n<start_of_turn>model\n");

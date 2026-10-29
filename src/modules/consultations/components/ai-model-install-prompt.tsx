@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { isTauriRuntime } from "@/services/browser-store";
 import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
 import { allAIModelsReady, checkAIModelsStatus, dismissNewAssistantOffer, NEW_ASSISTANT, shouldOfferNewAssistant, shouldShowAIOnboarding, setAIOnboardingDismissed, triggerOpenAIOnboarding, TOTAL_AI_MODELS_SIZE_LABEL } from "../services/ai-model-provisioning";
-import { setGeneratorPreference } from "../local-ai/generator-choice";
+import { GEMMA4_SUSPENDED, setGeneratorPreference } from "../local-ai/generator-choice";
 
 const TOAST_ID = "baitari-local-tools-installation";
 
@@ -70,8 +70,10 @@ export function AIModelInstallPrompt() {
     } else if (state.target === "generator4" && state.status.generator4Ready) {
       toast.success("Nouvelle version installée", {
         id: TOAST_ID, duration: 10_000,
-        description: "L’assistant actuel reste en place. Essayez la nouvelle version, ou activez-la plus tard dans les paramètres.",
-        action: {label: "Essayer", onClick: () => setGeneratorPreference("gemma4")},
+        description: GEMMA4_SUSPENDED
+          ? "L’assistant actuel reste en place. La nouvelle version est temporairement indisponible."
+          : "L’assistant actuel reste en place. Essayez la nouvelle version, ou activez-la plus tard dans les paramètres.",
+        ...(GEMMA4_SUSPENDED ? {} : {action: {label: "Essayer", onClick: () => setGeneratorPreference("gemma4")}}),
       });
     } else if (allAIModelsReady(state.status)) {
       toast.success("Vos outils IA sont prêts", {id: TOAST_ID, description: "Vous pouvez désormais les utiliser hors ligne.", duration: 6000});
