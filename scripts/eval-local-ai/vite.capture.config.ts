@@ -54,10 +54,27 @@ const noEchoCancellation = (): Plugin => ({
       : undefined,
 });
 
+// BAITARI_CAPTURE_SAVE_DIR=<folder>: the native save panel is not driven. Its
+// call is recorded in window.__CAPTURE_SAVES__ (the name it would propose) and
+// answered with that name in <folder>, so the real export writes there.
+const recordedSave = (): Plugin => ({
+  name: "baitari-capture-recorded-save",
+  enforce: "pre",
+  transform: (code, id) =>
+    process.env.BAITARI_CAPTURE_SAVE_DIR && id.includes("plugin-dialog") && code.includes("'plugin:dialog|save'")
+      ? code.replace(
+          "return await invoke('plugin:dialog|save', { options });",
+          `const answered = ${JSON.stringify(process.env.BAITARI_CAPTURE_SAVE_DIR)} + "/" + options.defaultPath;
+    (window.__CAPTURE_SAVES__ ??= []).push({ defaultPath: options.defaultPath, answered });
+    return answered;`,
+        )
+      : undefined,
+});
+
 export default async (env: ConfigEnv) => {
   const base =
     typeof appConfig === "function"
       ? await (appConfig as (env: ConfigEnv) => UserConfig | Promise<UserConfig>)(env)
       : appConfig;
-  return mergeConfig(base, { plugins: [scenario(), forcedRefusal(), noEchoCancellation()] });
+  return mergeConfig(base, { plugins: [scenario(), forcedRefusal(), noEchoCancellation(), recordedSave()] });
 };

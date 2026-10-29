@@ -1,0 +1,5 @@
+total 24
+drwxr-xr-x@ 4 zohir  staff   128 Oct 29 14:18 .
+drwxr-xr-x@ 7 zohir  staff   224 Oct 29 14:17 ..
+-rw-r--r--@ 1 zohir  staff  6035 Oct 29 14:18 Facture-INV-2026-000018-1cgz2j2.pdf
+-rw-r--r--@ 1 zohir  staff    57 Oct 29 14:17 Facture-INV-2026-000018.pdf

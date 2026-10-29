@@ -1,0 +1,21 @@
+app pid 65790
+14:17:59 1a-formulaire-patient
+14:18:01 1b-patient-cree
+14:18:06 2a-formulaire-rdv
+14:18:10 2b-rdv-agenda
+14:18:13 3-consultation-flux
+14:18:20 4-dictee
+14:18:37 5a-relecture
+14:18:40 5b-note-validee
+14:18:42 6a-facturation
+14:18:46 6b-facture-emise
+14:18:50 7a-flux-apres
+14:18:54 7b-agenda-apres
+14:18:59 7c-reouverture
+14:19:03 7d-dossier-synthese
+14:19:05 7e-dossier-chronologie
+14:19:49 8a-recherche-mot
+14:20:10 8b-recherche-sens
+14:20:16 8c-recherche-patient
+14:20:23 8d-autre-dossier
+14:20:23 fin
