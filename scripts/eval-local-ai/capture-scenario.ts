@@ -83,6 +83,12 @@ async function run() {
   }
   // End-to-end clinic case in the packaged measuring app (real microphone).
   if (config.scenario === "workflow") {
+    // After a reload for the dark theme, the dictation states resume alone.
+    if (sessionStorage.getItem("etats-dictee")) {
+      const { captureDictationStates } = await import("./capture-etats-dictee");
+      await captureDictationStates(config.signal);
+      return;
+    }
     const { captureWorkflow } = await import("./capture-workflow");
     await captureWorkflow(config.signal);
     return;

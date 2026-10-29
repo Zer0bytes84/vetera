@@ -1,0 +1,85 @@
+[
+  {
+    "theme": "light",
+    "name": "attente-micro",
+    "annuler": true
+  },
+  {
+    "theme": "light",
+    "name": "attente-micro-aide",
+    "aide": true
+  },
+  {
+    "theme": "light",
+    "name": "micro-sans-reponse",
+    "message": "Baitari n’a pas reçu l’autorisation du micro. Si aucune fenêtre ne s’est affichée, ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter.",
+    "dicterDisponible": true
+  },
+  {
+    "theme": "light",
+    "name": "attente-annulee",
+    "attenteAffichee": false,
+    "dicterDisponible": true
+  },
+  {
+    "theme": "light",
+    "name": "micro-refuse",
+    "message": "L’accès au micro est refusé. Ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter."
+  },
+  {
+    "theme": "light",
+    "name": "ecoute-voix",
+    "bars": [
+      14,
+      16,
+      25,
+      22,
+      13
+    ],
+    "silent": false,
+    "playing": true
+  },
+  {
+    "theme": "light",
+    "name": "ecoute-silence",
+    "bars": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "silent": true
+  },
+  {
+    "theme": "light",
+    "name": "transcription",
+    "texte": "Le propriétaire remarque que Max gémit lorsqu'il se gratte",
+    "erreur": null
+  },
+  {
+    "theme": "dark",
+    "name": "ecoute-voix",
+    "bars": [
+      14,
+      22,
+      23,
+      17,
+      15
+    ],
+    "silent": false,
+    "playing": true
+  },
+  {
+    "theme": "dark",
+    "name": "ecoute-silence",
+    "bars": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "silent": true
+  }
+]

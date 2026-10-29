@@ -161,16 +161,28 @@ export async function captureWorkflow(signal: string) {
   await sleep(1500);
   const started = await one<{ status: string }>("SELECT status FROM appointments WHERE id=?", [appointmentId]);
   if (started.status !== "in_progress") await fail(`statut ${started.status} au lieu de in_progress après « Ouvrir »`);
-  const billEmpty = buttons().find((element) => element.textContent?.includes("Clôturer et facturer"));
-  await breach("facture-sans-note", Boolean(billEmpty && !billEmpty.disabled), {
-    probe: "« Clôturer et facturer » avant toute note",
-    enabled: billEmpty ? !billEmpty.disabled : null,
-  });
   await shot("3-consultation-flux", { status: started.status });
+  // B1 replayed: no validated note, so closing is blocked and says why; a
+  // forced click on the disabled button changes nothing.
+  const closing = buttons().find((element) => element.textContent?.includes("Clôturer et facturer"));
+  const blockerShown = bodyHas("Pas de note validée pour cette visite");
+  closing?.click();
+  await sleep(1200);
+  const stillOpen = await one<{ status: string }>("SELECT status FROM appointments WHERE id=?", [appointmentId]);
+  await breach("facture-sans-note", Boolean(closing && !closing.disabled) || !blockerShown || stillOpen.status !== "in_progress", {
+    probe: "« Clôturer et facturer » sans note validée",
+    enabled: closing ? !closing.disabled : null,
+    blockerShown,
+    statusAfterClick: stillOpen.status,
+    billingOpened: bodyHas("Encaisser et imprimer") || bodyHas("Facturer sans encaisser"),
+  });
+  document.querySelector(".consultation-closing-blocker")?.scrollIntoView({ block: "center" });
+  await shot("3b-cloture-bloquee", { blockerShown, enabled: closing ? !closing.disabled : null, statusAfterClick: stillOpen.status });
 
   // 4. Dictation, rubric by rubric, real microphone.
   step = "4-dictee";
-  (await expect(() => byLabel("Ouvrir l’assistant de consultation"), "bouton Assistant absent de la consultation"))!.click();
+  // Opened from the closing message itself: « Dicter la note ».
+  (await expect(() => byText("Dicter la note"), "« Dicter la note » absent du message de clôture"))!.click();
   const field = () => document.querySelector<HTMLTextAreaElement>("textarea.assistant-dictation-field");
   const dicter = () => buttons().find((element) => /^(Dicter|Compléter)$/.test(element.textContent?.trim() ?? "") && !element.disabled);
   await expect(() => field(), "champ de dictée de l’assistant absent", 180_000);
@@ -226,6 +238,11 @@ export async function captureWorkflow(signal: string) {
   if (!soap?.assessment) await fail("aucune note SOAP en base après la validation");
   await sleep(1000);
   await shot("5b-note-validee", { soapAssessment: soap!.assessment.slice(0, 200), reviewed: soap!.content.includes("reviewed") });
+  const closingAfter = buttons().find((element) => element.textContent?.includes("Clôturer et facturer"));
+  await breach("cloture-bloquee-apres-note", !closingAfter || closingAfter.disabled || bodyHas("Pas de note validée pour cette visite"), {
+    enabled: closingAfter ? !closingAfter.disabled : null,
+    blockerShown: bodyHas("Pas de note validée pour cette visite"),
+  });
 
   // 6. Invoice and PDF export. The native save panel is not driven: its call is
   // recorded and answered with a path in this instance's own Desktop folder.
@@ -283,11 +300,19 @@ export async function captureWorkflow(signal: string) {
   await sleep(2500);
   const overview = document.querySelector(".patient-overview")?.textContent ?? "";
   await breach("note-absente-synthese", !overview.includes("Malassezia") && !overview.includes("Otite"), { overviewExcerpt: overview.slice(0, 300) });
+  document.getElementById("record-tab-content")?.scrollIntoView({ block: "start" });
+  await sleep(400);
   await shot("7d-dossier-synthese");
   document.getElementById("record-tab-timeline")?.click();
   await sleep(1200);
   const timeline = document.querySelector(".patient-timeline-table")?.textContent ?? "";
   await breach("statut-chronologie", !/Terminé|Terminée/.test(timeline), { timelineExcerpt: timeline.slice(0, 300) });
+  // B3 replayed: the validated note, shown in the Synthèse, is in the chronology too.
+  await breach("note-absente-chronologie", !timeline.includes("Otite externe droite") || timeline.includes("Compte rendu non renseigné"), {
+    synthese: overview.includes("Otite externe droite"),
+    chronologie: timeline.includes("Otite externe droite"),
+    nonRenseigne: timeline.includes("Compte rendu non renseigné"),
+  });
   document.getElementById("record-tab-content")?.scrollIntoView({ block: "start" });
   await shot("7e-dossier-chronologie");
 
@@ -348,5 +373,8 @@ export async function captureWorkflow(signal: string) {
     },
   });
   await save();
-  await writeTextFile(signal, "restored");
+  // Then the states of the dictation panel, in the same instance.
+  sessionStorage.setItem("etats-dictee", "light");
+  const { captureDictationStates } = await import("./capture-etats-dictee");
+  await captureDictationStates(signal);
 }
