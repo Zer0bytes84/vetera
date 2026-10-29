@@ -1,0 +1,19 @@
+enregistrement 18.02 s, clip 14.71 s
+premier échantillon non nul : 0.0638125 s
+plancher -66.9 dBFS ; premier son > plancher + 15 dB : 1.62 s
+début du clip dans l'enregistrement : +2.76 s (corrélation 0.76)
+seconde du clip : niveau clip dBFS / niveau enregistré dBFS / écart dB
+    0 :  -20.6 /  -35.0 /  -14.4
+    1 :  -17.2 /  -19.0 /   -1.8
+    2 :  -17.5 /  -19.0 /   -1.5
+    3 :  -17.3 /  -19.3 /   -2.0
+    4 :  -15.2 /  -17.2 /   -2.0
+    5 :  -17.9 /  -19.0 /   -1.1
+    6 :  -20.3 /  -21.1 /   -0.8
+    7 :  -18.3 /  -18.8 /   -0.5
+    8 :  -16.7 /  -18.3 /   -1.6
+    9 :  -19.5 /  -19.9 /   -0.4
+   10 :  -15.6 /  -18.5 /   -2.9
+   11 :  -17.6 /  -19.7 /   -2.1
+   12 :  -17.6 /  -17.9 /   -0.3
+   13 :  -18.7 /  -19.3 /   -0.6

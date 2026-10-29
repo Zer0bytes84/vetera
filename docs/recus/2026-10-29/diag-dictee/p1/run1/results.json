@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "name": "1a-formulaire-patient"
+    },
+    {
+      "name": "1b-patient-cree",
+      "patientId": "mvu2h7qonjw9n55hau",
+      "owner": {
+        "last_name": "Testeur",
+        "first_name": "Camille"
+      }
+    },
+    {
+      "name": "2a-formulaire-rdv"
+    },
+    {
+      "name": "2b-rdv-agenda",
+      "appointment": {
+        "id": "mvu2hd6f31736wb9vka",
+        "status": "scheduled",
+        "start_time": "2026-10-29T13:00:00.000Z"
+      }
+    },
+    {
+      "name": "3-consultation-flux",
+      "status": "in_progress"
+    },
+    {
+      "name": "3b-cloture-bloquee",
+      "blockerShown": true,
+      "enabled": false,
+      "statusAfterClick": "in_progress"
+    },
+    {
+      "name": "4-dictee",
+      "path": "micro",
+      "dictated": [
+        "Le propriétaire remarque que Max gémit lorsqu'il se gratte l'oreille droite. Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+        "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympans difficilement visualisés en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+        "Température 38.5 °C, normale, fréquence cardiaque 92 BPM, fréquence respiratoire 20 mouvements par minute, poids 32.5 kg, stable, score corporel 5 sur 9, chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes, oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylocopes.",
+        "Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines."
+      ]
+    },
+    {
+      "name": "echec-5-note",
+      "reason": "génération refusée par l’assistant après 28.6 s : La réponse de l’assistant n’est pas un JSON SOAP valide. Votre dictée est conservée ; aucune note n’a été enregistrée.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »"
+    }
+  ],
+  "breaches": [
+    {
+      "id": "facture-sans-note",
+      "found": false,
+      "probe": "« Clôturer et facturer » sans note validée",
+      "enabled": false,
+      "blockerShown": true,
+      "statusAfterClick": "in_progress",
+      "billingOpened": false
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "rubriques": {
+    "subjective": "Légère baisse d'activité liée à l'inconfort, mes appétits conservés, aucun vomissement ni diarrhée, pas d'historique récent de baignade, alimentation habituelle inchangée, traitement antiparasitaire à jour, administré il y a deux semaines.",
+    "objective": "Normal. Fréquence cardiaque 92 BPM. Fréquence respiratoire 20 mouvements par minute. Poids 32.5 kg. Stable. Score corporel 5 sur 9. Chien éveillé, alerte et réactif, muqueuse rose et humide, TRC inférieur à 2 secondes. Oreille droite, érythème modéré du pavillon, cérumène brun foncé abondant, odeur légèrement cérumineuse, douleur à la palpation de la base de l'oreille, otoscopie, tympan difficilement visualisé en raison de l'œdème du canal et des sécrétions, oreille gauche, aspect normal, propre, non douloureuse, cytologie auriculaire, présence massive de malassozia et quelques coques bactériennes, staphylococques.",
+    "assessment": "Autite externe droite d'origine très probablement secondaire à une prolifération de levure, malassezia, diagnostic différentiel, allergie sous-jacente, alimentaire ou environnementale, à investiguer si les récidives persistent.",
+    "plan": "Soin au cabinet, nettoyage minutieux du canal auriculaire droit avec une solution céruminolytique adaptée, prescription médicale, gouttes auriculaires antibiotiques, antifongiques et anti-inflammatoires, 5 gouttes dans l'oreille droite, 2 fois par jour pendant 10 jours. Collier Elisabeth, conseiller si le grattage persiste, éducation du client, expliquer la technique d'installation des gouttes sans enfoncer l'embout dans le conduit, interdire les baignades et les nettoyages agressifs avec des cotons-tiges pendant le traitement, suivi, planifier une visite de contrôle dans 10 à 14 jours, ou appeler plutôt si aggravation ou douleur accrue."
+  },
+  "gabaritPlanTest": "",
+  "contexte": {
+    "patient": {
+      "id": "mvu21jpckngfc5go4mj",
+      "nom": "Max",
+      "espece": "Chien",
+      "race": "Berger Allemand",
+      "sexe": "M",
+      "naissance": null,
+      "statut": "sante",
+      "allergies": "",
+      "affectionsChroniques": "",
+      "notes": "",
+      "poids": null
+    },
+    "consultation": {
+      "motif": "Se gratte l’oreille droite depuis trois jours.",
+      "date": "2026-10-29T13:00:00.000Z"
+    },
+    "dernieresConsultations": []
+  }
+}

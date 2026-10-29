@@ -1,0 +1,13 @@
+#!/bin/zsh
+# Usage: p2-banc.sh <label> <case.json> — one reference-bench pass (gemma3, guided), then stops both processes by PID.
+set -u
+REPO="/Users/zohir/Documents/08 - Projets numériques/Projects 2026/BAITARI 2.1/bAItari"; E=$HOME/Library/Caches/baitari-eval; L=$1
+cd "$REPO"
+BAITARI_EVAL_TASKS=reference BAITARI_EVAL_REFERENCE="$2" BAITARI_EVAL_GENERATORS=gemma3 BAITARI_EVAL_VARIANTS=guidee BAITARI_EVAL_REFERENCE_CASES=reference BAITARI_EVAL_OUT=$E/diag-p2/report-$L.json BAITARI_EVAL_LABEL=$L npx vite --config scripts/eval-local-ai/vite.eval.config.ts > $E/diag-p2/vite-$L.log 2>&1 &
+VITE=$!
+until grep -q "Local:" $E/diag-p2/vite-$L.log; do sleep 1; done
+BAITARI_DATA_DIR=$E/diag-p2-db src-tauri/target/debug/vetera > $E/diag-p2/vetera-$L.log 2>&1 &
+APP=$!
+until [ -f $E/diag-p2/report-$L.json ]; do sleep 2; done
+grep "référence" $E/diag-p2/report-$L.progress.log
+kill $APP; kill $(lsof -nP -tiTCP:5180 -sTCP:LISTEN) $VITE 2>/dev/null; sleep 2

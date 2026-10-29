@@ -50,10 +50,35 @@ const benchEntry = (): Plugin => ({
   },
 });
 
+// BAITARI_EVAL_DIAG_TOKENS=1: the SOAP worker reports its real token counts
+// (input, reply budget, output) as a "DIAG" progress message before each reply.
+// BAITARI_EVAL_DIAG_CAPACITY=<n>: the engine is sized to at least n tokens, to
+// tell a reply cut by the budget from one the model ended itself. Bench only.
+const tokenDiagnosis = (): Plugin => ({
+  name: "baitari-eval-token-diagnosis",
+  enforce: "pre",
+  transform: (code, id) => {
+    // Worker modules carry a query (?worker_file…): compare the path alone.
+    if (!id.split("?")[0].endsWith("workers/soap.worker.ts")) return undefined;
+    const floor = Number(process.env.BAITARI_EVAL_DIAG_CAPACITY ?? 0);
+    let next = code;
+    if (floor > 0)
+      next = next
+        .replace("maxTokens: nextCapacity,", `maxTokens: Math.max(nextCapacity, ${floor}),`)
+        .replace("capacity = nextCapacity;", `capacity = Math.max(nextCapacity, ${floor});`);
+    if (process.env.BAITARI_EVAL_DIAG_TOKENS === "1")
+      next = next.replace(
+        'send({ type: "generated", text,',
+        'send({ type: "progress", message: "DIAG " + JSON.stringify({ inputTokens, templateTokens, capacity, outputTokens: model.sizeInTokens(text), characters: text.length }) });\n    send({ type: "generated", text,',
+      );
+    return next === code ? undefined : next;
+  },
+});
+
 export default async (env: ConfigEnv) => {
   const base =
     typeof appConfig === "function"
       ? await (appConfig as (env: ConfigEnv) => UserConfig | Promise<UserConfig>)(env)
       : appConfig;
-  return mergeConfig(base, { plugins: [benchEntry()] });
+  return mergeConfig(base, { plugins: [benchEntry(), tokenDiagnosis()] });
 };

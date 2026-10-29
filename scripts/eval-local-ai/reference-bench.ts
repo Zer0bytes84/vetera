@@ -17,6 +17,8 @@ const KEYS = ["subjective", "objective", "assessment", "plan"] as const;
 export interface ReferenceCase {
   rubriques: LocalSoapNote;
   gabaritPlanTest: string;
+  /** Context the panel built for this case (default: opened without an appointment). */
+  contexte?: LocalPatientContext;
 }
 
 /** Words removed from and added to a section (longest common subsequence). */
@@ -103,7 +105,10 @@ export async function runReference(
         const outputs: { number: 1 | 2; seconds: number; generator?: string; text: string }[] = [];
         const started = performance.now();
         let stage = "";
+        const tokens: unknown[] = [];
         const onProgress = (event: LocalAiProgress) => {
+          // Token counts reported by the worker under BAITARI_EVAL_DIAG_TOKENS.
+          if (event.message?.startsWith("DIAG ")) tokens.push(JSON.parse(event.message.slice(5)));
           if (event.stage && event.stage !== stage) stage = event.stage;
         };
         let note: LocalSoapNote | null = null;
@@ -113,7 +118,7 @@ export async function runReference(
           note = variant === "dictee" ? assembleGuidedNote(EMPTY_SOAP, answers) : await prepareSoapDraft({
             models,
             transcript,
-            context: contextWithoutVisit(),
+            context: item.contexte ?? contextWithoutVisit(),
             guidedSource,
             signal: new AbortController().signal,
             onProgress,
@@ -139,7 +144,7 @@ export async function runReference(
           };
         });
         const assembled = note ? assembledChecks(note, answers) : null;
-        rows.push({ generator, case: caseName, variant, accepted: Boolean(note), error, totalSeconds: seconds(started), transcript, scaffold, outputs, diffs, note, assembled });
+        rows.push({ generator, case: caseName, variant, accepted: Boolean(note), error, totalSeconds: seconds(started), transcript, scaffold, outputs, tokens, diffs, note, assembled });
         log(`référence ${caseName} · ${variant} · ${generator} : ${note ? "acceptée" : `refusée (${error})`}, ${outputs.length} essai(s), ${seconds(started)} s`);
       }
   return rows;

@@ -1,0 +1,26 @@
+1793310007.550 app pid 90127
+1793310010.180 1a-formulaire-patient
+1793310012.495 1b-patient-cree
+1793310017.224 2a-formulaire-rdv
+1793310020.836 2b-rdv-agenda
+1793310024.216 3-consultation-flux
+1793310026.581 3b-cloture-bloquee
+1793310028.056 vu play:rubrique-1
+1793310028.068 afplay-debut rubrique-1
+1793310053.007 afplay-fin rubrique-1
+1793310053.823 wav 1 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-90127-1793310053558325000-0/audio.wav
+1793310058.641 vu play:rubrique-2
+1793310058.651 afplay-debut rubrique-2
+1793310106.541 afplay-fin rubrique-2
+1793310107.445 wav 2 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-90127-1793310107194345000-1/audio.wav
+1793310115.525 vu play:rubrique-3
+1793310115.536 afplay-debut rubrique-3
+1793310169.074 afplay-fin rubrique-3
+1793310169.946 wav 3 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-90127-1793310169708039000-2/audio.wav
+1793310177.746 vu play:rubrique-4
+1793310177.756 afplay-debut rubrique-4
+1793310197.648 afplay-fin rubrique-4
+1793310198.527 wav 4 /var/folders/lh/56l83xvs4h30xkgl6fzhbv240000gn/T//baitari-dictee-90127-1793310198251553000-3/audio.wav
+1793310202.997 4-dictee
+1793310232.939 echec-5-note
+1793310233.079 failed: 5-note: génération refusée par l’assistant après 28.6 s : La réponse de l’assistant n’est pas un JSON SOAP valide. Votre dictée est conservée ; aucune note n’a été enregistrée.Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.Relire ma dictée comme noteModifier « Motif et antécédents »Modifier « Examen clinique »Modifier « Évaluation »Modifier « Plan de soins »
