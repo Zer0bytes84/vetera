@@ -617,11 +617,13 @@ export default function LocalConsultationAssistant({
 
   // The guided dictation reads like a conversation: the current question and
   // its field sit at the bottom, so the list opens there and follows each
-  // rubric (and the models card opening or closing above it).
+  // rubric (and the models card opening or closing above it). A dictation
+  // state appearing above the field (listening, permission, error) must not
+  // push Stop and the language below the edge: follow it too.
   useLayoutEffect(() => {
     const list = dictationScrollRef.current;
     if (list) list.scrollTop = list.scrollHeight;
-  }, [activeTab, sectionIndex, setupOpen]);
+  }, [activeTab, sectionIndex, setupOpen, ai.phase, visibleError]);
 
   const assistantMood: MascotMood = saved
     ? "happy"
@@ -981,7 +983,7 @@ export default function LocalConsultationAssistant({
             )}
 
             {/* Dictation Workspace Container */}
-            <div className="assistant-dictation-workspace flex min-h-0 flex-1 flex-col gap-2 rounded-2xl border border-border/80 bg-card p-3 shadow-xs">
+            <div className="assistant-dictation-workspace flex min-h-fit flex-1 flex-col gap-2 rounded-2xl border border-border/80 bg-card p-3 shadow-xs">
               {/* Mentions tags & patient autocomplete */}
               <div className="flex items-center justify-between gap-2 px-0.5">
                 <span className="t-12 font-medium text-foreground">
@@ -1051,7 +1053,7 @@ export default function LocalConsultationAssistant({
                 maxLength={MAX_TRANSCRIPT_LENGTH}
                 disabled={ai.busy && ai.phase !== "listening" || importing}
                 placeholder={`Vos observations · ${sectionPrompts[sectionIndex].title}…`}
-                className="assistant-dictation-field min-h-[170px] flex-1 resize-none rounded-[10px] border-border bg-background px-3 py-2.5 t-13 leading-relaxed shadow-none focus-visible:border-muted-foreground focus-visible:ring-0"
+                className="assistant-dictation-field min-h-[120px] flex-1 resize-none rounded-[10px] border-border bg-background px-3 py-2.5 t-13 leading-relaxed shadow-none focus-visible:border-muted-foreground focus-visible:ring-0"
                 onChange={(e) => {
                   setTranscript(e.target.value);
                   setCaret(e.target.selectionStart);
@@ -1111,7 +1113,7 @@ export default function LocalConsultationAssistant({
                   >
                     {ai.phase === "listening" ? (
                       <>
-                        <Stop className="size-3.5 animate-pulse text-white" />
+                        <Stop className="size-3.5 animate-pulse" />
                         <span>
                           Stop · {Math.floor(ai.seconds / 60)}:
                           {String(ai.seconds % 60).padStart(2, "0")}
