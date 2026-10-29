@@ -367,7 +367,7 @@ export function PatientTimeline({
                       <td className="px-3 py-3">
                         <p
                           className={cn(
-                            "break-words text-sm leading-5",
+                            "line-clamp-3 break-words text-sm leading-5",
                             entry.summary === NO_REPORT
                               ? "text-muted-foreground"
                               : "font-medium text-foreground/85"
@@ -376,7 +376,7 @@ export function PatientTimeline({
                           {entry.summary}
                         </p>
                         {entry.summaryDetail ? (
-                          <p className="mt-1 break-words text-muted-foreground text-xs leading-4">
+                          <p className="mt-1 line-clamp-2 break-words text-muted-foreground text-xs leading-4">
                             {entry.summaryDetail}
                           </p>
                         ) : null}
