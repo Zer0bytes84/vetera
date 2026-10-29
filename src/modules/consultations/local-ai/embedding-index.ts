@@ -105,7 +105,9 @@ export function documentSearchChunks(
 ): SearchChunk[] {
   let review: { reviewedAt?: string } | undefined;
   try {
-    review = JSON.parse(note.tags ?? "{}").clinicalDocument;
+    // A generated document, or a note kept without a visit: both validated.
+    const tags = JSON.parse(note.tags ?? "{}");
+    review = tags.clinicalDocument ?? tags.offVisitNote;
   } catch {
     /* Unreviewed source. */
   }

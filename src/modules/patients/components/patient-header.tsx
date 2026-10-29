@@ -15,6 +15,8 @@ interface PatientHeaderProps {
   /** Opens Soins & hospitalisation > Soins filtered on this patient. */
   onOpenCare?: () => void;
   onOpenClinicalNote?: () => void;
+  /** Writes a note in the record without any visit (call, advice, observation). */
+  onNewOffVisitNote?: () => void;
   onExportPdf?: () => void;
   /** Ouvre le carnet de santé (une page à remettre au propriétaire). */
   onHealthCard?: () => void;
@@ -29,6 +31,7 @@ export function PatientHeader({
   onNewAppointment,
   onOpenCare,
   onOpenClinicalNote,
+  onNewOffVisitNote,
   onExportPdf,
   onHealthCard,
   patient,
@@ -58,6 +61,18 @@ export function PatientHeader({
             >
               <Notebook className="size-4" aria-hidden="true" />
               Note clinique
+            </Button>
+          )}
+          {onNewOffVisitNote && (
+            // The primary action when no visit is under way to carry a note.
+            <Button
+              size="sm"
+              variant={onOpenClinicalNote ? "outline" : "default"}
+              className={cn("medical-action", onOpenClinicalNote ? "medical-action-outline" : "medical-action-primary")}
+              onClick={onNewOffVisitNote}
+            >
+              <PencilSimple className="size-4" aria-hidden="true" />
+              Note hors visite
             </Button>
           )}
           <Button

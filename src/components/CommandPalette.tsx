@@ -1217,6 +1217,9 @@ export default function CommandPalette({
                           sub: `Cas similaire · ${sectionLabel}`,
                           at: Date.now(),
                         });
+                        // A note kept without a visit opens itself in the record.
+                        if (result.sourceType === "document")
+                          sessionStorage.setItem("patient:open-note", result.sourceId);
                         window.location.hash = `#/patient/${encodeURIComponent(result.patientId)}`;
                         onNavigateToPatient(result.patientId);
                       }

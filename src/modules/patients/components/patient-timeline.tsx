@@ -1,5 +1,6 @@
 import {
   CalendarBlank,
+  PencilSimple,
   Notebook,
   Stethoscope,
   Syringe,
@@ -19,14 +20,16 @@ import {
 } from "@/components/ui/empty";
 import {
   useAppointmentsRepository,
+  useNotesRepository,
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
-import type { Appointment, Vaccination, WeightEntry } from "@/types/db";
+import { OFF_VISIT_KINDS, readOffVisitNote } from "@/modules/consultations/off-visit-note";
+import type { Appointment, Note, Vaccination, WeightEntry } from "@/types/db";
 
-type TimelineKind = "consultation" | "vaccination" | "weight";
+type TimelineKind = "consultation" | "note" | "vaccination" | "weight";
 
 type TimelineEntry = {
   id: string;
@@ -42,6 +45,7 @@ type TimelineEntry = {
 
 const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
   consultation: Stethoscope,
+  note: PencilSimple,
   vaccination: Syringe,
   weight: TrendUp,
 };
@@ -49,6 +53,8 @@ const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
 const KIND_COLOR: Record<TimelineKind, string> = {
   consultation:
     "bg-sky-50 text-sky-700 border border-sky-200/80 shadow-xs dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40",
+  note:
+    "bg-amber-50 text-amber-700 border border-amber-200/80 shadow-xs dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/40",
   vaccination:
     "bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40",
   weight:
@@ -59,6 +65,8 @@ interface PatientTimelineProps {
   className?: string;
   onEditWeight?: (entry: WeightEntry) => void;
   onJumpToAppointment?: (appointmentId: string) => void;
+  /** Opens a note kept without a visit. */
+  onOpenNote?: (noteId: string) => void;
   patientId: string;
 }
 
@@ -111,9 +119,33 @@ function formatDateParts(iso: string, includeTime: boolean) {
 function buildEntries(
   appointments: Appointment[],
   vaccinations: Vaccination[],
-  weights: WeightEntry[]
+  weights: WeightEntry[],
+  notes: Note[] = []
 ): TimelineEntry[] {
   const items: TimelineEntry[] = [];
+
+  // Notes kept without a visit: dated by their validation, never a consultation.
+  for (const note of notes) {
+    const meta = readOffVisitNote(note);
+    if (!meta) continue;
+    items.push({
+      id: `note-${note.id}`,
+      at: note.createdAt,
+      kind: "note",
+      label: "Note hors visite",
+      context: OFF_VISIT_KINDS[meta.kind],
+      summary:
+        meta.soap.assessment.trim() ||
+        meta.soap.subjective.trim() ||
+        meta.soap.plan.trim() ||
+        meta.soap.objective.trim(),
+      summaryDetail: meta.soap.plan.trim() && meta.soap.plan.trim() !== meta.soap.assessment.trim() ? `Plan · ${meta.soap.plan.trim()}` : undefined,
+      statusBadge: {
+        label: "Validée",
+        className: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+      },
+    });
+  }
 
   for (const apt of appointments) {
     const status = APPOINTMENT_STATUS_META[apt.status];
@@ -182,21 +214,24 @@ export function PatientTimeline({
   className,
   onEditWeight,
   onJumpToAppointment,
+  onOpenNote,
   patientId,
 }: PatientTimelineProps) {
   const { t } = useTranslation();
   const appointmentsRepo = useAppointmentsRepository();
   const vaccinationsRepo = useVaccinationsRepository();
   const weightsRepo = useWeightEntriesRepository();
+  const notesRepo = useNotesRepository();
 
   const entries = useMemo(
     () =>
       buildEntries(
         appointmentsRepo.data.filter((apt) => apt.patientId === patientId),
         vaccinationsRepo.forPatient(patientId),
-        weightsRepo.forPatient(patientId)
+        weightsRepo.forPatient(patientId),
+        notesRepo.data.filter((note) => note.patientId === patientId)
       ),
-    [appointmentsRepo.data, vaccinationsRepo, weightsRepo, patientId]
+    [appointmentsRepo.data, vaccinationsRepo, weightsRepo, notesRepo.data, patientId]
   );
 
   return (
@@ -252,7 +287,7 @@ export function PatientTimeline({
                   const Icon = KIND_ICON[entry.kind];
                   const dateParts = formatDateParts(
                     entry.at,
-                    entry.kind === "consultation"
+                    entry.kind === "consultation" || entry.kind === "note"
                   );
                   return (
                     <tr
@@ -346,6 +381,16 @@ export function PatientTimeline({
                               className="patient-timeline-kind-icon size-3.5"
                               weight="duotone"
                             />
+                          </Button>
+                        ) : entry.kind === "note" && onOpenNote ? (
+                          <Button
+                            className="min-h-8 h-auto max-w-full !whitespace-normal gap-1 rounded-lg px-1 py-1.5 text-xs"
+                            onClick={() => onOpenNote(entry.id.replace(/^note-/, ""))}
+                            size="sm"
+                            variant="ghost"
+                          >
+                            Lire la note
+                            <PencilSimple className="patient-timeline-kind-icon size-3.5" weight="duotone" />
                           </Button>
                         ) : entry.kind === "weight" &&
                           entry.weightEntry &&

@@ -30,6 +30,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { useConsultationDocumentsRepository, useNotesRepository } from "@/data/repositories";
+import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
 import { cn } from "@/lib/utils";
 import type { ConsultationDocument } from "@/types/db";
 import { PatientDocumentRegistry } from "@/modules/documents/components/patient-document-registry";
@@ -39,6 +40,8 @@ interface PatientDocumentsListProps {
   onOpenDocument?: (document: ConsultationDocument) => void;
   onUpload?: () => void;
   onOpenNotes?: () => void;
+  /** Notes kept without a visit open in the record, not in the Documents editor. */
+  onOpenOffVisitNote?: (noteId: string) => void;
   patientId: string;
 }
 
@@ -92,6 +95,7 @@ export function PatientDocumentsList({
   onOpenDocument,
   onUpload,
   onOpenNotes,
+  onOpenOffVisitNote,
   patientId,
 }: PatientDocumentsListProps) {
   const { t } = useTranslation();
@@ -179,7 +183,7 @@ export function PatientDocumentsList({
           <Button className="h-7 rounded-lg text-xs" onClick={() => void createClinicalNote()} size="sm" variant="outline">Rédiger</Button>
         </div>
         {clinicalNotes.length ? clinicalNotes.slice(0, 3).map((note) => (
-          <button className="flex w-full items-center justify-between gap-2 border-t border-border/50 py-2 text-left text-xs hover:text-primary" key={note.id} onClick={() => openNotes(note.id)} type="button">
+          <button className="flex w-full items-center justify-between gap-2 border-t border-border/50 py-2 text-left text-xs hover:text-primary" key={note.id} onClick={() => (onOpenOffVisitNote && readOffVisitNote(note) ? onOpenOffVisitNote(note.id) : openNotes(note.id))} type="button">
             <span className="truncate font-medium">{note.title || "Sans titre"}</span>
             <span className="shrink-0 text-muted-foreground">{formatDate(note.updatedAt)}</span>
           </button>

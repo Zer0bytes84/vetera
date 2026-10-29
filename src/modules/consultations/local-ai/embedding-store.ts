@@ -934,7 +934,8 @@ export async function searchAllPatientsFastLexical(
                   n.title, n.content, n.tags
            FROM notes n
            LEFT JOIN patients p ON p.id = n.patient_id
-           LIMIT 100`,
+           ORDER BY n.updated_at DESC, n.id
+           LIMIT 1000`,
         );
 
         for (const n of docNotes) {

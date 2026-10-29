@@ -33,6 +33,7 @@ import { useFocus } from "@/contexts/focus-provider";
 import {
   useAppointmentsRepository,
   useConsultationSoapsRepository,
+  useNotesRepository,
   useOwnersRepository,
   usePatientsRepository,
   usePrescriptionsRepository,
@@ -70,6 +71,8 @@ import { PatientKpiStrip } from "./components/patient-kpi-strip";
 import { PatientOverview } from "./components/patient-overview";
 import { PatientRecordHealth } from "./components/patient-record-health";
 import { PatientTimeline } from "./components/patient-timeline";
+import { OffVisitNotePanel } from "./components/off-visit-note-panel";
+import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
 import { VaccinationDialog } from "./components/vaccination-dialog";
 import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
@@ -202,6 +205,7 @@ export function PatientDetailPage({
   const vaccinationsRepo = useVaccinationsRepository();
   const weightsRepo = useWeightEntriesRepository();
   const soapsRepo = useConsultationSoapsRepository();
+  const notesRepo = useNotesRepository();
   const ownersRepo = useOwnersRepository();
   const tasksRepo = useTasksRepository();
 
@@ -222,6 +226,16 @@ export function PatientDetailPage({
   const [soapAppointmentId, setSoapAppointmentId] = useState<string | null>(
     null
   );
+  /** "new" writes a note without a visit; a note id reads one. */
+  const [offVisitNote, setOffVisitNote] = useState<"new" | string | null>(null);
+  // A search result asks for its note: opened once the record's notes are read.
+  useEffect(() => {
+    const wanted = sessionStorage.getItem("patient:open-note");
+    const note = wanted ? notesRepo.data.find((entry) => entry.id === wanted) : null;
+    if (!note) return;
+    sessionStorage.removeItem("patient:open-note");
+    if (note.patientId === patientId && readOffVisitNote(note)) setOffVisitNote(note.id);
+  }, [notesRepo.data, patientId]);
 
   const [selectedHospitalization, setSelectedHospitalization] =
     useState<Hospitalization | null>(null);
@@ -494,7 +508,21 @@ export function PatientDetailPage({
   const recentVisits = appointments.filter((appointment) =>
     ["completed", "in_progress"].includes(appointment.status)
   );
+  const scrollRecordToTop = () =>
+    requestAnimationFrame(() => {
+      const scrollPanel = pageRef.current?.closest<HTMLElement>(
+        '[data-slot="shell-scroll-panel"]'
+      );
+      if (scrollPanel) scrollPanel.scrollTo({ top: 0, behavior: "instant" });
+      else pageRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    });
+  const openOffVisitNote = (target: "new" | string) => {
+    setSoapAppointmentId(null);
+    setOffVisitNote(target);
+    scrollRecordToTop();
+  };
   const openSoapForAppointment = (appointmentId: string) => {
+    setOffVisitNote(null);
     setSoapAppointmentId(appointmentId);
     requestAnimationFrame(() => {
       const scrollPanel = pageRef.current?.closest<HTMLElement>(
@@ -542,6 +570,16 @@ export function PatientDetailPage({
             <ConsultationProducts key={`products:${soapAppointmentId}`} appointmentId={soapAppointmentId} patientId={patientId} />
           </section>
         )}
+        {offVisitNote && (
+          <OffVisitNotePanel
+            key={offVisitNote}
+            note={offVisitNote === "new" ? null : notesRepo.data.find((note) => note.id === offVisitNote) ?? null}
+            onClose={() => setOffVisitNote(null)}
+            onSaved={(note) => setOffVisitNote(note.id)}
+            patientId={patientId}
+            patientName={patient.name}
+          />
+        )}
         <PatientHeader
           onEditProfile={openProfileEditor}
           onExportPdf={() => setPdfExportOpen(true)}
@@ -555,6 +593,7 @@ export function PatientDetailPage({
               ? () => openSoapForAppointment(clinicalNoteAppointment.id)
               : undefined
           }
+          onNewOffVisitNote={() => openOffVisitNote("new")}
           onOpenCare={() => {
             requestFocus("care_patient", patientId);
             onNavigate("clinique");
@@ -1020,6 +1059,7 @@ export function PatientDetailPage({
                 <PatientDocumentsList
                   className="border-0 shadow-none"
                   onOpenNotes={() => onNavigate("notes")}
+                  onOpenOffVisitNote={openOffVisitNote}
                   patientId={patientId}
                 />
               )}
@@ -1028,6 +1068,7 @@ export function PatientDetailPage({
                   className="border-0 shadow-none"
                   onEditWeight={openEditWeight}
                   onJumpToAppointment={openSoapForAppointment}
+                  onOpenNote={openOffVisitNote}
                   patientId={patientId}
                 />
               ) : null}
