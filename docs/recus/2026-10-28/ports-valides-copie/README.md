@@ -14,7 +14,7 @@ Branche `feat/dictee-turbo-native`. Commit local, aucun push.
 |---|---|
 | Porter hunk par hunk depuis le diff réel, pas depuis la description du port | **Retenu.** Exemple : la pilule mesure « hauteur d'item + 6 px » dans la copie, alors que le brief dit « alignée sur les items ». J'ai porté la copie (§ 3.1). |
 | Prouver que rien d'autre ne passe | **Retenu.** Le diff de la copie contient aussi Agenda Ouvrir et l'assistant (§ 4). |
-| Vérifier que l'effet décrit se produit vraiment, pas seulement que le code est recopié | **Retenu.** Pour le port 4, l'effet décrit ne se produit pas en entier, ni dans la copie ni dans l'original (§ 3.4). |
+| Vérifier que l'effet décrit se produit vraiment, pas seulement que le code est recopié | **Retenu.** Pour le port 4, l'effet ne se produisait qu'en partie, dans la copie comme dans l'original. Corrigé à ta demande, puis mesuré (§ 3.4). |
 | Vérifier les cas voisins : ⌘K au clavier, style Classic | **En partie.** ⌘K passe par le même `setPaletteOpen`, inchangé. Le style Classic perd aussi sa recherche d'en-tête, comme dans la copie, mais n'a pas été capturé. |
 
 ### (2) La matière la plus brute
@@ -58,13 +58,14 @@ Branche `feat/dictee-turbo-native`. Commit local, aucun push.
 | `src/modules/shell/premium-sidebar.css` | 2 | Recopié. Ligne Paramètres à la typographie des items : 14 px, 500. |
 | `src/design-system/clean.css` | 2 | Hunk appliqué à la main : Paramètres en 13 px, 500, en Clean. |
 | `src/modules/dashboard/components/premium-analytics.tsx` | 3 | Hunk appliqué à la main. Les barres des consultations passent en `cleanHidden`, et une aire de cumul `MiniArea` s'ajoute. |
-| `src/design-system/premium-workspace.css` | 4a, 4c, 4d | Recopié. Bandeau sans `box-shadow`, carte à 16 px avec `overflow: hidden`, bandeau `16px 16px 0 0`, focus sans halo. |
-| `src/design-system/fields.css` | 4b | Recopié. Exemption des textarea SOAP. **Un écart** (§ 3.4). |
+| `src/design-system/premium-workspace.css` | 4a, 4c, 4d | Recopié : bandeau sans `box-shadow`, carte à 16 px avec `overflow: hidden`, bandeau `16px 16px 0 0`, focus sans halo. Puis classe doublée pour que la carte l'emporte (§ 3.4). |
+| `src/design-system/fields.css` | 4b | Recopié, puis spécificité relevée et survol gardé (§ 3.4). |
 | `tests/theme-clean-charter.test.ts` | 3 | Le test codait l'ancienne décision (barres des consultations visibles en Clean). Il vérifie désormais les deux aires et l'absence de barres en Clean. |
 
 `diff` copie / original après le port :
-- `app-shell.tsx`, `premium-sidebar.css` et `premium-workspace.css` : **identiques** ;
-- `app-sidebar.tsx` et `fields.css` : les deux écarts de charte ci-dessous, rien d'autre.
+- `app-shell.tsx` et `premium-sidebar.css` : **identiques** ;
+- `app-sidebar.tsx` : pastille à 12 px, loupe du mode icône sans cadre ;
+- `fields.css` et `premium-workspace.css` : spécificité des règles SOAP, rien d'autre.
 
 ## 3. Port par port
 
@@ -78,9 +79,11 @@ Mesures après le port :
 | Contour | fin, 20 % de l'encre |
 | Pastille ⌘K | sans bordure, ombre seule |
 | Recherche dans l'en-tête | absente (`headerSearch: false`) |
-| Mode icône | bouton loupe de 44 px, infobulle « Rechercher ⌘ K » |
+| Mode icône | **simple loupe**, sans cadre, en 20 px comme les icônes voisines, dans une zone de 44 px ; infobulle « Rechercher ⌘ K » |
 
 - **Hauteur :** la copie a `nav-row + 6 px`, donc la pilule mesure 6 px de plus qu'un item. J'ai porté la copie, puisque c'est elle qui a été validée au clic. Si « alignée » voulait dire « même hauteur », c'est une ligne à changer.
+- **Correction après ta relecture (29/10) :** dans la copie, le bouton du mode icône avait un contour de 1 px et une loupe de 24 px. Il ressemblait à un champ encadré, pas à l'icône que décrit le brief (« un simple bouton loupe »). Le contour est retiré et la loupe passe à 20 px. Mesure : bordure 0 px dans les trois thèmes.
+- **Les deux captures du mode icône :** `sidebar-icone` montre la loupe au repos. `sidebar-icone-infobulle` montre la loupe au focus clavier, ce qui fait apparaître l'infobulle. L'anneau visible sur celle-ci est l'indicateur de focus, pas un cadre.
 - **Écart de charte :** la pastille ⌘K était en `text-[11px]`, sous l'échelle de 12 px de la charte. Le test `type-scale` de l'original l'a refusé, alors qu'il n'a pas tourné dans la copie. Elle passe à `t-12`, soit 1 px de plus.
 
 Captures `sidebar`, `sidebar-icone` et `sidebar-icone-parametres`, en Clean clair, Clean sombre et Premium.
@@ -101,22 +104,33 @@ Capture `consultations`.
 
 ### 3.4 Blocs SOAP
 
-**Porté et effectif :**
-- **4a, séparateur du bandeau :** `box-shadow` passe de `inset 0 -1px …` à `none`, dans les trois thèmes.
-- **Coins du bandeau :** `16px 16px 0 0`.
+**Le port tel quel, dans la copie comme dans l'original, n'avait qu'un effet partiel.** Le séparateur du bandeau et ses coins arrondis s'appliquaient. Le reste non, battu par des règles plus fortes :
 
-**Porté, mais sans effet mesurable, ni dans la copie ni dans l'original :**
-- **4b, exemption des textarea :** le textarea garde un cadre de 1 px et un rayon de 8 px. Cause : l'exemption `:root:root:root .soap-section-editor [data-slot="textarea"]` pèse (0,5,0). La règle globale des champs pèse (0,6,0) à cause de ses `:is()`/`:not()`, et gagne.
-- **4c, carte à 16 px et 4d, focus par la bordure :** la carte mesure toujours `border: 0 none` et `border-radius: 0`, au repos comme au focus. Cause : la règle Premium `[data-visual-style="premium"] .bg-card { border: medium !important; border-radius: 0 !important }` gagne sur la carte, qui porte la classe `bg-card`. Le halo retiré n'apparaissait de toute façon pas.
+| Règle du port | Ce qui la battait |
+|---|---|
+| 4b, exemption des textarea : `:root:root:root .soap-section-editor [data-slot="textarea"]`, de spécificité (0,5,0) | La règle globale des champs, à (0,6,0) à cause de ses `:is()`/`:not()`. Le textarea gardait son cadre de 1 px et son rayon de 8 px. |
+| 4c et 4d, carte et focus : `:root[data-visual-style="premium"] .soap-section-editor`, de spécificité (0,3,0) | La règle du tableau de bord `… .dashboard-stage .bg-card { border: none !important; border-radius: 0 !important }`, au même poids et chargée plus tard. La carte, qui porte `bg-card`, perdait cadre et rayon. Le dossier patient s'affiche dans `.dashboard-stage`. |
 
-**Ce qu'on voit, identique à la copie :**
-- le bandeau titre aux coins arrondis, sans séparateur ;
-- sous lui, un seul cadre : celui du textarea (blanc, 8 px) ;
-- aucun halo au clic.
+Ces règles sont listées dans `regles-soap-avant.json`.
 
-C'est bien un seul cadre par boîte, mais c'est **le textarea**, pas la carte comme le décrit le brief. Le focus ne fonce donc aucune bordure.
+**Correction, à ta demande (29/10).** Seule la spécificité change ; les déclarations restent celles de la copie.
 
-**Ce que je n'ai pas fait :** corriger la spécificité pour obtenir l'effet décrit. Cela aurait changé le rendu validé dans la copie, et le brief demandait « exactement comme validés ». Les règles en cause sont listées dans `regles-soap-avant.json`.
+| Fichier | Changement |
+|---|---|
+| `premium-workspace.css` | La classe est doublée, `.soap-section-editor.soap-section-editor`, sur la carte et sur `:focus-within`, ce qui donne (0,4,0) et (0,5,0). |
+| `fields.css` | L'exemption passe à six `:root`, soit (0,8,0). Elle l'emporte sur la règle globale et sur ses états. |
+
+**Résultat mesuré dans les trois thèmes** (`apres/mesures.json`) :
+
+| Élément | Au repos | Au focus |
+|---|---|---|
+| Carte | rayon 16 px, bordure 1 px `--line`, seul cadre | bordure qui fonce à `--ink` (29 29 29, ou clair en sombre), rayon 16 px, aucun halo |
+| Bandeau titre | sans séparateur, coins `16px 16px 0 0` | idem |
+| Textarea | bordure 0, rayon 0, fond transparent | idem |
+
+**Mesurer le focus a demandé deux réglages du scénario de capture :**
+- **La fenêtre au premier plan.** Une fenêtre en arrière-plan n'applique jamais `:focus-within`. Le scénario la met au premier plan (`setFocus`) avant le clic.
+- **La fin de la transition.** La mesure se prend une fois finie la transition de 200 ms de la bordure.
 
 **Écart de charte :** dans l'exemption, le `:hover` est passé sous `@media (hover: hover) and (pointer: fine)`, comme l'exige le test `interaction-charter`. À la souris, aucun changement.
 
@@ -153,4 +167,5 @@ Les captures sont prises sur une copie de la base réelle. Dans cette copie, le 
 ## 6. Vérifications
 
 - **Vitest :** 1 277 verts. Typecheck et ESLint à zéro.
+- **Mesures :** toutes conformes au brief dans les trois thèmes, après les corrections (§ 3.1 et 3.4).
 - **Commit :** local, aucun push.

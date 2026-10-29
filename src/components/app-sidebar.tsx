@@ -222,7 +222,7 @@ export function AppSidebar({
                   aria-label="Rechercher (⌘K)"
                   aria-haspopup="dialog"
                   aria-keyshortcuts="Meta+K Control+K"
-                  className="flex size-11 items-center justify-center rounded-xl border border-sidebar-foreground/20 bg-transparent text-sidebar-foreground/75 transition-colors hover:border-sidebar-foreground/30 hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                  className="flex size-11 items-center justify-center rounded-xl text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
                   onClick={onSearch}
                   type="button"
                 >

@@ -96,8 +96,11 @@ export async function capturePorts(signal: string, appearances: string[], patien
   });
   byLabel("Réduire la barre latérale")?.click();
   await sleep(900);
-  search()?.focus();
+  // At rest first: the loupe as a plain icon, then focused to show its tooltip
+  // (the ring around it is the keyboard focus, not a frame).
   await shot("sidebar-icone", { search: box(search()), settings: box(document.querySelector(".sidebar-settings-button")) });
+  search()?.focus();
+  await shot("sidebar-icone-infobulle");
   search()?.blur();
   document.querySelector<HTMLElement>(".sidebar-settings-button")?.focus();
   await shot("sidebar-icone-parametres");
@@ -126,6 +129,9 @@ export async function capturePorts(signal: string, appearances: string[], patien
     header: box(editor().querySelector(":scope > div:first-child")),
     textarea: box(editor().querySelector("textarea")),
     boxes: document.querySelectorAll("#patient-consultation-note .soap-section-editor").length,
+    focusInside: editor().contains(document.activeElement),
+    focusWithin: editor().matches(":focus-within"),
+    windowFocused: document.hasFocus(),
   });
   await shot("soap", {
     ...soapMeasures(),
@@ -133,9 +139,15 @@ export async function capturePorts(signal: string, appearances: string[], patien
     headerRules: framingRules(editor().querySelector(":scope > div:first-child")),
     textareaRules: framingRules(editor().querySelector("textarea")),
   });
+  // A window in the background never matches :focus-within: bring it forward first.
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  await getCurrentWindow().setFocus();
+  await sleep(500);
   const textarea = editor().querySelector<HTMLTextAreaElement>("textarea")!;
   textarea.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
   textarea.focus();
+  // Measured once the border's 200 ms transition has ended.
+  await sleep(600);
   await shot("soap-focus", soapMeasures());
   textarea.blur();
 
