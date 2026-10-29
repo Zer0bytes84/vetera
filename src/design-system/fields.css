@@ -160,3 +160,21 @@
 :root:root:root [data-slot="input-group"] > :is(input, [data-slot="input-group-control"]):first-child {
   padding-left: 12px !important;
 }
+
+/* SOAP section editors draw their own card frame: the global field frame
+   stays out, so no second box or top separator appears inside the card. */
+:root:root:root .soap-section-editor [data-slot="textarea"],
+:root:root:root .soap-section-editor [data-slot="textarea"]:focus-visible {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root:root:root .soap-section-editor [data-slot="textarea"]:hover {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}

@@ -333,6 +333,13 @@
   transition: color 0.16s ease;
 }
 
+/* Settings row in the footer: same type as the nav items. */
+[data-visual-style="premium"] .app-sidebar .sidebar-settings-button {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
 /* Level 3: Accès rapides / Quick shortcuts. No rule above: space alone sets
    the footer apart from the navigation. */
 [data-visual-style="premium"] .app-sidebar .premium-shortcuts {

@@ -1061,7 +1061,8 @@ export function PremiumAnalytics({
           </span>
           <span className="kpiValueRow">
             <span className="kpiValue">{formatNumber(patients.visits)}</span>
-            <MiniBars values={trend.visits} label="Consultations sur la période" />
+            <MiniBars values={trend.visits} label="Consultations sur la période" cleanHidden />
+            <MiniArea values={trend.visits} label="Cumul des consultations sur la période" />
           </span>
           <span className="kpiSub">
             <DeltaBadge

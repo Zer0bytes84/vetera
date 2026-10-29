@@ -968,16 +968,18 @@
 :root[data-visual-style="premium"] .soap-editor-grid { gap: 20px; }
 :root[data-visual-style="premium"] .soap-section-editor {
   padding: 0 !important;
+  overflow: hidden !important;
   border: 1px solid var(--line) !important;
-  border-radius: 8px !important;
+  border-radius: 16px !important;
   background: var(--surface) !important;
   box-shadow: none !important;
 }
 :root[data-visual-style="premium"] .soap-section-editor > div:first-child {
   margin: 0 !important;
   padding: 12px 16px;
+  border-radius: 16px 16px 0 0;
   background: var(--band);
-  box-shadow: var(--hair-b);
+  box-shadow: none;
 }
 :root[data-visual-style="premium"] .soap-section-editor > div:first-child span {
   width: 24px;
@@ -1002,7 +1004,7 @@
 }
 :root[data-visual-style="premium"] .soap-section-editor:focus-within {
   border-color: var(--ink) !important;
-  box-shadow: 0 0 0 2px var(--lift-2) !important;
+  box-shadow: none !important;
 }
 
 /* Revue 3.3.20 : paramètres Sécurité et Cabinet, mêmes repères gravés. */

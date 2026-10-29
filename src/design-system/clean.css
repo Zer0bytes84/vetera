@@ -466,6 +466,8 @@
   color: var(--clean-ink-strong);
 }
 :root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-settings-button {
+  font-size: 13px;
+  font-weight: 500;
   color: var(--clean-ink-quiet);
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }

@@ -549,6 +549,7 @@ function AppShellInner() {
         collapsible={collapsible}
         currentView={currentView}
         onNavigate={handleNavigate}
+        onSearch={() => setPaletteOpen(true)}
         side={isRtl ? "right" : "left"}
         variant={variant}
       />
@@ -665,21 +666,6 @@ function AppShellInner() {
               {isPremium ? (
                 <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
                   <HeaderSidebarToggle />
-                  <span aria-hidden="true" className="shell-header-divider" />
-                  {/* La recherche, en pilule, à gauche : le titre vit déjà dans chaque page. */}
-                  <div className="shell-header-search-slot">
-                    <button
-                      type="button"
-                      aria-label="Rechercher un patient, une page ou une commande"
-                      aria-haspopup="dialog"
-                      aria-keyshortcuts="Meta+K Control+K"
-                      onClick={() => setPaletteOpen(true)}
-                      className="shell-header-search-field"
-                    >
-                      <span className="shell-header-search-placeholder">Rechercher un patient, une page…</span>
-                      <kbd className="shell-header-search-key">⌘K</kbd>
-                    </button>
-                  </div>
                 </div>
               ) : (
                 <div className="shell-toolbar-leading flex min-w-0 flex-1 sm:flex-initial items-center gap-2.5">
@@ -704,31 +690,6 @@ function AppShellInner() {
                       <SaveIndicator state={saveState} />
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* 2. CENTRE : Recherche au centre UNIQUEMENT en non-premium */}
-              {!isPremium && (
-                <div className="shell-toolbar-search-region hidden sm:flex flex-1 justify-start items-center pl-4 min-w-0">
-                  <button
-                    type="button"
-                    aria-label="Rechercher ou exécuter une commande (⌘K)"
-                    aria-haspopup="dialog"
-                    aria-keyshortcuts="Meta+K Control+K"
-                    onClick={() => setPaletteOpen(true)}
-                    className="shell-header-search group flex h-9 w-full max-w-[300px] items-center gap-2.5 rounded-full border border-black/8 bg-black/[0.03] px-3.5 text-left shadow-2xs backdrop-blur-md transition duration-150 hover:border-black/15 hover:bg-black/[0.05] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-white/18 dark:hover:bg-white/[0.08]"
-                  >
-                    <ToolbarIcon
-                      name="search"
-                      className="size-4 shrink-0 text-muted-foreground opacity-70 transition-opacity group-hover:opacity-100"
-                    />
-                    <span className="flex-1 truncate text-xs text-muted-foreground transition-colors group-hover:text-foreground md:t-13">
-                      Rechercher dans le cabinet…
-                    </span>
-                    <kbd className="pointer-events-none inline-flex items-center gap-0.5 rounded-md border border-black/8 bg-white/75 px-1.5 py-0.5 font-mono t-12 font-semibold tracking-tight text-muted-foreground transition-colors group-hover:border-black/15 dark:border-white/10 dark:bg-white/[0.08] dark:group-hover:border-white/20 shadow-2xs">
-                      ⌘K
-                    </kbd>
-                  </button>
                 </div>
               )}
 

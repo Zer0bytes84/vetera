@@ -326,10 +326,11 @@ describe("thème Clean : widgets", () => {
     expect(analytics).toMatch(/\.chartLinePrevious \{[^}]*stroke-dasharray/);
   });
 
-  it("varie la première rangée : une aire pour la trésorerie, les barres pour un seul indicateur, la même ligne de base", () => {
+  it("trace en Clean des cumuls en aire pour la trésorerie et les consultations, sans barre, sur la même ligne de base", () => {
     const source = readFileSync("src/modules/dashboard/components/premium-analytics.tsx", "utf8");
-    expect(source.match(/<MiniArea /g)).toHaveLength(1);
-    expect(source.match(/<MiniBars [^>]*cleanHidden/g)).toHaveLength(2);
+    // Validated on 27 October: the grey Consultations bars were invisible in Clean.
+    expect(source.match(/<MiniArea /g)).toHaveLength(2);
+    expect(source.match(/<MiniBars [^>]*cleanHidden/g)).toHaveLength(3);
     expect(source.match(/<MiniBars /g)).toHaveLength(3);
     const row = rulesFor(/\.kpis \.kpiValueRow$/)[0]?.toString() ?? "";
     expect(row).toContain("height: 32px");
