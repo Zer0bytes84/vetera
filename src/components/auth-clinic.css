@@ -32,6 +32,9 @@
   color: var(--foreground);
 }
 .auth-clinic-title > span { display: block; white-space: nowrap; }
+/* Italic descenders (the p of "plus") reach left of the box, and the animated
+   wrapper is its own layer that clips them: room inside, same left edge. */
+:root:root .auth-clinic .auth-clinic-title { padding: 0 .1em .12em .16em; margin: 0 -.1em -.12em -.16em; }
 .auth-clinic-chips {
   display: inline-flex;
   vertical-align: -.08em;
