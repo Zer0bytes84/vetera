@@ -280,6 +280,9 @@
 
 /* Wordmark: "AI" carried by the logo's blue-to-teal gradient inside bAItari. */
 .auth-wordmark { display: flex; align-items: center; gap: 10px; }
+/* The mark's ink starts 8 px into its 44 px box: pull it back so the logo
+   shares the left edge of the eyebrow, title, lead and rubrics. */
+.auth-wordmark > [role="img"] { margin-left: -8px; }
 .auth-wordmark > span {
   font: 650 24px/1 "Geist Variable", var(--font-sans);
   letter-spacing: -.045em;

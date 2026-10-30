@@ -33,6 +33,7 @@ Les fichiers modifiés sont `src/components/Auth.tsx`, `src/components/auth-clin
   - Dans le paragraphe, les mots « patients » et « consultations » sont surlignés en couleur.
   - En bas du panneau, une ligne de rubriques fait écho au logo placé en haut.
   - Le bloc de texte est centré sur l'axe optique de la carte de droite.
+  - Le pictogramme du logo est décalé de −8 px : son tracé commence 8 px à l'intérieur de son cadre de 44 px. Logo, surtitre, titre, paragraphe et rubriques partagent ainsi le même bord gauche (mesuré à 40 px sur 1024 px de large). Les marges du haut et du bas sont égales.
 - **Nom.** Sur cette page, le mot-symbole devient « bAItari ». « AI » est en Instrument Serif droite, dans le dégradé bleu-sarcelle du logo : son « I » à empattements ne peut pas se lire comme un « l ». Le composant `Logo` global n'est pas touché.
 - **Carte de connexion.**
   - Elle passe en verre liquide : flou de 22 px saturé, rebord lumineux doublé d'un liseré intérieur et halo.
