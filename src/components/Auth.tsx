@@ -5,6 +5,8 @@ import {
   CheckmarkCircle02Icon,
   LockIcon,
   Mail01Icon,
+  Note01Icon,
+  StethoscopeIcon,
   User02Icon,
   ViewIcon,
 } from "@/lib/hugeicons";
@@ -14,9 +16,9 @@ import type React from "react";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
-import { APP_NAME } from "@/lib/brand";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
 import Logo from "./Logo";
+import { CatSilhouette, DogSilhouette, PeekingCat, PeekingDog } from "./auth-peeking-pets";
 import "./auth-clinic.css";
 
 const Auth: React.FC = () => {
@@ -72,9 +74,28 @@ const Auth: React.FC = () => {
     >
 
       <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
-        <section className="relative hidden min-h-screen flex-col justify-between border-white/50 border-r p-10 lg:flex xl:p-14 dark:border-white/[0.06]">
+        <section
+          className="relative hidden min-h-screen flex-col justify-between border-white/50 border-r p-10 lg:flex xl:p-14 dark:border-white/[0.06]"
+          onPointerMove={(event) => {
+            if (event.pointerType !== "mouse") return;
+            const box = event.currentTarget.getBoundingClientRect();
+            event.currentTarget.style.setProperty("--auth-light-x", `${event.clientX - box.left}px`);
+            event.currentTarget.style.setProperty("--auth-light-y", `${event.clientY - box.top}px`);
+          }}
+        >
+          <div aria-hidden="true" className="auth-brand-canvas">
+            <div className="auth-brand-canvas__orb auth-brand-canvas__orb--blue" />
+            <div className="auth-brand-canvas__orb auth-brand-canvas__orb--teal" />
+            <div className="auth-brand-canvas__light" />
+            <div className="auth-brand-canvas__grain" />
+          </div>
           <div className="flex items-center justify-between">
-            <Logo size="xl" textSize="lg" />
+            <div aria-label="bAItari" className="auth-wordmark" role="img">
+              <Logo showWordmark={false} size="2xl" />
+              <span aria-hidden="true">
+                b<span className="auth-wordmark__ai">AI</span>tari
+              </span>
+            </div>
           </div>
 
           <motion.div
@@ -83,18 +104,42 @@ const Auth: React.FC = () => {
             initial={{ opacity: 0, y: 22 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
+            <p className="auth-clinic-eyebrow">
+              Baitari <span>·</span> de l’arabe bayṭarī, vétérinaire
+            </p>
             <h1 className="auth-clinic-title">
-              Votre cabinet,
-              <em>à portée de main.</em>
+              <span>Moins de paperasse,</span>
+              <span>
+                plus de
+                <span aria-hidden="true" className="auth-clinic-chips">
+                  <span className="auth-clinic-chip auth-clinic-chip--care">
+                    <HugeiconsIcon icon={StethoscopeIcon} strokeWidth={1.8} />
+                  </span>
+                  <span className="auth-clinic-chip auth-clinic-chip--note">
+                    <HugeiconsIcon icon={Note01Icon} strokeWidth={1.8} />
+                  </span>
+                </span>
+                pattes.
+              </span>
             </h1>
-            <p className="mt-7 max-w-lg text-pretty text-base text-zinc-600 leading-relaxed dark:text-zinc-300">
-              Vos patients, vos consultations et votre équipe. Tout commence
-              ici.
+            <p className="auth-clinic-lead">
+              Vos <mark className="auth-clinic-mark--blue">patients</mark>, vos{" "}
+              <mark className="auth-clinic-mark--pink">consultations</mark> et
+              votre équipe. Tout commence ici.
             </p>
           </motion.div>
+          <p aria-hidden="true" className="auth-clinic-rubrics">
+            Consultations <span>/</span> Soins <span>/</span> Rappels <span>/</span> Équipe
+          </p>
         </section>
 
         <section className="relative flex min-h-screen items-center justify-center p-5 sm:p-8 lg:p-12">
+          <div aria-hidden="true" className="auth-glass-backdrop">
+            <DogSilhouette className="auth-glass-backdrop__shape auth-glass-backdrop__shape--dog" />
+            <CatSilhouette className="auth-glass-backdrop__shape auth-glass-backdrop__shape--cat" />
+            <PeekingDog className="auth-glass-backdrop__dog" />
+            <PeekingCat className="auth-glass-backdrop__cat" />
+          </div>
           <motion.div
             animate={{ opacity: 1, y: 0, scale: 1 }}
             className="auth-panel w-full max-w-[480px] overflow-hidden rounded-[28px] border border-white/70 bg-white/72 shadow-[0_30px_90px_-46px_rgba(20,25,30,0.5)] backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-950/72 dark:shadow-[0_35px_90px_-40px_rgba(0,0,0,0.8)]"
@@ -109,13 +154,19 @@ const Auth: React.FC = () => {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="auth-clinic-welcome">
-                    {view === "login"
-                      ? "Bon retour"
-                      : `Bienvenue sur ${APP_NAME}`}
+                    {view === "login" ? (
+                      <>
+                        Ravi de vous <em>revoir.</em>
+                      </>
+                    ) : (
+                      <>
+                        Ouvrons votre <em>cabinet.</em>
+                      </>
+                    )}
                   </h2>
                   <p className="mt-1.5 text-sm text-zinc-500 leading-relaxed dark:text-zinc-400">
                     {view === "login"
-                      ? "Connectez-vous pour retrouver votre cabinet."
+                      ? "Vos patients vous attendent, vos notes aussi."
                       : "Créez votre espace de travail clinique local."}
                   </p>
                 </div>
