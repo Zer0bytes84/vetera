@@ -342,3 +342,30 @@
   .auth-clinic-chip--care, .auth-clinic-chip--note { animation: none; }
   .auth-brand-canvas__light { display: none; }
 }
+
+/* Activation screen: step label in the mono eyebrow voice, and two small
+   step dots in the card corner where the login card has nothing. */
+:root:root .auth-clinic .auth-clinic-step-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #0a6f9f;
+}
+.dark .auth-clinic .auth-clinic-step-label { color: #8fd6f7; }
+.auth-steps { display: flex; flex-shrink: 0; gap: 6px; margin: 0; padding: 0; border: 0; }
+.auth-step {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgb(255 255 255 / .6);
+  color: var(--muted-foreground);
+  font: 600 12px/1 "Geist Variable", var(--font-sans);
+  transition: background-color .3s, color .3s, border-color .3s;
+}
+.dark .auth-step { background: rgb(0 0 0 / .22); }
+.auth-step[data-active="true"] { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }

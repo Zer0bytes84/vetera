@@ -7,16 +7,16 @@ import {
   LockIcon,
   MailIcon,
   Shield01Icon,
-  SparklesIcon,
   UserCircle02Icon,
+  ViewIcon,
 } from "@/lib/hugeicons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { APP_NAME } from "@/lib/brand";
 import { useTauriDrag } from "@/hooks/use-tauri-drag";
-import { cn } from "@/lib/utils";
 import {
   formatLicenseKey,
 } from "@/services/licenseService";
@@ -25,7 +25,7 @@ import {
   createLicenseRequestMailto,
 } from "@/services/licenseActivationService";
 import Logo from "./Logo";
-import "./setup-wizard.css";
+import { AuthBrandPanel, AuthGlassBackdrop } from "./auth-brand-panel";
 
 interface SetupWizardProps {
   onComplete: (userData: {
@@ -36,31 +36,6 @@ interface SetupWizardProps {
     licenseKey: string;
   }) => Promise<void>;
 }
-
-const fieldClassName =
-  "setup-input block h-12 w-full rounded-xl border border-border bg-background pr-4 pl-11 t-16 text-foreground outline-none transition duration-200 placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20";
-
-const setupBenefits: Array<{
-  description: string;
-  icon: IconSvgElement;
-  title: string;
-}> = [
-  {
-    description: "Les dossiers restent sur cet appareil.",
-    icon: Shield01Icon,
-    title: "Données locales",
-  },
-  {
-    description: "Patients, agenda et suivi réunis.",
-    icon: SparklesIcon,
-    title: "Prêt au quotidien",
-  },
-  {
-    description: "Un compte administrateur sécurisé.",
-    icon: UserCircle02Icon,
-    title: "Accès personnel",
-  },
-];
 
 const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
   const {
@@ -152,212 +127,142 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
 
   return (
     <main
-      className="welcome-shell setup-welcome relative min-h-dvh overflow-auto bg-background text-foreground"
+      className="auth-shell auth-clinic relative min-h-screen overflow-x-hidden bg-background text-foreground"
       data-window-drag-region={isDesktopRuntime ? "true" : undefined}
       onMouseDown={handleWindowMouseDown}
       ref={windowDragRef}
     >
+      <div className="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)]">
+        <AuthBrandPanel rubrics={["Données locales", "Prêt au quotidien", "Accès personnel"]}>
+          <p className="auth-clinic-eyebrow">
+            Configuration locale <span>·</span> deux étapes
+          </p>
+          <h1 className="auth-clinic-title">
+            <span>Un démarrage calme,</span>
+            <span>un suivi précis.</span>
+          </h1>
+          <p className="auth-clinic-lead">
+            Activez votre <mark className="auth-clinic-mark--blue">licence</mark>, créez
+            votre <mark className="auth-clinic-mark--pink">accès</mark> et la clinique
+            est prête à travailler.
+          </p>
+        </AuthBrandPanel>
 
-      <div className="relative mx-auto grid min-h-dvh w-full max-w-[1600px] lg:grid-cols-[minmax(340px,0.82fr)_minmax(560px,1.18fr)]">
-        <section className="setup-intro relative hidden flex-col justify-between overflow-hidden px-10 py-9 lg:flex xl:px-14 xl:py-12">
-          <div className="relative flex items-center justify-between gap-4">
-            <Logo size="xl" />
-            <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-medium t-12 text-white/75 uppercase tracking-[0.12em]">
-              Configuration locale
-            </span>
-          </div>
+        <section className="relative flex min-h-screen items-center justify-center p-5 sm:p-8 lg:p-12">
+          <AuthGlassBackdrop />
+          <motion.div
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="auth-panel w-full max-w-[480px] overflow-hidden rounded-[28px]"
+            initial={{ opacity: 0, y: 18, scale: 0.985 }}
+            transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="border-black/[0.055] border-b px-6 py-5 sm:px-8 lg:hidden dark:border-white/[0.07]">
+              <Logo size="lg" textSize="md" />
+            </div>
 
-          <div className="relative my-10 max-w-[31rem]">
-            <p className="mb-5 font-semibold text-emerald-300 text-xs uppercase tracking-[0.18em]">
-              Votre clinique, prête à travailler
-            </p>
-            <h1 className="max-w-[28rem] font-heading font-semibold text-[clamp(2.5rem,4vw,4.6rem)] leading-[0.98] tracking-[-0.055em]">
-              Un démarrage calme. Un suivi précis.
-            </h1>
-            <p className="mt-6 max-w-md t-16 text-white/62 leading-7">
-              Deux étapes suffisent pour sécuriser votre espace et commencer à
-              gérer les patients de la clinique.
-            </p>
-          </div>
-
-          <div className="relative grid gap-2.5">
-            {setupBenefits.map(({ description, icon, title }) => (
-              <div
-                className="flex items-center gap-3.5 rounded-2xl border border-white/10 bg-white/[0.055] p-3.5 backdrop-blur-sm"
-                key={String(title)}
-              >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-emerald-200">
-                  <HugeiconsIcon
-                    className="size-5"
-                    icon={icon}
-                    strokeWidth={1.5}
-                  />
-                </span>
-                <span className="min-w-0">
-                  <span className="block font-semibold text-sm">{title}</span>
-                  <span className="mt-0.5 block text-white/50 text-xs">
-                    {description}
-                  </span>
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="flex min-h-dvh items-center justify-center px-5 py-8 sm:px-8 lg:px-12 lg:py-10">
-          <div className="w-full max-w-[540px]">
-            <div className="mb-8 flex items-center justify-between gap-5 lg:mb-10">
-              <Logo className="lg:hidden" size="lg" />
-              <fieldset className="ml-auto flex items-center gap-2">
-                <legend className="sr-only">Étape {step} sur 2</legend>
-                {[1, 2].map((item) => (
-                  <div className="flex items-center gap-2" key={item}>
-                    {item > 1 && (
-                      <span className="h-px w-6 bg-zinc-300 sm:w-9" />
+            <form className="p-6 sm:p-8" onSubmit={submitStep}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="auth-clinic-step-label">
+                    {step === 1 ? "Étape 1 · Activation" : "Étape 2 · Profil clinique"}
+                  </p>
+                  <h2 className="auth-clinic-welcome mt-2">
+                    {step === 1 ? (
+                      <>
+                        Activez <em>{APP_NAME}.</em>
+                      </>
+                    ) : (
+                      <>
+                        Créez votre <em>accès.</em>
+                      </>
                     )}
-                    <span
-                      data-active={step >= item}
-                      className={cn(
-                        "setup-step flex size-8 items-center justify-center rounded-full border font-semibold text-xs transition duration-300",
-                        step >= item
-                          ? "border-[#17231f] bg-[#17231f] text-white"
-                          : "border-zinc-300 bg-white/60 text-zinc-400"
-                      )}
-                    >
+                  </h2>
+                  <p className="mt-1.5 text-sm text-zinc-500 leading-relaxed dark:text-zinc-400">
+                    {step === 1
+                      ? "Associez votre licence à l’adresse e-mail utilisée lors de l’achat."
+                      : "Définissez le compte administrateur de cette clinique."}
+                  </p>
+                </div>
+                <fieldset className="auth-steps">
+                  <legend className="sr-only">Étape {step} sur 2</legend>
+                  {[1, 2].map((item) => (
+                    <span className="auth-step" data-active={step >= item} key={item}>
                       {step > item ? (
-                        <HugeiconsIcon
-                          className="size-4"
-                          icon={CheckmarkCircle02Icon}
-                          strokeWidth={1.5}
-                        />
+                        <HugeiconsIcon className="size-3.5" icon={CheckmarkCircle02Icon} strokeWidth={1.8} />
                       ) : (
                         item
                       )}
                     </span>
-                  </div>
-                ))}
-              </fieldset>
-            </div>
+                  ))}
+                </fieldset>
+              </div>
 
-            <div className="mb-7">
-              <p className="font-semibold text-emerald-700 text-xs uppercase tracking-[0.16em]">
-                {step === 1
-                  ? "Étape 1 · Activation"
-                  : "Étape 2 · Profil clinique"}
-              </p>
-              <h2 className="mt-3 font-heading font-semibold text-3xl leading-tight tracking-[-0.035em] sm:text-[2.5rem]">
-                {step === 1 ? `Activez ${APP_NAME}` : "Créez votre accès"}
-              </h2>
-              <p className="mt-2.5 max-w-md t-16 text-zinc-600 leading-6">
-                {step === 1
-                  ? "Associez votre licence à l’adresse email utilisée lors de l’achat."
-                  : "Définissez le compte administrateur de cette clinique."}
-              </p>
-            </div>
-
-            <form
-              className="setup-form rounded-2xl border border-border p-5 sm:p-7"
-              onSubmit={submitStep}
-            >
-              {error && (
-                <div className="fade-in slide-in-from-top-2 mb-5 flex animate-in items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5 text-red-700 text-sm">
-                  <HugeiconsIcon
-                    className="mt-0.5 size-4 shrink-0"
-                    icon={Alert02Icon}
-                    strokeWidth={1.5}
-                  />
-                  <span>{error}</span>
-                </div>
-              )}
+              <AnimatePresence initial={false} mode="popLayout">
+                {error ? (
+                  <motion.div
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    className="mt-6 flex items-start gap-3 overflow-hidden rounded-xl border border-destructive/20 bg-destructive/[0.06] p-3.5 text-destructive text-xs leading-relaxed"
+                    exit={{ opacity: 0, height: 0, y: -4 }}
+                    initial={{ opacity: 0, height: 0, y: -4 }}
+                    key="setup-error"
+                    role="alert"
+                  >
+                    <HugeiconsIcon className="mt-0.5 size-4 shrink-0" icon={Alert02Icon} strokeWidth={1.5} />
+                    <span className="font-medium">{error}</span>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
 
               {step === 1 ? (
-                <div className="fade-in animate-in space-y-5 duration-300">
-                  <SetupField
-                    icon={MailIcon}
-                    id="setup-email"
-                    label="Adresse email"
-                  >
+                <div className="mt-7 space-y-4">
+                  <SetupField icon={MailIcon} id="setup-email" label="E-mail professionnel">
                     <input
+                      aria-invalid={Boolean(error)}
+                      autoCapitalize="none"
                       autoComplete="email"
-                      className={fieldClassName}
+                      className="auth-field__input"
                       id="setup-email"
                       onChange={(event) => {
                         setEmail(event.target.value);
                         setError("");
                       }}
-                      placeholder="docteur@clinique.com"
+                      placeholder="vous@clinique.com"
                       required
+                      spellCheck={false}
                       type="email"
                       value={email}
                     />
                   </SetupField>
 
-                  <SetupField
-                    icon={Key01Icon}
-                    id="setup-license"
-                    label="Clé de licence"
-                  >
+                  <SetupField icon={Key01Icon} id="setup-license" label="Clé de licence">
                     <input
+                      aria-invalid={Boolean(error)}
                       autoComplete="off"
-                      className={`${fieldClassName} font-mono uppercase tracking-[0.08em]`}
+                      className="auth-field__input font-mono uppercase tracking-[0.08em]"
                       id="setup-license"
                       maxLength={24}
                       onChange={(event) => handleKeyChange(event.target.value)}
                       placeholder="XXXX-XXXX-XXXX-XXXX-XXXX"
                       required
+                      spellCheck={false}
                       type="text"
                       value={licenseKey}
                     />
                   </SetupField>
-
-                  <button
-                    className="group mt-1 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold t-16 text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] focus-visible:outline-2 focus-visible:outline-emerald-700 focus-visible:outline-offset-2 disabled:cursor-wait disabled:opacity-60"
-                    disabled={isActivating}
-                    type="submit"
-                  >
-                    {isActivating ? (
-                      <Spinner className="size-5 text-white" />
-                    ) : (
-                      <>
-                        Vérifier et continuer
-                        <HugeiconsIcon
-                          className="size-4 transition-transform group-hover:translate-x-0.5"
-                          icon={ArrowRight01Icon}
-                          strokeWidth={1.5}
-                        />
-                      </>
-                    )}
-                  </button>
-                  <button
-                    className="mx-auto flex cursor-pointer items-center gap-2 pt-1 font-medium text-sm text-zinc-600 transition hover:text-zinc-950"
-                    onClick={() => {
-                      window.location.href = createLicenseRequestMailto(email);
-                    }}
-                    type="button"
-                  >
-                    <HugeiconsIcon className="size-4" icon={MailIcon} strokeWidth={1.5} />
-                    Demander une licence par courriel
-                  </button>
                 </div>
               ) : (
-                <div className="fade-in slide-in-from-right-3 animate-in space-y-4 duration-300">
-                  <div className="mb-5 flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 font-medium text-emerald-800 text-sm">
-                    <HugeiconsIcon
-                      className="size-4.5 shrink-0"
-                      icon={CheckmarkCircle02Icon}
-                      strokeWidth={1.5}
-                    />
-                    Licence vérifiée pour {email}
+                <div className="mt-7 space-y-4">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-black/[0.055] bg-black/[0.018] px-3.5 py-3 text-xs text-zinc-500 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-zinc-400">
+                    <HugeiconsIcon className="size-4 shrink-0 text-primary" icon={CheckmarkCircle02Icon} strokeWidth={1.5} />
+                    <span>
+                      Licence vérifiée pour <span className="font-medium text-foreground">{email}</span>
+                    </span>
                   </div>
 
-                  <SetupField
-                    icon={UserCircle02Icon}
-                    id="setup-name"
-                    label="Nom complet"
-                  >
+                  <SetupField icon={UserCircle02Icon} id="setup-name" label="Nom complet">
                     <input
                       autoComplete="name"
-                      className={fieldClassName}
+                      className="auth-field__input"
                       id="setup-name"
                       onChange={(event) => {
                         setName(event.target.value);
@@ -370,100 +275,105 @@ const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                     />
                   </SetupField>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <SetupField
-                      icon={LockIcon}
+                  <SetupField icon={LockIcon} id="setup-password" label="Mot de passe">
+                    <input
+                      autoComplete="new-password"
+                      className="auth-field__input pe-20"
                       id="setup-password"
-                      label="Mot de passe"
+                      minLength={6}
+                      onChange={(event) => {
+                        setPassword(event.target.value);
+                        setError("");
+                      }}
+                      placeholder="6 caractères minimum"
+                      required
+                      type={showPasswords ? "text" : "password"}
+                      value={password}
+                    />
+                    <button
+                      aria-label={showPasswords ? "Masquer les mots de passe" : "Afficher les mots de passe"}
+                      className="absolute inset-y-1.5 end-1.5 flex items-center gap-1.5 rounded-lg px-2.5 font-medium t-12 text-zinc-500 transition-colors hover:bg-black/[0.04] hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                      onClick={() => setShowPasswords((visible) => !visible)}
+                      type="button"
                     >
-                      <input
-                        autoComplete="new-password"
-                        className={fieldClassName}
-                        id="setup-password"
-                        minLength={6}
-                        onChange={(event) => {
-                          setPassword(event.target.value);
-                          setError("");
-                        }}
-                        placeholder="6 caractères minimum"
-                        required
-                        type={showPasswords ? "text" : "password"}
-                        value={password}
-                      />
-                    </SetupField>
-                    <SetupField
-                      icon={LockIcon}
+                      <HugeiconsIcon className="size-3.5" icon={ViewIcon} strokeWidth={1.5} />
+                      {showPasswords ? "Masquer" : "Afficher"}
+                    </button>
+                  </SetupField>
+
+                  <SetupField icon={LockIcon} id="setup-confirm" label="Confirmation">
+                    <input
+                      autoComplete="new-password"
+                      className="auth-field__input"
                       id="setup-confirm"
-                      label="Confirmation"
-                    >
-                      <input
-                        autoComplete="new-password"
-                        className={fieldClassName}
-                        id="setup-confirm"
-                        minLength={6}
-                        onChange={(event) => {
-                          setConfirmPassword(event.target.value);
-                          setError("");
-                        }}
-                        placeholder="Répétez le mot de passe"
-                        required
-                        type={showPasswords ? "text" : "password"}
-                        value={confirmPassword}
-                      />
-                    </SetupField>
-                  </div>
-                  <label className="flex items-center gap-2 text-sm text-zinc-600">
-                    <input type="checkbox" checked={showPasswords} onChange={event => setShowPasswords(event.target.checked)} />
-                    Afficher les mots de passe
-                  </label>
+                      minLength={6}
+                      onChange={(event) => {
+                        setConfirmPassword(event.target.value);
+                        setError("");
+                      }}
+                      placeholder="Répétez le mot de passe"
+                      required
+                      type={showPasswords ? "text" : "password"}
+                      value={confirmPassword}
+                    />
+                  </SetupField>
+                </div>
+              )}
 
-                  <button
-                    className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#17231f] px-5 font-semibold t-16 text-white shadow-[0_10px_24px_rgba(23,35,31,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#22352e] disabled:cursor-not-allowed disabled:opacity-60"
-                    disabled={isLoading}
-                    type="submit"
-                  >
-                    {isLoading ? (
-                      <Spinner className="size-5 text-white" />
-                    ) : (
-                      <>
-                        Ouvrir mon espace
-                        <HugeiconsIcon
-                          className="size-4"
-                          icon={SparklesIcon}
-                          strokeWidth={1.5}
-                        />
-                      </>
-                    )}
-                  </button>
+              <div className="mt-7 flex items-center gap-2.5 rounded-xl border border-black/[0.055] bg-black/[0.018] px-3.5 py-3 text-xs text-zinc-500 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-zinc-400">
+                <HugeiconsIcon className="size-4 shrink-0 text-primary" icon={Shield01Icon} strokeWidth={1.5} />
+                Activation sécurisée. Vos données restent sur cet appareil.
+              </div>
 
+              <button
+                className="group mt-5 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-sm text-white shadow-[0_10px_28px_-15px_rgba(9,9,11,0.7)] transition duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_14px_32px_-16px_rgba(9,9,11,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+                disabled={step === 1 ? isActivating : isLoading}
+                type="submit"
+              >
+                {(step === 1 ? isActivating : isLoading) ? (
+                  <Spinner className="size-4 text-current" />
+                ) : (
+                  <>
+                    {step === 1 ? "Vérifier et continuer" : "Ouvrir mon espace"}
+                    <HugeiconsIcon
+                      className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                      icon={ArrowRight01Icon}
+                      strokeWidth={1.5}
+                    />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="border-black/[0.055] border-t bg-black/[0.018] px-6 py-4 text-center text-sm text-zinc-500 sm:px-8 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-zinc-400">
+              {step === 1 ? (
+                <>
+                  Pas encore de licence ?
                   <button
-                    className="mx-auto flex cursor-pointer items-center gap-1.5 pt-1 font-medium text-sm text-zinc-600 transition hover:text-zinc-950"
+                    className="ms-1.5 font-semibold text-zinc-950 transition-colors hover:text-primary focus-visible:underline focus-visible:outline-none dark:text-white"
                     onClick={() => {
-                      setError("");
-                      setStep(1);
+                      window.location.href = createLicenseRequestMailto(email);
                     }}
                     type="button"
                   >
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={ArrowLeft01Icon}
-                      strokeWidth={1.5}
-                    />
-                    Modifier la licence
+                    La demander par courriel
                   </button>
-                </div>
+                </>
+              ) : (
+                <button
+                  className="mx-auto flex items-center justify-center gap-1.5 font-semibold text-zinc-950 transition-colors hover:text-primary focus-visible:underline focus-visible:outline-none dark:text-white"
+                  onClick={() => {
+                    setError("");
+                    setStep(1);
+                  }}
+                  type="button"
+                >
+                  <HugeiconsIcon className="size-3.5" icon={ArrowLeft01Icon} strokeWidth={1.5} />
+                  Modifier la licence
+                </button>
               )}
-            </form>
-
-            <div className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-zinc-500">
-              <HugeiconsIcon
-                className="size-4 text-emerald-700"
-                icon={Shield01Icon}
-                strokeWidth={1.5}
-              />
-              Activation sécurisée · Vos données restent sur cet appareil
             </div>
-          </div>
+          </motion.div>
         </section>
       </div>
     </main>
@@ -480,15 +390,11 @@ interface SetupFieldProps {
 function SetupField({ children, icon, id, label }: SetupFieldProps) {
   return (
     <div className="space-y-2">
-      <label className="font-semibold t-13 text-zinc-800" htmlFor={id}>
+      <label className="auth-label" htmlFor={id}>
         {label}
       </label>
-      <div className="group relative">
-        <HugeiconsIcon
-          className="pointer-events-none absolute top-1/2 left-3.5 z-10 size-5 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-emerald-700"
-          icon={icon}
-          strokeWidth={1.5}
-        />
+      <div className="auth-field">
+        <HugeiconsIcon className="auth-field__icon" icon={icon} strokeWidth={1.5} />
         {children}
       </div>
     </div>
