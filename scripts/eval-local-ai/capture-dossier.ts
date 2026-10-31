@@ -72,6 +72,7 @@ export async function captureDossier(signal: string, query: string, restore: () 
     zero: ink(".patient-context-value"),
     timelineTitle: ink(".patient-timeline-title"),
     piece: ink(".patient-timeline-piece"),
+    blockHeading: ink(".record-block-heading"),
   });
   document.querySelector("#patient-chronologie")?.scrollIntoView({ block: "start" });
   await shot("dossier-chronologie", {

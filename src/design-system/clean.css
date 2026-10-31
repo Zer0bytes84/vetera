@@ -978,7 +978,7 @@
 }
 /* The record's block headings keep their one signature (medical-record.css). */
 :root[data-skin="clean"][data-skin][data-skin] .patient-record-page :is(h2, h3).record-block-heading {
-  color: var(--clean-ink-quiet) !important;
+  color: var(--clean-ink) !important;
   font-size: 13px !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) :is(.medical-record-health, .medical-owner-card) {
