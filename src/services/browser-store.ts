@@ -1,3 +1,4 @@
+import { formatPatientReference, patientReferenceNumber } from "@/modules/patients/reference/reference";
 export type BrowserTableName =
   | "users"
   | "sessions"
@@ -165,12 +166,33 @@ export function findBrowserRow<T extends BrowserRow>(
   return (getBrowserTable<T>(tableName).find(predicate) ?? null) as T | null;
 }
 
+const PATIENT_REFERENCE_COUNTER_KEY = `${STORAGE_KEY}.patient-reference-counter`;
+
+/**
+ * The browser demo store mirrors the SQLite trigger: a counter kept apart from
+ * the rows, so a deleted patient's number is never given again.
+ */
+function withPatientReference<T extends BrowserRow>(state: BrowserDatabaseState, row: T): T {
+  if ((row as { reference?: string }).reference) {
+    return row;
+  }
+  const highestStored = state.tables.patients.reduce(
+    (highest, entry) => Math.max(highest, patientReferenceNumber((entry as { reference?: string }).reference ?? "") ?? 0),
+    0
+  );
+  const saved = Number(window.localStorage.getItem(PATIENT_REFERENCE_COUNTER_KEY) ?? 0);
+  const next = Math.max(highestStored, Number.isSafeInteger(saved) ? saved : 0) + 1;
+  window.localStorage.setItem(PATIENT_REFERENCE_COUNTER_KEY, String(next));
+  return { ...row, reference: formatPatientReference(next) };
+}
+
 export function insertBrowserRow<T extends BrowserRow>(
   tableName: BrowserTableName,
   row: T
 ): T {
   const state = readState();
-  const preparedRow = withTimestamps(row);
+  const preparedRow =
+    tableName === "patients" ? withPatientReference(state, withTimestamps(row)) : withTimestamps(row);
 
   state.tables[tableName] = [...state.tables[tableName], preparedRow];
   writeState(state);

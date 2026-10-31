@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { tablesAffectedByDelete } from "@/services/sqlite/related-tables";
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 import { TableSnapshotCache, type CachedRow } from "@/services/sqlite/table-snapshot-cache";
 
 import {
@@ -129,7 +130,9 @@ const readTauriTable = async (tableName: string, force = false) => {
   }
 
   const promise = runDbRead((db) =>
-    db.select<Record<string, unknown>[]>(`SELECT * FROM ${tableName}`)
+    db.select<Record<string, unknown>[]>(
+      tableName === "patients" ? PATIENTS_WITH_REFERENCE_SQL : `SELECT * FROM ${tableName}`
+    )
   )
     .then((rows) => {
       const normalizedRows = rows ?? [];
@@ -248,6 +251,8 @@ const normalizeDbPayloadToExistingColumns = (
 ) => {
   const mappedEntries: Array<[string, unknown]> = [];
   for (const [key, value] of Object.entries(payload)) {
+    // A patient's reference is read from its own table and is never written back.
+    if (key === "reference" && !availableColumns.has(key)) continue;
     const resolvedKey = resolveDbFieldName(key, availableColumns);
     mappedEntries.push([resolvedKey, value]);
   }
@@ -391,7 +396,10 @@ export function useSQLite<T extends { id: string }>(tableName: string): UseSQLit
   const mapRow = useCallback((row: Record<string, unknown>) => normalizeBooleanFields(tableName, mapKeys(row, toCamelCase)) as CachedRow, [tableName]);
   const authoritativeRow = useCallback(async (db: SQLiteDatabase, id: string, fallback: CachedRow) => {
     try {
-      const rows = await db.select<Record<string, unknown>[]>(`SELECT * FROM ${safeTableName} WHERE id = ?`, [id]);
+      const rows = await db.select<Record<string, unknown>[]>(
+        safeTableName === "patients" ? `${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = ?` : `SELECT * FROM ${safeTableName} WHERE id = ?`,
+        [id]
+      );
       return rows[0] ? mapRow(rows[0]) : fallback;
     } catch {
       // The write already succeeded. A post-write read must not falsely roll it back.

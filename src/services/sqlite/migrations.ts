@@ -8,6 +8,7 @@ import { CARE_COMPLETION_ROLLBACK_MIGRATION_SQL } from "@/modules/care-tasks/com
 import { DOCUMENTS_MIGRATION_SQL } from "@/modules/documents/document-migration";
 import { ROOMS_MIGRATION_SQL } from "@/modules/rooms/migration";
 import { VISIT_FLOW_MIGRATION_SQL, VISIT_FLOW_NO_CHARGE_MIGRATION_SQL } from "@/modules/visit-flow/migration";
+import { PATIENT_REFERENCES_MIGRATION_SQL } from "@/modules/patients/reference/migration";
 import {
   MIGRATION_001_SQL,
   MIGRATION_002_SQL,
@@ -143,6 +144,7 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   { version: "038", name: "configurable-rooms", sql: ROOMS_MIGRATION_SQL },
   { version: "039", name: "visit-flow", sql: VISIT_FLOW_MIGRATION_SQL },
   { version: "040", name: "visit-flow-no-charge", sql: VISIT_FLOW_NO_CHARGE_MIGRATION_SQL },
+  { version: "041", name: "patient-references", sql: PATIENT_REFERENCES_MIGRATION_SQL },
 ] as const;
 import { DISPENSING_MIGRATION_SQL } from "@/modules/stock/dispensing-migration";
 import { MOVEMENT_SNAPSHOT_MIGRATION_SQL } from "@/modules/stock/movement-snapshot-migration";

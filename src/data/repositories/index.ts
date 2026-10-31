@@ -1,5 +1,6 @@
 import { useSQLite } from "@/hooks/useSQLite";
 import { roomsService } from "@/modules/rooms/service";
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 import {
   normalizeOwnerDraft,
   normalizePatientDraft,
@@ -95,6 +96,7 @@ const rowToPatient = (row: Record<string, unknown>): Patient => ({
     ? String(row.chronic_conditions)
     : undefined,
   generalNotes: row.general_notes ? String(row.general_notes) : undefined,
+  reference: row.reference ? String(row.reference) : undefined,
   createdAt: String(row.created_at ?? new Date().toISOString()),
 });
 
@@ -436,7 +438,7 @@ export function usePatientsRepository() {
     for (let attempt = 0; attempt < 5; attempt += 1) {
       const rows = await runDbRead((db) =>
         db.select<Record<string, unknown>[]>(
-          "SELECT * FROM patients WHERE id = ?",
+          `${PATIENTS_WITH_REFERENCE_SQL} WHERE patients.id = ?`,
           [patientId]
         )
       );

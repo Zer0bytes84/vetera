@@ -61,6 +61,10 @@ import {
 import { useFocus } from "@/contexts/focus-provider";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { getPatientStatusMeta } from "@/config/status-meta";
+import {
+  matchesPatientReference,
+  patientReferenceSearchText,
+} from "@/modules/patients/reference/reference";
 import { bestPassage, focusExcerpt } from "@/modules/consultations/local-ai/passage-search";
 import { highlightPassage } from "@/modules/consultations/local-ai/search-highlight";
 import {
@@ -614,11 +618,16 @@ export default function CommandPalette({
         const chip = p.chipNumber ?? "";
         const tattoo = p.tattooNumber ?? "";
         return matchesSearch(
-          `${p.name} ${p.species} ${p.breed ?? ""} ${ownerName} ${chip} ${tattoo}`,
+          `${p.name} ${p.species} ${p.breed ?? ""} ${ownerName} ${chip} ${tattoo} ${patientReferenceSearchText(p.reference)}`,
           q,
         );
       })
       .sort((a, b) => {
+        // The exact reference typed opens that patient first
+        const aReference = matchesPatientReference(a.reference, query);
+        const bReference = matchesPatientReference(b.reference, query);
+        if (aReference !== bReference) return aReference ? -1 : 1;
+
         // Prioritize startsWith on name
         const aName = normalizeSearch(a.name);
         const bName = normalizeSearch(b.name);
@@ -633,7 +642,7 @@ export default function CommandPalette({
         return bVisit - aVisit;
       })
       .slice(0, 8);
-  }, [patients, ownerById, q]);
+  }, [patients, ownerById, q, query]);
 
   const matchedAppointments = useMemo<Appointment[]>(() => {
     if (!q) {
@@ -1054,6 +1063,7 @@ export default function CommandPalette({
                       ownerName ?? "",
                       patient.chipNumber ?? "",
                       patient.tattooNumber ?? "",
+                      patientReferenceSearchText(patient.reference),
                     ]}
                     onSelect={() => handleSelectPatient(patient)}
                     value={`patient:${patient.id} ${patient.name} ${patient.species} ${patient.breed ?? ""}`}
@@ -1080,6 +1090,9 @@ export default function CommandPalette({
                         )}
                       </div>
                       <div className="flex items-center gap-1.5 truncate t-12 text-muted-foreground">
+                        {patient.reference && (
+                          <span className="font-mono tabular-nums">{patient.reference} ·</span>
+                        )}
                         <span>{patient.species}</span>
                         {patient.breed && <span>· {patient.breed}</span>}
                         {ownerName && (

@@ -20,6 +20,7 @@ import {
 
 import { useAudit } from "@/services/use-audit";
 import type { Appointment, Owner, Patient } from "@/types/db";
+import { patientReferenceSearchText } from "@/modules/patients/reference/reference";
 
 import {
   DetailsTab,
@@ -138,6 +139,7 @@ export function usePatientsPageModel({ onNavigateToPatient }: PatientsProps) {
           owner?.lastName,
           owner?.phone,
           owner?.email,
+          patientReferenceSearchText(patient.reference),
         ]
           .filter(Boolean)
           .join(" ")

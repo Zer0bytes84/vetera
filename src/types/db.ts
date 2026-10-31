@@ -40,6 +40,8 @@ export interface Patient {
   lastVisit?: string; // ISO string
   name: string;
   ownerId: string;
+  /** Référence lisible « ID-0011 », attribuée à la création, jamais modifiée. */
+  reference?: string;
   sex: "M" | "F";
   species: "Chien" | "Chat" | "NAC" | "Cheval" | string;
   status: "sante" | "traitement" | "hospitalise" | "decede";
