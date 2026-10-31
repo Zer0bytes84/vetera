@@ -845,7 +845,7 @@
 :root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-actions { border-top-color: var(--clean-line-subtle); }
 /* The record's own panel token follows the Clean card, so the timeline's
    markers and their ring sit on the card's exact tone in both modes. */
-:root[data-skin="clean"] .patient-record-page { --medical-panel: var(--clean-surface); }
+:root[data-skin="clean"] :is(.patient-record-page, .patient-peek-panel) { --medical-panel: var(--clean-surface); }
 :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-avatar {
   border-color: var(--clean-line) !important;
   border-radius: var(--clean-card-radius) !important;
@@ -977,7 +977,7 @@
   text-transform: none !important;
 }
 /* The record's block headings keep their one signature (medical-record.css). */
-:root[data-skin="clean"][data-skin][data-skin] .patient-record-page :is(h2, h3).record-block-heading {
+:root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) :is(h2, h3).record-block-heading {
   color: var(--clean-ink) !important;
   font-size: 13px !important;
 }

@@ -110,6 +110,20 @@ export async function captureDossier(signal: string, query: string, restore: () 
   scroller?.scrollTo({ top: scroller.scrollHeight });
   await shot("dossier-bas", { permanent: textOf(".medical-permanent") });
 
+  // The quick preview opened from the patient list, as a click on its row opens it.
+  location.hash = "#/patients";
+  await sleep(1500);
+  const { openPatientPeek } = await import("@/modules/patients/pages/patient-peek");
+  openPatientPeek(patientId);
+  await waitFor(() => document.querySelector(".patient-peek-panel .patient-peek-identity"), 30_000).catch(() => null);
+  await sleep(1200);
+  await shot("apercu", {
+    safety: textOf(".patient-peek-panel .medical-safety"),
+    headings: [...document.querySelectorAll(".patient-peek-panel .record-block-heading")].map((heading) => (heading as HTMLElement).innerText.trim()),
+  });
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  await sleep(600);
+
   for (const search of searches.split(",").filter(Boolean)) {
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
     const input = await waitFor(() => {

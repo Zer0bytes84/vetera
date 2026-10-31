@@ -1,6 +1,6 @@
-import type { KeyboardEvent, ReactNode } from "react";
+import type { KeyboardEvent } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AlertTriangle, Phone, Mail, Stethoscope, User } from "@/lib/icons";
+import { Phone, Mail, User } from "@/lib/icons";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { getSpeciesTheme } from "@/lib/species-theme";
 import { getPatientStatusMeta } from "@/config/status-meta";
@@ -162,63 +162,6 @@ export function isClinicalSignal(value?: string) {
     "aucun antecedent",
     "aucune maladie chronique",
   ].includes(normalized);
-}
-
-export function ClinicalAlerts({
-  patient,
-  extra,
-}: {
-  patient: Patient;
-  /** Further alert rows (a vaccine booster due) shown under allergies and history. */
-  extra?: ReactNode;
-}) {
-  const allergies = patient.allergies?.trim();
-  const chronicConditions = patient.chronicConditions?.trim();
-  const hasAllergies = isClinicalSignal(allergies);
-  const hasChronic = isClinicalSignal(chronicConditions);
-
-  if (!hasAllergies && !hasChronic && !extra) {
-    return null;
-  }
-
-  return (
-    <div
-      className="medical-alerts grid gap-2.5 px-6 py-4 border-t border-border/70 bg-gradient-to-r from-red-500/5 via-amber-500/5 to-transparent"
-      aria-label="Informations cliniques importantes"
-    >
-      {hasAllergies && (
-        <div
-          className="flex items-start gap-3 p-3.5 rounded-xl border border-rose-300/80 bg-rose-50/90 text-rose-900 shadow-xs dark:border-rose-800/60 dark:bg-rose-950/40 dark:text-rose-200"
-          role="alert"
-        >
-          <div className="p-1.5 rounded-lg bg-rose-500/20 text-rose-600 dark:bg-rose-500/30 dark:text-rose-400 shrink-0 mt-0.5">
-            <AlertTriangle size={18} className="shrink-0" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <strong className="text-xs font-semibold tracking-wide uppercase text-rose-700 dark:text-rose-300">
-              Allergies et contre-indications
-            </strong>
-            <p className="mt-0.5 text-sm font-medium leading-relaxed">{allergies}</p>
-          </div>
-        </div>
-      )}
-
-      {hasChronic && (
-        <div className="flex items-start gap-3 p-3 rounded-xl border border-amber-300/70 bg-amber-50/80 text-amber-900 shadow-xs dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-200">
-          <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-600 dark:bg-amber-500/30 dark:text-amber-400 shrink-0 mt-0.5">
-            <Stethoscope size={16} className="shrink-0" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <strong className="text-xs font-semibold tracking-wide uppercase text-amber-700 dark:text-amber-300">
-              Antécédents & Affections chroniques
-            </strong>
-            <p className="mt-0.5 text-sm font-medium leading-relaxed">{chronicConditions}</p>
-          </div>
-        </div>
-      )}
-      {extra}
-    </div>
-  );
 }
 
 export function OwnerContact({ owner }: { owner?: Owner }) {

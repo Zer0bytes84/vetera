@@ -1,6 +1,7 @@
 /* Dossier patient : SF Pro, échelle 8 / 12 / 16 / 24, signaux cliniques seuls. */
 :is(
   .patient-record-page,
+  .patient-peek-panel,
   .patient-record-dialog,
   .medical-record-summary,
   .medical-identity,
@@ -36,6 +37,7 @@
 .dark
   :is(
     .patient-record-page,
+    .patient-peek-panel,
     .patient-record-dialog,
     .medical-record-summary,
     .medical-identity,
@@ -2118,7 +2120,7 @@ button.patient-timeline-piece:focus-visible {
   line-height: 20px;
 }
 /* Scoped past Clean, which gives every plain paragraph its body grey. */
-.patient-record-page .medical-safety > p.medical-safety-pill {
+:is(.patient-record-page, .patient-peek-panel) .medical-safety > p.medical-safety-pill {
   display: inline-flex;
   align-items: center;
   max-width: 100%;
@@ -2145,7 +2147,7 @@ button.patient-timeline-piece:focus-visible {
   color: var(--medical-quiet);
   font-weight: 400;
 }
-.patient-record-page .medical-safety > p.medical-safety-pill.is-allergy {
+:is(.patient-record-page, .patient-peek-panel) .medical-safety > p.medical-safety-pill.is-allergy {
   border-color: var(--medical-danger-border);
   background: var(--medical-danger-bg);
   color: var(--medical-danger);
@@ -2303,7 +2305,7 @@ button.patient-timeline-piece:focus-visible {
 /* Block headings: the same signature on every block of the record, a small
    grey line icon and a light grey label, same size, gap and spacing. Scoped
    and firm, because Premium and Clean style these titles with strong rules. */
-.patient-record-page :is(h2, h3).record-block-heading {
+:is(.patient-record-page, .patient-peek-panel) :is(h2, h3).record-block-heading {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2333,4 +2335,9 @@ button.patient-timeline-piece:focus-visible {
 .patient-record-page .patient-summary-heading-row > .record-block-heading,
 .patient-record-page .medical-health-heading > .record-block-heading {
   margin-bottom: 0 !important;
+}
+
+/* The quick preview opens on the same safety band, between identity and tabs. */
+.patient-peek-safety {
+  padding: 0 24px 20px;
 }

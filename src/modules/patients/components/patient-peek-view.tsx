@@ -18,8 +18,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Activity, CalendarBlank, Notebook, Syringe } from "@/lib/icons";
 import {
-  ClinicalAlerts,
+  isClinicalSignal,
   OwnerContact,
   PatientIdentity,
   recordDate,
@@ -29,6 +30,8 @@ import {
   getNextDueVaccination,
   getVaccinationStatus,
 } from "../lib/vaccination-status";
+import { PatientSafetyZone } from "./patient-safety-zone";
+import { RecordBlockHeading } from "./record-block-heading";
 
 export interface PatientPeekViewProps {
   patient?: Patient;
@@ -157,7 +160,10 @@ export function PatientPeekView({
               <div className="patient-peek-identity px-6 py-6">
                 <PatientIdentity patient={patient} compact />
               </div>
-              <ClinicalAlerts patient={patient} />
+              {/* Safety first, as in the record: the allergy in red, the restraint beside it. */}
+              <div className="patient-peek-safety">
+                <PatientSafetyZone patient={patient} />
+              </div>
               <div
                 className="medical-tabs"
                 role="tablist"
@@ -193,9 +199,9 @@ export function PatientPeekView({
                 {tab === "summary" && (
                   <>
                     <section>
-                      <h3 className="medical-section-title">
+                      <RecordBlockHeading icon={Activity}>
                         Repères cliniques
-                      </h3>
+                      </RecordBlockHeading>
                       <dl className="medical-facts">
                         <div>
                           <dt>Dernière visite terminée</dt>
@@ -239,13 +245,19 @@ export function PatientPeekView({
                           <dt>Date de naissance</dt>
                           <dd>{recordDate(patient.dateOfBirth)}</dd>
                         </div>
+                        {isClinicalSignal(patient.chronicConditions) ? (
+                          <div>
+                            <dt>Antécédents</dt>
+                            <dd>{patient.chronicConditions?.trim()}</dd>
+                          </div>
+                        ) : null}
                       </dl>
                     </section>
                     <OwnerContact owner={owner} />
                     <section>
-                      <h3 className="medical-section-title">
+                      <RecordBlockHeading icon={Notebook}>
                         Notes utiles à la prise en charge
-                      </h3>
+                      </RecordBlockHeading>
                       <p className="medical-note">
                         {patient.generalNotes?.trim() ||
                           "Aucune note générale enregistrée."}
@@ -255,9 +267,9 @@ export function PatientPeekView({
                 )}
                 {tab === "visits" && (
                   <section aria-busy={historyLoading}>
-                    <h3 className="medical-section-title">
+                    <RecordBlockHeading icon={CalendarBlank}>
                       Visites et rendez-vous
-                    </h3>
+                    </RecordBlockHeading>
                     {historyLoading || skeletons.history ? (
                       <SkeletonBlock
                         visible={skeletons.history}
@@ -291,9 +303,9 @@ export function PatientPeekView({
                 )}
                 {tab === "followup" && (
                   <section aria-busy={followUpLoading}>
-                    <h3 className="medical-section-title">
+                    <RecordBlockHeading icon={Syringe}>
                       Vaccinations et pesées
-                    </h3>
+                    </RecordBlockHeading>
                     {followUpLoading || skeletons.followUp ? (
                       <SkeletonBlock
                         visible={skeletons.followUp}
