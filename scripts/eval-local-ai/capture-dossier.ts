@@ -14,10 +14,12 @@ const textOf = (selector: string) => document.querySelector<HTMLElement>(selecto
 
 export async function captureDossier(signal: string, query: string) {
   const [patientId, searches = ""] = query.split("|");
+  // Red console lines met along the way are kept with the measures.
+  const consoleErrors: string[] = (window as unknown as { __CAPTURE_ERRORS__?: string[] }).__CAPTURE_ERRORS__ ?? [];
   const results: Record<string, unknown>[] = [];
   const shot = async (name: string, measures: Record<string, unknown> = {}) => {
     await sleep(700);
-    results.push({ name, ...measures });
+    results.push({ name, ...measures, consoleErrors: [...consoleErrors] });
     await writeTextFile(`${signal}.results.json`, JSON.stringify(results, null, 2));
     await writeTextFile(signal, `ready:${name}`);
     for (let i = 0; i < 1200 && (await readTextFile(signal).catch(() => "")).trim() !== `done:${name}`; i++) await sleep(250);

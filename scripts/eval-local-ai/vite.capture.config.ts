@@ -21,6 +21,10 @@ const scenario = (): Plugin => ({
     order: "pre",
     handler: (html) =>
       html.replace(
+        // Red console lines from the very first script on, read by the scenario.
+        "<head>",
+        `<head><script>window.__CAPTURE_ERRORS__=[];(()=>{const keep=(v)=>window.__CAPTURE_ERRORS__.push(v instanceof Error?v.message+"\\n"+(v.stack||""):typeof v==="string"?v:(()=>{try{return JSON.stringify(v)}catch{return String(v)}})());const error=console.error.bind(console);console.error=(...a)=>{keep(a.map((x)=>x instanceof Error?x.message+"\\n"+(x.stack||""):typeof x==="string"?x:(()=>{try{return JSON.stringify(x)}catch{return String(x)}})()).join(" "));error(...a)};addEventListener("error",(e)=>keep(e.error||e.message||("ressource : "+(e.target&&(e.target.src||e.target.href)))),true);addEventListener("unhandledrejection",(e)=>keep(e.reason));})();</script>`,
+      ).replace(
         "</body>",
         `<script>window.__CAPTURE__=${JSON.stringify(capture)}</script><script type="module" src="/scripts/eval-local-ai/capture-scenario.ts"></script></body>`,
       ),
