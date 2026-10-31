@@ -1769,13 +1769,6 @@
   border-top: 1px solid var(--medical-border);
   scroll-margin-top: 16px;
 }
-.patient-chronologie-title {
-  margin: 0 0 20px;
-  color: var(--medical-ink);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-}
 .patient-timeline {
   display: grid;
   gap: 24px;
@@ -2182,21 +2175,19 @@ button.patient-timeline-piece:focus-visible {
 .patient-summary-column {
   display: grid;
   align-content: start;
-  gap: 10px;
   min-width: 0;
 }
+/* A block heading and, when it has one, its link on the far right. */
 .patient-summary-heading-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-height: 20px;
+  margin-bottom: 12px;
 }
-.patient-summary-heading {
-  margin: 0;
-  color: var(--medical-ink);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 20px;
+.patient-summary-heading-row > .record-block-heading {
+  margin-bottom: 0;
 }
 .patient-summary-link {
   border: 0;
@@ -2258,7 +2249,7 @@ button.patient-timeline-piece:focus-visible {
 
 /* Prévention: neutral countdowns; red only once a booster is late. */
 .medical-prevention-header {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .medical-prevention-list {
   margin: 0;
@@ -2307,4 +2298,38 @@ button.patient-timeline-piece:focus-visible {
   color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
+}
+
+/* Block headings: the same signature on every block of the record, a small
+   grey line icon and a light grey label, same size, gap and spacing. Scoped
+   and firm, because Premium and Clean style these titles with strong rules. */
+.patient-record-page :is(h2, h3).record-block-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--medical-quiet) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 20px !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.record-block-heading-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: color-mix(in oklab, var(--medical-quiet) 80%, transparent);
+}
+.record-block-heading-icon,
+.record-block-heading-icon [stroke-width] {
+  stroke-width: 1.25;
+}
+.patient-record-page .patient-summary-heading-row > .record-block-heading,
+.patient-record-page .medical-health-heading > .record-block-heading {
+  margin-bottom: 0 !important;
 }

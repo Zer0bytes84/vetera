@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Heartbeat, Pill } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { AppointmentTypeBadge } from "@/modules/agenda/components/agenda-shared";
@@ -6,6 +7,7 @@ import type { Appointment, ConsultationSoap } from "@/types/db";
 import type { HealthCardTreatment } from "../health-card/health-card-data";
 import { visitReason } from "../lib/visit-reason";
 import { isClinicalSignal, recordDate } from "./medical-record-summary";
+import { RecordBlockHeading } from "./record-block-heading";
 
 /** Only statuses other than "done" are worth a label on the last visit. */
 const OPEN_STATUS_LABELS: Partial<Record<Appointment["status"], string>> = {
@@ -52,7 +54,9 @@ export function PatientClinicalSummary({
         Synthèse clinique
       </h2>
       <div className="patient-summary-column">
-        <h3 className="patient-summary-heading">Affections suivies</h3>
+        <div className="patient-summary-heading-row">
+          <RecordBlockHeading icon={Heartbeat}>Affections suivies</RecordBlockHeading>
+        </div>
         {isClinicalSignal(chronic) ? (
           <ul className="patient-summary-list">
             <li>
@@ -65,7 +69,7 @@ export function PatientClinicalSummary({
       </div>
       <div className="patient-summary-column">
         <div className="patient-summary-heading-row">
-          <h3 className="patient-summary-heading">Traitements en cours</h3>
+          <RecordBlockHeading icon={Pill}>Traitements en cours</RecordBlockHeading>
           <button className="patient-summary-link" onClick={onOpenPrescriptions} type="button">
             Ordonnances
           </button>

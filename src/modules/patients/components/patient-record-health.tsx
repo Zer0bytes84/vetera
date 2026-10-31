@@ -1,4 +1,5 @@
-import { Check, ArrowRight } from "@/lib/icons";
+import { Check, ArrowRight, ListChecks } from "@/lib/icons";
+import { RecordBlockHeading } from "./record-block-heading";
 import { cn } from "@/lib/utils";
 import type { Owner, Patient, Vaccination, WeightEntry } from "@/types/db";
 
@@ -61,9 +62,9 @@ export function PatientRecordHealth({
       aria-label="Complétude du dossier"
     >
       <div className="medical-health-heading flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-foreground tracking-tight">
+        <RecordBlockHeading icon={ListChecks}>
           {isComplete ? "Dossier médical complet" : "Complétude du dossier"}
-        </h3>
+        </RecordBlockHeading>
         <span
           className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40"
           aria-label={`${completed} informations renseignées sur ${checks.length}`}

@@ -4,10 +4,14 @@ import {
   Check,
   FileText,
   FirstAid,
+  History,
   Hospital,
+  IdentificationBadge,
+  Notebook,
   Pill,
   Scales,
   Syringe,
+  User,
   X,
 } from "@/lib/icons";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -70,6 +74,7 @@ import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
 import { PatientClinicalSummary, PatientOverview } from "./components/patient-overview";
 import { PatientRecordHealth } from "./components/patient-record-health";
+import { RecordBlockHeading } from "./components/record-block-heading";
 import { PatientTimeline } from "./components/patient-timeline";
 import { OffVisitNotePanel } from "./components/off-visit-note-panel";
 import { readOffVisitNote } from "@/modules/consultations/off-visit-note";
@@ -1014,9 +1019,14 @@ export function PatientDetailPage({
                     className="patient-chronologie"
                     id="patient-chronologie"
                   >
-                    <h2 className="patient-chronologie-title" id="patient-chronologie-title">
+                    <RecordBlockHeading
+                      as="h2"
+                      className="patient-chronologie-title"
+                      icon={History}
+                      id="patient-chronologie-title"
+                    >
                       Chronologie
-                    </h2>
+                    </RecordBlockHeading>
                     <PatientTimeline
                       className="border-0 shadow-none"
                       onEditWeight={openEditWeight}
@@ -1189,7 +1199,7 @@ export function PatientDetailPage({
           </h2>
           <div className="medical-permanent-grid">
           <section>
-            <h3 className="medical-section-title">Identité</h3>
+            <RecordBlockHeading icon={IdentificationBadge}>Identité</RecordBlockHeading>
             <dl className="medical-facts">
               <div>
                 <dt>Date de naissance</dt>
@@ -1215,12 +1225,12 @@ export function PatientDetailPage({
           </section>
           {ownersRepo.loading ? (
             <section aria-busy="true">
-              <h3 className="medical-section-title">Propriétaire</h3>
+              <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
               <SkeletonBlock className="h-20" />
             </section>
           ) : ownersRepo.error ? (
             <section>
-              <h3 className="medical-section-title">Propriétaire</h3>
+              <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
               <p className="medical-empty">
                 Les coordonnées ne sont pas disponibles.
               </p>
@@ -1236,7 +1246,7 @@ export function PatientDetailPage({
             <OwnerContact owner={owner} />
           )}
           <section>
-            <h3 className="medical-section-title">Notes générales</h3>
+            <RecordBlockHeading icon={Notebook}>Notes générales</RecordBlockHeading>
             <p className="medical-note">
               {patient.generalNotes?.trim() ||
                 "Aucune note générale enregistrée."}

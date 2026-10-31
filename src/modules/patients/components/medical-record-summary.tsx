@@ -1,6 +1,6 @@
 import type { KeyboardEvent, ReactNode } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AlertTriangle, Phone, Mail, Stethoscope } from "@/lib/icons";
+import { AlertTriangle, Phone, Mail, Stethoscope, User } from "@/lib/icons";
 import { getSpeciesGlyph } from "@/lib/species-icons";
 import { getSpeciesTheme } from "@/lib/species-theme";
 import { getPatientStatusMeta } from "@/config/status-meta";
@@ -9,6 +9,7 @@ import { computeAge, formatAgeFr } from "../lib/age";
 import { normalizeDate } from "./patients-shared";
 import { formatPhone } from "@/utils/display-format";
 import { cn } from "@/lib/utils";
+import { RecordBlockHeading } from "./record-block-heading";
 import "../medical-record.css";
 
 export function recordDate(value?: string | null, withTime = false) {
@@ -227,7 +228,7 @@ export function OwnerContact({ owner }: { owner?: Owner }) {
         className="medical-owner p-5"
         aria-label="Coordonnées du propriétaire"
       >
-        <h3 className="text-sm font-semibold text-foreground mb-2">Propriétaire</h3>
+        <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
         <p className="medical-contact-hint text-xs text-muted-foreground">
           Associez un propriétaire depuis les informations du patient.
         </p>
@@ -242,7 +243,7 @@ export function OwnerContact({ owner }: { owner?: Owner }) {
 
   return (
     <section className="medical-owner p-5" aria-label="Coordonnées du propriétaire">
-      <h3 className="text-sm font-semibold text-foreground mb-3">Propriétaire</h3>
+      <RecordBlockHeading icon={User}>Propriétaire</RecordBlockHeading>
       <div className="medical-owner-card flex items-center gap-3.5 p-3 rounded-xl bg-muted/40 border border-border/60">
         <div
           className="medical-owner-avatar size-11 rounded-xl flex items-center justify-center font-bold text-sm text-white bg-gradient-to-br from-indigo-500 to-purple-600 shadow-sm shrink-0"

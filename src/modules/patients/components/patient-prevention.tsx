@@ -1,9 +1,11 @@
 import { useMemo } from "react";
+import { Bell } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Vaccination } from "@/types/db";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 import { countdownLabel, preventionCountdowns } from "../lib/prevention";
 import { recordDate } from "./medical-record-summary";
+import { RecordBlockHeading } from "./record-block-heading";
 
 interface PatientPreventionProps {
   now: number;
@@ -23,7 +25,9 @@ export function PatientPrevention({ now, onOpenVaccinations, patientId, vaccinat
   return (
     <section className="medical-prevention" aria-labelledby="medical-prevention-title">
       <div className="medical-prevention-header patient-summary-heading-row">
-        <h3 className="patient-summary-heading" id="medical-prevention-title">Rappels et prévention</h3>
+        <RecordBlockHeading icon={Bell} id="medical-prevention-title">
+          Rappels et prévention
+        </RecordBlockHeading>
         <button className="patient-summary-link" type="button" onClick={onOpenVaccinations}>
           Vaccinations
         </button>
