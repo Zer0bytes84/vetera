@@ -1022,6 +1022,7 @@ export function PatientDetailPage({
                       onOpenNote={openOffVisitNote}
                       onOpenPiece={openPiece}
                       patientId={patientId}
+                      summarizedVisitId={recentVisits[0]?.id}
                     />
                   </section>
                 </>

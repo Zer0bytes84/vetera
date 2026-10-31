@@ -64,6 +64,33 @@ export async function captureDossier(signal: string, query: string, restore: () 
     events: document.querySelectorAll("#patient-chronologie .patient-timeline-event").length,
     pieces: [...document.querySelectorAll("#patient-chronologie .patient-timeline-piece")].map((piece) => (piece as HTMLElement).innerText.replace(/\s+/g, " ").trim()),
   });
+  // One « Afficher plus », when the chronology offers it.
+  const more = [...document.querySelectorAll<HTMLButtonElement>("#patient-chronologie button")].find(
+    (button) => button.textContent?.trim() === "Afficher plus"
+  );
+  if (more) {
+    more.click();
+    await sleep(500);
+    document.querySelector("#patient-chronologie .patient-timeline-more")?.scrollIntoView({ block: "end" });
+    await shot("dossier-chronologie-plus", {
+      events: document.querySelectorAll("#patient-chronologie .patient-timeline-event").length,
+      more: textOf("#patient-chronologie .patient-timeline-more"),
+    });
+    // Then every event, down to the oldest.
+    for (let i = 0; i < 100; i++) {
+      const next = [...document.querySelectorAll<HTMLButtonElement>("#patient-chronologie button")].find(
+        (button) => button.textContent?.trim() === "Afficher plus"
+      );
+      if (!next) break;
+      next.click();
+      await sleep(300);
+    }
+    [...document.querySelectorAll("#patient-chronologie .patient-timeline-event")].at(-1)?.scrollIntoView({ block: "end" });
+    await shot("dossier-chronologie-fin", {
+      events: document.querySelectorAll("#patient-chronologie .patient-timeline-event").length,
+      pieces: [...document.querySelectorAll("#patient-chronologie .patient-timeline-piece, #patient-chronologie [data-kind='piece'] .patient-timeline-body")].map((piece) => (piece as HTMLElement).innerText.replace(/\s+/g, " ").trim()),
+    });
+  }
   // The foot of the record: permanent information, under the chronology.
   scroller?.scrollTo({ top: scroller.scrollHeight });
   await shot("dossier-bas", { permanent: textOf(".medical-permanent") });

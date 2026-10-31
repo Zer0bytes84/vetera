@@ -1739,12 +1739,37 @@
   width: 1px;
   background: var(--timeline-thread);
 }
+/* One event, one row of columns: what and when on the left, what was found
+   in the middle, its papers, state and action against the right edge. */
 .patient-timeline-event {
   position: relative;
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
-  gap: 12px;
+  column-gap: 12px;
+  row-gap: 6px;
   padding: 10px 0;
+}
+.patient-timeline-event > :not(.patient-timeline-marker) {
+  grid-column: 2;
+}
+.patient-timeline-event > .patient-timeline-marker {
+  grid-row: span 3;
+}
+@container patient-page (min-width: 760px) {
+  .patient-timeline-event {
+    grid-template-columns: 24px 168px minmax(0, 1fr) minmax(0, max-content);
+    column-gap: 16px;
+  }
+  .patient-timeline-event > :not(.patient-timeline-marker) {
+    grid-column: auto;
+  }
+  .patient-timeline-event > .patient-timeline-marker {
+    grid-row: auto;
+  }
+  .patient-timeline-side {
+    justify-content: flex-end;
+    max-width: 440px;
+  }
 }
 .patient-timeline-marker {
   position: relative;
@@ -1753,30 +1778,16 @@
   place-items: center;
   width: 24px;
   height: 24px;
-  margin-top: 4px;
   border: 1px solid var(--timeline-thread);
   border-radius: 999px;
   background: var(--medical-panel);
   color: var(--medical-muted);
   box-shadow: 0 0 0 4px var(--medical-panel);
 }
-.patient-timeline-body {
+.patient-timeline-when {
+  display: grid;
+  align-content: start;
   min-width: 0;
-}
-.patient-timeline-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 10px;
-  min-width: 0;
-  min-height: 32px;
-}
-.patient-timeline-date {
-  min-width: 112px;
-  color: var(--medical-quiet);
-  font-size: 12px;
-  line-height: 20px;
-  font-variant-numeric: tabular-nums;
 }
 .patient-timeline-title {
   color: var(--medical-ink);
@@ -1785,44 +1796,104 @@
   line-height: 20px;
   overflow-wrap: anywhere;
 }
-.patient-timeline-context,
-.patient-timeline-state {
+.patient-timeline-date {
   color: var(--medical-quiet);
+  font-size: 12px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.patient-timeline-body {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+}
+/* Scoped past Clean, which gives every plain paragraph its body grey. */
+.patient-record-page .patient-timeline-body > p.patient-timeline-summary {
+  color: var(--medical-ink);
+}
+.patient-timeline-body > p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.patient-timeline-context {
+  color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
-  overflow-wrap: anywhere;
 }
-.patient-timeline-state::before {
-  content: "· ";
-}
-.patient-timeline-action {
-  margin-left: auto;
-}
-.patient-timeline-action [data-slot="button"] {
-  color: var(--medical-muted);
+.patient-timeline-context > span {
+  color: var(--medical-quiet);
 }
 .patient-timeline-summary {
-  margin: 2px 0 0;
   font-size: 14px;
   line-height: 20px;
-  overflow-wrap: anywhere;
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
 .patient-timeline-detail {
-  margin: 2px 0 0;
   color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
-  overflow-wrap: anywhere;
+}
+/* No report: a note in passing, not a line of its own weight. */
+.patient-record-page .patient-timeline-body > p.patient-timeline-note {
+  color: var(--medical-quiet);
+  font-size: 12px;
+  line-height: 20px;
+}
+.patient-timeline-side {
+  /* Its 28 px controls centred on the title's 20 px line. */
+  margin-block: -4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: start;
+  gap: 6px 12px;
+  min-width: 0;
+}
+.patient-timeline-state {
+  color: var(--medical-quiet);
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.patient-timeline-action [data-slot="button"] {
+  color: var(--medical-muted);
+}
+/* The visit the Synthèse shows in full: one line here. */
+.patient-timeline-event[data-compact] .patient-timeline-when {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 10px;
+}
+@container patient-page (min-width: 760px) {
+  .patient-timeline-event[data-compact] .patient-timeline-when {
+    display: grid;
+  }
+}
+/* Planned, and the date has gone by: set apart from what took place. */
+.patient-timeline-event[data-overdue] .patient-timeline-marker {
+  border-style: dashed;
+}
+.patient-timeline-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding-left: 36px;
+  color: var(--medical-quiet);
+  font-size: 12px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
 }
 .patient-timeline-pieces {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 8px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
