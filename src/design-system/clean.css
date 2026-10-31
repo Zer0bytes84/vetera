@@ -829,7 +829,7 @@
    arrows only show when there is something to scroll to; labels in sentence
    case; sections divided by one line, never a card inside a card. The scope
    is repeated because Premium styles these blocks with strong selectors. */
-:root[data-skin="clean"][data-skin][data-skin] .patient-record-page :is(.medical-patient-header, .medical-register, .medical-permanent),
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page :is(.medical-patient-header, .medical-safety, .medical-register, .medical-permanent),
 :root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators {
   border: 0 !important;
   border-radius: var(--clean-card-radius) !important;
@@ -842,6 +842,10 @@
   padding: 20px 24px !important;
   background: transparent !important;
 }
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .medical-header-actions { border-top-color: var(--clean-line-subtle); }
+/* The record's own panel token follows the Clean card, so the timeline's
+   markers and their ring sit on the card's exact tone in both modes. */
+:root[data-skin="clean"] .patient-record-page { --medical-panel: var(--clean-surface); }
 :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-avatar {
   border-color: var(--clean-line) !important;
   border-radius: var(--clean-card-radius) !important;
@@ -886,6 +890,11 @@
   font-weight: 600 !important;
   letter-spacing: var(--clean-tracking-title) !important;
   color: var(--clean-ink-strong) !important;
+}
+/* Nothing today, nothing to follow: the zero stays, in the quiet grey. */
+:root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators .patient-context-value.is-zero {
+  color: var(--clean-ink-quiet) !important;
+  font-weight: 500 !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] .patient-record-page .patient-record-indicators :is(.patient-context-heading, .medical-kpi-heading h2) {
   color: var(--clean-ink-quiet) !important;

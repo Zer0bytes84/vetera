@@ -262,6 +262,7 @@
   letter-spacing: -0.015em;
 }
 
+
 .patient-context-detail {
   min-width: 0;
   overflow: hidden;
@@ -426,7 +427,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px 24px;
   padding: 24px;
 }
 
@@ -501,13 +502,41 @@
 }
 
 .medical-status {
+  gap: 6px;
   font-weight: 500;
 }
 .medical-status-dot {
-  width: 4px;
-  height: 4px;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: currentColor;
+}
+
+/* Species, sex, sterilisation: facts about the animal, in the same grey. */
+.medical-tag {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 24px;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--medical-soft);
+  color: var(--medical-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.medical-identity .medical-identity-meta {
+  margin: 4px 0 0;
+  gap: 6px;
+  color: var(--medical-muted);
+  font-size: 14px;
+}
+.medical-identity .medical-identity-meta:empty {
+  display: none;
 }
 
 :is(.medical-tag-pill, .medical-id-chip) {
@@ -547,11 +576,16 @@
   line-height: 24px;
 }
 
+/* The record's actions: a bar of their own under the identity. */
 .medical-header-actions {
   display: flex;
+  flex: 1 1 100%;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  margin-inline: -24px;
+  padding: 16px 24px 0;
+  border-top: 1px solid var(--medical-border);
 }
 
 @layer components {
@@ -719,6 +753,14 @@
   height: 28px;
   color: var(--medical-muted);
   transition: color 160ms ease;
+}
+/* The weight trend in ink, a plain line: no tinted fill under it. */
+.medical-weight-sparkline polygon {
+  display: none;
+}
+.medical-weight-sparkline polyline {
+  stroke: currentColor;
+  stroke-width: 1.5;
 }
 @media (hover: hover) and (pointer: fine) {
   .medical-weight-sparkline:hover {
@@ -1162,7 +1204,7 @@
   line-height: 20px;
 }
 .medical-facts dd {
-  margin: 8px 0 0;
+  margin: 2px 0 0;
   color: var(--medical-ink);
   font-size: 14px;
   font-weight: 500;
@@ -1386,6 +1428,14 @@
   line-height: 20px;
   font-variant-numeric: tabular-nums;
 }
+/* 4/6 is a count, not a good mark: in grey until the record is complete. */
+.patient-record-page .medical-health-heading > span {
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  color: var(--medical-muted) !important;
+  font-weight: 500 !important;
+}
 .medical-health-progress {
   height: 4px;
   overflow: hidden;
@@ -1527,6 +1577,11 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
+/* "Modifier les informations": its label on the column's left edge. */
+.patient-record-page .medical-permanent-grid > section > [data-slot="button"] {
+  margin-inline-start: -8px;
+  padding-inline: 8px !important;
+}
 @container patient-page (min-width: 720px) {
   .medical-permanent-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1639,16 +1694,18 @@
 }
 
 
-/* Chronologie: a vertical thread. Each event hangs on it by a marker of its
-   kind; the papers it produced (prescription, invoice, result) hang under it. */
+/* Chronologie: a vertical thread. Each event hangs on it by a small neutral
+   marker whose glyph says its kind; the papers it produced (prescription,
+   invoice, result) hang under it. Colour is kept for states that need a look. */
 .patient-chronologie {
+  --timeline-thread: color-mix(in oklab, var(--medical-ink) 14%, transparent);
   margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid var(--medical-border);
   scroll-margin-top: 16px;
 }
 .patient-chronologie-title {
-  margin: 0 0 16px;
+  margin: 0 0 20px;
   color: var(--medical-ink);
   font-size: 16px;
   font-weight: 600;
@@ -1656,15 +1713,16 @@
 }
 .patient-timeline {
   display: grid;
-  gap: 20px;
+  gap: 24px;
   min-width: 0;
 }
 .patient-timeline-month-label {
-  margin: 0 0 8px;
-  color: var(--medical-quiet);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 18px;
+  margin: 0 0 4px;
+  padding-left: 36px;
+  color: var(--medical-ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
 }
 .patient-timeline-list {
   position: relative;
@@ -1675,32 +1733,35 @@
 .patient-timeline-list::before {
   content: "";
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 15px;
+  top: 16px;
+  bottom: 16px;
+  left: 11px;
   width: 1px;
-  background: var(--medical-border);
+  background: var(--timeline-thread);
 }
 .patient-timeline-event {
   position: relative;
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr);
   gap: 12px;
-  padding: 6px 0 14px;
+  padding: 10px 0;
 }
 .patient-timeline-marker {
   position: relative;
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
+  margin-top: 4px;
+  border: 1px solid var(--timeline-thread);
   border-radius: 999px;
+  background: var(--medical-panel);
+  color: var(--medical-muted);
   box-shadow: 0 0 0 4px var(--medical-panel);
 }
 .patient-timeline-body {
   min-width: 0;
-  padding-top: 5px;
 }
 .patient-timeline-head {
   display: flex;
@@ -1708,8 +1769,10 @@
   align-items: center;
   gap: 4px 10px;
   min-width: 0;
+  min-height: 32px;
 }
 .patient-timeline-date {
+  min-width: 112px;
   color: var(--medical-quiet);
   font-size: 12px;
   line-height: 20px;
@@ -1720,19 +1783,27 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
+  overflow-wrap: anywhere;
 }
-.patient-timeline-context {
-  color: var(--medical-muted);
+.patient-timeline-context,
+.patient-timeline-state {
+  color: var(--medical-quiet);
   font-size: 13px;
   line-height: 20px;
   overflow-wrap: anywhere;
 }
+.patient-timeline-state::before {
+  content: "· ";
+}
 .patient-timeline-action {
   margin-left: auto;
 }
+.patient-timeline-action [data-slot="button"] {
+  color: var(--medical-muted);
+}
 .patient-timeline-summary {
-  margin: 4px 0 0;
-  font-size: 13px;
+  margin: 2px 0 0;
+  font-size: 14px;
   line-height: 20px;
   overflow-wrap: anywhere;
   display: -webkit-box;
@@ -1743,15 +1814,15 @@
 .patient-timeline-detail {
   margin: 2px 0 0;
   color: var(--medical-muted);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 13px;
+  line-height: 20px;
   overflow-wrap: anywhere;
 }
 .patient-timeline-pieces {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -1763,18 +1834,23 @@
   gap: 6px;
   padding: 0 10px;
   border: 1px solid var(--medical-border);
-  border-radius: 8px;
-  background: var(--medical-soft);
+  border-radius: 6px;
+  background: var(--medical-panel);
   color: var(--medical-ink);
   font-size: 12px;
-  line-height: 18px;
+  line-height: 20px;
+}
+.patient-timeline-piece svg {
+  color: var(--medical-muted);
 }
 button.patient-timeline-piece {
   cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 @media (hover: hover) and (pointer: fine) {
   button.patient-timeline-piece:hover {
-    background: var(--medical-hover);
+    border-color: var(--timeline-thread);
+    background: var(--medical-soft);
   }
 }
 button.patient-timeline-piece:focus-visible {
@@ -1787,17 +1863,18 @@ button.patient-timeline-piece:focus-visible {
   display: grid;
   gap: 24px;
 }
+/* Prevention sits beside the last visit on a tone step, as tall as what it
+   holds: an empty list does not leave a column of blank under a rule. */
+.patient-overview-aside {
+  align-self: start;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: var(--medical-soft);
+}
 @container patient-page (min-width: 1040px) {
   .patient-overview {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    gap: 0;
-  }
-  .patient-overview-aside {
-    padding-left: 24px;
-    border-left: 1px solid var(--medical-border);
-  }
-  .patient-overview-main {
-    padding-right: 24px;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 32px;
   }
 }
 .patient-overview-last-meta {
@@ -1806,15 +1883,29 @@ button.patient-timeline-piece:focus-visible {
   align-items: center;
   gap: 8px;
   color: var(--medical-quiet);
-  font-size: 12px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
-.patient-overview-reason {
-  margin: 10px 0 0;
+/* The kind of visit is a fact, not a state: written, not a green tag. */
+.patient-overview-last-meta > [data-slot="badge"] {
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  color: var(--medical-muted) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+}
+.patient-overview-last-meta > [data-slot="badge"]::before {
+  display: none !important;
+}
+.patient-record-page .patient-overview-main .patient-overview-last .patient-overview-reason {
+  margin: 6px 0 0;
   color: var(--medical-ink);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   line-height: 24px;
+  letter-spacing: -0.01em;
 }
 .patient-overview-soap {
   display: grid;
@@ -1827,15 +1918,13 @@ button.patient-timeline-piece:focus-visible {
   color: var(--medical-quiet);
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 .patient-overview-soap dd {
   display: -webkit-box;
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   overflow: hidden;
   color: var(--medical-ink);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 20px;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -1893,33 +1982,41 @@ button.patient-timeline-piece:focus-visible {
   line-height: 22px;
 }
 
-/* Safety: the allergy alone is red; treatment and history stay neutral. */
+/* Safety: one card like the others. The allergy alone is red, as a band
+   across its top; treatment, restraint and history follow in columns, an
+   absence in a paler grey than a value. */
 .medical-safety {
   display: grid;
-  gap: 12px;
   min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--medical-border);
+  border-radius: 12px;
+  background: var(--medical-panel);
 }
 .medical-safety-allergy {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid var(--medical-danger-border);
-  border-left: 4px solid var(--medical-danger);
-  border-radius: 10px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--medical-danger-border);
   background: var(--medical-danger-bg);
   color: var(--medical-danger);
 }
-.medical-safety-allergy strong {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 18px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.medical-safety-allergy > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
 }
-.medical-safety-allergy p {
-  margin: 2px 0 0;
+.medical-safety-allergy strong {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+}
+/* Scoped past Clean, which gives every plain paragraph its body grey. */
+.patient-record-page .medical-safety .medical-safety-allergy > div > p {
+  margin: 0;
+  color: inherit;
   font-size: 16px;
   font-weight: 600;
   line-height: 24px;
@@ -1927,18 +2024,22 @@ button.patient-timeline-piece:focus-visible {
 }
 .medical-safety-quiet {
   margin: 0;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--medical-border);
   color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
 }
 .medical-safety-facts {
   display: grid;
-  gap: 8px 24px;
+  gap: 16px 24px;
   margin: 0;
+  padding: 16px 24px;
 }
 @container patient-page (min-width: 760px) {
   .medical-safety-facts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
   }
 }
 .medical-safety-facts > div {
@@ -1947,16 +2048,22 @@ button.patient-timeline-piece:focus-visible {
 .medical-safety-facts dt {
   color: var(--medical-quiet);
   font-size: 12px;
-  line-height: 18px;
+  font-weight: 500;
+  line-height: 20px;
 }
 .medical-safety-facts dd {
   margin: 2px 0 0;
-  color: var(--medical-muted);
-  font-size: 13px;
+  color: var(--medical-ink);
+  font-size: 14px;
   line-height: 20px;
   overflow-wrap: anywhere;
 }
+.medical-safety-facts dd.is-empty {
+  color: var(--medical-quiet);
+}
 .medical-safety-facts ul {
+  display: grid;
+  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1984,7 +2091,14 @@ button.patient-timeline-piece:focus-visible {
   font-size: 12px;
   cursor: pointer;
   text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
   text-underline-offset: 3px;
+  transition: color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .medical-prevention-header button:hover {
+    color: var(--medical-ink);
+  }
 }
 .medical-prevention-list {
   margin: 0;
@@ -1998,7 +2112,7 @@ button.patient-timeline-piece:focus-visible {
   padding: 8px 0;
 }
 .medical-prevention-list > li + li {
-  border-top: 1px solid var(--medical-border);
+  border-top: 1px solid color-mix(in oklab, var(--medical-ink) 8%, transparent);
 }
 .medical-prevention-label {
   color: var(--medical-ink);

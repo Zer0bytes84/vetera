@@ -1,4 +1,5 @@
 import { AlertTriangle } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import type { Patient } from "@/types/db";
 import type { HealthCardTreatment } from "../health-card/health-card-data";
 import { isClinicalSignal, recordDate } from "./medical-record-summary";
@@ -33,7 +34,7 @@ export function PatientSafetyZone({ patient, treatments }: PatientSafetyZoneProp
     <section className="medical-safety" aria-label="Sécurité du patient">
       {hasAllergy ? (
         <div className="medical-safety-allergy" role="alert">
-          <AlertTriangle size={20} className="shrink-0" aria-hidden="true" />
+          <AlertTriangle size={18} className="shrink-0" aria-hidden="true" />
           <div className="min-w-0">
             <strong>Allergie</strong>
             <p>{allergies}</p>
@@ -47,7 +48,7 @@ export function PatientSafetyZone({ patient, treatments }: PatientSafetyZoneProp
       <dl className="medical-safety-facts">
         <div>
           <dt>Traitement en cours</dt>
-          <dd>
+          <dd className={cn(!treatments.items.length && "is-empty")}>
             {treatments.items.length ? (
               <ul>
                 {treatments.items.map((treatment) => (
@@ -62,7 +63,7 @@ export function PatientSafetyZone({ patient, treatments }: PatientSafetyZoneProp
         </div>
         <div>
           <dt>Contention</dt>
-          <dd>{restraint || "Non renseignée"}</dd>
+          <dd className={cn(!restraint && "is-empty")}>{restraint || "Non renseignée"}</dd>
         </div>
         {isClinicalSignal(chronic) ? (
           <div>

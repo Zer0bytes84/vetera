@@ -55,7 +55,8 @@ type TimelineEntry = {
   context?: string;
   summary: string;
   summaryDetail?: string;
-  statusBadge?: { label: string; className: string };
+  /** Quiet: the state an event normally ends in, read as plain text; only the others stay a tag. */
+  statusBadge?: { label: string; className: string; quiet?: boolean };
   weightEntry?: WeightEntry;
   /** Prescriptions, invoices and results this event produced. */
   pieces?: TimelinePiece[];
@@ -76,19 +77,6 @@ const PIECE_ICON: Record<TimelinePieceKind, typeof FileText> = {
   invoice: ReceiptText,
   result: ClipboardText,
   document: FileText,
-};
-
-const KIND_COLOR: Record<TimelineKind, string> = {
-  consultation:
-    "bg-sky-50 text-sky-700 border border-sky-200/80 shadow-xs dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/40",
-  note:
-    "bg-amber-50 text-amber-700 border border-amber-200/80 shadow-xs dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/40",
-  vaccination:
-    "bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40",
-  weight:
-    "bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/40",
-  piece:
-    "bg-zinc-50 text-zinc-700 border border-zinc-200/80 shadow-xs dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-700/60",
 };
 
 interface PatientTimelineProps {
@@ -218,6 +206,7 @@ function buildEntries(
       statusBadge: {
         label: "Validée",
         className: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+        quiet: true,
       },
     });
   }
@@ -231,7 +220,7 @@ function buildEntries(
       label: TYPE_LABEL[apt.type],
       context: apt.reason?.trim() || undefined,
       ...consultationSummary(apt, getSoap(apt.id)),
-      statusBadge: { label: status.label, className: status.className },
+      statusBadge: { label: status.label, className: status.className, quiet: apt.status === "completed" },
       pieces: attached.get(apt.id),
     });
   }
@@ -260,6 +249,7 @@ function buildEntries(
         label: "Administré",
         className:
           "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+        quiet: true,
       },
     });
   }
@@ -277,6 +267,7 @@ function buildEntries(
         label: "Enregistrée",
         className:
           "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+        quiet: true,
       },
       weightEntry: w,
     });
@@ -436,16 +427,13 @@ export function PatientTimeline({
                     entry.kind === "consultation" || entry.kind === "note"
                   );
                   const muted = entry.summary === NO_REPORT;
+                  // What happened leads (the reason, the vaccine, the kind of note);
+                  // the type of event follows it in grey. A weight's context is a score.
+                  const lead = entry.kind !== "weight" && entry.context;
                   return (
                     <li className="patient-timeline-event" key={entry.id} data-kind={entry.kind}>
-                      <span
-                        className={cn(
-                          "patient-timeline-marker patient-timeline-kind-icon",
-                          KIND_COLOR[entry.kind]
-                        )}
-                        aria-hidden="true"
-                      >
-                        <Icon className="size-4" weight="duotone" />
+                      <span className="patient-timeline-marker" aria-hidden="true">
+                        <Icon className="size-3.5" />
                       </span>
                       <div className="patient-timeline-body">
                         <div className="patient-timeline-head">
@@ -453,11 +441,15 @@ export function PatientTimeline({
                             {dateParts.date}
                             {dateParts.time ? ` · ${dateParts.time}` : ""}
                           </time>
-                          <span className="patient-timeline-title">{entry.label}</span>
-                          {entry.context ? (
+                          <span className="patient-timeline-title">{lead || entry.label}</span>
+                          {lead ? (
+                            <span className="patient-timeline-context">{entry.label}</span>
+                          ) : entry.context ? (
                             <span className="patient-timeline-context">{entry.context}</span>
                           ) : null}
-                          {entry.statusBadge ? (
+                          {entry.statusBadge?.quiet ? (
+                            <span className="patient-timeline-state">{entry.statusBadge.label}</span>
+                          ) : entry.statusBadge ? (
                             <Badge
                               className={cn(
                                 "rounded-full px-2 py-0.5 font-medium t-12",

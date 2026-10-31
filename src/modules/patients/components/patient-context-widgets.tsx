@@ -102,6 +102,8 @@ export function PatientContextWidgets({
           className={cn(
             "patient-context-value text-2xl font-bold tracking-tight text-foreground",
             appointmentsError ? "patient-context-date" : "",
+            // A zero is printed as a zero, without the weight of a figure.
+            !appointmentsLoading && !appointmentsError && visitsToday.length === 0 ? "is-zero" : "",
             visitsToday.length > 0 ? "text-sky-600 dark:text-sky-400" : ""
           )}
         >
@@ -133,6 +135,7 @@ export function PatientContextWidgets({
             className={cn(
               "patient-context-value text-2xl font-bold tracking-tight text-foreground",
               tasksError ? "patient-context-date" : "",
+              !tasksLoading && !tasksError && tasks.length === 0 ? "is-zero" : "",
               tasks.length > 0 ? "text-amber-600 dark:text-amber-400" : ""
             )}
           >

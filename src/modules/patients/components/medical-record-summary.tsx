@@ -77,21 +77,12 @@ export function PatientIdentity({
               {patient.reference}
             </span>
           ) : null}
-          <span className={cn("medical-status shadow-xs", status.className)}>
-            <span className="relative flex size-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-current" />
-              <span className="relative inline-flex rounded-full size-2 bg-current" />
-            </span>
+          {/* The status is the only tag with a hue; species and sex are facts. */}
+          <span className={cn("medical-status", status.className)}>
+            <span className="medical-status-dot" aria-hidden="true" />
             {status.label}
           </span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border shadow-xs",
-              speciesTheme.badgeBg,
-              speciesTheme.badgeText,
-              speciesTheme.badgeBorder
-            )}
-          >
+          <span className="medical-tag">
             <HugeiconsIcon
               icon={getSpeciesGlyph(patient.species)}
               size={13}
@@ -102,23 +93,26 @@ export function PatientIdentity({
             {patient.species}
           </span>
           {patient.sex && (
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border shadow-xs",
-                patient.sex === "M"
-                  ? "bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/40"
-                  : "bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/40"
-              )}
-            >
+            <span className="medical-tag">
               {sexLabel} {sexSymbol}
             </span>
           )}
           {patient.sterilized ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/40 shadow-xs">
+            <span className="medical-tag">
               {patient.sex === "F" ? "Stérilisée" : "Stérilisé"}
             </span>
           ) : null}
         </div>
+
+        <p className="medical-identity-meta">
+          {patient.breed ? (
+            <span>{patient.breed}</span>
+          ) : null}
+          {patient.breed && ageLabel ? <span aria-hidden="true">·</span> : null}
+          {ageLabel ? (
+            <span>{ageLabel}</span>
+          ) : null}
+        </p>
 
         {owner ? (
           <p className="medical-identity-owner">
@@ -126,18 +120,6 @@ export function PatientIdentity({
             <strong>{`${owner.firstName} ${owner.lastName}`.trim()}</strong>
           </p>
         ) : null}
-
-        <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground my-2 font-normal">
-          {patient.breed ? (
-            <span className="font-medium text-foreground/80">{patient.breed}</span>
-          ) : null}
-          {patient.breed && ageLabel ? <span aria-hidden="true" className="text-muted-foreground/50">·</span> : null}
-          {ageLabel ? (
-            <span className="inline-flex items-center gap-1 text-muted-foreground">
-              {ageLabel}
-            </span>
-          ) : null}
-        </p>
 
         {showIdentifiers ? (
         <div className="medical-record-id flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
