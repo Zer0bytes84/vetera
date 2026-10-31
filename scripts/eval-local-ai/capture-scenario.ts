@@ -117,9 +117,11 @@ async function run() {
     return;
   }
   // Patient record: header, safety, synthesis, chronology, reference search.
+  // The requested theme is set first, and the viewer's own put back before "restored".
   if (config.scenario === "dossier") {
+    if (!(await prepare())) return;
     const { captureDossier } = await import("./capture-dossier");
-    await captureDossier(config.signal, config.query);
+    await captureDossier(config.signal, config.query, restore);
     return;
   }
   // Agenda « Ouvrir »: a completed then a new appointment opened in Flux.

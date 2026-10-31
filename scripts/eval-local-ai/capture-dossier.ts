@@ -12,7 +12,7 @@ const setInput = (input: HTMLInputElement, value: string) => {
 };
 const textOf = (selector: string) => document.querySelector<HTMLElement>(selector)?.innerText.trim() ?? null;
 
-export async function captureDossier(signal: string, query: string) {
+export async function captureDossier(signal: string, query: string, restore: () => void = () => {}) {
   const [patientId, searches = ""] = query.split("|");
   // Red console lines met along the way are kept with the measures.
   const consoleErrors: string[] = (window as unknown as { __CAPTURE_ERRORS__?: string[] }).__CAPTURE_ERRORS__ ?? [];
@@ -44,11 +44,29 @@ export async function captureDossier(signal: string, query: string) {
     prevention: textOf(".medical-prevention"),
     tabs: [...document.querySelectorAll('[role="tab"]')].map((tab) => tab.textContent?.trim()),
   });
+  // The synthesis: the record tabs, the last visit and prevention.
+  document.querySelector(".medical-register")?.scrollIntoView({ block: "start" });
+  // Computed ink of the parts the finish pass tunes, read from the page itself.
+  const ink = (selector: string) => {
+    const element = document.querySelector(selector);
+    if (!element) return null;
+    const style = getComputedStyle(element);
+    return { color: style.color, size: style.fontSize, weight: style.fontWeight, family: style.fontFamily.split(",")[0] };
+  };
+  await shot("dossier-synthese", {
+    reason: ink(".patient-overview-reason"),
+    zero: ink(".patient-context-value"),
+    timelineTitle: ink(".patient-timeline-title"),
+    piece: ink(".patient-timeline-piece"),
+  });
   document.querySelector("#patient-chronologie")?.scrollIntoView({ block: "start" });
   await shot("dossier-chronologie", {
     events: document.querySelectorAll("#patient-chronologie .patient-timeline-event").length,
     pieces: [...document.querySelectorAll("#patient-chronologie .patient-timeline-piece")].map((piece) => (piece as HTMLElement).innerText.replace(/\s+/g, " ").trim()),
   });
+  // The foot of the record: permanent information, under the chronology.
+  scroller?.scrollTo({ top: scroller.scrollHeight });
+  await shot("dossier-bas", { permanent: textOf(".medical-permanent") });
 
   for (const search of searches.split(",").filter(Boolean)) {
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
@@ -65,5 +83,6 @@ export async function captureDossier(signal: string, query: string) {
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     await sleep(600);
   }
+  restore();
   await writeTextFile(signal, "restored");
 }
