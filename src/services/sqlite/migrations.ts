@@ -145,6 +145,13 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   { version: "039", name: "visit-flow", sql: VISIT_FLOW_MIGRATION_SQL },
   { version: "040", name: "visit-flow-no-charge", sql: VISIT_FLOW_NO_CHARGE_MIGRATION_SQL },
   { version: "041", name: "patient-references", sql: PATIENT_REFERENCES_MIGRATION_SQL },
+  {
+    // How to hold the animal safely (muzzle, two people, sedation first).
+    version: "042",
+    name: "patient-restraint",
+    skipIfColumnExists: { table: "patients", column: "restraint" },
+    sql: "ALTER TABLE patients ADD COLUMN restraint TEXT;",
+  },
 ] as const;
 import { DISPENSING_MIGRATION_SQL } from "@/modules/stock/dispensing-migration";
 import { MOVEMENT_SNAPSHOT_MIGRATION_SQL } from "@/modules/stock/movement-snapshot-migration";

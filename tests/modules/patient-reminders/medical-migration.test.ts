@@ -27,7 +27,7 @@ it("migre les rappels patients et leur historique tout en conservant les rappels
   const { db, adapter } = await oldDatabase();
   const before = db.prepare("SELECT * FROM tasks").all();
   const typeBefore = db.prepare("SELECT name,interval_months,active FROM reminder_types WHERE id='vaccination'").get();
-  await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["036", "037", "038", "039", "040", "041"]);
+  await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["036", "037", "038", "039", "040", "041", "042"]);
   expect(db.prepare("SELECT * FROM tasks").all()).toEqual(before);
   expect(db.prepare("SELECT name,interval_months,active FROM reminder_types WHERE id='vaccination'").get()).toEqual(typeBefore);
   expect(db.prepare("SELECT patient_id,client_id,type,statut,intervalle_mois FROM medical_reminders").get()).toEqual({ patient_id: "patient", client_id: "owner", type: "vaccin", statut: "termine", intervalle_mois: 6 });
@@ -51,12 +51,14 @@ it("ouvre une base en migration 036 sans rejouer les rappels et conserve ses don
   const tables = ["tasks", "patients", "owners", "reminder_types", "patient_reminders", "medical_reminders", "medical_reminder_history"];
   const before = tables.map((table) => db.prepare(`SELECT * FROM ${table} ORDER BY id`).all());
 
-  await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["037", "038", "039", "040", "041"]);
+  await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["037", "038", "039", "040", "041", "042"]);
 
   for (const [index, table] of tables.entries()) {
-    expect(db.prepare(`SELECT * FROM ${table} ORDER BY id`).all()).toEqual(before[index]);
+    // Migration 042 adds the empty restraint column to patients, nothing else.
+    const expected = table === "patients" ? before[index].map((row) => ({ ...row, restraint: null })) : before[index];
+    expect(db.prepare(`SELECT * FROM ${table} ORDER BY id`).all()).toEqual(expected);
   }
-  expect(db.prepare("PRAGMA user_version").get()?.user_version).toBe(41);
+  expect(db.prepare("PRAGMA user_version").get()?.user_version).toBe(42);
   expect(db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='documents'").get()?.name).toBe("documents");
   await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual([]);
 });
@@ -77,5 +79,5 @@ it("annule sans perte une migration interrompue et la rejoue au démarrage suiva
   await expect(runSqliteMigrations(failing, SQLITE_MIGRATIONS)).rejects.toMatchObject({ version: "036" });
   expect(db.prepare("SELECT name FROM pragma_table_info('reminder_types') WHERE name='libelle'").all()).toEqual([]);
   expect(db.prepare("SELECT status FROM tasks WHERE id='manual'").get()?.status).toBe("todo");
-  await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["036", "037", "038", "039", "040", "041"]);
+  await expect(runSqliteMigrations(adapter, SQLITE_MIGRATIONS)).resolves.toEqual(["036", "037", "038", "039", "040", "041", "042"]);
 });

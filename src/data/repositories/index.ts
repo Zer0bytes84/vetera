@@ -97,6 +97,7 @@ const rowToPatient = (row: Record<string, unknown>): Patient => ({
     : undefined,
   generalNotes: row.general_notes ? String(row.general_notes) : undefined,
   reference: row.reference ? String(row.reference) : undefined,
+  restraint: row.restraint ? String(row.restraint) : undefined,
   createdAt: String(row.created_at ?? new Date().toISOString()),
 });
 

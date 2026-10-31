@@ -125,7 +125,11 @@ describe("mise à niveau", () => {
     const snapshot = () => Object.fromEntries(tables.map((t) => [t, sqlite.prepare(`SELECT * FROM "${t}" ORDER BY rowid`).all()]));
     const before = snapshot();
     await runSqliteMigrations(db, SQLITE_MIGRATIONS);
-    expect(snapshot()).toEqual(before);
+    // Migration 042 adds the empty restraint column to patients, nothing else.
+    expect(snapshot()).toEqual({
+      ...before,
+      patients: before.patients.map((row) => ({ ...row, restraint: null })),
+    });
   });
 
   it("donne leur étape aux visites existantes sans inventer d'historique", async () => {

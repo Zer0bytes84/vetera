@@ -66,10 +66,26 @@ L'ordre est le suivant :
 
 ## Ce qui n'est pas prouvé
 
-- **Contention.** Aucun champ n'existe dans la base. L'ajouter est un changement de schéma, qui n'est pas accordé ; la zone sécurité ne l'affiche donc pas.
 - **Documents déjà finalisés.** Leur PDF et leurs valeurs sont figés et ne recevront pas la référence. Seuls les nouveaux documents l'auront.
 - **PDF imprimés.** Le rendu des PDF (facture, ordonnance, carnet, export, documents) n'a pas été contrôlé visuellement. Seules les données et les types ont été vérifiés.
 - **Prévention avec des rappels réels.** Elle n'a été vue que vide pour Kejounti. Le cas avec rappels est couvert par les tests unitaires.
 - **Captures Stitch v5.** Elles sont introuvables sur ce Mac ; la hiérarchie suit la consigne écrite.
 - **Mode sombre et largeur mobile.** Ils n'ont pas été capturés.
 - **Instance de l'utilisateur.** Celle qui tourne sur 5180 a la nouvelle interface par rechargement à chaud. Elle n'a pas été relancée.
+
+## Ajout : la contention (migration 042)
+
+L'utilisateur a accordé le changement de schéma. La migration 042 ajoute la colonne `patients.restraint` (TEXT, vide par défaut). Elle se saisit dans « Modifier le dossier », champ « Contention ». La zone sécurité l'affiche en neutre, sous le traitement en cours (capture `dossier-haut-contention.jpg`, prise sur une copie).
+
+**Ordre réel des opérations, à noter.** L'instance `tauri dev` de l'utilisateur (port 5180) a rechargé le code et appliqué elle-même la migration 042 à la base réelle à 12:59:51, avant ma sauvegarde et mon test sur copie. Le contrôle fait ensuite donne :
+
+- `integrity_check` ok et `foreign_key_check` vide ;
+- 11 patients, tous avec `restraint` vide ;
+- les patients sont identiques, colonne par colonne, à la sauvegarde d'avant 041 (hors `updated_at`, non comparé) ;
+- les seuls écarts de comptage sont attendus : 2 migrations, le compteur et 11 références.
+
+Le même enchaînement 041+042, rejoué sur une copie, est vert et idempotent. Une sauvegarde postérieure est dans `baitari-apres-042.db`.
+
+**Leçon.** Une migration ajoutée au registre s'applique dès que l'instance de l'utilisateur se recharge. Il faut sauvegarder et tester sur copie **avant** d'enregistrer la migration dans `migrations.ts`.
+
+**Hors champ, constaté en passant.** Vider un champ texte du dossier (allergies, antécédents, contention…) ne l'efface pas : la valeur vide devient `undefined`, et l'écriture générique l'ignore. Ce comportement existait déjà ; il n'est pas corrigé ici.

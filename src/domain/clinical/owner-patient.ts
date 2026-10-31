@@ -142,6 +142,7 @@ export function normalizePatientDraft(
     dateOfBirth,
     allergies: trimOptional(patient.allergies),
     chronicConditions: trimOptional(patient.chronicConditions),
+    restraint: trimOptional(patient.restraint),
     generalNotes: trimOptional(patient.generalNotes),
     chipNumber: trimOptional(patient.chipNumber),
     tattooNumber: trimOptional(patient.tattooNumber),

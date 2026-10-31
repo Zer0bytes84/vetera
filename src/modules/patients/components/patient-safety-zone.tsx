@@ -20,11 +20,13 @@ function treatmentLine(treatment: HealthCardTreatment) {
 
 /**
  * What must be known before touching the animal. The allergy dominates and is
- * the only red surface; the current treatment and the history stay neutral.
+ * the only red surface; the current treatment, the restraint and the history
+ * stay neutral.
  */
 export function PatientSafetyZone({ patient, treatments }: PatientSafetyZoneProps) {
   const allergies = patient.allergies?.trim();
   const chronic = patient.chronicConditions?.trim();
+  const restraint = patient.restraint?.trim();
   const hasAllergy = isClinicalSignal(allergies);
 
   return (
@@ -57,6 +59,10 @@ export function PatientSafetyZone({ patient, treatments }: PatientSafetyZoneProp
               "Aucun"
             )}
           </dd>
+        </div>
+        <div>
+          <dt>Contention</dt>
+          <dd>{restraint || "Non renseignée"}</dd>
         </div>
         {isClinicalSignal(chronic) ? (
           <div>

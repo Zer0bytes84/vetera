@@ -160,6 +160,7 @@ type PatientProfileDraft = Pick<
   | "breed"
   | "chipNumber"
   | "chronicConditions"
+  | "restraint"
   | "dateOfBirth"
   | "generalNotes"
   | "name"
@@ -176,6 +177,7 @@ function createProfileDraft(patient: Patient): PatientProfileDraft {
     breed: patient.breed ?? "",
     chipNumber: patient.chipNumber ?? "",
     chronicConditions: patient.chronicConditions ?? "",
+    restraint: patient.restraint ?? "",
     dateOfBirth: patient.dateOfBirth ?? "",
     generalNotes: patient.generalNotes ?? "",
     name: patient.name,
@@ -494,6 +496,7 @@ export function PatientDetailPage({
         breed: profileDraft.breed?.trim() || undefined,
         chipNumber: profileDraft.chipNumber?.trim() || undefined,
         chronicConditions: profileDraft.chronicConditions?.trim() || undefined,
+        restraint: profileDraft.restraint?.trim() || undefined,
         dateOfBirth: profileDraft.dateOfBirth || undefined,
         generalNotes: profileDraft.generalNotes?.trim() || undefined,
         name: profileDraft.name.trim(),
@@ -861,6 +864,20 @@ export function PatientDetailPage({
                   }
                   placeholder="Aucun antécédent signalé"
                   value={profileDraft.chronicConditions}
+                />
+              </label>
+              <label className="grid gap-2 text-sm md:col-span-2">
+                <span className="font-medium">Contention</span>
+                <Input
+                  onChange={(event) =>
+                    setProfileDraft((current) =>
+                      current
+                        ? { ...current, restraint: event.target.value }
+                        : current
+                    )
+                  }
+                  placeholder="Muselière, à deux personnes, sédation avant soins…"
+                  value={profileDraft.restraint}
                 />
               </label>
               <label className="grid gap-2 text-sm md:col-span-2 xl:col-span-4">
