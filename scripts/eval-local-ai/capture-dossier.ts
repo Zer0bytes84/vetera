@@ -1,0 +1,67 @@
+// Patient record capture: the record of one patient (header, safety zone,
+// synthesis, chronology), then the command palette searched by its reference
+// in each typed form. query = "<patient id>|<search 1>,<search 2>,…".
+// Each state is photographed by the shell ("ready:<name>" → "done:<name>")
+// and measured in the page; nothing is written to the database.
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { ensureSession, sleep, waitFor } from "./capture-dictee";
+
+const setInput = (input: HTMLInputElement, value: string) => {
+  Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+};
+const textOf = (selector: string) => document.querySelector<HTMLElement>(selector)?.innerText.trim() ?? null;
+
+export async function captureDossier(signal: string, query: string) {
+  const [patientId, searches = ""] = query.split("|");
+  const results: Record<string, unknown>[] = [];
+  const shot = async (name: string, measures: Record<string, unknown> = {}) => {
+    await sleep(700);
+    results.push({ name, ...measures });
+    await writeTextFile(`${signal}.results.json`, JSON.stringify(results, null, 2));
+    await writeTextFile(signal, `ready:${name}`);
+    for (let i = 0; i < 1200 && (await readTextFile(signal).catch(() => "")).trim() !== `done:${name}`; i++) await sleep(250);
+  };
+  await ensureSession();
+  localStorage.setItem("baitari:ai-models-onboarding-dismissed", "true");
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  await getCurrentWindow().setFocus();
+
+  location.hash = `#/patient/${encodeURIComponent(patientId)}`;
+  await waitFor(() => document.querySelector(".medical-patient-header"), 60_000);
+  await waitFor(() => document.querySelector("#patient-chronologie .patient-timeline-event"), 30_000).catch(() => null);
+  await sleep(2500);
+  const scroller = document.querySelector<HTMLElement>('[data-slot="shell-scroll-panel"]');
+  scroller?.scrollTo({ top: 0 });
+  await shot("dossier-haut", {
+    name: textOf(".medical-identity-name"),
+    reference: textOf(".medical-reference"),
+    owner: textOf(".medical-identity-owner strong"),
+    allergy: textOf(".medical-safety-allergy p"),
+    safety: textOf(".medical-safety"),
+    prevention: textOf(".medical-prevention"),
+    tabs: [...document.querySelectorAll('[role="tab"]')].map((tab) => tab.textContent?.trim()),
+  });
+  document.querySelector("#patient-chronologie")?.scrollIntoView({ block: "start" });
+  await shot("dossier-chronologie", {
+    events: document.querySelectorAll("#patient-chronologie .patient-timeline-event").length,
+    pieces: [...document.querySelectorAll("#patient-chronologie .patient-timeline-piece")].map((piece) => (piece as HTMLElement).innerText.replace(/\s+/g, " ").trim()),
+  });
+
+  for (const search of searches.split(",").filter(Boolean)) {
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
+    const input = await waitFor(() => {
+      const found = document.querySelector<HTMLInputElement>("[data-command-palette-input]");
+      if (!found) window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
+      return found;
+    });
+    setInput(input, search);
+    await sleep(1500);
+    const first = document.querySelector<HTMLElement>('[cmdk-item][data-value^="patient:"]');
+    await shot(`palette-${search}`, { search, firstPatient: first?.innerText.replace(/\s+/g, " ").trim() ?? null });
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await sleep(600);
+  }
+  await writeTextFile(signal, "restored");
+}

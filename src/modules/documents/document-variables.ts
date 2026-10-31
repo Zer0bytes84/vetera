@@ -9,6 +9,7 @@ export interface DocumentVariable {
 
 export const DOCUMENT_VARIABLES: readonly DocumentVariable[] = [
   { key: "patient.nom", label: "Nom du patient", group: "Patient" },
+  { key: "patient.reference", label: "Référence patient", group: "Patient" },
   { key: "patient.espece", label: "Espèce", group: "Patient" },
   { key: "patient.race", label: "Race", group: "Patient" },
   { key: "patient.sexe", label: "Sexe", group: "Patient" },

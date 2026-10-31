@@ -5,7 +5,7 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro" | "tableau" | "ports" | "agenda" | "factures" | "lot3" | "workflow" | "etats";
+  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro" | "tableau" | "ports" | "agenda" | "factures" | "lot3" | "workflow" | "etats" | "dossier";
   /** "dictee": generator preference set before the dictation (gemma3 or gemma4). */
   generator?: string;
   /** "outils-ia": position the switch must reach ("on" = new assistant version). */
@@ -114,6 +114,12 @@ async function run() {
   if (config.scenario === "factures") {
     const { captureFactures } = await import("./capture-factures");
     await captureFactures(config.signal, config.query);
+    return;
+  }
+  // Patient record: header, safety, synthesis, chronology, reference search.
+  if (config.scenario === "dossier") {
+    const { captureDossier } = await import("./capture-dossier");
+    await captureDossier(config.signal, config.query);
     return;
   }
   // Agenda « Ouvrir »: a completed then a new appointment opened in Flux.

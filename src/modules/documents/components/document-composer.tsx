@@ -44,7 +44,7 @@ export function DocumentComposer({ open, patientId, consultationId, onClose, onC
     setPdf(null);
     if (!preparation) return;
     const timer = setTimeout(() => {
-      void buildManagedDocumentPdf({ title, content, clinic: preparation.clinic }).then((document) => {
+      void buildManagedDocumentPdf({ title, content, clinic: preparation.clinic, patientReference: preparation.values["patient.reference"] || undefined }).then((document) => {
         if (active) setPdf(document.output("datauristring"));
       }).catch((cause) => { if (active) setError(cause.message); });
     }, 250);

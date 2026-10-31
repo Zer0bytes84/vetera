@@ -189,7 +189,7 @@ function drawIdentity(page: Page, card: HealthCard): number {
   page.style(22, true, INK);
   page.text(identity.name, x, top + 8.5, width);
   page.style(10, false, SOFT);
-  page.text([identity.species, identity.breed, identity.sexLabel].filter(Boolean).join(" · "), x, top + 14.5, width);
+  page.text([identity.reference, identity.species, identity.breed, identity.sexLabel].filter(Boolean).join(" · "), x, top + 14.5, width);
 
   const facts: [string, string][] = [
     ["Âge", identity.ageLabel ?? "Non renseigné"],

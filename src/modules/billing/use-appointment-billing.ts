@@ -15,6 +15,7 @@ import type { Appointment, Owner, Patient } from "@/types/db";
 import { formatOwnerName, type BillingItem } from "@/modules/clinique/components/clinique-shared";
 import type { useAppointmentsRepository } from "@/data/repositories";
 import type { ExistingInvoice } from "./billing-draft";
+import { patientDocumentName } from "@/modules/patients/reference/reference";
 
 /**
  * Billing of a visit, shared by Clinique and Flux so both bill the same way:
@@ -129,13 +130,13 @@ export function useAppointmentBilling({
               "Facture enregistrée introuvable. Réessayez depuis Finances."
             );
           const document = invoice
-            ? invoiceDocument(invoice, patient?.name || "Patient")
+            ? invoiceDocument(invoice, patient ? patientDocumentName(patient) : "Patient")
             : {
                 settings: await getInvoiceSettings(),
                 data: {
                   number: invoiceNumber,
                   date: new Date(),
-                  patientName: patient?.name || "Patient",
+                  patientName: patient ? patientDocumentName(patient) : "Patient",
                   ownerName: formatOwnerName(owner),
                   items: items.map((item) => ({
                     description: item.desc,

@@ -9,6 +9,7 @@ import {
 } from "./document-domain";
 import { MANAGED_DOCUMENT_DEFAULTS } from "./document-migration";
 import { DOCUMENT_MISSING_VALUE, renderDocumentVariables, validateDocumentTemplate } from "./document-variables";
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 
 export type DocumentRow = Record<string, unknown>;
 const TABLES = ["users", "sessions", "patients", "owners", "appointments", "consultation_soaps", "prescriptions", "prescription_items", "notes", "app_settings", "document_templates", "documents", "document_events", "document_versions"] as const;
@@ -34,7 +35,9 @@ export function sqliteDocumentPersistence(persistence: CarePersistence): Documen
       async list(table, filters = {}) {
         const keys = Object.keys(filters);
         check(table, keys);
-        return db.select<DocumentRow[]>(`SELECT * FROM ${table}${keys.length ? ` WHERE ${keys.map((key) => `${key} = ?`).join(" AND ")}` : ""}`, Object.values(filters));
+        // A patient is read with its reference, kept in its own table.
+        const source = table === "patients" ? PATIENTS_WITH_REFERENCE_SQL : `SELECT * FROM ${table}`;
+        return db.select<DocumentRow[]>(`${source}${keys.length ? ` WHERE ${keys.map((key) => `${table}.${key} = ?`).join(" AND ")}` : ""}`, Object.values(filters));
       },
       async insert(table, row) {
         const keys = Object.keys(row);
@@ -321,7 +324,7 @@ export function createDocumentStore(
         const ownerName = owner ? `${text(owner.first_name)} ${text(owner.last_name)}`.trim() : "";
         const vetName = text(vet?.display_name);
         const values: Record<string, string> = {
-          "patient.nom": text(patient.name), "patient.espece": text(patient.species), "patient.race": text(patient.breed),
+          "patient.nom": text(patient.name), "patient.reference": text(patient.reference), "patient.espece": text(patient.species), "patient.race": text(patient.breed),
           "patient.sexe": patient.sex === "M" ? "Mâle" : patient.sex === "F" ? "Femelle" : "",
           "patient.naissance": dateText(patient.date_of_birth), "patient.identification": text(patient.chip_number) || text(patient.tattoo_number),
           "client.nom": ownerName, "proprietaire.nom": ownerName, "client.telephone": text(owner?.phone), "client.email": text(owner?.email),

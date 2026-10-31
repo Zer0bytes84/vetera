@@ -3,7 +3,6 @@ import {
   ArrowUpRight,
   CalendarBlank,
   ClipboardList,
-  Notebook,
 } from "@/lib/icons";
 import {
   Popover,
@@ -20,12 +19,8 @@ interface PatientContextWidgetsProps {
   appointments: Appointment[];
   appointmentsLoading: boolean;
   appointmentsError: boolean;
-  lastAppointment: Appointment | null;
-  lastVisit?: string;
-  nextAppointment: Appointment | null;
   now: number;
   onOpenHistory: () => void;
-  onOpenLastConsultation: () => void;
   onOpenTask: (taskId: string) => void;
   onRetryTasks: () => void;
   patientName: string;
@@ -46,12 +41,8 @@ export function PatientContextWidgets({
   appointments,
   appointmentsLoading,
   appointmentsError,
-  lastAppointment,
-  lastVisit,
-  nextAppointment,
   now,
   onOpenHistory,
-  onOpenLastConsultation,
   onOpenTask,
   onRetryTasks,
   patientName,
@@ -80,9 +71,7 @@ export function PatientContextWidgets({
       ? "Rendez-vous indisponibles"
       : firstVisit
         ? `${visitTime} · ${firstVisit.type}`
-        : nextAppointment
-          ? `Prochain : ${shortDate(nextAppointment.startTime) || "à confirmer"}`
-          : "Aucun rendez-vous prévu aujourd’hui";
+        : "Aucun rendez-vous prévu aujourd’hui";
   const taskDetail = tasksLoading
     ? "Chargement des actions"
     : tasksError
@@ -90,28 +79,6 @@ export function PatientContextWidgets({
       : formatDisplayText(
           tasks[0]?.title || "Aucune action en attente pour ce patient"
         );
-  const displayedLastVisit = lastAppointment?.startTime || lastVisit;
-  const lastSummary = (
-    lastAppointment?.reason ||
-    lastAppointment?.title ||
-    ""
-  ).trim();
-  const lastType = lastAppointment?.type || "";
-  const lastDescription = lastSummary
-    .toLocaleLowerCase("fr")
-    .includes(lastType.toLocaleLowerCase("fr"))
-    ? lastSummary
-    : [lastType, lastSummary].filter(Boolean).join(" · ");
-  const lastVisitDetail = appointmentsLoading
-    ? "Chargement de l’historique"
-    : appointmentsError
-      ? "Historique indisponible"
-      : lastAppointment
-        ? lastDescription
-        : displayedLastVisit
-          ? "Voir le parcours de soins"
-          : "Aucune consultation terminée";
-
   return (
     <section
       className="patient-context-widgets"
@@ -225,38 +192,6 @@ export function PatientContextWidgets({
           )}
         </PopoverContent>
       </Popover>
-
-      <button
-        type="button"
-        className="patient-context-card group"
-        onClick={onOpenLastConsultation}
-        aria-label={
-          lastAppointment
-            ? `Ouvrir la dernière consultation de ${patientName}`
-            : `Voir le parcours de soins de ${patientName}`
-        }
-        aria-busy={appointmentsLoading}
-      >
-        <span className="patient-context-heading flex items-center gap-2">
-          <span className="size-7 rounded-md flex items-center justify-center bg-violet-50 text-violet-600 border border-violet-200/60 dark:bg-violet-950/60 dark:text-violet-400 dark:border-violet-800/40 shrink-0 shadow-xs">
-            <Notebook size={15} weight="duotone" aria-hidden="true" />
-          </span>
-          <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Dernière consultation</span>
-          <ArrowUpRight size={14} className="ml-auto text-muted-foreground/60 group-hover:text-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
-        </span>
-        <span className="patient-context-value patient-context-date t-18 font-bold tracking-tight text-foreground">
-          {appointmentsLoading
-            ? "…"
-            : appointmentsError
-              ? "N/D"
-              : displayedLastVisit
-                ? shortDate(displayedLastVisit) || "Date à confirmer"
-                : "Pas encore"}
-        </span>
-        <span className="patient-context-detail text-xs text-muted-foreground truncate" title={lastVisitDetail}>
-          {lastVisitDetail}
-        </span>
-      </button>
     </section>
   );
 }

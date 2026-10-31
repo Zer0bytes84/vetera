@@ -38,3 +38,8 @@ export const PATIENTS_WITH_REFERENCE_SQL =
 export function patientReferenceSearchText(reference: string | undefined) {
   return reference ? `${reference} ${reference.replace("-", "")}` : "";
 }
+
+/** The patient as printed on a document: « Rex · ID-0011 ». */
+export function patientDocumentName(patient: { name: string; reference?: string }) {
+  return patient.reference ? `${patient.name} · ${patient.reference}` : patient.name;
+}

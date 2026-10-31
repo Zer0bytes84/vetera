@@ -34,6 +34,7 @@ export function PatientHeader({
   onNewOffVisitNote,
   onExportPdf,
   onHealthCard,
+  owner,
   patient,
 }: PatientHeaderProps) {
   const speciesTheme = getSpeciesTheme(patient.species);
@@ -51,7 +52,7 @@ export function PatientHeader({
         aria-hidden="true"
       />
       <div className="medical-header-main">
-        <PatientIdentity patient={patient} />
+        <PatientIdentity owner={owner} patient={patient} showIdentifiers={false} />
         <div className="medical-header-actions" aria-label="Actions du dossier">
           {onOpenClinicalNote && (
             <Button

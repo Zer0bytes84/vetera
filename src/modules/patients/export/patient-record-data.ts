@@ -1,3 +1,4 @@
+import { patientDocumentName } from "@/modules/patients/reference/reference";
 import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
 import { DOCUMENT_TYPES, documentLocalDay, type PatientDocument } from "@/modules/documents/document-domain";
 import { assertDateOnly } from "@/modules/patient-reminders/domain";
@@ -149,7 +150,7 @@ export function assemblePatientRecordSnapshot(raw: PatientRecordRawData, input: 
   if (options.sections.identity) {
     const rows: string[][] = [];
     const field = (label: string, value: unknown) => { if (present(value)) rows.push([label, value]); };
-    field("Nom", patient.name); field("Espèce", patient.species); field("Race", patient.breed);
+    field("Nom", patient.name); field("Référence", patient.reference); field("Espèce", patient.species); field("Race", patient.breed);
     field("Sexe", patient.sex === "F" ? "Femelle" : patient.sex === "M" ? "Mâle" : "");
     if (typeof patient.sterilized === "boolean") field("Stérilisation", patient.sterilized ? "Oui" : "Non");
     if (patient.dateOfBirth) {
@@ -275,5 +276,5 @@ export function assemblePatientRecordSnapshot(raw: PatientRecordRawData, input: 
     append("attachments", "Annexes", blocks);
   }
   if (!sections.length) throw new Error("Aucune donnée exportable ne correspond au périmètre choisi.");
-  return freeze({ patientId: patient.id, patientName: patient.name, requestedBy: raw.requestedBy, generatedAt: timestamp, exportDay, filename: patientRecordFilename(patient.name, exportDay, options.period), options, clinic: { ...raw.clinic }, cover: { ...(patient.species ? { species: patient.species } : {}), ...(patient.breed ? { breed: patient.breed } : {}), ...(ownerName ? { ownerName } : {}) }, sections });
+  return freeze({ patientId: patient.id, patientName: patientDocumentName(patient), requestedBy: raw.requestedBy, generatedAt: timestamp, exportDay, filename: patientRecordFilename(patient.name, exportDay, options.period), options, clinic: { ...raw.clinic }, cover: { ...(patient.species ? { species: patient.species } : {}), ...(patient.breed ? { breed: patient.breed } : {}), ...(ownerName ? { ownerName } : {}) }, sections });
 }

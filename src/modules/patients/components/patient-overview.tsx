@@ -1,4 +1,4 @@
-import { ChevronRight } from "@/lib/icons";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { AppointmentTypeBadge } from "@/modules/agenda/components/agenda-shared";
@@ -6,9 +6,7 @@ import type { Appointment, ConsultationSoap } from "@/types/db";
 import { visitReason } from "../lib/visit-reason";
 import { recordDate } from "./medical-record-summary";
 
-const PREVIOUS_VISITS = 5;
-
-/** Only statuses other than "done" are worth a label in a list of past visits. */
+/** Only statuses other than "done" are worth a label on the last visit. */
 const OPEN_STATUS_LABELS: Partial<Record<Appointment["status"], string>> = {
   in_progress: "En cours",
   arrived: "Arrivé",
@@ -21,29 +19,58 @@ function excerpt(value?: string | null) {
 }
 
 /**
- * Synthèse tab: the last visit first, with what the vet concluded (assessment
- * and plan from its note), then the visits before it as a compact list.
+ * Synthèse: the last visit, with what the vet concluded (assessment and plan
+ * from its note), and beside it what is due next. The visits before it are
+ * in the chronology that follows, never listed twice.
  */
 export function PatientOverview({
+  aside,
   error,
   getSoap,
   loading,
-  onOpenHistory,
   onOpenVisit,
   onRetry,
   patientName,
   visits,
 }: {
+  /** Shown beside the last visit (the prevention countdowns). */
+  aside?: ReactNode;
   error: boolean;
   getSoap: (appointmentId: string) => ConsultationSoap | null;
   loading: boolean;
-  onOpenHistory: () => void;
   onOpenVisit: (appointmentId: string) => void;
   onRetry: () => void;
   patientName: string;
   /** Completed or ongoing visits, most recent first. */
   visits: Appointment[];
 }) {
+  return (
+    <div className="patient-overview">
+      <div className="patient-overview-main">
+        <LastVisit
+          error={error}
+          getSoap={getSoap}
+          loading={loading}
+          onOpenVisit={onOpenVisit}
+          onRetry={onRetry}
+          patientName={patientName}
+          visits={visits}
+        />
+      </div>
+      {aside ? <div className="patient-overview-aside">{aside}</div> : null}
+    </div>
+  );
+}
+
+function LastVisit({
+  error,
+  getSoap,
+  loading,
+  onOpenVisit,
+  onRetry,
+  patientName,
+  visits,
+}: Omit<Parameters<typeof PatientOverview>[0], "aside">) {
   if (loading) {
     return (
       <div className="flex justify-center py-6">
@@ -70,7 +97,7 @@ export function PatientOverview({
     );
   }
 
-  const [last, ...previous] = visits;
+  const [last] = visits;
   const lastSoap = getSoap(last.id);
   const assessment = excerpt(lastSoap?.assessment);
   const plan = excerpt(lastSoap?.plan);
@@ -78,8 +105,7 @@ export function PatientOverview({
   const lastOpenStatus = OPEN_STATUS_LABELS[last.status];
 
   return (
-    <div className="patient-overview">
-      <section
+    <section
         aria-labelledby="overview-last-visit"
         className="patient-overview-last"
       >
@@ -123,62 +149,6 @@ export function PatientOverview({
             Pas encore de note rédigée pour cette consultation.
           </p>
         )}
-      </section>
-
-      <section
-        aria-labelledby="overview-previous-visits"
-        className="patient-overview-previous"
-      >
-        <div className="medical-overview-heading">
-          <h3 id="overview-previous-visits">Consultations précédentes</h3>
-          <Button onClick={onOpenHistory} size="sm" variant="ghost">
-            Voir tout l’historique
-          </Button>
-        </div>
-        {previous.length === 0 ? (
-          <p className="patient-overview-no-note">
-            Aucune autre consultation.
-          </p>
-        ) : (
-          <ol className="patient-overview-list">
-            {previous.slice(0, PREVIOUS_VISITS).map((visit) => {
-              const reason = visitReason(visit, patientName);
-              const openStatus = OPEN_STATUS_LABELS[visit.status];
-              return (
-                <li key={visit.id}>
-                  <button
-                    className="patient-overview-row group"
-                    onClick={() => onOpenVisit(visit.id)}
-                    type="button"
-                  >
-                    <time>{recordDate(visit.startTime)}</time>
-                    <span className="patient-overview-row-main">
-                      <strong>{visit.type}</strong>
-                      {reason ? <span>{reason}</span> : null}
-                    </span>
-                    {openStatus ? (
-                      <span className="patient-overview-status">
-                        {openStatus}
-                      </span>
-                    ) : null}
-                    <ChevronRight
-                      aria-hidden="true"
-                      className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
-                    />
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-        )}
-        {previous.length > PREVIOUS_VISITS ? (
-          <p className="patient-overview-more">
-            {previous.length - PREVIOUS_VISITS} autre
-            {previous.length - PREVIOUS_VISITS > 1 ? "s" : ""} dans la
-            chronologie.
-          </p>
-        ) : null}
-      </section>
-    </div>
+    </section>
   );
 }

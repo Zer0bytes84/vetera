@@ -34,7 +34,11 @@ async function installFonts(doc: jsPDF) {
   } catch (error) { fonts = undefined; throw error; }
 }
 
-export interface DocumentPdfContent { title: string; content: string; clinic: InvoiceSettings }
+export interface DocumentPdfContent {
+  title: string; content: string; clinic: InvoiceSettings;
+  /** « ID-0011 », printed at the top of every page. */
+  patientReference?: string;
+}
 
 /** One PDF is used for the preview, the final snapshot, export and printing. */
 export async function buildManagedDocumentPdf(source: DocumentPdfContent): Promise<jsPDF> {
@@ -72,6 +76,10 @@ export async function buildManagedDocumentPdf(source: DocumentPdfContent): Promi
       lines.forEach((line) => { doc.text(line, x, infoY); infoY += 4.5; });
     });
     y = Math.max(49, infoY + 4);
+    if (source.patientReference) {
+      normal(9, true, "#292929");
+      doc.text(`Réf. patient ${source.patientReference}`, right, y - 3, { align: "right" });
+    }
     doc.setDrawColor("#d4d4d4"); doc.setLineWidth(0.2); doc.line(left, y, right, y);
     y += 10;
     if (!continuation) {
@@ -118,7 +126,7 @@ export async function patientDocumentPdf(document: PatientDocument): Promise<str
     pdf.setProperties({ title: document.title });
     return pdf.output("datauristring");
   }
-  return (await buildManagedDocumentPdf(document)).output("datauristring");
+  return (await buildManagedDocumentPdf({ ...document, patientReference: document.values["patient.reference"] || undefined })).output("datauristring");
 }
 
 export async function exportManagedDocument(document: PatientDocument): Promise<boolean> {

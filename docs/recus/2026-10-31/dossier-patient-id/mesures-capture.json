@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Kejounti",
+    "reference": "ID-0010",
+    "owner": "Kebaili Mohamed",
+    "allergy": "Pénicillines",
+    "safety": "ALLERGIE\n\nPénicillines\n\nTraitement en cours\nAucun",
+    "prevention": "Prévention\nVaccinations\n\nAucun rappel prévu.",
+    "tabs": [
+      "Synthèse",
+      "Ordonnances",
+      "Hospitalisations",
+      "Anesthésies",
+      "Vaccinations",
+      "Poids",
+      "Documents"
+    ]
+  },
+  {
+    "name": "dossier-chronologie",
+    "events": 13,
+    "pieces": [
+      "Facture INV-2026-000015",
+      "Facture INV-2026-000013",
+      "Facture INV-2026-000010",
+      "Facture LEGACY-msb5ram2k4dg7seoska",
+      "Facture LEGACY-ms85t5f5i5xqmkxe3io",
+      "Facture LEGACY-ms0dl3d9peob9ywlmu",
+      "Facture LEGACY-mqh9om2f86iaa1nrfbo"
+    ]
+  },
+  {
+    "name": "palette-0010",
+    "search": "0010",
+    "firstPatient": "Kejounti En bonne santé ID-0010 · Chien · Malinois · Propriétaire : Kebaili Mohamed ↵ Ouvrir"
+  },
+  {
+    "name": "palette-ID-0010",
+    "search": "ID-0010",
+    "firstPatient": "Kejounti En bonne santé ID-0010 · Chien · Malinois · Propriétaire : Kebaili Mohamed ↵ Ouvrir"
+  },
+  {
+    "name": "palette-ID0010",
+    "search": "ID0010",
+    "firstPatient": "Kejounti En bonne santé ID-0010 · Chien · Malinois · Propriétaire : Kebaili Mohamed ↵ Ouvrir"
+  }
+]

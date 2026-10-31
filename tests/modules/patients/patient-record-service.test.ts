@@ -94,7 +94,7 @@ describe("Isolated SQLite patient record reads", () => {
     state.database!.exec("DROP TABLE medical_reminders");
     await expect(loadPatientRecord("patient", DEFAULT_PATIENT_RECORD_OPTIONS)).rejects.toThrow("rappels médicaux ne sont pas disponibles");
     expect(state.statements.at(-1)).toBe("ROLLBACK");
-    await expect(loadPatientRecord("patient", identityOptions)).resolves.toMatchObject({ patientName: "Éloïse" });
+    await expect(loadPatientRecord("patient", identityOptions)).resolves.toMatchObject({ patientName: "Éloïse · ID-0001" });
   });
   it("rolls back cancellation between reads and does not return a partial snapshot", async () => {
     const controller = new AbortController(); const db = adapter(state.database!);

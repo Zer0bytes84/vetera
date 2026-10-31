@@ -1,3 +1,4 @@
+import { PATIENTS_WITH_REFERENCE_SQL } from "@/modules/patients/reference/reference";
 import { authRepository } from "@/data/repositories";
 import type { PatientDocument } from "@/modules/documents/document-domain";
 import { getBrowserTable, isTauriRuntime, type BrowserTableName } from "@/services/browser-store";
@@ -124,7 +125,9 @@ export async function readPatientRecordSnapshotData(db: PatientRecordReadDatabas
       async list(table, filters = {}) {
         const columns = Object.keys(filters);
         if (!TABLES.has(table) || columns.some((column) => !/^[a-z][a-z_]*$/.test(column))) throw new Error("La lecture du dossier patient est invalide.");
-        return db.select<Row[]>(`SELECT ${table === "users" ? "id, display_name" : "*"} FROM ${table}${columns.length ? ` WHERE ${columns.map((column) => `${column} = ?`).join(" AND ")}` : ""}`, Object.values(filters));
+        // A patient is read with its reference, kept in its own table.
+        const source = table === "patients" ? PATIENTS_WITH_REFERENCE_SQL : `SELECT ${table === "users" ? "id, display_name" : "*"} FROM ${table}`;
+        return db.select<Row[]>(`${source}${columns.length ? ` WHERE ${columns.map((column) => `${table}.${column} = ?`).join(" AND ")}` : ""}`, Object.values(filters));
       },
     }, patientId, options, requestedBy, signal);
     checkAbort(signal);

@@ -2,7 +2,6 @@ import { PatientStays } from "@/modules/hospitalizations/stays/patient-stays";
 import {
   ArrowLeft,
   Check,
-  Clock,
   FileText,
   FirstAid,
   Hospital,
@@ -36,6 +35,7 @@ import {
   useNotesRepository,
   useOwnersRepository,
   usePatientsRepository,
+  usePrescriptionItemsRepository,
   usePrescriptionsRepository,
   useTasksRepository,
   useVaccinationsRepository,
@@ -61,10 +61,13 @@ import { PatientDocumentsList } from "./components/patient-documents-list";
 import { PatientHeader } from "./components/patient-header";
 import { PatientContextWidgets } from "./components/patient-context-widgets";
 import {
-  ClinicalAlerts,
   OwnerContact,
   recordDate,
 } from "./components/medical-record-summary";
+import { PatientSafetyZone } from "./components/patient-safety-zone";
+import { PatientPrevention } from "./components/patient-prevention";
+import { buildTreatments } from "./health-card/health-card-data";
+import type { TimelinePiece } from "./lib/timeline-pieces";
 import { MedicalRecordTabs } from "./components/medical-record-tabs";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
@@ -77,7 +80,6 @@ import { VaccinationDialog } from "./components/vaccination-dialog";
 import { VaccinationList } from "./components/vaccination-list";
 import { WeightEntryDialog } from "./components/weight-entry-dialog";
 import { WeightEvolutionChart } from "./components/weight-evolution-chart";
-import { lateLabel, vaccinationBannerEntries } from "./lib/vaccination-banner";
 import { DatePicker } from "@/components/ui/date-picker";
 import { PageHeader } from "@/design-system/patterns/page-header";
 
@@ -94,7 +96,6 @@ type PatientRecordSection =
   | "vaccinations"
   | "weight"
   | "documents"
-  | "timeline"
   | "prescriptions"
   | "hospitalizations"
   | "anesthesia";
@@ -105,12 +106,6 @@ const PATIENT_RECORD_SECTIONS = [
     label: "Synthèse",
     icon: FirstAid,
     color: "text-rose-600 dark:text-rose-400",
-  },
-  {
-    value: "timeline",
-    label: "Chronologie",
-    icon: Clock,
-    color: "text-sky-600 dark:text-sky-400",
   },
   {
     value: "prescriptions",
@@ -202,6 +197,7 @@ export function PatientDetailPage({
   const patientsRepo = usePatientsRepository();
   const appointmentsRepo = useAppointmentsRepository();
   const prescriptionsRepo = usePrescriptionsRepository();
+  const prescriptionItemsRepo = usePrescriptionItemsRepository();
   const vaccinationsRepo = useVaccinationsRepository();
   const weightsRepo = useWeightEntriesRepository();
   const soapsRepo = useConsultationSoapsRepository();
@@ -352,16 +348,19 @@ export function PatientDetailPage({
         )[0] ?? null,
     [appointments, now]
   );
-  // Every overdue booster, then those due within 30 days, are raised with the
-  // clinical alerts (same classification as the health card).
-  const vaccinationDue = useMemo(() => {
-    const entries = vaccinationBannerEntries(patientId, vaccinations, new Date(now));
-    if (!entries.length) return null;
-    return {
-      status: entries.some((entry) => entry.status === "overdue") ? "overdue" : "due_soon",
-      entries,
-    };
-  }, [now, patientId, vaccinations]);
+  // The safety zone shows what is still being given today.
+  const treatments = useMemo(
+    () =>
+      patient
+        ? buildTreatments({
+            items: prescriptionItemsRepo.data,
+            now: new Date(now),
+            patient,
+            prescriptions: prescriptionsRepo.data,
+          })
+        : { hidden: 0, items: [] },
+    [now, patient, prescriptionItemsRepo.data, prescriptionsRepo.data]
+  );
   const clinicalNoteAppointment = useMemo(
     () =>
       appointments.find(
@@ -385,8 +384,18 @@ export function PatientDetailPage({
     setAutoCreatedAppointmentId(null);
   }, [patientId]);
 
-  const handleTabChange = (val: PatientRecordSection) => {
-    setActiveTab(val);
+  const handleTabChange = (val: PatientRecordSection | "timeline") => {
+    // The chronology follows the synthesis: asking for it scrolls there.
+    if (val === "timeline") {
+      setActiveTab("overview");
+      requestAnimationFrame(() =>
+        document
+          .getElementById("patient-chronologie")
+          ?.scrollIntoView({ block: "start" })
+      );
+    } else {
+      setActiveTab(val);
+    }
     setSelectedHospitalization(null);
     setSelectedAnesthesia(null);
     setPrescriptionAppointmentId(null);
@@ -521,6 +530,16 @@ export function PatientDetailPage({
     setOffVisitNote(target);
     scrollRecordToTop();
   };
+  const openPiece = (piece: TimelinePiece) => {
+    if (piece.kind === "invoice") {
+      requestFocus("invoice", piece.sourceId);
+      onNavigate("finances");
+    } else if (piece.id.startsWith("prescription-")) {
+      handleTabChange("prescriptions");
+    } else {
+      handleTabChange("documents");
+    }
+  };
   const openSoapForAppointment = (appointmentId: string) => {
     setOffVisitNote(null);
     setSoapAppointmentId(appointmentId);
@@ -607,15 +626,13 @@ export function PatientDetailPage({
         {healthCardOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture du carnet de santé…</p>}>
           <HealthCardDialog key={patientId} owner={owner} patient={patient} onClose={() => setHealthCardOpen(false)} />
         </Suspense>}
+        <PatientSafetyZone patient={patient} treatments={treatments} />
         <section className="patient-record-indicators" aria-label={`Indicateurs de ${patient.name}`}>
           <PatientContextWidgets
             patientName={patient.name}
             appointments={appointments}
             appointmentsLoading={appointmentsRepo.loading}
             appointmentsError={Boolean(appointmentsRepo.error)}
-            lastAppointment={lastAppointment}
-            lastVisit={patient.lastVisit}
-            nextAppointment={nextAppointment}
             now={now}
             tasks={patientTasks}
             tasksLoading={tasksRepo.loading}
@@ -627,18 +644,6 @@ export function PatientDetailPage({
                   .getElementById("record-tab-content")
                   ?.scrollIntoView({ block: "start" })
               );
-            }}
-            onOpenLastConsultation={() => {
-              if (lastAppointment) {
-                openSoapForAppointment(lastAppointment.id);
-              } else {
-                handleTabChange("timeline");
-                requestAnimationFrame(() =>
-                  document
-                    .getElementById("record-tab-content")
-                    ?.scrollIntoView({ block: "start" })
-                );
-              }
             }}
             onOpenTask={(taskId) => {
               requestFocus("task", taskId);
@@ -691,37 +696,6 @@ export function PatientDetailPage({
 
         </section>
 
-        <ClinicalAlerts
-          extra={
-            vaccinationDue ? (
-              <button
-                className="medical-vaccine-alert flex w-full items-start gap-3 rounded-xl border border-amber-300/70 bg-amber-50/80 p-3 text-left text-amber-900 shadow-xs hover:bg-amber-100/80 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-200"
-                onClick={() => handleTabChange("vaccinations")}
-                type="button"
-              >
-                <span className="mt-0.5 shrink-0 rounded-lg bg-amber-500/20 p-1.5 text-amber-600 dark:bg-amber-500/30 dark:text-amber-400">
-                  <Syringe aria-hidden="true" className="size-4" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <strong className="text-xs font-semibold tracking-wide uppercase text-amber-700 dark:text-amber-300">
-                    {vaccinationDue.status === "overdue" ? "Rappel vaccinal en retard" : "Rappel vaccinal à prévoir"}
-                  </strong>
-                  <span className="mt-0.5 block text-sm font-medium leading-relaxed">
-                    {vaccinationDue.entries.map((entry, index) => (
-                      <span key={`${entry.name}-${entry.nextDueAt}`}>
-                        {index > 0 ? " ; " : null}
-                        {entry.status === "overdue"
-                          ? <>{entry.name} · <span className="font-semibold">{lateLabel(entry.daysLate ?? 0)}</span> (prévu le {recordDate(entry.nextDueAt)})</>
-                          : <>{entry.name} · {recordDate(entry.nextDueAt)}</>}
-                      </span>
-                    ))}. Voir l’onglet Vaccinations.
-                  </span>
-                </span>
-              </button>
-            ) : null
-          }
-          patient={patient}
-        />
 
         {isProfileEditorOpen && profileDraft ? (
           <section className="rounded-2xl border border-border/80 bg-card/95 shadow-md p-5 sm:p-6 backdrop-blur-xl">
@@ -998,16 +972,42 @@ export function PatientDetailPage({
               aria-labelledby={`record-tab-${activeTab}`}
             >
               {activeTab === "overview" && (
-                <PatientOverview
-                  error={Boolean(appointmentsRepo.error)}
-                  getSoap={soapsRepo.forAppointment}
-                  loading={appointmentsRepo.loading}
-                  onOpenHistory={() => handleTabChange("timeline")}
-                  onOpenVisit={openSoapForAppointment}
-                  onRetry={() => void appointmentsRepo.refresh()}
-                  patientName={patient.name}
-                  visits={recentVisits}
-                />
+                <>
+                  <PatientOverview
+                    aside={
+                      <PatientPrevention
+                        now={now}
+                        onOpenVaccinations={() => handleTabChange("vaccinations")}
+                        patientId={patientId}
+                        vaccinations={vaccinations}
+                      />
+                    }
+                    error={Boolean(appointmentsRepo.error)}
+                    getSoap={soapsRepo.forAppointment}
+                    loading={appointmentsRepo.loading}
+                    onOpenVisit={openSoapForAppointment}
+                    onRetry={() => void appointmentsRepo.refresh()}
+                    patientName={patient.name}
+                    visits={recentVisits}
+                  />
+                  <section
+                    aria-labelledby="patient-chronologie-title"
+                    className="patient-chronologie"
+                    id="patient-chronologie"
+                  >
+                    <h2 className="patient-chronologie-title" id="patient-chronologie-title">
+                      Chronologie
+                    </h2>
+                    <PatientTimeline
+                      className="border-0 shadow-none"
+                      onEditWeight={openEditWeight}
+                      onJumpToAppointment={openSoapForAppointment}
+                      onOpenNote={openOffVisitNote}
+                      onOpenPiece={openPiece}
+                      patientId={patientId}
+                    />
+                  </section>
+                </>
               )}
               {activeTab === "vaccinations" &&
                 (vaccinationsRepo.loading ? (
@@ -1063,15 +1063,6 @@ export function PatientDetailPage({
                   patientId={patientId}
                 />
               )}
-              {activeTab === "timeline" ? (
-                <PatientTimeline
-                  className="border-0 shadow-none"
-                  onEditWeight={openEditWeight}
-                  onJumpToAppointment={openSoapForAppointment}
-                  onOpenNote={openOffVisitNote}
-                  patientId={patientId}
-                />
-              ) : null}
 
               {activeTab === "prescriptions" ? (
                 <PrescriptionList
@@ -1183,6 +1174,10 @@ export function PatientDetailPage({
               <div>
                 <dt>Date de naissance</dt>
                 <dd>{recordDate(patient.dateOfBirth)}</dd>
+              </div>
+              <div>
+                <dt>Enregistré le</dt>
+                <dd>{recordDate(patient.createdAt)}</dd>
               </div>
               {patient.chipNumber ? (
                 <div>

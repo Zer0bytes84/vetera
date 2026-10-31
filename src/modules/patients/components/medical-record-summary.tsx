@@ -25,10 +25,16 @@ export function recordDate(value?: string | null, withTime = false) {
 
 export function PatientIdentity({
   patient,
+  owner,
   compact = false,
+  showIdentifiers = true,
 }: {
   patient: Patient;
+  /** The owner's name stands next to the patient's, as bold as it. */
+  owner?: Owner;
   compact?: boolean;
+  /** Chip, tattoo and registration date; the record shows them in Identité. */
+  showIdentifiers?: boolean;
 }) {
   const age = computeAge(patient.dateOfBirth);
   const ageLabel = age ? formatAgeFr(age) : null;
@@ -65,7 +71,12 @@ export function PatientIdentity({
 
       <div className="min-w-0 flex-1">
         <div className="medical-identity-line flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">{patient.name}</h1>
+          <h1 className="medical-identity-name text-2xl font-bold tracking-tight text-foreground">{patient.name}</h1>
+          {patient.reference ? (
+            <span className="medical-reference" title="Référence patient, attribuée à la création et jamais modifiée">
+              {patient.reference}
+            </span>
+          ) : null}
           <span className={cn("medical-status shadow-xs", status.className)}>
             <span className="relative flex size-2 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-current" />
@@ -109,6 +120,13 @@ export function PatientIdentity({
           ) : null}
         </div>
 
+        {owner ? (
+          <p className="medical-identity-owner">
+            <span>Propriétaire</span>
+            <strong>{`${owner.firstName} ${owner.lastName}`.trim()}</strong>
+          </p>
+        ) : null}
+
         <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground my-2 font-normal">
           {patient.breed ? (
             <span className="font-medium text-foreground/80">{patient.breed}</span>
@@ -121,6 +139,7 @@ export function PatientIdentity({
           ) : null}
         </p>
 
+        {showIdentifiers ? (
         <div className="medical-record-id flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           {patient.chipNumber?.trim() ? (
             <>
@@ -140,9 +159,36 @@ export function PatientIdentity({
           ) : null}
           <span>Enregistré le {recordDate(patient.createdAt)}</span>
         </div>
+        ) : null}
       </div>
     </div>
   );
+}
+
+// Les réponses négatives explicites ne constituent pas une alerte clinique.
+export function isClinicalSignal(value?: string) {
+  if (!value?.trim()) return false;
+  const normalized = value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("fr-FR")
+    .replace(/[’']/g, " ")
+    .replace(/[.!]/g, "")
+    .trim();
+  return ![
+    "aucune",
+    "aucun",
+    "neant",
+    "ras",
+    "r a s",
+    "non",
+    "aucune allergie",
+    "aucune allergie connue",
+    "pas d allergie",
+    "pas d allergies",
+    "aucun antecedent",
+    "aucune maladie chronique",
+  ].includes(normalized);
 }
 
 export function ClinicalAlerts({
@@ -155,31 +201,6 @@ export function ClinicalAlerts({
 }) {
   const allergies = patient.allergies?.trim();
   const chronicConditions = patient.chronicConditions?.trim();
-  // Les réponses négatives explicites ne constituent pas une alerte clinique.
-  const isClinicalSignal = (value?: string) => {
-    if (!value) return false;
-    const normalized = value
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLocaleLowerCase("fr-FR")
-      .replace(/[’']/g, " ")
-      .replace(/[.!]/g, "")
-      .trim();
-    return ![
-      "aucune",
-      "aucun",
-      "neant",
-      "ras",
-      "r a s",
-      "non",
-      "aucune allergie",
-      "aucune allergie connue",
-      "pas d allergie",
-      "pas d allergies",
-      "aucun antecedent",
-      "aucune maladie chronique",
-    ].includes(normalized);
-  };
   const hasAllergies = isClinicalSignal(allergies);
   const hasChronic = isClinicalSignal(chronicConditions);
 

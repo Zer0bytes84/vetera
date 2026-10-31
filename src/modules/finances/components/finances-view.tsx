@@ -122,6 +122,7 @@ import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useListCursor } from "@/hooks/useListCursor";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
+import { patientDocumentName } from "@/modules/patients/reference/reference";
 
 export function FinancesView(props: FinancesViewProps) {
   const isPremium = useIsPremium();
@@ -1645,10 +1646,15 @@ export function FinancesView(props: FinancesViewProps) {
 
       {previewInvoice &&
         (() => {
+          const invoicePatient = patients.find(
+            (patient) => patient.id === previewInvoice.patientId
+          );
           const document = invoiceDocument(
             previewInvoice,
-            getInvoicePatientName(previewInvoice, patients) ||
-              "Patient non renseigné"
+            invoicePatient
+              ? patientDocumentName(invoicePatient)
+              : getInvoicePatientName(previewInvoice, patients) ||
+                  "Patient non renseigné"
           );
           return (
             <InvoicePdfPreview

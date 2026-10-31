@@ -1,12 +1,16 @@
 import {
   CalendarBlank,
+  FileText,
+  ClipboardText,
   PencilSimple,
   Notebook,
+  Pill,
+  ReceiptText,
   Stethoscope,
   Syringe,
   TrendUp,
 } from "@/lib/icons";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
@@ -20,18 +24,28 @@ import {
 } from "@/components/ui/empty";
 import {
   useAppointmentsRepository,
+  useConsultationDocumentsRepository,
   useConsultationSoapsRepository,
   useNotesRepository,
+  usePrescriptionsRepository,
   useVaccinationsRepository,
   useWeightEntriesRepository,
 } from "@/data/repositories";
+import { usePatientDocuments } from "@/modules/documents/hooks/use-managed-documents";
+import { isTauriRuntime } from "@/services/browser-store";
+import {
+  collectTimelinePieces,
+  piecesByVisit,
+  type TimelinePiece,
+  type TimelinePieceKind,
+} from "../lib/timeline-pieces";
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
 import { OFF_VISIT_KINDS, readOffVisitNote } from "@/modules/consultations/off-visit-note";
 import { isSoapReviewed } from "@/modules/consultations/local-ai/soap-review";
-import type { Appointment, ConsultationSoap, Note, Vaccination, WeightEntry } from "@/types/db";
+import type { Appointment, ConsultationSoap, Invoice, Note, Vaccination, WeightEntry } from "@/types/db";
 
-type TimelineKind = "consultation" | "note" | "vaccination" | "weight";
+type TimelineKind = "consultation" | "note" | "vaccination" | "weight" | "piece";
 
 type TimelineEntry = {
   id: string;
@@ -43,6 +57,10 @@ type TimelineEntry = {
   summaryDetail?: string;
   statusBadge?: { label: string; className: string };
   weightEntry?: WeightEntry;
+  /** Prescriptions, invoices and results this event produced. */
+  pieces?: TimelinePiece[];
+  /** A piece no visit produced stands as its own event. */
+  piece?: TimelinePiece;
 };
 
 const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
@@ -50,6 +68,14 @@ const KIND_ICON: Record<TimelineKind, typeof Stethoscope> = {
   note: PencilSimple,
   vaccination: Syringe,
   weight: TrendUp,
+  piece: FileText,
+};
+
+const PIECE_ICON: Record<TimelinePieceKind, typeof FileText> = {
+  prescription: Pill,
+  invoice: ReceiptText,
+  result: ClipboardText,
+  document: FileText,
 };
 
 const KIND_COLOR: Record<TimelineKind, string> = {
@@ -61,6 +87,8 @@ const KIND_COLOR: Record<TimelineKind, string> = {
     "bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40",
   weight:
     "bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-xs dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/40",
+  piece:
+    "bg-zinc-50 text-zinc-700 border border-zinc-200/80 shadow-xs dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-700/60",
 };
 
 interface PatientTimelineProps {
@@ -69,6 +97,8 @@ interface PatientTimelineProps {
   onJumpToAppointment?: (appointmentId: string) => void;
   /** Opens a note kept without a visit. */
   onOpenNote?: (noteId: string) => void;
+  /** Opens a prescription, an invoice, a result or a document. */
+  onOpenPiece?: (piece: TimelinePiece) => void;
   patientId: string;
 }
 
@@ -160,9 +190,14 @@ function buildEntries(
   vaccinations: Vaccination[],
   weights: WeightEntry[],
   notes: Note[] = [],
-  getSoap: (appointmentId: string) => ConsultationSoap | null = () => null
+  getSoap: (appointmentId: string) => ConsultationSoap | null = () => null,
+  pieces: TimelinePiece[] = []
 ): TimelineEntry[] {
   const items: TimelineEntry[] = [];
+  const { attached, loose } = piecesByVisit(
+    pieces,
+    new Set(appointments.map((apt) => apt.id))
+  );
 
   // Notes kept without a visit: dated by their validation, never a consultation.
   for (const note of notes) {
@@ -197,6 +232,18 @@ function buildEntries(
       context: apt.reason?.trim() || undefined,
       ...consultationSummary(apt, getSoap(apt.id)),
       statusBadge: { label: status.label, className: status.className },
+      pieces: attached.get(apt.id),
+    });
+  }
+
+  for (const piece of loose) {
+    items.push({
+      id: `piece-${piece.id}`,
+      at: piece.at,
+      kind: "piece",
+      label: piece.label,
+      summary: piece.detail ?? "",
+      piece,
     });
   }
 
@@ -240,11 +287,72 @@ function buildEntries(
   );
 }
 
+const MONTH_FORMAT = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" });
+
+function monthLabel(iso: string) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "Date inconnue";
+  const label = MONTH_FORMAT.format(date);
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+/** Invoices are kept in SQLite only; the browser demo has none. */
+function usePatientInvoices(patientId: string) {
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  useEffect(() => {
+    if (!isTauriRuntime()) return;
+    let cancelled = false;
+    void import("@/services/billingService")
+      .then(({ listInvoices }) => listInvoices())
+      .then((rows) => {
+        if (!cancelled) setInvoices(rows.filter((invoice) => invoice.patientId === patientId));
+      })
+      .catch(() => {
+        // A missing invoice list leaves the visits themselves readable.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [patientId]);
+  return invoices;
+}
+
+function PieceChip({
+  piece,
+  onOpen,
+}: {
+  piece: TimelinePiece;
+  onOpen?: (piece: TimelinePiece) => void;
+}) {
+  const Icon = PIECE_ICON[piece.kind];
+  const content = (
+    <>
+      <Icon className="size-3.5 shrink-0" weight="duotone" aria-hidden="true" />
+      <span className="font-medium">{piece.label}</span>
+      {piece.detail ? (
+        <span className="truncate text-muted-foreground">{piece.detail}</span>
+      ) : null}
+    </>
+  );
+  return onOpen ? (
+    <button
+      className="patient-timeline-piece"
+      onClick={() => onOpen(piece)}
+      type="button"
+    >
+      {content}
+    </button>
+  ) : (
+    <span className="patient-timeline-piece">{content}</span>
+  );
+}
+
 export function PatientTimeline({
   className,
   onEditWeight,
   onJumpToAppointment,
   onOpenNote,
+  onOpenPiece,
   patientId,
 }: PatientTimelineProps) {
   const { t } = useTranslation();
@@ -254,6 +362,21 @@ export function PatientTimeline({
   const notesRepo = useNotesRepository();
   // The same source as the Synthèse tab: the visit's consultation note.
   const soapsRepo = useConsultationSoapsRepository();
+  const prescriptionsRepo = usePrescriptionsRepository();
+  const attachmentsRepo = useConsultationDocumentsRepository();
+  const { documents } = usePatientDocuments(patientId);
+  const invoices = usePatientInvoices(patientId);
+
+  const pieces = useMemo(
+    () =>
+      collectTimelinePieces({
+        attachments: attachmentsRepo.data.filter((doc) => doc.patientId === patientId),
+        documents,
+        invoices,
+        prescriptions: prescriptionsRepo.data.filter((rx) => rx.patientId === patientId),
+      }),
+    [attachmentsRepo.data, documents, invoices, prescriptionsRepo.data, patientId]
+  );
 
   const entries = useMemo(
     () =>
@@ -262,194 +385,162 @@ export function PatientTimeline({
         vaccinationsRepo.forPatient(patientId),
         weightsRepo.forPatient(patientId),
         notesRepo.data.filter((note) => note.patientId === patientId),
-        soapsRepo.forAppointment
+        soapsRepo.forAppointment,
+        pieces
       ),
-    [appointmentsRepo.data, vaccinationsRepo, weightsRepo, notesRepo.data, soapsRepo.forAppointment, patientId]
+    [appointmentsRepo.data, vaccinationsRepo, weightsRepo, notesRepo.data, soapsRepo.forAppointment, patientId, pieces]
   );
+
+  const months = useMemo(() => {
+    const groups: { label: string; entries: TimelineEntry[] }[] = [];
+    for (const entry of entries) {
+      const label = monthLabel(entry.at);
+      const current = groups.at(-1);
+      if (current?.label === label) current.entries.push(entry);
+      else groups.push({ label, entries: [entry] });
+    }
+    return groups;
+  }, [entries]);
 
   return (
     <div className={cn("flex min-w-0 flex-col", className)}>
-      <div className="flex flex-1 flex-col">
-        {entries.length === 0 ? (
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia>
-                <CalendarBlank
-                  className="size-7 text-muted-foreground"
-                  weight="duotone"
-                />
-              </EmptyMedia>
-              <EmptyTitle>{t("patientDetail.timeline.empty")}</EmptyTitle>
-              <EmptyDescription>
-                {t("patientDetail.timeline.subtitle")}
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        ) : (
-          <div
-            className="patient-timeline-scroll rounded-xl border border-border/70 bg-card"
-            role="region"
-            aria-label="Chronologie du patient"
-            tabIndex={0}
-          >
-            <table className="patient-timeline-table w-full table-fixed text-left text-sm">
-              <caption className="sr-only">
-                Historique clinique complet du patient
-              </caption>
-              <thead className="border-border/70 border-b">
-                <tr>
-                  <th scope="col" className="w-[16%] font-medium">
-                    Date
-                  </th>
-                  <th scope="col" className="w-[22%] font-medium">
-                    Événement
-                  </th>
-                  <th scope="col" className="w-[32%] font-medium">
-                    Résumé clinique
-                  </th>
-                  <th scope="col" className="w-[15%] font-medium">
-                    Statut
-                  </th>
-                  <th scope="col" className="w-[15%] text-right font-medium">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {entries.map((entry) => {
-                  const Icon = KIND_ICON[entry.kind];
+      {entries.length === 0 ? (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia>
+              <CalendarBlank
+                className="size-7 text-muted-foreground"
+                weight="duotone"
+              />
+            </EmptyMedia>
+            <EmptyTitle>{t("patientDetail.timeline.empty")}</EmptyTitle>
+            <EmptyDescription>
+              {t("patientDetail.timeline.subtitle")}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div
+          className="patient-timeline"
+          role="region"
+          aria-label="Chronologie du patient"
+        >
+          {months.map((month) => (
+            <section className="patient-timeline-month" key={month.label}>
+              <h3 className="patient-timeline-month-label">{month.label}</h3>
+              <ol className="patient-timeline-list">
+                {month.entries.map((entry) => {
+                  const Icon = entry.piece ? PIECE_ICON[entry.piece.kind] : KIND_ICON[entry.kind];
                   const dateParts = formatDateParts(
                     entry.at,
                     entry.kind === "consultation" || entry.kind === "note"
                   );
+                  const muted = entry.summary === NO_REPORT;
                   return (
-                    <tr
-                      className="group align-middle transition-colors hover:bg-muted/20"
-                      key={entry.id}
-                    >
-                      <td className="px-3 py-3">
-                        <time
-                          className="block text-xs leading-5"
-                          dateTime={entry.at}
-                        >
-                          <span className="block font-medium text-foreground/80">
+                    <li className="patient-timeline-event" key={entry.id} data-kind={entry.kind}>
+                      <span
+                        className={cn(
+                          "patient-timeline-marker patient-timeline-kind-icon",
+                          KIND_COLOR[entry.kind]
+                        )}
+                        aria-hidden="true"
+                      >
+                        <Icon className="size-4" weight="duotone" />
+                      </span>
+                      <div className="patient-timeline-body">
+                        <div className="patient-timeline-head">
+                          <time className="patient-timeline-date" dateTime={entry.at}>
                             {dateParts.date}
-                          </span>
-                          {dateParts.time ? (
-                            <span className="block text-muted-foreground">
-                              {dateParts.time}
-                            </span>
+                            {dateParts.time ? ` · ${dateParts.time}` : ""}
+                          </time>
+                          <span className="patient-timeline-title">{entry.label}</span>
+                          {entry.context ? (
+                            <span className="patient-timeline-context">{entry.context}</span>
                           ) : null}
-                        </time>
-                      </td>
-                      <td className="px-3 py-3">
-                        <div className="flex min-w-0 items-start gap-2.5">
-                          <span
+                          {entry.statusBadge ? (
+                            <Badge
+                              className={cn(
+                                "rounded-full px-2 py-0.5 font-medium t-12",
+                                entry.statusBadge.className
+                              )}
+                              variant="secondary"
+                            >
+                              {entry.statusBadge.label}
+                            </Badge>
+                          ) : null}
+                          <span className="patient-timeline-action">
+                            {entry.kind === "consultation" && onJumpToAppointment ? (
+                              <Button
+                                className="h-7 gap-1 rounded-lg px-2 text-xs"
+                                onClick={() => onJumpToAppointment(entry.id.replace(/^apt-/, ""))}
+                                size="sm"
+                                variant="ghost"
+                              >
+                                Note clinique
+                                <Notebook className="size-3.5" weight="duotone" />
+                              </Button>
+                            ) : entry.kind === "note" && onOpenNote ? (
+                              <Button
+                                className="h-7 gap-1 rounded-lg px-2 text-xs"
+                                onClick={() => onOpenNote(entry.id.replace(/^note-/, ""))}
+                                size="sm"
+                                variant="ghost"
+                              >
+                                Lire la note
+                                <PencilSimple className="size-3.5" weight="duotone" />
+                              </Button>
+                            ) : entry.kind === "weight" && entry.weightEntry && onEditWeight ? (
+                              <Button
+                                className="h-7 rounded-lg px-2 text-xs"
+                                onClick={() => onEditWeight(entry.weightEntry!)}
+                                size="sm"
+                                variant="ghost"
+                              >
+                                Modifier
+                              </Button>
+                            ) : entry.piece && onOpenPiece ? (
+                              <Button
+                                className="h-7 rounded-lg px-2 text-xs"
+                                onClick={() => onOpenPiece(entry.piece!)}
+                                size="sm"
+                                variant="ghost"
+                              >
+                                Ouvrir
+                              </Button>
+                            ) : null}
+                          </span>
+                        </div>
+                        {entry.summary ? (
+                          <p
                             className={cn(
-                              "patient-timeline-kind-icon flex size-8 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105",
-                              KIND_COLOR[entry.kind]
+                              "patient-timeline-summary",
+                              muted ? "text-muted-foreground" : "text-foreground/85"
                             )}
                           >
-                            <Icon className="size-4.5" weight="duotone" />
-                          </span>
-                          <div className="min-w-0">
-                            <span className="block break-words font-semibold text-sm leading-5">
-                              {entry.label}
-                            </span>
-                            {entry.context ? (
-                              <span className="mt-0.5 block text-muted-foreground text-xs leading-4">
-                                {entry.context}
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-3 py-3">
-                        <p
-                          className={cn(
-                            "line-clamp-3 break-words text-sm leading-5",
-                            entry.summary === NO_REPORT
-                              ? "text-muted-foreground"
-                              : "font-medium text-foreground/85"
-                          )}
-                        >
-                          {entry.summary}
-                        </p>
-                        {entry.summaryDetail ? (
-                          <p className="mt-1 line-clamp-2 break-words text-muted-foreground text-xs leading-4">
-                            {entry.summaryDetail}
+                            {entry.summary}
                           </p>
                         ) : null}
-                      </td>
-                      <td className="px-3 py-3">
-                        {entry.statusBadge ? (
-                          <Badge
-                            className={cn(
-                              "max-w-full !whitespace-normal rounded-full px-2 py-0.5 text-center font-medium t-12",
-                              entry.statusBadge.className
-                            )}
-                            variant="secondary"
-                          >
-                            {entry.statusBadge.label}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">
-                            —
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 text-right">
-                        {entry.kind === "consultation" &&
-                        onJumpToAppointment ? (
-                          <Button
-                            className="min-h-8 h-auto max-w-full !whitespace-normal gap-1 rounded-lg px-1 py-1.5 text-xs"
-                            onClick={() =>
-                              onJumpToAppointment(entry.id.replace(/^apt-/, ""))
-                            }
-                            size="sm"
-                            variant="ghost"
-                          >
-                            Note clinique
-                            <Notebook
-                              className="patient-timeline-kind-icon size-3.5"
-                              weight="duotone"
-                            />
-                          </Button>
-                        ) : entry.kind === "note" && onOpenNote ? (
-                          <Button
-                            className="min-h-8 h-auto max-w-full !whitespace-normal gap-1 rounded-lg px-1 py-1.5 text-xs"
-                            onClick={() => onOpenNote(entry.id.replace(/^note-/, ""))}
-                            size="sm"
-                            variant="ghost"
-                          >
-                            Lire la note
-                            <PencilSimple className="patient-timeline-kind-icon size-3.5" weight="duotone" />
-                          </Button>
-                        ) : entry.kind === "weight" &&
-                          entry.weightEntry &&
-                          onEditWeight ? (
-                          <Button
-                            className="min-h-8 h-auto max-w-full !whitespace-normal rounded-lg px-1 py-1.5 text-xs"
-                            onClick={() => onEditWeight(entry.weightEntry!)}
-                            size="sm"
-                            variant="ghost"
-                          >
-                            Modifier
-                          </Button>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">
-                            —
-                          </span>
-                        )}
-                      </td>
-                    </tr>
+                        {entry.summaryDetail ? (
+                          <p className="patient-timeline-detail">{entry.summaryDetail}</p>
+                        ) : null}
+                        {entry.pieces?.length ? (
+                          <ul className="patient-timeline-pieces" aria-label="Pièces de cet événement">
+                            {entry.pieces.map((piece) => (
+                              <li key={piece.id}>
+                                <PieceChip onOpen={onOpenPiece} piece={piece} />
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </div>
+                    </li>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+              </ol>
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -168,7 +168,7 @@
 
 .patient-context-widgets {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   min-width: 0;
   gap: 12px;
 }
@@ -1461,7 +1461,7 @@
 }
 @container patient-page (min-width: 1040px) {
   .patient-record-indicators {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .patient-record-indicators > :is(.patient-context-widgets, .medical-kpi-strip) {
     display: contents;
@@ -1639,53 +1639,147 @@
 }
 
 
-/* Chronologie: all columns remain inside the patient record, including actions. */
-.patient-timeline-scroll {
-  width: 100%;
+/* Chronologie: a vertical thread. Each event hangs on it by a marker of its
+   kind; the papers it produced (prescription, invoice, result) hang under it. */
+.patient-chronologie {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--medical-border);
+  scroll-margin-top: 16px;
+}
+.patient-chronologie-title {
+  margin: 0 0 16px;
+  color: var(--medical-ink);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+.patient-timeline {
+  display: grid;
+  gap: 20px;
   min-width: 0;
-  max-height: min(60dvh, 36rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  container-type: inline-size;
-  scrollbar-gutter: stable;
 }
-.patient-timeline-scroll:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-.patient-timeline-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-.patient-timeline-table th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: #f5f5f5;
-  color: #5d5d5d;
-  padding: 12px;
+.patient-timeline-month-label {
+  margin: 0 0 8px;
+  color: var(--medical-quiet);
   font-size: 12px;
   font-weight: 500;
   line-height: 18px;
-  border-bottom: 1px solid var(--border);
 }
-.dark .patient-timeline-table th {
-  background: var(--muted);
-  color: var(--muted-foreground);
+.patient-timeline-list {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.patient-timeline-table :is(th, td) {
+.patient-timeline-list::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 15px;
+  width: 1px;
+  background: var(--medical-border);
+}
+.patient-timeline-event {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+  padding: 6px 0 14px;
+}
+.patient-timeline-marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px var(--medical-panel);
+}
+.patient-timeline-body {
   min-width: 0;
+  padding-top: 5px;
+}
+.patient-timeline-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  min-width: 0;
+}
+.patient-timeline-date {
+  color: var(--medical-quiet);
+  font-size: 12px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.patient-timeline-title {
+  color: var(--medical-ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.patient-timeline-context {
+  color: var(--medical-muted);
+  font-size: 13px;
+  line-height: 20px;
   overflow-wrap: anywhere;
-  white-space: normal;
 }
-@container (max-width: 640px) {
-  .patient-timeline-table :is(th, td) { padding-inline: 8px; }
-  .patient-timeline-kind-icon { display: none; }
-  .patient-timeline-table td p { font-size: 12px; }
+.patient-timeline-action {
+  margin-left: auto;
 }
-@container (max-width: 400px) {
-  .patient-timeline-table :is(th, td) { padding-inline: 4px; }
+.patient-timeline-summary {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.patient-timeline-detail {
+  margin: 2px 0 0;
+  color: var(--medical-muted);
+  font-size: 12px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+.patient-timeline-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.patient-timeline-piece {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 28px;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
+  background: var(--medical-soft);
+  color: var(--medical-ink);
+  font-size: 12px;
+  line-height: 18px;
+}
+button.patient-timeline-piece {
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  button.patient-timeline-piece:hover {
+    background: var(--medical-hover);
+  }
+}
+button.patient-timeline-piece:focus-visible {
+  outline: 2px solid var(--medical-focus);
+  outline-offset: 2px;
 }
 
 /* Synthèse: the last visit and what was concluded, then the visits before it. */
@@ -1698,11 +1792,11 @@
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
     gap: 0;
   }
-  .patient-overview-previous {
+  .patient-overview-aside {
     padding-left: 24px;
     border-left: 1px solid var(--medical-border);
   }
-  .patient-overview-last {
+  .patient-overview-main {
     padding-right: 24px;
   }
 }
@@ -1754,61 +1848,6 @@
   font-size: 13px;
   line-height: 20px;
 }
-.patient-overview-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.patient-overview-list > li + li {
-  border-top: 1px solid var(--medical-border);
-}
-.patient-overview-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 52px;
-  padding: 8px 4px;
-  border: 0;
-  background: transparent;
-  color: var(--medical-ink);
-  text-align: left;
-  cursor: pointer;
-}
-@media (hover: hover) and (pointer: fine) {
-  .patient-overview-row:hover {
-    background: var(--medical-soft);
-  }
-}
-.patient-overview-row:focus-visible {
-  outline: 2px solid var(--medical-ink);
-  outline-offset: -2px;
-}
-.patient-overview-row time {
-  flex: 0 0 96px;
-  color: var(--medical-quiet);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-.patient-overview-row-main {
-  display: flex;
-  min-width: 0;
-  flex: 1;
-  flex-direction: column;
-}
-.patient-overview-row-main strong {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 20px;
-}
-.patient-overview-row-main span {
-  overflow: hidden;
-  color: var(--medical-muted);
-  font-size: 12px;
-  line-height: 18px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .patient-overview-status {
   flex-shrink: 0;
   padding: 1px 8px;
@@ -1817,4 +1856,177 @@
   color: var(--medical-ink);
   font-size: 12px;
   line-height: 18px;
+}
+
+/* Header: the patient's and the owner's names, bold, the reference beside. */
+.medical-identity .medical-identity-name {
+  font-weight: 700;
+}
+.medical-reference {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--medical-border);
+  border-radius: 6px;
+  background: var(--medical-soft);
+  color: var(--medical-ink);
+  font-family: var(--app-font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.medical-identity .medical-identity-owner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 0;
+  color: var(--medical-muted);
+  font-size: 13px;
+}
+.medical-identity-owner strong {
+  color: var(--medical-ink);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+/* Safety: the allergy alone is red; treatment and history stay neutral. */
+.medical-safety {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.medical-safety-allergy {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--medical-danger-border);
+  border-left: 4px solid var(--medical-danger);
+  border-radius: 10px;
+  background: var(--medical-danger-bg);
+  color: var(--medical-danger);
+}
+.medical-safety-allergy strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.medical-safety-allergy p {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+.medical-safety-quiet {
+  margin: 0;
+  color: var(--medical-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+.medical-safety-facts {
+  display: grid;
+  gap: 8px 24px;
+  margin: 0;
+}
+@container patient-page (min-width: 760px) {
+  .medical-safety-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.medical-safety-facts > div {
+  min-width: 0;
+}
+.medical-safety-facts dt {
+  color: var(--medical-quiet);
+  font-size: 12px;
+  line-height: 18px;
+}
+.medical-safety-facts dd {
+  margin: 2px 0 0;
+  color: var(--medical-muted);
+  font-size: 13px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+.medical-safety-facts ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Prévention: neutral countdowns; red only once a booster is late. */
+.medical-prevention-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.medical-prevention-header h2 {
+  margin: 0;
+  color: var(--medical-ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.medical-prevention-header button {
+  border: 0;
+  background: none;
+  color: var(--medical-muted);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.medical-prevention-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.medical-prevention-list > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 12px;
+  padding: 8px 0;
+}
+.medical-prevention-list > li + li {
+  border-top: 1px solid var(--medical-border);
+}
+.medical-prevention-label {
+  color: var(--medical-ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+.medical-prevention-count {
+  color: var(--medical-muted);
+  font-size: 13px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.medical-prevention-date {
+  grid-column: 1 / -1;
+  color: var(--medical-quiet);
+  font-size: 12px;
+  line-height: 18px;
+}
+.medical-prevention-list > li.is-late .medical-prevention-count {
+  color: var(--medical-danger);
+  font-weight: 600;
+}
+.medical-prevention-empty {
+  margin: 0;
+  color: var(--medical-muted);
+  font-size: 13px;
+  line-height: 20px;
 }

@@ -74,6 +74,8 @@ export interface HealthCard {
     ownerName?: string;
     ownerPhone?: string;
     photoDataUrl?: string;
+    /** « ID-0011 ». */
+    reference?: string;
     sexLabel: string;
     species: string;
     tattooNumber?: string;
@@ -263,7 +265,10 @@ function doseLabel(item: PrescriptionItem): string | undefined {
   return undefined;
 }
 
-function buildTreatments(input: HealthCardInput) {
+/** Treatments still running today, from signed or dispensed prescriptions. */
+export function buildTreatments(
+  input: Pick<HealthCardInput, "items" | "now" | "patient" | "prescriptions">
+) {
   const byId = new Map(
     input.prescriptions
       .filter(
@@ -406,6 +411,7 @@ export function buildHealthCard(input: HealthCardInput): HealthCard {
       chipNumber: clean(patient.chipNumber),
       tattooNumber: clean(patient.tattooNumber),
       photoDataUrl: photo(patient.avatarUrl),
+      reference: clean(patient.reference),
       ownerName,
       ownerPhone: owner ? clean(owner.phone) : undefined,
     },
