@@ -2337,7 +2337,8 @@ button.patient-timeline-piece:focus-visible {
   margin-bottom: 0 !important;
 }
 
-/* The quick preview opens on the same safety band, between identity and tabs. */
+/* The quick preview opens on the same safety band, between identity and tabs,
+   with the same air above (under the identity's rule) as below. */
 .patient-peek-safety {
-  padding: 0 24px 20px;
+  padding: 16px 24px;
 }

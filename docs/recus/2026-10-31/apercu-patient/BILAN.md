@@ -34,3 +34,7 @@ Le composant `ClinicalAlerts` n'avait plus d'utilisateur ; je l'ai supprimé. Le
 - **Un patient sans allergie.** Le cas n'a pas été vu dans l'aperçu ; la bande affiche alors « Aucune allergie connue » ou « Allergies non renseignées », en neutre.
 - **Le mode « suivi au clavier »** (aperçu non modal, qui suit la sélection dans la liste) n'a pas été capturé ; c'est le même panneau.
 - **Les aperçus ouverts depuis l'agenda, le tableau de bord ou Flux** utilisent le même composant, mais n'ont pas été capturés.
+
+## Espacement de la bande sécurité (correctif)
+
+La bande était collée au filet de l'identité (0 px au-dessus) et éloignée des onglets en dessous (environ 50 px). Elle a maintenant 16 px au-dessus comme en dessous, et son bord gauche est aligné sur l'avatar. Captures : `apres-espacement/`.
