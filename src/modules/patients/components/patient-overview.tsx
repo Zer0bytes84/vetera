@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { AppointmentTypeBadge } from "@/modules/agenda/components/agenda-shared";
 import type { Appointment, ConsultationSoap } from "@/types/db";
+import type { HealthCardTreatment } from "../health-card/health-card-data";
 import { visitReason } from "../lib/visit-reason";
-import { recordDate } from "./medical-record-summary";
+import { isClinicalSignal, recordDate } from "./medical-record-summary";
 
 /** Only statuses other than "done" are worth a label on the last visit. */
 const OPEN_STATUS_LABELS: Partial<Record<Appointment["status"], string>> = {
@@ -16,6 +17,80 @@ const OPEN_STATUS_LABELS: Partial<Record<Appointment["status"], string>> = {
 function excerpt(value?: string | null) {
   const text = value?.replace(/\s+/g, " ").trim();
   return text || "";
+}
+
+function treatmentRhythm(treatment: HealthCardTreatment) {
+  const until =
+    treatment.until === "long_cours"
+      ? "au long cours"
+      : treatment.until
+        ? `jusqu’au ${recordDate(treatment.until)}`
+        : undefined;
+  return [treatment.dose, treatment.frequency, until].filter(Boolean).join(" · ");
+}
+
+/**
+ * Synthèse clinique: three calm columns, what is followed, what is given and
+ * what is due. Only what the record holds; an empty column says so.
+ */
+export function PatientClinicalSummary({
+  chronicConditions,
+  onOpenPrescriptions,
+  prevention,
+  treatments,
+}: {
+  chronicConditions?: string;
+  onOpenPrescriptions: () => void;
+  /** The prevention countdowns, red only once late. */
+  prevention: ReactNode;
+  treatments: { hidden: number; items: HealthCardTreatment[] };
+}) {
+  const chronic = chronicConditions?.trim();
+  return (
+    <section className="patient-clinical-summary" aria-labelledby="patient-clinical-summary-title">
+      <h2 className="sr-only" id="patient-clinical-summary-title">
+        Synthèse clinique
+      </h2>
+      <div className="patient-summary-column">
+        <h3 className="patient-summary-heading">Affections suivies</h3>
+        {isClinicalSignal(chronic) ? (
+          <ul className="patient-summary-list">
+            <li>
+              <strong>{chronic}</strong>
+            </li>
+          </ul>
+        ) : (
+          <p className="patient-summary-empty">Aucune affection suivie.</p>
+        )}
+      </div>
+      <div className="patient-summary-column">
+        <div className="patient-summary-heading-row">
+          <h3 className="patient-summary-heading">Traitements en cours</h3>
+          <button className="patient-summary-link" onClick={onOpenPrescriptions} type="button">
+            Ordonnances
+          </button>
+        </div>
+        {treatments.items.length ? (
+          <ul className="patient-summary-list">
+            {treatments.items.map((treatment) => (
+              <li key={`${treatment.name}-${treatment.since}`}>
+                <strong>{treatment.name}</strong>
+                {treatmentRhythm(treatment) ? <span>{treatmentRhythm(treatment)}</span> : null}
+              </li>
+            ))}
+            {treatments.hidden ? (
+              <li className="patient-summary-more">
+                et {treatments.hidden} autre{treatments.hidden > 1 ? "s" : ""}
+              </li>
+            ) : null}
+          </ul>
+        ) : (
+          <p className="patient-summary-empty">Aucun traitement en cours.</p>
+        )}
+      </div>
+      <div className="patient-summary-column">{prevention}</div>
+    </section>
+  );
 }
 
 /**

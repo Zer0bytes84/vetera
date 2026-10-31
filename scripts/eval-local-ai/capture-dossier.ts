@@ -19,7 +19,21 @@ export async function captureDossier(signal: string, query: string, restore: () 
   const results: Record<string, unknown>[] = [];
   const shot = async (name: string, measures: Record<string, unknown> = {}) => {
     await sleep(700);
-    results.push({ name, ...measures, consoleErrors: [...consoleErrors] });
+    // Whatever scrolls sideways: the window, the scroll panel, or a block of the record.
+    const scrolls = (element: HTMLElement) => {
+      if (element.scrollWidth <= element.clientWidth + 1) return false;
+      const overflow = getComputedStyle(element).overflowX;
+      return element === document.documentElement || overflow === "auto" || overflow === "scroll";
+    };
+    const page = document.querySelector<HTMLElement>(".patient-record-page");
+    const sideways = [
+      document.documentElement,
+      document.querySelector<HTMLElement>('[data-slot="shell-scroll-panel"]'),
+      ...(page ? page.querySelectorAll<HTMLElement>("*") : []),
+    ]
+      .filter((element): element is HTMLElement => element !== null && scrolls(element))
+      .map((element) => element.className.toString().split(" ")[0] || element.tagName);
+    results.push({ name, ...measures, sideways, consoleErrors: [...consoleErrors] });
     await writeTextFile(`${signal}.results.json`, JSON.stringify(results, null, 2));
     await writeTextFile(signal, `ready:${name}`);
     for (let i = 0; i < 1200 && (await readTextFile(signal).catch(() => "")).trim() !== `done:${name}`; i++) await sleep(250);

@@ -22,9 +22,9 @@ export function PatientPrevention({ now, onOpenVaccinations, patientId, vaccinat
 
   return (
     <section className="medical-prevention" aria-labelledby="medical-prevention-title">
-      <div className="medical-prevention-header">
-        <h2 id="medical-prevention-title">Prévention</h2>
-        <button type="button" onClick={onOpenVaccinations}>
+      <div className="medical-prevention-header patient-summary-heading-row">
+        <h3 className="patient-summary-heading" id="medical-prevention-title">Rappels et prévention</h3>
+        <button className="patient-summary-link" type="button" onClick={onOpenVaccinations}>
           Vaccinations
         </button>
       </div>

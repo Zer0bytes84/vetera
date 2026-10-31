@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Kejounti",
+    "reference": "ID-0010",
+    "owner": "Kebaili Mohamed",
+    "allergy": null,
+    "safety": "Sécurité\n\nAllergie\nPénicillines\n\nContention\nMuselière, manipuler à deux",
+    "prevention": "Rappels et prévention\nVaccinations\nVaccin\nen retard de 19 jours\n12 oct. 2026\nVermifuge\ndans 15 jours\n15 nov. 2026",
+    "tabs": [
+      "Synthèse",
+      "Ordonnances",
+      "Hospitalisations",
+      "Anesthésies",
+      "Vaccinations",
+      "Poids",
+      "Documents"
+    ],
+    "sideways": [],
+    "consoleErrors": []
+  },
+  {
+    "name": "dossier-synthese",
+    "reason": {
+      "color": "rgb(41, 41, 41)",
+      "size": "18px",
+      "weight": "600",
+      "family": "Inter Clean"
+    },
+    "zero": {
+      "color": "rgb(127, 127, 127)",
+      "size": "24px",
+      "weight": "500",
+      "family": "Inter Clean"
+    },
+    "timelineTitle": {
+      "color": "rgb(41, 41, 41)",
+      "size": "14px",
+      "weight": "600",
+      "family": "Inter Clean"
+    },
+    "piece": {
+      "color": "rgb(41, 41, 41)",
+      "size": "12px",
+      "weight": "400",
+      "family": "Inter Clean"
+    },
+    "sideways": [],
+    "consoleErrors": []
+  },
+  {
+    "name": "dossier-chronologie",
+    "events": 3,
+    "pieces": [
+      "Ordonnance signée",
+      "Facture INV-2026-000015",
+      "Facture INV-2026-000013"
+    ],
+    "sideways": [],
+    "consoleErrors": []
+  },
+  {
+    "name": "dossier-chronologie-plus",
+    "events": 6,
+    "more": "Afficher plus\n6 sur 13 événements",
+    "sideways": [],
+    "consoleErrors": []
+  },
+  {
+    "name": "dossier-chronologie-fin",
+    "events": 13,
+    "pieces": [
+      "Ordonnance signée",
+      "Facture INV-2026-000015",
+      "Facture INV-2026-000013",
+      "Facture INV-2026-000010",
+      "Facture 1 août 2026",
+      "Facture 30 juil. 2026",
+      "Facture 25 juil. 2026",
+      "Facture 16 juin 2026"
+    ],
+    "sideways": [],
+    "consoleErrors": []
+  },
+  {
+    "name": "dossier-bas",
+    "permanent": "Informations permanentes\nIdentité\nDate de naissance\nÀ compléter\nEnregistré le\n16 juin 2026\nPropriétaire\nKM\n\nKebaili Mohamed\n\nVillage Ait saada, Tizi-ouzou\n\n76 76 27 28 28\nmoumouhkebaili@gmail.com\nNotes générales\n\nAucune note générale enregistrée.\n\nModifier les informations\nComplétude du dossier\n4/6\nDate de naissance à renseigner\nAucun vaccin : onglet Vaccinations",
+    "sideways": [],
+    "consoleErrors": []
+  }
+]

@@ -1,10 +1,12 @@
 import { CalendarPlus, FirstAid, Notebook, PencilSimple } from "@/lib/icons";
 import { Download, HeartPulse } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getSpeciesTheme } from "@/lib/species-theme";
+import { isTauriRuntime } from "@/services/browser-store";
 import type { Owner, Patient } from "@/types/db";
+import { formatDinars } from "@/utils/display-format";
 import { PatientIdentity } from "./medical-record-summary";
 
 interface PatientHeaderProps {
@@ -24,6 +26,34 @@ interface PatientHeaderProps {
   patient: Patient;
 }
 
+/**
+ * What the owner still owes, over every issued invoice in their name (all
+ * their animals), in centimes. Null while unknown: nothing is shown then.
+ */
+function useOwnerBalance(ownerId?: string) {
+  const [balance, setBalance] = useState<{ ownerId: string; cents: number } | null>(null);
+  useEffect(() => {
+    if (!ownerId || !isTauriRuntime()) return;
+    let cancelled = false;
+    void import("@/services/billingService")
+      .then(({ listInvoices }) => listInvoices())
+      .then((invoices) => {
+        if (cancelled) return;
+        const cents = invoices
+          .filter((invoice) => invoice.ownerId === ownerId && invoice.documentStatus === "issued")
+          .reduce((sum, invoice) => sum + Math.max(0, invoice.balanceAmount), 0);
+        setBalance({ ownerId, cents });
+      })
+      .catch(() => {
+        // The record stays readable without the balance.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ownerId]);
+  return balance && balance.ownerId === ownerId ? balance.cents : null;
+}
+
 export function PatientHeader({
   children,
   className,
@@ -38,6 +68,14 @@ export function PatientHeader({
   patient,
 }: PatientHeaderProps) {
   const speciesTheme = getSpeciesTheme(patient.species);
+  const balance = useOwnerBalance(owner?.id);
+  // One primary action, on the right of the card: the note of the visit under
+  // way, or a note without visit when none is.
+  const primary = onOpenClinicalNote
+    ? { label: "Note clinique", icon: Notebook, onClick: onOpenClinicalNote }
+    : onNewOffVisitNote
+      ? { label: "Note hors visite", icon: PencilSimple, onClick: onNewOffVisitNote }
+      : null;
 
   return (
     <section
@@ -53,23 +91,29 @@ export function PatientHeader({
       />
       <div className="medical-header-main">
         <PatientIdentity owner={owner} patient={patient} showIdentifiers={false} />
-        <div className="medical-header-actions" aria-label="Actions du dossier">
-          {onOpenClinicalNote && (
+        <div className="medical-header-aside">
+          {balance !== null ? (
+            <p className="medical-owner-balance">
+              Solde du propriétaire <strong>{formatDinars(balance / 100)}</strong>
+            </p>
+          ) : null}
+          {primary ? (
             <Button
               size="sm"
               className="medical-action medical-action-primary"
-              onClick={onOpenClinicalNote}
+              onClick={primary.onClick}
             >
-              <Notebook className="size-4" aria-hidden="true" />
-              Note clinique
+              <primary.icon className="size-4" aria-hidden="true" />
+              {primary.label}
             </Button>
-          )}
-          {onNewOffVisitNote && (
-            // The primary action when no visit is under way to carry a note.
+          ) : null}
+        </div>
+        <div className="medical-header-actions" aria-label="Actions du dossier">
+          {onOpenClinicalNote && onNewOffVisitNote && (
             <Button
               size="sm"
-              variant={onOpenClinicalNote ? "outline" : "default"}
-              className={cn("medical-action", onOpenClinicalNote ? "medical-action-outline" : "medical-action-primary")}
+              variant="outline"
+              className="medical-action medical-action-outline"
               onClick={onNewOffVisitNote}
             >
               <PencilSimple className="size-4" aria-hidden="true" />

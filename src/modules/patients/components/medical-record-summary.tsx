@@ -82,42 +82,32 @@ export function PatientIdentity({
             <span className="medical-status-dot" aria-hidden="true" />
             {status.label}
           </span>
-          <span className="medical-tag">
-            <HugeiconsIcon
-              icon={getSpeciesGlyph(patient.species)}
-              size={13}
-              strokeWidth={1.5}
-              className="shrink-0"
-              aria-hidden="true"
-            />
-            {patient.species}
-          </span>
-          {patient.sex && (
-            <span className="medical-tag">
-              {sexLabel} {sexSymbol}
-            </span>
-          )}
-          {patient.sterilized ? (
-            <span className="medical-tag">
-              {patient.sex === "F" ? "Stérilisée" : "Stérilisé"}
-            </span>
-          ) : null}
         </div>
 
+        {/* What the animal is, in one sober line: species, breed, sex, age, chip. */}
         <p className="medical-identity-meta">
-          {patient.breed ? (
-            <span>{patient.breed}</span>
-          ) : null}
-          {patient.breed && ageLabel ? <span aria-hidden="true">·</span> : null}
-          {ageLabel ? (
-            <span>{ageLabel}</span>
-          ) : null}
+          {[
+            patient.species,
+            patient.breed,
+            sexLabel
+              ? `${sexLabel}${patient.sterilized ? (patient.sex === "F" ? " stérilisée" : " stérilisé") : ""} ${sexSymbol}`.trim()
+              : patient.sterilized
+                ? "Stérilisé"
+                : null,
+            ageLabel,
+            !showIdentifiers && patient.chipNumber?.trim() ? `Puce ${patient.chipNumber.trim()}` : null,
+          ]
+            .filter(Boolean)
+            .map((part, index) => (
+              <span key={index}>{part}</span>
+            ))}
         </p>
 
         {owner ? (
           <p className="medical-identity-owner">
             <span>Propriétaire</span>
             <strong>{`${owner.firstName} ${owner.lastName}`.trim()}</strong>
+            {owner.phone ? <span className="medical-identity-phone">{formatPhone(owner.phone)}</span> : null}
           </p>
         ) : null}
 

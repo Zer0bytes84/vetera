@@ -5,14 +5,11 @@ import {
   FileText,
   FirstAid,
   Hospital,
-  List,
   Pill,
   Scales,
   Syringe,
   X,
 } from "@/lib/icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { MedicalFileIcon } from "@/lib/hugeicons";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -71,7 +68,7 @@ import type { TimelinePiece } from "./lib/timeline-pieces";
 import { MedicalRecordTabs } from "./components/medical-record-tabs";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { PatientKpiStrip } from "./components/patient-kpi-strip";
-import { PatientOverview } from "./components/patient-overview";
+import { PatientClinicalSummary, PatientOverview } from "./components/patient-overview";
 import { PatientRecordHealth } from "./components/patient-record-health";
 import { PatientTimeline } from "./components/patient-timeline";
 import { OffVisitNotePanel } from "./components/off-visit-note-panel";
@@ -350,7 +347,7 @@ export function PatientDetailPage({
         )[0] ?? null,
     [appointments, now]
   );
-  // The safety zone shows what is still being given today.
+  // The clinical summary shows what is still being given today.
   const treatments = useMemo(
     () =>
       patient
@@ -563,24 +560,24 @@ export function PatientDetailPage({
       <div className="mx-auto w-full max-w-7xl space-y-4">
         <PageHeader
           className="patient-record-heading"
-          actions={
-            // The way back to the list sits with the page actions, on the right.
-            <Button
-              className="patient-record-list-link"
-              onClick={() => onNavigate("patients")}
-              size="sm"
-              title="Retour à la liste des patients"
-              variant="outline"
-            >
-              <List className="size-4" aria-hidden="true" />
-              Liste des patients
-            </Button>
+          // A trail back to the list: « Patients / Kejounti · ID-0010 ».
+          title={
+            <nav aria-label="Fil d’Ariane" className="patient-record-trail">
+              <button
+                className="patient-record-list-link"
+                onClick={() => onNavigate("patients")}
+                title="Retour à la liste des patients"
+                type="button"
+              >
+                Patients
+              </button>
+              <span aria-hidden="true">/</span>
+              <span aria-current="page">
+                {patient.name}
+                {patient.reference ? ` · ${patient.reference}` : ""}
+              </span>
+            </nav>
           }
-          // The record's own icon, the one that already opens a record in Flux
-          // and in the command palette.
-          icon={<HugeiconsIcon icon={MedicalFileIcon} size={20} strokeWidth={1.5} />}
-          subtitle={`${patient.name} · consultations, traitements et suivi`}
-          title="Dossier patient"
         />
         {soapAppointmentId && (
           <section id="patient-consultation-note" aria-label={`Note de consultation de ${patient.name}`} className="space-y-4 border-b border-border pb-6">
@@ -629,7 +626,7 @@ export function PatientDetailPage({
         {healthCardOpen && <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Ouverture du carnet de santé…</p>}>
           <HealthCardDialog key={patientId} owner={owner} patient={patient} onClose={() => setHealthCardOpen(false)} />
         </Suspense>}
-        <PatientSafetyZone patient={patient} treatments={treatments} />
+        <PatientSafetyZone patient={patient} />
         <section className="patient-record-indicators" aria-label={`Indicateurs de ${patient.name}`}>
           <PatientContextWidgets
             patientName={patient.name}
@@ -990,8 +987,10 @@ export function PatientDetailPage({
             >
               {activeTab === "overview" && (
                 <>
-                  <PatientOverview
-                    aside={
+                  <PatientClinicalSummary
+                    chronicConditions={patient.chronicConditions}
+                    onOpenPrescriptions={() => handleTabChange("prescriptions")}
+                    prevention={
                       <PatientPrevention
                         now={now}
                         onOpenVaccinations={() => handleTabChange("vaccinations")}
@@ -999,6 +998,9 @@ export function PatientDetailPage({
                         vaccinations={vaccinations}
                       />
                     }
+                    treatments={treatments}
+                  />
+                  <PatientOverview
                     error={Boolean(appointmentsRepo.error)}
                     getSoap={soapsRepo.forAppointment}
                     loading={appointmentsRepo.loading}

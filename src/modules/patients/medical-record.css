@@ -538,6 +538,70 @@
 .medical-identity .medical-identity-meta:empty {
   display: none;
 }
+.medical-identity-meta > span + span::before {
+  content: "·";
+  margin-right: 6px;
+  color: var(--medical-quiet);
+}
+.medical-identity-phone {
+  color: var(--medical-muted);
+  font-variant-numeric: tabular-nums;
+}
+.medical-identity-phone::before {
+  content: "·";
+  margin-right: 8px;
+  color: var(--medical-quiet);
+}
+
+/* Right of the card: what the owner owes, then the one primary action. */
+.medical-header-aside {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px 16px;
+}
+.patient-record-page .medical-header-aside > p.medical-owner-balance {
+  margin: 0;
+  color: var(--medical-muted);
+  font-size: 13px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.medical-owner-balance strong {
+  margin-left: 4px;
+  color: var(--medical-ink);
+  font-weight: 500;
+}
+
+/* The page header holds a trail back to the list, not a second title. */
+.patient-record-trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--medical-ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+.patient-record-trail > span[aria-hidden] {
+  color: var(--medical-quiet);
+}
+.patient-record-trail button {
+  border: 0;
+  background: none;
+  color: var(--medical-muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .patient-record-trail button:hover {
+    color: var(--medical-ink);
+  }
+}
 
 :is(.medical-tag-pill, .medical-id-chip) {
   border: 1px solid var(--medical-border);
@@ -973,12 +1037,14 @@
   line-height: 20px;
 }
 
+/* Every section stays in the window's width: the row wraps, it never scrolls. */
 .medical-tabs {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0;
   min-width: 0;
-  overflow-x: auto;
+  overflow: visible;
   overscroll-behavior-x: contain;
   padding: 8px 24px;
   border-bottom: 1px solid var(--medical-border);
@@ -1137,7 +1203,6 @@
   margin-bottom: 16px;
 }
 .medical-overview-heading [data-slot="button"] {
-  margin-right: -8px;
   color: var(--medical-muted);
   font-size: 12px;
   font-weight: 400;
@@ -1934,20 +1999,6 @@ button.patient-timeline-piece:focus-visible {
   display: grid;
   gap: 24px;
 }
-/* Prevention sits beside the last visit on a tone step, as tall as what it
-   holds: an empty list does not leave a column of blank under a rule. */
-.patient-overview-aside {
-  align-self: start;
-  padding: 16px 20px;
-  border-radius: 10px;
-  background: var(--medical-soft);
-}
-@container patient-page (min-width: 1040px) {
-  .patient-overview {
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    gap: 32px;
-  }
-}
 .patient-overview-last-meta {
   display: flex;
   flex-wrap: wrap;
@@ -2053,113 +2104,106 @@ button.patient-timeline-piece:focus-visible {
   line-height: 22px;
 }
 
-/* Safety: one card like the others. The allergy alone is red, as a band
-   across its top; treatment, restraint and history follow in columns, an
-   absence in a paler grey than a value. */
+/* Safety: one flat band. The allergy is the only red mark of the record;
+   the restraint sits beside it, neutral. */
 .medical-safety {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
   min-width: 0;
-  overflow: hidden;
+  padding: 12px 24px;
   border: 1px solid var(--medical-border);
   border-radius: 12px;
   background: var(--medical-panel);
 }
-.medical-safety-allergy {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 24px;
-  border-bottom: 1px solid var(--medical-danger-border);
-  background: var(--medical-danger-bg);
-  color: var(--medical-danger);
-}
-.medical-safety-allergy > div {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
-}
-.medical-safety-allergy strong {
-  font-size: 13px;
+.medical-safety-label {
+  margin-right: 6px;
+  color: var(--medical-quiet);
+  font-size: 12px;
   font-weight: 500;
   line-height: 20px;
 }
 /* Scoped past Clean, which gives every plain paragraph its body grey. */
-.patient-record-page .medical-safety .medical-safety-allergy > div > p {
+.patient-record-page .medical-safety > p.medical-safety-pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 28px;
+  gap: 6px;
   margin: 0;
-  color: inherit;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  overflow-wrap: anywhere;
-}
-.medical-safety-quiet {
-  margin: 0;
-  padding: 14px 24px;
-  border-bottom: 1px solid var(--medical-border);
+  padding: 3px 10px;
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
+  background: var(--medical-soft);
   color: var(--medical-muted);
   font-size: 13px;
   line-height: 20px;
-}
-.medical-safety-facts {
-  display: grid;
-  gap: 16px 24px;
-  margin: 0;
-  padding: 16px 24px;
-}
-@container patient-page (min-width: 760px) {
-  .medical-safety-facts {
-    grid-auto-columns: minmax(0, 1fr);
-    grid-auto-flow: column;
-  }
-}
-.medical-safety-facts > div {
-  min-width: 0;
-}
-.medical-safety-facts dt {
-  color: var(--medical-quiet);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 20px;
-}
-.medical-safety-facts dd {
-  margin: 2px 0 0;
-  color: var(--medical-ink);
-  font-size: 14px;
-  line-height: 20px;
   overflow-wrap: anywhere;
 }
-.medical-safety-facts dd.is-empty {
+.medical-safety-pill > span {
   color: var(--medical-quiet);
 }
-.medical-safety-facts ul {
-  display: grid;
-  gap: 2px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.medical-safety-pill > strong {
+  color: var(--medical-ink);
+  font-weight: 500;
+}
+.medical-safety-pill.is-empty > strong {
+  color: var(--medical-quiet);
+  font-weight: 400;
+}
+.patient-record-page .medical-safety > p.medical-safety-pill.is-allergy {
+  border-color: var(--medical-danger-border);
+  background: var(--medical-danger-bg);
+  color: var(--medical-danger);
+}
+.medical-safety-pill.is-allergy > span,
+.medical-safety-pill.is-allergy > strong {
+  color: inherit;
+}
+.medical-safety-pill.is-allergy > strong {
+  font-weight: 600;
 }
 
-/* Prévention: neutral countdowns; red only once a booster is late. */
-.medical-prevention-header {
+/* Synthèse clinique: three calm columns over the last visit. */
+.patient-clinical-summary {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--medical-border);
+}
+@container patient-page (min-width: 900px) {
+  .patient-clinical-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+}
+.patient-summary-column {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+}
+.patient-summary-heading-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
 }
-.medical-prevention-header h2 {
+.patient-summary-heading {
   margin: 0;
   color: var(--medical-ink);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 20px;
 }
-.medical-prevention-header button {
+.patient-summary-link {
   border: 0;
   background: none;
   color: var(--medical-muted);
   font-size: 12px;
+  line-height: 20px;
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
@@ -2167,23 +2211,72 @@ button.patient-timeline-piece:focus-visible {
   transition: color 160ms ease;
 }
 @media (hover: hover) and (pointer: fine) {
-  .medical-prevention-header button:hover {
+  .patient-summary-link:hover {
     color: var(--medical-ink);
   }
+}
+.patient-summary-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.patient-summary-list > li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
+  background: var(--medical-soft);
+  overflow-wrap: anywhere;
+}
+.patient-summary-list strong {
+  color: var(--medical-ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+.patient-summary-list span {
+  color: var(--medical-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+.patient-summary-list > li.patient-summary-more {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--medical-quiet);
+  font-size: 12px;
+}
+.patient-record-page .patient-summary-column > p.patient-summary-empty {
+  margin: 0;
+  color: var(--medical-quiet);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+/* Prévention: neutral countdowns; red only once a booster is late. */
+.medical-prevention-header {
+  margin-bottom: 10px;
 }
 .medical-prevention-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
+.medical-prevention-list {
+  display: grid;
+  gap: 8px;
+}
 .medical-prevention-list > li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0 12px;
-  padding: 8px 0;
-}
-.medical-prevention-list > li + li {
-  border-top: 1px solid color-mix(in oklab, var(--medical-ink) 8%, transparent);
+  padding: 10px 12px;
+  border: 1px solid var(--medical-border);
+  border-radius: 8px;
+  background: var(--medical-soft);
 }
 .medical-prevention-label {
   color: var(--medical-ink);

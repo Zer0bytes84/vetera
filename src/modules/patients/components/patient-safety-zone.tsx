@@ -1,77 +1,40 @@
 import { AlertTriangle } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { Patient } from "@/types/db";
-import type { HealthCardTreatment } from "../health-card/health-card-data";
-import { isClinicalSignal, recordDate } from "./medical-record-summary";
+import { isClinicalSignal } from "./medical-record-summary";
 
 interface PatientSafetyZoneProps {
   patient: Patient;
-  treatments: { hidden: number; items: HealthCardTreatment[] };
-}
-
-function treatmentLine(treatment: HealthCardTreatment) {
-  const until =
-    treatment.until === "long_cours"
-      ? "au long cours"
-      : treatment.until
-        ? `jusqu’au ${recordDate(treatment.until)}`
-        : undefined;
-  return [treatment.name, treatment.dose, treatment.frequency, until].filter(Boolean).join(" · ");
 }
 
 /**
- * What must be known before touching the animal. The allergy dominates and is
- * the only red surface; the current treatment, the restraint and the history
- * stay neutral.
+ * What must be known before touching the animal, on one flat band: the
+ * allergy, the only red mark of the record, and the restraint, neutral, on
+ * the same line. Treatments live in the clinical summary.
  */
-export function PatientSafetyZone({ patient, treatments }: PatientSafetyZoneProps) {
+export function PatientSafetyZone({ patient }: PatientSafetyZoneProps) {
   const allergies = patient.allergies?.trim();
-  const chronic = patient.chronicConditions?.trim();
   const restraint = patient.restraint?.trim();
   const hasAllergy = isClinicalSignal(allergies);
 
   return (
     <section className="medical-safety" aria-label="Sécurité du patient">
+      <span className="medical-safety-label">Sécurité</span>
       {hasAllergy ? (
-        <div className="medical-safety-allergy" role="alert">
-          <AlertTriangle size={18} className="shrink-0" aria-hidden="true" />
-          <div className="min-w-0">
-            <strong>Allergie</strong>
-            <p>{allergies}</p>
-          </div>
-        </div>
+        <p className="medical-safety-pill is-allergy" role="alert">
+          <AlertTriangle size={14} className="shrink-0" aria-hidden="true" />
+          <span>Allergie</span>
+          <strong>{allergies}</strong>
+        </p>
       ) : (
-        <p className="medical-safety-quiet">
+        <p className="medical-safety-pill">
           {allergies ? "Aucune allergie connue" : "Allergies non renseignées"}
         </p>
       )}
-      <dl className="medical-safety-facts">
-        <div>
-          <dt>Traitement en cours</dt>
-          <dd className={cn(!treatments.items.length && "is-empty")}>
-            {treatments.items.length ? (
-              <ul>
-                {treatments.items.map((treatment) => (
-                  <li key={`${treatment.name}-${treatment.since}`}>{treatmentLine(treatment)}</li>
-                ))}
-                {treatments.hidden ? <li>et {treatments.hidden} autre{treatments.hidden > 1 ? "s" : ""}</li> : null}
-              </ul>
-            ) : (
-              "Aucun"
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt>Contention</dt>
-          <dd className={cn(!restraint && "is-empty")}>{restraint || "Non renseignée"}</dd>
-        </div>
-        {isClinicalSignal(chronic) ? (
-          <div>
-            <dt>Antécédents</dt>
-            <dd>{chronic}</dd>
-          </div>
-        ) : null}
-      </dl>
+      <p className={cn("medical-safety-pill", !restraint && "is-empty")}>
+        <span>Contention</span>
+        <strong>{restraint || "non renseignée"}</strong>
+      </p>
     </section>
   );
 }
