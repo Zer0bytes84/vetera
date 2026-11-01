@@ -1,0 +1,250 @@
+[
+  {
+    "appearance": "clean-light",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [],
+    "stroke": null,
+    "dimmers": []
+  },
+  {
+    "appearance": "clean-light",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  },
+  {
+    "appearance": "clean-light",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [],
+    "stroke": null,
+    "dimmers": []
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  },
+  {
+    "appearance": "premium-light",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [],
+    "stroke": null,
+    "dimmers": []
+  },
+  {
+    "appearance": "premium-light",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  },
+  {
+    "appearance": "premium-light",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [],
+    "stroke": null,
+    "dimmers": []
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": []
+  }
+]

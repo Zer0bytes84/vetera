@@ -1,22 +1,4 @@
-.plush-mascot {
-  display: inline-block;
-  position: relative;
-  flex: 0 0 auto;
-  width: var(--mascot-size, 44px);
-  height: var(--mascot-size, 44px);
-  pointer-events: none;
-  user-select: none;
-}
-.plush-mascot-lens,
-.plush-mascot-look {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.plush-mascot-lens { position: relative; }
-.plush-mascot-look { transition: transform 220ms cubic-bezier(.22, 1, .36, 1); }
-.plush-mascot[data-framing="portrait"] { overflow: visible; }
-.plush-mascot[data-framing="portrait"] .plush-mascot-look { transform-origin: 50% 50%; }
+
 
 .sidebar-brand-wordmark {
   color: var(--sidebar-foreground);
@@ -108,11 +90,9 @@
   .mascot-settings-intro { gap: 12px; padding: 18px 18px 6px; }
   .mascot-settings-intro h3 { font-size: 16px; }
   .mascot-settings-preview { flex-basis: 84px; min-height: 90px; }
-  .mascot-settings-preview .plush-mascot { width: 80px; height: 80px; }
   .mascot-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 8px 18px 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .plush-mascot .plush-mascot-look { animation: none !important; transition: none !important; transform: none !important; }
   .mascot-choice { transition: none; }
   .mascot-choice:active { transform: none; }
 }
@@ -189,12 +169,6 @@
     box-shadow: none;
   }
 }
-@media (hover: hover) and (pointer: fine) {
-  .sidebar-mascot-circle[data-sidebar-brand="mascot"]:hover .mascot-3d-wrapper {
-    border-color: color-mix(in srgb, var(--sidebar-foreground) 28%, var(--sidebar-border));
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
-  }
-}
 .sidebar-brand-home { padding: 6px 0; border-radius: 6px; cursor: pointer; }
 .mascot-picker {
   width: min(330px, calc(100vw - 24px));
@@ -263,24 +237,6 @@
   justify-content: center;
   position: relative;
   user-select: none;
-}
-
-/* Cadre circulaire soigné style avatar */
-.mascot-3d-wrapper {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  border-radius: 9999px;
-  line-height: 0;
-  border: 1.5px solid color-mix(in srgb, var(--border) 70%, transparent);
-  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f3f5 100%);
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-.dark .mascot-3d-wrapper {
-  border-color: color-mix(in srgb, var(--border) 60%, rgba(255, 255, 255, 0.12));
-  background: radial-gradient(circle at 50% 35%, #2a2d36 0%, #181a20 100%);
-  box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.4), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* Visage en gros plan (portrait avatar close-up) */
@@ -374,4 +330,30 @@
   background: var(--muted);
   color: var(--foreground);
   font-weight: 600;
+}
+
+/* The sidebar's mascot: drawn larger than the trigger's box, centred on it,
+   so the head and ears overflow without moving the header or the menu. */
+.sidebar-mascot-circle[data-sidebar-brand="mascot"] {
+  width: 56px;
+  height: 56px;
+}
+.sidebar-brand[data-collapsed="true"] .sidebar-mascot-circle[data-sidebar-brand="mascot"] {
+  width: 42px;
+  height: 42px;
+}
+.sidebar-mascot-circle .sidebar-mascot {
+  margin: -6px;
+}
+.sidebar-brand[data-collapsed="true"] .sidebar-mascot-circle .sidebar-mascot {
+  margin: -1px;
+}
+/* In the sidebar the mascot takes the sidebar's ink and ground, whatever the
+   page's: a dark sidebar over a light page draws it light on dark. */
+.sidebar-mascot.lm-root {
+  --pet-ink: var(--nav-ink, var(--sidebar-foreground));
+  --pet-paper: var(--nav-bg, var(--sidebar));
+}
+.sidebar-mascot .lm-frame {
+  fill: color-mix(in srgb, var(--pet-ink) 9%, transparent);
 }

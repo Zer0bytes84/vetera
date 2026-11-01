@@ -10,6 +10,7 @@ export { SidebarBrand } from "./sidebar-brand";
 export {
   MASCOT_ANIMALS,
   MASCOT_ASSETS,
-  NEW_3D_MASCOTS,
+  MASCOT_CHOICES,
   LEGACY_VECTOR_MASCOTS,
 } from "./mascot-assets";
+export { LineMascot } from "./line-mascot";

@@ -1,15 +1,23 @@
-export type MascotAnimal =
-  | "chat"
-  | "chien"
-  | "vache"
-  | "fennec"
-  | "lapin"
-  | "dog"
-  | "cat"
-  | "rabbit"
-  | "fox"
-  | "panda"
-  | "bear";
+/** The twelve line mascots, in the order they are offered. */
+export const MASCOT_CHOICE_KEYS = [
+  "chien",
+  "chat",
+  "lapin",
+  "fennec",
+  "vache",
+  "cheval",
+  "mouton",
+  "chevre",
+  "hamster",
+  "perroquet",
+  "herisson",
+  "tortue",
+] as const;
+
+/** Names saved by earlier versions, read back as one of the twelve. */
+const LEGACY_ANIMALS = ["dog", "cat", "rabbit", "fox", "panda", "bear"] as const;
+
+export type MascotAnimal = (typeof MASCOT_CHOICE_KEYS)[number] | (typeof LEGACY_ANIMALS)[number];
 
 export interface MascotPreferences {
   mode: "mascot" | "logo";
@@ -19,25 +27,14 @@ export interface MascotPreferences {
 
 export const MASCOT_STORAGE_KEY = "baitari:mascot:v1";
 const CHANGE_EVENT = "baitari-mascot-changed";
+/** By default, the dog, alive: the clinic's companion until another is chosen. */
 export const DEFAULT_MASCOT_PREFERENCES: MascotPreferences = {
-  mode: "logo",
-  animal: "chat",
+  mode: "mascot",
+  animal: "chien",
   animated: true,
 };
 
-export const VALID_ANIMALS: readonly MascotAnimal[] = [
-  "chat",
-  "chien",
-  "vache",
-  "fennec",
-  "lapin",
-  "dog",
-  "cat",
-  "rabbit",
-  "fox",
-  "panda",
-  "bear",
-];
+export const VALID_ANIMALS: readonly MascotAnimal[] = [...MASCOT_CHOICE_KEYS, ...LEGACY_ANIMALS];
 export const MASCOT_ANIMALS = VALID_ANIMALS;
 
 const LEGACY_ANIMAL_MAP: Record<string, MascotAnimal> = {
@@ -61,10 +58,10 @@ export function parseMascotPreferences(raw: string | null): MascotPreferences {
     const mappedAnimal = LEGACY_ANIMAL_MAP[rawAnimal];
     const animal = mappedAnimal || (VALID_ANIMALS.includes(rawAnimal as MascotAnimal)
       ? (rawAnimal as MascotAnimal)
-      : "chat");
+      : DEFAULT_MASCOT_PREFERENCES.animal);
 
     return {
-      mode: config.mode === "mascot" ? "mascot" : "logo",
+      mode: config.mode === "logo" ? "logo" : "mascot",
       animal,
       animated: typeof config.animated === "boolean" ? config.animated : true,
     };

@@ -8,8 +8,10 @@ import {
 import {
   LEGACY_VECTOR_MASCOTS,
   MASCOT_ASSETS,
-  NEW_3D_MASCOTS,
+  MASCOT_CHOICES,
+  lineAnimalOf,
 } from "@/components/mascot/mascot-assets";
+import { LINE_ANIMALS } from "@/components/mascot/line-mascots";
 
 describe("mascot preferences & assets", () => {
   let store: Record<string, string> = {};
@@ -41,26 +43,29 @@ describe("mascot preferences & assets", () => {
     vi.unstubAllGlobals();
   });
 
-  it("utilise le logo classique par défaut", () => {
+  it("accueille avec le chien par défaut, vivant", () => {
     const prefs = getMascotPreferences();
-    expect(prefs.mode).toBe("logo");
-    expect(DEFAULT_MASCOT_PREFERENCES.mode).toBe("logo");
+    expect(prefs).toEqual({ mode: "mascot", animal: "chien", animated: true });
+    expect(DEFAULT_MASCOT_PREFERENCES.animal).toBe("chien");
   });
 
-  it("supporte tous les 5 compagnons illustrés (chat, chien, vache, fennec, lapin)", () => {
-    expect(NEW_3D_MASCOTS).toEqual(["chat", "chien", "vache", "fennec", "lapin"]);
-    for (const animal of NEW_3D_MASCOTS) {
+  it("propose douze compagnons au trait, chacun dessiné", () => {
+    expect(MASCOT_CHOICES).toHaveLength(12);
+    expect(new Set(MASCOT_CHOICES).size).toBe(12);
+    for (const animal of MASCOT_CHOICES) {
       expect(MASCOT_ANIMALS).toContain(animal);
-      expect(MASCOT_ASSETS[animal].kind).toBe("vector");
+      expect(LINE_ANIMALS[lineAnimalOf(animal)].label).toBe(MASCOT_ASSETS[animal].label);
     }
   });
 
-  it("conserve les 6 mascottes illustrées d'origine pour la rétrocompatibilité", () => {
+  it("relit les noms des versions précédentes comme l'un des douze", () => {
     expect(LEGACY_VECTOR_MASCOTS).toEqual(["dog", "cat", "rabbit", "fox", "panda", "bear"]);
     for (const animal of LEGACY_VECTOR_MASCOTS) {
       expect(MASCOT_ANIMALS).toContain(animal);
-      expect(MASCOT_ASSETS[animal].kind).toBe("vector");
+      expect(MASCOT_CHOICES).toContain(lineAnimalOf(animal));
     }
+    store["baitari:mascot:v1"] = JSON.stringify({ mode: "mascot", animal: "dog", animated: true });
+    expect(getMascotPreferences().animal).toBe("chien");
   });
 
   it("persiste le choix de la mascotte dans localStorage", () => {

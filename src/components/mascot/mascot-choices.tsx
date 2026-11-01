@@ -5,7 +5,7 @@ import {
   type MascotPreferences,
   saveMascotPreferences,
 } from "@/lib/mascot-preferences";
-import { MASCOT_ASSETS, NEW_3D_MASCOTS } from "./mascot-assets";
+import { MASCOT_ASSETS, MASCOT_CHOICES } from "./mascot-assets";
 import { MascotAvatar } from "./mascot-avatar";
 
 export function MascotChoices({
@@ -35,7 +35,7 @@ export function MascotChoices({
     >
       {/* Grid of choices */}
       <div className="mascot-choices" data-compact={compact ? "true" : "false"}>
-        {NEW_3D_MASCOTS.map((animal) => {
+        {MASCOT_CHOICES.map((animal) => {
           const selected =
             preferences.mode === "mascot" && preferences.animal === animal;
           return (
@@ -48,12 +48,8 @@ export function MascotChoices({
               onClick={() => choose({ mode: "mascot", animal })}
               type="button"
             >
-              <MascotAvatar
-                animal={animal}
-                animated={preferences.animated}
-                idle={false}
-                size={compact ? 54 : 64}
-              />
+              {/* Still portraits: twelve faces following the pointer would be a crowd. */}
+              <MascotAvatar animal={animal} animated={false} overflow size={compact ? 54 : 64} />
               <span>{MASCOT_ASSETS[animal].label}</span>
               <span className="mascot-choice-check" aria-hidden="true">
                 {selected ? "✓" : ""}

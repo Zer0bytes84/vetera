@@ -1,0 +1,1079 @@
+[
+  {
+    "appearance": "clean-light",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 0px)",
+      "translate(0px, 0px)"
+    ],
+    "ink": "#f3f3f5",
+    "paper": "#0c0d0f",
+    "stroke": "rgb(243, 243, 245)",
+    "dimmers": []
+  },
+  {
+    "appearance": "clean-light",
+    "state": "yeux-gauche",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-1.24px, -0.13px)",
+      "translate(-1.24px, -0.13px)"
+    ]
+  },
+  {
+    "appearance": "clean-light",
+    "state": "yeux-droite",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.2px, -0.02px)",
+      "translate(2.2px, -0.02px)"
+    ]
+  },
+  {
+    "appearance": "clean-light",
+    "state": "yeux-haut",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-0.05px, -1.5px)",
+      "translate(-0.05px, -1.5px)"
+    ]
+  },
+  {
+    "appearance": "clean-light",
+    "state": "yeux-bas",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 2.19px)",
+      "translate(0px, 2.19px)"
+    ]
+  },
+  {
+    "appearance": "clean-light",
+    "state": "clignement",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ]
+  },
+  {
+    "appearance": "clean-light",
+    "state": "joyeux",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "happy"
+  },
+  {
+    "appearance": "clean-light",
+    "state": "neutre",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "neutral"
+  },
+  {
+    "appearance": "clean-light",
+    "state": "reflexion",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "thinking",
+    "waited": "26 s sans mouvement"
+  },
+  {
+    "appearance": "clean-light",
+    "state": "balayage-3s",
+    "frames": 180,
+    "meanMs": 16.7,
+    "p95Ms": 18.3,
+    "maxMs": 18.8,
+    "over20ms": 0
+  },
+  {
+    "appearance": "clean-light",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  },
+  {
+    "appearance": "clean-light",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 0px)",
+      "translate(0px, 0px)"
+    ],
+    "ink": "#f3f3f5",
+    "paper": "#0c0d0f",
+    "stroke": "rgb(243, 243, 245)",
+    "dimmers": []
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "yeux-gauche",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-1.24px, -0.13px)",
+      "translate(-1.24px, -0.13px)"
+    ]
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "yeux-droite",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.2px, -0.02px)",
+      "translate(2.2px, -0.02px)"
+    ]
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "yeux-haut",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-0.05px, -1.5px)",
+      "translate(-0.05px, -1.5px)"
+    ]
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "yeux-bas",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 2.19px)",
+      "translate(0px, 2.19px)"
+    ]
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "clignement",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ]
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "joyeux",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "happy"
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "neutre",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "neutral"
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "reflexion",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "thinking (posé pour la capture)"
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "balayage-3s",
+    "frames": 180,
+    "meanMs": 16.7,
+    "p95Ms": 18.1,
+    "maxMs": 18.7,
+    "over20ms": 0
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  },
+  {
+    "appearance": "clean-dark",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,200,220x28",
+      "Patients@14,234,220x28",
+      "Agenda@14,268,220x28",
+      "Soins & hospitalis@14,302,220x28",
+      "Flux@14,336,220x28",
+      "Rappels@14,370,220x28",
+      "Documents@14,458,220x28",
+      "Produits@14,492,220x28",
+      "Finances@14,526,220x28",
+      "Équipe@14,560,220x28"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 0px)",
+      "translate(0px, 0px)"
+    ],
+    "ink": "#292929",
+    "paper": "#efefef",
+    "stroke": "rgb(41, 41, 41)",
+    "dimmers": []
+  },
+  {
+    "appearance": "premium-light",
+    "state": "yeux-gauche",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-1.24px, -0.12px)",
+      "translate(-1.24px, -0.12px)"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "state": "yeux-droite",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.2px, -0.02px)",
+      "translate(2.2px, -0.02px)"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "state": "yeux-haut",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-0.05px, -1.5px)",
+      "translate(-0.05px, -1.5px)"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "state": "yeux-bas",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 2.19px)",
+      "translate(0px, 2.19px)"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "state": "clignement",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.56px, 1.54px)",
+      "translate(1.56px, 1.54px)"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "state": "joyeux",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.56px, 1.54px)",
+      "translate(1.56px, 1.54px)"
+    ],
+    "mood": "happy"
+  },
+  {
+    "appearance": "premium-light",
+    "state": "neutre",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.56px, 1.54px)",
+      "translate(1.56px, 1.54px)"
+    ],
+    "mood": "neutral"
+  },
+  {
+    "appearance": "premium-light",
+    "state": "reflexion",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.56px, 1.54px)",
+      "translate(1.56px, 1.54px)"
+    ],
+    "mood": "thinking (posé pour la capture)"
+  },
+  {
+    "appearance": "premium-light",
+    "state": "balayage-3s",
+    "frames": 180,
+    "meanMs": 16.7,
+    "p95Ms": 18.4,
+    "maxMs": 18.7,
+    "over20ms": 0
+  },
+  {
+    "appearance": "premium-light",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  },
+  {
+    "appearance": "premium-light",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "repos",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 0px)",
+      "translate(0px, 0px)"
+    ],
+    "ink": "#f3f3f3",
+    "paper": "#111111",
+    "stroke": "rgb(243, 243, 243)",
+    "dimmers": []
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "yeux-gauche",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-1.24px, -0.13px)",
+      "translate(-1.24px, -0.13px)"
+    ]
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "yeux-droite",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, -0.02px)",
+      "translate(2.19px, -0.02px)"
+    ]
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "yeux-haut",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(-0.05px, -1.5px)",
+      "translate(-0.05px, -1.5px)"
+    ]
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "yeux-bas",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(0px, 2.19px)",
+      "translate(0px, 2.19px)"
+    ]
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "clignement",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ]
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "joyeux",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "happy"
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "neutre",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "neutral"
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "reflexion",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(1.57px, 1.54px)",
+      "translate(1.57px, 1.54px)"
+    ],
+    "mood": "thinking (posé pour la capture)"
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "balayage-3s",
+    "frames": 180,
+    "meanMs": 16.7,
+    "p95Ms": 18.3,
+    "maxMs": 18.9,
+    "over20ms": 0
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "replie",
+    "items": [
+      "Tableau de bord@0,178,80x40",
+      "Patients@0,222,80x40",
+      "Agenda@0,266,80x40",
+      "Soins & hospitalis@0,310,80x40",
+      "Flux@0,354,80x40",
+      "Rappels@0,398,80x40",
+      "Documents@0,463,80x40",
+      "Produits@0,507,80x40",
+      "Finances@0,551,80x40",
+      "Équipe@0,595,80x40"
+    ],
+    "header": 106,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  },
+  {
+    "appearance": "premium-dark",
+    "state": "parametres",
+    "items": [
+      "Tableau de bord@14,183,220x31",
+      "Patients@14,216,220x31",
+      "Agenda@14,249,220x31",
+      "Soins & hospitalis@14,282,220x31",
+      "Flux@14,315,220x31",
+      "Rappels@14,348,220x31",
+      "Documents@14,419,220x31",
+      "Produits@14,452,220x31",
+      "Finances@14,485,220x31",
+      "Équipe@14,518,220x31"
+    ],
+    "header": 74,
+    "pageOverflowX": 0,
+    "bodyOverflowX": 0,
+    "pupils": [
+      "translate(2.19px, 0.06px)",
+      "translate(2.19px, 0.06px)"
+    ]
+  }
+]

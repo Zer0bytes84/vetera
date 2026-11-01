@@ -1,46 +1,35 @@
-import type { MascotAnimal } from "@/lib/mascot-preferences";
+import { MASCOT_CHOICE_KEYS, type MascotAnimal } from "@/lib/mascot-preferences";
+import { LINE_ANIMALS, type LineAnimalKey } from "./line-mascots";
 
 export interface MascotAssetItem {
   label: string;
   kind: "vector";
 }
 
-export const MASCOT_ASSETS: Record<MascotAnimal, MascotAssetItem> = {
-  chat: { label: "Chat", kind: "vector" },
-  chien: { label: "Chien", kind: "vector" },
-  vache: { label: "Vache", kind: "vector" },
-  fennec: { label: "Fennec", kind: "vector" },
-  lapin: { label: "Lapin", kind: "vector" },
-  dog: { label: "Chien", kind: "vector" },
-  cat: { label: "Chat", kind: "vector" },
-  rabbit: { label: "Lapin", kind: "vector" },
-  fox: { label: "Fennec", kind: "vector" },
-  panda: { label: "Panda", kind: "vector" },
-  bear: { label: "Ours", kind: "vector" },
+/** Names saved by earlier versions, drawn as one of the twelve. */
+const LEGACY_DRAWING: Record<string, LineAnimalKey> = {
+  dog: "chien",
+  cat: "chat",
+  rabbit: "lapin",
+  fox: "fennec",
+  bear: "chien",
+  panda: "chat",
 };
 
-export const NEW_3D_MASCOTS: readonly MascotAnimal[] = [
-  "chat",
-  "chien",
-  "vache",
-  "fennec",
-  "lapin",
-];
+/** The drawing of any saved animal, earlier names included. */
+export const lineAnimalOf = (animal: MascotAnimal): LineAnimalKey =>
+  LEGACY_DRAWING[animal] ?? (animal as LineAnimalKey);
 
-export const COMPANION_MASCOTS = NEW_3D_MASCOTS;
+export const MASCOT_ASSETS = Object.fromEntries(
+  [...MASCOT_CHOICE_KEYS, ...Object.keys(LEGACY_DRAWING)].map((animal) => [
+    animal,
+    { label: LINE_ANIMALS[lineAnimalOf(animal as MascotAnimal)].label, kind: "vector" },
+  ]),
+) as Record<MascotAnimal, MascotAssetItem>;
 
-export const LEGACY_VECTOR_MASCOTS: readonly MascotAnimal[] = [
-  "dog",
-  "cat",
-  "rabbit",
-  "fox",
-  "panda",
-  "bear",
-];
+/** The twelve offered in the settings, in their order. */
+export const MASCOT_CHOICES: readonly MascotAnimal[] = MASCOT_CHOICE_KEYS;
 
-export const ALL_MASCOT_ANIMALS: readonly MascotAnimal[] = [
-  ...NEW_3D_MASCOTS,
-  ...LEGACY_VECTOR_MASCOTS,
-];
+export const LEGACY_VECTOR_MASCOTS: readonly MascotAnimal[] = ["dog", "cat", "rabbit", "fox", "panda", "bear"];
 
-export const MASCOT_ANIMALS = ALL_MASCOT_ANIMALS;
+export const MASCOT_ANIMALS: readonly MascotAnimal[] = [...MASCOT_CHOICES, ...LEGACY_VECTOR_MASCOTS];

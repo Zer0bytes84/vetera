@@ -21,7 +21,19 @@ export function SidebarBrand({ collapsed, onHome }: { collapsed: boolean; onHome
           data-sidebar-brand={withMascot ? "mascot" : "logo"}
           title="Choisir mon compagnon"
         >
-          {withMascot ? <MascotAvatar animal={preferences.animal} animated={preferences.animated} framing="portrait" size={collapsed ? 42 : 56} /> : <Logo collapsed variant="refined" />}
+          {withMascot ? (
+            // Drawn larger than its box: the box keeps the header's layout, the
+            // ears leave the circle above it. Folded into icons, it stays inside.
+            <MascotAvatar
+              animal={preferences.animal}
+              animated={preferences.animated}
+              className="sidebar-mascot"
+              overflow={!collapsed}
+              size={collapsed ? 44 : 68}
+            />
+          ) : (
+            <Logo collapsed variant="refined" />
+          )}
         </PopoverTrigger>
         <PopoverContent align="start" sideOffset={10} className="mascot-picker">
           <div className="mascot-picker-heading">

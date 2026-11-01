@@ -5,7 +5,7 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 interface CaptureConfig {
-  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro" | "tableau" | "ports" | "agenda" | "factures" | "lot3" | "workflow" | "etats" | "dossier";
+  scenario: "palette" | "assistant" | "outils-ia" | "reset" | "dictee" | "micro" | "tableau" | "ports" | "agenda" | "factures" | "lot3" | "workflow" | "etats" | "dossier" | "mascotte";
   /** "dictee": generator preference set before the dictation (gemma3 or gemma4). */
   generator?: string;
   /** "outils-ia": position the switch must reach ("on" = new assistant version). */
@@ -128,6 +128,12 @@ async function run() {
   if (config.scenario === "agenda") {
     const { captureAgenda } = await import("./capture-agenda");
     await captureAgenda(config.signal, config.query);
+    return;
+  }
+  // Sidebar mascot: gaze, blink, moods, folded sidebar, settings, per appearance.
+  if (config.scenario === "mascotte") {
+    const { captureMascot } = await import("./capture-mascotte");
+    await captureMascot(config.signal, config.query.split(","));
     return;
   }
   // Dashboard widgets: one pass per appearance listed in the query.
