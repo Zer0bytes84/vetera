@@ -449,17 +449,73 @@
   gap: 12px;
 }
 
-/* Micro-histogram: grey bars, the latest bucket in the series colour. */
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiBars {
-  flex: none;
+/* Every card's figure on one baseline, with or without a chart beside it. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpis .kpiValueRow {
+  min-height: 32px;
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpis .kpi > .kpiValue {
+  display: flex;
+  align-items: flex-end;
+  min-height: 32px;
+}
+
+/* First row: one chart per card, never the same twice. Trésorerie draws its
+   running total as a quiet area. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiArea {
+  flex: 0 0 auto;
+  margin-bottom: 3px;
+  overflow: visible;
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiAreaFill {
+  fill: var(--series-1, var(--premium-blue));
+  opacity: 0.1;
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiAreaLine {
+  fill: none;
+  stroke: var(--series-1, var(--premium-blue));
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+
+/* Consultations: the visits by kind, the leading kind named over one bar of
+   segments (accent first, then the ink steps of the species split). */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKinds {
+  display: flex;
+  flex: 0 1 120px;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
   margin-bottom: 3px;
 }
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiBars rect {
-  fill: var(--line-strong);
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsLead {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
 }
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiBars rect[data-current] {
-  fill: var(--series-1, var(--premium-blue));
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsMore {
+  color: var(--faint);
 }
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsBar {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsBar > i {
+  flex-basis: 0;
+  min-width: 3px;
+  border-radius: 2px;
+  background: var(--tone);
+}
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsBar > i[data-tone="0"] { --tone: var(--series-1, var(--premium-blue)); }
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsBar > i[data-tone="1"] { --tone: color-mix(in srgb, var(--ink) 70%, transparent); }
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsBar > i[data-tone="2"] { --tone: color-mix(in srgb, var(--ink) 46%, transparent); }
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsBar > i[data-tone="3"] { --tone: color-mix(in srgb, var(--ink) 28%, transparent); }
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiKindsBar > i[data-tone="4"] { --tone: color-mix(in srgb, var(--ink) 16%, transparent); }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .kpiSub {
   display: flex;

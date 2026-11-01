@@ -326,12 +326,14 @@ describe("thème Clean : widgets", () => {
     expect(analytics).toMatch(/\.chartLinePrevious \{[^}]*stroke-dasharray/);
   });
 
-  it("trace en Clean des cumuls en aire pour la trésorerie et les consultations, sans barre, sur la même ligne de base", () => {
+  it("donne à chaque carte de la première rangée son propre graphique, sur la même ligne de base", () => {
     const source = readFileSync("src/modules/dashboard/components/premium-analytics.tsx", "utf8");
-    // Validated on 27 October: the grey Consultations bars were invisible in Clean.
-    expect(source.match(/<MiniArea /g)).toHaveLength(2);
-    expect(source.match(/<MiniBars [^>]*cleanHidden/g)).toHaveLength(3);
-    expect(source.match(/<MiniBars /g)).toHaveLength(3);
+    // 31 October: Trésorerie and Consultations drew the same cumulative area
+    // (Clean), and three cards the same bars (Premium). One chart per card.
+    expect(source.match(/<MiniArea /g)).toHaveLength(1);
+    expect(source.match(/<MiniKinds /g)).toHaveLength(1);
+    expect(source).not.toMatch(/<MiniBars /);
+    expect(source).not.toMatch(/className="kpiArea"[^>]*data-clean-only/);
     const row = rulesFor(/\.kpis \.kpiValueRow$/)[0]?.toString() ?? "";
     expect(row).toContain("height: 32px");
     expect(rulesFor(/\.kpis \.kpi > \.kpiValue$/)[0]?.toString()).toContain("height: 32px");

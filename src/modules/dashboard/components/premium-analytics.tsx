@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils";
 import { PageDate } from "@/components/PageDate";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { WidgetState } from "./clinical/shared";
-import { buildDayUnits, buildMonthForecast } from "../model/dashboard-widgets";
+import { buildDayUnits, buildMonthForecast, type VisitKindRow } from "../model/dashboard-widgets";
 import { DayUnits, ForecastBar, WidgetFooter } from "./widget-units";
 import type { View } from "@/types";
 import "./premium-analytics.css";
@@ -135,47 +135,31 @@ function DeltaBadge({
   );
 }
 
-/** A KPI's micro-histogram: grey bars, the latest bucket in the series colour. */
-function MiniBars({ values, label, cleanHidden = false }: { values: number[]; label: string; cleanHidden?: boolean }) {
-  if (values.length < 2) return null;
-  const max = Math.max(...values, 0);
-  const width = 84;
-  const height = 28;
-  const gap = values.length > 20 ? 1 : 2;
-  const bar = (width - gap * (values.length - 1)) / values.length;
+/**
+ * The period's visits by kind: the leading kind named, then every kind as one
+ * segment of a single bar, in the same tones as the species split.
+ */
+function MiniKinds({ rows }: { rows: VisitKindRow[] }) {
+  if (!rows.length) return null;
+  const detail = rows.map((row) => `${row.name} ${formatNumber(row.count)} (${row.share} %)`).join(" · ");
   return (
-    <svg
-      className="kpiBars"
-      data-clean-hidden={cleanHidden ? "" : undefined}
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      role="img"
-      aria-label={label}
-    >
-      {values.map((value, i) => {
-        const h = max ? Math.max(2, (value / max) * height) : 2;
-        return (
-          <rect
-            // Bars are positional and never reorder.
-            // biome-ignore lint/suspicious/noArrayIndexKey: fixed buckets
-            key={i}
-            data-current={i === values.length - 1 ? "" : undefined}
-            x={i * (bar + gap)}
-            y={height - h}
-            width={bar}
-            height={h}
-            rx={Math.min(1.5, bar / 2)}
-          />
-        );
-      })}
-    </svg>
+    <span aria-label={`Consultations par motif : ${detail}`} className="kpiKinds" role="img" title={detail}>
+      <span className="kpiKindsLead">
+        {rows[0].name} · {rows[0].share} %
+        {rows.length > 1 ? <span className="kpiKindsMore"> · {rows.length - 1} autre{rows.length > 2 ? "s" : ""}</span> : null}
+      </span>
+      <span aria-hidden="true" className="kpiKindsBar">
+        {rows.map((row, index) => (
+          <i data-tone={Math.min(index, 4)} key={row.key} style={{ flexGrow: row.count }} />
+        ))}
+      </span>
+    </span>
   );
 }
 
 /**
  * A KPI's running total across the period, as a quiet area: its last point is
- * the figure the card shows. Shown by the Clean skin only (data-clean-only).
+ * the figure the card shows. Trésorerie only: one chart, one card.
  */
 function MiniArea({ values, label }: { values: number[]; label: string }) {
   if (values.length < 2) return null;
@@ -190,7 +174,6 @@ function MiniArea({ values, label }: { values: number[]; label: string }) {
     <svg
       aria-label={label}
       className="kpiArea"
-      data-clean-only=""
       height={height}
       role="img"
       viewBox={`0 0 ${width} ${height}`}
@@ -1029,7 +1012,6 @@ export function PremiumAnalytics({
           </span>
           <span className="kpiValueRow">
             <span className="kpiValue">{formatCentimes(cash.income)}</span>
-            <MiniBars values={trend.income} label="Recettes encaissées sur la période" cleanHidden />
             <MiniArea values={trend.income} label="Cumul des recettes encaissées sur la période" />
           </span>
           <span className="kpiSub">
@@ -1061,8 +1043,8 @@ export function PremiumAnalytics({
           </span>
           <span className="kpiValueRow">
             <span className="kpiValue">{formatNumber(patients.visits)}</span>
-            <MiniBars values={trend.visits} label="Consultations sur la période" cleanHidden />
-            <MiniArea values={trend.visits} label="Cumul des consultations sur la période" />
+            {/* Its own information: the visits by kind, which no other card shows. */}
+            <MiniKinds rows={patients.kinds} />
           </span>
           <span className="kpiSub">
             <DeltaBadge
@@ -1094,8 +1076,8 @@ export function PremiumAnalytics({
           </span>
           <span className="kpiValueRow">
             <span className="kpiValue">{formatNumber(patients.count)}</span>
-            {/* Distinct patients do not add up across days: Clean shows the figure alone. */}
-            <MiniBars values={trend.patients} label="Patients vus sur la période" cleanHidden />
+            {/* Distinct patients do not add up across days, and their daily
+                bars drew the visits' shape again: the figure alone. */}
           </span>
           <span className="kpiSub">
             <DeltaBadge

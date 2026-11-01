@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDayUnits, buildMonthForecast, buildSpeciesSplit, shares } from "@/modules/dashboard/model/dashboard-widgets";
+import { buildDayUnits, buildMonthForecast, buildSpeciesSplit, buildVisitKinds, shares } from "@/modules/dashboard/model/dashboard-widgets";
 import type { ScheduleEntry } from "@/modules/dashboard/v2/model";
 import type { Transaction } from "@/types/db";
 
@@ -153,5 +153,28 @@ describe("patients par espèce", () => {
 
   it("reste vide sans patient actif", () => {
     expect(buildSpeciesSplit([patient("Chien", "decede")], now)).toMatchObject({ total: 0, rows: [] });
+  });
+});
+
+describe("consultations par motif", () => {
+  it("compte chaque motif, du plus fréquent au moins fréquent, avec des parts qui somment à 100", () => {
+    const kinds = buildVisitKinds([
+      { type: "Consultation" },
+      { type: "Vaccin" },
+      { type: "Consultation" },
+      { type: null },
+      { type: "Urgence" },
+      { type: " Vaccin " },
+    ]);
+    expect(kinds.map((row) => [row.name, row.count])).toEqual([
+      ["Consultation", 3],
+      ["Vaccin", 2],
+      ["Urgence", 1],
+    ]);
+    expect(kinds.reduce((sum, row) => sum + row.share, 0)).toBe(100);
+  });
+
+  it("aucune visite, aucun motif", () => {
+    expect(buildVisitKinds([])).toEqual([]);
   });
 });

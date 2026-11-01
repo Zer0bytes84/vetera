@@ -178,3 +178,26 @@ export function buildSpeciesSplit(patients: { species?: string; status?: string;
     rows: lines.map((row, index): SpeciesRow => ({ key: row.key, name: row.name, count: row.count, share: parts[index] })),
   };
 }
+
+export interface VisitKindRow {
+  key: string;
+  name: string;
+  count: number;
+  share: number;
+}
+
+/**
+ * The period's visits by kind (Consultation, Vaccin, Chirurgie…), largest
+ * first: what the Consultations card shows that no other card does. A visit
+ * without a kind is a consultation, as everywhere else in the dashboard.
+ */
+export function buildVisitKinds(visits: { type?: string | null }[]): VisitKindRow[] {
+  const counts = new Map<string, number>();
+  for (const visit of visits) {
+    const name = visit.type?.trim() || "Consultation";
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "fr"));
+  const parts = shares(sorted.map(([, count]) => count));
+  return sorted.map(([name, count], index) => ({ key: name.toLocaleLowerCase("fr-FR"), name, count, share: parts[index] }));
+}

@@ -1,5 +1,6 @@
 import type { Appointment, Invoice, Owner, Patient, Product, Task, Transaction, Vaccination } from "@/types/db";
 import { addDays, endOfDay, parseDashboardDate, startOfDay, type ClinicalAlert } from "../v2/model";
+import { buildVisitKinds } from "./dashboard-widgets";
 
 export const ANALYTICS_PERIODS = [
   { value: "today", label: "Aujourd’hui" },
@@ -128,6 +129,7 @@ export function buildPremiumAnalytics(data: {
       completed: currentVisits.filter(a => a.status === "completed").length,
       underway: currentVisits.filter(a => ["arrived", "waiting", "in_progress"].includes(a.status)).length,
       planned: currentVisits.filter(a => ["scheduled", "confirmed"].includes(a.status)).length,
+      kinds: buildVisitKinds(currentVisits),
       newRecords: data.patients.filter(p => within(p.createdAt, ranges.current)).length },
     actions: { count: actions.length, previous: previousActions.length, change: metricChange(actions.length, previousActions.length),
       urgent: actions.filter(a => a.tone === "critical").length,
