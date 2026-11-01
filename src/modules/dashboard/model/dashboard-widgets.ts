@@ -201,3 +201,173 @@ export function buildVisitKinds(visits: { type?: string | null }[]): VisitKindRo
   const parts = shares(sorted.map(([, count]) => count));
   return sorted.map(([name, count], index) => ({ key: name.toLocaleLowerCase("fr-FR"), name, count, share: parts[index] }));
 }
+
+export type HeatmapPeriod = "week" | "month" | "quarter" | "year";
+
+export const HEATMAP_PERIODS: { value: HeatmapPeriod; label: string }[] = [
+  { value: "week", label: "Semaine" },
+  { value: "month", label: "Mois" },
+  { value: "quarter", label: "Trimestre" },
+  { value: "year", label: "Année" },
+];
+
+/** Steps of intensity above an empty day. */
+export const HEAT_STEPS = 4;
+
+export interface HeatDay {
+  key: string;
+  date: Date;
+  count: number;
+  /** 0 for an empty day, then 1 to HEAT_STEPS. */
+  level: number;
+  /** After today: what is already booked, not what happened. */
+  future: boolean;
+  today: boolean;
+}
+
+/** A calendar month, Monday first; null pads the days of the neighbouring months. */
+export interface HeatMonth {
+  key: string;
+  label: string;
+  weeks: (HeatDay | null)[][];
+}
+
+/** One week of the year view, Monday to Sunday, named when a month starts in it. */
+export interface HeatColumn {
+  key: string;
+  days: (HeatDay | null)[];
+  month?: string;
+}
+
+const dayKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const dayOnly = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const plusDays = (date: Date, days: number) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+/** Monday on or before the date. */
+const mondayOf = (date: Date) => plusDays(dayOnly(date), -((date.getDay() + 6) % 7));
+
+/**
+ * Level of a day's count. Up to HEAT_STEPS appointments on the busiest day,
+ * one step per appointment, so 1 never looks like 3; above, equal slices of
+ * the busiest day.
+ */
+export function heatLevel(count: number, max: number) {
+  if (count <= 0) return 0;
+  if (max <= HEAT_STEPS) return Math.min(count, HEAT_STEPS);
+  return Math.min(HEAT_STEPS, Math.ceil((count * HEAT_STEPS) / max));
+}
+
+/** What each step covers, in appointments, for the legend's tooltips. */
+export function heatLegend(max: number) {
+  return Array.from({ length: HEAT_STEPS + 1 }, (_, level) => {
+    if (!level) return { level, min: 0, max: 0 };
+    if (max <= HEAT_STEPS) return { level, min: level, max: level };
+    return { level, min: Math.floor(((level - 1) * max) / HEAT_STEPS) + 1, max: Math.floor((level * max) / HEAT_STEPS) };
+  });
+}
+
+function heatRange(period: HeatmapPeriod, now: Date) {
+  if (period === "week") {
+    const from = mondayOf(now);
+    return { from, to: plusDays(from, 6) };
+  }
+  if (period === "year") {
+    // Twelve months up to the end of this week, whole weeks for the columns.
+    return { from: new Date(now.getFullYear(), now.getMonth() - 11, 1), to: plusDays(mondayOf(now), 6) };
+  }
+  const months = period === "quarter" ? 3 : 1;
+  return {
+    from: new Date(now.getFullYear(), now.getMonth() - months + 1, 1),
+    to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+  };
+}
+
+/**
+ * Appointments per day for the clinic's activity heatmap: cancellations and
+ * no-shows excluded, as in the day's units. Days are the clinic's local days.
+ * Booked days after today are counted and flagged, never invented.
+ */
+export function buildActivityHeatmap(
+  appointments: { startTime?: string | null; status: string }[],
+  period: HeatmapPeriod,
+  now: Date,
+) {
+  const { from, to } = heatRange(period, now);
+  const end = plusDays(to, 1);
+  const counts = new Map<string, number>();
+  for (const appointment of appointments) {
+    if (NOT_SEEN.has(appointment.status)) continue;
+    const start = parseDashboardDate(appointment.startTime ?? undefined);
+    if (!start || start < from || start >= end) continue;
+    const key = dayKey(start);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  const max = Math.max(0, ...counts.values());
+  const todayKey = dayKey(now);
+  const today = dayOnly(now);
+  const days: HeatDay[] = [];
+  for (let date = from; date <= to; date = plusDays(date, 1)) {
+    const key = dayKey(date);
+    const count = counts.get(key) ?? 0;
+    days.push({ key, date, count, level: heatLevel(count, max), future: date > today, today: key === todayKey });
+  }
+  const byKey = new Map(days.map((day) => [day.key, day]));
+  const weekOf = (monday: Date, inside: (date: Date) => boolean) =>
+    Array.from({ length: 7 }, (_, index) => {
+      const date = plusDays(monday, index);
+      return inside(date) ? (byKey.get(dayKey(date)) ?? null) : null;
+    });
+
+  const months: HeatMonth[] = [];
+  const columns: HeatColumn[] = [];
+  if (period === "year") {
+    for (let monday = mondayOf(from); monday <= to; monday = plusDays(monday, 7)) {
+      const week = weekOf(monday, (date) => date >= from && date <= to);
+      const first = week.find((day) => day?.date.getDate() === 1) ?? (columns.length ? undefined : week.find(Boolean));
+      columns.push({
+        key: dayKey(monday),
+        days: week,
+        month: first ? first.date.toLocaleDateString("fr-FR", { month: "short" }) : undefined,
+      });
+    }
+  } else if (period === "week") {
+    months.push({
+      key: dayKey(from),
+      label: `Semaine du ${from.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`,
+      weeks: [weekOf(from, () => true)],
+    });
+  } else {
+    for (let first = from; first <= to; first = new Date(first.getFullYear(), first.getMonth() + 1, 1)) {
+      const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);
+      const weeks: (HeatDay | null)[][] = [];
+      for (let monday = mondayOf(first); monday <= last; monday = plusDays(monday, 7)) {
+        weeks.push(weekOf(monday, (date) => date >= first && date <= last));
+      }
+      const label = first.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+      months.push({ key: dayKey(first), label: label[0].toLocaleUpperCase("fr-FR") + label.slice(1), weeks });
+    }
+  }
+
+  const active = days.filter((day) => day.count > 0);
+  // Monday first, as the grid reads.
+  const weekdays = [0, 0, 0, 0, 0, 0, 0];
+  for (const day of active) weekdays[(day.date.getDay() + 6) % 7] += day.count;
+  const busiest = active.reduce<HeatDay | null>((best, day) => (!best || day.count > best.count ? day : best), null);
+  return {
+    period,
+    from,
+    to,
+    days,
+    months,
+    columns,
+    max,
+    total: active.reduce((sum, day) => sum + day.count, 0),
+    activeDays: active.length,
+    /** Days of the range up to today: the ones that could have had a visit. */
+    elapsedDays: days.filter((day) => !day.future).length,
+    busiest,
+    /** Appointments per weekday over the range, Monday first. */
+    weekdays,
+    legend: heatLegend(max),
+  };
+}

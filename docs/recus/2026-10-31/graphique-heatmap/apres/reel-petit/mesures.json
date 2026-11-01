@@ -1,0 +1,329 @@
+[
+  {
+    "appearance": "clean-light",
+    "row": "kpi",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes-consultations",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes-12-mois",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes-7-jours",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes-recettes",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes-30-jours",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "recettes-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "activite",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "activite-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "activite-semaine",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "activite-trimestre",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "activite-annee",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "activite-mois",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "surveiller",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-light",
+    "row": "surveiller-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "kpi",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes-consultations",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes-12-mois",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes-7-jours",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes-recettes",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes-30-jours",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "recettes-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "activite",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "activite-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "activite-semaine",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "activite-trimestre",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "activite-annee",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "activite-mois",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "surveiller",
+    "width": 612,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "clean-dark",
+    "row": "surveiller-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "kpi",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes-consultations",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes-12-mois",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes-7-jours",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes-recettes",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes-30-jours",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "recettes-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "activite",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "activite-survol",
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "activite-semaine",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "activite-trimestre",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "activite-annee",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "activite-mois",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "surveiller",
+    "width": 620,
+    "clipped": [],
+    "overlaps": []
+  },
+  {
+    "appearance": "premium-light",
+    "row": "surveiller-survol",
+    "clipped": [],
+    "overlaps": []
+  }
+]

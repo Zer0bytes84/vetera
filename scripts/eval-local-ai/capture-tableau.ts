@@ -10,9 +10,16 @@ import { ensureSession, sleep, waitFor } from "./capture-dictee";
 
 const ROWS: [name: string, selector: string][] = [
   ["kpi", ".premium-overview-shell > .kpis"],
-  ["recettes", ".premium-overview-shell > .split"],
+  ["recettes", ".premium-overview-shell > .recettesCard"],
+  ["activite", ".premium-overview-shell > .pairRow"],
   ["surveiller", ".premium-overview-shell > .watchGrid"],
 ];
+
+/** Switches pressed one after another in a row, each photographed: [shot, button label]. */
+const SWITCHES: Record<string, [shot: string, label: string][]> = {
+  activite: [["semaine", "Semaine"], ["trimestre", "Trimestre"], ["annee", "Année"], ["mois", "Mois"]],
+  recettes: [["consultations", "Consultations"], ["12-mois", "12 mois"], ["7-jours", "7 jours"], ["recettes", "Recettes"], ["30-jours", "30 jours"]],
+};
 
 /**
  * Text that leaves its card (or is cut by a box that hides it), then pairs of
@@ -46,7 +53,7 @@ function measure(root: Element) {
       const b = lines[j];
       if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
       // The chart's tooltip floats over the plot by design.
-      if (Boolean(a.el.closest(".chartTip")) !== Boolean(b.el.closest(".chartTip"))) continue;
+      if (Boolean(a.el.closest(".chartTip, .focusTip, .heatTip")) !== Boolean(b.el.closest(".chartTip, .focusTip, .heatTip"))) continue;
       const hit = a.rects.some((ra) =>
         b.rects.some(
           (rb) =>
@@ -108,12 +115,35 @@ export async function captureDashboard(signal: string, appearances: string[]) {
     await save();
     await handshake(`ready:${appearance}-${name}`, `done:${appearance}-${name}`);
     // The hover states: the chart's tooltip near its end, the first species lit.
-    const chart = row.querySelector<SVGSVGElement>(".chartPlot svg");
+    const chart = row.querySelector<SVGSVGElement>(".chartPlot svg, .focusPlot svg");
     const species = row.querySelector<HTMLElement>(".speciesCard .widgetRows li");
+    // The busiest day of the heatmap, its tooltip open.
+    const cells = [...row.querySelectorAll<HTMLElement>(".heatMain .heatCell[data-level]")];
+    const busiest = cells.sort((a, b) => Number(b.dataset.level) - Number(a.dataset.level))[0];
+    if (busiest) {
+      busiest.dispatchEvent(new PointerEvent("pointerover", { bubbles: true }));
+      await sleep(500);
+      results.push({ appearance, row: `${name}-survol`, ...measure(row) });
+      await save();
+      await handshake(`ready:${appearance}-${name}-survol`, `done:${appearance}-${name}-survol`);
+      busiest.dispatchEvent(new PointerEvent("pointerout", { bubbles: true }));
+    }
+    for (const [shot, label] of SWITCHES[name] ?? []) {
+      const button = [...row.querySelectorAll<HTMLButtonElement>("button")].find((b) => b.textContent?.trim() === label);
+      if (!button) {
+        results.push({ appearance, row: `${name}-${shot}`, error: `bouton « ${label} » absent` });
+        continue;
+      }
+      button.click();
+      await sleep(700);
+      results.push({ appearance, row: `${name}-${shot}`, width: Math.round(row.getBoundingClientRect().width), ...measure(row) });
+      await save();
+      await handshake(`ready:${appearance}-${name}-${shot}`, `done:${appearance}-${name}-${shot}`);
+    }
     if (chart || species) {
       if (chart) {
         const box = chart.getBoundingClientRect();
-        chart.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: box.left + box.width * 0.9, clientY: box.top + box.height / 2 }));
+        chart.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: box.left + box.width * 0.55, clientY: box.top + box.height / 2 }));
       }
       species?.dispatchEvent(new PointerEvent("pointerover", { bubbles: true }));
       await sleep(600);

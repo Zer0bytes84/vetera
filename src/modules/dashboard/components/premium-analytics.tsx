@@ -17,13 +17,14 @@ import {
   UsersRound,
   Wallet,
 } from "lucide-react";
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { firstNameOf, formatNumber } from "@/utils/display-format";
-import { formatCentimes, formatTime, type ScheduleEntry } from "../v2/model";
+import { formatCentimes, formatTime, parseDashboardDate, type ScheduleEntry } from "../v2/model";
 import { settlementRate } from "../v2/financial-model";
-import { monotonePath, splitUnit } from "./chart-path";
+import { splitUnit } from "./chart-path";
 import {
   ANALYTICS_PERIODS,
+  analyticsRanges,
   type AnalyticsPeriod,
   type buildPremiumAnalytics,
 } from "../model/premium-analytics";
@@ -37,6 +38,8 @@ import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { WidgetState } from "./clinical/shared";
 import { buildDayUnits, buildMonthForecast, type VisitKindRow } from "../model/dashboard-widgets";
 import { DayUnits, ForecastBar, WidgetFooter } from "./widget-units";
+import { FocusTrendChart, type FocusPoint } from "./focus-trend-chart";
+import { ActivityHeatmap } from "./activity-heatmap";
 import type { View } from "@/types";
 import "./premium-analytics.css";
 
@@ -185,379 +188,11 @@ function MiniArea({ values, label }: { values: number[]; label: string }) {
   );
 }
 
-/** Size of the plot box: the chart is drawn at the height its card gives it. */
-function usePlotSize() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState<{ h: number; w: number } | null>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([e]) => {
-      setSize({ h: Math.floor(e.contentRect.height), w: Math.floor(e.contentRect.width) });
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return [ref, size] as const;
-}
+type TrendPoint = FocusPoint;
 
-function scaleTicks(max: number) {
-  const raw = Math.max(max, 4) / 4;
-  const pow = 10 ** Math.floor(Math.log10(raw));
-  const step = [1, 2, 2.5, 5, 10].map((m) => m * pow).find((s) => s >= raw) ?? raw;
-  const top = step * 4;
-  return { top, ticks: [0, 1, 2, 3, 4].map((i) => Math.round(step * i * 100) / 100) };
-}
-
-interface TrendPoint {
-  label: string;
-  long: string;
-  receipts: number;
-  visits: number;
-  /** Consultations in the matching bucket of the previous period. */
-  previousVisits?: number;
-  /** Receipts (DA) in the matching bucket of the previous period. */
-  previousReceipts?: number;
-}
-
-const T_CHART = { h: 220, top: 16, bottom: 28, left: 54, right: 34 };
-
-function TrendChartCurve({ points }: { points: TrendPoint[] }) {
-  const [ref, size] = usePlotSize();
-  const w = size?.w ?? null;
-  // Never shorter than the drawn minimum; taller when the row stretches the card.
-  const chartH = Math.max(T_CHART.h, size?.h ?? 0);
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
-
-  const n = points.length;
-  const maxReceipts = Math.max(1, ...points.map((p) => p.receipts));
-  const maxVisits = Math.max(1, ...points.map((p) => p.visits));
-
-  const { top: topReceipts, ticks: receiptTicks } = scaleTicks(maxReceipts);
-  // Consultations have their own scale, read on the right-hand axis.
-  const { top: topVisits, ticks: visitTicks } = scaleTicks(maxVisits);
-
-  const width = w ?? 0;
-  const plotW = Math.max(0, width - T_CHART.left - T_CHART.right);
-  const plotH = chartH - T_CHART.top - T_CHART.bottom;
-
-  const x = (k: number) => T_CHART.left + (n <= 1 ? plotW / 2 : (k * plotW) / (n - 1));
-  const yReceipts = (v: number) => T_CHART.top + plotH - (v / topReceipts) * plotH;
-  const yVisits = (v: number) => T_CHART.top + plotH - (v / topVisits) * plotH;
-
-  const gradientId = useId().replace(/:/g, "");
-  const lineReceipts = monotonePath(points.map((p, k) => [x(k), yReceipts(p.receipts)]));
-  const lineVisits = monotonePath(points.map((p, k) => [x(k), yVisits(p.visits)]));
-  // The previous period's receipts, dashed in grey under the current curve. They keep
-  // the current scale, so the drawn axis never moves; a higher value stops at the top
-  // of the plot and reads in full in the tooltip.
-  const hasPrevious = points.some((p) => p.previousReceipts !== undefined);
-  const linePreviousReceipts = hasPrevious
-    ? monotonePath(points.map((p, k) => [x(k), yReceipts(Math.min(p.previousReceipts ?? 0, topReceipts))]))
-    : "";
-  const closeArea = (line: string) =>
-    n ? `${line} L${x(n - 1).toFixed(1)},${yReceipts(0)} L${x(0).toFixed(1)},${yReceipts(0)} Z` : "";
-  const areaReceipts = closeArea(lineReceipts);
-  const areaVisits = closeArea(lineVisits);
-
-  // Points de données : discrets, seulement quand la période reste lisible.
-  const showPoints = n > 1 && n <= 45;
-  const peakIdx = points.reduce(
-    (best, p, k) => (p.receipts > (points[best]?.receipts ?? 0) ? k : best),
-    0
-  );
-  const peak = points[peakIdx];
-  const hasPeak = Boolean(peak && peak.receipts > 0);
-  const peakAnchor = x(peakIdx) > width - 90 ? "end" : x(peakIdx) < T_CHART.left + 60 ? "start" : "middle";
-  const columnW = n > 1 ? plotW / (n - 1) : plotW;
-
-  // Labels keep at least 76 px between them (a label is ~45 px wide, the first one is start-aligned): thin them
-  // at a fixed interval, and let the last one replace a neighbour that is too close.
-  const minGap = 76;
-  const step = n > 1 ? plotW / (n - 1) : plotW;
-  const every = Math.max(1, Math.ceil(minGap / Math.max(step, 1)));
-  const shownLabels = new Set<number>();
-  for (let k = 0; k < n; k += every) shownLabels.add(k);
-  if (n > 1 && !shownLabels.has(n - 1)) {
-    const lastShown = Math.max(...shownLabels);
-    if (lastShown > 0 && (n - 1 - lastShown) * step < minGap) shownLabels.delete(lastShown);
-    shownLabels.add(n - 1);
-  }
-
-  const handlePointer = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (plotW <= 0 || n <= 1) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    const px = e.clientX - r.left;
-    const k = Math.round(((px - T_CHART.left) / plotW) * (n - 1));
-    setActiveIdx(Math.min(n - 1, Math.max(0, k)));
-  };
-
-  const hot = activeIdx !== null ? points[activeIdx] : null;
-  // The tooltip opens on the side with room: right of the cursor on the left
-  // half, left of it on the right half, so it never leaves the card.
-  const tipFlip = activeIdx !== null && x(activeIdx) > width / 2;
-  const tipLeft = activeIdx !== null ? (tipFlip ? x(activeIdx) - 12 : x(activeIdx) + 12) : 0;
-
-  return (
-    <div className="chartWrap">
-      <div className="chartLegend">
-        <span className="chartLegendItem">
-          <i className="chartLegendKey" style={{ background: "var(--series-1)" }} />
-          <span>Recettes (DA)</span>
-        </span>
-        <span className="chartLegendItem">
-          <i className="chartLegendKey" style={{ background: "var(--series-2)" }} />
-          <span>Consultations (échelle de droite)</span>
-        </span>
-        {hasPrevious ? (
-          <span className="chartLegendItem">
-            <i className="chartLegendKey chartLegendKeyPrevious" />
-            <span>Recettes, période précédente</span>
-          </span>
-        ) : null}
-      </div>
-
-      <div ref={ref} className="chartPlot">
-        {w !== null && (
-          <svg
-            width={width}
-            height={chartH}
-            role="img"
-            aria-label="Évolution des recettes et du volume de consultations"
-            tabIndex={0}
-            onPointerMove={handlePointer}
-            onPointerLeave={() => setActiveIdx(null)}
-            onFocus={() => setActiveIdx(n - 1)}
-            onBlur={() => setActiveIdx(null)}
-          >
-            {/* Horizontal Gridlines */}
-            {receiptTicks.map((t) => (
-              <g key={t}>
-                <line
-                  x1={T_CHART.left}
-                  x2={width - T_CHART.right}
-                  y1={yReceipts(t)}
-                  y2={yReceipts(t)}
-                  className={t ? "chartGridLine" : "chartBaseline"}
-                />
-                <text x={T_CHART.left - 8} y={yReceipts(t)} className="chartTickY">
-                  {formatNumber(t)}
-                </text>
-              </g>
-            ))}
-            {visitTicks.map((t) => (
-              <text
-                key={`v${t}`}
-                x={width - T_CHART.right + 8}
-                y={yVisits(t)}
-                className="chartTickY chartTickVisits"
-              >
-                {formatNumber(t)}
-              </text>
-            ))}
-
-            {/* X-axis labels */}
-            {/* The hovered day replaces its regular label, never stacks on it. */}
-            {points.map((p, k) =>
-              shownLabels.has(k) && k !== activeIdx ? (
-                <text
-                  key={k}
-                  x={x(k)}
-                  y={chartH - 8}
-                  className="chartTickX"
-                  textAnchor={
-                    n > 1 && k === n - 1
-                      ? "end"
-                      : n > 1 && k === 0
-                      ? "start"
-                      : "middle"
-                  }
-                >
-                  {p.label}
-                </text>
-              ) : null
-            )}
-
-            <defs>
-              <linearGradient id={`${gradientId}-receipts`} x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" style={{ stopColor: "var(--series-1)", stopOpacity: 0.26 }} />
-                <stop offset="65%" style={{ stopColor: "var(--series-1)", stopOpacity: 0.06 }} />
-                <stop offset="100%" style={{ stopColor: "var(--series-1)", stopOpacity: 0 }} />
-              </linearGradient>
-              <linearGradient id={`${gradientId}-visits`} x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" style={{ stopColor: "var(--series-2)", stopOpacity: 0.14 }} />
-                <stop offset="100%" style={{ stopColor: "var(--series-2)", stopOpacity: 0 }} />
-              </linearGradient>
-            </defs>
-
-            {/* Colonne survolée */}
-            {activeIdx !== null && n > 1 ? (
-              <rect
-                className="chartColumn"
-                height={plotH}
-                width={Math.max(6, columnW)}
-                x={x(activeIdx) - Math.max(6, columnW) / 2}
-                y={T_CHART.top}
-              />
-            ) : null}
-
-            {/* Aires en dégradé, recettes au premier plan */}
-            <path className="chartArea chartAreaVisits" d={areaVisits} fill={`url(#${gradientId}-visits)`} />
-            <path className="chartArea" d={areaReceipts} fill={`url(#${gradientId}-receipts)`} />
-
-            {/* Halo doux sous les courbes, pour la profondeur */}
-            <path className="chartGlow" d={lineVisits} stroke="var(--series-2)" />
-            <path className="chartGlow" d={lineReceipts} stroke="var(--series-1)" />
-
-            {/* Previous period's receipts, dashed in grey under the current curves. */}
-            {hasPrevious ? (
-              <path
-                d={linePreviousReceipts}
-                className="chartLine chartLinePrevious"
-                stroke="var(--faint)"
-              />
-            ) : null}
-
-            {/* Series 2: Consultations curve (Orange) */}
-            <path
-              d={lineVisits}
-              className="chartLine chartLineDraw"
-              pathLength={1}
-              stroke="var(--series-2)"
-              opacity={0.9}
-            />
-
-            {/* Series 1: Recettes curve (Blue) */}
-            <path
-              d={lineReceipts}
-              className="chartLine chartLineDraw"
-              pathLength={1}
-              stroke="var(--series-1)"
-            />
-
-            {/* Points de données */}
-            {showPoints
-              ? points.map((p, k) =>
-                  p.receipts > 0 ? (
-                    <circle
-                      className="chartPoint"
-                      cx={x(k)}
-                      cy={yReceipts(p.receipts)}
-                      data-active={activeIdx === k || undefined}
-                      fill="var(--series-1)"
-                      key={`r${k}`}
-                      r={2.5}
-                    />
-                  ) : null
-                )
-              : null}
-
-            {/* Pic de la période */}
-            {hasPeak && activeIdx === null ? (
-              <g className="chartPeak">
-                <circle cx={x(peakIdx)} cy={yReceipts(peak.receipts)} r={8} className="chartPeakHalo" />
-                <circle cx={x(peakIdx)} cy={yReceipts(peak.receipts)} r={3.5} fill="var(--series-1)" className="chartDot" />
-                <text
-                  className="chartPeakLabel"
-                  textAnchor={peakAnchor}
-                  x={x(peakIdx)}
-                  y={Math.max(12, yReceipts(peak.receipts) - 14)}
-                >
-                  {formatNumber(peak.receipts)} DA
-                </text>
-              </g>
-            ) : null}
-
-            {/* Interactive hover crosshair and dots */}
-            {activeIdx !== null && hot && (
-              <g>
-                <line
-                  x1={x(activeIdx)}
-                  x2={x(activeIdx)}
-                  y1={T_CHART.top}
-                  y2={yReceipts(0)}
-                  className="chartCrosshair"
-                />
-                {/* The hovered day is named on the axis, over the regular labels. */}
-                <text
-                  x={x(activeIdx)}
-                  y={chartH - 8}
-                  className="chartTickX chartTickXActive"
-                  textAnchor={
-                    activeIdx === n - 1 ? "end" : activeIdx === 0 ? "start" : "middle"
-                  }
-                >
-                  {hot.label}
-                </text>
-                <g className="chartHot" style={{ transform: `translate(${x(activeIdx)}px, ${yVisits(hot.visits)}px)` }}>
-                  <circle r={10} fill="var(--series-2)" className="chartHalo" />
-                  <circle r={4.5} fill="var(--series-2)" className="chartDot" />
-                </g>
-                <g className="chartHot" style={{ transform: `translate(${x(activeIdx)}px, ${yReceipts(hot.receipts)}px)` }}>
-                  <circle r={10} fill="var(--series-1)" className="chartHalo" />
-                  <circle r={4.5} fill="var(--series-1)" className="chartDot" />
-                </g>
-              </g>
-            )}
-          </svg>
-        )}
-
-        {/* Readout floating tooltip */}
-        {hot && (
-          <div
-            className="chartTip"
-            style={{ left: 0, top: 10, transform: `translateX(${tipLeft}px)${tipFlip ? " translateX(-100%)" : ""}` }}
-            aria-hidden="true"
-          >
-            <div className="chartTipHead">{hot.long}</div>
-            <div className="chartTipRow">
-              <i
-                className="chartTipKey"
-                style={{ background: "var(--series-1)" }}
-              />
-              <span>
-                <strong>{formatNumber(hot.receipts)} DA</strong> recettes
-              </span>
-            </div>
-            <div className="chartTipRow">
-              <i
-                className="chartTipKey"
-                style={{ background: "var(--series-2)" }}
-              />
-              <span>
-                <strong>{hot.visits}</strong> consultations
-              </span>
-            </div>
-            {hot.previousReceipts !== undefined ? (
-              <div className="chartTipRow">
-                <i className="chartTipKey chartTipKeyPrevious" />
-                <span>
-                  <strong>{formatNumber(hot.previousReceipts)} DA</strong> la période précédente
-                </span>
-              </div>
-            ) : null}
-            {hot.previousVisits !== undefined ? (
-              <div className="chartTipRow">
-                <i className="chartTipKey chartTipKeyPrevious" />
-                <span>
-                  <strong>{hot.previousVisits}</strong> consultations la période précédente
-                </span>
-              </div>
-            ) : null}
-            {hot.previousReceipts !== undefined && hot.receipts !== hot.previousReceipts ? (
-              // The answer the two lines lead to, written out.
-              <div className="chartTipDelta">
-                {hot.receipts > hot.previousReceipts ? "+" : "−"}
-                {formatNumber(Math.abs(hot.receipts - hot.previousReceipts))} DA sur la même tranche
-              </div>
-            ) : null}
-
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+/** The chart's own periods: a single day draws no curve. */
+const CHART_PERIODS = ANALYTICS_PERIODS.filter((option) => option.value !== "today");
+type ChartPeriod = (typeof CHART_PERIODS)[number]["value"];
 
 /** Chiffre principal avec son unité en retrait (« 13 900 » + « DA »). */
 function FactValue({ text }: { text: string }) {
@@ -634,10 +269,22 @@ export function PremiumAnalytics({
     }
   }, [nextAppointment]);
 
-  // Compute trend points for the selected period
+  // The chart's own period, set from its card; it follows the page's period
+  // when that one changes (a single day has no curve: a week instead).
+  const pagePeriod: ChartPeriod = period === "today" ? "7d" : period;
+  const [chartPeriod, setChartPeriod] = useState<ChartPeriod>(pagePeriod);
+  const [followedPeriod, setFollowedPeriod] = useState(pagePeriod);
+  if (followedPeriod !== pagePeriod) {
+    setFollowedPeriod(pagePeriod);
+    setChartPeriod(pagePeriod);
+  }
+  const chartRanges = useMemo(() => analyticsRanges(chartPeriod, now ?? new Date()), [chartPeriod, now]);
+
+  // Compute trend points for the chart's period
   const chartPoints = useMemo<TrendPoint[]>(() => {
     const transactions = presentation?.transactions || [];
     const appointments = presentation?.appointments || [];
+    const ranges = chartRanges;
     const { from, to } = ranges.current;
     // Each bucket's twin in the previous period, the same length earlier.
     const shift = from.getTime() - ranges.previous.from.getTime();
@@ -649,7 +296,8 @@ export function PremiumAnalytics({
       Math.round((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24))
     );
 
-    const step = daysCount <= 1 ? 1 : daysCount <= 7 ? 1 : daysCount <= 31 ? 3 : 7;
+    // One point a day up to a quarter, as the reference draws; a week beyond.
+    const step = daysCount <= 92 ? 1 : 7;
     const points: TrendPoint[] = [];
 
     const cursor = new Date(from);
@@ -661,8 +309,9 @@ export function PremiumAnalytics({
       const receiptsSum = transactions
         .filter((t) => {
           if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
-          const d = new Date(t.date);
-          return d >= cursor && d <= bucketEnd;
+          // Read as the Trésorerie card reads it: a SQLite timestamp is UTC.
+          const d = parseDashboardDate(t.date);
+          return Boolean(d && d >= cursor && d <= bucketEnd);
         })
         .reduce((sum, t) => sum + (t.amount || 0), 0);
 
@@ -677,15 +326,19 @@ export function PremiumAnalytics({
           ? cursor.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
           : cursor.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 
+      // A bucket of several days is named by its span, not by its first day.
+      const spanEnd = new Date(bucketEnd.getFullYear(), bucketEnd.getMonth(), bucketEnd.getDate());
       const long =
         daysCount <= 1
           ? cursor.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-          : cursor.toLocaleDateString("fr-FR", {
-              weekday: "short",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            });
+          : step > 1 && spanEnd.getTime() !== new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()).getTime()
+            ? `Du ${cursor.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} au ${spanEnd.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}`
+            : cursor.toLocaleDateString("fr-FR", {
+                weekday: "short",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              });
 
       const previousFrom = cursor.getTime() - shift;
       const previousTo = bucketEnd.getTime() - shift;
@@ -697,7 +350,7 @@ export function PremiumAnalytics({
       const previousReceipts = transactions
         .filter((t) => {
           if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
-          const time = new Date(t.date).getTime();
+          const time = parseDashboardDate(t.date)?.getTime() ?? Number.NaN;
           return time >= previousFrom && time <= previousTo;
         })
         .reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -723,7 +376,7 @@ export function PremiumAnalytics({
     }
 
     return points;
-  }, [ranges, presentation?.transactions, presentation?.appointments]);
+  }, [chartRanges, presentation?.transactions, presentation?.appointments]);
 
   // The month's receipts and where their pace leads (Recettes card).
   const forecast = useMemo(
@@ -1122,28 +775,38 @@ export function PremiumAnalytics({
         </button>
       </div>
 
-      {/* 4. Split Section: Left Curve Chart (Recettes) & Right Facts / Upcoming (Reference .split) */}
-      <div className="split">
-        {/* Left Card: Recettes & Volume Chart (Reference TrendChart) */}
-        <div className="card frame">
-          <div className="cardHead">
-            <div>
-              <h2 className="cardTitle">Recettes & activité</h2>
-              <p className="cardNote">Encaissements en DA et consultations, par jour</p>
+      {/* 4. Recettes & activité, full width. */}
+      <section aria-label="Recettes & activité" className="card frame recettesCard">
+        <FocusTrendChart
+          periodControl={
+            <div aria-label="Période du graphique" className="focusTabs" data-tabs-style="segmented" role="group">
+              {CHART_PERIODS.map((option) => (
+                <button
+                  aria-pressed={chartPeriod === option.value}
+                  data-active={chartPeriod === option.value}
+                  key={option.value}
+                  onClick={() => setChartPeriod(option.value)}
+                  type="button"
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
-            <button type="button" className="moreLink" onClick={onFinances}>
-              Finances <ArrowRight size={13} aria-hidden="true" />
-            </button>
-          </div>
-          <div className="cardFlush">
-            <TrendChartCurve points={chartPoints} />
-            {/* No forecast from a journal still loading. */}
-            {states.cash.loading ? null : <ForecastBar forecast={forecast} />}
-          </div>
-        </div>
+          }
+          points={chartPoints}
+        />
+        {/* No forecast from a journal still loading. */}
+        {states.cash.loading ? null : <ForecastBar forecast={forecast} />}
+        <WidgetFooter action="Finances" onAction={onFinances}>
+          Encaissements payés, {chartPeriod === "12m" ? "par semaine" : "par jour"} · consultations hors annulations et absences
+        </WidgetFooter>
+      </section>
 
-        {/* Right Card: Cette semaine & Prochains rendez-vous (Reference .facts and .table) */}
-        <div className="card frame">
+      {/* 5. Under the chart, half and half: the clinic's activity, then Cette semaine. */}
+      <div className="pairRow">
+        <ActivityHeatmap appointments={presentation?.appointments ?? []} now={updatedAt} onAgenda={() => onNavigate?.("agenda")} />
+
+        <div className="card frame weekCard">
           <div className="cardHead">
             <div>
               <h2 className="cardTitle">Cette semaine</h2>
@@ -1181,12 +844,8 @@ export function PremiumAnalytics({
                 {weekStats.rate === null ? (
                   <dd className="factEmpty">Aucune facture</dd>
                 ) : (
-                  <>
-                    <FactValue text={`${formatNumber(weekStats.rate, { maximumFractionDigits: 1 })} %`} />
-                    <span aria-hidden="true" className="factMeter">
-                      <i style={{ width: `${Math.min(100, Math.max(0, weekStats.rate))}%` }} />
-                    </span>
-                  </>
+                  // The figure alone: Consultations already draws a horizontal bar.
+                  <FactValue text={`${formatNumber(weekStats.rate, { maximumFractionDigits: 1 })} %`} />
                 )}
                 <dd className="factNote">Sur toutes les factures émises</dd>
               </div>
@@ -1198,67 +857,69 @@ export function PremiumAnalytics({
             </dl>
 
             {/* Rendez-vous du jour: units that count at a glance, then the next visits. */}
-            <h3 className="daySectionTitle">Rendez-vous du jour</h3>
-            {dayUnits.total ? (
-              <>
-                <DayUnits day={dayUnits} />
-                <ul className="dayList">
-                  {today!
-                    .filter((row) => !["completed", "cancelled", "no_show"].includes(row.appointment.status))
-                    .slice(0, 3)
-                    .map((row) => {
-                      const isNext = row.appointment.id === nextUpId;
-                      const timeStr = row.appointment.startTime
-                        ? new Date(row.appointment.startTime).toLocaleTimeString("fr-FR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "Aujourd'hui";
-                      const type = row.appointment.type || "Consultation";
-                      return (
-                        <li key={row.appointment.id}>
-                          {/* The row follows the visit in Flux, where visits move on. */}
-                          <button
-                            type="button"
-                            className="dayRow"
-                            data-next={isNext || undefined}
-                            aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
-                            onClick={() => onStartConsultation?.(row.appointment.id)}
-                          >
-                            <span className="dayRowTime">{timeStr}</span>
-                            <span className="dayRowText">
-                              <strong>{row.patientName || "Patient"}</strong>
-                              <span>
-                                {[
-                                  ["arrived", "waiting", "in_progress"].includes(row.appointment.status)
-                                    ? "En cours"
-                                    : isNext
-                                      ? "Prochain"
-                                      : null,
-                                  row.ownerName ? `avec ${row.ownerName}` : null,
-                                ]
-                                  .filter(Boolean)
-                                  .join(" · ") || "Rendez-vous à venir"}
-                              </span>
-                            </span>
-                            <Badge
-                              className={cn("border-transparent", getAppointmentTypeMeta(row.appointment.type).badgeClassName)}
-                              variant="outline"
+            <div className="weekDay">
+              <h3 className="daySectionTitle">Rendez-vous du jour</h3>
+              {dayUnits.total ? (
+                <>
+                  <DayUnits day={dayUnits} />
+                  <ul className="dayList">
+                    {today!
+                      .filter((row) => !["completed", "cancelled", "no_show"].includes(row.appointment.status))
+                      .slice(0, 3)
+                      .map((row) => {
+                        const isNext = row.appointment.id === nextUpId;
+                        const timeStr = row.appointment.startTime
+                          ? new Date(row.appointment.startTime).toLocaleTimeString("fr-FR", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "Aujourd'hui";
+                        const type = row.appointment.type || "Consultation";
+                        return (
+                          <li key={row.appointment.id}>
+                            {/* The row follows the visit in Flux, where visits move on. */}
+                            <button
+                              type="button"
+                              className="dayRow"
+                              data-next={isNext || undefined}
+                              aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
+                              onClick={() => onStartConsultation?.(row.appointment.id)}
                             >
-                              {type}
-                            </Badge>
-                          </button>
-                        </li>
-                      );
-                    })}
-                </ul>
-                {dayUnits.done === dayUnits.total ? (
-                  <p className="dayEmpty">Tous les rendez-vous du jour sont terminés.</p>
-                ) : null}
-              </>
-            ) : (
-              <p className="dayEmpty">Aucun rendez-vous aujourd’hui.</p>
-            )}
+                              <span className="dayRowTime">{timeStr}</span>
+                              <span className="dayRowText">
+                                <strong>{row.patientName || "Patient"}</strong>
+                                <span>
+                                  {[
+                                    ["arrived", "waiting", "in_progress"].includes(row.appointment.status)
+                                      ? "En cours"
+                                      : isNext
+                                        ? "Prochain"
+                                        : null,
+                                    row.ownerName ? `avec ${row.ownerName}` : null,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" · ") || "Rendez-vous à venir"}
+                                </span>
+                              </span>
+                              <Badge
+                                className={cn("border-transparent", getAppointmentTypeMeta(row.appointment.type).badgeClassName)}
+                                variant="outline"
+                              >
+                                {type}
+                              </Badge>
+                            </button>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                  {dayUnits.done === dayUnits.total ? (
+                    <p className="dayEmpty">Tous les rendez-vous du jour sont terminés.</p>
+                  ) : null}
+                </>
+              ) : (
+                <p className="dayEmpty">Aucun rendez-vous aujourd’hui.</p>
+              )}
+            </div>
             {/* What comes next, then the card's single action. */}
             <WidgetFooter action="Agenda" onAction={() => onNavigate?.("agenda")}>
               {(() => {

@@ -321,9 +321,11 @@ describe("thème Clean : widgets", () => {
   it("porte la comparaison sous le chiffre et la période précédente en pointillé", () => {
     const chip = rulesFor(/\.kpiSub \.delta > span:not/).map((rule) => rule.toString()).join("");
     expect(chip).toContain("border-radius: 999px");
-    // The previous period's grey dash is drawn in every skin (premium-analytics.css).
-    const analytics = readFileSync("src/modules/dashboard/components/premium-analytics.css", "utf8");
-    expect(analytics).toMatch(/\.chartLinePrevious \{[^}]*stroke-dasharray/);
+    // 31 October: the chart draws one series at a time, as the reference does;
+    // the previous period is read in its readout, never as a second line.
+    const chart = readFileSync("src/modules/dashboard/components/focus-trend-chart.tsx", "utf8");
+    expect(chart).toMatch(/la période précédente/);
+    expect(chart).not.toMatch(/focusPrevious/);
   });
 
   it("donne à chaque carte de la première rangée son propre graphique, sur la même ligne de base", () => {

@@ -537,7 +537,7 @@
   text-transform: none !important;
 }
 /* Tabular figures for amounts and tables, so columns of numbers align. */
-:root[data-skin="clean"] :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick, .chartTickVisits) {
+:root[data-skin="clean"] :is(table, [data-slot="table"], .kpiValue, .section-atlas-value, .facts dd, .chartTick) {
   font-variant-numeric: tabular-nums;
 }
 :root[data-skin="clean"] :is(.kpiValue, .section-atlas-value) { font-weight: 600 !important; letter-spacing: var(--clean-tracking-title) !important; }
