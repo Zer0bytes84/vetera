@@ -17,7 +17,10 @@ import { activateLicense } from "@/services/licenseActivationService";
 import {
   acceptLicenseActivation,
   checkLicenseAccess,
+  getCachedLicenseAccess,
   type LicenseAccess,
+  LICENSE_LOCAL_RECHECK_MS,
+  recheckLicenseInBackground,
 } from "@/services/licenseRuntime";
 import { formatLicenseKey } from "@/services/licenseService";
 
@@ -28,8 +31,15 @@ export function LicenseGate({ children }: { children: ReactNode }) {
   return <CheckedLicenseGate>{children}</CheckedLicenseGate>;
 }
 
+/** Same verdict, same object: a background recheck that changes nothing renders nothing. */
+function sameAccess(a: LicenseAccess | null, b: LicenseAccess) {
+  return Boolean(a) && a!.allowed === b.allowed && a!.message === b.message && a!.offlineUntil === b.offlineUntil && a!.expiresAt === b.expiresAt && a!.email === b.email;
+}
+
 function CheckedLicenseGate({ children }: { children: ReactNode }) {
-  const [access, setAccess] = useState<LicenseAccess | null>(null);
+  // Remounted (React 19 hides a suspended tree and reruns its effects), the
+  // gate starts from the access this process already verified: no wait.
+  const [access, setAccess] = useState<LicenseAccess | null>(() => getCachedLicenseAccess());
   const [email, setEmail] = useState("");
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
@@ -37,42 +47,39 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
   const inFlight = useRef(false);
   const mounted = useRef(true);
   const drag = useTauriDrag<HTMLDivElement>(true);
+  const apply = useCallback((result: LicenseAccess) => {
+    if (!mounted.current) return;
+    setAccess((previous) => (sameAccess(previous, result) ? previous : result));
+    setEmail((previous) => previous || result.email || "");
+  }, []);
+  // Startup and explicit retries: the full check, with its usual wait.
   const refresh = useCallback(async (online: boolean) => {
     if (inFlight.current) return;
     inFlight.current = true;
     setBusy(true);
     try {
-      const result = await checkLicenseAccess(online);
-      if (mounted.current) {
-        setAccess(result);
-        setEmail((previous) => previous || result.email || "");
-      }
+      apply(await checkLicenseAccess(online));
     } finally {
       inFlight.current = false;
       if (mounted.current) setBusy(false);
     }
-  }, []);
+  }, [apply]);
 
   useEffect(() => {
     mounted.current = true;
-    void refresh(true);
-    let lastOnline = Date.now();
-    const tick = () => {
-      const online = Date.now() - lastOnline >= 15 * 60_000;
-      if (online) lastOnline = Date.now();
-      void refresh(online);
+    // One full check per process; a remount reuses the verified access.
+    if (!getCachedLicenseAccess()) void refresh(true);
+    // Background rechecks: no busy state, no wait, a verdict only if it changes.
+    const recheck = (cause: "interval" | "visibility" | "online") => {
+      if (inFlight.current) return;
+      void recheckLicenseInBackground(cause)?.then(apply);
     };
+    const tick = () => recheck("interval");
     const focus = () => {
-      if (document.visibilityState !== "visible") return;
-      const online = Date.now() - lastOnline >= 60_000;
-      if (online) lastOnline = Date.now();
-      void refresh(online);
+      if (document.visibilityState === "visible") recheck("visibility");
     };
-    const reconnect = () => {
-      lastOnline = Date.now();
-      void refresh(true);
-    };
-    const timer = window.setInterval(tick, 60_000);
+    const reconnect = () => recheck("online");
+    const timer = window.setInterval(tick, LICENSE_LOCAL_RECHECK_MS);
     window.addEventListener("online", reconnect);
     document.addEventListener("visibilitychange", focus);
     return () => {
@@ -81,7 +88,7 @@ function CheckedLicenseGate({ children }: { children: ReactNode }) {
       window.removeEventListener("online", reconnect);
       document.removeEventListener("visibilitychange", focus);
     };
-  }, [refresh]);
+  }, [apply, refresh]);
 
   const activate = async (event: FormEvent) => {
     event.preventDefault();

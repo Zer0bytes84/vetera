@@ -1,0 +1,721 @@
+{"event": "license-check", "at": "2026-11-03T14:42:39.161Z", "t": 962, "forceOnline": true, "totalMs": 508, "steps": {"readStored": 161, "deviceId": 0, "verifySignature": 7, "network": 329, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-check", "at": "2026-11-03T14:43:12.763Z", "t": 34565, "forceOnline": true, "totalMs": 511, "steps": {"readStored": 164, "deviceId": 0, "verifySignature": 6, "network": 332, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-check", "at": "2026-11-03T14:43:53.277Z", "t": 373, "forceOnline": true, "totalMs": 269, "steps": {"readStored": 4, "deviceId": 2, "verifySignature": 2, "network": 251, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "db-slow", "at": "2026-11-03T14:43:53.935Z", "t": 1031, "waitMs": 270, "runMs": 51, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:43:53.956Z", "t": 1052, "waitMs": 321, "runMs": 21, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:43:54.132Z", "t": 1227, "waitMs": 342, "runMs": 176, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:43:54.212Z", "t": 1308, "waitMs": 518, "runMs": 80, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:43:54.331Z", "t": 1426, "waitMs": 598, "runMs": 119, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:43:54.484Z", "t": 1579, "waitMs": 659, "runMs": 153, "depth": 15, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:43:54.672Z", "t": 1767, "waitMs": 808, "runMs": 188, "depth": 16, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:43:54.695Z", "t": 1790, "waitMs": 988, "runMs": 23, "depth": 17, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:43:54.771Z", "t": 1866, "waitMs": 1006, "runMs": 77, "depth": 18, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.506Z", "t": 2601, "waitMs": 285, "runMs": 735, "depth": 4, "caller": "runPurgeDemoData@src/services/demo-data.ts:657:27 < purgeDemoDataInTauriIfNeeded@src/services/demo-data.ts:636:42"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.510Z", "t": 2605, "waitMs": 469, "runMs": 4, "depth": 2, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.514Z", "t": 2609, "waitMs": 473, "runMs": 4, "depth": 3, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.520Z", "t": 2616, "waitMs": 477, "runMs": 6, "depth": 4, "caller": "refreshRooms@src/modules/rooms/use-rooms.ts:20:30 < subscribe@src/modules/rooms/use-rooms.ts:37:78"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.586Z", "t": 2681, "waitMs": 482, "runMs": 66, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.649Z", "t": 2745, "waitMs": 548, "runMs": 64, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.746Z", "t": 2842, "waitMs": 609, "runMs": 97, "depth": 7, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:43:55.751Z", "t": 2846, "waitMs": 705, "runMs": 5, "depth": 8, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "license-check", "at": "2026-11-03T14:43:55.762Z", "t": 2857, "forceOnline": true, "totalMs": 2079, "steps": {"readStored": 1090, "deviceId": 0, "verifySignature": 40, "network": 668, "save": 5}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-check", "at": "2026-11-03T14:44:42.650Z", "t": 49746, "forceOnline": false, "totalMs": 30, "steps": {"readStored": 20, "deviceId": 0, "verifySignature": 1, "save": 8}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-mount", "at": "2026-11-03T14:44:44.046Z", "t": 51142}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:44.046Z", "t": 51142, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:44.047Z", "t": 51143, "shown": "splash", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:44:44.435Z", "t": 51531, "forceOnline": true, "totalMs": 389, "steps": {"readStored": 16, "deviceId": 0, "verifySignature": 2, "network": 364, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:44.540Z", "t": 51636, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T14:44:44.879Z", "t": 51975, "waitMs": 293, "runMs": 48, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:44.898Z", "t": 51995, "waitMs": 341, "runMs": 19, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:44.930Z", "t": 52026, "waitMs": 360, "runMs": 31, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:44.959Z", "t": 52055, "waitMs": 391, "runMs": 29, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:44:44.977Z", "t": 52073, "waitMs": 421, "runMs": 18, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:44.991Z", "t": 52087, "waitMs": 439, "runMs": 13, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.020Z", "t": 52116, "waitMs": 452, "runMs": 30, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.026Z", "t": 52122, "waitMs": 482, "runMs": 6, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.062Z", "t": 52158, "waitMs": 487, "runMs": 36, "depth": 15, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.065Z", "t": 52161, "waitMs": 523, "runMs": 3, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.066Z", "t": 52163, "waitMs": 526, "runMs": 1, "depth": 17, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.077Z", "t": 52173, "waitMs": 527, "runMs": 11, "depth": 18, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.096Z", "t": 52192, "waitMs": 537, "runMs": 19, "depth": 19, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.115Z", "t": 52211, "waitMs": 554, "runMs": 19, "depth": 20, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.124Z", "t": 52220, "waitMs": 573, "runMs": 8, "depth": 21, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.125Z", "t": 52221, "waitMs": 581, "runMs": 1, "depth": 22, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:45.126Z", "t": 52222, "waitMs": 582, "runMs": 1, "depth": 23, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "main-thread-stall", "at": "2026-11-03T14:44:47.089Z", "t": 54185, "ms": 154}
+{"event": "navigation", "at": "2026-11-03T14:44:47.146Z", "t": 54242, "view": "dashboard", "commitMs": 127, "paintMs": 309}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.216Z", "t": 54312, "waitMs": 271, "runMs": 39, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.265Z", "t": 54362, "waitMs": 310, "runMs": 50, "depth": 6, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.298Z", "t": 54394, "waitMs": 359, "runMs": 33, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.335Z", "t": 54431, "waitMs": 392, "runMs": 37, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.351Z", "t": 54447, "waitMs": 429, "runMs": 16, "depth": 9, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.353Z", "t": 54449, "waitMs": 445, "runMs": 2, "depth": 10, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.359Z", "t": 54455, "waitMs": 447, "runMs": 5, "depth": 11, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.379Z", "t": 54475, "waitMs": 452, "runMs": 20, "depth": 12, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.382Z", "t": 54478, "waitMs": 472, "runMs": 3, "depth": 13, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.384Z", "t": 54480, "waitMs": 418, "runMs": 2, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.420Z", "t": 54516, "waitMs": 420, "runMs": 36, "depth": 15, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.425Z", "t": 54521, "waitMs": 456, "runMs": 5, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.434Z", "t": 54530, "waitMs": 461, "runMs": 8, "depth": 17, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.436Z", "t": 54532, "waitMs": 469, "runMs": 2, "depth": 18, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.443Z", "t": 54540, "waitMs": 463, "runMs": 8, "depth": 19, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:44:47.446Z", "t": 54542, "waitMs": 471, "runMs": 2, "depth": 20, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "license-gate-mount", "at": "2026-11-03T14:44:50.068Z", "t": 85}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:50.068Z", "t": 85, "shown": "splash", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:44:50.068Z", "t": 85}
+{"event": "license-gate-mount", "at": "2026-11-03T14:44:50.068Z", "t": 85}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:50.068Z", "t": 85, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:50.069Z", "t": 85, "shown": "splash", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:44:50.361Z", "t": 377, "forceOnline": true, "totalMs": 293, "steps": {"readStored": 4, "deviceId": 2, "verifySignature": 1, "network": 279, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:50.710Z", "t": 726, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:44:50.710Z", "t": 727}
+{"event": "license-gate-mount", "at": "2026-11-03T14:44:50.726Z", "t": 743}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:50.726Z", "t": 743, "shown": "app", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:50.728Z", "t": 745, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:44:50.993Z", "t": 1010, "waitMs": 282, "runMs": 40, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.036Z", "t": 1053, "waitMs": 322, "runMs": 44, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.069Z", "t": 1086, "waitMs": 366, "runMs": 32, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.144Z", "t": 1161, "waitMs": 398, "runMs": 75, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.184Z", "t": 1201, "waitMs": 473, "runMs": 40, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.204Z", "t": 1221, "waitMs": 513, "runMs": 20, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.235Z", "t": 1252, "waitMs": 533, "runMs": 31, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.249Z", "t": 1265, "waitMs": 564, "runMs": 13, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.279Z", "t": 1296, "waitMs": 577, "runMs": 30, "depth": 15, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.307Z", "t": 1324, "waitMs": 607, "runMs": 28, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.319Z", "t": 1336, "waitMs": 635, "runMs": 12, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.330Z", "t": 1347, "waitMs": 647, "runMs": 11, "depth": 18, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.353Z", "t": 1370, "waitMs": 658, "runMs": 23, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.361Z", "t": 1378, "waitMs": 681, "runMs": 8, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.368Z", "t": 1385, "waitMs": 652, "runMs": 7, "depth": 21, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.381Z", "t": 1398, "waitMs": 657, "runMs": 13, "depth": 22, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.395Z", "t": 1412, "waitMs": 669, "runMs": 14, "depth": 23, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.398Z", "t": 1415, "waitMs": 683, "runMs": 3, "depth": 24, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.406Z", "t": 1423, "waitMs": 686, "runMs": 8, "depth": 25, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.408Z", "t": 1425, "waitMs": 694, "runMs": 2, "depth": 26, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.415Z", "t": 1432, "waitMs": 682, "runMs": 7, "depth": 27, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.428Z", "t": 1445, "waitMs": 686, "runMs": 13, "depth": 28, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.433Z", "t": 1450, "waitMs": 699, "runMs": 5, "depth": 29, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:44:51.434Z", "t": 1451, "waitMs": 704, "runMs": 1, "depth": 30, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "license-check", "at": "2026-11-03T14:44:51.568Z", "t": 1585, "forceOnline": true, "totalMs": 843, "steps": {"readStored": 708, "deviceId": 0, "verifySignature": 0, "network": 132, "save": 1}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:44:51.569Z", "t": 1586, "shown": "app", "busy": false}
+{"event": "navigation", "at": "2026-11-03T14:44:52.437Z", "t": 2454, "view": "patients", "commitMs": 35, "paintMs": 49}
+{"event": "navigation", "at": "2026-11-03T14:44:53.745Z", "t": 3762, "view": "agenda", "commitMs": 34, "paintMs": 44}
+{"event": "navigation", "at": "2026-11-03T14:44:55.006Z", "t": 5023, "view": "clinique", "commitMs": 36, "paintMs": 53}
+{"event": "navigation", "at": "2026-11-03T14:44:56.215Z", "t": 6232, "view": "flux", "commitMs": 26, "paintMs": 82}
+{"event": "navigation", "at": "2026-11-03T14:44:57.536Z", "t": 7553, "view": "notes", "commitMs": 30, "paintMs": 37}
+{"event": "navigation", "at": "2026-11-03T14:44:58.525Z", "t": 8542, "view": "stock", "commitMs": 26, "paintMs": 37}
+{"event": "navigation", "at": "2026-11-03T14:44:59.897Z", "t": 9914, "view": "finances", "commitMs": 34, "paintMs": 47}
+{"event": "license-gate-mount", "at": "2026-11-03T14:45:02.734Z", "t": 108}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:02.734Z", "t": 108, "shown": "splash", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:45:02.735Z", "t": 109}
+{"event": "license-gate-mount", "at": "2026-11-03T14:45:02.735Z", "t": 109}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:02.735Z", "t": 109, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:02.736Z", "t": 110, "shown": "splash", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:45:03.078Z", "t": 451, "forceOnline": true, "totalMs": 343, "steps": {"readStored": 4, "deviceId": 1, "verifySignature": 0, "network": 332, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:03.908Z", "t": 1282, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:45:03.909Z", "t": 1283}
+{"event": "license-gate-mount", "at": "2026-11-03T14:45:03.919Z", "t": 1293}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:03.919Z", "t": 1293, "shown": "app", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:03.923Z", "t": 1296, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.211Z", "t": 1585, "waitMs": 272, "runMs": 50, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.259Z", "t": 1633, "waitMs": 322, "runMs": 48, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.278Z", "t": 1652, "waitMs": 370, "runMs": 19, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.315Z", "t": 1689, "waitMs": 389, "runMs": 37, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.325Z", "t": 1699, "waitMs": 426, "runMs": 10, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.355Z", "t": 1729, "waitMs": 417, "runMs": 30, "depth": 15, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.378Z", "t": 1752, "waitMs": 444, "runMs": 24, "depth": 16, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.385Z", "t": 1759, "waitMs": 460, "runMs": 7, "depth": 17, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.402Z", "t": 1775, "waitMs": 462, "runMs": 16, "depth": 18, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "db-slow", "at": "2026-11-03T14:45:04.522Z", "t": 1896, "waitMs": 193, "runMs": 120, "depth": 10, "caller": "runPurgeDemoData@src/services/demo-data.ts:657:27 < purgeDemoDataInTauriIfNeeded@src/services/demo-data.ts:636:42"}
+{"event": "license-check", "at": "2026-11-03T14:45:04.600Z", "t": 1974, "forceOnline": true, "totalMs": 681, "steps": {"readStored": 483, "deviceId": 0, "verifySignature": 6, "network": 104, "save": 4}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:04.601Z", "t": 1974, "shown": "app", "busy": false}
+{"event": "main-thread-stall", "at": "2026-11-03T14:45:23.559Z", "t": 20933, "ms": 737}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:45:23.559Z", "t": 20933, "cause": "visibility"}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:23.567Z", "t": 20941, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:45:23.572Z", "t": 20947, "forceOnline": false, "totalMs": 13, "steps": {"readStored": 8, "deviceId": 0, "verifySignature": 2, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:45:23.573Z", "t": 20947, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:46:03.980Z", "t": 61355, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:46:04.168Z", "t": 61542, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:46:04.258Z", "t": 61633, "forceOnline": false, "totalMs": 278, "steps": {"readStored": 263, "deviceId": 0, "verifySignature": 6, "save": 8}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:46:04.260Z", "t": 61635, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:46:13.842Z", "t": 71217, "cause": "visibility"}
+{"event": "license-gate-state", "at": "2026-11-03T14:46:13.860Z", "t": 71235, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:46:14.213Z", "t": 71588, "forceOnline": true, "totalMs": 371, "steps": {"readStored": 11, "deviceId": 0, "verifySignature": 4, "network": 350, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:46:14.215Z", "t": 71589, "shown": "app", "busy": false}
+{"event": "main-thread-stall", "at": "2026-11-03T14:46:53.625Z", "t": 111000, "ms": 374}
+{"event": "main-thread-stall", "at": "2026-11-03T14:46:54.625Z", "t": 112001, "ms": 901}
+{"event": "main-thread-stall", "at": "2026-11-03T14:46:55.633Z", "t": 113009, "ms": 908}
+{"event": "main-thread-stall", "at": "2026-11-03T14:46:56.624Z", "t": 114000, "ms": 891}
+{"event": "main-thread-stall", "at": "2026-11-03T14:46:57.625Z", "t": 115001, "ms": 901}
+{"event": "main-thread-stall", "at": "2026-11-03T14:46:58.681Z", "t": 116056, "ms": 955}
+{"event": "main-thread-stall", "at": "2026-11-03T14:46:59.720Z", "t": 117096, "ms": 940}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:00.711Z", "t": 118087, "ms": 890}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:01.724Z", "t": 119100, "ms": 913}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:02.710Z", "t": 120086, "ms": 886}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:03.729Z", "t": 121104, "ms": 918}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:47:04.057Z", "t": 121433, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:47:04.274Z", "t": 121650, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:47:04.400Z", "t": 121776, "waitMs": 217, "runMs": 126, "depth": 3, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "license-check", "at": "2026-11-03T14:47:04.450Z", "t": 121826, "forceOnline": false, "totalMs": 393, "steps": {"readStored": 343, "deviceId": 0, "verifySignature": 31, "save": 19}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:47:04.451Z", "t": 121827, "shown": "app", "busy": false}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:04.670Z", "t": 122046, "ms": 842}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:05.788Z", "t": 123164, "ms": 1018}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:31.254Z", "t": 148630, "ms": 474}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:47:31.268Z", "t": 148645, "cause": "visibility"}
+{"event": "main-thread-stall", "at": "2026-11-03T14:47:31.561Z", "t": 148937, "ms": 207}
+{"event": "license-gate-state", "at": "2026-11-03T14:47:31.613Z", "t": 148989, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:47:31.992Z", "t": 149368, "forceOnline": true, "totalMs": 718, "steps": {"readStored": 275, "deviceId": 0, "verifySignature": 55, "network": 374, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:47:31.995Z", "t": 149371, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:48:04.101Z", "t": 181477, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:04.317Z", "t": 181694, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:48:04.483Z", "t": 181860, "waitMs": 217, "runMs": 164, "depth": 3, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "license-check", "at": "2026-11-03T14:48:04.506Z", "t": 181883, "forceOnline": false, "totalMs": 405, "steps": {"readStored": 382, "deviceId": 0, "verifySignature": 13, "save": 9}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:04.508Z", "t": 181885, "shown": "app", "busy": false}
+{"event": "license-gate-mount", "at": "2026-11-03T14:48:23.987Z", "t": 139}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:23.987Z", "t": 139, "shown": "splash", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:48:23.988Z", "t": 140}
+{"event": "license-gate-mount", "at": "2026-11-03T14:48:23.988Z", "t": 140}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:23.988Z", "t": 140, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:23.989Z", "t": 141, "shown": "splash", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:48:24.611Z", "t": 763, "forceOnline": true, "totalMs": 624, "steps": {"readStored": 4, "deviceId": 3, "verifySignature": 5, "network": 603, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:25.209Z", "t": 1361, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:48:25.210Z", "t": 1363}
+{"event": "license-gate-mount", "at": "2026-11-03T14:48:25.251Z", "t": 1404}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:25.251Z", "t": 1404, "shown": "app", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:25.282Z", "t": 1434, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:48:25.526Z", "t": 1678, "waitMs": 107, "runMs": 221, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:25.618Z", "t": 1770, "waitMs": 328, "runMs": 92, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:25.753Z", "t": 1906, "waitMs": 420, "runMs": 136, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:25.882Z", "t": 2034, "waitMs": 555, "runMs": 129, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:26.091Z", "t": 2243, "waitMs": 684, "runMs": 209, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:26.213Z", "t": 2365, "waitMs": 892, "runMs": 122, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:26.424Z", "t": 2576, "waitMs": 1014, "runMs": 212, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:26.492Z", "t": 2644, "waitMs": 1226, "runMs": 67, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:26.694Z", "t": 2846, "waitMs": 1293, "runMs": 202, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:48:26.784Z", "t": 2937, "waitMs": 1495, "runMs": 90, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:26.962Z", "t": 3114, "waitMs": 1585, "runMs": 177, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:27.152Z", "t": 3304, "waitMs": 1762, "runMs": 191, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:48:27.271Z", "t": 3423, "waitMs": 1952, "runMs": 118, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:48:27.438Z", "t": 3590, "waitMs": 2068, "runMs": 168, "depth": 15, "caller": "listInvoices@src/services/billingService.ts:851:19 < @src/modules/finances/hooks/use-finances-page-model.tsx:148:52"}
+{"event": "db-slow", "at": "2026-11-03T14:48:27.735Z", "t": 3887, "waitMs": 2232, "runMs": 297, "depth": 16, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:48:27.902Z", "t": 4055, "waitMs": 2486, "runMs": 167, "depth": 17, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:48:27.941Z", "t": 4093, "waitMs": 2652, "runMs": 38, "depth": 18, "caller": "listInvoices@src/services/billingService.ts:851:19 < @src/modules/finances/hooks/use-finances-page-model.tsx:148:52"}
+{"event": "db-slow", "at": "2026-11-03T14:48:28.096Z", "t": 4249, "waitMs": 2690, "runMs": 155, "depth": 19, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:48:28.173Z", "t": 4325, "waitMs": 2809, "runMs": 76, "depth": 20, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "db-slow", "at": "2026-11-03T14:48:28.336Z", "t": 4489, "waitMs": 2556, "runMs": 164, "depth": 19, "caller": "runPurgeDemoData@src/services/demo-data.ts:657:27 < purgeDemoDataInTauriIfNeeded@src/services/demo-data.ts:636:42"}
+{"event": "license-check", "at": "2026-11-03T14:48:28.342Z", "t": 4495, "forceOnline": true, "totalMs": 3091, "steps": {"readStored": 2923, "deviceId": 0, "verifySignature": 10, "network": 135, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:48:28.344Z", "t": 4496, "shown": "app", "busy": false}
+{"event": "autopilot-start", "at": "2026-11-03T14:49:03.531Z", "t": 39684, "label": "avant", "rounds": 2, "dwellMs": 3000, "events": true}
+{"event": "db-slow", "at": "2026-11-03T14:49:04.604Z", "t": 40756, "waitMs": 235, "runMs": 133, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:49:04.898Z", "t": 41051, "waitMs": 367, "runMs": 295, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:49:05.038Z", "t": 41191, "waitMs": 661, "runMs": 140, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:49:05.223Z", "t": 41376, "waitMs": 801, "runMs": 185, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:49:05.366Z", "t": 41519, "waitMs": 986, "runMs": 143, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:49:25.349Z", "t": 61502, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:49:25.469Z", "t": 61622, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:49:25.591Z", "t": 61744, "forceOnline": false, "totalMs": 241, "steps": {"readStored": 224, "deviceId": 0, "verifySignature": 9, "save": 8}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:49:25.592Z", "t": 61745, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:50:25.414Z", "t": 121568, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:50:25.556Z", "t": 121710, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:50:25.643Z", "t": 121797, "forceOnline": false, "totalMs": 229, "steps": {"readStored": 217, "deviceId": 0, "verifySignature": 6, "save": 6}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:50:25.649Z", "t": 121804, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:51:07.779Z", "t": 163924, "cause": "visibility"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:07.835Z", "t": 163979, "shown": "app", "busy": true}
+{"event": "navigation", "at": "2026-11-03T14:51:07.975Z", "t": 164119, "view": "patients", "commitMs": 272, "paintMs": 124414}
+{"event": "autopilot-nav", "at": "2026-11-03T14:51:08.133Z", "t": 164278, "label": "avant", "round": 0, "view": "Patients", "paintMs": 124433, "settledMs": 124433, "dbOps": 15}
+{"event": "license-check", "at": "2026-11-03T14:51:08.145Z", "t": 164289, "forceOnline": true, "totalMs": 365, "steps": {"readStored": 35, "deviceId": 0, "verifySignature": 17, "network": 306, "save": 1}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:08.146Z", "t": 164290, "shown": "app", "busy": false}
+{"event": "navigation", "at": "2026-11-03T14:51:11.343Z", "t": 167488, "view": "agenda", "commitMs": 141, "paintMs": 189}
+{"event": "autopilot-nav", "at": "2026-11-03T14:51:11.501Z", "t": 167645, "label": "avant", "round": 0, "view": "Agenda", "paintMs": 201, "settledMs": 201, "dbOps": 0}
+{"event": "navigation", "at": "2026-11-03T14:51:14.549Z", "t": 170693, "view": "clinique", "commitMs": 26, "paintMs": 43}
+{"event": "autopilot-nav", "at": "2026-11-03T14:51:14.701Z", "t": 170845, "label": "avant", "round": 0, "view": "Soins & hospitalisation", "paintMs": 43, "settledMs": 43, "dbOps": 0}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:51:17.710Z", "t": 173854, "cause": "visibility"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:17.752Z", "t": 173896, "shown": "app", "busy": true}
+{"event": "navigation", "at": "2026-11-03T14:51:17.806Z", "t": 173951, "view": "flux", "commitMs": 41, "paintMs": 96}
+{"event": "license-check", "at": "2026-11-03T14:51:17.970Z", "t": 174114, "forceOnline": false, "totalMs": 260, "steps": {"readStored": 252, "deviceId": 0, "verifySignature": 3, "save": 4}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:17.970Z", "t": 174114, "shown": "app", "busy": false}
+{"event": "autopilot-nav", "at": "2026-11-03T14:51:18.133Z", "t": 174278, "label": "avant", "round": 0, "view": "Flux", "paintMs": 96, "settledMs": 261, "dbOps": 17}
+{"event": "navigation", "at": "2026-11-03T14:51:21.184Z", "t": 177328, "view": "taches", "commitMs": 36, "paintMs": 46}
+{"event": "autopilot-nav", "at": "2026-11-03T14:51:21.337Z", "t": 177482, "label": "avant", "round": 0, "view": "Rappels", "paintMs": 46, "settledMs": 46, "dbOps": 0}
+{"event": "navigation", "at": "2026-11-03T14:51:24.398Z", "t": 180542, "view": "notes", "commitMs": 36, "paintMs": 56}
+{"event": "autopilot-nav", "at": "2026-11-03T14:51:24.558Z", "t": 180702, "label": "avant", "round": 0, "view": "Documents", "paintMs": 56, "settledMs": 56, "dbOps": 0}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:51:25.425Z", "t": 181569, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:25.484Z", "t": 181629, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:51:25.530Z", "t": 181674, "forceOnline": false, "totalMs": 105, "steps": {"readStored": 99, "deviceId": 0, "verifySignature": 2, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:25.531Z", "t": 181675, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:51:27.654Z", "t": 183799, "cause": "online"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:27.746Z", "t": 183890, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:51:28.115Z", "t": 184259, "forceOnline": true, "totalMs": 460, "steps": {"readStored": 145, "deviceId": 0, "verifySignature": 3, "network": 286, "save": 10}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:51:28.116Z", "t": 184260, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T14:51:28.572Z", "t": 184716, "waitMs": 238, "runMs": 80, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:51:28.651Z", "t": 184795, "waitMs": 318, "runMs": 79, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:52:25.532Z", "t": 241677, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:52:25.706Z", "t": 241851, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:52:25.795Z", "t": 241940, "forceOnline": false, "totalMs": 262, "steps": {"readStored": 249, "deviceId": 0, "verifySignature": 5, "save": 6}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:52:25.797Z", "t": 241942, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:52:28.168Z", "t": 244313, "cause": "visibility"}
+{"event": "license-gate-state", "at": "2026-11-03T14:52:28.193Z", "t": 244338, "shown": "app", "busy": true}
+{"event": "navigation", "at": "2026-11-03T14:52:28.210Z", "t": 244355, "view": "stock", "commitMs": 90, "paintMs": 60555}
+{"event": "autopilot-nav", "at": "2026-11-03T14:52:28.364Z", "t": 244509, "label": "avant", "round": 0, "view": "Produits", "paintMs": 60556, "settledMs": 60556, "dbOps": 12}
+{"event": "license-check", "at": "2026-11-03T14:52:28.449Z", "t": 244593, "forceOnline": true, "totalMs": 280, "steps": {"readStored": 19, "deviceId": 0, "verifySignature": 3, "network": 254, "save": 1}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:52:28.449Z", "t": 244594, "shown": "app", "busy": false}
+{"event": "navigation", "at": "2026-11-03T14:52:31.489Z", "t": 247634, "view": "finances", "commitMs": 68, "paintMs": 117}
+{"event": "autopilot-nav", "at": "2026-11-03T14:52:31.796Z", "t": 247941, "label": "avant", "round": 0, "view": "Finances", "paintMs": 119, "settledMs": 274, "dbOps": 5}
+{"event": "navigation", "at": "2026-11-03T14:52:35.122Z", "t": 251267, "view": "dashboard", "commitMs": 210, "paintMs": 322}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.219Z", "t": 251364, "waitMs": 284, "runMs": 22, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.264Z", "t": 251409, "waitMs": 306, "runMs": 46, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.296Z", "t": 251441, "waitMs": 352, "runMs": 32, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.346Z", "t": 251491, "waitMs": 383, "runMs": 50, "depth": 7, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.380Z", "t": 251525, "waitMs": 433, "runMs": 34, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.400Z", "t": 251545, "waitMs": 467, "runMs": 19, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.435Z", "t": 251580, "waitMs": 487, "runMs": 35, "depth": 10, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.469Z", "t": 251614, "waitMs": 522, "runMs": 34, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.486Z", "t": 251631, "waitMs": 556, "runMs": 16, "depth": 12, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.495Z", "t": 251640, "waitMs": 573, "runMs": 9, "depth": 13, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.500Z", "t": 251645, "waitMs": 582, "runMs": 6, "depth": 14, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.520Z", "t": 251665, "waitMs": 587, "runMs": 20, "depth": 15, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.532Z", "t": 251677, "waitMs": 607, "runMs": 12, "depth": 16, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.541Z", "t": 251686, "waitMs": 520, "runMs": 10, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.545Z", "t": 251690, "waitMs": 529, "runMs": 4, "depth": 18, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.554Z", "t": 251699, "waitMs": 533, "runMs": 8, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.555Z", "t": 251700, "waitMs": 542, "runMs": 2, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.563Z", "t": 251708, "waitMs": 535, "runMs": 8, "depth": 21, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:52:35.565Z", "t": 251710, "waitMs": 542, "runMs": 2, "depth": 22, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "autopilot-nav", "at": "2026-11-03T14:52:35.732Z", "t": 251877, "label": "avant", "round": 0, "view": "Tableau de bord", "paintMs": 322, "settledMs": 776, "dbOps": 22}
+{"event": "navigation", "at": "2026-11-03T14:52:38.882Z", "t": 255027, "view": "patients", "commitMs": 86, "paintMs": 145}
+{"event": "autopilot-nav", "at": "2026-11-03T14:52:39.176Z", "t": 255321, "label": "avant", "round": 1, "view": "Patients", "paintMs": 145, "settledMs": 283, "dbOps": 6}
+{"event": "navigation", "at": "2026-11-03T14:52:42.354Z", "t": 258500, "view": "agenda", "commitMs": 84, "paintMs": 174}
+{"event": "autopilot-nav", "at": "2026-11-03T14:52:42.696Z", "t": 258841, "label": "avant", "round": 1, "view": "Agenda", "paintMs": 174, "settledMs": 357, "dbOps": 11}
+{"event": "navigation", "at": "2026-11-03T14:52:45.825Z", "t": 261970, "view": "clinique", "commitMs": 60, "paintMs": 124}
+{"event": "autopilot-nav", "at": "2026-11-03T14:52:46.132Z", "t": 262278, "label": "avant", "round": 1, "view": "Soins & hospitalisation", "paintMs": 124, "settledMs": 278, "dbOps": 23}
+{"event": "db-slow", "at": "2026-11-03T14:52:49.752Z", "t": 265897, "waitMs": 275, "runMs": 146, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:49.842Z", "t": 265987, "waitMs": 421, "runMs": 90, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:49.930Z", "t": 266075, "waitMs": 510, "runMs": 89, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:50.022Z", "t": 266167, "waitMs": 599, "runMs": 92, "depth": 7, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:52:50.115Z", "t": 266260, "waitMs": 691, "runMs": 93, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:50.194Z", "t": 266340, "waitMs": 783, "runMs": 79, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:50.355Z", "t": 266500, "waitMs": 861, "runMs": 161, "depth": 10, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:50.460Z", "t": 266605, "waitMs": 1022, "runMs": 105, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:50.554Z", "t": 266699, "waitMs": 1126, "runMs": 94, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:52:50.576Z", "t": 266721, "waitMs": 1220, "runMs": 22, "depth": 13, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:53:25.612Z", "t": 301758, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:53:25.714Z", "t": 301859, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:53:25.913Z", "t": 302059, "forceOnline": false, "totalMs": 301, "steps": {"readStored": 289, "deviceId": 0, "verifySignature": 7, "save": 5}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:53:25.914Z", "t": 302060, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:54:13.367Z", "t": 349514, "cause": "visibility"}
+{"event": "license-gate-state", "at": "2026-11-03T14:54:13.402Z", "t": 349548, "shown": "app", "busy": true}
+{"event": "navigation", "at": "2026-11-03T14:54:13.409Z", "t": 349555, "view": "flux", "commitMs": 142, "paintMs": 84187}
+{"event": "autopilot-nav", "at": "2026-11-03T14:54:13.563Z", "t": 349709, "label": "avant", "round": 1, "view": "Flux", "paintMs": 84187, "settledMs": 84187, "dbOps": 18}
+{"event": "license-check", "at": "2026-11-03T14:54:13.709Z", "t": 349855, "forceOnline": true, "totalMs": 339, "steps": {"readStored": 19, "deviceId": 0, "verifySignature": 10, "network": 293, "save": 1}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:54:13.710Z", "t": 349856, "shown": "app", "busy": false}
+{"event": "navigation", "at": "2026-11-03T14:54:16.754Z", "t": 352900, "view": "taches", "commitMs": 123, "paintMs": 181}
+{"event": "autopilot-nav", "at": "2026-11-03T14:54:17.083Z", "t": 353229, "label": "avant", "round": 1, "view": "Rappels", "paintMs": 183, "settledMs": 351, "dbOps": 11}
+{"event": "navigation", "at": "2026-11-03T14:54:20.188Z", "t": 356335, "view": "notes", "commitMs": 58, "paintMs": 100}
+{"event": "autopilot-nav", "at": "2026-11-03T14:54:20.371Z", "t": 356518, "label": "avant", "round": 1, "view": "Documents", "paintMs": 101, "settledMs": 127, "dbOps": 3}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:54:23.375Z", "t": 359521, "cause": "online"}
+{"event": "license-gate-state", "at": "2026-11-03T14:54:23.456Z", "t": 359602, "shown": "app", "busy": true}
+{"event": "navigation", "at": "2026-11-03T14:54:23.494Z", "t": 359640, "view": "stock", "commitMs": 81, "paintMs": 119}
+{"event": "autopilot-nav", "at": "2026-11-03T14:54:23.815Z", "t": 359962, "label": "avant", "round": 1, "view": "Produits", "paintMs": 119, "settledMs": 281, "dbOps": 5}
+{"event": "license-check", "at": "2026-11-03T14:54:23.948Z", "t": 360095, "forceOnline": true, "totalMs": 573, "steps": {"readStored": 265, "deviceId": 0, "verifySignature": 12, "network": 291, "save": 2}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:54:23.949Z", "t": 360095, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:54:25.612Z", "t": 361758, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:54:25.638Z", "t": 361784, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:54:25.667Z", "t": 361814, "forceOnline": false, "totalMs": 55, "steps": {"readStored": 47, "deviceId": 0, "verifySignature": 1, "save": 7}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:54:25.667Z", "t": 361814, "shown": "app", "busy": false}
+{"event": "navigation", "at": "2026-11-03T14:54:26.925Z", "t": 363071, "view": "finances", "commitMs": 57, "paintMs": 104}
+{"event": "autopilot-nav", "at": "2026-11-03T14:54:27.187Z", "t": 363334, "label": "avant", "round": 1, "view": "Finances", "paintMs": 105, "settledMs": 206, "dbOps": 5}
+{"event": "navigation", "at": "2026-11-03T14:54:30.374Z", "t": 366521, "view": "dashboard", "commitMs": 98, "paintMs": 183}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.574Z", "t": 366721, "waitMs": 259, "runMs": 48, "depth": 7, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.608Z", "t": 366755, "waitMs": 308, "runMs": 34, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.628Z", "t": 366774, "waitMs": 341, "runMs": 20, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.664Z", "t": 366811, "waitMs": 361, "runMs": 36, "depth": 10, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.699Z", "t": 366845, "waitMs": 397, "runMs": 35, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.713Z", "t": 366860, "waitMs": 432, "runMs": 14, "depth": 12, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.720Z", "t": 366867, "waitMs": 447, "runMs": 7, "depth": 13, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.725Z", "t": 366871, "waitMs": 453, "runMs": 5, "depth": 14, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.742Z", "t": 366888, "waitMs": 458, "runMs": 17, "depth": 15, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.747Z", "t": 366893, "waitMs": 475, "runMs": 5, "depth": 16, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.748Z", "t": 366895, "waitMs": 457, "runMs": 1, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.749Z", "t": 366896, "waitMs": 458, "runMs": 1, "depth": 18, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.756Z", "t": 366903, "waitMs": 459, "runMs": 7, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.757Z", "t": 366904, "waitMs": 466, "runMs": 1, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.764Z", "t": 366911, "waitMs": 457, "runMs": 7, "depth": 21, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:54:30.766Z", "t": 366913, "waitMs": 464, "runMs": 2, "depth": 22, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "autopilot-nav", "at": "2026-11-03T14:54:30.923Z", "t": 367070, "label": "avant", "round": 1, "view": "Tableau de bord", "paintMs": 183, "settledMs": 576, "dbOps": 22}
+{"event": "autopilot-end", "at": "2026-11-03T14:54:33.926Z", "t": 370073, "label": "avant"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:55:25.615Z", "t": 421763, "cause": "interval"}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:25.660Z", "t": 421807, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:55:25.686Z", "t": 421834, "forceOnline": false, "totalMs": 71, "steps": {"readStored": 63, "deviceId": 0, "verifySignature": 1, "save": 6}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:25.687Z", "t": 421834, "shown": "app", "busy": false}
+{"event": "main-app-branch", "at": "2026-11-03T14:55:38.176Z", "t": 73, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T14:55:38.177Z", "t": 74, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T14:55:38.201Z", "t": 98, "branch": "loading", "loading": false, "isCheckingSetup": true, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-mount", "at": "2026-11-03T14:55:38.206Z", "t": 103}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:38.206Z", "t": 103, "shown": "splash", "busy": false}
+{"event": "main-app-branch", "at": "2026-11-03T14:55:38.207Z", "t": 104, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:55:38.207Z", "t": 104}
+{"event": "license-gate-mount", "at": "2026-11-03T14:55:38.207Z", "t": 104}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:38.207Z", "t": 104, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:38.208Z", "t": 105, "shown": "splash", "busy": true}
+{"event": "main-app-branch", "at": "2026-11-03T14:55:38.208Z", "t": 105, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": true, "user": true}
+{"event": "license-check", "at": "2026-11-03T14:55:38.511Z", "t": 409, "forceOnline": true, "totalMs": 305, "steps": {"readStored": 4, "deviceId": 3, "verifySignature": 1, "network": 292, "save": 1}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:38.964Z", "t": 861, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:55:38.964Z", "t": 862}
+{"event": "license-gate-mount", "at": "2026-11-03T14:55:38.982Z", "t": 879}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:38.982Z", "t": 879, "shown": "app", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:38.988Z", "t": 885, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:55:39.198Z", "t": 1095, "waitMs": 239, "runMs": 75, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:39.430Z", "t": 1327, "waitMs": 314, "runMs": 232, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:39.554Z", "t": 1451, "waitMs": 546, "runMs": 124, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:39.825Z", "t": 1722, "waitMs": 670, "runMs": 271, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:40.007Z", "t": 1904, "waitMs": 941, "runMs": 182, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:40.332Z", "t": 2229, "waitMs": 1123, "runMs": 325, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:40.409Z", "t": 2306, "waitMs": 1448, "runMs": 77, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:40.653Z", "t": 2550, "waitMs": 1525, "runMs": 244, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:40.958Z", "t": 2856, "waitMs": 1768, "runMs": 306, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:55:41.119Z", "t": 3016, "waitMs": 2074, "runMs": 161, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:41.312Z", "t": 3209, "waitMs": 2235, "runMs": 193, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:41.462Z", "t": 3359, "waitMs": 2427, "runMs": 150, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:41.600Z", "t": 3497, "waitMs": 2577, "runMs": 138, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:41.792Z", "t": 3689, "waitMs": 2714, "runMs": 192, "depth": 15, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:55:41.928Z", "t": 3825, "waitMs": 2906, "runMs": 136, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:41.962Z", "t": 3859, "waitMs": 3042, "runMs": 34, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.002Z", "t": 3900, "waitMs": 3077, "runMs": 40, "depth": 18, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.122Z", "t": 4019, "waitMs": 3117, "runMs": 120, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.148Z", "t": 4046, "waitMs": 3236, "runMs": 26, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.245Z", "t": 4143, "waitMs": 3185, "runMs": 97, "depth": 21, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.349Z", "t": 4246, "waitMs": 3279, "runMs": 103, "depth": 22, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.355Z", "t": 4253, "waitMs": 3382, "runMs": 7, "depth": 23, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.378Z", "t": 4276, "waitMs": 3389, "runMs": 23, "depth": 24, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.466Z", "t": 4364, "waitMs": 3412, "runMs": 88, "depth": 25, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.471Z", "t": 4368, "waitMs": 3500, "runMs": 4, "depth": 26, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.514Z", "t": 4411, "waitMs": 3489, "runMs": 44, "depth": 27, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.669Z", "t": 4566, "waitMs": 3525, "runMs": 155, "depth": 28, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.675Z", "t": 4572, "waitMs": 3680, "runMs": 6, "depth": 29, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.678Z", "t": 4575, "waitMs": 3684, "runMs": 3, "depth": 30, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "db-slow", "at": "2026-11-03T14:55:42.771Z", "t": 4668, "waitMs": 2870, "runMs": 93, "depth": 27, "caller": "runPurgeDemoData@src/services/demo-data.ts:657:27 < purgeDemoDataInTauriIfNeeded@src/services/demo-data.ts:636:42"}
+{"event": "license-check", "at": "2026-11-03T14:55:42.838Z", "t": 4736, "forceOnline": true, "totalMs": 3857, "steps": {"readStored": 3698, "deviceId": 0, "verifySignature": 1, "network": 149, "save": 4}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:55:42.839Z", "t": 4737, "shown": "app", "busy": false}
+{"event": "autopilot-reload", "at": "2026-11-03T14:56:08.930Z", "t": 30828, "label": "demarrage"}
+{"event": "main-app-branch", "at": "2026-11-03T14:56:10.050Z", "t": 347, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T14:56:10.057Z", "t": 353, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T14:56:10.180Z", "t": 477, "branch": "loading", "loading": false, "isCheckingSetup": true, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-mount", "at": "2026-11-03T14:56:10.198Z", "t": 494}
+{"event": "license-gate-state", "at": "2026-11-03T14:56:10.198Z", "t": 494, "shown": "splash", "busy": false}
+{"event": "main-app-branch", "at": "2026-11-03T14:56:10.199Z", "t": 495, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:56:10.199Z", "t": 495}
+{"event": "license-gate-mount", "at": "2026-11-03T14:56:10.199Z", "t": 495}
+{"event": "license-gate-state", "at": "2026-11-03T14:56:10.199Z", "t": 495, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:56:10.209Z", "t": 505, "shown": "splash", "busy": true}
+{"event": "main-app-branch", "at": "2026-11-03T14:56:10.209Z", "t": 505, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": true, "user": true}
+{"event": "license-check", "at": "2026-11-03T14:56:10.520Z", "t": 817, "forceOnline": true, "totalMs": 322, "steps": {"readStored": 20, "deviceId": 5, "verifySignature": 3, "network": 283, "save": 4}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:56:12.114Z", "t": 2410, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:56:12.119Z", "t": 2416}
+{"event": "license-gate-mount", "at": "2026-11-03T14:56:12.224Z", "t": 2520}
+{"event": "license-gate-state", "at": "2026-11-03T14:56:12.224Z", "t": 2520, "shown": "app", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:56:12.250Z", "t": 2546, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:56:12.482Z", "t": 2779, "waitMs": 426, "runMs": 228, "depth": 1, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:12.534Z", "t": 2830, "waitMs": 653, "runMs": 52, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:12.763Z", "t": 3059, "waitMs": 704, "runMs": 229, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:12.865Z", "t": 3162, "waitMs": 932, "runMs": 103, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:13.327Z", "t": 3623, "waitMs": 1035, "runMs": 462, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:13.414Z", "t": 3710, "waitMs": 1496, "runMs": 87, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:13.853Z", "t": 4150, "waitMs": 1583, "runMs": 440, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:14.207Z", "t": 4503, "waitMs": 2020, "runMs": 353, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:14.553Z", "t": 4849, "waitMs": 2373, "runMs": 347, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:15.061Z", "t": 5357, "waitMs": 2720, "runMs": 508, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:56:15.298Z", "t": 5594, "waitMs": 3227, "runMs": 237, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:15.500Z", "t": 5796, "waitMs": 3464, "runMs": 202, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:15.725Z", "t": 6022, "waitMs": 3666, "runMs": 226, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:15.834Z", "t": 6130, "waitMs": 3891, "runMs": 108, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.194Z", "t": 6490, "waitMs": 3991, "runMs": 360, "depth": 15, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.240Z", "t": 6536, "waitMs": 4351, "runMs": 46, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.289Z", "t": 6585, "waitMs": 4397, "runMs": 48, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.328Z", "t": 6624, "waitMs": 4407, "runMs": 40, "depth": 18, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.469Z", "t": 6765, "waitMs": 4446, "runMs": 140, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.494Z", "t": 6790, "waitMs": 4587, "runMs": 26, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.652Z", "t": 6949, "waitMs": 4385, "runMs": 158, "depth": 21, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.728Z", "t": 7024, "waitMs": 4519, "runMs": 75, "depth": 22, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.738Z", "t": 7034, "waitMs": 4592, "runMs": 10, "depth": 23, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.855Z", "t": 7151, "waitMs": 4602, "runMs": 117, "depth": 24, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.896Z", "t": 7192, "waitMs": 4719, "runMs": 41, "depth": 25, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.905Z", "t": 7201, "waitMs": 4759, "runMs": 9, "depth": 26, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:16.971Z", "t": 7267, "waitMs": 4684, "runMs": 66, "depth": 27, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:56:17.054Z", "t": 7351, "waitMs": 4716, "runMs": 84, "depth": 28, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:56:17.060Z", "t": 7357, "waitMs": 4799, "runMs": 6, "depth": 29, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:56:17.065Z", "t": 7361, "waitMs": 4803, "runMs": 4, "depth": 30, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "license-check", "at": "2026-11-03T14:56:17.332Z", "t": 7628, "forceOnline": true, "totalMs": 5107, "steps": {"readStored": 4840, "deviceId": 0, "verifySignature": 3, "network": 254, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:56:17.333Z", "t": 7630, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:57:12.226Z", "t": 62523, "cause": "interval"}
+{"event": "db-slow", "at": "2026-11-03T14:57:12.533Z", "t": 62830, "waitMs": 1, "runMs": 313, "depth": 1, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35"}
+{"event": "license-gate-state", "at": "2026-11-03T14:57:12.566Z", "t": 62863, "shown": "app", "busy": true}
+{"event": "db-slow", "at": "2026-11-03T14:57:12.568Z", "t": 62865, "waitMs": 310, "runMs": 34, "depth": 2, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < listener@src/modules/patient-reminders/use-patient-reminders.ts:33:19"}
+{"event": "db-slow", "at": "2026-11-03T14:57:12.601Z", "t": 62899, "waitMs": 344, "runMs": 34, "depth": 3, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < listener@src/modules/patient-reminders/use-patient-reminders.ts:33:19"}
+{"event": "db-slow", "at": "2026-11-03T14:57:12.733Z", "t": 63030, "waitMs": 378, "runMs": 132, "depth": 4, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "db-slow", "at": "2026-11-03T14:57:12.739Z", "t": 63036, "waitMs": 509, "runMs": 6, "depth": 5, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "db-slow", "at": "2026-11-03T14:57:12.789Z", "t": 63086, "waitMs": 515, "runMs": 50, "depth": 6, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35"}
+{"event": "db-slow", "at": "2026-11-03T14:57:12.897Z", "t": 63194, "waitMs": 562, "runMs": 108, "depth": 7, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "license-check", "at": "2026-11-03T14:57:12.913Z", "t": 63210, "forceOnline": false, "totalMs": 686, "steps": {"readStored": 671, "deviceId": 0, "verifySignature": 6, "save": 9}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:57:12.914Z", "t": 63211, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T14:57:37.030Z", "t": 87327, "waitMs": 0, "runMs": 303, "depth": 1, "caller": "getSetting@src/services/appSettingsService.ts:36:33 < async getLicenseInfo@src/services/appSettingsService.ts:102:35"}
+{"event": "license-gate-state", "at": "2026-11-03T14:57:37.040Z", "t": 87337, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:57:37.321Z", "t": 87618, "forceOnline": true, "totalMs": 596, "steps": {"readStored": 304, "deviceId": 11, "verifySignature": 3, "network": 267, "save": 5}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:57:37.324Z", "t": 87621, "shown": "app", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T14:57:56.493Z", "t": 106791, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:57:57.099Z", "t": 107397, "forceOnline": true, "totalMs": 837, "steps": {"readStored": 226, "deviceId": 0, "verifySignature": 2, "network": 597, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:57:57.100Z", "t": 107398, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T14:58:12.623Z", "t": 122921, "waitMs": 274, "runMs": 29, "depth": 3, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < listener@src/modules/patient-reminders/use-patient-reminders.ts:33:19"}
+{"event": "db-slow", "at": "2026-11-03T14:58:12.663Z", "t": 122961, "waitMs": 303, "runMs": 40, "depth": 4, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35"}
+{"event": "db-slow", "at": "2026-11-03T14:58:12.737Z", "t": 123035, "waitMs": 343, "runMs": 74, "depth": 5, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "db-slow", "at": "2026-11-03T14:58:12.743Z", "t": 123041, "waitMs": 416, "runMs": 6, "depth": 6, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "license-gate-state", "at": "2026-11-03T14:58:37.385Z", "t": 147683, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:58:37.687Z", "t": 147985, "forceOnline": true, "totalMs": 576, "steps": {"readStored": 267, "deviceId": 0, "verifySignature": 4, "network": 290, "save": 4}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:58:37.688Z", "t": 147986, "shown": "app", "busy": false}
+{"event": "license-refresh-trigger", "at": "2026-11-03T14:58:49.317Z", "t": 159615, "cause": "visibility"}
+{"event": "license-gate-state", "at": "2026-11-03T14:58:49.359Z", "t": 159658, "shown": "app", "busy": true}
+{"event": "license-check", "at": "2026-11-03T14:58:49.690Z", "t": 159988, "forceOnline": false, "totalMs": 372, "steps": {"readStored": 100, "deviceId": 0, "verifySignature": 163, "save": 108}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T14:58:49.692Z", "t": 159990, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T14:59:12.765Z", "t": 183064, "waitMs": 205, "runMs": 176, "depth": 3, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < listener@src/modules/patient-reminders/use-patient-reminders.ts:33:19"}
+{"event": "db-slow", "at": "2026-11-03T14:59:12.885Z", "t": 183184, "waitMs": 379, "runMs": 120, "depth": 4, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35"}
+{"event": "db-slow", "at": "2026-11-03T14:59:12.970Z", "t": 183269, "waitMs": 307, "runMs": 85, "depth": 4, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "db-slow", "at": "2026-11-03T14:59:12.976Z", "t": 183275, "waitMs": 392, "runMs": 6, "depth": 5, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:59:27.467Z", "t": 197766}
+{"event": "license-gate-mount", "at": "2026-11-03T14:59:27.652Z", "t": 197951}
+{"event": "license-gate-state", "at": "2026-11-03T14:59:27.652Z", "t": 197951, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T14:59:27.655Z", "t": 197954}
+{"event": "license-gate-mount", "at": "2026-11-03T14:59:27.666Z", "t": 197965}
+{"event": "license-gate-state", "at": "2026-11-03T14:59:27.666Z", "t": 197965, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T14:59:28.027Z", "t": 198326, "waitMs": 350, "runMs": 191, "depth": 1, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:28.083Z", "t": 198382, "waitMs": 540, "runMs": 56, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:28.365Z", "t": 198664, "waitMs": 596, "runMs": 282, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:28.568Z", "t": 198867, "waitMs": 878, "runMs": 202, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:28.837Z", "t": 199136, "waitMs": 1080, "runMs": 269, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:28.915Z", "t": 199214, "waitMs": 1349, "runMs": 78, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:29.280Z", "t": 199579, "waitMs": 1427, "runMs": 365, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:29.431Z", "t": 199730, "waitMs": 1791, "runMs": 152, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:29.825Z", "t": 200124, "waitMs": 1943, "runMs": 394, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:30.134Z", "t": 200433, "waitMs": 2336, "runMs": 309, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T14:59:30.304Z", "t": 200603, "waitMs": 2645, "runMs": 170, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:30.541Z", "t": 200840, "waitMs": 2815, "runMs": 237, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:30.622Z", "t": 200921, "waitMs": 3051, "runMs": 81, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:30.723Z", "t": 201022, "waitMs": 3132, "runMs": 101, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:30.954Z", "t": 201253, "waitMs": 3231, "runMs": 231, "depth": 15, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T14:59:30.982Z", "t": 201281, "waitMs": 3461, "runMs": 28, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.015Z", "t": 201314, "waitMs": 3489, "runMs": 33, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.133Z", "t": 201433, "waitMs": 3522, "runMs": 119, "depth": 18, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.234Z", "t": 201533, "waitMs": 3640, "runMs": 100, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.239Z", "t": 201538, "waitMs": 3740, "runMs": 5, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.243Z", "t": 201542, "waitMs": 3589, "runMs": 4, "depth": 21, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.310Z", "t": 201610, "waitMs": 3582, "runMs": 67, "depth": 22, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.349Z", "t": 201648, "waitMs": 3647, "runMs": 39, "depth": 23, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.353Z", "t": 201652, "waitMs": 3686, "runMs": 4, "depth": 24, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.396Z", "t": 201695, "waitMs": 3689, "runMs": 43, "depth": 25, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.401Z", "t": 201700, "waitMs": 3732, "runMs": 5, "depth": 26, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.552Z", "t": 201851, "waitMs": 3736, "runMs": 151, "depth": 27, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.636Z", "t": 201935, "waitMs": 3715, "runMs": 85, "depth": 28, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T14:59:31.642Z", "t": 201941, "waitMs": 3800, "runMs": 6, "depth": 29, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T15:00:28.042Z", "t": 258342, "waitMs": 190, "runMs": 151, "depth": 3, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < listener@src/modules/patient-reminders/use-patient-reminders.ts:33:19"}
+{"event": "db-slow", "at": "2026-11-03T15:00:28.102Z", "t": 258402, "waitMs": 341, "runMs": 60, "depth": 4, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35"}
+{"event": "db-slow", "at": "2026-11-03T15:00:28.230Z", "t": 258530, "waitMs": 227, "runMs": 128, "depth": 4, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "db-slow", "at": "2026-11-03T15:00:28.239Z", "t": 258539, "waitMs": 355, "runMs": 9, "depth": 5, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < listener@src/modules/hospitalizations/stays/use-stays.ts:31:19"}
+{"event": "autopilot-reload", "at": "2026-11-03T15:00:51.159Z", "t": 281461, "label": "apres-demarrage"}
+{"event": "main-app-branch", "at": "2026-11-03T15:00:52.878Z", "t": 568, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T15:00:52.889Z", "t": 579, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T15:00:53.167Z", "t": 856, "branch": "loading", "loading": false, "isCheckingSetup": true, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-mount", "at": "2026-11-03T15:00:53.177Z", "t": 867}
+{"event": "license-gate-state", "at": "2026-11-03T15:00:53.178Z", "t": 867, "shown": "splash", "busy": false}
+{"event": "main-app-branch", "at": "2026-11-03T15:00:53.181Z", "t": 871, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-unmount", "at": "2026-11-03T15:00:53.182Z", "t": 871}
+{"event": "license-gate-mount", "at": "2026-11-03T15:00:53.182Z", "t": 871}
+{"event": "license-gate-state", "at": "2026-11-03T15:00:53.182Z", "t": 871, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T15:00:53.189Z", "t": 878, "shown": "splash", "busy": true}
+{"event": "main-app-branch", "at": "2026-11-03T15:00:53.189Z", "t": 879, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": true, "user": true}
+{"event": "license-check", "at": "2026-11-03T15:00:53.866Z", "t": 1556, "forceOnline": true, "totalMs": 688, "steps": {"readStored": 15, "deviceId": 6, "verifySignature": 14, "network": 640, "save": 4}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T15:00:55.834Z", "t": 3523, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T15:00:55.841Z", "t": 3530}
+{"event": "license-gate-mount", "at": "2026-11-03T15:00:55.959Z", "t": 3649}
+{"event": "license-gate-state", "at": "2026-11-03T15:00:55.959Z", "t": 3649, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T15:00:56.389Z", "t": 4078, "waitMs": 461, "runMs": 394, "depth": 1, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:56.696Z", "t": 4386, "waitMs": 855, "runMs": 308, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:56.985Z", "t": 4675, "waitMs": 1163, "runMs": 289, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:57.141Z", "t": 4830, "waitMs": 1451, "runMs": 156, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:57.555Z", "t": 5245, "waitMs": 1607, "runMs": 414, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:57.716Z", "t": 5406, "waitMs": 2021, "runMs": 161, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:58.058Z", "t": 5747, "waitMs": 2182, "runMs": 342, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:58.225Z", "t": 5915, "waitMs": 2524, "runMs": 168, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:58.677Z", "t": 6367, "waitMs": 2691, "runMs": 452, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:59.294Z", "t": 6984, "waitMs": 3143, "runMs": 617, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T15:00:59.494Z", "t": 7184, "waitMs": 3759, "runMs": 200, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:59.655Z", "t": 7344, "waitMs": 3959, "runMs": 161, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:00:59.977Z", "t": 7666, "waitMs": 4120, "runMs": 322, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:00:59.985Z", "t": 7675, "waitMs": 4442, "runMs": 8, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.345Z", "t": 8035, "waitMs": 4447, "runMs": 360, "depth": 15, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.406Z", "t": 8095, "waitMs": 4807, "runMs": 61, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.453Z", "t": 8143, "waitMs": 4867, "runMs": 48, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.522Z", "t": 8211, "waitMs": 4914, "runMs": 68, "depth": 18, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.694Z", "t": 8384, "waitMs": 4982, "runMs": 173, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.774Z", "t": 8464, "waitMs": 5155, "runMs": 80, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.877Z", "t": 8567, "waitMs": 4951, "runMs": 102, "depth": 21, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:00.893Z", "t": 8583, "waitMs": 5016, "runMs": 17, "depth": 22, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:01.073Z", "t": 8763, "waitMs": 5032, "runMs": 180, "depth": 23, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:01.084Z", "t": 8773, "waitMs": 5211, "runMs": 10, "depth": 24, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:01.132Z", "t": 8821, "waitMs": 5222, "runMs": 48, "depth": 25, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:01.136Z", "t": 8825, "waitMs": 5270, "runMs": 4, "depth": 26, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:01.234Z", "t": 8923, "waitMs": 5179, "runMs": 98, "depth": 27, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:01:01.344Z", "t": 9033, "waitMs": 5240, "runMs": 110, "depth": 28, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T15:01:01.348Z", "t": 9038, "waitMs": 5349, "runMs": 4, "depth": 29, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "autopilot-start", "at": "2026-11-03T15:01:09.114Z", "t": 16804, "label": "apres", "rounds": 2, "dwellMs": 3000, "events": true}
+{"event": "db-slow", "at": "2026-11-03T15:01:10.591Z", "t": 18281, "waitMs": 264, "runMs": 223, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:01:10.955Z", "t": 18644, "waitMs": 486, "runMs": 363, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:01:11.090Z", "t": 18779, "waitMs": 849, "runMs": 135, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:01:11.352Z", "t": 19042, "waitMs": 984, "runMs": 262, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:01:11.543Z", "t": 19233, "waitMs": 1246, "runMs": 192, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:05:56.166Z", "t": 303860, "cause": "interval"}
+{"event": "license-recheck", "at": "2026-11-03T15:05:56.171Z", "t": 303865, "reason": "interval", "online": false}
+{"event": "license-check", "at": "2026-11-03T15:05:56.213Z", "t": 303907, "forceOnline": false, "totalMs": 41, "steps": {"readStored": 18, "deviceId": 0, "verifySignature": 12, "save": 9}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:10:56.333Z", "t": 604027, "cause": "interval"}
+{"event": "license-recheck", "at": "2026-11-03T15:10:56.334Z", "t": 604028, "reason": "interval", "online": false}
+{"event": "license-check", "at": "2026-11-03T15:10:56.380Z", "t": 604073, "forceOnline": false, "totalMs": 43, "steps": {"readStored": 20, "deviceId": 0, "verifySignature": 10, "save": 11}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:13:08.060Z", "t": 735755, "cause": "visibility"}
+{"event": "navigation", "at": "2026-11-03T15:13:08.253Z", "t": 735948, "view": "patients", "commitMs": 376, "paintMs": 719104}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:08.412Z", "t": 736107, "label": "apres", "round": 0, "view": "Patients", "paintMs": 719135, "settledMs": 719135, "dbOps": 34}
+{"event": "navigation", "at": "2026-11-03T15:13:11.513Z", "t": 739208, "view": "agenda", "commitMs": 67, "paintMs": 96}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:11.668Z", "t": 739363, "label": "apres", "round": 0, "view": "Agenda", "paintMs": 96, "settledMs": 96, "dbOps": 0}
+{"event": "navigation", "at": "2026-11-03T15:13:14.735Z", "t": 742430, "view": "clinique", "commitMs": 42, "paintMs": 64}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:14.888Z", "t": 742583, "label": "apres", "round": 0, "view": "Soins & hospitalisation", "paintMs": 64, "settledMs": 64, "dbOps": 0}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:13:17.891Z", "t": 745586, "cause": "visibility"}
+{"event": "navigation", "at": "2026-11-03T15:13:17.948Z", "t": 745643, "view": "flux", "commitMs": 37, "paintMs": 56}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:18.467Z", "t": 746162, "label": "apres", "round": 0, "view": "Flux", "paintMs": 56, "settledMs": 419, "dbOps": 19}
+{"event": "navigation", "at": "2026-11-03T15:13:21.527Z", "t": 749222, "view": "taches", "commitMs": 41, "paintMs": 55}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:21.684Z", "t": 749379, "label": "apres", "round": 0, "view": "Rappels", "paintMs": 56, "settledMs": 56, "dbOps": 0}
+{"event": "navigation", "at": "2026-11-03T15:13:24.751Z", "t": 752446, "view": "notes", "commitMs": 41, "paintMs": 63}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:24.903Z", "t": 752598, "label": "apres", "round": 0, "view": "Documents", "paintMs": 64, "settledMs": 64, "dbOps": 0}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:13:27.908Z", "t": 755603, "cause": "online"}
+{"event": "navigation", "at": "2026-11-03T15:13:27.958Z", "t": 755653, "view": "stock", "commitMs": 21, "paintMs": 50}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:28.115Z", "t": 755810, "label": "apres", "round": 0, "view": "Produits", "paintMs": 50, "settledMs": 50, "dbOps": 0}
+{"event": "navigation", "at": "2026-11-03T15:13:31.162Z", "t": 758857, "view": "finances", "commitMs": 25, "paintMs": 42}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:31.315Z", "t": 759010, "label": "apres", "round": 0, "view": "Finances", "paintMs": 43, "settledMs": 43, "dbOps": 0}
+{"event": "navigation", "at": "2026-11-03T15:13:34.501Z", "t": 762196, "view": "dashboard", "commitMs": 100, "paintMs": 181}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.696Z", "t": 762391, "waitMs": 253, "runMs": 47, "depth": 7, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.727Z", "t": 762422, "waitMs": 300, "runMs": 31, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.751Z", "t": 762446, "waitMs": 331, "runMs": 24, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.789Z", "t": 762484, "waitMs": 355, "runMs": 38, "depth": 10, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.822Z", "t": 762518, "waitMs": 393, "runMs": 33, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.838Z", "t": 762533, "waitMs": 426, "runMs": 15, "depth": 12, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.839Z", "t": 762535, "waitMs": 441, "runMs": 2, "depth": 13, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.845Z", "t": 762540, "waitMs": 443, "runMs": 5, "depth": 14, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.862Z", "t": 762557, "waitMs": 448, "runMs": 17, "depth": 15, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.863Z", "t": 762559, "waitMs": 465, "runMs": 2, "depth": 16, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.864Z", "t": 762560, "waitMs": 443, "runMs": 1, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.865Z", "t": 762560, "waitMs": 444, "runMs": 1, "depth": 18, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.872Z", "t": 762567, "waitMs": 444, "runMs": 7, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.874Z", "t": 762569, "waitMs": 451, "runMs": 2, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.882Z", "t": 762577, "waitMs": 443, "runMs": 8, "depth": 21, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T15:13:34.883Z", "t": 762578, "waitMs": 451, "runMs": 1, "depth": 22, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:35.052Z", "t": 762747, "label": "apres", "round": 0, "view": "Tableau de bord", "paintMs": 181, "settledMs": 576, "dbOps": 22}
+{"event": "navigation", "at": "2026-11-03T15:13:38.197Z", "t": 765892, "view": "patients", "commitMs": 80, "paintMs": 141}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:38.495Z", "t": 766191, "label": "apres", "round": 1, "view": "Patients", "paintMs": 141, "settledMs": 281, "dbOps": 6}
+{"event": "navigation", "at": "2026-11-03T15:13:41.679Z", "t": 769375, "view": "agenda", "commitMs": 79, "paintMs": 179}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:41.975Z", "t": 769670, "label": "apres", "round": 1, "view": "Agenda", "paintMs": 179, "settledMs": 314, "dbOps": 11}
+{"event": "navigation", "at": "2026-11-03T15:13:45.099Z", "t": 772794, "view": "clinique", "commitMs": 58, "paintMs": 120}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:45.367Z", "t": 773062, "label": "apres", "round": 1, "view": "Soins & hospitalisation", "paintMs": 120, "settledMs": 238, "dbOps": 23}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:13:48.371Z", "t": 776067, "cause": "visibility"}
+{"event": "navigation", "at": "2026-11-03T15:13:48.473Z", "t": 776169, "view": "flux", "commitMs": 51, "paintMs": 100}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:48.795Z", "t": 776491, "label": "apres", "round": 1, "view": "Flux", "paintMs": 101, "settledMs": 272, "dbOps": 19}
+{"event": "navigation", "at": "2026-11-03T15:13:51.909Z", "t": 779605, "view": "taches", "commitMs": 60, "paintMs": 109}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:52.203Z", "t": 779898, "label": "apres", "round": 1, "view": "Rappels", "paintMs": 110, "settledMs": 243, "dbOps": 11}
+{"event": "navigation", "at": "2026-11-03T15:13:55.309Z", "t": 783005, "view": "notes", "commitMs": 53, "paintMs": 102}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:55.486Z", "t": 783182, "label": "apres", "round": 1, "view": "Documents", "paintMs": 103, "settledMs": 126, "dbOps": 3}
+{"event": "navigation", "at": "2026-11-03T15:13:57.406Z", "t": 785102, "view": "dashboard", "commitMs": 62, "paintMs": 123}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.662Z", "t": 785358, "waitMs": 298, "runMs": 36, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.682Z", "t": 785377, "waitMs": 334, "runMs": 19, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.718Z", "t": 785413, "waitMs": 353, "runMs": 36, "depth": 10, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.752Z", "t": 785447, "waitMs": 389, "runMs": 34, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.767Z", "t": 785463, "waitMs": 423, "runMs": 15, "depth": 12, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.769Z", "t": 785465, "waitMs": 439, "runMs": 2, "depth": 13, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.774Z", "t": 785470, "waitMs": 441, "runMs": 5, "depth": 14, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.793Z", "t": 785488, "waitMs": 446, "runMs": 18, "depth": 15, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.795Z", "t": 785490, "waitMs": 464, "runMs": 2, "depth": 16, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.801Z", "t": 785496, "waitMs": 449, "runMs": 6, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.801Z", "t": 785497, "waitMs": 455, "runMs": 1, "depth": 18, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.809Z", "t": 785505, "waitMs": 456, "runMs": 8, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.811Z", "t": 785507, "waitMs": 463, "runMs": 2, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.821Z", "t": 785517, "waitMs": 457, "runMs": 10, "depth": 21, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T15:13:57.823Z", "t": 785518, "waitMs": 467, "runMs": 2, "depth": 22, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:13:58.491Z", "t": 786186, "cause": "online"}
+{"event": "navigation", "at": "2026-11-03T15:13:58.610Z", "t": 786306, "view": "stock", "commitMs": 57, "paintMs": 119}
+{"event": "autopilot-nav", "at": "2026-11-03T15:13:58.770Z", "t": 786466, "label": "apres", "round": 1, "view": "Produits", "paintMs": 119, "settledMs": 119, "dbOps": 1}
+{"event": "navigation", "at": "2026-11-03T15:14:01.859Z", "t": 789555, "view": "finances", "commitMs": 52, "paintMs": 84}
+{"event": "autopilot-nav", "at": "2026-11-03T15:14:02.131Z", "t": 789827, "label": "apres", "round": 1, "view": "Finances", "paintMs": 85, "settledMs": 195, "dbOps": 5}
+{"event": "navigation", "at": "2026-11-03T15:14:05.304Z", "t": 792999, "view": "dashboard", "commitMs": 89, "paintMs": 168}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.519Z", "t": 793215, "waitMs": 282, "runMs": 30, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.542Z", "t": 793238, "waitMs": 311, "runMs": 23, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.578Z", "t": 793274, "waitMs": 334, "runMs": 36, "depth": 10, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.613Z", "t": 793309, "waitMs": 370, "runMs": 35, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.628Z", "t": 793324, "waitMs": 405, "runMs": 15, "depth": 12, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.630Z", "t": 793325, "waitMs": 420, "runMs": 2, "depth": 13, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.634Z", "t": 793330, "waitMs": 421, "runMs": 4, "depth": 14, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.651Z", "t": 793347, "waitMs": 426, "runMs": 17, "depth": 15, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.653Z", "t": 793348, "waitMs": 443, "runMs": 2, "depth": 16, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.654Z", "t": 793349, "waitMs": 427, "runMs": 1, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.655Z", "t": 793350, "waitMs": 428, "runMs": 1, "depth": 18, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.662Z", "t": 793357, "waitMs": 429, "runMs": 7, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.663Z", "t": 793359, "waitMs": 436, "runMs": 1, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.670Z", "t": 793365, "waitMs": 428, "runMs": 7, "depth": 21, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T15:14:05.671Z", "t": 793366, "waitMs": 434, "runMs": 1, "depth": 22, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "autopilot-nav", "at": "2026-11-03T15:14:05.830Z", "t": 793526, "label": "apres", "round": 1, "view": "Tableau de bord", "paintMs": 168, "settledMs": 536, "dbOps": 22}
+{"event": "autopilot-end", "at": "2026-11-03T15:14:08.831Z", "t": 796527, "label": "apres"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:15:56.328Z", "t": 904025, "cause": "interval"}
+{"event": "license-recheck", "at": "2026-11-03T15:15:56.328Z", "t": 904025, "reason": "interval", "online": true}
+{"event": "license-check", "at": "2026-11-03T15:15:59.288Z", "t": 906986, "forceOnline": true, "totalMs": 2960, "steps": {"readStored": 4, "deviceId": 0, "verifySignature": 3, "network": 2945, "save": 3}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:16:56.564Z", "t": 964262, "cause": "visibility"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:20:56.415Z", "t": 1204117, "cause": "interval"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:25:13.490Z", "t": 1461189, "cause": "visibility"}
+{"event": "license-recheck", "at": "2026-11-03T15:25:13.491Z", "t": 1461189, "reason": "visibility", "online": false}
+{"event": "license-check", "at": "2026-11-03T15:25:13.571Z", "t": 1461270, "forceOnline": false, "totalMs": 81, "steps": {"readStored": 53, "deviceId": 0, "verifySignature": 10, "save": 15}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-refresh-trigger", "at": "2026-11-03T15:25:56.418Z", "t": 1504117, "cause": "interval"}
+{"event": "main-app-branch", "at": "2026-11-03T15:26:22.443Z", "t": 416, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T15:26:22.452Z", "t": 425, "branch": "loading", "loading": true, "isCheckingSetup": true, "hasBootstrapped": false, "user": false}
+{"event": "main-app-branch", "at": "2026-11-03T15:26:22.592Z", "t": 565, "branch": "loading", "loading": false, "isCheckingSetup": true, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-mount", "at": "2026-11-03T15:26:22.608Z", "t": 581}
+{"event": "license-gate-state", "at": "2026-11-03T15:26:22.608Z", "t": 581, "shown": "splash", "busy": false}
+{"event": "main-app-branch", "at": "2026-11-03T15:26:22.609Z", "t": 582, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": false, "user": true}
+{"event": "license-gate-unmount", "at": "2026-11-03T15:26:22.609Z", "t": 582}
+{"event": "license-gate-mount", "at": "2026-11-03T15:26:22.610Z", "t": 582}
+{"event": "license-gate-state", "at": "2026-11-03T15:26:22.610Z", "t": 582, "shown": "splash", "busy": false}
+{"event": "license-gate-state", "at": "2026-11-03T15:26:22.619Z", "t": 592, "shown": "splash", "busy": true}
+{"event": "main-app-branch", "at": "2026-11-03T15:26:22.619Z", "t": 592, "branch": "app", "loading": false, "isCheckingSetup": false, "hasBootstrapped": true, "user": true}
+{"event": "license-check", "at": "2026-11-03T15:26:24.717Z", "t": 2690, "forceOnline": true, "totalMs": 2109, "steps": {"readStored": 18, "deviceId": 6, "verifySignature": 7, "network": 2059, "save": 4}, "allowed": true, "offline": false, "message": "Licence vérifiée"}
+{"event": "license-gate-state", "at": "2026-11-03T15:26:26.584Z", "t": 4557, "shown": "app", "busy": false}
+{"event": "license-gate-unmount", "at": "2026-11-03T15:26:26.589Z", "t": 4562}
+{"event": "license-gate-mount", "at": "2026-11-03T15:26:26.680Z", "t": 4653}
+{"event": "license-gate-state", "at": "2026-11-03T15:26:26.680Z", "t": 4653, "shown": "app", "busy": false}
+{"event": "db-slow", "at": "2026-11-03T15:26:27.145Z", "t": 5118, "waitMs": 639, "runMs": 438, "depth": 1, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:27.234Z", "t": 5207, "waitMs": 1066, "runMs": 89, "depth": 2, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:27.457Z", "t": 5430, "waitMs": 1154, "runMs": 223, "depth": 3, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:27.585Z", "t": 5558, "waitMs": 1371, "runMs": 128, "depth": 4, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:27.884Z", "t": 5857, "waitMs": 1499, "runMs": 299, "depth": 5, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:28.050Z", "t": 6023, "waitMs": 1797, "runMs": 166, "depth": 6, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:28.405Z", "t": 6378, "waitMs": 1963, "runMs": 355, "depth": 7, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:28.507Z", "t": 6480, "waitMs": 2318, "runMs": 103, "depth": 8, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:28.897Z", "t": 6870, "waitMs": 2416, "runMs": 389, "depth": 9, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:29.381Z", "t": 7354, "waitMs": 2802, "runMs": 484, "depth": 10, "caller": "@src/modules/stock/hooks/use-stock-inventory.ts:17:53 < refresh@src/modules/stock/hooks/use-stock-inventory.ts:31:5"}
+{"event": "db-slow", "at": "2026-11-03T15:26:29.573Z", "t": 7546, "waitMs": 3278, "runMs": 192, "depth": 11, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:29.698Z", "t": 7671, "waitMs": 3469, "runMs": 125, "depth": 12, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:29.913Z", "t": 7886, "waitMs": 3591, "runMs": 215, "depth": 13, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:29.921Z", "t": 7894, "waitMs": 3805, "runMs": 8, "depth": 14, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.242Z", "t": 8215, "waitMs": 3799, "runMs": 321, "depth": 15, "caller": "readTauriTable@src/hooks/useSQLite.ts:88:28 < loadTableSnapshot@src/hooks/useSQLite.ts:213:36"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.288Z", "t": 8261, "waitMs": 4119, "runMs": 46, "depth": 16, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.337Z", "t": 8310, "waitMs": 4165, "runMs": 49, "depth": 17, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.398Z", "t": 8371, "waitMs": 4211, "runMs": 61, "depth": 18, "caller": "listInvoices@src/services/billingService.ts:851:19 < readInvoices@src/modules/dashboard/hooks/use-dashboard-financials.ts:8:42"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.521Z", "t": 8494, "waitMs": 4271, "runMs": 123, "depth": 19, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.541Z", "t": 8514, "waitMs": 4394, "runMs": 20, "depth": 20, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.608Z", "t": 8581, "waitMs": 3965, "runMs": 67, "depth": 21, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.694Z", "t": 8667, "waitMs": 4006, "runMs": 86, "depth": 22, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.705Z", "t": 8678, "waitMs": 4090, "runMs": 11, "depth": 23, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:69 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.731Z", "t": 8704, "waitMs": 4101, "runMs": 26, "depth": 24, "caller": "@src/modules/hospitalizations/stays/use-stays.ts:14:104 < @src/modules/hospitalizations/stays/use-stays.ts:29:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.778Z", "t": 8751, "waitMs": 4126, "runMs": 48, "depth": 25, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:76 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.784Z", "t": 8757, "waitMs": 4174, "runMs": 6, "depth": 26, "caller": "@src/modules/patient-reminders/use-patient-reminders.ts:16:109 < @src/modules/patient-reminders/use-patient-reminders.ts:31:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.837Z", "t": 8810, "waitMs": 4105, "runMs": 53, "depth": 27, "caller": "@src/modules/dashboard/hooks/usePostOpFollowUp.ts:14:35 < @src/modules/dashboard/hooks/usePostOpFollowUp.ts:72:17"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.915Z", "t": 8888, "waitMs": 4130, "runMs": 78, "depth": 28, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}
+{"event": "db-slow", "at": "2026-11-03T15:26:30.926Z", "t": 8899, "waitMs": 4207, "runMs": 10, "depth": 29, "caller": "getSetting@src/services/appSettingsService.ts:36:33"}

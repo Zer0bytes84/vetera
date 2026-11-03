@@ -106,9 +106,13 @@ export function getDeviceId(): Promise<string> {
   return devicePromise;
 }
 
+/** Network timeout of an activation request; background rechecks pass a shorter one. */
+export const LICENSE_REQUEST_TIMEOUT_MS = 10_000;
+
 async function licenseRequest(
   path: string,
-  body: Record<string, string>
+  body: Record<string, string>,
+  timeoutMs = LICENSE_REQUEST_TIMEOUT_MS
 ): Promise<LicenseActivationResult> {
   if (!ACTIVATION_SERVER_URL || !LICENSE_PUBLIC_KEY) {
     throw new LicenseActivationError(
@@ -131,7 +135,7 @@ async function licenseRequest(
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ ...body, deviceId }),
-  });
+  }, timeoutMs);
   const payload = await readAdminResponse<LicenseActivationResult>(response);
   if (!payload?.activationToken || !payload.license?.email)
     throw new LicenseActivationError("Réponse d’activation invalide.");
@@ -149,19 +153,21 @@ async function licenseRequest(
 
 export async function activateLicense(
   email: string,
-  key: string
+  key: string,
+  timeoutMs?: number
 ): Promise<LicenseActivationResult> {
   return licenseRequest("/v1/activate", {
     email: email.trim().toLowerCase(),
     key,
-  });
+  }, timeoutMs);
 }
 
 export function renewLicenseActivation(
   activationToken: string,
-  email: string
+  email: string,
+  timeoutMs?: number
 ): Promise<LicenseActivationResult> {
-  return licenseRequest("/v1/verify", { activationToken, email });
+  return licenseRequest("/v1/verify", { activationToken, email }, timeoutMs);
 }
 
 async function readAdminResponse<T>(response: Response): Promise<T> {
@@ -181,11 +187,12 @@ async function readAdminResponse<T>(response: Response): Promise<T> {
 
 async function fetchAdminResponse(
   input: string,
-  init?: RequestInit
+  init?: RequestInit,
+  timeoutMs = LICENSE_REQUEST_TIMEOUT_MS
 ): Promise<Response> {
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10_000);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const response = await fetch(input, {
         ...init,
