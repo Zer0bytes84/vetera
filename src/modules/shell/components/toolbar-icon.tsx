@@ -1,14 +1,15 @@
 import type { SVGProps } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Message01Icon from "@hugeicons/core-free-icons/Message01Icon";
+import AiMagicIcon from "@hugeicons/core-free-icons/AiMagicIcon";
+import Notification03Icon from "@hugeicons/core-free-icons/Notification03Icon";
 import FilterHorizontalIcon from "@hugeicons/core-free-icons/FilterHorizontalIcon";
-import { Search01Icon, Notification02Icon, Sun03Icon, Moon02Icon } from "@/lib/hugeicons";
+import { Search01Icon, Sun03Icon, Moon02Icon } from "@/lib/hugeicons";
 
 type ToolbarIconName = "search" | "assistant" | "notifications" | "settings" | "sun" | "moon";
 const toolbarGlyphs = {
   search: Search01Icon,
-  assistant: Message01Icon,
-  notifications: Notification02Icon,
+  assistant: AiMagicIcon,
+  notifications: Notification03Icon,
   settings: FilterHorizontalIcon,
   sun: Sun03Icon,
   moon: Moon02Icon,

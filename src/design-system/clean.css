@@ -52,7 +52,14 @@
   --clean-card-radius: 10px;
   --clean-control-radius: 8px;
   --clean-control: 32px;
-  --clean-header: 48px;
+  --clean-header: 60px;
+  /* Header tools only; --clean-control (32px) stays for fields and other controls. */
+  --clean-header-control: 36px;
+  --clean-header-icon: 18px;
+  --clean-header-icon-stroke: 1.6;
+  --clean-header-avatar-button: 40px;
+  --clean-header-avatar: 36px;
+  --clean-online: #22c55e;
   --clean-row-list: 40px;
   --clean-row-table: 32px;
   --clean-nav-item: 28px;
@@ -276,43 +283,49 @@
 
 /* Header tools: ghost icon buttons, no boxes. */
 :root[data-skin="clean"][data-skin][data-skin] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control) {
-  width: var(--clean-control) !important;
-  min-width: var(--clean-control) !important;
-  height: var(--clean-control) !important;
-  min-height: var(--clean-control) !important;
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--clean-ink) !important;
-  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+  width: var(--clean-header-control) !important;
+  min-width: var(--clean-header-control) !important;
+  height: var(--clean-header-control) !important;
+  min-height: var(--clean-header-control) !important;
+  border: 1px solid color-mix(in srgb, var(--clean-ink-strong) 8%, transparent) !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--clean-ink-strong) 5%, transparent) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--clean-ink-strong) 6%, transparent) !important;
+  color: var(--clean-ink-strong) !important;
+  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease, transform 160ms ease;
 }
 /* Premium sets this control inside a cascade layer, so Clean answers in the same layer. */
 @layer utilities {
   :root[data-skin="clean"][data-skin][data-skin] .shell-toolbar-actions .shell-toolbar-control {
-    border-color: transparent !important;
-    background: transparent !important;
-    box-shadow: none !important;
+    border: 1px solid color-mix(in srgb, var(--clean-ink-strong) 8%, transparent) !important;
+    border-radius: 999px !important;
+    background: color-mix(in srgb, var(--clean-ink-strong) 5%, transparent) !important;
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--clean-ink-strong) 6%, transparent) !important;
+  }
+  :root[data-skin="clean"][data-skin][data-skin] .shell-toolbar-actions .shell-toolbar-control:hover {
+    background: color-mix(in srgb, var(--clean-accent) 12%, transparent) !important;
   }
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"][data-skin][data-skin] :is(.topIcon, .shell-toolbar-actions button, .shell-toolbar-actions .shell-toolbar-control):hover {
-    background: var(--clean-hover) !important;
-    color: var(--clean-ink-strong) !important;
+    background: color-mix(in srgb, var(--clean-accent) 12%, transparent) !important;
+    color: var(--clean-accent) !important;
+    transform: translateY(-1px);
     transition-duration: var(--speed-highlight-in);
   }
 }
 /* One cluster, one glyph size, one weight: 16px glyphs 4px apart. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions { gap: 4px !important; }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions :is(button, .shell-toolbar-control) {
-  border-radius: var(--clean-control-radius) !important;
+  border-radius: 999px !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg {
-  width: 16px !important;
-  height: 16px !important;
-  stroke-width: 1.5 !important;
+  width: var(--clean-header-icon) !important;
+  height: var(--clean-header-icon) !important;
+  stroke-width: var(--clean-header-icon-stroke) !important;
   color: inherit !important;
 }
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg [stroke-width] { stroke-width: 1.5; }
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions :is(button, .shell-toolbar-control) svg [stroke-width] { stroke-width: var(--clean-header-icon-stroke); }
 /* The unread count sits on the bell's shoulder, cut out of the glass. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar-actions button > span:not([class*="sr-only"]) {
   inset: 2px 1px auto auto !important;
@@ -371,6 +384,30 @@
 }
 /* The avatar's disc (28 px in a 32 px button) ends on the page's 24 px margin, measured from the sheet edge like the cards (a classic scrollbar is taken back). */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-account-trigger) { padding-inline-end: calc(22px - var(--shell-scrollbar-width, 0px)) !important; }
+
+/* Account: larger avatar with a green presence dot (signed in). */
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-account-trigger {
+  position: relative;
+  width: var(--clean-header-avatar-button);
+  height: var(--clean-header-avatar-button);
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-account-trigger .shell-account-avatar {
+  width: var(--clean-header-avatar);
+  height: var(--clean-header-avatar);
+  font-size: 15px;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-account-trigger::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: var(--clean-online);
+  box-shadow: 0 0 0 2px var(--clean-sheet);
+  pointer-events: none;
+}
 
 /* ---------- Sidebar: on the frame, compact and silent ---------- */
 :root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) { color-scheme: dark; }
