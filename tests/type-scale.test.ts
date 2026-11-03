@@ -26,8 +26,11 @@ it("n’utilise aucune taille de texte libre hors de l’échelle de la charte",
         if (!ALLOWED.has(px)) offenders.push(`${path}: ${match[0]}`);
       }
     } else {
-      // Emoji glyphs in the avatar picker are pictures, not text.
-      const css = source.replace(/\.settings-avatar-choice\s*\{[^}]*\}/g, "");
+      // Emoji glyphs in the avatar picker are pictures, not text. So is the
+      // glyph in the header's 36 px avatar disc (15 px, validated 2026-11-02).
+      const css = source
+        .replace(/\.settings-avatar-choice\s*\{[^}]*\}/g, "")
+        .replace(/\.shell-account-trigger \.shell-account-avatar\s*\{[^}]*\}/g, "");
       for (const match of css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)(px|rem)/g)) {
         const px = Number(match[1]) * (match[2] === "rem" ? 16 : 1);
         if (!ALLOWED.has(px)) offenders.push(`${path}: ${match[0]}`);
