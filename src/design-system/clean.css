@@ -65,7 +65,7 @@
   --clean-nav-item: 28px;
   --clean-nav-icon: 16px;
   --clean-list-icon: 16px;
-  --clean-icon-stroke: 1px;
+  --clean-icon-stroke: 1.5px;
   --clean-card-pad: 16px;
   --clean-glass-blur: 20px;
   /* Segmented switches: a tinted track, a white sheet for the chosen view. */
@@ -84,11 +84,11 @@
   /* Icon substitutions (Lucide, drawn as masks over the original icon, so no
      component changes per theme). Each one is listed in the review and can be
      vetoed alone by deleting its line in the substitution block below. */
---clean-icon-book-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 8.2A2.22 2.22 0 0 0 13.8 6c-.8 0-1.4.3-1.8.9-.4-.6-1-.9-1.8-.9A2.22 2.22 0 0 0 8 8.2c0 .6.3 1.2.7 1.6A226.652 226.652 0 0 0 12 13a404 404 0 0 0 3.3-3.1 2.413 2.413 0 0 0 .7-1.7'/%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/%3E%3C/svg%3E");
-  --clean-icon-syringe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 2 4 4'/%3E%3Cpath d='m17 7 3-3'/%3E%3Cpath d='M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5'/%3E%3Cpath d='m9 11 4 4'/%3E%3Cpath d='m5 19-3 3'/%3E%3Cpath d='m14 4 6 6'/%3E%3C/svg%3E");
-  --clean-icon-siren: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18v-6a5 5 0 1 1 10 0v6'/%3E%3Cpath d='M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z'/%3E%3Cpath d='M21 12h1'/%3E%3Cpath d='M18.5 4.5 18 5'/%3E%3Cpath d='M2 12h1'/%3E%3Cpath d='M12 2v1'/%3E%3Cpath d='m4.929 4.929.707.707'/%3E%3Cpath d='M12 12v6'/%3E%3C/svg%3E");
-  --clean-icon-calendar-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5'/%3E%3Cpath d='M16 2v4'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M3 10h5'/%3E%3Cpath d='M17.5 17.5 16 16.3V14'/%3E%3Ccircle cx='16' cy='16' r='6'/%3E%3C/svg%3E");
-  --clean-icon-clock-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6v6l4 2'/%3E%3Cpath d='M16 21.16a10 10 0 1 1 5-13.516'/%3E%3Cpath d='M20 11.5v6'/%3E%3Cpath d='M20 21.5h.01'/%3E%3C/svg%3E");
+--clean-icon-book-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 8.2A2.22 2.22 0 0 0 13.8 6c-.8 0-1.4.3-1.8.9-.4-.6-1-.9-1.8-.9A2.22 2.22 0 0 0 8 8.2c0 .6.3 1.2.7 1.6A226.652 226.652 0 0 0 12 13a404 404 0 0 0 3.3-3.1 2.413 2.413 0 0 0 .7-1.7'/%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/%3E%3C/svg%3E");
+  --clean-icon-syringe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 2 4 4'/%3E%3Cpath d='m17 7 3-3'/%3E%3Cpath d='M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5'/%3E%3Cpath d='m9 11 4 4'/%3E%3Cpath d='m5 19-3 3'/%3E%3Cpath d='m14 4 6 6'/%3E%3C/svg%3E");
+  --clean-icon-siren: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18v-6a5 5 0 1 1 10 0v6'/%3E%3Cpath d='M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z'/%3E%3Cpath d='M21 12h1'/%3E%3Cpath d='M18.5 4.5 18 5'/%3E%3Cpath d='M2 12h1'/%3E%3Cpath d='M12 2v1'/%3E%3Cpath d='m4.929 4.929.707.707'/%3E%3Cpath d='M12 12v6'/%3E%3C/svg%3E");
+  --clean-icon-calendar-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5'/%3E%3Cpath d='M16 2v4'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M3 10h5'/%3E%3Cpath d='M17.5 17.5 16 16.3V14'/%3E%3Ccircle cx='16' cy='16' r='6'/%3E%3C/svg%3E");
+  --clean-icon-clock-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6v6l4 2'/%3E%3Cpath d='M16 21.16a10 10 0 1 1 5-13.516'/%3E%3Cpath d='M20 11.5v6'/%3E%3Cpath d='M20 21.5h.01'/%3E%3C/svg%3E");
   --clean-icon-calendar-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10h18V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M16 2v4'/%3E%3Cpath d='M21.29 14.7a2.43 2.43 0 0 0-2.65-.52c-.3.12-.57.3-.8.53l-.34.34-.35-.34a2.43 2.43 0 0 0-2.65-.53c-.3.12-.56.3-.79.53-.95.94-1 2.53.2 3.74L17.5 22l3.6-3.55c1.2-1.21 1.14-2.8.19-3.74Z'/%3E%3C/svg%3E");
   /* Quick-access dots: the status hues, brought down to the theme's quiet greys. */
   --clean-dot-mix: 55%;
@@ -124,6 +124,7 @@
   --clean-ink: #cbcccd;
   --clean-ink-quiet: #959698;
   --clean-ink-disabled: #575759;
+  --clean-online: #22c55e;
   /* Premium dark's status hues, carried by the sidebar dots in both declensions. */
   --premium-blue: #88b3ef;
   --premium-green: #74c399;
@@ -302,8 +303,10 @@
     background: color-mix(in srgb, var(--clean-ink-strong) 5%, transparent) !important;
     box-shadow: 0 1px 2px color-mix(in srgb, var(--clean-ink-strong) 6%, transparent) !important;
   }
-  :root[data-skin="clean"][data-skin][data-skin] .shell-toolbar-actions .shell-toolbar-control:hover {
-    background: color-mix(in srgb, var(--clean-accent) 12%, transparent) !important;
+  @media (hover: hover) and (pointer: fine) {
+    :root[data-skin="clean"][data-skin][data-skin] .shell-toolbar-actions .shell-toolbar-control:hover {
+      background: color-mix(in srgb, var(--clean-accent) 12%, transparent) !important;
+    }
   }
 }
 @media (hover: hover) and (pointer: fine) {
@@ -520,7 +523,7 @@
   }
 }
 
-/* ---------- Icons: one thin stroke, contained size, quiet at rest ---------- */
+/* ---------- Icons: one 1.5 stroke, contained size, the label's grey at rest ---------- */
 @layer utilities {
   :root[data-skin="clean"] .app-sidebar .sidebar-nav-icon {
     width: var(--clean-nav-icon) !important;
@@ -538,7 +541,9 @@
 :root[data-skin="clean"] :is(.app-sidebar [data-slot="sidebar-menu-button"], .premium-shortcuts button, [data-list-row], [data-slot="table-row"], .medical-data-table tr, .shell-toolbar-actions) svg [stroke-width] {
   stroke-width: var(--clean-icon-stroke);
 }
-:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] svg { color: var(--clean-ink-quiet); }
+/* Premium's sidebar pins these strokes at 1 with !important (premium-sidebar.css): Clean answers in kind. */
+:root[data-skin="clean"] :is(.app-sidebar .sidebar-nav-icon svg, .app-sidebar .premium-shortcut-icon) { stroke-width: var(--clean-icon-stroke) !important; }
+:root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"] svg { color: var(--clean-ink); }
 :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) svg { color: var(--clean-ink-strong); }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"] .app-sidebar [data-slot="sidebar-menu-button"]:hover svg { color: var(--clean-ink-strong); }

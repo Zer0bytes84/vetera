@@ -66,11 +66,26 @@ describe("thème Clean : jetons", () => {
     expect(table.some((n) => n.type === "decl" && n.prop === "height" && n.value.includes("--clean-row-table"))).toBe(true);
   });
 
-  it("dessine les icônes de navigation en trait de 1 px et 16 px", () => {
-    expect(declarations.get("--clean-icon-stroke")).toBe("1px");
+  it("dessine les icônes de navigation en trait de 1,5 et 16 px", () => {
+    expect(declarations.get("--clean-icon-stroke")).toBe("1.5px");
     expect(declarations.get("--clean-nav-icon")).toBe("16px");
     expect(CLEAN).toMatch(/stroke-width: var\(--clean-icon-stroke\)/);
+    // premium-sidebar.css pins the sidebar strokes at 1 !important; Clean must answer in kind.
+    expect(CLEAN).toMatch(/\.app-sidebar \.sidebar-nav-icon svg, \.app-sidebar \.premium-shortcut-icon\) \{ stroke-width: var\(--clean-icon-stroke\) !important; \}/);
     expect(CLEAN).toMatch(/sidebar-nav-icon svg[\s\S]*?width: var\(--clean-nav-icon\) !important/);
+  });
+
+  it("donne aux icônes de navigation au repos le gris de leur libellé, l'actif en gris fort", () => {
+    const rest = rulesFor(/sidebar-menu-button"\] svg$/).flatMap((rule) => rule.nodes);
+    expect(rest.some((n) => n.type === "decl" && n.prop === "color" && n.value === "var(--clean-ink)")).toBe(true);
+    const active = rulesFor(/\[data-active\]:not\(\[data-active="false"\]\) svg$/).flatMap((rule) => rule.nodes);
+    expect(active.some((n) => n.type === "decl" && n.prop === "color" && n.value === "var(--clean-ink-strong)")).toBe(true);
+  });
+
+  it("trace les masques de substitution au même trait de 1,5", () => {
+    const masks = [...declarations.entries()].filter(([name]) => name.startsWith("--clean-icon-") && name !== "--clean-icon-stroke");
+    expect(masks.length).toBeGreaterThan(0);
+    for (const [name, value] of masks) expect(value, name).toContain("stroke-width='1.5'");
   });
 
   it("réserve le quatrième gris au texte et aux icônes désactivés", () => {
