@@ -1,10 +1,11 @@
 import { normalizeSkin, type Skin } from "./theme-skin";
 
 /*
- * Appearance keeps three real choices: light or dark mode (theme-provider),
- * the theme (Clean or Premium, `skin`) and the Clean type set (`cleanFont`).
+ * Appearance keeps four real choices: light or dark mode (theme-provider),
+ * the theme (Clean or Premium, `skin`), the Clean type set (`cleanFont`) and
+ * the sidebar tone (sidebar-tone.ts, restored the same evening).
  * The decorative settings removed on 5 November 2026 (accent colour, Classic
- * style, Liquid Glass switch, sidebar tone and presentation, glass contrast,
+ * style, Liquid Glass switch, sidebar presentation, glass contrast,
  * and the hidden radius, density, font and header pattern values) are now
  * fixed at their default; `cleanUpRemovedDisplaySettings` drops what an older
  * install stored for them. See docs/recus/2026-11-05/nettoyage-parametres/.
@@ -152,7 +153,6 @@ export function keepPreviousAppearanceDefaults() {
 export const REMOVED_DISPLAY_KEYS = [
   "layout_variant_v8",
   "sidebar_glass_contrast_v1",
-  "baitari-sidebar-tone",
   "baitari-crm-geist-trial-v1",
   "baitari-neutral-controls-v1",
   "baitari-blue-system-polish-v1",

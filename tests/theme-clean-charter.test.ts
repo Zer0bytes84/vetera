@@ -14,8 +14,8 @@ import {
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const SCOPE = ':root[data-skin="clean"]';
 const DARK = ':root[data-skin="clean"].dark';
-// The sidebar takes the dark set in both declensions (its tone setting was removed on 5 November 2026).
-const SIDEBAR = ':root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
+// The sidebar takes the dark set unless Appearance forces it light (data-sidebar-tone).
+const SIDEBAR = ':root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
 const root = postcss.parse(CLEAN);
 const tokensOf = (selector: string) => {
   const found = new Map<string, string>();

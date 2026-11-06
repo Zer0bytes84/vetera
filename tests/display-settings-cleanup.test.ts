@@ -55,8 +55,9 @@ describe("paramètres d'affichage retirés : migration", () => {
     expect(config).toEqual({ skin: "clean", cleanFont: "plex" });
     expect(JSON.parse(storage.get("theme-config")!)).toEqual({ skin: "clean", cleanFont: "plex" });
     for (const key of REMOVED_DISPLAY_KEYS) expect(storage.has(key), key).toBe(false);
-    // Kept: the mode, the collapse behaviour, the migration markers.
+    // Kept: the mode, the collapse behaviour, the sidebar tone, the migration markers.
     expect(storage.get("theme")).toBe("dark");
+    expect(storage.get("baitari-sidebar-tone")).toBe(JSON.stringify({ "user-1": "light" }));
     expect(storage.get("layout_collapsible_v7")).toBe("offcanvas");
     expect(storage.get("baitari-clean-default-v1")).toBe("true");
 
@@ -97,13 +98,16 @@ describe("paramètres d'affichage retirés : migration", () => {
 
   it("ne laisse plus aucune trace des réglages retirés dans le code", async () => {
     const { readFileSync, existsSync } = await import("node:fs");
-    expect(existsSync("src/lib/sidebar-tone.ts")).toBe(false);
+    // The light sidebar and its setting were restored the same evening: they stay.
+    expect(existsSync("src/lib/sidebar-tone.ts")).toBe(true);
     expect(existsSync("src/components/ThemeSelector.tsx")).toBe(false);
     const settings = readFileSync("src/components/Parametres.tsx", "utf8");
-    for (const gone of ["Couleur d’accent", "Liquid Glass", "Style Premium", "Teinte de la barre latérale", "Présentation de la barre latérale", "Contraste du verre"]) {
+    for (const gone of ["Couleur d’accent", "Liquid Glass", "Style Premium", "Présentation de la barre latérale", "Contraste du verre"]) {
       expect(settings, gone).not.toContain(gone);
     }
     const css = ["src/index.css", "src/design-system/premium.css", "src/design-system/clean.css", "src/modules/shell/premium-sidebar.css"].map((file) => readFileSync(file, "utf8")).join("\n");
-    expect(css).not.toMatch(/data-sidebar-tone|data-variant="(glass|minimal|inset|floating)"|data-header-pattern="(aurora|tide|spectrum|topography|quiet)"|data-density="/);
+    expect(settings).toContain("Teinte de la barre latérale");
+    expect(css).toContain('[data-sidebar-tone="light"]');
+    expect(css).not.toMatch(/data-variant="(glass|minimal|inset|floating)"|data-header-pattern="(aurora|tide|spectrum|topography|quiet)"|data-density="/);
   });
 });

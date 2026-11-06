@@ -22,7 +22,7 @@
    every other theme, so Premium keeps its exact rendering. */
 :root:not([data-skin="clean"]) [data-clean-only] { display: none !important; }
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *):where(:not([data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]), [data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) *)));
 
 @theme inline {
   --font-heading: var(--app-font-heading);
@@ -671,7 +671,8 @@
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
   scrollbar-width: thin;
 }
-.dark * {
+.dark *:where(:not([data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]), [data-sidebar-tone="light"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"]) *)),
+:where([data-sidebar-tone="dark"]) .dark {
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
@@ -2401,7 +2402,7 @@ button:focus-visible,
   box-shadow: 1px 0 0 color-mix(in oklab, white 52%, transparent);
 }
 
-.dark [data-variant="sidebar"] [data-slot="sidebar-container"] {
+.dark:where(:not([data-sidebar-tone="light"])) [data-variant="sidebar"] [data-slot="sidebar-container"] {
   border-inline-end-color: color-mix(in oklab, white 15%, transparent);
   box-shadow: 1px 0 0 color-mix(in oklab, black 42%, transparent);
 }
@@ -2491,16 +2492,16 @@ button:focus-visible,
 [data-collapsible="icon"] .restored-sidebar .sidebar-nav-link[data-active] .sidebar-nav-icon {
   background: transparent;
 }
-.dark .sidebar-nav-link[data-active] {
+.dark:where(:not([data-sidebar-tone="light"])) .sidebar-nav-link[data-active] {
   background: var(--sidebar-accent);
   color: var(--sidebar-accent-foreground);
   box-shadow: inset 0 0 0 1px var(--sidebar-border);
 }
-.dark .sidebar-nav-link[data-active] .sidebar-nav-icon {
+.dark:where(:not([data-sidebar-tone="light"])) .sidebar-nav-link[data-active] .sidebar-nav-icon {
   color: inherit;
   background: transparent;
 }
-.dark [data-collapsible="icon"] .restored-sidebar .sidebar-nav-link[data-active] .sidebar-nav-icon {
+.dark:where(:not([data-sidebar-tone="light"])) [data-collapsible="icon"] .restored-sidebar .sidebar-nav-link[data-active] .sidebar-nav-icon {
   background: transparent;
 }
 .sidebar-nav-link:focus-visible {
@@ -2527,7 +2528,7 @@ button:focus-visible,
   background: rgb(24 24 27 / 0.075);
   opacity: 1;
 }
-.dark .restored-sidebar [data-slot="sidebar-header-separator"] {
+.dark:where(:not([data-sidebar-tone="light"])) .restored-sidebar [data-slot="sidebar-header-separator"] {
   background: rgb(255 255 255 / 0.075);
 }
 .restored-sidebar .sidebar-section-divider {
@@ -2550,7 +2551,7 @@ button:focus-visible,
   filter: blur(50px);
 }
 
-.dark .apple-sidebar-glow {
+.dark:where(:not([data-sidebar-tone="light"])) .apple-sidebar-glow {
   opacity: 0.24;
 }
 
