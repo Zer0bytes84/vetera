@@ -1,0 +1,3 @@
+Avant (0fc91ae, défauts) contre après (recherche dans l'entête). Masque : entête (y < 132 px d'image) et barre latérale (x < 500 px d'image), seules zones changées.
+  clean: 30/30 identiques hors entête et barre latérale []
+  premium: 30/30 identiques hors entête et barre latérale []

@@ -1,0 +1,57 @@
+{
+ "out": {
+  "clean-clair-repos": "color(srgb 0.160784 0.160784 0.160784 / 0.05) | color(srgb 0.160784 0.160784 0.160784 / 0.08) | rgb(115, 115, 115)",
+  "clean-clair-survol": "color(srgb 0.160784 0.160784 0.160784 / 0.08) | color(srgb 0.160784 0.160784 0.160784 / 0.14) | rgb(93, 93, 93)",
+  "clean-clair-focus": "solid 2px",
+  "clean-clair-saisie": {
+   "expanded": "true",
+   "palette": true,
+   "results": [
+    "RexEn bonne santéID-0005 ·Chien· Labrado",
+    "Rex - ChirurgieRex · 7 novembre 2026 02:",
+    "Rex - ConsultationRex · 26 octobre 2026 "
+   ]
+  },
+  "clean-clair-raccourci": true,
+  "clean-sombre-repos": "color(srgb 0.952941 0.952941 0.960784 / 0.05) | color(srgb 0.952941 0.952941 0.960784 / 0.08) | rgb(149, 150, 152)",
+  "clean-sombre-survol": "color(srgb 0.952941 0.952941 0.960784 / 0.08) | color(srgb 0.952941 0.952941 0.960784 / 0.14) | rgb(203, 204, 205)",
+  "clean-sombre-focus": "solid 2px",
+  "clean-sombre-saisie": {
+   "expanded": "true",
+   "palette": true,
+   "results": [
+    "RexEn bonne santéID-0005 ·Chien· Labrado",
+    "Rex - ChirurgieRex · 7 novembre 2026 02:",
+    "Rex - ConsultationRex · 26 octobre 2026 "
+   ]
+  },
+  "clean-sombre-raccourci": true,
+  "premium-clair-repos": "color(srgb 0.160784 0.160784 0.160784 / 0.04) | color(srgb 0.160784 0.160784 0.160784 / 0.08) | rgb(127, 127, 127)",
+  "premium-clair-survol": "color(srgb 0.160784 0.160784 0.160784 / 0.07) | color(srgb 0.160784 0.160784 0.160784 / 0.14) | rgb(41, 41, 41)",
+  "premium-clair-focus": "solid 2px",
+  "premium-clair-saisie": {
+   "expanded": "true",
+   "palette": true,
+   "results": [
+    "RexEn bonne santéID-0005 ·Chien· Labrado",
+    "Rex - ChirurgieRex · 7 novembre 2026 02:",
+    "Rex - ConsultationRex · 26 octobre 2026 "
+   ]
+  },
+  "premium-clair-raccourci": true,
+  "premium-sombre-repos": "color(srgb 0.933333 0.933333 0.933333 / 0.04) | color(srgb 0.933333 0.933333 0.933333 / 0.08) | rgb(154, 154, 154)",
+  "premium-sombre-survol": "color(srgb 0.933333 0.933333 0.933333 / 0.07) | color(srgb 0.933333 0.933333 0.933333 / 0.14) | rgb(238, 238, 238)",
+  "premium-sombre-focus": "solid 2px",
+  "premium-sombre-saisie": {
+   "expanded": "true",
+   "palette": true,
+   "results": [
+    "RexEn bonne santéID-0005 ·Chien· Labrado",
+    "Rex - ChirurgieRex · 7 novembre 2026 02:",
+    "Rex - ConsultationRex · 26 octobre 2026 "
+   ]
+  },
+  "premium-sombre-raccourci": true
+ },
+ "errors": []
+}

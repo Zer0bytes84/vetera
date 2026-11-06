@@ -1,0 +1,196 @@
+[
+ {
+  "id": "entete-sidebar-ouverte-clair",
+  "view": "patients",
+  "mode": "light",
+  "fullClip": {
+   "x": 0,
+   "y": 0,
+   "width": 1440,
+   "height": 230
+  },
+  "marks": [
+   {
+    "sel": "[data-slot=\"app-header\"] .shell-sidebar-toggle",
+    "label": "slideout",
+    "show": [
+     "x",
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[data-slot=\"app-header\"]",
+    "label": "entête",
+    "show": [
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[aria-label^=\"Ouvrir la palette\"], [aria-label=\"Rechercher (⌘K)\"], .shell-header-search-field",
+    "label": "recherche",
+    "show": [
+     "h",
+     "w",
+     "x",
+     "radius"
+    ]
+   },
+   {
+    "sel": "[data-sidebar=\"sidebar\"] [data-slot=\"sidebar-group-label\"]",
+    "label": "1er groupe",
+    "show": [
+     "x"
+    ],
+    "pad": false
+   }
+  ]
+ },
+ {
+  "id": "entete-sidebar-repliee-clair",
+  "view": "patients",
+  "mode": "light",
+  "fullClip": {
+   "x": 0,
+   "y": 0,
+   "width": 1440,
+   "height": 230
+  },
+  "marks": [
+   {
+    "sel": "[data-slot=\"app-header\"] .shell-sidebar-toggle",
+    "label": "slideout",
+    "show": [
+     "x",
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[data-slot=\"app-header\"]",
+    "label": "entête",
+    "show": [
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[aria-label^=\"Ouvrir la palette\"], [aria-label=\"Rechercher (⌘K)\"], .shell-header-search-field",
+    "label": "recherche",
+    "show": [
+     "h",
+     "w",
+     "x",
+     "radius"
+    ]
+   },
+   {
+    "sel": "[data-sidebar=\"sidebar\"] [data-slot=\"sidebar-group-label\"]",
+    "label": "1er groupe",
+    "show": [
+     "x"
+    ],
+    "pad": false
+   }
+  ],
+  "click": "[data-slot=\"app-header\"] .shell-sidebar-toggle"
+ },
+ {
+  "id": "entete-sidebar-ouverte-sombre",
+  "view": "patients",
+  "mode": "dark",
+  "fullClip": {
+   "x": 0,
+   "y": 0,
+   "width": 1440,
+   "height": 230
+  },
+  "marks": [
+   {
+    "sel": "[data-slot=\"app-header\"] .shell-sidebar-toggle",
+    "label": "slideout",
+    "show": [
+     "x",
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[data-slot=\"app-header\"]",
+    "label": "entête",
+    "show": [
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[aria-label^=\"Ouvrir la palette\"], [aria-label=\"Rechercher (⌘K)\"], .shell-header-search-field",
+    "label": "recherche",
+    "show": [
+     "h",
+     "w",
+     "x",
+     "radius"
+    ]
+   },
+   {
+    "sel": "[data-sidebar=\"sidebar\"] [data-slot=\"sidebar-group-label\"]",
+    "label": "1er groupe",
+    "show": [
+     "x"
+    ],
+    "pad": false
+   }
+  ]
+ },
+ {
+  "id": "entete-sidebar-repliee-sombre",
+  "view": "patients",
+  "mode": "dark",
+  "fullClip": {
+   "x": 0,
+   "y": 0,
+   "width": 1440,
+   "height": 230
+  },
+  "marks": [
+   {
+    "sel": "[data-slot=\"app-header\"] .shell-sidebar-toggle",
+    "label": "slideout",
+    "show": [
+     "x",
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[data-slot=\"app-header\"]",
+    "label": "entête",
+    "show": [
+     "h"
+    ],
+    "pad": false
+   },
+   {
+    "sel": "[aria-label^=\"Ouvrir la palette\"], [aria-label=\"Rechercher (⌘K)\"], .shell-header-search-field",
+    "label": "recherche",
+    "show": [
+     "h",
+     "w",
+     "x",
+     "radius"
+    ]
+   },
+   {
+    "sel": "[data-sidebar=\"sidebar\"] [data-slot=\"sidebar-group-label\"]",
+    "label": "1er groupe",
+    "show": [
+     "x"
+    ],
+    "pad": false
+   }
+  ],
+  "click": "[data-slot=\"app-header\"] .shell-sidebar-toggle"
+ }
+]

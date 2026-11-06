@@ -1,0 +1,33 @@
+import { chromium } from "/Users/zohir/.npm/_npx/9833c18b2d85bc59/node_modules/playwright/index.mjs";
+const OUT = process.argv[2];
+const ctx = await chromium.launchPersistentContext(new URL("./profile", import.meta.url).pathname, { headless: true, executablePath: "/Users/zohir/Library/Caches/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell", viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, locale: "fr-FR" });
+const p = ctx.pages()[0] ?? await ctx.newPage();
+const errors = []; p.on("pageerror", (e) => errors.push(e.message));
+const out = {};
+for (const [skin, mode] of [["clean", "light"], ["clean", "dark"], ["premium", "light"], ["premium", "dark"]]) {
+  await p.goto("http://localhost:5173/");
+  await p.evaluate(([s, m]) => { localStorage.setItem("theme", m); localStorage.setItem("theme-config", JSON.stringify({ skin: s })); localStorage.setItem("baitari-sidebar-tone", "{}"); }, [skin, mode]);
+  await p.goto("http://localhost:5173/#/patients"); await p.reload(); await p.waitForSelector(".shell-header-search-field"); await p.waitForTimeout(1500);
+  const clip = { x: 248, y: 0, width: 560, height: 64 };
+  const f = p.locator(".shell-header-search-field");
+  const style = () => f.evaluate((e) => { const c = getComputedStyle(e); return `${c.backgroundColor} | ${c.borderTopColor} | ${c.color}`; });
+  const tag = `${skin}-${mode === "light" ? "clair" : "sombre"}`;
+  await p.mouse.move(1430, 890); await p.waitForTimeout(300);
+  out[`${tag}-repos`] = await style(); await p.screenshot({ path: `${OUT}/champ-${tag}-1-repos.png`, clip });
+  await f.hover(); await p.waitForTimeout(300);
+  out[`${tag}-survol`] = await style(); await p.screenshot({ path: `${OUT}/champ-${tag}-2-survol.png`, clip });
+  await p.mouse.move(1430, 890); await p.locator(".shell-sidebar-toggle").focus(); await p.keyboard.press("Tab"); await p.waitForTimeout(300);
+  out[`${tag}-focus`] = await f.evaluate((e) => document.activeElement === e && getComputedStyle(e).outlineStyle + " " + getComputedStyle(e).outlineWidth);
+  await p.screenshot({ path: `${OUT}/champ-${tag}-3-focus.png`, clip: { ...clip, height: 70 } });
+  await p.keyboard.press("Enter"); await p.waitForTimeout(600);
+  await p.keyboard.type("Rex"); await p.waitForTimeout(900);
+  out[`${tag}-saisie`] = { expanded: await f.getAttribute("aria-expanded"), palette: await p.evaluate(() => !!document.querySelector('[role="dialog"]')), results: await p.evaluate(() => [...document.querySelectorAll('[role="dialog"] [cmdk-item], [role="dialog"] [role="option"]')].slice(0, 4).map((e) => e.textContent.trim().slice(0, 40))) };
+  await p.screenshot({ path: `${OUT}/champ-${tag}-4-saisie.png` });
+  await p.keyboard.press("Escape"); await p.waitForTimeout(300);
+  await p.keyboard.press(process.platform === "darwin" ? "Meta+k" : "Control+k"); await p.waitForTimeout(500);
+  out[`${tag}-raccourci`] = await p.evaluate(() => !!document.querySelector('[role="dialog"]'));
+  await p.keyboard.press("Escape");
+}
+await p.evaluate(() => localStorage.setItem("theme-config", JSON.stringify({ skin: "clean" })));
+console.log(JSON.stringify({ out, errors }, null, 1));
+await ctx.close();
