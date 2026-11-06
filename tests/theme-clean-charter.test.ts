@@ -14,8 +14,8 @@ import {
 const CLEAN = readFileSync("src/design-system/clean.css", "utf8");
 const SCOPE = ':root[data-skin="clean"]';
 const DARK = ':root[data-skin="clean"].dark';
-// The sidebar takes the dark set unless Appearance forces it light (data-sidebar-tone).
-const SIDEBAR = ':root[data-skin="clean"]:where(:not([data-sidebar-tone="light"])) :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
+// The sidebar takes the dark set in both declensions (its tone setting was removed on 5 November 2026).
+const SIDEBAR = ':root[data-skin="clean"] :is([data-slot="sidebar"], [data-sidebar="sidebar"][data-mobile="true"])';
 const root = postcss.parse(CLEAN);
 const tokensOf = (selector: string) => {
   const found = new Map<string, string>();
@@ -414,7 +414,7 @@ describe("thème Clean : réglage et défaut", () => {
     const storage = new Map<string, string>();
     const dataset: Record<string, string> = {};
     vi.stubGlobal("document", { documentElement: { dataset, style: { setProperty: () => undefined } } });
-    vi.stubGlobal("localStorage", { getItem: (key: string) => storage.get(key) ?? null, setItem: (key: string, value: string) => storage.set(key, value) });
+    vi.stubGlobal("localStorage", { getItem: (key: string) => storage.get(key) ?? null, setItem: (key: string, value: string) => storage.set(key, value), removeItem: (key: string) => storage.delete(key) });
     vi.stubGlobal("window", { dispatchEvent: () => true });
     return { storage, dataset };
   }
@@ -433,8 +433,9 @@ describe("thème Clean : réglage et défaut", () => {
   it("une installation existante garde Premium et son mode sombre", () => {
     const { storage } = environment();
     storage.set("baitari-premium-default-v1", "true");
-    storage.set("theme-config", JSON.stringify({ ...DEFAULT_THEME, density: "compact" }));
-    expect(getThemeConfig()).toMatchObject({ skin: "premium", density: "compact" });
+    storage.set("theme-config", JSON.stringify({ density: "compact" }));
+    // The removed density setting is dropped; the theme is kept.
+    expect(getThemeConfig()).toEqual({ skin: "premium" });
     expect(storage.get("theme")).toBe("dark");
   });
 
@@ -462,11 +463,12 @@ describe("thème Clean : réglage et défaut", () => {
     expect(storage.get("theme")).toBeUndefined();
   });
 
-  it("pose la peau sur la racine, et jamais en Classique", () => {
+  it("pose la peau sur la racine, toujours sur le style Premium", () => {
     const { dataset } = environment();
     applyTheme({ ...DEFAULT_THEME, skin: "clean" }, false);
     expect(dataset.skin).toBe("clean");
-    applyTheme({ ...DEFAULT_THEME, visualStyle: "classic", skin: "clean" }, false);
+    expect(dataset.visualStyle).toBe("premium");
+    applyTheme({ ...DEFAULT_THEME, skin: "premium" }, false);
     expect(dataset.skin).toBe("premium");
   });
 

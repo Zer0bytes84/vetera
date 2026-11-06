@@ -41,16 +41,13 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLayout } from "@/contexts/layout-provider";
 import { useUsersRepository } from "@/data/repositories";
 import { APP_NAME } from "@/lib/brand";
 import { writeCachedProfile } from "@/lib/profile-cache";
 import {
-  ACCENT_THEMES,
   applyTheme,
   CLEAN_FONT_SETS,
   type CleanFontSet,
@@ -97,7 +94,6 @@ import Logo from "./Logo";
 import { ThemeModeToggle } from "./theme-mode-toggle";
 import { AppThemePicker } from "./app-theme-picker";
 import { appThemeSettings, currentAppTheme, normalizeSkin } from "@/lib/theme-skin";
-import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
 import { roleLabel as displayRole } from "@/lib/user-role";
 import { PageHeader } from "@/design-system/patterns/page-header";
@@ -176,17 +172,17 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       {
         id: "apparence",
         label: "Apparence",
-        description: "Thème, couleur et navigation",
+        description: "Thème, police et navigation",
         icon: LaptopIcon,
         keywords: [
           "clair",
           "sombre",
           "dark",
-          "couleur",
-          "accent",
+          "thème",
+          "clean",
+          "premium",
           "police",
           "font",
-          "arrondi",
           "sidebar",
           "barre latérale",
           "peluche",
@@ -556,8 +552,6 @@ interface ParametresProps {
   onThemeChange?: (theme: "light" | "dark" | "system") => void;
 }
 
-const LOOKALIKE_ACCENTS: string[] = ["cyan", "teal"];
-
 const Parametres: React.FC<ParametresProps> = ({
   currentTheme = "light",
   onNavigate,
@@ -898,56 +892,25 @@ const Parametres: React.FC<ParametresProps> = ({
                 <h3>Affichage</h3>
                 <p>Un espace lisible, de jour comme de nuit.</p>
               </div>
-              {themeConfig.visualStyle === "premium" && (
-                <div className="settings-row">
-                  <div>
-                    <p className="settings-row-title">Thème</p>
-                    <p className="settings-row-detail">
-                      Premium clair, Premium sombre, Clean clair ou Clean sombre.
-                    </p>
-                  </div>
-                  <AppThemePicker
-                    value={currentAppTheme(
-                      normalizeSkin(themeConfig.skin),
-                      currentTheme === "dark" ||
-                        (currentTheme === "system" &&
-                          window.matchMedia("(prefers-color-scheme: dark)").matches),
-                    )}
-                    onChange={(theme) => {
-                      const { skin, mode } = appThemeSettings(theme);
-                      handleThemeConfigChange({ ...themeConfig, skin });
-                      onThemeChange?.(mode);
-                    }}
-                  />
-                </div>
-              )}
               <div className="settings-row">
                 <div>
-                  <label
-                    htmlFor="premium-visual-style"
-                    className="settings-row-title cursor-pointer"
-                  >
-                    Style Premium
-                  </label>
-                  <p
-                    id="premium-style-description"
-                    className="settings-row-detail"
-                  >
-                    {themeConfig.visualStyle === "premium"
-                      ? "Premium : surfaces douces et espace aéré."
-                      : "Classique : votre apparence actuelle."}
+                  <p className="settings-row-title">Thème</p>
+                  <p className="settings-row-detail">
+                    Premium clair, Premium sombre, Clean clair ou Clean sombre.
                   </p>
                 </div>
-                <Switch
-                  id="premium-visual-style"
-                  aria-describedby="premium-style-description"
-                  checked={themeConfig.visualStyle === "premium"}
-                  onCheckedChange={(checked) =>
-                    handleThemeConfigChange({
-                      ...themeConfig,
-                      visualStyle: checked ? "premium" : "classic",
-                    })
-                  }
+                <AppThemePicker
+                  value={currentAppTheme(
+                    normalizeSkin(themeConfig.skin),
+                    currentTheme === "dark" ||
+                      (currentTheme === "system" &&
+                        window.matchMedia("(prefers-color-scheme: dark)").matches),
+                  )}
+                  onChange={(theme) => {
+                    const { skin, mode } = appThemeSettings(theme);
+                    handleThemeConfigChange({ ...themeConfig, skin });
+                    onThemeChange?.(mode);
+                  }}
                 />
               </div>
               <div className="settings-row">
@@ -962,9 +925,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   onChange={(nextMode) => onThemeChange?.(nextMode)}
                 />
               </div>
-              <SidebarToneSetting userId={currentUser?.id} />
-              {themeConfig.visualStyle === "premium" &&
-                normalizeSkin(themeConfig.skin) === "clean" && (
+              {normalizeSkin(themeConfig.skin) === "clean" && (
                   <div className="settings-row">
                     <div>
                       <p className="settings-row-title">Police</p>
@@ -1007,84 +968,6 @@ const Parametres: React.FC<ParametresProps> = ({
                     </div>
                   </div>
                 )}
-              <div className="settings-row">
-                <div>
-                  <label
-                    htmlFor="liquid-glass-navigation"
-                    className="settings-row-title cursor-pointer"
-                  >
-                    Liquid Glass
-                  </label>
-                  <p
-                    id="liquid-glass-description"
-                    className="settings-row-detail"
-                  >
-                    Une capsule de verre et des contours arrondis autour des
-                    icônes.
-                  </p>
-                </div>
-                <Switch
-                  id="liquid-glass-navigation"
-                  aria-describedby="liquid-glass-description"
-                  checked={themeConfig.chromeStyle === "liquid-glass"}
-                  onCheckedChange={(checked) =>
-                    handleThemeConfigChange({
-                      ...themeConfig,
-                      chromeStyle: checked ? "liquid-glass" : "classic",
-                    })
-                  }
-                />
-              </div>
-              <div className="settings-row">
-                <div>
-                  <p className="settings-row-title">Couleur d’accent</p>
-                  <p className="settings-row-detail">
-                    Repère discret dans l’interface.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {(
-                    Object.entries(ACCENT_THEMES) as [
-                      keyof typeof ACCENT_THEMES,
-                      typeof ACCENT_THEMES.blue,
-                    ][]
-                  )
-                    // Eight distinct hues: cyan and teal stay valid for saved settings
-                    // but are only listed while one of them is the current choice.
-                    .filter(
-                      ([key]) =>
-                        !LOOKALIKE_ACCENTS.includes(key) ||
-                        themeConfig.accent === key,
-                    )
-                    .map(([key, theme]) => (
-                      <button
-                        aria-label={`Couleur ${theme.label}`}
-                        aria-pressed={themeConfig.accent === key}
-                        className={cn(
-                          "settings-swatch",
-                          themeConfig.accent === key &&
-                            "settings-swatch-active",
-                        )}
-                        key={key}
-                        onClick={() =>
-                          handleThemeConfigChange({
-                            ...themeConfig,
-                            accent: key,
-                          })
-                        }
-                        title={theme.label}
-                        type="button"
-                      >
-                        <span
-                          className={cn(
-                            "size-5 rounded-full bg-gradient-to-br",
-                            theme.previewGradient,
-                          )}
-                        />
-                      </button>
-                    ))}
-                </div>
-              </div>
             </section>
             <section className="settings-panel">
               <div className="settings-row">
@@ -1349,86 +1232,13 @@ const Parametres: React.FC<ParametresProps> = ({
   );
 };
 
-
-/** The sidebar's tone, per user: the theme's own, or always light or dark. */
-function SidebarToneSetting({ userId }: { userId: string | undefined }) {
-  // The choice made here, for the user it was made for; another user reads their own.
-  const [chosen, setChosen] = useState<{ userId: string; tone: SidebarTone } | null>(null);
-  const tone = chosen && chosen.userId === userId ? chosen.tone : getSidebarTone(userId);
-  return (
-    <div className="settings-row">
-      <div>
-        <p className="settings-row-title">Barre latérale</p>
-        <p className="settings-row-detail">
-          Automatique suit le thème. Claire ou Sombre reste votre choix, quel que soit le thème.
-        </p>
-      </div>
-      <div className="settings-segmented" role="group" aria-label="Teinte de la barre latérale">
-        {SIDEBAR_TONES.map(({ value, label }) => (
-          <button
-            aria-pressed={tone === value}
-            className={cn(tone === value && "settings-segmented-active")}
-            disabled={!userId}
-            key={value}
-            onClick={() => {
-              if (!userId) return;
-              setChosen({ userId, tone: value });
-              saveSidebarTone(userId, value);
-            }}
-            type="button"
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function SidebarLayoutSettings() {
-  const {
-    variant,
-    setVariant,
-    collapsible,
-    setCollapsible,
-    glassContrast,
-    setGlassContrast,
-  } = useLayout();
+  const { collapsible, setCollapsible } = useLayout();
   return (
     <section className="settings-panel">
       <div className="settings-panel-heading">
         <h3>Navigation</h3>
         <p>Choisissez l’espace qui convient à votre façon de travailler.</p>
-      </div>
-      <div className="settings-row">
-        <div>
-          <p className="settings-row-title">Présentation</p>
-          <p className="settings-row-detail">
-            La version épurée laisse plus de place au contenu.
-          </p>
-        </div>
-        <div
-          className="settings-segmented"
-          role="group"
-          aria-label="Présentation de la barre latérale"
-        >
-          {(
-            [
-              ["minimal", "Épurée"],
-              ["inset", "Encadrée"],
-            ] as const
-          ).map(([value, label]) => (
-            <button
-              aria-pressed={variant === value}
-              className={cn(variant === value && "settings-segmented-active")}
-              key={value}
-              onClick={() => setVariant(value)}
-              type="button"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
       <div className="settings-row">
         <div>
@@ -1463,28 +1273,6 @@ function SidebarLayoutSettings() {
           ))}
         </div>
       </div>
-      {variant === "glass" && (
-        <div className="settings-row">
-          <div>
-            <p className="settings-row-title">Contraste du verre</p>
-            <p className="settings-row-detail">
-              Réglage conservé pour votre disposition actuelle.
-            </p>
-          </div>
-          <div className="flex w-40 items-center gap-3">
-            <Slider
-              aria-label="Contraste du verre"
-              max={100}
-              min={0}
-              onValueChange={(value) =>
-                setGlassContrast(Array.isArray(value) ? (value[0] ?? 0) : value)
-              }
-              value={[glassContrast]}
-            />
-            <span className="text-xs tabular-nums">{glassContrast}%</span>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

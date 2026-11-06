@@ -41,10 +41,6 @@
   background: var(--page-bg) !important;
 }
 
-:is([data-visual-style="premium"], .premium-analytics-dashboard) .header-pattern-live {
-  display: none !important;
-}
-
 /* Base typography and anti-aliasing */
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .premium-overview-shell,
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .premium-analytics-dashboard {

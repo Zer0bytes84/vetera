@@ -8,8 +8,6 @@ import { HeaderSidebarToggle } from "./components/header-sidebar-toggle";
 import { QuickActionsFab } from "./components/quick-actions-fab";
 import { roleLabel } from "@/lib/user-role";
 import type { PremiumShortcut } from "@/lib/visual-style";
-import { getThemeConfig } from "@/lib/theme-store";
-import { useSidebarTone } from "@/lib/sidebar-tone";
 import { HeroPattern } from "@/components/HeroPattern";
 import { SaveIndicator } from "@/design-system/patterns/save-indicator";
 import { useSaveIndicator } from "@/hooks/useSaveIndicator";
@@ -299,7 +297,6 @@ function AppShellInner() {
       : getViewTitle(currentView, t);
 
   const { currentUser, logout } = useAuth();
-  useSidebarTone(currentUser?.id);
   const [consultationPickerOpen, setConsultationPickerOpen] = useState(false);
   useEffect(() => {
     // The palette's Nouvelle consultation opens the same patient picker.
@@ -344,18 +341,7 @@ function AppShellInner() {
     isDesktopRuntime,
     ref: headerRef,
   } = useTauriDrag<HTMLElement>(true);
-  const { variant: preferredVariant, collapsible } = useLayout();
-  const [liquidGlass, setLiquidGlass] = useState(() => getThemeConfig().chromeStyle === "liquid-glass");
-  useEffect(() => {
-    const syncChromeStyle = () => setLiquidGlass(getThemeConfig().chromeStyle === "liquid-glass");
-    window.addEventListener("baitari-theme-config-changed", syncChromeStyle);
-    window.addEventListener("storage", syncChromeStyle);
-    return () => {
-      window.removeEventListener("baitari-theme-config-changed", syncChromeStyle);
-      window.removeEventListener("storage", syncChromeStyle);
-    };
-  }, []);
-  const variant = liquidGlass ? "sidebar" : preferredVariant;
+  const { collapsible } = useLayout();
   const previousDecorView = useRef<string | null>(null);
   useEffect(() => {
     const route = `${currentView}:${currentPatientId ?? ""}`;
@@ -551,77 +537,27 @@ function AppShellInner() {
         onNavigate={handleNavigate}
         onSearch={() => setPaletteOpen(true)}
         side={isRtl ? "right" : "left"}
-        variant={variant}
+        variant="sidebar"
       />
 
       <SidebarInset
         style={
           {
-            "--header-content-clearance":
-              isDesktopRuntime && (variant === "minimal" || variant === "inset")
-                ? "8px"
-                : "var(--titlebar-clearance)",
+            "--header-content-clearance": "var(--titlebar-clearance)",
           } as React.CSSProperties
         }
         className={cn(
           "!border-none backdrop-blur-xl",
-          variant === "sidebar" &&
-            "!m-0 !rounded-none !bg-white/40 dark:!bg-zinc-950/40 p-0 shadow-none ring-0",
-          variant === "inset" &&
-            "!rounded-t-[24px] !rounded-b-none !border-transparent !bg-transparent p-2 pb-2 shadow-none ring-0",
-          variant === "minimal" &&
-            "!mb-0 !rounded-t-[18px] !rounded-b-none !border-none !bg-background dark:!bg-zinc-950 p-0 shadow-sm ring-0",
-          variant === "floating" &&
-            "!rounded-[24px] !bg-transparent p-0 shadow-sm ring-1 ring-black/5 dark:ring-white/8",
-          variant === "glass" &&
-            "!rounded-[22px] !bg-transparent p-0 shadow-none ring-0",
+          "!m-0 !rounded-none !bg-white/40 dark:!bg-zinc-950/40 p-0 shadow-none ring-0",
           "transition-[margin,background-color,border-color,border-radius,box-shadow,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           aiAssistantOpen && !isAssistantCollapsed && "sm:mr-[460px] lg:mr-[520px]",
-          "md:peer-data-[variant=inset]:max-h-dvh",
-          "md:peer-data-[variant=minimal]:max-h-[calc(100dvh-8px)]",
-          "md:peer-data-[variant=floating]:max-h-dvh",
-          "md:peer-data-[variant=glass]:max-h-[calc(100dvh-24px)]",
-          "max-h-dvh",
-          isDesktopRuntime &&
-            variant === "minimal" &&
-            "md:!mt-[calc(var(--titlebar-clearance)-8px)] md:!max-h-[calc(100dvh-var(--titlebar-clearance)+8px)]",
-          "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:!ms-0",
-          "md:peer-data-[variant=minimal]:peer-data-[state=collapsed]:!ms-0"
+          "max-h-dvh"
         )}
       >
-        {variant === "inset" ? (
-          <>
-            <div
-              aria-hidden="true"
-              data-slot="shell-panel-frame"
-              className="pointer-events-none absolute inset-0 z-0 rounded-t-[24px] rounded-b-none bg-white/35 shadow-[inset_0_0_2px_1px_rgba(255,255,255,0.5),0_1px_2px_rgba(15,23,42,0.05)] backdrop-blur-xl dark:bg-zinc-900/30 dark:shadow-[inset_0_0_2px_1px_rgba(255,255,255,0.1),0_1px_2px_rgba(0,0,0,0.34)]"
-            />
-            <div
-              aria-hidden="true"
-              data-slot="shell-panel-frame"
-              className="pointer-events-none absolute inset-0 z-20 rounded-t-[24px] rounded-b-none border border-zinc-950/[0.065] shadow-[inset_0_1px_0_rgba(255,255,255,0.56)] dark:border-white/10 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-            />
-          </>
-        ) : null}
-        {variant === "minimal" ? (
-          <div
-            aria-hidden="true"
-            data-slot="shell-panel-frame"
-              className="pointer-events-none absolute inset-0 z-20 rounded-t-[18px] rounded-b-none border-zinc-950/[0.075] border-s border-t dark:border-white/12"
-          />
-        ) : null}
         <div
           className={cn(
             "!border-b-0 relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-y-none bg-background transition-[background-color,border-radius,box-shadow,opacity] duration-[240ms] ease-[var(--ease-out)] [scrollbar-gutter:auto]",
-            variant === "sidebar" && "rounded-none shadow-none ring-0",
-            variant === "inset" &&
-              "rounded-t-[16px] rounded-b-none shadow-2xl ring-1 ring-black/10 dark:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.78)] dark:ring-white/10",
-            variant === "minimal" &&
-              "rounded-t-[18px] rounded-b-none shadow-none ring-0",
-            variant === "floating" &&
-              "rounded-[22px] shadow-2xl ring-1 ring-black/10 dark:ring-white/14",
-            variant === "glass" &&
-              "rounded-[22px] shadow-[0_18px_55px_-32px_rgba(15,23,42,0.32)] ring-1 ring-black/[0.06] dark:shadow-[0_24px_64px_-34px_rgba(0,0,0,0.8)] dark:ring-white/10"
+            "rounded-none shadow-none ring-0"
           )}
           data-slot="shell-scroll-panel"
           ref={sidebarScrollRef}
@@ -634,8 +570,6 @@ function AppShellInner() {
               !isPremium && "bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl backdrop-saturate-150",
               !isPremium && "shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_24px_-2px_rgba(0,0,0,0.4)]",
               isPremium && "!border-none !shadow-none",
-              variant === "minimal" && "rounded-t-[18px]",
-              variant === "glass" && "rounded-t-[22px]",
               isDesktopRuntime && "cursor-default select-none"
             )}
             data-slot="app-header"

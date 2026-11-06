@@ -1,20 +1,14 @@
-import { normalizeVisualStyle, type VisualStyle } from "./visual-style";
 import { normalizeSkin, type Skin } from "./theme-skin";
-export type AccentColor =
-  | "mist"
-  | "blue"
-  | "emerald"
-  | "violet"
-  | "rose"
-  | "amber"
-  | "cyan"
-  | "orange"
-  | "teal"
-  | "noir";
 
-export type RadiusSize = "sm" | "md" | "lg" | "xl" | "full";
-
-export type FontFamily = "geist" | "inter" | "system";
+/*
+ * Appearance keeps three real choices: light or dark mode (theme-provider),
+ * the theme (Clean or Premium, `skin`) and the Clean type set (`cleanFont`).
+ * The decorative settings removed on 5 November 2026 (accent colour, Classic
+ * style, Liquid Glass switch, sidebar tone and presentation, glass contrast,
+ * and the hidden radius, density, font and header pattern values) are now
+ * fixed at their default; `cleanUpRemovedDisplaySettings` drops what an older
+ * install stored for them. See docs/recus/2026-11-05/nettoyage-parametres/.
+ */
 
 /**
  * Type sets of the Clean skin only (interface, titles, data). Kept apart from
@@ -57,362 +51,41 @@ export function normalizeCleanFont(value: unknown): CleanFontSet {
     : DEFAULT_CLEAN_FONT;
 }
 
-export type HeaderPattern =
-  | "opaline"
-  | "aurora"
-  | "tide"
-  | "spectrum"
-  | "topography"
-  | "quiet";
-
-export const HEADER_PATTERNS: Record<
-  HeaderPattern,
-  { label: string; description: string }
-> = {
-  opaline: {
-    label: "Original",
-    description: "Le dégradé Baitari d'origine",
-  },
-  aurora: {
-    label: "Aurora",
-    description: "Mesh boréal aux lignes fluides",
-  },
-  tide: {
-    label: "Marée",
-    description: "Ondes turquoise et sauge",
-  },
-  spectrum: {
-    label: "Spectre",
-    description: "Mesh pêche, lilas et azur",
-  },
-  topography: {
-    label: "Floraison",
-    description: "Pastel poudré et motif botanique",
-  },
-  quiet: {
-    label: "Calme",
-    description: "Voile minéral presque neutre",
-  },
-};
-
 export interface ThemeConfig {
-  visualStyle?: VisualStyle;
   /** Unset means the default skin (DEFAULT_SKIN). Installs from before Clean became the default have it set (keepPreviousAppearanceDefaults). */
   skin?: Skin;
-  chromeStyle: "classic" | "liquid-glass";
-  accent: AccentColor;
-  density: "compact" | "comfortable" | "spacious";
-  font: FontFamily;
   /** Clean skin only; unset means the default Geist set (DEFAULT_CLEAN_FONT). */
   cleanFont?: CleanFontSet;
-  headerPattern: HeaderPattern;
-  radius: RadiusSize;
-  sidebarStyle: "inset" | "minimal" | "floating" | "classic";
 }
 
-export const ACCENT_THEMES: Record<
-  AccentColor,
-  {
-    label: string;
-    description: string;
-    light: {
-      primary: string;
-      primaryForeground: string;
-      ring: string;
-      muted: string;
-      mutedForeground: string;
-    };
-    dark: {
-      primary: string;
-      primaryForeground: string;
-      ring: string;
-      muted: string;
-      mutedForeground: string;
-    };
-    previewGradient: string;
-  }
-> = {
-  mist: {
-    label: "Mist",
-    description: "Neutre et élégant",
-    light: {
-      primary: "oklch(0.218 0.008 223.9)",
-      primaryForeground: "oklch(0.987 0.002 197.1)",
-      ring: "oklch(0.723 0.014 214.4)",
-      muted: "oklch(0.963 0.002 197.1)",
-      mutedForeground: "oklch(0.56 0.021 213.5)",
-    },
-    dark: {
-      primary: "oklch(0.925 0.005 214.3)",
-      primaryForeground: "oklch(0.218 0.008 223.9)",
-      ring: "oklch(0.56 0.021 213.5)",
-      muted: "oklch(0.275 0.011 216.9)",
-      mutedForeground: "oklch(0.723 0.014 214.4)",
-    },
-    previewGradient: "from-slate-500 to-slate-600",
-  },
-  blue: {
-    label: "Bleu",
-    description: "Classique et professionnel",
-    light: {
-      primary: "oklch(0.488 0.243 264.376)",
-      primaryForeground: "oklch(1 0 0)",
-      ring: "oklch(0.488 0.243 264.376)",
-      muted: "oklch(0.967 0.003 247.858)",
-      mutedForeground: "oklch(0.551 0.023 264.364)",
-    },
-    dark: {
-      primary: "oklch(0.546 0.245 262.881)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.546 0.245 262.881)",
-      muted: "oklch(0.268 0.007 228.827)",
-      mutedForeground: "oklch(0.708 0.013 264.364)",
-    },
-    previewGradient: "from-blue-500 to-indigo-600",
-  },
-  emerald: {
-    label: "Émeraude",
-    description: "Nature et sérénité",
-    light: {
-      primary: "#059669",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "#059669",
-      muted: "oklch(0.967 0.004 156.743)",
-      mutedForeground: "oklch(0.551 0.023 163.225)",
-    },
-    dark: {
-      primary: "#34d399",
-      primaryForeground: "#09090b",
-      ring: "#34d399",
-      muted: "oklch(0.268 0.007 162.48)",
-      mutedForeground: "oklch(0.708 0.013 163.225)",
-    },
-    previewGradient: "from-emerald-500 to-teal-600",
-  },
-  violet: {
-    label: "Violet",
-    description: "Créatif et élégant",
-    light: {
-      primary: "#4124fb",
-      primaryForeground: "oklch(1 0 0)",
-      ring: "#8b7aff",
-      muted: "oklch(0.967 0.003 307.225)",
-      mutedForeground: "oklch(0.551 0.023 307.225)",
-    },
-    dark: {
-      primary: "#4124fb",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "#8b7aff",
-      muted: "oklch(0.268 0.007 307.225)",
-      mutedForeground: "oklch(0.708 0.013 307.225)",
-    },
-    previewGradient: "from-violet-500 to-purple-600",
-  },
-  rose: {
-    label: "Rose",
-    description: "Doux et chaleureux",
-    light: {
-      primary: "oklch(0.596 0.205 25.331)",
-      primaryForeground: "oklch(1 0 0)",
-      ring: "oklch(0.596 0.205 25.331)",
-      muted: "oklch(0.967 0.003 25.331)",
-      mutedForeground: "oklch(0.551 0.023 25.331)",
-    },
-    dark: {
-      primary: "oklch(0.646 0.205 25.331)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.646 0.205 25.331)",
-      muted: "oklch(0.268 0.007 25.331)",
-      mutedForeground: "oklch(0.708 0.013 25.331)",
-    },
-    previewGradient: "from-rose-500 to-pink-600",
-  },
-  amber: {
-    label: "Ambre",
-    description: "Énergique et lumineux",
-    light: {
-      primary: "oklch(0.696 0.17 75.834)",
-      primaryForeground: "oklch(0.268 0.007 75.834)",
-      ring: "oklch(0.696 0.17 75.834)",
-      muted: "oklch(0.967 0.003 75.834)",
-      mutedForeground: "oklch(0.551 0.023 75.834)",
-    },
-    dark: {
-      primary: "oklch(0.796 0.17 75.834)",
-      primaryForeground: "oklch(0.268 0.007 75.834)",
-      ring: "oklch(0.796 0.17 75.834)",
-      muted: "oklch(0.268 0.007 75.834)",
-      mutedForeground: "oklch(0.708 0.013 75.834)",
-    },
-    previewGradient: "from-amber-500 to-orange-600",
-  },
-  cyan: {
-    label: "Cyan",
-    description: "Frais et moderne",
-    light: {
-      primary: "oklch(0.696 0.145 205.834)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.696 0.145 205.834)",
-      muted: "oklch(0.967 0.003 205.834)",
-      mutedForeground: "oklch(0.551 0.023 205.834)",
-    },
-    dark: {
-      primary: "oklch(0.746 0.145 205.834)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.746 0.145 205.834)",
-      muted: "oklch(0.268 0.007 205.834)",
-      mutedForeground: "oklch(0.708 0.013 205.834)",
-    },
-    previewGradient: "from-cyan-500 to-blue-600",
-  },
-  orange: {
-    label: "Orange",
-    description: "Vif et dynamique",
-    light: {
-      primary: "oklch(0.646 0.222 41.116)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.646 0.222 41.116)",
-      muted: "oklch(0.967 0.003 41.116)",
-      mutedForeground: "oklch(0.551 0.023 41.116)",
-    },
-    dark: {
-      primary: "oklch(0.746 0.222 41.116)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.746 0.222 41.116)",
-      muted: "oklch(0.268 0.007 41.116)",
-      mutedForeground: "oklch(0.708 0.013 41.116)",
-    },
-    previewGradient: "from-orange-500 to-red-600",
-  },
-  teal: {
-    label: "Teal",
-    description: "Équilibré et apaisant",
-    light: {
-      primary: "oklch(0.596 0.125 180.834)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.596 0.125 180.834)",
-      muted: "oklch(0.967 0.003 180.834)",
-      mutedForeground: "oklch(0.551 0.023 180.834)",
-    },
-    dark: {
-      primary: "oklch(0.696 0.125 180.834)",
-      primaryForeground: "oklch(0.985 0.002 247.839)",
-      ring: "oklch(0.696 0.125 180.834)",
-      muted: "oklch(0.268 0.007 180.834)",
-      mutedForeground: "oklch(0.708 0.013 180.834)",
-    },
-    previewGradient: "from-teal-500 to-emerald-600",
-  },
-  noir: {
-    label: "Noir",
-    description: "Noir en clair → Blanc en sombre",
-    light: {
-      primary: "oklch(0.145 0 0)",
-      primaryForeground: "oklch(1 0 0)",
-      ring: "oklch(0.145 0 0)",
-      muted: "oklch(0.967 0 0)",
-      mutedForeground: "oklch(0.552 0 0)",
-    },
-    dark: {
-      primary: "oklch(0.985 0 0)",
-      primaryForeground: "oklch(0.145 0 0)",
-      ring: "oklch(0.985 0 0)",
-      muted: "oklch(0.269 0 0)",
-      mutedForeground: "oklch(0.708 0 0)",
-    },
-    previewGradient: "from-zinc-900 to-zinc-950",
-  },
-};
+export const DEFAULT_THEME: ThemeConfig = {};
 
-export const FONT_MAP: Record<
-  FontFamily,
-  { label: string; css: string; description: string }
-> = {
-  geist: {
-    label: "Geist",
-    css: "'Geist Variable', sans-serif",
-    description: "Moderne et géométrique",
-  },
-  inter: {
-    label: "Inter",
-    css: "'Inter Variable', sans-serif",
-    description: "Lisible et polyvalent",
-  },
-  system: {
-    label: "Système",
-    css: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    description: "Natif et rapide",
-  },
-};
-
-export const RADIUS_MAP: Record<RadiusSize, string> = {
-  sm: "0.375rem",
-  md: "0.5rem",
-  lg: "0.75rem",
-  xl: "1rem",
-  full: "9999px",
-};
-
-export const DENSITY_MAP: Record<
-  "compact" | "comfortable" | "spacious",
-  { padding: string; gap: string; spacing: string }
-> = {
-  compact: { padding: "0.5rem", gap: "0.5rem", spacing: "tight" },
-  comfortable: { padding: "0.75rem", gap: "0.75rem", spacing: "normal" },
-  spacious: { padding: "1rem", gap: "1rem", spacing: "loose" },
-};
-
-export const DEFAULT_THEME: ThemeConfig = {
+/** The fixed values of the removed settings, as every default install had them. */
+const FIXED = {
   visualStyle: "premium",
   chromeStyle: "liquid-glass",
-  accent: "blue",
-  radius: "md",
-  density: "comfortable",
-  font: "system",
   headerPattern: "opaline",
-  sidebarStyle: "classic",
-};
-
-const ORIGINAL_HEADER_RESTORE_KEY = "baitari_original_header_restored_v2";
+  radius: "0.5rem",
+  font: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  // The former "blue" accent: only its muted ink still reaches the charts.
+  mutedForeground: { light: "oklch(0.551 0.023 264.364)", dark: "oklch(0.708 0.013 264.364)" },
+} as const;
 
 export function applyTheme(config: ThemeConfig, isDark: boolean) {
   const root = document.documentElement;
-  root.dataset.visualStyle = normalizeVisualStyle(config.visualStyle);
-  // Clean is a layer over Premium light; Classic keeps no skin.
-  root.dataset.skin =
-    normalizeVisualStyle(config.visualStyle) === "premium" ? normalizeSkin(config.skin) : "premium";
-  root.dataset.chromeStyle = config.chromeStyle === "liquid-glass" ? "liquid-glass" : "classic";
-  const accent = ACCENT_THEMES[config.accent];
-  const baseMode = isDark ? accent.dark : accent.light;
-  const premium = normalizeVisualStyle(config.visualStyle) === "premium";
-  const mode = premium ? { ...baseMode,
-    primary: isDark ? "#3b1fe5" : "#191919",
-    primaryForeground: "#ffffff",
-    ring: isDark ? "#3b1fe5" : "#191919",
-  } : baseMode;
+  root.dataset.visualStyle = FIXED.visualStyle;
+  root.dataset.skin = normalizeSkin(config.skin);
+  root.dataset.chromeStyle = FIXED.chromeStyle;
+  const primary = isDark ? "#3b1fe5" : "#191919";
+  const mutedForeground = isDark ? FIXED.mutedForeground.dark : FIXED.mutedForeground.light;
 
-  const darkDashboardMuted = "var(--frame)";
-  const darkDashboardMutedForeground = "var(--ink-muted)";
-  const darkDashboardAccent = "var(--surface-raised)";
-
-  const mutedValue = "var(--frame)";
-  const mutedForegroundValue = isDark
-    ? darkDashboardMutedForeground
-    : "var(--ink-muted)";
-  // Accent is an interactive surface (menus, selections), not primary ink.
-  const accentValue = isDark ? darkDashboardAccent : "var(--frame)";
-
-  root.style.setProperty("--primary", mode.primary, "important");
-  root.style.setProperty(
-    "--primary-foreground",
-    mode.primaryForeground,
-    "important"
-  );
+  root.style.setProperty("--primary", primary, "important");
+  root.style.setProperty("--primary-foreground", "#ffffff", "important");
   root.style.setProperty("--on-primary", "#ffffff", "important");
-  root.style.setProperty("--btn-primary-bg", mode.primary, "important");
+  root.style.setProperty("--btn-primary-bg", primary, "important");
   root.style.setProperty("--btn-primary-hover", isDark ? "#4b33f0" : "#000000", "important");
   root.style.setProperty("--btn-primary-fg", "#ffffff", "important");
-  root.style.setProperty("--ring", mode.ring, "important");
+  root.style.setProperty("--ring", primary, "important");
   // Navigation stays neutral like the CRM; primary color belongs to actions.
   root.style.setProperty("--sidebar-primary", "var(--frame)", "important");
   root.style.setProperty("--sidebar-primary-foreground", "var(--ink)", "important");
@@ -421,75 +94,35 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.style.setProperty("--sidebar-accent-foreground", "var(--ink)", "important");
 
   // Keep dark surfaces globally coherent with dashboard visuals.
-  // In dark mode, avoid runtime accent overrides that create mismatched pages.
-  if (isDark) {
-    root.style.setProperty("--muted", darkDashboardMuted, "important");
-    root.style.setProperty(
-      "--muted-foreground",
-      darkDashboardMutedForeground,
-      "important"
-    );
-    root.style.setProperty("--accent", darkDashboardAccent, "important");
-  } else {
-    root.style.setProperty("--muted", mutedValue, "important");
-    root.style.setProperty(
-      "--muted-foreground",
-      mutedForegroundValue,
-      "important"
-    );
-    root.style.setProperty("--accent", accentValue, "important");
-  }
-  root.style.setProperty("--radius", RADIUS_MAP[config.radius], "important");
+  // Accent is an interactive surface (menus, selections), not primary ink.
+  root.style.setProperty("--muted", "var(--frame)", "important");
+  root.style.setProperty("--muted-foreground", "var(--ink-muted)", "important");
+  root.style.setProperty("--accent", isDark ? "var(--surface-raised)" : "var(--frame)", "important");
+  root.style.setProperty("--radius", FIXED.radius, "important");
 
-  if (config.accent === "mist") {
-    if (isDark) {
-      root.style.setProperty("--chart-1", "oklch(0.72 0.086 248)");
-      root.style.setProperty("--chart-2", "oklch(0.8 0.055 196)");
-      root.style.setProperty("--chart-3", "oklch(0.68 0.03 230)");
-      root.style.setProperty("--chart-4", "oklch(0.56 0.025 228)");
-      root.style.setProperty("--chart-5", "oklch(0.84 0.018 228)");
-    } else {
-      root.style.setProperty("--chart-1", "oklch(0.62 0.086 248)");
-      root.style.setProperty("--chart-2", "oklch(0.74 0.05 196)");
-      root.style.setProperty("--chart-3", "oklch(0.57 0.03 230)");
-      root.style.setProperty("--chart-4", "oklch(0.82 0.022 228)");
-      root.style.setProperty("--chart-5", "oklch(0.68 0.018 228)");
-    }
-  } else {
-    root.style.setProperty("--chart-1", mode.primary);
-    root.style.setProperty("--chart-2", mode.primaryForeground);
-    root.style.setProperty(
-      "--chart-3",
-      isDark
-        ? `color-mix(in oklch, ${mode.primary} 60%, white 40%)`
-        : `color-mix(in oklch, ${mode.primary} 40%, black 60%)`
-    );
-    root.style.setProperty(
-      "--chart-4",
-      isDark
-        ? `color-mix(in oklch, ${mode.primary} 80%, white 20%)`
-        : `color-mix(in oklch, ${mode.primary} 20%, black 80%)`
-    );
-    root.style.setProperty(
-      "--chart-5",
-      `color-mix(in oklch, ${mode.primary} 30%, ${mode.mutedForeground})`
-    );
-  }
+  root.style.setProperty("--chart-1", primary);
+  root.style.setProperty("--chart-2", "#ffffff");
+  root.style.setProperty(
+    "--chart-3",
+    isDark
+      ? `color-mix(in oklch, ${primary} 60%, white 40%)`
+      : `color-mix(in oklch, ${primary} 40%, black 60%)`
+  );
+  root.style.setProperty(
+    "--chart-4",
+    isDark
+      ? `color-mix(in oklch, ${primary} 80%, white 20%)`
+      : `color-mix(in oklch, ${primary} 20%, black 80%)`
+  );
+  root.style.setProperty("--chart-5", `color-mix(in oklch, ${primary} 30%, ${mutedForeground})`);
 
-  root.style.setProperty("--app-font-sans", FONT_MAP[config.font].css);
-  root.style.setProperty("--app-font-heading", FONT_MAP[config.font].css);
-  root.style.setProperty("--app-font-display", FONT_MAP[config.font].css);
-  root.style.setProperty("--font-sans", FONT_MAP[config.font].css);
-  root.style.setProperty("--font-heading", FONT_MAP[config.font].css);
-  root.dataset.font = config.font;
+  root.style.setProperty("--app-font-sans", FIXED.font);
+  root.style.setProperty("--app-font-heading", FIXED.font);
+  root.style.setProperty("--app-font-display", FIXED.font);
+  root.style.setProperty("--font-sans", FIXED.font);
+  root.style.setProperty("--font-heading", FIXED.font);
   root.dataset.cleanFont = normalizeCleanFont(config.cleanFont);
-  root.dataset.headerPattern = config.headerPattern || "opaline";
-  root.dataset.radius = config.radius;
-  root.dataset.density = config.density;
-
-  const density = DENSITY_MAP[config.density];
-  root.style.setProperty("--density-padding", density.padding);
-  root.style.setProperty("--density-gap", density.gap);
+  root.dataset.headerPattern = FIXED.headerPattern;
 }
 
 const PREMIUM_DEFAULT_MIGRATION_KEY = "baitari-premium-default-v1";
@@ -508,66 +141,74 @@ export function keepPreviousAppearanceDefaults() {
     let parsed: Partial<ThemeConfig> = {};
     try { parsed = stored ? JSON.parse(stored) : {}; } catch { /* unreadable config: keep it as is */ }
     if (parsed && typeof parsed === "object" && parsed.skin === undefined) {
-      localStorage.setItem("theme-config", JSON.stringify({ ...DEFAULT_THEME, ...parsed, skin: "premium" }));
+      localStorage.setItem("theme-config", JSON.stringify({ ...parsed, skin: "premium" }));
     }
     if (localStorage.getItem("theme") === null) localStorage.setItem("theme", "dark");
   }
   localStorage.setItem(CLEAN_DEFAULT_MIGRATION_KEY, "true");
 }
 
-export function getThemeConfig(): ThemeConfig {
-  keepPreviousAppearanceDefaults();
+/** Storage keys of the removed settings and of their one-shot migrations. */
+export const REMOVED_DISPLAY_KEYS = [
+  "layout_variant_v8",
+  "sidebar_glass_contrast_v1",
+  "baitari-sidebar-tone",
+  "baitari-crm-geist-trial-v1",
+  "baitari-neutral-controls-v1",
+  "baitari-blue-system-polish-v1",
+  "baitari_original_header_restored_v2",
+] as const;
+
+/**
+ * An older install may hold values for settings that no longer exist. Keeps
+ * the theme and the type set, drops everything else, never throws: an
+ * unreadable config falls back to the defaults. Runs on every read, so it
+ * also cleans a value written by an older build after an update.
+ */
+export function cleanUpRemovedDisplaySettings(): ThemeConfig {
+  let parsed: unknown = null;
   try {
     const stored = localStorage.getItem("theme-config");
-    if (stored) {
-      const parsed = JSON.parse(stored) as ThemeConfig;
-      const config = { ...DEFAULT_THEME, ...parsed, visualStyle: normalizeVisualStyle(parsed.visualStyle) };
-      // Older versions persisted Classic automatically, before Premium became the default.
-      // Migrate once; explicit appearance changes made afterwards remain respected.
-      if (localStorage.getItem(PREMIUM_DEFAULT_MIGRATION_KEY) !== "true") {
-        config.visualStyle = "premium";
-        localStorage.setItem("theme-config", JSON.stringify(config));
-        localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
-      }
-      // Apply the requested CRM visual trial once; later appearance choices persist.
-      if (localStorage.getItem("baitari-crm-geist-trial-v1") !== "true") {
-        config.accent = "noir";
-        config.font = "geist";
-        localStorage.setItem("theme-config", JSON.stringify(config));
-        localStorage.setItem("baitari-crm-geist-trial-v1", "true");
-      }
-      if (localStorage.getItem(ORIGINAL_HEADER_RESTORE_KEY) !== "true") {
-        config.headerPattern = DEFAULT_THEME.headerPattern;
-        localStorage.setItem("theme-config", JSON.stringify(config));
-        localStorage.setItem(ORIGINAL_HEADER_RESTORE_KEY, "true");
-      }
-      // Restore the neutral controls after the CRM violet trial, once only.
-      // Explicit later accent choices remain available in Appearance.
-      if (localStorage.getItem("baitari-neutral-controls-v1") !== "true") {
-        if (config.accent === "violet") config.accent = "noir";
-        localStorage.setItem("theme-config", JSON.stringify(config));
-        localStorage.setItem("baitari-neutral-controls-v1", "true");
-      }
-      // Apply the approved blue / native SF Pro direction once, then keep
-      // subsequent choices made in Appearance.
-      if (localStorage.getItem("baitari-blue-system-polish-v1") !== "true") {
-        config.accent = "blue";
-        config.font = "system";
-        localStorage.setItem("theme-config", JSON.stringify(config));
-        localStorage.setItem("baitari-blue-system-polish-v1", "true");
-      }
-      return config;
-    }
-  } catch {}
-  localStorage.setItem("baitari-crm-geist-trial-v1", "true");
-  localStorage.setItem("baitari-neutral-controls-v1", "true");
-  localStorage.setItem("baitari-blue-system-polish-v1", "true");
-  localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
-  return { ...DEFAULT_THEME };
+    parsed = stored ? JSON.parse(stored) : null;
+  } catch {
+    parsed = null;
+  }
+  const config: ThemeConfig = {};
+  if (parsed && typeof parsed === "object") {
+    const { skin, cleanFont } = parsed as Record<string, unknown>;
+    if (skin === "clean" || skin === "premium") config.skin = skin;
+    if (typeof cleanFont === "string" && cleanFont in CLEAN_FONT_SETS) config.cleanFont = cleanFont as CleanFontSet;
+  }
+  try {
+    const next = JSON.stringify(config);
+    if (parsed !== null && localStorage.getItem("theme-config") !== next) localStorage.setItem("theme-config", next);
+    for (const key of REMOVED_DISPLAY_KEYS) localStorage.removeItem(key);
+  } catch {
+    // Storage unavailable: the fixed appearance still applies.
+  }
+  return config;
+}
+
+export function getThemeConfig(): ThemeConfig {
+  try {
+    keepPreviousAppearanceDefaults();
+  } catch {
+    // Storage unavailable: defaults apply.
+  }
+  const config = cleanUpRemovedDisplaySettings();
+  try {
+    localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
+  } catch {
+    // Storage unavailable.
+  }
+  return config;
 }
 
 export function saveThemeConfig(config: ThemeConfig) {
+  const next: ThemeConfig = {};
+  if (config.skin) next.skin = normalizeSkin(config.skin);
+  if (config.cleanFont) next.cleanFont = normalizeCleanFont(config.cleanFont);
   localStorage.setItem(PREMIUM_DEFAULT_MIGRATION_KEY, "true");
-  localStorage.setItem("theme-config", JSON.stringify(config));
+  localStorage.setItem("theme-config", JSON.stringify(next));
   window.dispatchEvent(new Event("baitari-theme-config-changed"));
 }
