@@ -52,7 +52,10 @@ import { writeCachedProfile } from "@/lib/profile-cache";
 import {
   ACCENT_THEMES,
   applyTheme,
+  CLEAN_FONT_SETS,
+  type CleanFontSet,
   getThemeConfig,
+  normalizeCleanFont,
   saveThemeConfig,
   type ThemeConfig,
 } from "@/lib/theme-store";
@@ -960,6 +963,50 @@ const Parametres: React.FC<ParametresProps> = ({
                 />
               </div>
               <SidebarToneSetting userId={currentUser?.id} />
+              {themeConfig.visualStyle === "premium" &&
+                normalizeSkin(themeConfig.skin) === "clean" && (
+                  <div className="settings-row">
+                    <div>
+                      <p className="settings-row-title">Police</p>
+                      <p className="settings-row-detail">
+                        {CLEAN_FONT_SETS[normalizeCleanFont(themeConfig.cleanFont)].description}
+                        . Thème Clean seulement.
+                      </p>
+                    </div>
+                    <div
+                      className="settings-segmented"
+                      role="group"
+                      aria-label="Police du thème Clean"
+                    >
+                      {(
+                        Object.entries(CLEAN_FONT_SETS) as [
+                          CleanFontSet,
+                          (typeof CLEAN_FONT_SETS)[CleanFontSet],
+                        ][]
+                      ).map(([value, set]) => {
+                        const active =
+                          normalizeCleanFont(themeConfig.cleanFont) === value;
+                        return (
+                          <button
+                            aria-pressed={active}
+                            className={cn(active && "settings-segmented-active")}
+                            key={value}
+                            onClick={() =>
+                              handleThemeConfigChange({
+                                ...themeConfig,
+                                cleanFont: value,
+                              })
+                            }
+                            style={{ fontFamily: set.sample }}
+                            type="button"
+                          >
+                            {set.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               <div className="settings-row">
                 <div>
                   <label

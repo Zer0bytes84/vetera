@@ -4,6 +4,10 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/space-grotesk";
+/* Clean type sets (Appearance > Police): declared here, downloaded by nobody,
+   bundled locally; a face loads only when a Clean set uses it. */
+@import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/ibm-plex-sans";
 @import "./design-system/tokens.css";
 @import "./design-system/premium.css";
 @import "./design-system/premium-workspace.css";

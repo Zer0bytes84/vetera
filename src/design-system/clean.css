@@ -1829,3 +1829,27 @@
 :root[data-skin="clean"][data-skin] .finance-analysis-category-detail { margin-top: 8px !important; }
 :root[data-skin="clean"][data-skin] .settings-content-heading > p { margin-top: 4px !important; }
 :root[data-skin="clean"][data-skin] .flow-planned { padding: 12px !important; }
+
+/* ---------- Type sets: Appearance > Police, Clean only ----------
+   Inter stays the default ([data-clean-font="inter"] changes nothing). Each
+   set fills the three roles: interface and body, titles, data (codes,
+   references, shortcuts; amounts keep tabular figures of the interface face).
+   OFL files, bundled locally (index.css), never fetched. */
+:root[data-skin="clean"][data-clean-font="geist"] {
+  --clean-font-ui: "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --clean-font-heading: var(--clean-font-ui);
+  --clean-font-data: "Geist Mono Variable", ui-monospace, monospace;
+}
+:root[data-skin="clean"][data-clean-font="plex"] {
+  --clean-font-ui: "IBM Plex Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --clean-font-heading: var(--clean-font-ui);
+  --clean-font-data: "IBM Plex Mono", ui-monospace, monospace;
+}
+:root[data-skin="clean"][data-clean-font="signature"] {
+  --clean-font-heading: "Space Grotesk Variable", "Inter Clean", sans-serif;
+  --clean-font-data: "Geist Mono Variable", ui-monospace, monospace;
+}
+:root[data-skin="clean"]:is([data-clean-font="geist"], [data-clean-font="plex"], [data-clean-font="signature"]) {
+  --font-mono: var(--clean-font-data);
+}
+

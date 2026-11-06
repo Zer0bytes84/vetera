@@ -16,6 +16,47 @@ export type RadiusSize = "sm" | "md" | "lg" | "xl" | "full";
 
 export type FontFamily = "geist" | "inter" | "system";
 
+/**
+ * Type sets of the Clean skin only (interface, titles, data). Kept apart from
+ * `font`, which Classic and Premium read, so a choice made in Clean never
+ * reaches Premium. Every file is bundled locally (OFL), nothing is fetched.
+ */
+export type CleanFontSet = "inter" | "geist" | "plex" | "signature";
+
+export const CLEAN_FONT_SETS: Record<
+  CleanFontSet,
+  { label: string; description: string; sample: string }
+> = {
+  inter: {
+    label: "Inter",
+    description: "Actuelle : Inter partout",
+    sample: "'Inter Clean', 'Inter Variable', sans-serif",
+  },
+  geist: {
+    label: "Geist",
+    description: "Geist, chiffres en Geist Mono",
+    sample: "'Geist Variable', sans-serif",
+  },
+  plex: {
+    label: "Plex",
+    description: "IBM Plex Sans, chiffres en Plex Mono",
+    sample: "'IBM Plex Sans Variable', sans-serif",
+  },
+  signature: {
+    label: "Signature",
+    description: "Inter, titres en Space Grotesk",
+    sample: "'Space Grotesk Variable', sans-serif",
+  },
+};
+
+export const DEFAULT_CLEAN_FONT: CleanFontSet = "inter";
+
+export function normalizeCleanFont(value: unknown): CleanFontSet {
+  return typeof value === "string" && value in CLEAN_FONT_SETS
+    ? (value as CleanFontSet)
+    : DEFAULT_CLEAN_FONT;
+}
+
 export type HeaderPattern =
   | "opaline"
   | "aurora"
@@ -62,6 +103,8 @@ export interface ThemeConfig {
   accent: AccentColor;
   density: "compact" | "comfortable" | "spacious";
   font: FontFamily;
+  /** Clean skin only; unset means the current Inter set (DEFAULT_CLEAN_FONT). */
+  cleanFont?: CleanFontSet;
   headerPattern: HeaderPattern;
   radius: RadiusSize;
   sidebarStyle: "inset" | "minimal" | "floating" | "classic";
@@ -439,6 +482,7 @@ export function applyTheme(config: ThemeConfig, isDark: boolean) {
   root.style.setProperty("--font-sans", FONT_MAP[config.font].css);
   root.style.setProperty("--font-heading", FONT_MAP[config.font].css);
   root.dataset.font = config.font;
+  root.dataset.cleanFont = normalizeCleanFont(config.cleanFont);
   root.dataset.headerPattern = config.headerPattern || "opaline";
   root.dataset.radius = config.radius;
   root.dataset.density = config.density;
