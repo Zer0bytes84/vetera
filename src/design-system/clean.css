@@ -1831,7 +1831,8 @@
 :root[data-skin="clean"][data-skin] .flow-planned { padding: 12px !important; }
 
 /* ---------- Type sets: Appearance > Police, Clean only ----------
-   Inter stays the default ([data-clean-font="inter"] changes nothing). Each
+   Geist is the default (set by theme-store); [data-clean-font="inter"] keeps
+   the base Inter tokens, unchanged. Each
    set fills the three roles: interface and body, titles, data (codes,
    references, shortcuts; amounts keep tabular figures of the interface face).
    OFL files, bundled locally (index.css), never fetched. */

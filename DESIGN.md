@@ -587,5 +587,5 @@ Pointer inspection reveals the nearest chart bucket with its date and value, a g
 - Spacing: 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48 px on the 4px base; 2 and 6 only inside controls of 32px or less. Indicator cards: 20px above and below, 24px at the sides, on the dashboard and every page. Tables: 12px between columns, 16px at the edges.
 - Radii: 4, 6, 8 (controls), 10 (cards), 12 (sheet) and full. Control heights: 20, 24, 28 (segment items), 32 (controls and segment tracks), 36 (header), 40 (list rows).
 - Text: zero tracking at body sizes (Inter's optical size spaces small text); titles keep their tracking tokens. Quiet grey `#737373` (4.54:1 on the sheet).
-- Type sets (Appearance > Police, Clean only, Inter by default): Geist with Geist Mono, IBM Plex Sans with Plex Mono, Signature (Inter with Space Grotesk titles). OFL files bundled locally.
+- Type sets (Appearance > Police, Clean only, Geist with Geist Mono by default since 5 November 2026): Inter, IBM Plex Sans with Plex Mono, Signature (Inter with Space Grotesk titles). OFL files bundled locally.
 - `tests/clean-finish-scale.test.ts` keeps the finishing rules on these scales.

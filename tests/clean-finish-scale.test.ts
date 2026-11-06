@@ -52,9 +52,10 @@ describe("thème Clean : finition mesurée", () => {
 });
 
 describe("thème Clean : jeux de polices", () => {
-  it("garde Inter par défaut et ignore une valeur inconnue", () => {
-    expect(normalizeCleanFont(undefined)).toBe("inter");
-    expect(normalizeCleanFont("comic")).toBe("inter");
+  it("prend Geist par défaut et ignore une valeur inconnue", () => {
+    expect(normalizeCleanFont(undefined)).toBe("geist");
+    expect(normalizeCleanFont("comic")).toBe("geist");
+    expect(normalizeCleanFont("inter")).toBe("inter");
     expect(Object.keys(CLEAN_FONT_SETS)).toEqual(["inter", "geist", "plex", "signature"]);
     const store = readFileSync("src/lib/theme-store.ts", "utf8");
     expect(store).toContain("root.dataset.cleanFont = normalizeCleanFont(config.cleanFont);");

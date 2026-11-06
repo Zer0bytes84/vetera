@@ -20,7 +20,7 @@ Date : 5 novembre 2026. Branche locale `design/finition-espacements`, partie de 
 
 - **Contraste du gris discret.** Ce gris colore 366 textes de 12 et 13 px. Il passait de 3,84:1, sous le seuil AA de 4,5:1, à 4,54:1.
 - **Interlettrage.** 934 textes recevaient un interlettrage fixe de −0,096 px hérité du body. Ils ont maintenant 0.
-- **Réglage « Police ».** Il est ajouté dans Apparence, en Clean seulement. Inter reste la police par défaut. Trois jeux sont proposés en plus : Geist, Plex et Signature.
+- **Réglage « Police ».** Il est ajouté dans Apparence, en Clean seulement. Geist est la police par défaut depuis ton choix (§ 5) ; Inter, Plex et Signature restent proposés.
 
 ## 1. Les quatre questions préalables, et ce qui en a été retenu
 
@@ -153,7 +153,7 @@ Les captures annotées « avant | après » sont dans `corrections/`. Les valeur
 
 ## 5. Le jeu de polices
 
-Réglage : **Paramètres → Apparence → Police**. Il n'apparaît qu'en Clean et vaut **Inter** par défaut.
+Réglage : **Paramètres → Apparence → Police**. Il n'apparaît qu'en Clean et vaut **Geist** par défaut, depuis ton choix après la première remise du bilan.
 
 - **Stockage séparé.** Le choix est enregistré dans un champ à part, `cleanFont`. Le champ `font` historique est lu par Classique et Premium ; un choix fait en Clean ne peut donc pas les atteindre.
 - **Embarquement local.** Tous les fichiers sont sous licence OFL-1.1, livrés par npm et embarqués par Vite.
@@ -168,8 +168,8 @@ Réglage : **Paramètres → Apparence → Police**. Il n'apparaît qu'en Clean 
 
 | Jeu | Interface et texte | Titres | Données (codes, références, raccourcis) | Mesures (fontTools) |
 | --- | --- | --- | --- | --- |
-| **Inter** (actuel, par défaut) | Inter, avec son axe de taille optique | Inter | Police à chasse fixe du système | <ul><li>Hauteur d'x : 7,10 px à 13 px.</li><li>Phrase témoin à 13 px : 283 px.</li><li>Figures tabulaires : oui.</li></ul> |
-| **Geist** | Geist | Geist | Geist Mono | <ul><li>Hauteur d'x : 6,89 px.</li><li>Phrase témoin : 278 px.</li><li>Figures tabulaires : oui.</li><li>C'est la paire de Vercel, dans l'esprit demandé.</li></ul> |
+| **Inter** (ancien défaut) | Inter, avec son axe de taille optique | Inter | Police à chasse fixe du système | <ul><li>Hauteur d'x : 7,10 px à 13 px.</li><li>Phrase témoin à 13 px : 283 px.</li><li>Figures tabulaires : oui.</li></ul> |
+| **Geist** (par défaut) | Geist | Geist | Geist Mono | <ul><li>Hauteur d'x : 6,89 px.</li><li>Phrase témoin : 278 px.</li><li>Figures tabulaires : oui.</li><li>C'est la paire de Vercel, dans l'esprit demandé.</li></ul> |
 | **Plex** | IBM Plex Sans | IBM Plex Sans | IBM Plex Mono (déjà embarquée) | <ul><li>Hauteur d'x : 6,71 px.</li><li>Phrase témoin : 269 px.</li><li>Chiffres tabulaires par défaut : les dix chiffres ont la même chasse (600).</li></ul> |
 | **Signature** | Inter | Space Grotesk (la signature Baitari, déjà embarquée) | Geist Mono | Titres : hauteur d'x de 0,486 em, plus petite qu'Inter (0,546 em). |
 
@@ -179,7 +179,7 @@ Réglage : **Paramètres → Apparence → Police**. Il n'apparaît qu'en Clean 
   - `gros-plan-<écran>.jpg` montre les textes de 12 et 13 px à 2x, pour juger le rendu aux petites tailles ;
   - `geist-sombre-*.jpg` montre Geist en sombre ;
   - `reglage-police-inter.png` et `reglage-police-geist.png` montrent le réglage lui-même.
-- **Choisir.** Les quatre sont comparables directement dans l'application. Je ne tranche pas à ta place ; le défaut reste Inter.
+- **Choisir.** Les quatre sont comparables directement dans l'application. Tu as choisi Geist : c'est le défaut. Une installation qui n'a jamais choisi passe à Geist ; un choix déjà enregistré (Inter, Plex, Signature) est gardé. Premium vérifié identique au pixel après ce changement (tableau de bord, Patients, Produits, clair et sombre).
 
 ## 6. Ce qui a été laissé tel quel, et pourquoi
 
@@ -257,7 +257,7 @@ Aucun n'a été modifié ni commité par moi. Deux points à signaler :
 | --- | --- |
 | `ba6a733` | `design(clean): finition mesurée, une échelle d'espacement et de rayons` : bloc de finition dans `clean.css`, gris discret, charte de test, section DESIGN.md |
 | `4eafda3` | `design(clean): jeux de polices au choix, Inter par défaut` : `cleanFont`, réglage Apparence, `@fontsource-variable/geist-mono` et `@fontsource-variable/ibm-plex-sans` (OFL), test de l'échelle |
-| Ce commit | `docs:` le présent bilan, les captures et les outils de mesure |
+| `12023fe` | `docs:` le présent bilan, les captures et les outils de mesure |
 
 Aucun push.
 
@@ -266,7 +266,7 @@ Aucun push.
 - **emil-design-eng.**
   - « Unseen details compound » a guidé le choix des corrections : un écart de 6 px entre le titre d'accueil et ses boutons, ou des pistes de 36 px contre des contrôles de 32. Personne ne les nomme, mais l'œil les additionne.
   - Le format de revue « Avant | Après | Pourquoi » structure le tableau du § 4.
-  - « Good defaults matter more than options » : Inter reste le défaut, les jeux restent un choix.
+  - « Good defaults matter more than options » : un seul défaut, Geist, les autres jeux restent un choix.
 - **apple-design.**
   - § 15 « Tracking is size-specific, never one value for all sizes » a tranché l'interlettrage. Le −0,096 px fixe hérité du body était exactement ce défaut ; il passe à 0 aux tailles de texte, et les titres gardent leur interlettrage négatif.
   - § 15 « Default to the platform's font… override only with a reason » : chaque jeu de police a son rôle et sa mesure.
@@ -275,3 +275,7 @@ Aucun push.
 - **break-ui.** J'en ai repris le principe des libellés longs, appliqué à la détection automatique des retours à la ligne. C'est elle qui a trouvé « Modèles de documents » et « Aucune consultation en cours ». Je n'ai pas construit sa bascule « données extrêmes » : cela ajouterait une fonctionnalité.
 - **animate, review-animations, improve-animations, animation-performance, find-animation-opportunities.** Non appliqués : aucune animation n'a été modifiée, ce qui était hors périmètre. Les transitions existantes de Clean (120 ms `ease-out`, survol réservé aux pointeurs fins) étaient déjà conformes.
 - **mobile-native, ask-sonner, pick-ui-library, prototype.** Lus dans leur description, sans objet ici.
+
+## 12. Après la remise : Geist par défaut
+
+Commit suivant : `DEFAULT_CLEAN_FONT` passe à `geist`. Tests : 1 380 sur 1 381 (même échec préexistant), typage et lint à 0. Vérifié dans le navigateur : sans choix enregistré, `data-clean-font="geist"`, corps en Geist, `--font-mono` en Geist Mono.
