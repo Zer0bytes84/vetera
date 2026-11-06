@@ -1,0 +1,31 @@
+{
+ "before": 12,
+ "after": {
+  "dataset": {
+   "visualStyle": "premium",
+   "skin": "clean",
+   "chromeStyle": "liquid-glass",
+   "cleanFont": "plex",
+   "headerPattern": "opaline"
+  },
+  "dark": true,
+  "config": "{\"skin\":\"clean\",\"cleanFont\":\"plex\"}",
+  "removed": [
+   [
+    "layout_variant_v8",
+    null
+   ],
+   [
+    "sidebar_glass_contrast_v1",
+    null
+   ],
+   [
+    "baitari-sidebar-tone",
+    null
+   ]
+  ],
+  "patients": 5,
+  "body": "\"IBM Plex Sans Variable\""
+ },
+ "errors": []
+}
