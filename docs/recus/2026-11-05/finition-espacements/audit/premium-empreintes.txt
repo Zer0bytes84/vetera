@@ -1,0 +1,32 @@
+Premium avant/après, 1440x900 @2x, heure figée, masque = mascotte animée de la sidebar (0,0)-(180,140) px image
+agenda-dark.png              avant dbdc0f5ecc99  après dbdc0f5ecc99  IDENTIQUE
+agenda-light.png             avant ba164acdf0d0  après ba164acdf0d0  IDENTIQUE
+aide-dark.png                avant fc7a077c7975  après fc7a077c7975  IDENTIQUE
+aide-light.png               avant bdc46fe5b740  après bdc46fe5b740  IDENTIQUE
+clinique-dark.png            avant 0aae2e203f01  après 0aae2e203f01  IDENTIQUE
+clinique-light.png           avant db6c01d7379c  après db6c01d7379c  IDENTIQUE
+dashboard-dark.png           avant b12221477591  après b12221477591  IDENTIQUE
+dashboard-light.png          avant 441fd5607971  après 441fd5607971  IDENTIQUE
+equipe-dark.png              avant e92c7245351f  après e92c7245351f  IDENTIQUE
+equipe-light.png             avant bbd9f6b90ff9  après bbd9f6b90ff9  IDENTIQUE
+finances-dark.png            avant 2bf5a33ada29  après 2bf5a33ada29  IDENTIQUE
+finances-light.png           avant 95c94ee34659  après 95c94ee34659  IDENTIQUE
+finances_analytics-dark.png  avant 8d9f951605b6  après 8d9f951605b6  IDENTIQUE
+finances_analytics-light.png avant f8f28a15e76a  après f8f28a15e76a  IDENTIQUE
+flux-dark.png                avant 9430d3c4e838  après 9430d3c4e838  IDENTIQUE
+flux-light.png               avant 9419ecbf6b46  après 9419ecbf6b46  IDENTIQUE
+notes-dark.png               avant e7e6c5e02ccf  après e7e6c5e02ccf  IDENTIQUE
+notes-light.png              avant bce354248930  après bce354248930  IDENTIQUE
+parametres-dark.png          avant 6b9e7d418cc5  après 6b9e7d418cc5  IDENTIQUE
+parametres-light.png         avant 72bae1293e4d  après 72bae1293e4d  IDENTIQUE
+patient_detail-dark.png      avant a1a3af973a84  après a1a3af973a84  IDENTIQUE
+patient_detail-light.png     avant 52bb0778621e  après 52bb0778621e  IDENTIQUE
+patients-dark.png            avant 066d35b3a624  après 066d35b3a624  IDENTIQUE
+patients-light.png           avant 08a99dc839dc  après 08a99dc839dc  IDENTIQUE
+soins-dark.png               avant 0aae2e203f01  après 0aae2e203f01  IDENTIQUE
+soins-light.png              avant db6c01d7379c  après db6c01d7379c  IDENTIQUE
+stock-dark.png               avant 16577f12aa16  après 16577f12aa16  IDENTIQUE
+stock-light.png              avant 593e35be44e0  après 593e35be44e0  IDENTIQUE
+taches-dark.png              avant a3aefb95f1ad  après a3aefb95f1ad  IDENTIQUE
+taches-light.png             avant 3d8ccb4ee11f  après 3d8ccb4ee11f  IDENTIQUE
+30/30 identiques hors mascotte

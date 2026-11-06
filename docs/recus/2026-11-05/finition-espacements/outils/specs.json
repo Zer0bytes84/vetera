@@ -1,0 +1,303 @@
+[
+ {
+  "id": "01-dashboard-bande-accueil",
+  "view": "dashboard",
+  "marks": [
+   {
+    "sel": ".heroTitle",
+    "label": "titre",
+    "show": [
+     "x"
+    ],
+    "pad": false,
+    "guide": "left"
+   },
+   {
+    "sel": ".heroActions",
+    "label": "actions",
+    "show": [
+     "x",
+     "gap"
+    ],
+    "pad": false,
+    "guide": "left"
+   },
+   {
+    "sel": ".heroActions .btn",
+    "label": "bouton",
+    "show": [
+     "h",
+     "pad",
+     "gap"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "02-dashboard-segments",
+  "view": "dashboard",
+  "marks": [
+   {
+    "sel": ".filters [data-tabs-style=\"segmented\"]",
+    "label": "piste",
+    "show": [
+     "h",
+     "pad"
+    ]
+   },
+   {
+    "sel": ".filters [data-tabs-style=\"segmented\"] > button",
+    "label": "item",
+    "show": [
+     "h"
+    ],
+    "nth": 1
+   }
+  ]
+ },
+ {
+  "id": "03-dashboard-indicateurs",
+  "view": "dashboard",
+  "marks": [
+   {
+    "sel": ".kpis > .kpi",
+    "label": "carte",
+    "show": [
+     "pad"
+    ],
+    "count": 2
+   }
+  ],
+  "margin": 24
+ },
+ {
+  "id": "04-agenda-segments",
+  "view": "agenda",
+  "scroll": "[data-tabs-style=\"segmented\"]",
+  "marks": [
+   {
+    "sel": "[data-tabs-style=\"segmented\"]",
+    "label": "piste",
+    "show": [
+     "h",
+     "pad"
+    ]
+   },
+   {
+    "sel": "[data-tabs-style=\"segmented\"] > [data-slot=\"tabs-trigger\"]",
+    "label": "item",
+    "show": [
+     "h"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "05-produits-tableau",
+  "view": "stock",
+  "scroll": "[data-slot=\"table\"] tbody tr",
+  "marks": [
+   {
+    "sel": "[data-slot=\"table\"] tbody tr td",
+    "label": "cellule",
+    "show": [
+     "pad"
+    ],
+    "count": 3
+   }
+  ],
+  "margin": 32
+ },
+ {
+  "id": "06-patients-indicateurs",
+  "view": "patients",
+  "marks": [
+   {
+    "sel": ".section-atlas-card",
+    "label": "carte",
+    "show": [
+     "pad"
+    ],
+    "count": 2
+   },
+   {
+    "sel": ".premium-page-head-main",
+    "label": "en-tête",
+    "show": [
+     "gap"
+    ],
+    "pad": false
+   }
+  ],
+  "margin": 24
+ },
+ {
+  "id": "07-flux-couloirs",
+  "view": "flux",
+  "marks": [
+   {
+    "sel": ".flow-lane",
+    "label": "couloir",
+    "show": [
+     "pad",
+     "radius"
+    ],
+    "count": 2
+   },
+   {
+    "sel": ".flow-density",
+    "label": "densité",
+    "show": [
+     "h",
+     "pad"
+    ]
+   }
+  ],
+  "margin": 24
+ },
+ {
+  "id": "08-dossier-onglets",
+  "view": "patient_detail",
+  "scroll": ".medical-tabs",
+  "marks": [
+   {
+    "sel": ".medical-tabs > button",
+    "label": "onglet",
+    "show": [
+     "h",
+     "pad"
+    ],
+    "count": 3
+   }
+  ],
+  "margin": 32
+ },
+ {
+  "id": "09-parametres-navigation",
+  "view": "parametres",
+  "marks": [
+   {
+    "sel": ".settings-nav-item",
+    "label": "item",
+    "show": [
+     "h",
+     "radius"
+    ],
+    "count": 1
+   },
+   {
+    "sel": ".settings-panel",
+    "label": "panneau",
+    "show": [
+     "radius"
+    ],
+    "pad": false
+   },
+   {
+    "sel": ".settings-page-nav",
+    "label": "nav",
+    "show": [
+     "gap"
+    ],
+    "pad": false
+   }
+  ],
+  "margin": 24
+ },
+ {
+  "id": "10-texte-gris-discret",
+  "view": "patients",
+  "marks": [
+   {
+    "sel": "[data-slot=\"shell-scroll-panel\"] .section-atlas-card p",
+    "label": "gris",
+    "show": [
+     "fs",
+     "color",
+     "ls"
+    ],
+    "count": 1,
+    "pad": false
+   },
+   {
+    "sel": "[data-slot=\"shell-scroll-panel\"] [data-slot=\"page-header\"] p",
+    "label": "sous-titre",
+    "show": [
+     "fs",
+     "color",
+     "ls"
+    ],
+    "count": 1,
+    "pad": false
+   }
+  ],
+  "margin": 40
+ },
+ {
+  "id": "11-aide-filets",
+  "view": "aide",
+  "marks": [
+   {
+    "sel": "[class*=\"border-zinc-\"]",
+    "label": "filet",
+    "show": [
+     "border"
+    ],
+    "pad": false,
+    "count": 2
+   }
+  ],
+  "margin": 24
+ },
+ {
+  "id": "12-agenda-cartes-liste",
+  "view": "agenda",
+  "scroll": ".agenda-appt-card",
+  "marks": [
+   {
+    "sel": ".agenda-appt-card",
+    "label": "carte",
+    "show": [
+     "pad",
+     "gap",
+     "radius"
+    ],
+    "count": 1
+   }
+  ],
+  "margin": 24
+ },
+ {
+  "id": "13-sombre-dashboard-segments",
+  "view": "dashboard",
+  "mode": "dark",
+  "marks": [
+   {
+    "sel": ".heroTitle",
+    "label": "titre",
+    "show": [
+     "x"
+    ],
+    "pad": false,
+    "guide": "left"
+   },
+   {
+    "sel": ".heroActions",
+    "label": "actions",
+    "show": [
+     "x"
+    ],
+    "pad": false,
+    "guide": "left"
+   },
+   {
+    "sel": ".filters [data-tabs-style=\"segmented\"]",
+    "label": "piste",
+    "show": [
+     "h",
+     "pad"
+    ]
+   }
+  ]
+ }
+]

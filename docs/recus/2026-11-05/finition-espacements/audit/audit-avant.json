@@ -1,0 +1,3454 @@
+{
+ "on_scale": {
+  "padding": {
+   "total": 4382,
+   "off": 904,
+   "on_pct": 79.4
+  },
+  "margin": {
+   "total": 758,
+   "off": 68,
+   "on_pct": 91.0
+  },
+  "gap": {
+   "total": 3962,
+   "off": 266,
+   "on_pct": 93.3
+  },
+  "font": {
+   "total": 2102,
+   "off": 52,
+   "on_pct": 97.5
+  },
+  "radius": {
+   "total": 1390,
+   "off": 146,
+   "on_pct": 89.5
+  },
+  "control_h": {
+   "total": 808,
+   "off": 256,
+   "on_pct": 68.3
+  }
+ },
+ "hist": {
+  "padding": [
+   [
+    "12.0",
+    946
+   ],
+   [
+    "6.0",
+    556
+   ],
+   [
+    "8.0",
+    468
+   ],
+   [
+    "20.0",
+    420
+   ],
+   [
+    "24.0",
+    338
+   ],
+   [
+    "16.0",
+    280
+   ],
+   [
+    "4.0",
+    238
+   ],
+   [
+    "14.0",
+    230
+   ],
+   [
+    "10.0",
+    210
+   ],
+   [
+    "22.0",
+    164
+   ],
+   [
+    "3.0",
+    152
+   ],
+   [
+    "2.0",
+    108
+   ],
+   [
+    "32.0",
+    68
+   ],
+   [
+    "9.0",
+    44
+   ],
+   [
+    "18.0",
+    38
+   ],
+   [
+    "1.0",
+    32
+   ],
+   [
+    "7.0",
+    28
+   ],
+   [
+    "36.0",
+    14
+   ],
+   [
+    "48.0",
+    10
+   ],
+   [
+    "40.0",
+    10
+   ],
+   [
+    "57.6",
+    8
+   ],
+   [
+    "30.0",
+    6
+   ],
+   [
+    "28.0",
+    4
+   ],
+   [
+    "38.0",
+    2
+   ],
+   [
+    "80.0",
+    2
+   ],
+   [
+    "21.0",
+    2
+   ],
+   [
+    "15.0",
+    2
+   ],
+   [
+    "160.0",
+    2
+   ]
+  ],
+  "margin": [
+   [
+    "-1.0",
+    264
+   ],
+   [
+    "4.0",
+    76
+   ],
+   [
+    "8.0",
+    70
+   ],
+   [
+    "2.0",
+    36
+   ],
+   [
+    "16.0",
+    36
+   ],
+   [
+    "24.0",
+    34
+   ],
+   [
+    "12.0",
+    32
+   ],
+   [
+    "918.0",
+    30
+   ],
+   [
+    "6.0",
+    28
+   ],
+   [
+    "0.5",
+    18
+   ],
+   [
+    "10.0",
+    18
+   ],
+   [
+    "-4.0",
+    14
+   ],
+   [
+    "32.0",
+    12
+   ],
+   [
+    "19.5",
+    6
+   ],
+   [
+    "63.0",
+    4
+   ],
+   [
+    "676.08",
+    4
+   ],
+   [
+    "216.41",
+    4
+   ],
+   [
+    "-8.0",
+    4
+   ],
+   [
+    "3.0",
+    4
+   ],
+   [
+    "28.0",
+    4
+   ],
+   [
+    "-24.0",
+    4
+   ],
+   [
+    "9.0",
+    4
+   ],
+   [
+    "471.45",
+    2
+   ],
+   [
+    "64.0",
+    2
+   ],
+   [
+    "53.59",
+    2
+   ],
+   [
+    "107.75",
+    2
+   ],
+   [
+    "152.69",
+    2
+   ],
+   [
+    "137.16",
+    2
+   ],
+   [
+    "67.73",
+    2
+   ],
+   [
+    "110.09",
+    2
+   ]
+  ],
+  "gap": [
+   [
+    "8.0",
+    1106
+   ],
+   [
+    "6.0",
+    932
+   ],
+   [
+    "4.0",
+    650
+   ],
+   [
+    "12.0",
+    428
+   ],
+   [
+    "16.0",
+    254
+   ],
+   [
+    "2.0",
+    146
+   ],
+   [
+    "10.0",
+    108
+   ],
+   [
+    "24.0",
+    106
+   ],
+   [
+    "20.0",
+    64
+   ],
+   [
+    "14.0",
+    64
+   ],
+   [
+    "3.0",
+    36
+   ],
+   [
+    "5.0",
+    24
+   ],
+   [
+    "18.0",
+    18
+   ],
+   [
+    "7.0",
+    8
+   ],
+   [
+    "1.0",
+    4
+   ],
+   [
+    "28.0",
+    4
+   ],
+   [
+    "26.0",
+    4
+   ],
+   [
+    "32.0",
+    4
+   ],
+   [
+    "40.0",
+    2
+   ]
+  ],
+  "font": [
+   [
+    "13.0",
+    828
+   ],
+   [
+    "12.0",
+    776
+   ],
+   [
+    "14.0",
+    218
+   ],
+   [
+    "24.0",
+    168
+   ],
+   [
+    "16.0",
+    32
+   ],
+   [
+    "15.0",
+    30
+   ],
+   [
+    "18.0",
+    28
+   ],
+   [
+    "20.0",
+    20
+   ],
+   [
+    "36.0",
+    2
+   ]
+  ],
+  "weight": [
+   [
+    "500",
+    858
+   ],
+   [
+    "400",
+    726
+   ],
+   [
+    "600",
+    260
+   ],
+   [
+    "450",
+    254
+   ],
+   [
+    "560",
+    4
+   ]
+  ],
+  "lh_ratio": [
+   [
+    "1.55",
+    566
+   ],
+   [
+    "1.43",
+    398
+   ],
+   [
+    "1.0",
+    276
+   ],
+   [
+    "1.33",
+    266
+   ],
+   [
+    "1.67",
+    106
+   ],
+   [
+    "1.4",
+    86
+   ],
+   [
+    "1.54",
+    80
+   ],
+   [
+    "1.45",
+    64
+   ],
+   [
+    "1.17",
+    60
+   ],
+   [
+    "1.2",
+    58
+   ],
+   [
+    "1.5",
+    58
+   ],
+   [
+    "1.25",
+    26
+   ],
+   [
+    "1.62",
+    18
+   ],
+   [
+    "1.1",
+    10
+   ],
+   [
+    "1.83",
+    10
+   ],
+   [
+    "1.38",
+    8
+   ],
+   [
+    "1.71",
+    4
+   ],
+   [
+    "1.56",
+    4
+   ],
+   [
+    "1.3",
+    4
+   ]
+  ],
+  "radius": [
+   [
+    "9999",
+    474
+   ],
+   [
+    "8.0",
+    342
+   ],
+   [
+    "6.0",
+    144
+   ],
+   [
+    "4.0",
+    114
+   ],
+   [
+    "10.0",
+    92
+   ],
+   [
+    "12.0",
+    78
+   ],
+   [
+    "14.0",
+    40
+   ],
+   [
+    "11.2",
+    26
+   ],
+   [
+    "9.0",
+    22
+   ],
+   [
+    "3.0",
+    16
+   ],
+   [
+    "16.0",
+    16
+   ],
+   [
+    "6.4",
+    8
+   ],
+   [
+    "2.0",
+    8
+   ],
+   [
+    "5.0",
+    6
+   ],
+   [
+    "14.4",
+    4
+   ]
+  ],
+  "control_h": [
+   [
+    "32",
+    236
+   ],
+   [
+    "40",
+    118
+   ],
+   [
+    "36",
+    116
+   ],
+   [
+    "30",
+    98
+   ],
+   [
+    "84",
+    60
+   ],
+   [
+    "44",
+    36
+   ],
+   [
+    "28",
+    32
+   ],
+   [
+    "128.1",
+    16
+   ],
+   [
+    "20",
+    14
+   ],
+   [
+    "98.3",
+    14
+   ],
+   [
+    "150.9",
+    12
+   ],
+   [
+    "191.7",
+    8
+   ],
+   [
+    "167.7",
+    8
+   ],
+   [
+    "131.1",
+    6
+   ],
+   [
+    "20.1",
+    4
+   ],
+   [
+    "58.7",
+    4
+   ],
+   [
+    "60.5",
+    4
+   ],
+   [
+    "40.7",
+    4
+   ],
+   [
+    "136",
+    4
+   ],
+   [
+    "34",
+    2
+   ],
+   [
+    "32.1",
+    2
+   ],
+   [
+    "19.5",
+    2
+   ],
+   [
+    "175.6",
+    2
+   ],
+   [
+    "73",
+    2
+   ],
+   [
+    "56",
+    2
+   ],
+   [
+    "38",
+    2
+   ]
+  ],
+  "family": [
+   [
+    "\"Inter Clean\"",
+    2098
+   ],
+   [
+    "ui-monospace",
+    4
+   ]
+  ],
+  "smoothing": [
+   [
+    "antialiased",
+    2102
+   ]
+  ],
+  "ls": [
+   [
+    "-0.096px",
+    934
+   ],
+   [
+    "normal",
+    238
+   ],
+   [
+    "-0.26px",
+    168
+   ],
+   [
+    "-0.28px",
+    162
+   ],
+   [
+    "-0.12px",
+    144
+   ],
+   [
+    "-0.528px",
+    110
+   ],
+   [
+    "-0.13px",
+    76
+   ],
+   [
+    "-0.195px",
+    76
+   ],
+   [
+    "-0.21px",
+    38
+   ],
+   [
+    "-0.48px",
+    30
+   ],
+   [
+    "-0.24px",
+    28
+   ],
+   [
+    "-0.14px",
+    18
+   ],
+   [
+    "-0.27px",
+    14
+   ],
+   [
+    "-0.72px",
+    12
+   ],
+   [
+    "-0.18px",
+    12
+   ],
+   [
+    "-0.36px",
+    8
+   ],
+   [
+    "-0.84px",
+    8
+   ],
+   [
+    "-0.6px",
+    8
+   ],
+   [
+    "0.72px",
+    6
+   ],
+   [
+    "0.12px",
+    4
+   ],
+   [
+    "-0.264px",
+    4
+   ],
+   [
+    "-0.35px",
+    2
+   ],
+   [
+    "0.26px",
+    2
+   ]
+  ],
+  "color": [
+   [
+    "rgb(127, 127, 127)",
+    368
+   ],
+   [
+    "rgb(149, 150, 152)",
+    356
+   ],
+   [
+    "rgb(41, 41, 41)",
+    351
+   ],
+   [
+    "rgb(243, 243, 245)",
+    339
+   ],
+   [
+    "rgb(93, 93, 93)",
+    202
+   ],
+   [
+    "rgb(203, 204, 205)",
+    192
+   ],
+   [
+    "rgb(255, 255, 255)",
+    81
+   ],
+   [
+    "rgb(116, 195, 153)",
+    19
+   ],
+   [
+    "rgb(37, 117, 75)",
+    19
+   ],
+   [
+    "oklch(0.705 0.015 286.067)",
+    19
+   ],
+   [
+    "rgb(226, 180, 103)",
+    13
+   ],
+   [
+    "rgb(152, 96, 20)",
+    13
+   ],
+   [
+    "oklab(0.672905 -0.000269204 -0.00312036 / 0.88)",
+    12
+   ],
+   [
+    "oklab(0.596486 0.0000272393 0.0000119507 / 0.88)",
+    12
+   ],
+   [
+    "oklch(0.442 0.017 285.786)",
+    12
+   ],
+   [
+    "rgb(161, 161, 161)",
+    12
+   ],
+   [
+    "rgb(237, 237, 237)",
+    12
+   ],
+   [
+    "oklch(0.552 0.016 285.938)",
+    9
+   ],
+   [
+    "oklch(0.21 0.006 285.885)",
+    7
+   ],
+   [
+    "rgb(181, 181, 181)",
+    7
+   ],
+   [
+    "rgb(136, 179, 239)",
+    6
+   ],
+   [
+    "rgb(53, 112, 196)",
+    6
+   ],
+   [
+    "rgb(87, 87, 89)",
+    5
+   ],
+   [
+    "rgb(166, 166, 166)",
+    5
+   ],
+   [
+    "oklch(0.924 0.12 95.746)",
+    4
+   ],
+   [
+    "oklch(0.414 0.112 45.904)",
+    4
+   ],
+   [
+    "oklab(0.999994 0.0000455677 0.0000200868 / 0.7)",
+    3
+   ],
+   [
+    "rgb(236, 146, 136)",
+    2
+   ],
+   [
+    "rgb(23, 23, 25)",
+    2
+   ],
+   [
+    "rgb(178, 60, 48)",
+    2
+   ]
+  ]
+ },
+ "bg": [
+  [
+   "('light', 'rgb(255, 255, 255)')",
+   193
+  ],
+  [
+   "('dark', 'rgb(23, 23, 25)')",
+   187
+  ],
+  [
+   "('light', 'rgb(250, 250, 250)')",
+   75
+  ],
+  [
+   "('dark', 'rgb(17, 18, 20)')",
+   74
+  ],
+  [
+   "('dark', 'rgb(59, 31, 229)')",
+   52
+  ],
+  [
+   "('light', 'rgb(25, 25, 25)')",
+   52
+  ],
+  [
+   "('dark', 'color(srgb 0.952941 0.952941 0.960784 / 0.05)')",
+   45
+  ],
+  [
+   "('light', 'color(srgb 0.160784 0.160784 0.160784 / 0.05)')",
+   45
+  ],
+  [
+   "('light', 'rgb(237, 237, 238)')",
+   32
+  ],
+  [
+   "('dark', 'rgb(12, 13, 15)')",
+   30
+  ],
+  [
+   "('dark', 'rgba(255, 255, 255, 0.05)')",
+   17
+  ],
+  [
+   "('light', 'rgb(12, 13, 15)')",
+   15
+  ],
+  [
+   "('dark', 'oklab(0.672905 -0.000269204 -0.00312036 / 0.12)')",
+   12
+  ],
+  [
+   "('light', 'oklab(0.596486 0.0000272393 0.0000119507 / 0.12)')",
+   12
+  ],
+  [
+   "('dark', 'oklab(0.754497 -0.0934127 0.0349042 / 0.12)')",
+   8
+  ],
+  [
+   "('dark', 'rgb(136, 179, 239)')",
+   8
+  ],
+  [
+   "('light', 'oklab(0.502593 -0.0938861 0.0410431 / 0.12)')",
+   8
+  ],
+  [
+   "('light', 'rgb(53, 112, 196)')",
+   8
+  ],
+  [
+   "('dark', 'rgba(255, 255, 255, 0.08)')",
+   7
+  ],
+  [
+   "('dark', 'color(srgb 0.145922 0.133294 0.119451)')",
+   7
+  ],
+  [
+   "('dark', 'oklab(0.964711 0.000791132 -0.00252795 / 0.05)')",
+   7
+  ],
+  [
+   "('light', 'rgb(127, 127, 127)')",
+   7
+  ],
+  [
+   "('light', 'rgba(0, 0, 0, 0.06)')",
+   7
+  ],
+  [
+   "('light', 'color(srgb 0.971726 0.956353 0.93549)')",
+   7
+  ],
+  [
+   "('light', 'oklab(0.280938 0.000012815 0.00000563264 / 0.05)')",
+   7
+  ],
+  [
+   "('light', 'rgb(245, 245, 245)')",
+   7
+  ],
+  [
+   "('dark', 'rgb(149, 150, 152)')",
+   6
+  ],
+  [
+   "('dark', 'color(srgb 0.115725 0.137412 0.133176)')",
+   6
+  ],
+  [
+   "('light', 'color(srgb 0.940157 0.962118 0.950588)')",
+   6
+  ],
+  [
+   "('light', 'oklab(0.985 0 0 / 0.5)')",
+   6
+  ],
+  [
+   "('dark', 'oklab(0.999994 0.0000455678 0.0000200868 / 0.00999999)')",
+   5
+  ],
+  [
+   "('dark', 'color(srgb 0.952941 0.952941 0.960784 / 0.06)')",
+   5
+  ],
+  [
+   "('light', 'color(srgb 0.160784 0.160784 0.160784 / 0.06)')",
+   5
+  ],
+  [
+   "('dark', 'oklch(0.623 0.214 259.815)')",
+   4
+  ],
+  [
+   "('dark', 'color(srgb 0.121216 0.13302 0.156784)')",
+   4
+  ],
+  [
+   "('light', 'oklch(0.623 0.214 259.815)')",
+   4
+  ],
+  [
+   "('light', 'color(srgb 0.944549 0.960745 0.983804)')",
+   4
+  ],
+  [
+   "('dark', 'rgb(37, 37, 37)')",
+   4
+  ],
+  [
+   "('dark', 'rgb(35, 36, 38)')",
+   3
+  ],
+  [
+   "('dark', 'oklch(0.769 0.188 70.08)')",
+   3
+  ]
+ ],
+ "border": [
+  [
+   "('light', '1px rgb(230, 230, 232)')",
+   416
+  ],
+  [
+   "('dark', '1px rgb(35, 36, 38)')",
+   284
+  ],
+  [
+   "('dark', '1px color(srgb 0.952941 0.952941 0.960784 / 0.08)')",
+   180
+  ],
+  [
+   "('light', '1px color(srgb 0.160784 0.160784 0.160784 / 0.08)')",
+   180
+  ],
+  [
+   "('dark', '1px rgba(0, 0, 0, 0)')",
+   105
+  ],
+  [
+   "('light', '1px rgba(0, 0, 0, 0)')",
+   105
+  ],
+  [
+   "('dark', '1px rgba(255, 255, 255, 0.1)')",
+   80
+  ],
+  [
+   "('dark', '1px rgba(255, 255, 255, 0.08)')",
+   68
+  ],
+  [
+   "('dark', '1px oklab(0.999994 0.0000455678 0.0000200868 / 0.12)')",
+   64
+  ],
+  [
+   "('light', '1px oklab(0.262 -0.0505697 0.00661093 / 0.05)')",
+   64
+  ],
+  [
+   "('dark', '1px rgb(59, 31, 229)')",
+   56
+  ],
+  [
+   "('light', '1px rgb(25, 25, 25)')",
+   56
+  ],
+  [
+   "('light', '1px rgb(242, 242, 242)')",
+   33
+  ],
+  [
+   "('dark', '1px oklab(0.999994 0.0000455678 0.0000200868 / 0.05)')",
+   25
+  ],
+  [
+   "('light', '1px rgba(9, 9, 11, 0.05)')",
+   24
+  ],
+  [
+   "('light', '1px oklch(0.967 0.001 286.375)')",
+   23
+  ],
+  [
+   "('dark', '1px oklab(0.999994 0.0000455678 0.0000200868 / 0.1)')",
+   20
+  ],
+  [
+   "('dark', '1px rgba(255, 255, 255, 0.16)')",
+   20
+  ],
+  [
+   "('dark', '1px rgb(48, 48, 48)')",
+   17
+  ],
+  [
+   "('dark', '1px oklab(0.964711 0.000791133 -0.00252795 / 0.09)')",
+   12
+  ],
+  [
+   "('light', '1px oklab(0.280938 0.000012815 0.00000563264 / 0.09)')",
+   12
+  ],
+  [
+   "('light', '1px oklch(0.92 0.004 286.32)')",
+   12
+  ],
+  [
+   "('dark', '1px color(srgb 0.952941 0.952941 0.960784 / 0.3)')",
+   8
+  ],
+  [
+   "('light', '1px color(srgb 0.160784 0.160784 0.160784 / 0.3)')",
+   8
+  ],
+  [
+   "('light', '1px oklab(0.92 0.00112401 -0.00383883 / 0.8)')",
+   6
+  ],
+  [
+   "('dark', '1px oklab(0.260077 -0.000372097 -0.00398037 / 0.6)')",
+   4
+  ],
+  [
+   "('light', '1px oklab(0.925504 0.000797033 -0.00255537 / 0.6)')",
+   4
+  ],
+  [
+   "('dark', '1px oklab(0.946099 0.0000428557 0.0000189543 / 0.14)')",
+   4
+  ],
+  [
+   "('light', '1px oklab(0.280938 0.000012815 0.00000563264 / 0.14)')",
+   4
+  ],
+  [
+   "('dark', '1px oklch(0.260077 0.00399772 none / 0.78)')",
+   4
+  ],
+  [
+   "('light', '1px oklch(0.925504 0.00267679 none / 0.78)')",
+   4
+  ],
+  [
+   "('dark', '1px oklab(0.260077 -0.000372097 -0.00398037 / 0.7)')",
+   3
+  ],
+  [
+   "('light', '1px oklab(0.925504 0.000797033 -0.00255537 / 0.7)')",
+   3
+  ],
+  [
+   "('dark', '1px oklab(0.260077 -0.000372097 -0.00398037 / 0.78)')",
+   2
+  ],
+  [
+   "('light', '1px oklab(0.925504 0.000797033 -0.00255537 / 0.78)')",
+   2
+  ],
+  [
+   "('dark', '1px oklab(0.999994 0.0000455678 0.0000200868 / 0.2)')",
+   1
+  ],
+  [
+   "('dark', '1px oklab(0.964711 0.000791132 -0.00252795 / 0.1)')",
+   1
+  ],
+  [
+   "('light', '1px oklab(0.999994 0.0000455678 0.0000200868 / 0.2)')",
+   1
+  ],
+  [
+   "('light', '1px oklab(0.280938 0.000012815 0.00000563264 / 0.1)')",
+   1
+  ],
+  [
+   "('dark', '1px rgb(28, 28, 30)')",
+   1
+  ]
+ ],
+ "offs": {
+  "radius": [
+   {
+    "value": 9.0,
+    "path": "div.settings-page-layout > nav.settings-page-nav > div.settings-nav-group > button.settings-nav-item",
+    "count": 20,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "html.dark > body > div",
+    "count": 15,
+    "views": [
+     "agenda-dark",
+     "aide-dark",
+     "clinique-dark",
+     "dashboard-dark",
+     "equipe-dark",
+     "finances-dark",
+     "finances_analytics-dark",
+     "flux-dark",
+     "notes-dark",
+     "parametres-dark",
+     "patient_detail-dark",
+     "patients-dark",
+     "soins-dark",
+     "stock-dark",
+     "taches-dark"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "html.light > body > div",
+    "count": 15,
+    "views": [
+     "agenda-light",
+     "aide-light",
+     "clinique-light",
+     "dashboard-light",
+     "equipe-light",
+     "finances-light",
+     "finances_analytics-light",
+     "flux-light",
+     "notes-light",
+     "parametres-light",
+     "patient_detail-light",
+     "patients-light",
+     "soins-light",
+     "stock-light",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.heatBody > div.heatSide > div.heatLegend > i.heatCell",
+    "count": 10,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 16.0,
+    "path": "div.flow-board-page.dashboard-stage.w-full > div.flow-board > div.flow-lanes > section.flow-lane",
+    "count": 10,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "div.space-y-6 > div.mt-8 > div.grid.grid-cols-1.gap-4 > div.rounded-xl.border.border-zinc-100",
+    "count": 8,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 2.0,
+    "path": "span.kpiValueRow > span.kpiKinds > span.kpiKindsBar > i",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "div.agenda-appointment-list.min-w-0.px-5 > ol.agenda-appt-list > li > div.agenda-appointment-row.agenda-appt-card.group",
+    "count": 6,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 5.0,
+    "path": "div.weekDay > div.dayUnits > div.unitGrid > span[data-slot=tooltip-trigger].unit",
+    "count": 6,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "ul.widgetRows > li > span.widgetRowMark > i.unit",
+    "count": 6,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "div[data-slot=card].group/card.text-card-foreground.text-sm > div[data-slot=card-content].flex-1.overflow-auto.p-4 > div.grid.grid-cols-1.gap-4 > div.group.relative.flex",
+    "count": 6,
+    "views": [
+     "equipe-dark",
+     "equipe-light"
+    ]
+   },
+   {
+    "value": 6.4,
+    "path": "div.min-w-0.rounded-body.bg-surface > div.mb-4.flex.flex-wrap > div.flex.items-center.gap-3 > button.inline-flex.min-h-11.items-center",
+    "count": 4,
+    "views": [
+     "clinique-dark",
+     "clinique-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": 6.4,
+    "path": "section.mb-1 > div.ml-4.space-y-0.5.border-border > div.group.flex.w-full > button.flex.min-h-11.min-w-0",
+    "count": 4,
+    "views": [
+     "notes-dark",
+     "notes-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "section.settings-page-main > div.settings-content > div.settings-section-stack > section.settings-panel",
+    "count": 4,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "div.agenda-workspace.dashboard-stage.flex > div.grid.gap-6 > div[data-slot=card].group/card.flex.flex-col > div[data-slot=card-header].group/card-header.@container/card-header.grid",
+    "count": 2,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "div.grid.gap-6 > aside.grid.min-w-0.gap-6 > div[data-slot=card].group/card.flex.flex-col > div[data-slot=card-header].group/card-header.@container/card-header.grid",
+    "count": 2,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 14.4,
+    "path": "div[data-slot=shell-scroll-panel].!border-b-0.relative.z-10 > div[data-slot=shell-view-content].flex.min-h-0.flex-1 > div.app-view-enter.min-h-0.min-w-0 > div.mx-auto.flex.h-[calc(100svh-88px)]",
+    "count": 2,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "main.mx-auto.max-w-3xl.px-6 > div.fade-in.slide-in-from-bottom-4.animate-in > div.flex.items-start.gap-5 > div.flex.size-12.shrink-0",
+    "count": 2,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "div.fade-in.slide-in-from-bottom-4.animate-in > div.prose.prose-zinc.prose-sm > div.space-y-6 > div.mt-8.rounded-xl.border",
+    "count": 2,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.dashboard-stage.flex.w-full > div[data-slot=card].group/card.text-card-foreground.text-sm > div[data-slot=card-header].group/card-header.@container/card-header.grid",
+    "count": 2,
+    "views": [
+     "equipe-dark",
+     "equipe-light"
+    ]
+   },
+   {
+    "value": 11.2,
+    "path": "div[data-slot=tabs].group/tabs.flex.gap-2 > div[data-slot=tabs-content].flex-1.text-sm.outline-none > div[data-slot=card].group/card.flex.flex-col > div[data-slot=card-header].group/card-header.@container/card-header.grid",
+    "count": 2,
+    "views": [
+     "finances-dark",
+     "finances-light"
+    ]
+   },
+   {
+    "value": 16.0,
+    "path": "div[data-slot=tabs-content].flex-1.text-sm.outline-none > div[data-slot=card].group/card.flex.flex-col > div[data-slot=card-content].p-0 > div[data-slot=empty].flex.w-full.min-w-0",
+    "count": 2,
+    "views": [
+     "finances-dark",
+     "finances-light"
+    ]
+   },
+   {
+    "value": 16.0,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.flow-board-page.dashboard-stage.w-full > div.flow-board > section.flow-planned",
+    "count": 2,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 9.0,
+    "path": "div.settings-page-layout > nav.settings-page-nav > div.settings-nav-group > button.settings-nav-item.settings-nav-item-active",
+    "count": 2,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 16.0,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.reminders-page.dashboard-stage.flex > section.space-y-4 > div.clinical-subtle-surface.flex.min-h-56",
+    "count": 2,
+    "views": [
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 14.4,
+    "path": "div.reminders-page.dashboard-stage.flex > section.space-y-4 > div.clinical-subtle-surface.flex.min-h-56 > div.flex.size-12.items-center",
+    "count": 2,
+    "views": [
+     "taches-dark",
+     "taches-light"
+    ]
+   }
+  ],
+  "padding": [
+   {
+    "value": 14.0,
+    "path": "table[data-slot=table].w-full.caption-bottom.text-sm > tbody[data-slot=table-body] > tr[data-slot=table-row].border-b.border-border/60.transition-colors > td[data-slot=table-cell].whitespace-nowrap.px-4.py-3.5",
+    "count": 120,
+    "views": [
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.flow-board-page.dashboard-stage.w-full > div.flow-board > div.flow-lanes > section.flow-lane",
+    "count": 40,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "table[data-slot=table].w-full.caption-bottom.text-sm > tbody[data-slot=table-body] > tr[data-slot=table-row].border-b.border-border/60.transition-colors > td[data-slot=table-cell].px-4.py-3.5.align-middle",
+    "count": 40,
+    "views": [
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "div.premium-overview-shell.flex.flex-col > div.card.frame > div.tiles > button.tile",
+    "count": 32,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "table[data-slot=table].w-full.caption-bottom.text-sm > thead[data-slot=table-header].bg-[#edf3ef] > tr[data-slot=table-row].border-b.transition-colors.border-[#dce7df] > th[data-slot=table-head].h-11.whitespace-nowrap.px-4",
+    "count": 32,
+    "views": [
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "main[data-slot=sidebar-inset].relative.flex.min-w-0 > div[data-slot=shell-scroll-panel].!border-b-0.relative.z-10 > header[data-slot=app-header].sticky.top-0.z-40 > div.shell-toolbar.relative.flex",
+    "count": 30,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "aide-dark",
+     "aide-light",
+     "clinique-dark",
+     "clinique-light",
+     "dashboard-dark",
+     "dashboard-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "finances_analytics-dark",
+     "finances_analytics-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "parametres-dark",
+     "parametres-light",
+     "patient_detail-dark",
+     "patient_detail-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "section.medical-register > div.medical-tabs-frame > div.medical-tabs > button.group.cursor-pointer.transition",
+    "count": 28,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "div.dashboard-stage.flex.w-full > section.section-atlas > div.kpis.frame.section-atlas-grid > div.kpi.section-atlas-card.group",
+    "count": 24,
+    "views": [
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": 7.0,
+    "path": "div.flow-lanes > section.flow-lane > header.flow-lane-head > span.flow-count",
+    "count": 20,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "div.flow-board > div.flow-lanes > section.flow-lane > p.flow-lane-empty",
+    "count": 20,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.flow-board > div.flow-lanes > section.flow-lane > p.flow-lane-empty",
+    "count": 20,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 18.0,
+    "path": "div.agenda-appointment-list.min-w-0.px-5 > ol.agenda-appt-list > li > div.agenda-appointment-row.agenda-appt-card.group",
+    "count": 18,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div[data-slot=tabs].group/tabs.flex.clinical-workspace > section.care-page.dashboard-stage.min-w-0 > div.care-toolbar.flex.flex-wrap > div.flex.flex-wrap.gap-1",
+    "count": 16,
+    "views": [
+     "clinique-dark",
+     "clinique-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "section.care-page.dashboard-stage.min-w-0 > div.care-toolbar.flex.flex-wrap > div.care-toolbar-controls.flex.flex-wrap > div.flex",
+    "count": 16,
+    "views": [
+     "clinique-dark",
+     "clinique-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.focusChart > div.focusHead > div.focusControls > div.focusTabs",
+    "count": 16,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 18.0,
+    "path": "div.premium-overview-shell.flex.flex-col > div.card.frame > div.tiles > button.tile",
+    "count": 16,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 9.0,
+    "path": "div.agenda-appt-main > div.agenda-appt-title-row > span.agenda-appt-badges > span[data-slot=badge].group/badge.inline-flex.h-5",
+    "count": 12,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "section.care-page.dashboard-stage.min-w-0 > section.section-atlas.care-summary > div.kpis.frame.section-atlas-grid > div.kpi.section-atlas-card.group",
+    "count": 12,
+    "views": [
+     "clinique-dark",
+     "clinique-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "div.card.frame.weekCard > div.cardFlush > dl.facts > div",
+    "count": 12,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.grid.grid-cols-1.gap-4 > div.group.relative.flex > div.flex > span[data-slot=badge].group/badge.inline-flex.h-5",
+    "count": 12,
+    "views": [
+     "equipe-dark",
+     "equipe-light"
+    ]
+   },
+   {
+    "value": 9.0,
+    "path": "div.grid.grid-cols-1.gap-4 > div.group.relative.flex > div.flex > span[data-slot=badge].group/badge.inline-flex.h-5",
+    "count": 12,
+    "views": [
+     "equipe-dark",
+     "equipe-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.grid.grid-cols-1.gap-4 > div.group.relative.flex > div.absolute.right-5.bottom-5 > span[data-slot=badge].group/badge.inline-flex.h-5",
+    "count": 12,
+    "views": [
+     "equipe-dark",
+     "equipe-light"
+    ]
+   },
+   {
+    "value": 9.0,
+    "path": "div.grid.grid-cols-1.gap-4 > div.group.relative.flex > div.absolute.right-5.bottom-5 > span[data-slot=badge].group/badge.inline-flex.h-5",
+    "count": 12,
+    "views": [
+     "equipe-dark",
+     "equipe-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div[data-slot=card-content].flex.min-h-0.flex-1 > div.flex.flex-wrap.items-center > button[data-slot=dropdown-menu-trigger].group/button.rounded-lg.inline-flex > span.shrink-0.border-r.border-border",
+    "count": 12,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div[data-slot=card-content].flex.min-h-0.flex-1 > div.flex.flex-wrap.items-center > button[data-slot=dropdown-menu-trigger].group/button.rounded-lg.inline-flex > span.flex.min-w-0.items-center",
+    "count": 12,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "div.agenda-workspace.dashboard-stage.flex > section.section-atlas > div.kpis.frame.section-atlas-grid > div.kpi.section-atlas-card.group",
+    "count": 8,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div[data-slot=tabs].group/tabs.flex.min-w-0 > div.agenda-day-toolbar.flex.flex-col > div.flex.flex-wrap.items-center > div[data-slot=tabs-list].group/tabs-list.inline-flex.w-fit",
+    "count": 8,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.agenda-day-toolbar.flex.flex-col > div.flex.flex-wrap.items-center > div[data-slot=tabs].group/tabs.flex.gap-2 > div[data-slot=tabs-list].group/tabs-list.inline-flex.w-fit",
+    "count": 8,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.dashboard-stage.flex.w-full > div.premium-overview-shell.flex.flex-col > div.filters > div.filter-segments",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "div.dashboard-stage.flex.w-full > div.premium-overview-shell.flex.flex-col > div.kpis.frame > button.kpi",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.pairRow > div.card.frame.heatCard > div.cardHead > div.heatPeriods",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.weekDay > ul.dayList > li > button.dayRow",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "ul.dayList > li > button.dayRow > span[data-slot=badge].group/badge.inline-flex.h-5",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 9.0,
+    "path": "ul.dayList > li > button.dayRow > span[data-slot=badge].group/badge.inline-flex.h-5",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 22.0,
+    "path": "div.watchGrid > section.card.frame.watchCard > div.cardFlush > p.watchEmpty",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.cardFlush > ul.watchList > li > button.watchRow",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.dashboard-stage.flex.w-full > div[data-slot=tabs].group/tabs.flex.gap-2 > div.finance-register-heading.flex.flex-wrap > div[data-slot=tabs-list].group/tabs-list.inline-flex.w-fit",
+    "count": 8,
+    "views": [
+     "finances-dark",
+     "finances-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.finance-analysis-panels > section.finance-overview.board-frame > div.finance-overview-head > div.finance-overview-periods",
+    "count": 8,
+    "views": [
+     "finances_analytics-dark",
+     "finances_analytics-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.flow-toolbar > div.flow-toolbar-controls > div.flow-density > button",
+    "count": 8,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.flow-board-page.dashboard-stage.w-full > div.flow-board > section.flow-planned",
+    "count": 8,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   }
+  ],
+  "gap": [
+   {
+    "value": 10.0,
+    "path": "div[data-slot=shell-scroll-panel].!border-b-0.relative.z-10 > header[data-slot=app-header].sticky.top-0.z-40 > div.shell-toolbar.relative.flex > div.shell-toolbar-leading.flex.min-w-0",
+    "count": 60,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "aide-dark",
+     "aide-light",
+     "clinique-dark",
+     "clinique-light",
+     "dashboard-dark",
+     "dashboard-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "finances_analytics-dark",
+     "finances_analytics-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "parametres-dark",
+     "parametres-light",
+     "patient_detail-dark",
+     "patient_detail-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "div[data-slot=page-header].page-header.flex.flex-col > div.min-w-0 > div.premium-page-head.min-w-0 > div.premium-page-head-main.flex.min-w-0",
+    "count": 52,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "clinique-dark",
+     "clinique-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "finances_analytics-dark",
+     "finances_analytics-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "parametres-dark",
+     "parametres-light",
+     "patient_detail-dark",
+     "patient_detail-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.card.frame > div.tiles > button.tile > div.tileText",
+    "count": 32,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 18.0,
+    "path": "div.agenda-appointment-list.min-w-0.px-5 > ol.agenda-appt-list > li > div.agenda-appointment-row.agenda-appt-card.group",
+    "count": 12,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.grid.gap-2.5 > ul.grid.gap-1.5 > li.agenda-load-legend > span.flex.items-center.gap-2.5",
+    "count": 12,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 5.0,
+    "path": "div.cardFlush > dl.facts > div > dd.factNote",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "section.mb-1 > div.ml-4.space-y-0.5.border-border > div.group.flex.w-full > button.flex.min-h-11.min-w-0",
+    "count": 8,
+    "views": [
+     "notes-dark",
+     "notes-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "section.medical-kpi-strip > article.medical-kpi.group > div.medical-kpi-heading > div.flex.items-center.gap-2.5",
+    "count": 8,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "li > div.agenda-appointment-row.agenda-appt-card.group > div.agenda-appt-main > div.agenda-appt-meta",
+    "count": 6,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div[data-slot=card-content].flex.min-h-0.flex-1 > div[data-slot=tabs].group/tabs.flex.min-w-0 > div.agenda-appointment-list.min-w-0.px-5 > ol.agenda-appt-list",
+    "count": 4,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "aside.grid.min-w-0.gap-6 > div[data-slot=card].group/card.flex.flex-col > div[data-slot=card-content].grid.gap-5.px-5 > div.grid.gap-2.5",
+    "count": 4,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div[data-slot=card].group/card.flex.flex-col > div[data-slot=card-content].grid.gap-5.px-5 > div.grid.gap-2.5 > div.agenda-load-bar",
+    "count": 4,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 5.0,
+    "path": "div.premium-overview-shell.flex.flex-col > section.hero.frame > div.heroMain > div.next",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.premium-overview-shell.flex.flex-col > section.hero.frame > div.heroBand > div.heroActions",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 7.0,
+    "path": "section.hero.frame > div.heroBand > div.heroActions > button[data-slot=tooltip-trigger].btn.btnPrimary",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 7.0,
+    "path": "section.hero.frame > div.heroBand > div.heroActions > button.btn.btnSecondary",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "div.pairRow > div.card.frame.heatCard > div.heatBody > div.heatSide",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 5.0,
+    "path": "div.cardFlush > dl.facts > div > dd.factEmpty",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 5.0,
+    "path": "div.cardFlush > dl.facts > div > dd",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 5.0,
+    "path": "div.cardFlush > div.weekDay > div.dayUnits > div.unitGrid",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 28.0,
+    "path": "div[data-slot=shell-scroll-panel].!border-b-0.relative.z-10 > div[data-slot=shell-view-content].flex.min-h-0.flex-1 > div.app-view-enter.min-h-0.min-w-0 > div.finance-analysis",
+    "count": 4,
+    "views": [
+     "finances_analytics-dark",
+     "finances_analytics-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.flow-board-page.dashboard-stage.w-full > div.flow-board > div.flow-lanes",
+    "count": 4,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 26.0,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.settings-page > div.settings-page-layout > nav.settings-page-nav",
+    "count": 4,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 18.0,
+    "path": "div.settings-content > div.settings-section-stack > section.settings-panel > div.settings-profile-identity",
+    "count": 4,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 18.0,
+    "path": "div.dashboard-stage.flex.w-full > div.premium-overview-shell.flex.flex-col > section.hero.frame > div.heroBand",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 14.0,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.flow-board-page.dashboard-stage.w-full > div.flow-toolbar > p.flow-toolbar-summary",
+    "count": 2,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.patient-record-page.dashboard-stage.flex > div.mx-auto.w-full.max-w-7xl > section.medical-safety",
+    "count": 2,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "section.patient-timeline-month > ol.patient-timeline-list > li.patient-timeline-event > div.patient-timeline-when",
+    "count": 2,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   }
+  ],
+  "font": [
+   {
+    "value": 15.0,
+    "path": "div.shell-toolbar.relative.flex > button[data-slot=tooltip-trigger].shell-account-trigger > div.flex.shrink-0.select-none > span.leading-none",
+    "count": 30,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "aide-dark",
+     "aide-light",
+     "clinique-dark",
+     "clinique-light",
+     "dashboard-dark",
+     "dashboard-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "finances_analytics-dark",
+     "finances_analytics-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "parametres-dark",
+     "parametres-light",
+     "patient_detail-dark",
+     "patient_detail-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 20.0,
+    "path": "section.settings-panel > details.settings-avatar-picker > div.mt-4.flex.flex-wrap > button.settings-avatar-choice",
+    "count": 20,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 36.0,
+    "path": "section.settings-panel > div.settings-profile-identity > div.flex.shrink-0.select-none > span.leading-none",
+    "count": 2,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   }
+  ],
+  "margin": [
+   {
+    "value": 0.5,
+    "path": "div.min-w-0 > div.premium-page-head.min-w-0 > div.premium-page-head-main.flex.min-w-0 > div.premium-page-icon.page-header-icon.grid",
+    "count": 18,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "finances_analytics-dark",
+     "finances_analytics-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "patients-dark",
+     "patients-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "li > div.agenda-appointment-row.agenda-appt-card.group > div.agenda-appt-main > div.agenda-appt-meta",
+    "count": 6,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 19.5,
+    "path": "div.min-w-0 > div.premium-page-head.min-w-0 > div.premium-page-head-main.flex.min-w-0 > div.premium-page-icon.page-header-icon.grid",
+    "count": 6,
+    "views": [
+     "clinique-dark",
+     "clinique-light",
+     "parametres-dark",
+     "parametres-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "section.finance-analysis-categories.board-frame > ul.finance-analysis-category-list > li > div.finance-analysis-category-detail",
+    "count": 6,
+    "views": [
+     "finances_analytics-dark",
+     "finances_analytics-light"
+    ]
+   },
+   {
+    "value": 63.0,
+    "path": "div.mx-auto.flex.h-[calc(100svh-88px)] > div[data-slot=scroll-area].relative.h-full.min-w-0 > div[data-slot=scroll-area-viewport].size-full.rounded-[inherit].outline-none > main.mx-auto.max-w-3xl.px-6",
+    "count": 4,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "section.hero.frame > div.heroMain > div > p.kicker",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "section.hero.frame > div.heroMain > div > p.heroNote",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.kpis.frame > button.kpi > span.kpiValueRow > svg",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 3.0,
+    "path": "div.kpis.frame > button.kpi > span.kpiValueRow > span.kpiKinds",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 10.0,
+    "path": "div.cardFlush > dl.facts > div > dd.factEmpty",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 53.59,
+    "path": "div.pairRow > div.card.frame.weekCard > div.cardFlush > div.widgetFooter",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 52.98,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > div.documents-workspace.dashboard-stage.flex > div[data-slot=page-header].page-header.flex.flex-col > div[data-slot=page-header-actions].page-header-actions.flex.shrink-0",
+    "count": 2,
+    "views": [
+     "notes-dark",
+     "notes-light"
+    ]
+   },
+   {
+    "value": 28.0,
+    "path": "div.min-h-0.flex-1.overflow-y-auto > div.mx-auto.flex.min-h-[440px] > div.flex.flex-1.flex-col > div.mt-7.flex.flex-wrap",
+    "count": 2,
+    "views": [
+     "notes-dark",
+     "notes-light"
+    ]
+   },
+   {
+    "value": 28.0,
+    "path": "div.settings-page > div.settings-page-layout > section.settings-page-main > div.settings-content-heading",
+    "count": 2,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 5.0,
+    "path": "div.settings-page-layout > section.settings-page-main > div.settings-content-heading > p",
+    "count": 2,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": 9.0,
+    "path": "button.patient-context-card.group > span.patient-context-heading.flex.items-center > span.size-7.rounded-md.flex > svg",
+    "count": 2,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": 9.0,
+    "path": "button[data-slot=popover-trigger].patient-context-card.group > span.patient-context-heading.flex.items-center > span.size-7.rounded-md.flex > svg",
+    "count": 2,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": -4.8,
+    "path": "div.quick-reminder-type.flex.min-w-40 > div > div[data-slot=input-group].group/input-group.relative.flex > div[data-slot=input-group-addon].flex.h-auto.cursor-text",
+    "count": 2,
+    "views": [
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 10.52,
+    "path": "div.reminders-page.dashboard-stage.flex > section.space-y-4 > div.reminders-filter-bar.flex.flex-wrap > div.ml-auto.flex.flex-wrap",
+    "count": 2,
+    "views": [
+     "taches-dark",
+     "taches-light"
+    ]
+   }
+  ],
+  "lh_frac": [
+   {
+    "value": "13.0/20.15",
+    "path": "div.p-3 > div.agenda-month-grid.grid.grid-cols-7 > button.agenda-month-day.relative.flex > span.agenda-month-day-number.grid.size-7",
+    "count": 60,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": "13.0/20.15",
+    "path": "div.kpi.section-atlas-card.group > span.kpiHead > span > span",
+    "count": 44,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "clinique-dark",
+     "clinique-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": "12.0/16.8",
+    "path": "div.kpis.frame.section-atlas-grid > div.kpi.section-atlas-card.group > span.kpiSub > span.kpiDetailRow.section-atlas-context",
+    "count": 38,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "clinique-dark",
+     "clinique-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": "24.0/28.8",
+    "path": "div > div[data-slot=sidebar-wrapper].group/sidebar-wrapper.flex.min-h-svh > div[data-slot=dialog-header].flex.flex-col.gap-2 > h2[data-slot=dialog-title].font-heading.font-medium.t-24",
+    "count": 30,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "aide-dark",
+     "aide-light",
+     "clinique-dark",
+     "clinique-light",
+     "dashboard-dark",
+     "dashboard-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "finances_analytics-dark",
+     "finances_analytics-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "parametres-dark",
+     "parametres-light",
+     "patient_detail-dark",
+     "patient_detail-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": "13.0/18.85",
+    "path": "div > div[data-slot=sidebar-wrapper].group/sidebar-wrapper.flex.min-h-svh > div[data-slot=dialog-header].flex.flex-col.gap-2 > p[data-slot=dialog-description].text-muted-foreground.text-sm",
+    "count": 30,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "aide-dark",
+     "aide-light",
+     "clinique-dark",
+     "clinique-light",
+     "dashboard-dark",
+     "dashboard-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "finances_analytics-dark",
+     "finances_analytics-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "parametres-dark",
+     "parametres-light",
+     "patient_detail-dark",
+     "patient_detail-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": "13.0/18.57",
+    "path": "table[data-slot=table].w-full.caption-bottom.text-sm > tbody[data-slot=table-body] > tr[data-slot=table-row].border-b.border-border/60.transition-colors > td[data-slot=table-cell].whitespace-nowrap.px-4.py-3.5",
+    "count": 30,
+    "views": [
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": "24.0/28.8",
+    "path": "div.premium-page-head.min-w-0 > div.premium-page-head-main.flex.min-w-0 > div.min-w-0 > h1.premium-page-title.page-header-title.font-heading",
+    "count": 22,
+    "views": [
+     "agenda-dark",
+     "agenda-light",
+     "clinique-dark",
+     "clinique-light",
+     "equipe-dark",
+     "equipe-light",
+     "finances-dark",
+     "finances-light",
+     "flux-dark",
+     "flux-light",
+     "notes-dark",
+     "notes-light",
+     "parametres-dark",
+     "parametres-light",
+     "patients-dark",
+     "patients-light",
+     "soins-dark",
+     "soins-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": "13.0/20.15",
+    "path": "button.kpi.section-atlas-card.group > span.kpiHead > span > span",
+    "count": 20,
+    "views": [
+     "aide-dark",
+     "aide-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": "12.0/16.8",
+    "path": "div.kpis.frame.section-atlas-grid > button.kpi.section-atlas-card.group > span.kpiSub > span.kpiDetailRow.section-atlas-context",
+    "count": 20,
+    "views": [
+     "aide-dark",
+     "aide-light",
+     "stock-dark",
+     "stock-light",
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": "13.0/20.15",
+    "path": "nav.settings-page-nav > div.settings-nav-group > button.settings-nav-item > span",
+    "count": 20,
+    "views": [
+     "parametres-dark",
+     "parametres-light"
+    ]
+   },
+   {
+    "value": "13.0/18.57",
+    "path": "table[data-slot=table].w-full.caption-bottom.text-sm > tbody[data-slot=table-body] > tr[data-slot=table-row].border-b.border-border/60.transition-colors > td[data-slot=table-cell].px-4.py-3.5.align-middle",
+    "count": 20,
+    "views": [
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "footer.flow-footer > p.flex.flex-wrap.items-center > span.flex.items-center.gap-1 > kbd.inline-flex.min-w-5.items-center",
+    "count": 18,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": "14.0/21.7",
+    "path": "div.tiles > button.tile > div.tileText > strong",
+    "count": 16,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": "12.0/17.4",
+    "path": "div.tiles > button.tile > div.tileText > span",
+    "count": 16,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "section.agenda-month-calendar.surface-card.rounded-panel > div.p-3 > div.agenda-month-grid.grid.grid-cols-7 > span.bg-muted/60.px-2.py-1.5",
+    "count": 14,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": "12.0/17.14",
+    "path": "ol.agenda-week-strip > li > button.agenda-week-day > span.agenda-week-count",
+    "count": 14,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": "12.0/17.14",
+    "path": "ol.agenda-week-strip > li > button.agenda-week-day > span.agenda-week-name",
+    "count": 14,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": "12.0/17.14",
+    "path": "div.agenda-appointment-row.agenda-appt-card.group > div.agenda-appt-main > div.agenda-appt-meta > span",
+    "count": 12,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "div[data-slot=scroll-area-viewport].size-full.rounded-[inherit].outline-none > div.space-y-6 > div.space-y-1.5 > h3.mb-2.pl-3.font-semibold",
+    "count": 10,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "div.tiles > button.tile > div.tileTop > span.tileCount",
+    "count": 10,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": "13.0/20.15",
+    "path": "div.flow-lanes > section.flow-lane > header.flow-lane-head > h2",
+    "count": 10,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "div.flow-lanes > section.flow-lane > header.flow-lane-head > span.flow-count",
+    "count": 10,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "div.flow-board > div.flow-lanes > section.flow-lane > p.flow-lane-empty",
+    "count": 10,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "div.flow-board-page.dashboard-stage.w-full > footer.flow-footer > p.flex.flex-wrap.items-center > span.flex.items-center.gap-1",
+    "count": 10,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": "13.0/17.33",
+    "path": "div.flex.flex-wrap.items-center > button[data-slot=dropdown-menu-trigger].group/button.rounded-lg.inline-flex > span.flex.min-w-0.items-center > span.truncate",
+    "count": 10,
+    "views": [
+     "patients-dark",
+     "patients-light",
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": "12.0/17.14",
+    "path": "table.medical-data-table.patients-table.min-w-full > thead > tr > th.sticky.top-0.z-10",
+    "count": 10,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": "13.0/18.57",
+    "path": "td.patients-col-patient.py-4.pr-3 > div.flex.min-w-0.items-center > span.patients-cell-stack.min-w-0 > span.patients-cell-sub.truncate",
+    "count": 10,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": "13.0/18.57",
+    "path": "tr.group.cursor-pointer > td.patients-col-owner.px-3.py-4 > span.patients-cell-stack > span.patients-cell-sub.truncate.tabular-nums",
+    "count": 10,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": "13.0/17.33",
+    "path": "div.flex.items-center.justify-end > span > button[data-slot=tooltip-trigger].group/button.inline-flex.shrink-0 > span.sr-only",
+    "count": 10,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": "13.0/18.57",
+    "path": "tr.group.cursor-pointer > td.patients-col-open.whitespace-nowrap.py-4 > div.flex.items-center.justify-end > button[data-slot=tooltip-trigger].patients-open-link",
+    "count": 10,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": "13.0/18.57",
+    "path": "td.patients-col-open.whitespace-nowrap.py-4 > div.flex.items-center.justify-end > button[data-slot=tooltip-trigger].patients-open-link > span.sr-only",
+    "count": 10,
+    "views": [
+     "patients-dark",
+     "patients-light"
+    ]
+   },
+   {
+    "value": "13.0/18.57",
+    "path": "tr[data-slot=table-row].border-b.border-border/60.transition-colors > td[data-slot=table-cell].whitespace-nowrap.px-4.py-3.5 > div.max-w-[280px] > p.truncate.font-semibold",
+    "count": 10,
+    "views": [
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": "12.0/19.5",
+    "path": "div.mt-8 > div.grid.grid-cols-1.gap-4 > div.rounded-xl.border.border-zinc-100 > p.text-xs.text-zinc-500.leading-relaxed",
+    "count": 8,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": "13.0/20.15",
+    "path": "div.kpis.frame > button.kpi > span.kpiHead > span",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": "12.0/16.8",
+    "path": "div.kpis.frame > button.kpi > span.kpiSub > span.kpiDetailRow",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": "14.0/21.7",
+    "path": "section.card.frame.watchCard > div.cardHead > div > h2.cardTitle.watchTitle",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "div.watchGrid > section.card.frame.watchCard > div.widgetFooter > button.pillAction",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": "13.0/17.33",
+    "path": "div.dashboard-stage.flex.w-full > div[data-slot=page-header].page-header.flex.flex-col > div[data-slot=page-header-actions].page-header-actions.flex.shrink-0 > button[data-slot=button].group/button.rounded-lg.inline-flex",
+    "count": 8,
+    "views": [
+     "finances-dark",
+     "finances-light",
+     "patients-dark",
+     "patients-light",
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": "13.0/18.2",
+    "path": "div.finance-analysis > section.finance-analysis-metrics.board-frame > div.finance-analysis-metric > h2",
+    "count": 8,
+    "views": [
+     "finances_analytics-dark",
+     "finances_analytics-light"
+    ]
+   },
+   {
+    "value": "12.0/18.6",
+    "path": "section.finance-analysis-metrics.board-frame > div.finance-analysis-metric > span.finance-analysis-variation > span",
+    "count": 8,
+    "views": [
+     "finances_analytics-dark",
+     "finances_analytics-light"
+    ]
+   }
+  ],
+  "control_h": [
+   {
+    "value": 84,
+    "path": "section.agenda-month-calendar.surface-card.rounded-panel > div.p-3 > div.agenda-month-grid.grid.grid-cols-7 > button.agenda-month-day.relative.flex",
+    "count": 60,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "section.care-page.dashboard-stage.min-w-0 > div.care-toolbar.flex.flex-wrap > div.flex.flex-wrap.gap-1 > button[data-slot=button].group/button.rounded-lg.inline-flex",
+    "count": 16,
+    "views": [
+     "clinique-dark",
+     "clinique-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": 128.1,
+    "path": "div.premium-overview-shell.flex.flex-col > div.card.frame > div.tiles > button.tile",
+    "count": 16,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 98.3,
+    "path": "div.agenda-load-section.grid.gap-3 > ol.agenda-week-strip > li > button.agenda-week-day",
+    "count": 14,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div.focusHead > div.focusControls > div.focusTabs > button",
+    "count": 12,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div.premium-overview-shell.flex.flex-col > div.filters > div.filter-segments > button.filter",
+    "count": 10,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div.agenda-day-toolbar.flex.flex-col > div.flex.flex-wrap.items-center > div[data-slot=tabs-list].group/tabs-list.inline-flex.w-fit > button[data-slot=tabs-trigger].relative.inline-flex.h-[calc(100%-1px)]",
+    "count": 8,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div.care-toolbar.flex.flex-wrap > div.care-toolbar-controls.flex.flex-wrap > div.flex > button[data-slot=button].group/button.rounded-lg.inline-flex",
+    "count": 8,
+    "views": [
+     "clinique-dark",
+     "clinique-light",
+     "soins-dark",
+     "soins-light"
+    ]
+   },
+   {
+    "value": 191.7,
+    "path": "div.dashboard-stage.flex.w-full > div.premium-overview-shell.flex.flex-col > div.kpis.frame > button.kpi",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div.card.frame.heatCard > div.cardHead > div.heatPeriods > button",
+    "count": 8,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "section.finance-overview.board-frame > div.finance-overview-head > div.finance-overview-periods > button",
+    "count": 8,
+    "views": [
+     "finances_analytics-dark",
+     "finances_analytics-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "aside.flex.min-h-0.shrink-0 > div.shrink-0.border-border.border-b > div[data-slot=toggle-group].group/toggle-group.flex.w-fit > button[data-slot=toggle-group-item].group/toggle.inline-flex.items-center",
+    "count": 8,
+    "views": [
+     "notes-dark",
+     "notes-light"
+    ]
+   },
+   {
+    "value": 167.7,
+    "path": "div.space-y-4 > section.section-atlas > div.kpis.frame.section-atlas-grid > button.kpi.section-atlas-card.group",
+    "count": 8,
+    "views": [
+     "stock-dark",
+     "stock-light"
+    ]
+   },
+   {
+    "value": 150.9,
+    "path": "div.reminders-page.dashboard-stage.flex > section.section-atlas > div.kpis.frame.section-atlas-grid > button.kpi.section-atlas-card.group",
+    "count": 8,
+    "views": [
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div.flex.flex-wrap.items-center > div[data-slot=tabs].group/tabs.flex.gap-2 > div[data-slot=tabs-list].group/tabs-list.inline-flex.w-fit > button[data-slot=tabs-trigger].relative.inline-flex.h-[calc(100%-1px)]",
+    "count": 6,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 131.1,
+    "path": "div.agenda-appointment-list.min-w-0.px-5 > ol.agenda-appt-list > li > div.agenda-appointment-row.agenda-appt-card.group",
+    "count": 6,
+    "views": [
+     "agenda-dark",
+     "agenda-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "section.space-y-4 > div.reminders-filter-bar.flex.flex-wrap > div.reminder-segments > button.reminder-segment",
+    "count": 6,
+    "views": [
+     "taches-dark",
+     "taches-light"
+    ]
+   },
+   {
+    "value": 150.9,
+    "path": "div.app-view-enter.min-h-0.min-w-0 > section.section-atlas.mx-4.mb-5 > div.kpis.frame.section-atlas-grid > button.kpi.section-atlas-card.group",
+    "count": 4,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div.flex.items-center.gap-4 > div.flex.items-center.gap-3 > div.flex.gap-2 > button.cursor-pointer.rounded-lg.border",
+    "count": 4,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 58.7,
+    "path": "div.weekDay > ul.dayList > li > button.dayRow",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 60.5,
+    "path": "div.cardFlush > ul.watchList > li > button.watchRow",
+    "count": 4,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 30,
+    "path": "div[data-slot=tabs].group/tabs.flex.gap-2 > div.finance-register-heading.flex.flex-wrap > div[data-slot=tabs-list].group/tabs-list.inline-flex.w-fit > button[data-slot=tabs-trigger].relative.inline-flex.h-[calc(100%-1px)]",
+    "count": 4,
+    "views": [
+     "finances-dark",
+     "finances-light"
+    ]
+   },
+   {
+    "value": 40.7,
+    "path": "section.mb-1 > div.ml-4.space-y-0.5.border-border > div.group.flex.w-full > button.flex.min-h-11.min-w-0",
+    "count": 4,
+    "views": [
+     "notes-dark",
+     "notes-light"
+    ]
+   },
+   {
+    "value": 34,
+    "path": "aside.flex.w-full.shrink-0 > div.border-zinc-200/80.border-b.p-4 > div.relative > input.w-full.rounded-lg.border",
+    "count": 2,
+    "views": [
+     "aide-dark",
+     "aide-light"
+    ]
+   },
+   {
+    "value": 20.1,
+    "path": "div.heroMain > div.next > span.nextWho > button.nextWhoLink",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 32.1,
+    "path": "div.premium-overview-shell.flex.flex-col > section.hero.frame > div.heroBand > button.host",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 19.5,
+    "path": "section.card.frame.watchCard > div.cardFlush > p.watchEmpty > button.watchRetry",
+    "count": 2,
+    "views": [
+     "dashboard-dark",
+     "dashboard-light"
+    ]
+   },
+   {
+    "value": 20.1,
+    "path": "div.flow-toolbar > div.flow-toolbar-controls > label.flow-search > input",
+    "count": 2,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 175.6,
+    "path": "section.flow-planned > ul.flow-planned-list > li > article.flow-card",
+    "count": 2,
+    "views": [
+     "flux-dark",
+     "flux-light"
+    ]
+   },
+   {
+    "value": 73,
+    "path": "div.min-h-0.flex-1.overflow-y-auto > div.mx-auto.flex.min-h-[440px] > div.flex.flex-1.flex-col > button.mt-10.flex.max-w-md",
+    "count": 2,
+    "views": [
+     "notes-dark",
+     "notes-light"
+    ]
+   },
+   {
+    "value": 136,
+    "path": "div.mx-auto.w-full.max-w-7xl > section.patient-record-indicators > section.patient-context-widgets > button.patient-context-card.group",
+    "count": 2,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": 136,
+    "path": "div.mx-auto.w-full.max-w-7xl > section.patient-record-indicators > section.patient-context-widgets > button[data-slot=popover-trigger].patient-context-card.group",
+    "count": 2,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": 56,
+    "path": "div.medical-permanent-grid > section.medical-record-health.p-5.rounded-2xl > div.medical-health-actions.grid.gap-2 > button.medical-health-action.flex.items-center",
+    "count": 2,
+    "views": [
+     "patient_detail-dark",
+     "patient_detail-light"
+    ]
+   },
+   {
+    "value": 38,
+    "path": "div.quick-reminder-type.flex.min-w-40 > div > div[data-slot=input-group].group/input-group.relative.flex > input[data-slot=input-group-control].h-8.w-full.min-w-0",
+    "count": 2,
+    "views": [
+     "taches-dark",
+     "taches-light"
+    ]
+   }
+  ]
+ },
+ "per_view": {
+  "agenda-dark": {
+   "radius": 6,
+   "padding": 35,
+   "gap": 25,
+   "font": 1,
+   "margin": 4,
+   "control_h": 47
+  },
+  "agenda-light": {
+   "radius": 6,
+   "padding": 35,
+   "gap": 25,
+   "font": 1,
+   "margin": 4,
+   "control_h": 47
+  },
+  "aide-dark": {
+   "radius": 8,
+   "padding": 4,
+   "gap": 2,
+   "font": 1,
+   "control_h": 5,
+   "margin": 2
+  },
+  "aide-light": {
+   "radius": 8,
+   "padding": 4,
+   "gap": 2,
+   "font": 1,
+   "control_h": 5,
+   "margin": 2
+  },
+  "clinique-dark": {
+   "radius": 2,
+   "padding": 12,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 6
+  },
+  "clinique-light": {
+   "radius": 2,
+   "padding": 12,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 6
+  },
+  "dashboard-dark": {
+   "radius": 16,
+   "padding": 83,
+   "gap": 39,
+   "font": 1,
+   "margin": 6,
+   "control_h": 34
+  },
+  "dashboard-light": {
+   "radius": 16,
+   "padding": 83,
+   "gap": 39,
+   "font": 1,
+   "margin": 6,
+   "control_h": 34
+  },
+  "equipe-dark": {
+   "radius": 5,
+   "padding": 31,
+   "gap": 4,
+   "font": 1,
+   "margin": 1
+  },
+  "equipe-light": {
+   "radius": 5,
+   "padding": 31,
+   "gap": 4,
+   "font": 1,
+   "margin": 1
+  },
+  "finances-dark": {
+   "radius": 3,
+   "padding": 9,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 2
+  },
+  "finances-light": {
+   "radius": 3,
+   "padding": 9,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 2
+  },
+  "finances_analytics-dark": {
+   "radius": 1,
+   "padding": 5,
+   "gap": 6,
+   "font": 1,
+   "margin": 4,
+   "control_h": 4
+  },
+  "finances_analytics-light": {
+   "radius": 1,
+   "padding": 5,
+   "gap": 6,
+   "font": 1,
+   "margin": 4,
+   "control_h": 4
+  },
+  "flux-dark": {
+   "radius": 7,
+   "padding": 68,
+   "gap": 7,
+   "font": 1,
+   "margin": 1,
+   "control_h": 2
+  },
+  "flux-light": {
+   "radius": 7,
+   "padding": 68,
+   "gap": 7,
+   "font": 1,
+   "margin": 1,
+   "control_h": 2
+  },
+  "notes-dark": {
+   "radius": 3,
+   "padding": 6,
+   "gap": 8,
+   "font": 1,
+   "margin": 3,
+   "control_h": 7
+  },
+  "notes-light": {
+   "radius": 3,
+   "padding": 6,
+   "gap": 8,
+   "font": 1,
+   "margin": 3,
+   "control_h": 7
+  },
+  "parametres-dark": {
+   "radius": 14,
+   "padding": 19,
+   "gap": 8,
+   "font": 12,
+   "margin": 3
+  },
+  "parametres-light": {
+   "radius": 14,
+   "padding": 19,
+   "gap": 8,
+   "font": 12,
+   "margin": 3
+  },
+  "patient_detail-dark": {
+   "radius": 1,
+   "padding": 28,
+   "gap": 10,
+   "font": 1,
+   "control_h": 3,
+   "margin": 2
+  },
+  "patient_detail-light": {
+   "radius": 1,
+   "padding": 28,
+   "gap": 10,
+   "font": 1,
+   "control_h": 3,
+   "margin": 2
+  },
+  "patients-dark": {
+   "radius": 1,
+   "padding": 18,
+   "gap": 4,
+   "font": 1,
+   "margin": 1
+  },
+  "patients-light": {
+   "radius": 1,
+   "padding": 18,
+   "gap": 4,
+   "font": 1,
+   "margin": 1
+  },
+  "soins-dark": {
+   "radius": 2,
+   "padding": 12,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 6
+  },
+  "soins-light": {
+   "radius": 2,
+   "padding": 12,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 6
+  },
+  "stock-dark": {
+   "radius": 1,
+   "padding": 111,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 4
+  },
+  "stock-light": {
+   "radius": 1,
+   "padding": 111,
+   "gap": 4,
+   "font": 1,
+   "margin": 1,
+   "control_h": 4
+  },
+  "taches-dark": {
+   "radius": 3,
+   "padding": 11,
+   "gap": 4,
+   "font": 1,
+   "margin": 3,
+   "control_h": 8
+  },
+  "taches-light": {
+   "radius": 3,
+   "padding": 11,
+   "gap": 4,
+   "font": 1,
+   "margin": 3,
+   "control_h": 8
+  }
+ }
+}
