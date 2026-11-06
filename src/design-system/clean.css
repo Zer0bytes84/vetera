@@ -66,6 +66,10 @@
   --clean-row-list: 40px;
   --clean-row-table: 32px;
   --clean-nav-item: 28px;
+  /* Navigation labels: 14 px since 5 November 2026 (13 px before). Read at a
+     glance, sometimes from the exam table: +7.7 % x-height, still one line
+     and the same 28 px row (measures in docs/recus/2026-11-05/recherche-entete/). */
+  --clean-nav-text: 14px;
   --clean-nav-icon: 16px;
   --clean-list-icon: 16px;
   --clean-icon-stroke: 1.5px;
@@ -349,35 +353,41 @@
   box-shadow: 0 0 0 2px var(--clean-sheet);
 }
 
-/* Header search: the segmented switch itself, the track's soft grey and its
-   corners, the ⌘K mark as its chosen item. */
+/* Header search: the material of the header's tools on the right (hairline
+   at 8 %, fill at 5 % of the strong ink), the quiet grey for the
+   placeholder, the ⌘K capsule as a white sheet like a chosen segment. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field {
-  border-radius: var(--clean-control-radius);
-  background: var(--clean-segment-track);
+  border-color: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
+  background: color-mix(in srgb, var(--clean-ink-strong) 5%, transparent);
   color: var(--clean-ink-quiet);
 }
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--clean-ink-strong) 16%, transparent);
+  background: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
+  color: var(--clean-ink);
+}
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-key {
-  border-radius: var(--clean-segment-radius);
   background: var(--clean-segment-active);
   box-shadow: var(--clean-segment-active-shadow);
   color: var(--clean-ink);
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field:hover {
-    background: color-mix(in oklab, var(--clean-segment-track), var(--clean-ink-strong) 5%);
+    border-color: color-mix(in srgb, var(--clean-ink-strong) 14%, transparent);
+    background: color-mix(in srgb, var(--clean-ink-strong) 8%, transparent);
     color: var(--clean-ink);
   }
   :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field:hover .shell-header-search-key { color: var(--clean-ink-strong); }
 }
-/* The slide-out toggle: a ghost like the tools on the right, its glyph on the
-   page's 24 px margin; the rule beside it is the header's quiet line. */
+/* The slide-out toggle: a round ghost at the tools' 36 px, in the strong ink
+   of their glyphs; the rule beside it is the header's quiet line. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-sidebar-toggle) { padding-inline-start: 16px !important; }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-sidebar-toggle {
   border: 0 !important;
-  border-radius: var(--clean-control-radius) !important;
+  border-radius: 999px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: var(--clean-ink) !important;
+  color: var(--clean-ink-strong) !important;
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-divider { background: var(--clean-line); }
@@ -438,13 +448,13 @@
   min-height: var(--clean-nav-item) !important;
   border-radius: var(--clean-control-radius);
   color: var(--clean-ink);
-  font-size: 13px;
+  font-size: var(--clean-nav-text);
   font-weight: 500;
   letter-spacing: -0.006em;
   box-shadow: none !important;
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
-:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: 13px !important; }
+:root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"] > span { font-size: var(--clean-nav-text) !important; }
 :root[data-skin="clean"][data-skin][data-skin] .app-sidebar [data-slot="sidebar-menu-button"][data-active]:not([data-active="false"]) {
   background: var(--clean-nav-active) !important;
   border-color: transparent !important;
@@ -463,7 +473,7 @@
   }
   :root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button:hover { background: var(--clean-nav-hover) !important; }
 }
-:root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button { color: var(--clean-ink); font-size: 13px; }
+:root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button { color: var(--clean-ink); font-size: var(--clean-nav-text); }
 /* Quick-access dots keep their hue, desaturated towards the theme's greys. */
 :root[data-skin="clean"][data-skin][data-skin] .premium-shortcuts button .premium-shortcut-dot {
   background: color-mix(in oklab, var(--premium-shortcut-color) var(--clean-dot-mix), var(--clean-ink-quiet)) !important;
@@ -500,6 +510,7 @@
   height: var(--clean-nav-item);
   border-radius: var(--clean-control-radius);
   color: var(--clean-ink);
+  font-size: var(--clean-nav-text);
   font-weight: 500;
   letter-spacing: -0.006em;
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
@@ -509,7 +520,7 @@
   color: var(--clean-ink-strong);
 }
 :root[data-skin="clean"][data-skin][data-skin] .app-sidebar .sidebar-settings-button {
-  font-size: 13px;
+  font-size: var(--clean-nav-text);
   font-weight: 500;
   color: var(--clean-ink-quiet);
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;

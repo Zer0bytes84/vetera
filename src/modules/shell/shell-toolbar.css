@@ -481,38 +481,49 @@
   .shell-toolbar-actions,:root[data-chrome-style="liquid-glass"] .shell-toolbar-actions { background:var(--background); }
 }
 
-/* Header search (Premium and Clean): the segmented switch's geometry, a
-   32 px field with 8 px corners on a soft grey, the placeholder on the left,
-   and inside it on the right a 28 px mark with 6 px corners carrying ⌘K, 2 px
-   from the edge so both curves are concentric. It sits at the header's left, where the title used
-   to be, and gives way to the search icon when the header is narrow. */
+/* Header search (Premium and Clean), rebuilt on 5 November 2026 when it moved
+   from the sidebar to the header's left, beside the sidebar toggle. A 36 px
+   capsule, the height of the header's tools, so the row reads as one line:
+   16 px glyph 12 px in, 8 px to the placeholder, and a 28 px ⌘K capsule 4 px
+   from the right edge, so both ends are concentric. Rest, hover, press and
+   open (palette showing: aria-expanded) share one material; focus draws the
+   ring. It gives way to the search icon when the header is narrow. */
 .shell-header-search-slot {
-  width: clamp(220px, 32cqi, 300px);
+  width: clamp(240px, 30cqi, 360px);
   min-width: 0;
 }
 .shell-header-search-field {
   display: flex;
   width: 100%;
-  height: 32px;
+  height: 36px;
   align-items: center;
   gap: 8px;
-  padding: 0 2px 0 12px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--surface-hover, var(--muted));
+  padding: 0 4px 0 12px;
+  border: 1px solid color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink, var(--foreground)) 4%, transparent);
   color: var(--ink-muted, var(--muted-foreground));
   font-size: 13px;
+  font-weight: 450;
+  line-height: 20px;
   text-align: left;
   cursor: pointer;
   transition:
     background-color var(--speed-highlight-out) ease,
+    border-color var(--speed-highlight-out) ease,
     color var(--speed-highlight-out) ease,
     transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
+.shell-header-search-icon { flex: none; }
 .shell-header-search-field:active { transform: scale(0.99); }
 .shell-header-search-field:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
+}
+.shell-header-search-field[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--ink, var(--foreground)) 16%, transparent);
+  background: color-mix(in srgb, var(--ink, var(--foreground)) 7%, transparent);
+  color: var(--ink, var(--foreground));
 }
 .shell-header-search-placeholder {
   min-width: 0;
@@ -523,27 +534,30 @@
 }
 .shell-header-search-key {
   display: grid;
-  width: 28px;
+  min-width: 28px;
   height: 28px;
   flex: none;
   place-items: center;
-  border-radius: 6px;
+  padding: 0 8px;
+  border-radius: 999px;
   background: var(--surface, var(--card));
-  box-shadow: 0 0 0 1px var(--border);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink, var(--foreground)) 8%, transparent);
   font-family: inherit;
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0;
-  color: var(--ink, var(--foreground));
+  color: var(--ink-soft, var(--foreground));
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
 @media (hover: hover) and (pointer: fine) {
   .shell-header-search-field:hover {
-    background: color-mix(in oklab, var(--surface-hover, var(--muted)), var(--ink, var(--foreground)) 5%);
+    border-color: color-mix(in srgb, var(--ink, var(--foreground)) 14%, transparent);
+    background: color-mix(in srgb, var(--ink, var(--foreground)) 7%, transparent);
     color: var(--ink, var(--foreground));
-    transition-duration: var(--speed-highlight-in), var(--speed-highlight-in), 160ms;
+    transition-duration: var(--speed-highlight-in), var(--speed-highlight-in), var(--speed-highlight-in), 160ms;
   }
+  .shell-header-search-field:hover .shell-header-search-key { color: var(--ink, var(--foreground)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .shell-header-search-field:active { transform: none; }
@@ -602,21 +616,23 @@
 
 /* The sidebar's slide-out toggle opens the header, then a short rule, then the
    search pill: one group at the header's left edge. */
+/* Slide-out toggle: the 36 px of the header's tools, round like them. */
 .shell-sidebar-toggle {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   flex: none;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 999px;
   color: var(--ink-muted, var(--muted-foreground));
   cursor: pointer;
   transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
 }
 .shell-sidebar-toggle:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+/* The thin rule between the toggle and the search: 20 px, the line colour. */
 .shell-header-divider {
   width: 1px;
-  height: 16px;
+  height: 20px;
   flex: none;
   background: var(--border);
 }

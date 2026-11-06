@@ -17,8 +17,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
-import { SearchIcon } from "@/lib/hugeicons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 import {
   CLINIC_TAB_EVENT,
@@ -31,7 +29,6 @@ import type { View } from "@/types";
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   currentView: View;
   onNavigate: (view: View) => void;
-  onSearch?: () => void;
 };
 
 type ClinicTab = "soins" | "hospitalisation";
@@ -49,7 +46,6 @@ function openClinicTab(tab: ClinicTab, currentView: View, onNavigate: (view: Vie
 export function AppSidebar({
   currentView,
   onNavigate,
-  onSearch,
   variant = "sidebar",
   ...props
 }: AppSidebarProps) {
@@ -214,38 +210,6 @@ export function AppSidebar({
             isCollapsed ? "w-full items-center gap-4" : "gap-4"
           )}
         >
-
-          {onSearch ? (
-            isCollapsed ? (
-              <ShortcutTooltip label="Rechercher" shortcut="⌘ K">
-                <button
-                  aria-label="Rechercher (⌘K)"
-                  aria-haspopup="dialog"
-                  aria-keyshortcuts="Meta+K Control+K"
-                  className="flex size-11 items-center justify-center rounded-xl text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                  onClick={onSearch}
-                  type="button"
-                >
-                  <HugeiconsIcon className="size-5" icon={SearchIcon} strokeWidth={1.5} />
-                </button>
-              </ShortcutTooltip>
-            ) : (
-              <button
-                aria-label="Ouvrir la palette de commandes (⌘K)"
-                aria-haspopup="dialog"
-                aria-keyshortcuts="Meta+K Control+K"
-                className="group flex h-[calc(var(--premium-nav-row)+6px)] w-full items-center gap-2.5 rounded-full border border-sidebar-foreground/20 bg-transparent pl-2.5 pr-3.5 text-left text-sidebar-foreground/75 transition-colors hover:border-sidebar-foreground/30 hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                onClick={onSearch}
-                type="button"
-              >
-                <HugeiconsIcon className="size-[18px] shrink-0 opacity-80 transition-opacity group-hover:opacity-100" icon={SearchIcon} strokeWidth={1.5} />
-                <span className="flex-1 truncate text-sm font-medium">Rechercher</span>
-                <kbd className="pointer-events-none inline-flex items-center rounded-md bg-sidebar-accent px-2.5 py-1 font-mono t-12 font-semibold tracking-tight text-sidebar-foreground/85 shadow-sm">
-                  ⌘K
-                </kbd>
-              </button>
-            )
-          ) : null}
 
           <NavMain items={mainItems} title={t("nav.sections.patientJourney")} premiumTitle="Espace de travail" />
 

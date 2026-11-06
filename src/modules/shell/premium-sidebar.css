@@ -199,8 +199,11 @@
   text-rendering: optimizeLegibility;
 }
 
+/* Since the search moved to the header (5 November 2026), the first group
+   heading follows the brand: 20 px above it, so the brand's visible edge sits
+   28 px from the heading, the same step as between two groups (Clean). */
 [data-visual-style="premium"] .app-sidebar [data-slot="sidebar-content"] {
-  padding: 12px 14px 8px;
+  padding: 20px 14px 8px;
 }
 
 [data-visual-style="premium"] .app-sidebar [data-slot="sidebar-content"] > div {

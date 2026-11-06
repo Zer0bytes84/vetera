@@ -4,6 +4,7 @@ import { ThemeControl } from "./components/theme-control";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import { ToolbarIcon } from "./components/toolbar-icon";
 import { AccountMenu } from "./components/account-menu";
+import { HeaderSearch } from "./components/header-search";
 import { HeaderSidebarToggle } from "./components/header-sidebar-toggle";
 import { QuickActionsFab } from "./components/quick-actions-fab";
 import { roleLabel } from "@/lib/user-role";
@@ -537,7 +538,6 @@ function AppShellInner() {
         collapsible={collapsible}
         currentView={currentView}
         onNavigate={handleNavigate}
-        onSearch={() => setPaletteOpen(true)}
         side={isRtl ? "right" : "left"}
         variant="sidebar"
       />
@@ -602,6 +602,7 @@ function AppShellInner() {
               {isPremium ? (
                 <div className="shell-toolbar-leading flex min-w-0 flex-1 items-center gap-2.5">
                   <HeaderSidebarToggle />
+                  <HeaderSearch onOpen={() => setPaletteOpen(true)} open={paletteOpen} />
                 </div>
               ) : (
                 <div className="shell-toolbar-leading flex min-w-0 flex-1 sm:flex-initial items-center gap-2.5">
