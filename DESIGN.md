@@ -581,3 +581,11 @@ Pointer inspection reveals the nearest chart bucket with its date and value, a g
 - Improve financial legends and clinical list readability, retain tabular numerals and explicit cancelled/no-show planning labels. Fit the main analytical cash amount with the shared FittedAmount component.
 - Analytical controls stay in the heading, date ranges stay in the cash footer, and plot baselines align across all three cards. Heatmap focus remains visible without an unnecessary vertical scrollbar; footer copy stacks naturally at narrow widths.
 - UI polish skill was not found under that exact name; the available Impeccable polish guide is the refinement workflow used alongside emil-design-eng.
+
+### Clean finish scale (5 November 2026)
+- Measured on the running app (computed styles, 15 views, Clean light and dark); report in `docs/recus/2026-11-05/finition-espacements/`.
+- Spacing: 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48 px on the 4px base; 2 and 6 only inside controls of 32px or less. Indicator cards: 20px above and below, 24px at the sides, on the dashboard and every page. Tables: 12px between columns, 16px at the edges.
+- Radii: 4, 6, 8 (controls), 10 (cards), 12 (sheet) and full. Control heights: 20, 24, 28 (segment items), 32 (controls and segment tracks), 36 (header), 40 (list rows).
+- Text: zero tracking at body sizes (Inter's optical size spaces small text); titles keep their tracking tokens. Quiet grey `#737373` (4.54:1 on the sheet).
+- Type sets (Appearance > Police, Clean only, Inter by default): Geist with Geist Mono, IBM Plex Sans with Plex Mono, Signature (Inter with Space Grotesk titles). OFL files bundled locally.
+- `tests/clean-finish-scale.test.ts` keeps the finishing rules on these scales.

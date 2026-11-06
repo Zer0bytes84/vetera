@@ -51,7 +51,7 @@ describe("thème Clean : jetons", () => {
     expect(declarations.get("--clean-hover")).toBe("#f0f0f1");
     expect(declarations.get("--clean-ink-strong")).toBe("#292929");
     expect(declarations.get("--clean-ink")).toBe("#5d5d5d");
-    expect(declarations.get("--clean-ink-quiet")).toBe("#7f7f7f");
+    expect(declarations.get("--clean-ink-quiet")).toBe("#737373");
     expect(declarations.get("--clean-ink-disabled")).toBe("#a6a6a6");
   });
 

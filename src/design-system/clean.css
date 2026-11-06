@@ -39,7 +39,10 @@
   /* Text: the charter's three greys, plus a fourth for disabled text and icons only. */
   --clean-ink-strong: #292929;
   --clean-ink: #5d5d5d;
-  --clean-ink-quiet: #7f7f7f;
+  /* #7f7f7f measured 3.84:1 on the sheet, under WCAG AA (4.5:1) for the 12
+     and 13 px labels it carries; #737373 gives 4.54:1 on the sheet, 4.74:1 on
+     white (finish of 5 November 2026). The default dark sidebar does not use it. */
+  --clean-ink-quiet: #737373;
   --clean-ink-disabled: #a6a6a6;
   /* Accent and focus ring: Premium's values for each mode, as Clean tokens so
      the sidebar can carry the dark ones next to light content. */
@@ -1684,3 +1687,145 @@
     transition-duration: var(--speed-highlight-in);
   }
 }
+
+/* ---------- Finish of 5 November 2026: one measured scale ----------
+   Measured on the running app (computed styles, 15 views, light and dark);
+   report and before/after captures in docs/recus/2026-11-05/finition-espacements/.
+   Spacing (px): 2 4 6 8 12 16 20 24 32 40 48, on a 4 px base; 2 and 6 only
+   inside controls of 32 px or less. Radii: 4 6 8 10 12 and full. Control
+   heights: 20 24 28 32 36 40. Each rule names the off-scale value it replaces.
+   The sidebar and the header are left exactly as they are. */
+
+/* Text tracking. The body's -0.006em was resolved at the body's 16 px and
+   inherited as a fixed -0.096 px by every 12 and 13 px label (-0.008em at
+   12 px). Inter's optical size already spaces small text; titles keep their
+   own tracking tokens (--clean-tracking-title, --clean-tracking-heading). */
+:root[data-skin="clean"] body { letter-spacing: 0; }
+
+/* Segmented switches: tabs.css (shared, ":root:root:root") outranked the Clean
+   rule above, so the tracks measured 36 px with 30 px items beside 32 px
+   controls. Same rule, one rank higher: 32 px track, 2 px inset, 28 px items. */
+:root[data-skin="clean"][data-skin][data-skin] [data-tabs-style="segmented"] {
+  height: var(--clean-control) !important;
+  min-height: var(--clean-control) !important;
+  padding: 2px !important;
+}
+:root[data-skin="clean"][data-skin][data-skin] [data-tabs-style="segmented"] > :is([data-slot="tabs-trigger"], [role="tab"], [data-slot="toggle-group-item"], button) {
+  height: var(--clean-segment-item) !important;
+  min-height: var(--clean-segment-item) !important;
+}
+
+/* Radii: the shadcn multipliers of the 8 px base gave 4.8, 6.4, 11.2 and
+   14.4 px. Each lands on its step of the scale; component rules keep theirs. */
+:root[data-skin="clean"] :where(.rounded-sm) { border-radius: 4px; }
+:root[data-skin="clean"] :where(.rounded-md) { border-radius: 6px; }
+:root[data-skin="clean"] :where(.rounded-xl) { border-radius: var(--clean-card-radius); }
+:root[data-skin="clean"] :where(.rounded-2xl) { border-radius: var(--clean-sheet-radius); }
+
+/* Tables: one cell inset everywhere, the Patients one (12 px between
+   columns, 16 px at the edges). Products measured 14 px. */
+:root[data-skin="clean"][data-skin] [data-slot="table"] :is(th, td) { padding-inline: 12px !important; }
+:root[data-skin="clean"][data-skin] [data-slot="table"] :is(th, td):first-child { padding-inline-start: 16px !important; }
+:root[data-skin="clean"][data-skin] [data-slot="table"] :is(th, td):last-child { padding-inline-end: 16px !important; }
+
+/* Status pills: 8 px each side (measured 9). */
+:root[data-skin="clean"][data-skin] [data-slot="badge"] { padding-inline: 8px !important; }
+
+/* Page title: the icon sits 12 px from the title (measured 14). */
+:root[data-skin="clean"][data-skin] .premium-page-head-main { gap: 12px !important; }
+
+/* Indicator cards, one inset for the dashboard and every page: 20 px above
+   and below, 24 px at the sides (measured 20/22/18/22, 20/24/22/24, 20/22/22/22). */
+:root[data-skin="clean"][data-skin] :is(.section-atlas-card, .kpis > .kpi, .tiles > .tile, .facts > div) {
+  padding: 20px 24px !important;
+}
+:root[data-skin="clean"][data-skin] .tileText { gap: 4px !important; }
+:root[data-skin="clean"][data-skin] .facts dd { gap: 4px !important; }
+
+/* Welcome band: the actions start on the title's 24 px line (measured 30 px,
+   a 6 px step between title and buttons), 8 px apart (measured 10). Buttons
+   take the 12 px inset of every control (measured 14) and a 6 px icon gap. */
+:root[data-skin="clean"][data-skin] .heroBand {
+  padding-inline: 24px !important;
+  column-gap: 16px !important;
+}
+:root[data-skin="clean"][data-skin] .heroActions { gap: 8px !important; }
+:root[data-skin="clean"][data-skin] .heroActions .btn {
+  padding-inline: 12px !important;
+  gap: 6px !important;
+}
+:root[data-skin="clean"][data-skin] .heroMain .next {
+  padding-inline-start: 24px !important;
+  gap: 4px !important;
+}
+
+/* Flux lanes: card radius and a 12 px inset (measured 16 and 10); an empty
+   lane reads as one 40 px list row; its 8 px sides keep the text width of
+   before, so no label wraps. */
+:root[data-skin="clean"][data-skin] :is(.flow-lane, .flow-planned) {
+  border-radius: var(--clean-card-radius) !important;
+}
+:root[data-skin="clean"][data-skin] .flow-lane { padding: 12px !important; }
+:root[data-skin="clean"][data-skin] .flow-lane-empty { padding: 12px 8px !important; }
+
+/* Agenda list: 16 px card inset and gaps, 20 px after the colour bar
+   (measured 18, 22 and 18), card radius (measured 14). */
+:root[data-skin="clean"][data-skin] .agenda-appt-card {
+  gap: 16px !important;
+  padding: 16px 16px 16px 20px !important;
+  border-radius: var(--clean-card-radius) !important;
+}
+:root[data-skin="clean"][data-skin] .agenda-appt-meta { gap: 12px !important; margin-top: 8px !important; }
+
+/* Patient file tabs: the 12 px inset of the other navigation tabs (measured 10). */
+@layer utilities {
+  :root[data-skin="clean"][data-skin][data-skin] :is(.patient-record-page, .patient-peek-panel) .medical-tabs > :is(button, [role="tab"]) {
+    padding: 0 12px !important;
+  }
+}
+
+/* Settings: control radius on the navigation (measured 9), card radius on the
+   panels (measured 14), and gaps back on the scale (measured 26, 18, 28). */
+:root[data-skin="clean"][data-skin] .settings-nav-item { border-radius: var(--clean-control-radius) !important; }
+/* Its icons take the 16 px of the sidebar's (measured 18): the longest label,
+   "Modèles de documents" (145 px at zero tracking), keeps its single line. */
+:root[data-skin="clean"][data-skin] .settings-nav-item > svg {
+  width: var(--clean-nav-icon) !important;
+  height: var(--clean-nav-icon) !important;
+}
+:root[data-skin="clean"][data-skin] .settings-panel { border-radius: var(--clean-card-radius) !important; }
+:root[data-skin="clean"][data-skin] .settings-page-nav { gap: 24px !important; }
+:root[data-skin="clean"][data-skin] .settings-profile-identity { gap: 16px !important; }
+:root[data-skin="clean"][data-skin] .settings-content-heading { margin-bottom: 24px !important; }
+
+/* Help: Tailwind's zinc greys (hue 286) took the place of the Clean lines and
+   inks there. Same roles, Clean values. */
+:root[data-skin="clean"] :is([class*="border-zinc-"], [class*="divide-zinc-"] > *) { border-color: var(--clean-line) !important; }
+:root[data-skin="clean"] [class*="text-zinc-4"] { color: var(--clean-ink-quiet) !important; }
+:root[data-skin="clean"] [class*="text-zinc-5"] { color: var(--clean-ink) !important; }
+
+/* Dashboard lists: 12 px above and below each row (measured 10), the empty
+   message on the rows' 20 px side inset (measured 22). */
+:root[data-skin="clean"][data-skin] :is(.dayRow, .watchRow) { padding-block: 12px !important; }
+:root[data-skin="clean"][data-skin] .watchEmpty { padding-inline: 20px !important; }
+/* Kicker and note around the welcome title: 8 px (measured 10). */
+:root[data-skin="clean"][data-skin] .heroMain .kicker { margin-bottom: 8px !important; }
+:root[data-skin="clean"][data-skin] .heroMain .heroNote { margin-top: 8px !important; }
+:root[data-skin="clean"][data-skin] .facts dd.factEmpty { margin-top: 8px !important; }
+
+/* Controls keep the 12 px inset of the buttons: Flux density items, the
+   two-part filter menus, plain text fields (measured 10). Fields that carry a
+   leading icon keep their own inset. */
+:root[data-skin="clean"][data-skin][data-skin] .flow-density > button { padding-inline: 12px !important; }
+:root[data-skin="clean"][data-skin] [data-slot="dropdown-menu-trigger"] > span { padding-inline: 12px !important; }
+:root[data-skin="clean"][data-skin] input[data-slot="input"]:not([class*="pl-"], [class*="ps-"]) { padding-inline: 12px !important; }
+
+/* Gaps back on the scale: Tailwind's gap-2.5 (10 px) between an icon or dot
+   and its label becomes 8; lists and lanes take 12, wide groups 24. */
+:root[data-skin="clean"] :where(.gap-2\.5) { gap: 8px; }
+:root[data-skin="clean"][data-skin] :is(.agenda-appt-list, .flow-lanes, .flow-board) { gap: 12px !important; }
+:root[data-skin="clean"][data-skin] :is(.heatSide, .flow-toolbar-summary) { gap: 12px !important; }
+:root[data-skin="clean"][data-skin] .finance-analysis { gap: 24px !important; }
+:root[data-skin="clean"][data-skin] .finance-analysis-category-detail { margin-top: 8px !important; }
+:root[data-skin="clean"][data-skin] .settings-content-heading > p { margin-top: 4px !important; }
+:root[data-skin="clean"][data-skin] .flow-planned { padding: 12px !important; }
