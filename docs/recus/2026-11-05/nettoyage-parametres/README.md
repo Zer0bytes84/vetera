@@ -2,9 +2,41 @@
 
 Date : 5 novembre 2026. Branche locale `design/nettoyage-parametres`, partie de `design/finition-espacements` (après le commit `a5f8ae0`, Geist par défaut). Aucun push.
 
+## Correction du même soir : la barre latérale claire revient
+
+> Le nettoyage avait retiré la teinte de la barre latérale (Automatique / Claire / Sombre). **C'était une erreur de tri : elle reste.** Commit `0fc91ae`.
+
+- **Ce qui revient.** Le réglage « Barre latérale » dans Apparence, `src/lib/sidebar-tone.ts`, la classe `dark` forcée dans `ui/sidebar.tsx`, toutes ses règles CSS (gardes `:where(:not([data-sidebar-tone="light"]))`, bloc clair de Clean, variante `dark` de Tailwind) et `tests/sidebar-tone.test.ts`.
+- **Identique à avant.** `sidebar-tone.ts`, `ui/sidebar.tsx` et `sidebar-tone.test.ts` sont identiques octet pour octet à ceux de `a5f8ae0`, l'état d'avant le nettoyage. Les CSS ont été reprises de `a5f8ae0`, puis le nettoyage y a été rejoué sans toucher à la teinte (`preuves/cssclean2.mjs`).
+- **Migration.** Elle ne supprime plus la clé `baitari-sidebar-tone` : le choix de chaque utilisateur est conservé.
+- **Rien d'autre n'est défait.** Accent, Classique, Liquid Glass, présentation, contraste du verre et valeurs cachées restent retirés.
+- **Défaut inchangé.** En Clean clair, la barre latérale reste sombre tant que « Automatique » est choisi.
+
+**Preuves**
+
+| Contrôle | Résultat |
+| --- | --- |
+| Pixels, barre latérale claire forcée (tableau de bord, Patients, Agenda, Réglages ; clair et sombre) | **8 sur 8 identiques** entre `a5f8ae0` et `0fc91ae` |
+| Pixels, apparence par défaut (Clean et Premium) | **60 sur 60 identiques** |
+| Comportement réel dans l'application (`preuves/tone.mjs`) | Voir la liste ci-dessous |
+| Tests | `sidebar-tone.test.ts` et la charte Clean au vert ; la suite complète est détaillée au § 7 |
+
+- **Réserve sur les pixels.** La première capture « avant » de Réglages avait été prise pendant que Vite recompilait le module. Je l'ai refaite, puis comparée de nouveau. Le détail est dans `preuves/tone-empreintes.txt`.
+- **Comportement réel, choix par choix :**
+  - **Claire :** barre latérale `#ededee`, libellés `#5d5d5d`, attribut `data-sidebar-tone="light"` ;
+  - **Sombre :** `#0c0d0f`, ce qui est la teinte native de Clean, donc aucune marque sur la racine ;
+  - **Automatique :** retour au défaut ;
+  - **Persistance :** le choix est enregistré par utilisateur ;
+  - **Erreurs :** aucune.
+- **Captures :**
+  - `captures/clean-clair-barre-claire-tableau-de-bord.jpg` : la barre claire active, conforme à ta capture de l'application installée ;
+  - `captures/clean-clair-barre-claire-reglage.jpg` : le réglage lui-même.
+
+Les sections suivantes décrivent le nettoyage initial. Là où elles disent la teinte retirée, la correction ci-dessus prime.
+
 ## En bref
 
-- **Retirés de l'interface.** Six réglages décoratifs disparaissent de l'écran Apparence : couleur d'accent, Style Premium/Classique, Liquid Glass, teinte de la barre latérale, présentation de la barre latérale, contraste du verre.
+- **Retirés de l'interface.** Cinq réglages décoratifs disparaissent de l'écran Apparence : couleur d'accent, Style Premium/Classique, Liquid Glass, présentation de la barre latérale, contraste du verre. La teinte de la barre latérale avait d'abord été retirée, puis rétablie (voir la correction en tête).
 - **Retirés en silence.** Quatre valeurs cachées, sans interface depuis la 3.3.8, ne sont plus lues : arrondi, densité, police historique et motif d'en-tête.
 - **Ce qui reste à l'écran.** Chaque réglage retiré est remplacé par son défaut, appliqué de façon fixe. C'est l'apparence qu'avait toute installation par défaut.
 - **Preuve visuelle.** 60 écrans sur 60 (Clean et Premium, clair et sombre) sont identiques au pixel près, avant et après. La seule zone exclue est la mascotte animée de la sidebar.
@@ -190,4 +222,11 @@ Le hook git de graphify relance une reconstruction de `graphify-out/` à chaque 
 
 ## 10. Commits locaux
 
-Ils sont listés dans le message de clôture et dans `git log design/nettoyage-parametres`. Aucun push.
+| Commit | Contenu |
+| --- | --- |
+| `532e39b` | `refactor(apparence)` : retrait des réglages |
+| `b92a89f` | `docs` : ce bilan |
+| `0fc91ae` | `fix(apparence)` : barre latérale claire et son réglage rétablis |
+| Ce commit | `docs` : la correction notée dans le bilan |
+
+Aucun push.
