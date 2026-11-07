@@ -1,6 +1,6 @@
 # Phase widgets du tableau de bord : le graphique, puis la rangée des chiffres clés
 
-Date : 7 novembre 2026. Étapes 1 et 2 commitées (`7c72611`), étape 3 commitée ensuite. Le thème TuffUI n'a jamais été importé : tous les composants sont adaptés à nos jetons et à nos quatre thèmes. Aucune donnée de démonstration dans le code : tout est calculé sur les enregistrements de l'app.
+Date : 7 novembre 2026. Étapes 1 et 2 commitées (`7c72611`), étape 3 (`124431d`), étape 4 et clôture de la phase 1 dans le commit suivant. Le thème TuffUI n'a jamais été importé : tous les composants sont adaptés à nos jetons et à nos quatre thèmes. Aucune donnée de démonstration dans le code : tout est calculé sur les enregistrements de l'app.
 
 Contrôles finaux : **193 fichiers de tests, 1536 tests, tous verts** (187 fichiers et 1450 tests au début de la phase, après l'installation de `stat-grid`) ; `tsc -b` et `eslint src tests` sans message.
 
@@ -58,6 +58,35 @@ Deux widgets en demi-largeur, **même hauteur** (455 px mesurés, 475 px avec 70
 **Tests** : 197 fichiers, 1575 tests verts ; `tsc -b` et `eslint src tests` sans message.
 
 **Captures** : `etape3-apres/` (rangée, survol, vue « Par heure », quatre thèmes).
+
+## Étape 4 : la dernière rangée, « Agenda rapide » et « Alertes »
+
+Deux widgets en demi-largeur, **même hauteur** (447 px mesurés), alignés. Aucun thème TuffUI : `slot-picker` et `diverging-bars` sont adaptés à nos jetons.
+
+**Agenda rapide** (`src/components/ui/slot-picker.tsx`, variante semaine de Yuri) : une colonne par jour (jour abrégé en gras, quantième dessous), une pastille par créneau, les flèches du clavier qui passent d'une case à l'autre, et, une fois un créneau choisi, une ligne qui glisse sous le panneau avec le jour, l'heure et un bouton **en pastille** « Créer le rendez-vous ». Le créneau est choisi puis confirmé : **la création du rendez-vous s'ouvre sur ce jour, cette heure et le vétérinaire libre à ce moment** (le marqueur `vetera:pending-appointment` de l'agenda porte maintenant `time` et `vetId`). Écarts avec Yuri : pas de fuseau horaire ni d'état « invitation envoyée » (la clinique n'a qu'une horloge) ; pas d'étoile « suggéré » (rien ne recommande un créneau ici) ; un jour complet garde sa colonne et dit « Complet ».
+*Les créneaux sont réellement libres* : demi-heures de l'agenda (`freeSlotStarts`, la règle même de l'agenda), libres si **au moins un vétérinaire actif** n'a aucune réservation active dessus et si elles ne sont pas terminées ; un rendez-vous annulé ou manqué libère sa place ; cinq jours à partir d'aujourd'hui, six premiers créneaux par jour, total libre au pied. **Heures de la clinique** : déduites des réservations des 90 derniers jours (de l'heure où 95 % commencent à celle où 95 % finissent, dans la grille 7 h - 24 h de l'agenda) ; avec moins de dix réservations, 8 h - 18 h par défaut, et le pied l'écrit. **À confirmer** : cette règle d'heures, faute de réglage « horaires de la clinique » dans l'app.
+
+**Alertes** (`src/components/ui/diverging-bars.tsx`) : colonnes par jour, catégories empilées au-dessus, retards **en rose sous la ligne** (un sous-ensemble de la pile, comme chez Yuri), pastilles pour masquer une catégorie, infobulle à côté de la colonne, chiffre en tête (« N alertes à traiter ») et total des retards à droite. Fenêtre : 6 jours avant, 7 jours après, plus **une colonne « Avant »** qui rassemble tout ce qui est daté plus tôt, pour que rien d'ouvert ne manque au graphique. Cinq catégories, chacune avec sa couleur (teintes de Yuri : bleu d'accent, sarcelle, violet, ocre, plus un indigo ajouté aux jetons) :
+| Catégorie | Compte | En retard quand |
+| --- | --- | --- |
+| Rappels | rappels médicaux `en_cours`, à leur échéance (hors patients décédés) | l'échéance est passée |
+| Soins | soins à faire ou en cours, à leur jour prévu | l'heure prévue est passée (règle de la vue Soins) |
+| Stock | lots qui périment ce jour-là ; rupture ou sous le seuil, comptés aujourd'hui (un état, pas une date) | le lot est déjà périmé |
+| Créances | factures émises avec un reste à encaisser (la règle du chiffre « Créances »), à leur échéance, **ou aujourd'hui sans échéance** | l'app les dit « en retard » |
+| Rendez-vous non traités | rendez-vous terminés restés « planifié » ou « confirmé », à leur jour | tous : un rendez-vous passé sans issue est un trou (pas de consultation, pas de facture, rien dans la chronologie) |
+Une source qui ne charge pas (rappels, soins) est nommée sous le graphique au lieu de compter zéro en silence.
+
+**Vérifié** : 20 contrôles sur les vraies données du navigateur (`rt-etape4.json` : créneaux de chaque jour contre un calcul indépendant des heures, des vétérinaires et des réservations ; pied ; stock et rendez-vous non traités par jour ; ouverture du formulaire sur le bon jour, la bonne heure et le bon vétérinaire) et 16 contrôles par thème avec rappels, soins, factures et rendez-vous injectés (`rt-etape4-alertes-*.json` : chaque catégorie par jour, retards, colonne « Avant », chiffre en tête, infobulle, masquage d'une catégorie), **zéro écart**. **Limite** : rappels, soins et factures viennent de la base native ; dans le navigateur, ils ont été injectés dans mon script (jamais dans l'app) pour la vérification ; le vrai test reste `npm run tauri:dev`.
+
+## Clôture de la phase 1
+
+- **Bouton « + »** : le bouton flottant est supprimé, remplacé par un « + » dans l'entête, à la même place sur toutes les pages (même position sur le tableau de bord et l'agenda, aux 8 px de barre de défilement près), avec le même menu et les quatre mêmes actions. Menu de 320 px, une ligne par libellé (32 px), raccourcis dans une même colonne à droite. L'option « Masquer pendant le défilement », propre au bouton flottant, disparaît avec lui.
+- **Chiffres clés** : la vue par défaut repasse sur « Indicateurs ».
+- **Chiffre de l'entête d'« Alertes »** : repris au même gabarit que les grandes valeurs des autres widgets (24 px, interligne serré), masque de la roue de chiffres adouci.
+- **Bordure du bas de « Recettes & activité »** : mesurée et regardée dans les quatre thèmes (`bordure/`) : rayon de 22 px, bande de contour régulière, nette.
+- **Équipe rouge sur l'ensemble du tableau de bord** : chiffres clés (deux jeux de données), graphique, activité, semaine, créneaux, alertes : zéro écart.
+- **Tests** : 199 fichiers, 1610 tests verts ; `tsc -b` et `eslint src tests` sans message.
+- **Captures** : `tableau-de-bord-final/` (page entière, quatre thèmes), `etape4-apres/`, `menu-plus/`, `bordure/`.
 
 ## Ce que l'équipe rouge a trouvé
 

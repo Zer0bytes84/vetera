@@ -15,6 +15,6 @@ it("la vue Indicateurs montre les barres d'objectif, la vue Mini-graphiques les 
   expect(source).toContain('sparklines={keyView === "sparklines"}');
 });
 
-it("le widget ouvre sur les mini-graphiques, comme la rangée l'a toujours montrée", () => {
-  expect(source).toContain('useState<"kpi" | "sparklines">("sparklines")');
+it("le widget ouvre sur les indicateurs (les barres d'objectif), pas sur les mini-graphiques", () => {
+  expect(source).toContain('useState<"kpi" | "sparklines">("kpi")');
 });

@@ -58,6 +58,7 @@
   --card-raised: oklch(0.912 0.003 286);
   --chart-blue: #0071e3;
   --chart-teal: #1a9e8c;
+  --chart-indigo: #5e5ce6;
   --primary: #191919;
   --primary-foreground: #ffffff;
   --secondary: #ffffff;
@@ -127,6 +128,7 @@
   --card-raised: oklch(0.265 0 0);
   --chart-blue: #0a84ff;
   --chart-teal: #1a9e8c;
+  --chart-indigo: #7d7aff;
   --elev-card: 0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06);
   --elev-float:
     0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06),

@@ -748,6 +748,8 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
           patientId?: string;
           create?: boolean;
           date?: string;
+          time?: string;
+          vetId?: string;
         };
         const requestedDate = pending.date ? new Date(pending.date) : undefined;
         const date = requestedDate && !Number.isNaN(requestedDate.getTime()) ? requestedDate : undefined;
@@ -755,7 +757,7 @@ export function useAgendaPageModel(onNavigate?: (view: View) => void) {
         if (!pending.patientId) {
           window.sessionStorage.removeItem("vetera:pending-appointment");
           if (pending.create) {
-            openCreate(date);
+            openCreate(date, pending.time, pending.vetId);
             return true;
           }
           return false;

@@ -1,434 +1,142 @@
 {
  "periodes": {
   "Aujourd’hui": {
-   "cartes": [
-    {
-     "label": "Trésorerie",
-     "value": "7 700 DA",
-     "pill": "+24,2 %",
-     "ligne": "Solde net : 7 700 DA",
-     "aria": "Voir la trésorerie",
-     "objectif": {
-      "now": 1,
-      "texte": "100 % : Période précédente : 6 200 DA",
-      "libelle": "Période précédente : 6 200 DA 100 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    },
-    {
-     "label": "Rendez-vous",
-     "value": "3",
-     "pill": "+200 %",
-     "ligne": "1 honoré · 0 annulé · 0 absence",
-     "aria": "Voir les rendez-vous",
-     "objectif": {
-      "now": 0.3333333333333333,
-      "texte": "33 % : Honorés : 1 sur 3",
-      "libelle": "Honorés : 1 sur 3 33 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    },
-    {
-     "label": "Créances",
-     "value": "200 DA",
-     "pill": null,
-     "ligne": "Aucune facture impayée · 2 écritures en attente",
-     "aria": "Voir les créances",
-     "objectif": null,
-     "courbes": 0,
-     "barTop": -1
-    },
-    {
-     "label": "Actions à suivre",
-     "value": "2",
-     "pill": null,
-     "ligne": "2 prioritaires · 0 vaccins · 2 tâches",
-     "aria": "Voir les actions et rappels",
-     "objectif": {
-      "now": 0,
-      "texte": "0 % : 0 action terminée sur 2",
-      "libelle": "0 action terminée sur 2 0 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    }
+   "badges": [
+    "Trésorerie : +24,2 % (favorable)",
+    "Rendez-vous : +200 % (favorable)",
+    "Créances : +200 DA (défavorable)",
+    "Actions à suivre : +2 (défavorable)"
    ],
-   "consultationsDansLaLegende": "4",
-   "ancienneCarteConsultations": "3",
+   "lignes": [
+    "Solde net : 7 700 DA",
+    "1 honoré · 0 annulé · 0 absence",
+    "Aucune facture impayée · 2 en attente",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
    "ecarts": []
   },
   "7 jours": {
-   "cartes": [
-    {
-     "label": "Trésorerie",
-     "value": "13 900 DA",
-     "pill": "+157,4 %",
-     "ligne": "Solde net : 13 900 DA",
-     "aria": "Voir la trésorerie",
-     "objectif": {
-      "now": 1,
-      "texte": "100 % : Période précédente : 5 400 DA",
-      "libelle": "Période précédente : 5 400 DA 100 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    },
-    {
-     "label": "Rendez-vous",
-     "value": "4",
-     "pill": "+100 %",
-     "ligne": "2 honorés · 0 annulé · 0 absence",
-     "aria": "Voir les rendez-vous",
-     "objectif": {
-      "now": 0.5,
-      "texte": "50 % : Honorés : 2 sur 4",
-      "libelle": "Honorés : 2 sur 4 50 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    },
-    {
-     "label": "Créances",
-     "value": "200 DA",
-     "pill": null,
-     "ligne": "Aucune facture impayée · 2 écritures en attente",
-     "aria": "Voir les créances",
-     "objectif": null,
-     "courbes": 0,
-     "barTop": -1
-    },
-    {
-     "label": "Actions à suivre",
-     "value": "2",
-     "pill": null,
-     "ligne": "2 prioritaires · 0 vaccins · 2 tâches",
-     "aria": "Voir les actions et rappels",
-     "objectif": {
-      "now": 0,
-      "texte": "0 % : 0 action terminée sur 2",
-      "libelle": "0 action terminée sur 2 0 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    }
+   "badges": [
+    "Trésorerie : +157,4 % (favorable)",
+    "Rendez-vous : +100 % (favorable)",
+    "Créances : +200 DA (défavorable)",
+    "Actions à suivre : +2 (défavorable)"
    ],
-   "consultationsDansLaLegende": "4",
-   "ancienneCarteConsultations": "4",
+   "lignes": [
+    "Solde net : 13 900 DA",
+    "2 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée · 2 en attente",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
    "ecarts": []
   },
   "30 jours": {
-   "cartes": [
-    {
-     "label": "Trésorerie",
-     "value": "26 700 DA",
-     "pill": "+203,4 %",
-     "ligne": "Solde net : 23 750 DA",
-     "aria": "Voir la trésorerie",
-     "objectif": {
-      "now": 1,
-      "texte": "100 % : Période précédente : 8 800 DA",
-      "libelle": "Période précédente : 8 800 DA 100 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    },
-    {
-     "label": "Rendez-vous",
-     "value": "6",
-     "pill": "+500 %",
-     "ligne": "4 honorés · 0 annulé · 0 absence",
-     "aria": "Voir les rendez-vous",
-     "objectif": {
-      "now": 0.6666666666666666,
-      "texte": "67 % : Honorés : 4 sur 6",
-      "libelle": "Honorés : 4 sur 6 67 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    },
-    {
-     "label": "Créances",
-     "value": "200 DA",
-     "pill": null,
-     "ligne": "Aucune facture impayée · 2 écritures en attente",
-     "aria": "Voir les créances",
-     "objectif": null,
-     "courbes": 0,
-     "barTop": -1
-    },
-    {
-     "label": "Actions à suivre",
-     "value": "2",
-     "pill": null,
-     "ligne": "2 prioritaires · 0 vaccins · 2 tâches",
-     "aria": "Voir les actions et rappels",
-     "objectif": {
-      "now": 0,
-      "texte": "0 % : 0 action terminée sur 2",
-      "libelle": "0 action terminée sur 2 0 %"
-     },
-     "courbes": 0,
-     "barTop": 429
-    }
+   "badges": [
+    "Trésorerie : +203,4 % (favorable)",
+    "Rendez-vous : +500 % (favorable)",
+    "Créances : +200 DA (défavorable)",
+    "Actions à suivre : +2 (défavorable)"
    ],
-   "consultationsDansLaLegende": "6",
-   "ancienneCarteConsultations": "6",
+   "lignes": [
+    "Solde net : 23 750 DA",
+    "4 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée · 2 en attente",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
    "ecarts": []
   },
   "90 jours": {
-   "cartes": [
-    {
-     "label": "Trésorerie",
-     "value": "35 500 DA",
-     "pill": "+184 %",
-     "ligne": "Solde net : 32 550 DA",
-     "aria": "Voir la trésorerie",
-     "objectif": {
-      "now": 1,
-      "texte": "100 % : Période précédente : 12 500 DA",
-      "libelle": "Période précédente : 12 500 DA 100 %"
-     },
-     "courbes": 0,
-     "barTop": 409
-    },
-    {
-     "label": "Rendez-vous",
-     "value": "7",
-     "pill": null,
-     "ligne": "5 honorés · 0 annulé · 0 absence",
-     "aria": "Voir les rendez-vous",
-     "objectif": {
-      "now": 0.7142857142857143,
-      "texte": "71 % : Honorés : 5 sur 7",
-      "libelle": "Honorés : 5 sur 7 71 %"
-     },
-     "courbes": 0,
-     "barTop": 409
-    },
-    {
-     "label": "Créances",
-     "value": "200 DA",
-     "pill": null,
-     "ligne": "Aucune facture impayée · 2 écritures en attente",
-     "aria": "Voir les créances",
-     "objectif": null,
-     "courbes": 0,
-     "barTop": -1
-    },
-    {
-     "label": "Actions à suivre",
-     "value": "2",
-     "pill": null,
-     "ligne": "2 prioritaires · 0 vaccins · 2 tâches",
-     "aria": "Voir les actions et rappels",
-     "objectif": {
-      "now": 0,
-      "texte": "0 % : 0 action terminée sur 2",
-      "libelle": "0 action terminée sur 2 0 %"
-     },
-     "courbes": 0,
-     "barTop": 409
-    }
+   "badges": [
+    "Trésorerie : +184 % (favorable)",
+    "Rendez-vous : +7 (favorable)",
+    "Créances : +200 DA (défavorable)",
+    "Actions à suivre : +2 (défavorable)"
    ],
-   "consultationsDansLaLegende": "7",
-   "ancienneCarteConsultations": "7",
+   "lignes": [
+    "Solde net : 32 550 DA",
+    "5 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée · 2 en attente",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
    "ecarts": []
   },
   "12 mois": {
-   "cartes": [
-    {
-     "label": "Trésorerie",
-     "value": "48 000 DA",
-     "pill": null,
-     "ligne": "Solde net : 45 050 DA",
-     "aria": "Voir la trésorerie",
-     "objectif": null,
-     "courbes": 0,
-     "barTop": -1
-    },
-    {
-     "label": "Rendez-vous",
-     "value": "7",
-     "pill": null,
-     "ligne": "5 honorés · 0 annulé · 0 absence",
-     "aria": "Voir les rendez-vous",
-     "objectif": {
-      "now": 0.7142857142857143,
-      "texte": "71 % : Honorés : 5 sur 7",
-      "libelle": "Honorés : 5 sur 7 71 %"
-     },
-     "courbes": 0,
-     "barTop": 405
-    },
-    {
-     "label": "Créances",
-     "value": "200 DA",
-     "pill": null,
-     "ligne": "Aucune facture impayée · 2 écritures en attente",
-     "aria": "Voir les créances",
-     "objectif": null,
-     "courbes": 0,
-     "barTop": -1
-    },
-    {
-     "label": "Actions à suivre",
-     "value": "2",
-     "pill": null,
-     "ligne": "2 prioritaires · 0 vaccins · 2 tâches",
-     "aria": "Voir les actions et rappels",
-     "objectif": {
-      "now": 0,
-      "texte": "0 % : 0 action terminée sur 2",
-      "libelle": "0 action terminée sur 2 0 %"
-     },
-     "courbes": 0,
-     "barTop": 405
-    }
+   "badges": [
+    "Trésorerie : +48 000 DA (favorable)",
+    "Rendez-vous : +7 (favorable)",
+    "Créances : +200 DA (défavorable)",
+    "Actions à suivre : +2 (défavorable)"
    ],
-   "consultationsDansLaLegende": "7",
-   "ancienneCarteConsultations": "7",
+   "lignes": [
+    "Solde net : 45 050 DA",
+    "5 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée · 2 en attente",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
    "ecarts": []
   }
  },
- "vues": {
-  "defaut": "Sparklines",
-  "sparklines": {
-   "courbesParCarte": [
-    1,
-    1,
-    1,
-    1
-   ],
-   "barresParCarte": [
-    0,
-    0,
-    0,
-    0
-   ]
+ "gabarit": {
+  "1440px · Mini-graphiques": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "n/a",
+   "courbe": "identique"
   },
-  "kpi": {
-   "courbesParCarte": [
-    0,
-    0,
-    0,
-    0
-   ],
-   "barresParCarte": [
-    1,
-    1,
-    0,
-    1
-   ]
+  "1440px · Indicateurs": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "identique",
+   "courbe": "n/a"
   },
-  "barresAlignees": true,
-  "retour": {
-   "courbesParCarte": [
-    1,
-    1,
-    1,
-    1
-   ],
-   "barresParCarte": [
-    0,
-    0,
-    0,
-    0
-   ]
+  "1100px · Mini-graphiques": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "n/a",
+   "courbe": "identique"
+  },
+  "1100px · Indicateurs": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "identique",
+   "courbe": "n/a"
+  },
+  "900px · Mini-graphiques": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "n/a",
+   "courbe": "identique"
+  },
+  "900px · Indicateurs": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "identique",
+   "courbe": "n/a"
   }
  },
- "rangee": {
-  "Aujourd’hui": "une seule rangée",
-  "7 jours": "une seule rangée",
-  "30 jours": "une seule rangée",
-  "90 jours": "une seule rangée",
-  "12 mois": "une seule rangée",
-  "1100px": {
-   "rangees": 1,
-   "debordementDePage": false
-  },
-  "900px": {
-   "rangees": 1,
-   "debordementDePage": false
-  }
- },
- "clics": {
-  "Voir la trésorerie": {
-   "attendu": "Finances",
-   "titreDeLaPage": "Finances & Facturation",
-   "ok": true
-  },
-  "Voir les rendez-vous": {
-   "attendu": "Agenda",
-   "titreDeLaPage": "Agenda",
-   "ok": true
-  },
-  "Voir les créances": {
-   "attendu": "Finances",
-   "titreDeLaPage": "Finances & Facturation",
-   "ok": true
-  },
-  "Voir les actions et rappels": {
-   "attendu": "Rappels",
-   "titreDeLaPage": "Rappels",
-   "ok": true
-  }
- },
- "doublon": {
-  "resteARecouvrerDansCetteSemaine": 0,
-  "tauxDeReglementToujoursLa": 1
- },
- "erreurs": [],
- "alignement": {
-  "Aujourd’hui": {
-   "barres": 3,
-   "hauteurs": [
-    429,
-    429,
-    429
-   ],
-   "alignees": true
-  },
-  "7 jours": {
-   "barres": 3,
-   "hauteurs": [
-    429,
-    429,
-    429
-   ],
-   "alignees": true
-  },
-  "30 jours": {
-   "barres": 3,
-   "hauteurs": [
-    429,
-    429,
-    429
-   ],
-   "alignees": true
-  },
-  "90 jours": {
-   "barres": 3,
-   "hauteurs": [
-    409,
-    409,
-    409
-   ],
-   "alignees": true
-  },
-  "12 mois": {
-   "barres": 2,
-   "hauteurs": [
-    405,
-    405
-   ],
-   "alignees": true
-  }
- },
- "aujourdhui": {
-  "legendeConsultations": "4",
-  "ancienneCarteConsultations": "3",
-  "remarque": "le graphique suit 7 jours quand « Aujourd’hui » est choisi (un jour ne dessine pas de courbe)"
- }
+ "erreurs": []
 }

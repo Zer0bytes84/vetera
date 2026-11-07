@@ -73,7 +73,7 @@ function Digit({
   instant: boolean;
 }) {
   return (
-    <span className="relative inline-block h-[1lh] overflow-hidden [mask-image:linear-gradient(transparent,black_22%,black_78%,transparent)]">
+    <span className="relative inline-block h-[1lh] overflow-hidden [mask-image:linear-gradient(transparent,black_10%,black_90%,transparent)]">
       {/* Sizes the wheel to one digit; tabular figures keep every digit equally wide. */}
       <span className="invisible">0</span>
       <span

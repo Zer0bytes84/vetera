@@ -6,7 +6,7 @@ import { ToolbarIcon } from "./components/toolbar-icon";
 import { AccountMenu } from "./components/account-menu";
 import { HeaderSearch } from "./components/header-search";
 import { HeaderSidebarToggle } from "./components/header-sidebar-toggle";
-import { QuickActionsFab } from "./components/quick-actions-fab";
+import { HeaderQuickActions } from "./components/header-quick-actions";
 import { roleLabel } from "@/lib/user-role";
 import type { PremiumShortcut } from "@/lib/visual-style";
 import { useSidebarTone } from "@/lib/sidebar-tone";
@@ -636,6 +636,9 @@ function AppShellInner() {
               <div className="shell-toolbar-actions flex shrink-0 items-center justify-end gap-2">
                 {isPremium ? (
                   <>
+                    {/* 0. Quick actions: the same place on every page */}
+                    <HeaderQuickActions className="topIcon" onAction={handleQuickAction} />
+
                     {/* 1. Theme toggle */}
                     <ThemeControl dark={isDarkMode} onToggle={toggleTheme} />
 
@@ -694,6 +697,12 @@ function AppShellInner() {
                   </>
                 ) : (
                   <>
+                    {/* Quick actions: the same place on every page */}
+                    <HeaderQuickActions
+                      className="shell-toolbar-control grid size-9 shrink-0 place-items-center rounded-full"
+                      onAction={handleQuickAction}
+                    />
+
                     {/* Mobile search button */}
                     <ShortcutTooltip label="Rechercher partout" shortcut="⌘ K">
                       <button
@@ -971,7 +980,6 @@ function AppShellInner() {
             </div>
           </div>
         </div>
-        <QuickActionsFab onAction={handleQuickAction} scrollRef={sidebarScrollRef} />
       </SidebarInset>
 
       {/* Command Palette */}

@@ -130,14 +130,17 @@ export function buildFinancialOverview(
  * behind it: how many are unpaid, and how many of those are past their due date. The amount is in
  * dinars; the counts are invoices only, a manual entry is not an invoice.
  */
+/** An issued invoice with something left to collect, net of its credit notes: what « Créances » counts. */
+export function isOpenInvoice(invoice: Pick<Invoice, "documentStatus" | "issuedAt" | "createdAt" | "grossAmount" | "creditAmount" | "balanceAmount">) {
+  if (invoice.documentStatus !== "issued" || !(invoice.issuedAt ?? invoice.createdAt)) return false;
+  const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
+  return Math.min(net, Math.max(0, invoice.balanceAmount) / 100) > 0;
+}
+
 export function receivablesSummary(invoices: Invoice[], transactions: Transaction[]) {
   const overview = buildFinancialOverview(invoices, transactions, { from: "", to: "" }, "all");
   const total = overview.categories.reduce((sum, category) => sum + category.riskValue, 0);
-  const open = invoices.filter((invoice) => {
-    if (invoice.documentStatus !== "issued" || !(invoice.issuedAt ?? invoice.createdAt)) return false;
-    const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
-    return Math.min(net, Math.max(0, invoice.balanceAmount) / 100) > 0;
-  });
+  const open = invoices.filter(isOpenInvoice);
   return {
     total,
     unpaidInvoices: open.length,

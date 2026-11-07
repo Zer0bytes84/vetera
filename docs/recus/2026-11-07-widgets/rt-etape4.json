@@ -1,0 +1,198 @@
+{
+ "erreurs": [],
+ "ecarts": [],
+ "verifie": 20,
+ "oracle": {
+  "from": 8,
+  "to": 18,
+  "basis": "default",
+  "days": [
+   {
+    "key": "2026-11-07",
+    "first": [
+     "15:30",
+     "16:00",
+     "16:30",
+     "17:00",
+     "17:30"
+    ],
+    "n": 5,
+    "vets": [
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01"
+    ],
+    "date": "7 novembre 2026"
+   },
+   {
+    "key": "2026-11-08",
+    "first": [
+     "08:00",
+     "08:30",
+     "09:00",
+     "09:30",
+     "10:00",
+     "10:30"
+    ],
+    "n": 20,
+    "vets": [
+     "demo_vet_02",
+     "demo_vet_02",
+     "demo_vet_02",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01"
+    ],
+    "date": "8 novembre 2026"
+   },
+   {
+    "key": "2026-11-09",
+    "first": [
+     "08:00",
+     "08:30",
+     "09:00",
+     "09:30",
+     "10:00",
+     "10:30"
+    ],
+    "n": 20,
+    "vets": [
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01"
+    ],
+    "date": "9 novembre 2026"
+   },
+   {
+    "key": "2026-11-10",
+    "first": [
+     "08:00",
+     "08:30",
+     "09:00",
+     "09:30",
+     "10:00",
+     "10:30"
+    ],
+    "n": 20,
+    "vets": [
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01"
+    ],
+    "date": "10 novembre 2026"
+   },
+   {
+    "key": "2026-11-11",
+    "first": [
+     "08:00",
+     "08:30",
+     "09:00",
+     "09:30",
+     "10:00",
+     "10:30"
+    ],
+    "n": 20,
+    "vets": [
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01",
+     "demo_vet_01"
+    ],
+    "date": "11 novembre 2026"
+   }
+  ],
+  "totalFree": 85,
+  "stock": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   2,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "appt": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "late": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "older": 0,
+  "vets": 2,
+  "appts": 8
+ },
+ "dialog": [
+  {
+   "type": "text",
+   "v": "",
+   "t": ""
+  },
+  {
+   "type": "select-one",
+   "v": "demo_vet_01",
+   "t": "Affectation automatiqueDr Lina Ait Salem"
+  },
+  {
+   "type": "checkbox",
+   "v": "on",
+   "t": ""
+  },
+  {
+   "type": "text",
+   "v": "09:30",
+   "t": ""
+  },
+  {
+   "type": "select-one",
+   "v": "15",
+   "t": "15 min30 min45 min1 h1 h 302 h"
+  }
+ ],
+ "dialogText": "Nouveau rendez-vous Patient, créneau et motif de consultation. Recherche rapide patient / propriétaire Sélectionnez directement le bon dossier. Le propriétaire et le patient seront remplis ensemble. Rechercher par propriétaire Vétérinaire Affectation automatique Dr Lina Ait Salem Dr Karim Messaoud Laissez vide pour utiliser le vétérinaire local disponible par défaut. Type d'acte Consultation Vacci"
+}

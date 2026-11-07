@@ -11,8 +11,11 @@ import {
   useTransactionsRepository,
   useVaccinationsRepository,
   useHospitalizationsRepository,
+  useUsersRepository,
 } from "@/data/repositories";
 import { useNowTick } from "@/hooks/useNowTick";
+import { useAlertCare } from "../use-alert-care";
+import type { FreeSlot } from "../model/free-slots";
 import { useDelayedSkeleton } from "@/hooks/useDelayedSkeleton";
 import { usePatientIntentPrefetch } from "@/hooks/usePatientIntentPrefetch";
 import { openPatientPeek } from "@/modules/patients/pages/patient-peek";
@@ -80,6 +83,11 @@ export function DashboardPage({
   const capacity = useStays();
   const invoices = useDashboardFinancials();
   const medicalReminders = usePatientReminders();
+  const users = useUsersRepository();
+  const vets = useMemo(
+    () => users.data.filter((user) => user.status === "active" && (user.role === "vet_principal" || user.role === "vet_adjoint")),
+    [users.data],
+  );
   const [analyticsPeriod, setAnalyticsPeriod] = useState<DashboardPeriod>("30d");
   const [customRange, setCustomRange] = useState<CustomRange | null>(null);
   const presentation = useMemo(() => dashboardPresentationData({
@@ -104,6 +112,13 @@ export function DashboardPage({
   const [busyIds, setBusyIds] = useState<string[]>([]);
   const pending = useRef(new Set<string>());
   const now = useNowTick(30_000);
+  const alertCare = useAlertCare(now);
+  const createSlot = (slot: FreeSlot) => {
+    prepareAppointment(undefined, slot.startsAt, slot.start, slot.vetId);
+    navigate("agenda");
+    // The agenda reads the marker when it mounts; the event covers a view that is already mounted.
+    window.setTimeout(() => window.dispatchEvent(new Event("vetera:new-appointment")), 150);
+  };
   const reduced = useReducedMotion();
   const intent = usePatientIntentPrefetch();
   const today = useMemo(
@@ -341,6 +356,13 @@ export function DashboardPage({
           }
           now={now}
           presentation={presentation}
+          vets={vets}
+          onCreateSlot={createSlot}
+          alertSources={{
+            reminders: medicalReminders.reminders,
+            careTasks: alertCare.tasks,
+            unavailable: [medicalReminders.error ? "rappels" : "", alertCare.error ? "soins" : ""].filter(Boolean),
+          }}
           watch={
             <DashboardWatch
               hospitalized={buildHospitalizedWatch({

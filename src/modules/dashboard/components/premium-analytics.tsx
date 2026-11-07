@@ -40,6 +40,11 @@ import { ForecastBar, WidgetFooter } from "./widget-units";
 import { type FocusPoint } from "./focus-trend-chart";
 import { RevenueChartWidget } from "./revenue-chart-widget";
 import { ActivityHexWidget } from "./activity-hex-widget";
+import { AlertsWidget } from "./alerts-widget";
+import { QuickAgendaWidget } from "./quick-agenda-widget";
+import type { AlertReminder } from "../model/alert-bars";
+import type { FreeSlot } from "../model/free-slots";
+import type { CareTask } from "@/modules/care-tasks/domain";
 import { WeekRadialWidget } from "./week-radial-widget";
 import type { View } from "@/types";
 import "./premium-analytics.css";
@@ -83,6 +88,12 @@ interface PremiumAnalyticsProps {
   watch?: React.ReactNode;
   /** Heure courante (horloge de la page), pour repérer le prochain rendez-vous. */
   now?: Date;
+  /** Vétérinaires actifs : « Agenda rapide » compte un créneau libre dès que l'un d'eux l'est. */
+  vets?: { id: string }[];
+  /** Le vétérinaire a choisi un créneau libre : la création du rendez-vous s'ouvre dessus. */
+  onCreateSlot?: (slot: FreeSlot) => void;
+  /** Rappels et soins lus à part des autres données ; `unavailable` nomme ce qui n'a pas pu être chargé. */
+  alertSources?: { reminders: AlertReminder[]; careTasks: CareTask[]; unavailable: string[] };
 }
 
 export function DeltaBadge({
@@ -231,6 +242,9 @@ export function PremiumAnalytics({
   presentation,
   clinicalView,
   now,
+  vets,
+  onCreateSlot,
+  alertSources,
 }: PremiumAnalyticsProps) {
   const { currentUser } = useAuth();
   const userName = firstNameOf(currentUser?.displayName, "Docteur");
@@ -277,7 +291,7 @@ export function PremiumAnalytics({
   const [chartCustom, setChartCustom] = useState<CustomRange | null>(period === "custom" ? (customRange ?? null) : null);
   const [chartPickerOpen, setChartPickerOpen] = useState(false);
   // The key figures' two views: the cards alone, or with their sparklines (the row's current look).
-  const [keyView, setKeyView] = useState<"kpi" | "sparklines">("sparklines");
+  const [keyView, setKeyView] = useState<"kpi" | "sparklines">("kpi");
   // The first day of a range being picked, until the second one ends it.
   const [chartAnchor, setChartAnchor] = useState<Date | null>(null);
   const [followedPeriod, setFollowedPeriod] = useState(pageKey);
@@ -420,6 +434,18 @@ export function PremiumAnalytics({
     () => buildMonthForecast(presentation?.transactions ?? [], now ?? new Date()),
     [presentation?.transactions, now]
   );
+  const alertInputs = useMemo(
+    () => ({
+      reminders: alertSources?.reminders ?? [],
+      careTasks: alertSources?.careTasks ?? [],
+      products: presentation?.products ?? [],
+      patients: presentation?.patients ?? [],
+      invoices: presentation?.invoices ?? [],
+      appointments: presentation?.appointments ?? [],
+    }),
+    [alertSources?.reminders, alertSources?.careTasks, presentation?.products, presentation?.patients, presentation?.invoices, presentation?.appointments],
+  );
+
   const weekStats = useMemo(
     () =>
       buildWeekFacts({
@@ -633,6 +659,21 @@ export function PremiumAnalytics({
         <ActivityHexWidget appointments={presentation?.appointments ?? []} now={updatedAt} />
 
         <WeekRadialWidget appointments={presentation?.appointments ?? []} facts={weekStats} now={updatedAt} />
+      </div>
+
+      {/* 6. The last row, half and half: Agenda rapide (free slots), then Alertes. */}
+      <div className="pairRow">
+        <QuickAgendaWidget
+          appointments={presentation?.appointments ?? []}
+          now={updatedAt}
+          onCreate={(slot) => onCreateSlot?.(slot)}
+          vets={vets ?? []}
+        />
+        <AlertsWidget
+          inputs={alertInputs}
+          now={updatedAt}
+          unavailable={alertSources?.unavailable ?? []}
+        />
       </div>
       </>}
     </div>
