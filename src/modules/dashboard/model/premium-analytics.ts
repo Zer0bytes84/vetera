@@ -12,7 +12,52 @@ export const ANALYTICS_PERIODS = [
 export type AnalyticsPeriod = (typeof ANALYTICS_PERIODS)[number]["value"];
 export type AnalyticsRange = { from: Date; to: Date };
 
-export function analyticsRanges(period: AnalyticsPeriod, now: Date) {
+/** The dashboard's own periods: the presets, or two days picked by the user. */
+export type DashboardPeriod = AnalyticsPeriod | "custom";
+/** Two calendar days as « AAAA-MM-JJ », as the date picker writes them. */
+export type CustomRange = { from: string; to: string };
+/** The longest picked span: beyond two years a point per week still draws no curve worth reading. */
+export const MAX_CUSTOM_DAYS = 731;
+
+function parseDay(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  // 2026-02-31 rolls over into March: not a day.
+  return date.getMonth() === Number(match[2]) - 1 ? date : null;
+}
+
+/**
+ * The picked days as a range from the first midnight to the last 23:59:59.
+ * Reversed days are put in order and a span past the limit keeps its end.
+ * Anything unreadable gives null, so a half-typed date never drives the figures.
+ */
+export function customAnalyticsRange(custom: CustomRange | null | undefined): AnalyticsRange | null {
+  if (!custom) return null;
+  const a = parseDay(custom.from);
+  const b = parseDay(custom.to);
+  if (!a || !b) return null;
+  const [first, last] = a <= b ? [a, b] : [b, a];
+  const days = Math.round((last.getTime() - first.getTime()) / 86_400_000) + 1;
+  const from = days > MAX_CUSTOM_DAYS ? addDays(last, 1 - MAX_CUSTOM_DAYS) : first;
+  return { from: startOfDay(from), to: endOfDay(last) };
+}
+
+function calendarDays(range: AnalyticsRange) {
+  return Math.max(1, Math.round((startOfDay(range.to).getTime() - startOfDay(range.from).getTime()) / 86_400_000) + 1);
+}
+
+export function analyticsRanges(period: DashboardPeriod, now: Date, custom?: CustomRange | null) {
+  if (period === "custom") {
+    const range = customAnalyticsRange(custom);
+    // Nothing valid picked yet: the thirty days the page opens on.
+    if (!range) return analyticsRanges("30d", now);
+    const days = calendarDays(range);
+    return {
+      current: range,
+      previous: { from: startOfDay(addDays(range.from, -days)), to: new Date(range.from.getTime() - 1) },
+    };
+  }
   const to = endOfDay(now);
   const days = period === "today" ? 1 : period === "7d" ? 7 : period === "30d" ? 30 : 90;
   const from = period === "12m"
@@ -35,8 +80,19 @@ function within(value: string | undefined, range: AnalyticsRange) {
  * Buckets for the KPI micro-histograms: one bar per day up to 30 days, per
  * week over 90 days, per month over 12 months; none for a single day.
  */
-export function trendBuckets(period: AnalyticsPeriod, range: AnalyticsRange): AnalyticsRange[] {
+export function trendBuckets(period: DashboardPeriod, range: AnalyticsRange): AnalyticsRange[] {
   if (period === "today") return [];
+  if (period === "custom") {
+    const days = calendarDays(range);
+    if (days <= 1) return [];
+    // A bar a day up to a month, a week beyond.
+    const step = days <= 31 ? 1 : 7;
+    const buckets: AnalyticsRange[] = [];
+    for (let from = range.from; from <= range.to; from = startOfDay(addDays(from, step))) {
+      buckets.push({ from, to: new Date(Math.min(startOfDay(addDays(from, step)).getTime() - 1, range.to.getTime())) });
+    }
+    return buckets;
+  }
   if (period === "12m") {
     return Array.from({ length: 12 }, (_, i) => {
       const from = new Date(range.from.getFullYear(), range.from.getMonth() + i, i === 0 ? range.from.getDate() : 1);
@@ -89,8 +145,8 @@ export function dashboardPresentationData(data: {
 export function buildPremiumAnalytics(data: {
   appointments: Appointment[]; patients: Patient[]; transactions: Transaction[];
   tasks: Task[]; vaccinations: Vaccination[]; alerts: ClinicalAlert[];
-}, period: AnalyticsPeriod, now: Date) {
-  const ranges = analyticsRanges(period, now);
+}, period: DashboardPeriod, now: Date, custom?: CustomRange | null) {
+  const ranges = analyticsRanges(period, now, custom);
   const knownPatients = new Set(data.patients.map(p => p.id));
   const visitsIn = (range: AnalyticsRange) => data.appointments.filter(a =>
     knownPatients.has(a.patientId) && !["cancelled", "no_show"].includes(a.status) && within(a.startTime, range)

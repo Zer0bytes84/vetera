@@ -45,11 +45,9 @@ function Cell({ day, onHover }: { day: HeatDay | null; onHover: (day: HeatDay | 
 export function ActivityHeatmap({
   appointments,
   now,
-  onAgenda,
 }: {
   appointments: { startTime?: string | null; status: string }[];
   now: Date;
-  onAgenda: () => void;
 }) {
   const [period, setPeriod] = useState<HeatmapPeriod>("month");
   const map = useMemo(() => buildActivityHeatmap(appointments, period, now), [appointments, period, now]);
@@ -196,7 +194,7 @@ export function ActivityHeatmap({
         </div>
       </div>
 
-      <WidgetFooter action="Agenda" onAction={onAgenda}>
+      <WidgetFooter>
         {futureBooked
           ? `${plural(futureBooked, "rendez-vous")} déjà prévu${futureBooked > 1 ? "s" : ""} d’ici le ${lastDay}`
           : map.days.some((day) => day.future)

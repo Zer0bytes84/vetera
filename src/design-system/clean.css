@@ -379,25 +379,16 @@
   }
   :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-search-field:hover .shell-header-search-key { color: var(--clean-ink-strong); }
 }
-/* The slide-out toggle: a round ghost at the tools' 36 px, in the strong ink
-   of their glyphs; the rule beside it is the header's quiet line. */
+/* The slide-out toggle is a `topIcon` like the tools on the right: it takes their capsule, their 16 px
+   glyph and their stroke (it was a borderless ghost, unlike its neighbours). The padding opens the
+   header, the rule beside it is the header's quiet line. */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-sidebar-toggle) { padding-inline-start: 16px !important; }
-:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-sidebar-toggle {
-  border: 0 !important;
-  border-radius: 999px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--clean-ink-strong) !important;
-  transition: background-color var(--speed-highlight-out) ease, color var(--speed-highlight-out) ease;
+:root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-sidebar-toggle svg {
+  width: var(--clean-header-icon) !important;
+  height: var(--clean-header-icon) !important;
+  stroke-width: var(--clean-header-icon-stroke) !important;
 }
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-header-divider { background: var(--clean-line); }
-@media (hover: hover) and (pointer: fine) {
-  :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-sidebar-toggle:hover {
-    background: var(--clean-hover) !important;
-    color: var(--clean-ink-strong) !important;
-    transition-duration: var(--speed-highlight-in);
-  }
-}
 /* The avatar's disc (28 px in a 32 px button) ends on the page's 24 px margin, measured from the sheet edge like the cards (a classic scrollbar is taken back). */
 :root[data-skin="clean"][data-skin][data-skin] [data-slot="app-header"] .shell-toolbar:has(.shell-account-trigger) { padding-inline-end: calc(22px - var(--shell-scrollbar-width, 0px)) !important; }
 
@@ -1620,8 +1611,15 @@
   color: var(--clean-ink-strong);
 }
 :root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon svg {
-  width: 20px !important;
-  height: 20px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+/* The glyph shares its vertical axis with the header's slide-out icon (measured 282 px
+   against 286 px). A translation, not a margin: the title does not move with it. The
+   page gutter is 16 px under 1024 px and 24 px above, so the shift follows it. */
+:root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon { translate: 4px 0; }
+@media (min-width: 1024px) {
+  :root[data-skin="clean"] [data-slot="page-header"] .premium-page-icon { translate: -4px 0; }
 }
 :root[data-skin="clean"] [data-slot="page-header"]:has(.page-header-kicker) .premium-page-icon {
   margin-top: 19.5px;

@@ -3763,3 +3763,23 @@ button:focus-visible,
   outline: none;
   box-shadow: none;
 }
+
+/* Calendars, every skin: the day states read at a glance. Today takes the accent blue (ink
+   and a tinted ground), the picked day the strong ground, a picked range a tint of the accent.
+   Clean resets every button whose class holds « bg-muted/50 » to transparent with !important,
+   which hid the picked day in every calendar: these rules outrank that reset. */
+:root:root [data-slot="calendar"] td[data-today="true"]:not([data-selected="true"]) > button {
+  background: color-mix(in oklab, var(--tone-blue) 14%, transparent) !important;
+  color: var(--tone-blue) !important;
+  font-weight: 600;
+}
+:root:root [data-slot="calendar"] button[data-selected-single="true"],
+:root:root [data-slot="calendar"] button[data-range-start="true"],
+:root:root [data-slot="calendar"] button[data-range-end="true"] {
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+:root:root [data-slot="calendar"] button[data-range-middle="true"] {
+  background: color-mix(in oklab, var(--tone-blue) 14%, transparent) !important;
+  color: var(--foreground) !important;
+}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
 import { PatientDossierSearch } from "./patient-dossier-search";
 import { formatPersonName } from "@/utils/display-format";
@@ -15,7 +16,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
 
 import { AgendaListView } from "@/components/AgendaListView";
-import { AgendaMonthCalendar } from "@/modules/agenda/components/agenda-month-calendar";
+import { AgendaCalendar, type CalendarView } from "@/modules/agenda/components/agenda-calendar";
 import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
 import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
 import MotivationalHeader from "@/components/MotivationalHeader";
@@ -215,6 +216,8 @@ export function AgendaView(props: AgendaViewProps) {
     viewMode,
     weekDays,
   } = props;
+  // The day in close-up opens first: a busy day reads at a glance before anything else.
+  const [calendarView, setCalendarView] = useState<CalendarView>("day");
   const isDayScope = tableTab === "selection";
   const displayMode: ViewMode = viewMode === "month" ? "list" : viewMode;
   const showsList = !isDayScope || displayMode === "list";
@@ -272,15 +275,30 @@ export function AgendaView(props: AgendaViewProps) {
 
       <SectionCards items={sectionCards} />
 
-      <AgendaMonthCalendar
+      <AgendaCalendar
         getAppointmentsForDate={getAppointmentsForDate}
         getPatientName={getPatientName}
         monthDays={monthDays}
+        onCreateAt={(date, time) => handleOpenCreate(date, time)}
+        onSelectAppointment={(appointment) => {
+          selectAppointment(appointment, true);
+          // The detail card sits under the calendar: bring it into view.
+          window.requestAnimationFrame(() =>
+            document.getElementById("agenda-detail")?.scrollIntoView({
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+              block: "nearest",
+            })
+          );
+        }}
         onSelectDate={(date) => {
           setSelectedDate(date);
           setTableTab("selection");
         }}
+        onViewChange={setCalendarView}
+        selectedAppointmentId={selectedAppointmentId}
         selectedDate={selectedDate}
+        view={calendarView}
+        weekDays={weekDays}
       />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_336px] xl:items-start">
@@ -492,7 +510,7 @@ export function AgendaView(props: AgendaViewProps) {
 
         <aside className="grid min-w-0 gap-6" aria-label="Détail et charge de la journée">
           {selectedAppointment ? (
-            <Card className="agenda-side-panel board-frame">
+            <Card className="agenda-side-panel board-frame" id="agenda-detail">
               <CardHeader className="border-border border-b px-5 py-4">
                 <CardDescription>Rendez-vous sélectionné</CardDescription>
                 <CardTitle className="font-medium text-[18px] tracking-[-0.02em]">

@@ -11,34 +11,69 @@ export interface FocusPoint {
   previousVisits?: number;
 }
 
-type Metric = "receipts" | "visits";
+/** Plot geometry: the readout band on top, the visits scale on the left, the receipts scale on the right, three dates under. */
+const G = { h: 300, top: 52, bottom: 28, left: 34, right: 46 };
 
-/** Plot geometry: the readout band on top, the scale on the right, three dates under. */
-const G = { h: 300, top: 52, bottom: 28, left: 0, right: 40 };
-
-function scaleTop(max: number) {
+/** Five equal steps up to a round top, so the two scales share one grid. */
+export function scaleTop(max: number) {
   const raw = Math.max(max, 5) / 5;
   const pow = 10 ** Math.floor(Math.log10(raw));
   const step = [1, 2, 2.5, 5, 10].map((m) => m * pow).find((s) => s >= raw) ?? raw;
   return { top: step * 5, ticks: [0, 1, 2, 3, 4, 5].map((i) => Math.round(step * i * 100) / 100) };
 }
 
+/** The change of a total against the one before it; null when there is nothing to compare. */
+export function seriesChange(total: number, previousTotal: number, hasPrevious: boolean) {
+  return hasPrevious && previousTotal ? Math.round(((total - previousTotal) / previousTotal) * 1000) / 10 : null;
+}
+
 /** Compact scale label: 15 000 → « 15 k ». */
 const compact = (value: number) =>
   value >= 1000 ? `${formatNumber(value / 1000, { maximumFractionDigits: 1 })} k` : formatNumber(value);
 
-const METRICS: { value: Metric; label: string }[] = [
-  { value: "receipts", label: "Recettes" },
-  { value: "visits", label: "Consultations" },
-];
+const money = (v: number) => `${formatNumber(v)} DA`;
+const count = (v: number) => `${formatNumber(v)} consultation${v > 1 ? "s" : ""}`;
+
+function Figure({
+  series,
+  label,
+  value,
+  change,
+  previous,
+}: {
+  series: "receipts" | "visits";
+  label: string;
+  value: string;
+  change: number | null;
+  previous: string;
+}) {
+  return (
+    <div className="focusFigure" data-series={series}>
+      <span className="focusFigureLabel">
+        <i aria-hidden="true" className="focusKey" data-series={series} />
+        {label}
+      </span>
+      <strong>{value}</strong>
+      <span className="focusChange" data-sense={change === null ? "none" : change > 0 ? "up" : change < 0 ? "down" : "flat"}>
+        {change === null ? (
+          "Pas de période précédente comparable"
+        ) : (
+          <>
+            <b>{`${change > 0 ? "+" : ""}${formatNumber(change, { maximumFractionDigits: 1 })} %`}</b>
+            {` contre ${previous} la période précédente`}
+          </>
+        )}
+      </span>
+    </div>
+  );
+}
 
 /**
- * The receipts chart, after the reference: the period's figure and its change
- * in the head, the series tabs and the period on the right, one series drawn
- * as a fine monochrome line with its glow and a fading area, a dashed grid
- * and a dashed cross on the hovered day, a frameless readout, the scale on
- * the right and three dates under. Straight segments: an empty stretch of
- * days stays flat at zero, as the journal has it.
+ * The period's receipts and consultations on one chart: receipts in dinars as
+ * the ink line with its glow and fading area (scale on the right), consultations
+ * as a blue line with a marker per day (scale on the left). Each has its figure
+ * and its change in the head; a dashed grid and cross, a frameless readout with
+ * both values. Straight segments: an empty stretch of days stays flat at zero.
  */
 export function FocusTrendChart({
   points,
@@ -46,13 +81,12 @@ export function FocusTrendChart({
   footer,
 }: {
   points: FocusPoint[];
-  /** The period switch, set in the head beside the series tabs. */
+  /** The period switch, set in the head. */
   periodControl?: ReactNode;
   footer?: ReactNode;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
-  const [metric, setMetric] = useState<Metric>("receipts");
   const [active, setActive] = useState<number | null>(null);
   const id = useId().replace(/:/g, "");
 
@@ -65,37 +99,41 @@ export function FocusTrendChart({
   }, []);
 
   const n = points.length;
-  const value = (p: FocusPoint) => (metric === "receipts" ? p.receipts : p.visits);
-  const previous = (p: FocusPoint) => (metric === "receipts" ? p.previousReceipts : p.previousVisits);
-  const total = points.reduce((sum, p) => sum + value(p), 0);
-  const hasPrevious = points.some((p) => previous(p) !== undefined);
-  const previousTotal = points.reduce((sum, p) => sum + (previous(p) ?? 0), 0);
-  const change = hasPrevious && previousTotal ? Math.round(((total - previousTotal) / previousTotal) * 1000) / 10 : null;
-  const unit = (v: number) =>
-    metric === "receipts" ? `${formatNumber(v)} DA` : `${formatNumber(v)} consultation${v > 1 ? "s" : ""}`;
+  const sum = (pick: (p: FocusPoint) => number | undefined) => points.reduce((total, p) => total + (pick(p) ?? 0), 0);
+  const receiptsTotal = sum((p) => p.receipts);
+  const visitsTotal = sum((p) => p.visits);
+  const receiptsBefore = sum((p) => p.previousReceipts);
+  const visitsBefore = sum((p) => p.previousVisits);
+  const hasPrevious = points.some((p) => p.previousReceipts !== undefined || p.previousVisits !== undefined);
+  const receiptsChange = seriesChange(receiptsTotal, receiptsBefore, hasPrevious);
+  const visitsChange = seriesChange(visitsTotal, visitsBefore, hasPrevious);
 
-  const { top, ticks } = scaleTop(Math.max(1, ...points.map(value)));
+  const left = scaleTop(Math.max(1, ...points.map((p) => p.visits)));
+  const right = scaleTop(Math.max(1, ...points.map((p) => p.receipts)));
   const plotW = Math.max(0, width - G.left - G.right);
   const plotH = G.h - G.top - G.bottom;
   const base = G.top + plotH;
   const x = (k: number) => G.left + (n <= 1 ? plotW / 2 : (k * plotW) / (n - 1));
-  const y = (v: number) => base - (Math.min(v, top) / top) * plotH;
-  const path = (from: number, to: number) =>
+  const yReceipts = (v: number) => base - (Math.min(v, right.top) / right.top) * plotH;
+  const yVisits = (v: number) => base - (Math.min(v, left.top) / left.top) * plotH;
+  const path = (pick: (p: FocusPoint) => number, y: (v: number) => number, from: number, to: number) =>
     points
       .slice(from, to + 1)
-      .map((p, i) => `${i ? "L" : "M"}${x(from + i).toFixed(1)},${y(value(p)).toFixed(1)}`)
+      .map((p, i) => `${i ? "L" : "M"}${x(from + i).toFixed(1)},${y(pick(p)).toFixed(1)}`)
       .join(" ");
 
-  // At rest the whole line is lit; on hover, what came before steps back.
+  // At rest the whole receipts line is lit; on hover, what came before steps back.
   const split = active ?? 0;
-  const lit = n > 1 ? path(split, n - 1) : "";
-  const quiet = active !== null && active > 0 ? path(0, active) : "";
+  const lit = n > 1 ? path((p) => p.receipts, yReceipts, split, n - 1) : "";
+  const quiet = active !== null && active > 0 ? path((p) => p.receipts, yReceipts, 0, active) : "";
   const area = lit ? `${lit} L${x(n - 1).toFixed(1)},${base} L${x(split).toFixed(1)},${base} Z` : "";
+  const visitsLine = n > 1 ? path((p) => p.visits, yVisits, 0, n - 1) : "";
   const dates = n > 2 ? [0, Math.floor((n - 1) / 2), n - 1] : [0, n - 1];
+  // A marker a day while days stay apart; a long period keeps the line alone.
+  const markers = n <= 31;
 
   const hot = active !== null ? points[active] : null;
-  const hotPrevious = hot ? previous(hot) : undefined;
-  const flip = active !== null && x(active) > width - 240;
+  const flip = active !== null && x(active) > width - 260;
 
   const onMove = (event: React.PointerEvent<SVGSVGElement>) => {
     if (n < 2 || plotW <= 0) return;
@@ -114,42 +152,29 @@ export function FocusTrendChart({
   return (
     <div className="focusChart">
       <div className="focusHead">
-        <div className="focusFigure">
-          <span className="focusFigureLabel">{metric === "receipts" ? "Recettes encaissées" : "Consultations"}</span>
-          <strong>{metric === "receipts" ? `${formatNumber(total)} DA` : formatNumber(total)}</strong>
-          <span className="focusChange" data-sense={change === null ? "none" : change > 0 ? "up" : change < 0 ? "down" : "flat"}>
-            {change === null ? (
-              "Pas de période précédente comparable"
-            ) : (
-              <>
-                <b>{`${change > 0 ? "+" : ""}${formatNumber(change, { maximumFractionDigits: 1 })} %`}</b>
-                {` contre ${unit(previousTotal)} la période précédente`}
-              </>
-            )}
-          </span>
+        <div className="focusFigures">
+          <Figure
+            change={receiptsChange}
+            label="Recettes encaissées"
+            previous={money(receiptsBefore)}
+            series="receipts"
+            value={money(receiptsTotal)}
+          />
+          <Figure
+            change={visitsChange}
+            label="Consultations"
+            previous={formatNumber(visitsBefore)}
+            series="visits"
+            value={formatNumber(visitsTotal)}
+          />
         </div>
-        <div className="focusControls">
-          <div aria-label="Série affichée" className="focusTabs" data-tabs-style="segmented" role="group">
-            {METRICS.map((option) => (
-              <button
-                aria-pressed={metric === option.value}
-                data-active={metric === option.value}
-                key={option.value}
-                onClick={() => setMetric(option.value)}
-                type="button"
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          {periodControl}
-        </div>
+        <div className="focusControls">{periodControl}</div>
       </div>
 
       <div className="focusPlot" ref={boxRef}>
         {width ? (
           <svg
-            aria-label={`${metric === "receipts" ? "Recettes" : "Consultations"} sur la période : ${unit(total)}`}
+            aria-label={`Recettes et consultations sur la période : ${money(receiptsTotal)} et ${count(visitsTotal)}`}
             data-active={active !== null || undefined}
             height={G.h}
             onBlur={() => setActive(null)}
@@ -172,11 +197,15 @@ export function FocusTrendChart({
               </filter>
             </defs>
 
-            {ticks.map((t) => (
+            {/* One grid, two scales: the five steps of each line up. */}
+            {right.ticks.map((t, i) => (
               <g key={t}>
-                <line className="focusGrid" x1={G.left} x2={width - G.right + 10} y1={y(t)} y2={y(t)} />
-                <text className="focusTickY" x={width} y={y(t)}>
-                  {metric === "receipts" ? compact(t) : formatNumber(t)}
+                <line className="focusGrid" x1={G.left} x2={width - G.right + 10} y1={yReceipts(t)} y2={yReceipts(t)} />
+                <text className="focusTickY" data-series="receipts" x={width} y={yReceipts(t)}>
+                  {compact(t)}
+                </text>
+                <text className="focusTickY focusTickLeft" data-series="visits" x={0} y={yVisits(left.ticks[i])}>
+                  {formatNumber(left.ticks[i])}
                 </text>
               </g>
             ))}
@@ -185,6 +214,12 @@ export function FocusTrendChart({
             {quiet ? <path className="focusQuiet" d={quiet} /> : null}
             <path className="focusGlow" d={lit} filter={`url(#${id}-glow)`} />
             <path className="focusLine" d={lit} />
+            <path className="focusLineVisits" d={visitsLine} />
+            {markers
+              ? points.map((p, k) => (
+                  <circle className="focusMarker" cx={x(k)} cy={yVisits(p.visits)} key={k} r={2.5} />
+                ))
+              : null}
 
             {/* The hovered day's date replaces any regular date too close to it. */}
             {dates.map((k) =>
@@ -198,8 +233,8 @@ export function FocusTrendChart({
             {active !== null && hot ? (
               <g>
                 <line className="focusRule" x1={x(active)} x2={x(active)} y1={4} y2={base} />
-                <line className="focusRule" x1={G.left} x2={width - G.right + 10} y1={y(value(hot))} y2={y(value(hot))} />
-                <circle className="focusDot" cx={x(active)} cy={y(value(hot))} r={3.5} />
+                <circle className="focusDot" cx={x(active)} cy={yReceipts(hot.receipts)} r={3.5} />
+                <circle className="focusDot focusDotVisits" cx={x(active)} cy={yVisits(hot.visits)} r={3.5} />
                 <text
                   className="focusTickX focusTickXActive"
                   textAnchor={active === 0 ? "start" : active === n - 1 ? "end" : "middle"}
@@ -213,17 +248,21 @@ export function FocusTrendChart({
           </svg>
         ) : null}
 
-        {/* Frameless readout beside the rule, in the band above the plot. */}
+        {/* Frameless readout beside the rule, in the band above the plot: both series, each named. */}
         {hot && active !== null ? (
           <div aria-hidden="true" className="focusTip" data-flip={flip || undefined} style={{ left: x(active), top: 0 }}>
             <span className="focusTipDate">{hot.long}</span>
-            <strong>{unit(value(hot))}</strong>
-            {hotPrevious !== undefined ? (
+            <strong>
+              <i className="focusKey" data-series="receipts" />
+              {money(hot.receipts)}
+            </strong>
+            <strong>
+              <i className="focusKey" data-series="visits" />
+              {count(hot.visits)}
+            </strong>
+            {hot.previousReceipts !== undefined || hot.previousVisits !== undefined ? (
               <span className="focusTipDate">
-                {unit(hotPrevious)} la période précédente
-                {value(hot) !== hotPrevious
-                  ? ` · ${value(hot) > hotPrevious ? "+" : "−"}${unit(Math.abs(value(hot) - hotPrevious))}`
-                  : ""}
+                Période précédente : {money(hot.previousReceipts ?? 0)} · {formatNumber(hot.previousVisits ?? 0)}
               </span>
             ) : null}
           </div>

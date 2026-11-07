@@ -594,6 +594,10 @@
 [data-visual-style="premium"] [role="tab"] [data-slot="badge"],
 [data-visual-style="premium"] [data-slot="tabs-trigger"] .badge,
 [data-visual-style="premium"] [role="tab"] .tabCount {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
   min-width: 22px !important;
   height: 20px !important;
   padding: 0 7px !important;

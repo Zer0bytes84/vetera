@@ -39,6 +39,12 @@
   --signal-watch: #f59e0b;
   --signal-positive: #10b981;
   --signal-quiet: #696b71;
+  /* Accent inks for key figures (dashboard, agenda): each holds 4.5:1 on the light surfaces. */
+  --tone-green: #0f7a55;
+  --tone-blue: #2457d6;
+  --tone-violet: #6a3fd6;
+  --tone-amber: #8a5500;
+  --tone-rose: #b23c30;
   --primary: #191919;
   --primary-foreground: #ffffff;
   --secondary: #ffffff;
@@ -97,6 +103,12 @@
   --signal-watch: #fcd34d;
   --signal-positive: #34d399;
   --signal-quiet: #63656a;
+  /* The same accents on the dark surfaces, 7:1 and above. */
+  --tone-green: #34d399;
+  --tone-blue: #8fb0ff;
+  --tone-violet: #b9a1ff;
+  --tone-amber: #e2b467;
+  --tone-rose: #f0a097;
   --elev-card: 0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06);
   --elev-float:
     0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06),

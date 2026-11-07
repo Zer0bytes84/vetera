@@ -39,7 +39,7 @@ import { useDashboardVersion } from "../hooks/use-dashboard-version";
 import { useDashboardFinancials } from "../hooks/use-dashboard-financials";
 import { DashboardModeToggle } from "../components/dashboard-mode-toggle";
 import { PremiumAnalytics } from "../components/premium-analytics";
-import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod } from "../model/premium-analytics";
+import { buildPremiumAnalytics, dashboardPresentationData, type AnalyticsPeriod, type CustomRange, type DashboardPeriod } from "../model/premium-analytics";
 import "../components/premium-analytics.css";
 import { DashboardWatch } from "../components/dashboard-watch";
 import { OccupancyUnits } from "@/modules/hospitalizations/stays/occupancy-units";
@@ -80,7 +80,8 @@ export function DashboardPage({
   const capacity = useStays();
   const invoices = useDashboardFinancials();
   const medicalReminders = usePatientReminders();
-  const [analyticsPeriod, setAnalyticsPeriod] = useState<AnalyticsPeriod>("30d");
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<DashboardPeriod>("30d");
+  const [customRange, setCustomRange] = useState<CustomRange | null>(null);
   const presentation = useMemo(() => dashboardPresentationData({
     appointments: appointments.data, owners: owners.data, patients: patients.data,
     products: products.data, tasks: tasks.data, transactions: transactions.data,
@@ -315,15 +316,19 @@ export function DashboardPage({
       <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-6 pb-12 lg:px-6 premium-analytics-dashboard">
         <PremiumAnalytics
           clinicalView={version === "clinical" ? clinicalView : undefined}
-          model={buildPremiumAnalytics({ ...presentation, alerts }, analyticsPeriod, now)}
+          model={buildPremiumAnalytics({ ...presentation, alerts }, analyticsPeriod, now, customRange)}
           period={analyticsPeriod}
-          onPeriod={setAnalyticsPeriod}
+          onPeriod={(next: AnalyticsPeriod) => setAnalyticsPeriod(next)}
+          customRange={customRange}
+          onCustomRange={(range) => {
+            setCustomRange(range);
+            setAnalyticsPeriod("custom");
+          }}
           states={{ cash: cashState, patients: nowState, actions: actionsState }}
           onFinances={() => navigate("finances")}
           onPatients={() => navigate("patients")}
           onActions={() => navigate("taches")}
           onNavigate={navigate}
-          nextAppointment={today[0]}
           dashboardViewControl={
             <DashboardModeToggle
               value={version}

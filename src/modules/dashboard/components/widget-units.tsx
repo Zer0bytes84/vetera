@@ -187,13 +187,16 @@ export function ForecastBar({ forecast }: { forecast: MonthForecast }) {
 }
 
 /** A card's last line: what to know, then its single action as a pill. */
-export function WidgetFooter({ children, action, onAction }: { children?: ReactNode; action: string; onAction: () => void }) {
+/** The action is optional: a card whose destination another card on the row already offers shows the note alone. */
+export function WidgetFooter({ children, action, onAction }: { children?: ReactNode; action?: string; onAction?: () => void }) {
   return (
     <div className="widgetFooter">
       <p>{children}</p>
-      <button className="pillAction" onClick={onAction} type="button">
-        {action} <ArrowRight aria-hidden="true" size={13} />
-      </button>
+      {action && onAction ? (
+        <button className="pillAction" onClick={onAction} type="button">
+          {action} <ArrowRight aria-hidden="true" size={13} />
+        </button>
+      ) : null}
     </div>
   );
 }

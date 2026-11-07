@@ -4,8 +4,6 @@ import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
-  BarChart3,
-  BedDouble,
   Bell,
   Calendar,
   CalendarDays,
@@ -27,9 +25,15 @@ import {
   analyticsRanges,
   type AnalyticsPeriod,
   type buildPremiumAnalytics,
+  type CustomRange,
+  type DashboardPeriod,
 } from "../model/premium-analytics";
 import { prepareAppointment } from "@/modules/shell/model/clinical-actions";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Calendar as DateRangeCalendar } from "@/components/ui/calendar";
+import { COMPACT_CALENDAR_CLASS, DatePicker, formatDateValue } from "@/components/ui/date-picker";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { getAppointmentTypeMeta } from "@/config/status-meta";
 import { cn } from "@/lib/utils";
@@ -45,15 +49,19 @@ import "./premium-analytics.css";
 
 interface PremiumAnalyticsProps {
   model: ReturnType<typeof buildPremiumAnalytics>;
-  period: AnalyticsPeriod;
+  period: DashboardPeriod;
+  /** A preset period: the quick choices. */
   onPeriod: (period: AnalyticsPeriod) => void;
+  /** The two days picked, when `period` is « custom ». */
+  customRange?: CustomRange | null;
+  /** Two days picked: the page switches to « custom » with them. */
+  onCustomRange?: (range: CustomRange) => void;
   states: { cash: WidgetState; patients: WidgetState; actions: WidgetState };
   onFinances: () => void;
   onPatients: () => void;
   onActions: () => void;
   onNavigate?: (view: View) => void;
   dashboardViewControl?: React.ReactNode;
-  nextAppointment?: ScheduleEntry;
   presentation?: {
     patients: any[];
     owners: any[];
@@ -190,9 +198,8 @@ function MiniArea({ values, label }: { values: number[]; label: string }) {
 
 type TrendPoint = FocusPoint;
 
-/** The chart's own periods: a single day draws no curve. */
-const CHART_PERIODS = ANALYTICS_PERIODS.filter((option) => option.value !== "today");
-type ChartPeriod = (typeof CHART_PERIODS)[number]["value"];
+/** The chart's own periods: a single day draws no curve, so « today » is left to the page's. */
+type ChartPeriod = Exclude<AnalyticsPeriod, "today"> | "custom";
 
 /** Chiffre principal avec son unité en retrait (« 13 900 » + « DA »). */
 function FactValue({ text }: { text: string }) {
@@ -214,13 +221,14 @@ export function PremiumAnalytics({
   model,
   period,
   onPeriod,
+  customRange,
+  onCustomRange,
   states,
   onFinances,
   onPatients,
   onActions,
   onNavigate,
   dashboardViewControl,
-  nextAppointment,
   presentation,
   today,
   financials,
@@ -235,14 +243,19 @@ export function PremiumAnalytics({
   const updatedAt = now ?? new Date();
 
   const dateOptions = { day: "numeric", month: "short" } as const;
+  const sameDay = ranges.current.from.toDateString() === ranges.current.to.toDateString();
   const rangeLabel =
-    period === "today"
+    sameDay
       ? ranges.current.from.toLocaleDateString("fr-FR", {
           day: "numeric",
           month: "long",
           year: "numeric",
         })
       : `Du ${ranges.current.from.toLocaleDateString("fr-FR", dateOptions)} au ${ranges.current.to.toLocaleDateString("fr-FR", { ...dateOptions, year: "numeric" })}`;
+
+  // The days the two pickers show: the picked ones, else those of the preset in force.
+  const pickedFrom = period === "custom" && customRange ? customRange.from : formatDateValue(ranges.current.from);
+  const pickedTo = period === "custom" && customRange ? customRange.to : formatDateValue(ranges.current.to);
 
   const handleNewAppointment = () => {
     prepareAppointment();
@@ -259,26 +272,37 @@ export function PremiumAnalytics({
     }, 150);
   };
 
-  const nextTimeFormatted = useMemo(() => {
-    if (!nextAppointment) return null;
-    try {
-      const d = new Date(nextAppointment.appointment.startTime);
-      return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-    } catch {
-      return null;
-    }
-  }, [nextAppointment]);
-
   // The chart's own period, set from its card; it follows the page's period
   // when that one changes (a single day has no curve: a week instead).
   const pagePeriod: ChartPeriod = period === "today" ? "7d" : period;
+  // Picking other days moves the chart too, even when the page stays on « custom ».
+  const pageKey = `${pagePeriod}|${period === "custom" ? `${customRange?.from}|${customRange?.to}` : ""}`;
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>(pagePeriod);
-  const [followedPeriod, setFollowedPeriod] = useState(pagePeriod);
-  if (followedPeriod !== pagePeriod) {
-    setFollowedPeriod(pagePeriod);
+  // The days picked on the chart itself; they follow the page's when the page picks days.
+  const [chartCustom, setChartCustom] = useState<CustomRange | null>(period === "custom" ? (customRange ?? null) : null);
+  const [chartPickerOpen, setChartPickerOpen] = useState(false);
+  // The first day of a range being picked, until the second one ends it.
+  const [chartAnchor, setChartAnchor] = useState<Date | null>(null);
+  const [followedPeriod, setFollowedPeriod] = useState(pageKey);
+  if (followedPeriod !== pageKey) {
+    setFollowedPeriod(pageKey);
     setChartPeriod(pagePeriod);
+    setChartCustom(period === "custom" ? (customRange ?? null) : null);
   }
-  const chartRanges = useMemo(() => analyticsRanges(chartPeriod, now ?? new Date()), [chartPeriod, now]);
+  const chartRanges = useMemo(
+    () => analyticsRanges(chartPeriod, now ?? new Date(), chartCustom),
+    [chartPeriod, now, chartCustom]
+  );
+  const chartRangeLabel = (() => {
+    const day = { day: "numeric", month: "short", year: "numeric" } as const;
+    const { from, to } = chartRanges.current;
+    return from.toDateString() === to.toDateString()
+      ? from.toLocaleDateString("fr-FR", day)
+      : `Du ${from.toLocaleDateString("fr-FR", day)} au ${to.toLocaleDateString("fr-FR", day)}`;
+  })();
+  const chartIsWeekly =
+    chartPeriod === "12m" ||
+    (chartPeriod === "custom" && chartRanges.current.to.getTime() - chartRanges.current.from.getTime() > 92 * 86_400_000);
 
   // Compute trend points for the chart's period
   const chartPoints = useMemo<TrendPoint[]>(() => {
@@ -288,8 +312,11 @@ export function PremiumAnalytics({
     const { from, to } = ranges.current;
     // Each bucket's twin in the previous period, the same length earlier.
     const shift = from.getTime() - ranges.previous.from.getTime();
-    const isVisit = (a: { startTime?: string; status: string }) =>
-      Boolean(a.startTime) && !["cancelled", "no_show"].includes(a.status);
+    // The same visits as the Consultations figure: a visit whose patient no longer exists is not counted
+    // there, so it is not counted here either (the two figures sit side by side and must agree).
+    const knownPatients = new Set((presentation?.patients ?? []).map((patient) => patient.id));
+    const isVisit = (a: { startTime?: string; status: string; patientId?: string }) =>
+      Boolean(a.startTime) && !["cancelled", "no_show"].includes(a.status) && knownPatients.has(a.patientId ?? "");
 
     const daysCount = Math.max(
       1,
@@ -316,7 +343,7 @@ export function PremiumAnalytics({
         .reduce((sum, t) => sum + (t.amount || 0), 0);
 
       const visitsCount = appointments.filter((a) => {
-        if (!a.startTime || ["cancelled", "no_show"].includes(a.status)) return false;
+        if (!isVisit(a)) return false;
         const d = new Date(a.startTime);
         return d >= cursor && d <= bucketEnd;
       }).length;
@@ -376,7 +403,7 @@ export function PremiumAnalytics({
     }
 
     return points;
-  }, [chartRanges, presentation?.transactions, presentation?.appointments]);
+  }, [chartRanges, presentation?.transactions, presentation?.appointments, presentation?.patients]);
 
   // The month's receipts and where their pace leads (Recettes card).
   const forecast = useMemo(
@@ -499,26 +526,12 @@ export function PremiumAnalytics({
         action: onFinances,
       },
       {
-        id: "hospitalisations",
-        title: "Hospitalisations",
-        description: "Animaux admis en clinique et feuilles de soins",
-        icon: BedDouble,
-        action: () => onNavigate?.("soins"),
-      },
-      {
         id: "taches",
         title: "Rappels & Vaccins",
         description: "Vaccinations à échéance et relances propriétaires",
         count: `${actions.count} action${actions.count > 1 ? "s" : ""} à suivre`,
         icon: Bell,
         action: onActions,
-      },
-      {
-        id: "analyses",
-        title: "Bilan & Analyses",
-        description: "Indicateurs de performance et synthèse comptable",
-        icon: BarChart3,
-        action: onFinances,
       },
     ],
     [
@@ -546,47 +559,9 @@ export function PremiumAnalytics({
               <PageDate />
             </p>
             <h1 className="heroTitle">Bonjour {userName}, ravi de vous retrouver <span className="dashboard-greeting-wave" aria-hidden="true">👋</span></h1>
-            <p className="heroNote">
-              Votre journée au cabinet, les patients à suivre et les priorités, en un coup d’œil.
-            </p>
           </div>
 
-          <div className="next">
-            <span className="nextLabel">Prochain rendez-vous</span>
-            {nextAppointment ? (
-              <>
-                <span className="nextWhen">
-                  {nextTimeFormatted ? `Aujourd'hui à ${nextTimeFormatted}` : "Aujourd'hui"}
-                </span>
-                <span className="nextWho">
-                  avec{" "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onNavigate?.("agenda");
-                    }}
-                    className="nextWhoLink"
-                  >
-                    {nextAppointment.patientName || "Patient"}
-                    {nextAppointment.ownerName
-                      ? ` (${nextAppointment.ownerName})`
-                      : ""}
-                  </button>
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="nextWhen">Aucun rendez-vous</span>
-                <span className="nextWho">
-                  Les nouveaux rendez-vous apparaîtront dès réservation.
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Action Band with the signature cross-hatch background pattern */}
-        <div className="heroBand">
+          {/* The quick actions and the view switch stay one click away, beside the greeting. */}
           <div className="heroActions">
             <ShortcutTooltip label="Nouvelle consultation" shortcut="N">
               <button
@@ -610,14 +585,8 @@ export function PremiumAnalytics({
               <span>Nouveau patient</span>
             </button>
 
-            {/* The view switch, icons only, closes the action row in both views. */}
             {dashboardViewControl}
           </div>
-
-          <button type="button" className="host" onClick={() => onNavigate?.("agenda")}>
-            <span>Voir le planning du jour</span>
-            <ArrowUpRight size={14} strokeWidth={1} aria-hidden="true" />
-          </button>
         </div>
       </section>
 
@@ -638,6 +607,24 @@ export function PremiumAnalytics({
           </button>
         ))}
         </div>
+        {/* Any two days: the figures and the chart below follow them. */}
+        <div aria-label="Période personnalisée" className="filterDates" data-active={period === "custom" || undefined} role="group">
+          <DatePicker
+            aria-label="Début de la période"
+            className="filterDate"
+            max={pickedTo}
+            onChange={(value) => value && onCustomRange?.({ from: value, to: pickedTo })}
+            value={pickedFrom}
+          />
+          <span aria-hidden="true" className="filterDatesTo">au</span>
+          <DatePicker
+            aria-label="Fin de la période"
+            className="filterDate"
+            min={pickedFrom}
+            onChange={(value) => value && onCustomRange?.({ from: pickedFrom, to: value })}
+            value={pickedTo}
+          />
+        </div>
         <div className="filterGap" />
         <div className="filterRange">
           <CalendarDays size={14} strokeWidth={1} aria-hidden="true" />
@@ -653,6 +640,7 @@ export function PremiumAnalytics({
         <button
           type="button"
           className="kpi"
+          data-tone="green"
           onClick={onFinances}
           aria-label="Voir la trésorerie"
         >
@@ -684,6 +672,7 @@ export function PremiumAnalytics({
         <button
           type="button"
           className="kpi"
+          data-tone="blue"
           onClick={onPatients}
           aria-label="Voir les consultations"
         >
@@ -717,6 +706,7 @@ export function PremiumAnalytics({
         <button
           type="button"
           className="kpi"
+          data-tone="violet"
           onClick={onPatients}
           aria-label="Voir les dossiers patients"
         >
@@ -749,6 +739,7 @@ export function PremiumAnalytics({
         <button
           type="button"
           className="kpi"
+          data-tone={actions.urgent > 0 ? "rose" : "amber"}
           onClick={onActions}
           aria-label="Voir les actions et rappels"
         >
@@ -779,32 +770,58 @@ export function PremiumAnalytics({
       <section aria-label="Recettes & activité" className="card frame recettesCard">
         <FocusTrendChart
           periodControl={
-            <div aria-label="Période du graphique" className="focusTabs" data-tabs-style="segmented" role="group">
-              {CHART_PERIODS.map((option) => (
-                <button
-                  aria-pressed={chartPeriod === option.value}
-                  data-active={chartPeriod === option.value}
-                  key={option.value}
-                  onClick={() => setChartPeriod(option.value)}
-                  type="button"
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+            // One small calendar icon: the chart's period is a choice made now and then, not a row of buttons.
+            <Popover
+              onOpenChange={(open) => {
+                setChartPickerOpen(open);
+                if (!open) setChartAnchor(null);
+              }}
+              open={chartPickerOpen}
+            >
+              <PopoverTrigger
+                aria-label={`Choisir les dates du graphique : ${chartRangeLabel}`}
+                render={<Button className="size-8" size="icon-sm" title={chartRangeLabel} type="button" variant="ghost" />}
+              >
+                <CalendarDays aria-hidden="true" size={16} strokeWidth={1.5} />
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-auto p-2">
+                {/* Two clicks: the first day, then the last. A second range replaces the first. */}
+                <DateRangeCalendar
+                  className={COMPACT_CALENDAR_CLASS}
+                  defaultMonth={chartRanges.current.to}
+                  mode="range"
+                  onDayClick={(day) => {
+                    // First click starts a new range, second one ends it: never an edit of the old range.
+                    if (!chartAnchor) {
+                      setChartAnchor(day);
+                      return;
+                    }
+                    const [first, last] = day < chartAnchor ? [day, chartAnchor] : [chartAnchor, day];
+                    setChartCustom({ from: formatDateValue(first), to: formatDateValue(last) });
+                    setChartPeriod("custom");
+                    setChartAnchor(null);
+                    setChartPickerOpen(false);
+                  }}
+                  selected={chartAnchor ? { from: chartAnchor, to: chartAnchor } : { from: chartRanges.current.from, to: chartRanges.current.to }}
+                />
+                <p className="px-2 pt-1 pb-1 text-muted-foreground text-xs">
+                  {chartAnchor ? "Choisissez le dernier jour de la période" : chartRangeLabel}
+                </p>
+              </PopoverContent>
+            </Popover>
           }
           points={chartPoints}
         />
         {/* No forecast from a journal still loading. */}
         {states.cash.loading ? null : <ForecastBar forecast={forecast} />}
         <WidgetFooter action="Finances" onAction={onFinances}>
-          Encaissements payés, {chartPeriod === "12m" ? "par semaine" : "par jour"} · consultations hors annulations et absences
+          Encaissements payés, {chartIsWeekly ? "par semaine" : "par jour"} · consultations hors annulations et absences
         </WidgetFooter>
       </section>
 
       {/* 5. Under the chart, half and half: the clinic's activity, then Cette semaine. */}
       <div className="pairRow">
-        <ActivityHeatmap appointments={presentation?.appointments ?? []} now={updatedAt} onAgenda={() => onNavigate?.("agenda")} />
+        <ActivityHeatmap appointments={presentation?.appointments ?? []} now={updatedAt} />
 
         <div className="card frame weekCard">
           <div className="cardHead">

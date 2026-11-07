@@ -1,6 +1,6 @@
-/* The receipts chart, after the reference: one monochrome series with its
-   glow and fading area, a dashed grid and cross, a frameless readout.
-   Sizes 12, 13 and 24 px. */
+/* Receipts and consultations on one chart: receipts the monochrome line with its
+   glow and fading area, consultations a blue line with a marker a day, a dashed
+   grid and cross, a frameless readout. Sizes 12, 13 and 24 px. */
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .focusChart {
   --focus-ink: var(--ink);
   display: flex;
@@ -196,4 +196,69 @@
   font-weight: 500;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------ Two series */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusFigures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+  min-width: 0;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusFigureLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The key to each series: its line, so the head, the scales and the readout read together. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusKey {
+  display: inline-block;
+  flex: none;
+  width: 14px;
+  height: 0;
+  margin-right: 8px;
+  border-top: 2px solid var(--focus-ink);
+  vertical-align: middle;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusFigureLabel .focusKey {
+  margin-right: 0;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusKey[data-series="visits"] {
+  border-top-color: var(--tone-blue);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusLineVisits {
+  fill: none;
+  stroke: var(--tone-blue);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusMarker {
+  fill: var(--surface);
+  stroke: var(--tone-blue);
+  stroke-width: 1.5;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusDotVisits {
+  fill: var(--tone-blue);
+}
+
+/* The left scale belongs to the consultations: it takes their blue. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusTickLeft {
+  text-anchor: start;
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusTickY[data-series="visits"] {
+  fill: var(--tone-blue);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .focusTip strong {
+  display: flex;
+  align-items: center;
 }

@@ -37,12 +37,15 @@ export function AgendaMonthCalendar({
   monthDays,
   onSelectDate,
   selectedDate,
+  showHeader = true,
 }: {
   getAppointmentsForDate: (date: Date) => Appointment[];
   getPatientName: (patientId: string) => string;
   monthDays: Array<Date | null>;
   onSelectDate: (date: Date) => void;
   selectedDate: Date;
+  /** False when the page's own navigation bar already moves in time. */
+  showHeader?: boolean;
 }) {
   const today = new Date();
   const monthLabel = selectedDate.toLocaleDateString("fr-FR", {
@@ -61,7 +64,7 @@ export function AgendaMonthCalendar({
       aria-label="Calendrier des rendez-vous"
       className="agenda-month-calendar surface-card rounded-panel border border-border bg-card"
     >
-      <header className="flex items-center justify-between gap-3 border-border border-b px-5 py-3 sm:px-6">
+      {showHeader ? <header className="flex items-center justify-between gap-3 border-border border-b px-5 py-3 sm:px-6">
         <h2 className="font-medium text-[18px] text-foreground tracking-[-0.02em]">
           {monthLabel}
         </h2>
@@ -92,14 +95,14 @@ export function AgendaMonthCalendar({
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.5} />
           </Button>
         </div>
-      </header>
+      </header> : null}
 
       <div className="p-3 sm:p-4">
         {/* Outlook-style month: every day sits in its own bordered box. */}
-        <div className="agenda-month-grid grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-border bg-border">
+        <div className="agenda-month-grid grid grid-cols-7 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-foreground/15 bg-foreground/10">
           {DAY_NAMES.map((day) => (
             <span
-              className="bg-muted/60 px-2 py-1.5 text-[12px] text-muted-foreground"
+              className="border-foreground/15 border-b bg-[#F5F5F5] px-2 py-1.5 text-[12px] text-muted-foreground dark:bg-white/5"
               key={day}
             >
               {day}

@@ -334,6 +334,26 @@
   flex: 1;
 }
 
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .filterDates {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .filterDates .filterDate {
+  width: 9.25rem;
+  height: 32px;
+  min-height: 32px;
+  font-size: 13px;
+}
+
+/* The picked days are the period in force: the field takes the accent like an active tab. */
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .filterDates[data-active] .filterDate {
+  border-color: var(--ink);
+}
+
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .filterRange {
   display: inline-flex;
   align-items: center;
@@ -953,6 +973,19 @@
   height: 42px;
   margin-top: 1px;
   color: var(--ink);
+}
+
+:is([data-visual-style="premium"], .premium-analytics-dashboard) .premium-page-icon svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+/* The engraved square shares its vertical axis with the header's slide-out icon
+   (290 px against 293 px). A translation, so the title stays where it is; the page
+   gutter is 16 px under 1024 px and 24 px above. */
+:root[data-skin="premium"] .premium-page-icon { translate: 5px 0; }
+@media (min-width: 1024px) {
+  :root[data-skin="premium"] .premium-page-icon { translate: -3px 0; }
 }
 
 :is([data-visual-style="premium"], .premium-analytics-dashboard) .premium-page-icon::before {
@@ -1724,4 +1757,32 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
   :is([data-visual-style="premium"], .premium-analytics-dashboard) .weekCard .cardFlush > .widgetFooter {
     grid-column: 1 / -1;
   }
+}
+
+/* ------------------------------------------------------------ Tones of the key figures
+   One small set of accents shared by Clean and Premium, light and dark: the icon of each
+   figure takes its tone, and the figure itself only when the tone is a warning (amber, rose).
+   Each ink holds at least 4.5:1 on its surface; the tones never carry meaning alone, the
+   label and the comparison beside them say the same thing. */
+.premium-analytics-dashboard .kpi {
+  --tone: var(--ink);
+}
+.premium-analytics-dashboard .kpi[data-tone="green"] { --tone: var(--tone-green); }
+.premium-analytics-dashboard .kpi[data-tone="blue"] { --tone: var(--tone-blue); }
+.premium-analytics-dashboard .kpi[data-tone="violet"] { --tone: var(--tone-violet); }
+.premium-analytics-dashboard .kpi[data-tone="amber"] { --tone: var(--tone-amber); }
+.premium-analytics-dashboard .kpi[data-tone="rose"] { --tone: var(--tone-rose); }
+
+.premium-analytics-dashboard .kpi[data-tone] .kpiHead > span:first-child > svg {
+  box-sizing: content-box;
+  padding: 4px;
+  margin: -4px 2px -4px -4px;
+  border-radius: 7px;
+  stroke-width: 1.6;
+  color: var(--tone);
+  background: color-mix(in oklab, var(--tone) 16%, transparent);
+}
+/* The figure of a warning tone: premium.css pins .kpiValue to the ink with !important. */
+.premium-analytics-dashboard .kpis .kpi:is([data-tone="amber"], [data-tone="rose"]) .kpiValue {
+  color: var(--tone) !important;
 }
