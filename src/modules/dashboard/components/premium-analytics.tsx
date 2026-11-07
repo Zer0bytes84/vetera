@@ -2,23 +2,18 @@
 
 import {
   ArrowDownRight,
-  ArrowRight,
   ArrowUpRight,
-  Bell,
-  Calendar,
   CalendarDays,
   ClipboardCheck,
   LayoutGrid,
-  Package,
   Plus,
   Receipt,
   Stethoscope,
-  UsersRound,
   Wallet,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { firstNameOf, formatNumber } from "@/utils/display-format";
-import { formatCentimes, formatTime, parseDashboardDate, type ScheduleEntry } from "../v2/model";
+import { formatTime, parseDashboardDate, type ScheduleEntry } from "../v2/model";
 import { receivablesSummary, settlementRate } from "../v2/financial-model";
 import { StatGrid, type Stat } from "@/components/ui/stat-grid";
 import { buildKeyFigures, type KeyFigureId } from "../model/key-figures";
@@ -37,16 +32,15 @@ import { Button } from "@/components/ui/button";
 import { Calendar as DateRangeCalendar } from "@/components/ui/calendar";
 import { COMPACT_CALENDAR_CLASS, DatePicker, formatDateValue } from "@/components/ui/date-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { getAppointmentTypeMeta } from "@/config/status-meta";
-import { cn } from "@/lib/utils";
 import { ShortcutTooltip } from "@/design-system/patterns/shortcut-tooltip";
 import type { WidgetState } from "./clinical/shared";
-import { buildDayUnits, buildMonthForecast, buildVisitKinds, type VisitKindRow } from "../model/dashboard-widgets";
-import { DayUnits, ForecastBar, WidgetFooter } from "./widget-units";
+import { buildWeekFacts } from "../model/week-radial";
+import { buildMonthForecast, buildVisitKinds, type VisitKindRow } from "../model/dashboard-widgets";
+import { ForecastBar, WidgetFooter } from "./widget-units";
 import { type FocusPoint } from "./focus-trend-chart";
 import { RevenueChartWidget } from "./revenue-chart-widget";
-import { ActivityHeatmap } from "./activity-heatmap";
+import { ActivityHexWidget } from "./activity-hex-widget";
+import { WeekRadialWidget } from "./week-radial-widget";
 import type { View } from "@/types";
 import "./premium-analytics.css";
 
@@ -85,7 +79,7 @@ interface PremiumAnalyticsProps {
   /** Shows the visit in Flux, where visits move on. */
   onStartConsultation?: (appointmentId: string) => void;
   clinicalView?: React.ReactNode;
-  /** Rangée « À surveiller » (rappels, stock, hospitalisés), insérée avant « Gestion du cabinet ». */
+  /** Rangée « À surveiller » (rappels, stock, hospitalisés): plus affichée sur le tableau de bord, qui s'arrête après « Cette semaine ». */
   watch?: React.ReactNode;
   /** Heure courante (horloge de la page), pour repérer le prochain rendez-vous. */
   now?: Date;
@@ -208,7 +202,7 @@ const KEY_FIGURE_ICONS = { cash: Wallet, appointments: CalendarDays, receivables
 type ChartPeriod = Exclude<AnalyticsPeriod, "today"> | "custom";
 
 /** Chiffre principal avec son unité en retrait (« 13 900 » + « DA »). */
-function FactValue({ text }: { text: string }) {
+export function FactValue({ text }: { text: string }) {
   const [value, unit] = splitUnit(text);
   return (
     <dd>
@@ -231,20 +225,16 @@ export function PremiumAnalytics({
   onCustomRange,
   states,
   onFinances,
-  onPatients,
   onActions,
   onNavigate,
   dashboardViewControl,
   presentation,
-  today,
-  onStartConsultation,
   clinicalView,
-  watch,
   now,
 }: PremiumAnalyticsProps) {
   const { currentUser } = useAuth();
   const userName = firstNameOf(currentUser?.displayName, "Docteur");
-  const { cash, patients, actions, ranges } = model;
+  const { ranges } = model;
   const updatedAt = now ?? new Date();
 
   const dateOptions = { day: "numeric", month: "short" } as const;
@@ -430,138 +420,17 @@ export function PremiumAnalytics({
     () => buildMonthForecast(presentation?.transactions ?? [], now ?? new Date()),
     [presentation?.transactions, now]
   );
-  // The day's appointments as units (Cette semaine card).
-  const dayUnits = useMemo(() => buildDayUnits(today ?? []), [today]);
-
-  // Compute "Cette semaine" stats
-  // Premier rendez-vous du jour encore à venir ou en cours : simple repère visuel.
-  const nextUpId = useMemo(() => {
-    const nowMs = now?.getTime();
-    return today?.find((row) => {
-      if (["completed", "cancelled", "no_show"].includes(row.appointment.status)) return false;
-      if (nowMs === undefined) return true;
-      const end = new Date(row.appointment.endTime ?? row.appointment.startTime).getTime();
-      return Number.isNaN(end) || end >= nowMs;
-    })?.appointment.id;
-  }, [today, now]);
-
-  const weekStats = useMemo(() => {
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    const transactions = presentation?.transactions || [];
-    const appointments = presentation?.appointments || [];
-    const invoices = presentation?.invoices || [];
-
-    const weekTransactions = transactions.filter((t) => {
-      if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
-      const d = new Date(t.date);
-      return d >= startOfWeek && d <= now;
-    });
-
-    const weekIncome = weekTransactions.reduce((acc, t) => acc + (t.amount || 0), 0);
-
-    const visitsBetween = (from: Date, to: Date) =>
-      appointments.filter((a) => {
-        if (!a.startTime || ["cancelled", "no_show"].includes(a.status)) return false;
-        const d = new Date(a.startTime);
-        return d >= from && d <= to;
-      }).length;
-    // Same scope as the 30-day KPI: every visit of the week up to tonight,
-    // finished, under way or still planned today.
-    const endOfToday = new Date(now);
-    endOfToday.setHours(23, 59, 59, 999);
-    const weekVisits = visitsBetween(startOfWeek, endOfToday);
-    // Last week up to the same day and hour, so the two figures cover the same span.
-    const weekAgo = (d: Date) => new Date(d.getTime() - 7 * 86_400_000);
-    const previousIncome = transactions
-      .filter((t) => {
-        if (t.type !== "income" || t.status !== "paid" || !t.date) return false;
-        const d = new Date(t.date);
-        return d >= weekAgo(startOfWeek) && d <= weekAgo(now);
-      })
-      .reduce((acc, t) => acc + (t.amount || 0), 0);
-    const previousVisits = visitsBetween(weekAgo(startOfWeek), weekAgo(endOfToday));
-
-    // Settled share of the invoiced amount, on every issued invoice. Payment is
-    // the settlement status, never the document status (draft, issued, void).
-    const rate = settlementRate(invoices);
-
-    return {
-      since: startOfWeek,
-      income: weekIncome,
-      previousIncome,
-      visits: weekVisits,
-      previousVisits,
-      rate,
-    };
-  }, [presentation?.transactions, presentation?.appointments, presentation?.invoices]);
-
-  // Quick Access Modules definition
-  const cabinetTiles = useMemo(
-    () => [
-      {
-        id: "agenda",
-        title: "Agenda & Rendez-vous",
-        description: "Planning des rendez-vous et disponibilités en direct",
-        count: `${today?.length ?? 0} RDV aujourd'hui`,
-        icon: Calendar,
-        action: () => onNavigate?.("agenda"),
-      },
-      {
-        id: "clinique",
-        title: "Soins & hospitalisation",
-        description: "Soins du jour, hospitalisations et rappels médicaux",
-        icon: Stethoscope,
-        action: () => onNavigate?.("clinique"),
-      },
-      {
-        id: "patients",
-        title: "Dossiers Patients",
-        description: "Fiches animales, antécédents médicaux et maîtres",
-        count: `${presentation?.patients.length ?? patients.count} patients`,
-        icon: UsersRound,
-        action: onPatients,
-      },
-      {
-        id: "stock",
-        title: "Produits",
-        description: "Médicaments, lots FIFO et seuils de réapprovisionnement",
-        // No figure rather than a made-up one while the catalogue loads.
-        count: presentation ? `${presentation.products.length} références` : undefined,
-        icon: Package,
-        action: () => onNavigate?.("stock"),
-      },
-      {
-        id: "finances",
-        title: "Facturation & Devis",
-        description: "Factures émises, règlements et gestion des devis",
-        count: `${formatCentimes(cash.income)} sur la période`,
-        icon: Receipt,
-        action: onFinances,
-      },
-      {
-        id: "taches",
-        title: "Rappels & Vaccins",
-        description: "Vaccinations à échéance et relances propriétaires",
-        count: `${actions.count} action${actions.count > 1 ? "s" : ""} à suivre`,
-        icon: Bell,
-        action: onActions,
-      },
-    ],
-    [
-      today?.length,
-      patients.count,
-      presentation,
-      cash.income,
-      actions.count,
-      onNavigate,
-      onPatients,
-      onFinances,
-      onActions,
-    ]
+  const weekStats = useMemo(
+    () =>
+      buildWeekFacts({
+        transactions: presentation?.transactions || [],
+        appointments: presentation?.appointments || [],
+        invoices: presentation?.invoices || [],
+        now: updatedAt,
+      }),
+    // `updatedAt` is a fresh date on each render when the dashboard gets none; the data is what moves the figures.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [presentation?.transactions, presentation?.appointments, presentation?.invoices, now],
   );
 
   // One small calendar icon: the chart's period is a choice made now and then, not a row of buttons.
@@ -761,167 +630,9 @@ export function PremiumAnalytics({
 
       {/* 5. Under the chart, half and half: the clinic's activity, then Cette semaine. */}
       <div className="pairRow">
-        <ActivityHeatmap appointments={presentation?.appointments ?? []} now={updatedAt} />
+        <ActivityHexWidget appointments={presentation?.appointments ?? []} now={updatedAt} />
 
-        <div className="card frame weekCard">
-          <div className="cardHead">
-            <div>
-              <h2 className="cardTitle">Cette semaine</h2>
-              <p className="cardNote">
-                Depuis{" "}
-                {weekStats.since.toLocaleDateString("fr-FR", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "short",
-                })}
-              </p>
-            </div>
-
-          </div>
-          <div className="cardFlush">
-            <dl className="facts">
-              {/* The KPI cards above already carry this figure with its comparison. */}
-              <div data-clean-hidden="">
-                <dt>Recettes encaissées</dt>
-                <FactValue text={formatCentimes(weekStats.income)} />
-                <dd className="factNote">
-                  Semaine dernière : {formatCentimes(weekStats.previousIncome)}
-                </dd>
-              </div>
-              {/* The KPI cards above already carry this figure with its comparison. */}
-              <div data-clean-hidden="">
-                <dt>Consultations</dt>
-                <FactValue text={String(weekStats.visits)} />
-                <dd className="factNote">
-                  Semaine dernière : {formatNumber(weekStats.previousVisits)}
-                </dd>
-              </div>
-              <div>
-                <dt>Taux de règlement</dt>
-                {weekStats.rate === null ? (
-                  <dd className="factEmpty">Aucune facture</dd>
-                ) : (
-                  // The figure alone: Consultations already draws a horizontal bar.
-                  <FactValue text={`${formatNumber(weekStats.rate, { maximumFractionDigits: 1 })} %`} />
-                )}
-                <dd className="factNote">Sur toutes les factures émises</dd>
-              </div>
-            </dl>
-
-            {/* Rendez-vous du jour: units that count at a glance, then the next visits. */}
-            <div className="weekDay">
-              <h3 className="daySectionTitle">Rendez-vous du jour</h3>
-              {dayUnits.total ? (
-                <>
-                  <DayUnits day={dayUnits} />
-                  <ul className="dayList">
-                    {today!
-                      .filter((row) => !["completed", "cancelled", "no_show"].includes(row.appointment.status))
-                      .slice(0, 3)
-                      .map((row) => {
-                        const isNext = row.appointment.id === nextUpId;
-                        const timeStr = row.appointment.startTime
-                          ? new Date(row.appointment.startTime).toLocaleTimeString("fr-FR", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : "Aujourd'hui";
-                        const type = row.appointment.type || "Consultation";
-                        return (
-                          <li key={row.appointment.id}>
-                            {/* The row follows the visit in Flux, where visits move on. */}
-                            <button
-                              type="button"
-                              className="dayRow"
-                              data-next={isNext || undefined}
-                              aria-label={`Suivre ${row.patientName || "la visite"} dans Flux`}
-                              onClick={() => onStartConsultation?.(row.appointment.id)}
-                            >
-                              <span className="dayRowTime">{timeStr}</span>
-                              <span className="dayRowText">
-                                <strong>{row.patientName || "Patient"}</strong>
-                                <span>
-                                  {[
-                                    ["arrived", "waiting", "in_progress"].includes(row.appointment.status)
-                                      ? "En cours"
-                                      : isNext
-                                        ? "Prochain"
-                                        : null,
-                                    row.ownerName ? `avec ${row.ownerName}` : null,
-                                  ]
-                                    .filter(Boolean)
-                                    .join(" · ") || "Rendez-vous à venir"}
-                                </span>
-                              </span>
-                              <Badge
-                                className={cn("border-transparent", getAppointmentTypeMeta(row.appointment.type).badgeClassName)}
-                                variant="outline"
-                              >
-                                {type}
-                              </Badge>
-                            </button>
-                          </li>
-                        );
-                      })}
-                  </ul>
-                  {dayUnits.done === dayUnits.total ? (
-                    <p className="dayEmpty">Tous les rendez-vous du jour sont terminés.</p>
-                  ) : null}
-                </>
-              ) : (
-                <p className="dayEmpty">Aucun rendez-vous aujourd’hui.</p>
-              )}
-            </div>
-            {/* What comes next, then the card's single action. */}
-            <WidgetFooter action="Agenda" onAction={() => onNavigate?.("agenda")}>
-              {(() => {
-                const next = today?.find((row) => row.appointment.id === nextUpId);
-                if (next) {
-                  return `Prochain : ${next.start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} · ${next.patientName || "Patient"}`;
-                }
-                return dayUnits.total ? "Plus de rendez-vous à venir aujourd’hui" : "Journée libre dans l’agenda";
-              })()}
-            </WidgetFooter>
-          </div>
-        </div>
-      </div>
-
-      {/* 4b. À surveiller : rappels, stock, hospitalisés */}
-      {watch}
-
-      {/* 5. Ruled Lattice Quick Modules: Gestion du cabinet (Reference .tiles.frame) */}
-      <div className="card frame">
-        <div className="cardHead">
-          <div>
-            <h2 className="cardTitle">Gestion du cabinet</h2>
-            <p className="cardNote">Accès direct et suivi opérationnel des modules cliniques</p>
-          </div>
-        </div>
-        <div className="tiles">
-          {cabinetTiles.map((tile) => (
-            <button
-              key={tile.id}
-              type="button"
-              className="tile"
-              onClick={tile.action}
-            >
-              <div className="tileTop">
-                <tile.icon size={18} strokeWidth={1} aria-hidden="true" />
-                {"count" in tile && tile.count ? <span className="tileCount">{tile.count}</span> : null}
-                <ArrowRight
-                  size={14}
-                  strokeWidth={1}
-                  className="kpiGo"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="tileText">
-                <strong>{tile.title}</strong>
-                <span>{tile.description}</span>
-              </div>
-            </button>
-          ))}
-        </div>
+        <WeekRadialWidget appointments={presentation?.appointments ?? []} facts={weekStats} now={updatedAt} />
       </div>
       </>}
     </div>

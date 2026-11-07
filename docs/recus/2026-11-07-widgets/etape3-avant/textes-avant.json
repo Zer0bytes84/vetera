@@ -1,0 +1,2888 @@
+{
+ "activite": {
+  "Semaine": {
+   "total": "5rendez-vous sur la période",
+   "reperes": [
+    "Jours d’activité3 sur 6",
+    "Jour le plus chargésam. 7 nov. · 3",
+    "Jour de semaine le plus actifSamedi · 3"
+   ],
+   "pied": "1 rendez-vous déjà prévu d’ici le 8 nov.",
+   "niveaux": [
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "3",
+     "avenir": false,
+     "aujourdhui": true
+    },
+    {
+     "jour": "8",
+     "niveau": "1",
+     "avenir": true,
+     "aujourdhui": false
+    }
+   ]
+  },
+  "Mois": {
+   "total": "5rendez-vous sur la période",
+   "reperes": [
+    "Jours d’activité3 sur 7",
+    "Jour le plus chargésam. 7 nov. · 3",
+    "Jour de semaine le plus actifSamedi · 3"
+   ],
+   "pied": "1 rendez-vous déjà prévu d’ici le 30 nov.",
+   "niveaux": [
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "3",
+     "avenir": false,
+     "aujourdhui": true
+    },
+    {
+     "jour": "8",
+     "niveau": "1",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    }
+   ]
+  },
+  "Trimestre": {
+   "total": "8rendez-vous sur la période",
+   "reperes": [
+    "Jours d’activité6 sur 68",
+    "Jour le plus chargésam. 7 nov. · 3",
+    "Jour de semaine le plus actifSamedi · 4"
+   ],
+   "pied": "1 rendez-vous déjà prévu d’ici le 30 nov.",
+   "niveaux": [
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "3",
+     "avenir": false,
+     "aujourdhui": true
+    },
+    {
+     "jour": "8",
+     "niveau": "1",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": true,
+     "aujourdhui": false
+    }
+   ]
+  },
+  "Année": {
+   "total": "8rendez-vous sur la période",
+   "reperes": [
+    "Jours d’activité6 sur 342",
+    "Jour le plus chargésam. 7 nov. · 3",
+    "Jour de semaine le plus actifSamedi · 4"
+   ],
+   "pied": "1 rendez-vous déjà prévu d’ici le 8 nov.",
+   "niveaux": [
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "1",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "3",
+     "avenir": false,
+     "aujourdhui": true
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "15",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "22",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "29",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "3",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "10",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "17",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "24",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "31",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "7",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "14",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "21",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "28",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "5",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "12",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "19",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "26",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "2",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "9",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "16",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "23",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "30",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "6",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "13",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "20",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "27",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "4",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "11",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "18",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "25",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "1",
+     "niveau": "0",
+     "avenir": false,
+     "aujourdhui": false
+    },
+    {
+     "jour": "8",
+     "niveau": "1",
+     "avenir": true,
+     "aujourdhui": false
+    }
+   ]
+  }
+ },
+ "semaine": {
+  "entete": "Cette semaineDepuis lundi 2 nov.",
+  "faits": [
+   "Recettes encaissées13 900 DASemaine dernière : 5 400 DA",
+   "Consultations4Semaine dernière : 2",
+   "Taux de règlementAucune factureSur toutes les factures émises"
+  ],
+  "jour": "Rendez-vous du jour1sur 3 rendez-vous terminéTerminés134 %En cours133 %À venir133 %10:15SimbaEn cours · avec Samira TouatiUrgence14:00MiloProchain · avec Nadia BenaliContrôle",
+  "lignes": [
+   "10:15SimbaEn cours · avec Samira TouatiUrgence",
+   "14:00MiloProchain · avec Nadia BenaliContrôle"
+  ],
+  "pied": "Prochain : 14:00 · MiloAgenda"
+ }
+}

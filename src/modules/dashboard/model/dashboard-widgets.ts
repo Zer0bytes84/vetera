@@ -19,7 +19,7 @@ export interface DayUnit {
 const UNDERWAY = new Set(["arrived", "waiting", "in_progress"]);
 const NOT_SEEN = new Set(["cancelled", "no_show"]);
 
-function stateOf(status: string): DayUnitState {
+export function stateOf(status: string): DayUnitState {
   if (status === "completed") return "done";
   return UNDERWAY.has(status) ? "underway" : "upcoming";
 }
@@ -370,4 +370,26 @@ export function buildActivityHeatmap(
     weekdays,
     legend: heatLegend(max),
   };
+}
+
+/**
+ * Appointments per hour, with the same rules as the heatmap: cancellations and no-shows are not
+ * visits, hours are the clinic's local hours. The week is Monday to Sunday, `week[0]` being Monday;
+ * `today` is the current day's 24 hours. Booked hours later on are counted, never invented.
+ */
+export function buildHourlyActivity(appointments: { startTime?: string | null; status: string }[], now: Date) {
+  const weekFrom = mondayOf(now);
+  const weekEnd = plusDays(weekFrom, 7);
+  const dayStart = dayOnly(now);
+  const dayEnd = plusDays(dayStart, 1);
+  const week = Array.from({ length: 7 }, () => Array<number>(24).fill(0));
+  const today = Array<number>(24).fill(0);
+  for (const appointment of appointments) {
+    if (NOT_SEEN.has(appointment.status)) continue;
+    const start = parseDashboardDate(appointment.startTime ?? undefined);
+    if (!start) continue;
+    if (start >= weekFrom && start < weekEnd) week[(start.getDay() + 6) % 7][start.getHours()] += 1;
+    if (start >= dayStart && start < dayEnd) today[start.getHours()] += 1;
+  }
+  return { weekFrom, week, today };
 }

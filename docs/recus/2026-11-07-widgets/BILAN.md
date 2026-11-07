@@ -1,6 +1,6 @@
 # Phase widgets du tableau de bord : le graphique, puis la rangée des chiffres clés
 
-Date : 7 novembre 2026. **Rien de cette phase n'est commité** (le dernier commit, `59d573a`, contient la session précédente). Le thème TuffUI n'a jamais été importé : tous les composants sont adaptés à nos jetons et à nos quatre thèmes. Aucune donnée de démonstration dans le code : tout est calculé sur les enregistrements de l'app.
+Date : 7 novembre 2026. Étapes 1 et 2 commitées (`7c72611`), étape 3 commitée ensuite. Le thème TuffUI n'a jamais été importé : tous les composants sont adaptés à nos jetons et à nos quatre thèmes. Aucune donnée de démonstration dans le code : tout est calculé sur les enregistrements de l'app.
 
 Contrôles finaux : **193 fichiers de tests, 1536 tests, tous verts** (187 fichiers et 1450 tests au début de la phase, après l'installation de `stat-grid`) ; `tsc -b` et `eslint src tests` sans message.
 
@@ -40,6 +40,24 @@ Contrôles finaux : **193 fichiers de tests, 1536 tests, tous verts** (187 fichi
 **Mesuré** (vraies données, trois largeurs, deux vues) : libellé, valeur, badge, ligne de texte, barre et courbe tombent sur la même ordonnée d'une carte à l'autre, cartes de même hauteur, aucun libellé coupé. Dans le pire cas à 1440 px (48 honorés, 43 annulés, 43 absences, douze écritures en attente), aucune ligne n'est coupée ni ne passe à la ligne.
 
 **Vérifié chiffre par chiffre, avant et après** (référence : `etape2-avant/chiffres-cles-avant.json`, cinq périodes) : valeurs, badges, lignes et objectifs de chaque carte, zéro écart. Trésorerie et Actions identiques à l'ancienne rangée ; Rendez-vous, objectifs et créances recalculés indépendamment sur les tables brutes. Avec deux écritures en attente de test (120 et 80 DA) : Créances = 200 DA et badge « +200 DA » sur les cinq périodes.
+
+## Étape 3 : la rangée « Activité de la clinique » et « Cette semaine »
+
+Deux widgets en demi-largeur, **même hauteur** (455 px mesurés, 475 px avec 70 rendez-vous de plus), alignés. Aucun thème TuffUI : `hex-density` et `radial-dots` sont adaptés à nos jetons. Corrections de votre part en cours de route : fidélité à Yuri (ses éléments, ses chiffres, ses teintes), un seul mois pour l'activité, « Par jour » par défaut pour la semaine.
+
+**Activité de la clinique** (`src/components/ui/hex-density.tsx`) : un hexagone par jour du mois, cinq teintes du bleu d'accent (les cinq pas de Yuri, échelle en racine carrée du jour le plus chargé), contour sombre sur les jours les plus chargés, bandeau « Jour le plus chargé · 3 rendez-vous », pied « 3 jours · pic 3 » et légende Moins/Plus, infobulle au survol, flèches du clavier. Adaptations : les cellules sont données (une par jour) au lieu d'être regroupées depuis des points ; aujourd'hui a un contour plein, les jours à venir un contour pointillé ; le compteur d'en-tête est retiré à votre demande. Les vues Jour, Semaine et Trimestre sont abandonnées pour ce widget (le modèle `hex-activity.ts` les calcule toujours, testées, mais elles ne sont pas affichées).
+
+**Cette semaine** (`src/components/ui/radial-dots.tsx`) : anneau de points, vue « Par jour » (7 secteurs) par défaut, « Par heure » (24 secteurs), le chiffre de la semaine (consultations de lundi à ce soir) au centre, légende Terminés / En cours / À venir avec leurs totaux, et ceux du secteur survolé. Adaptation de fidélité : les points sont **exacts** (un point = un rendez-vous tant que le plus chargé n'en a pas plus de 24, sinon « 1 point = N rendez-vous » est écrit sous la légende). Teintes de Yuri : bleu d'accent, encre, encre atténuée.
+
+**Retirés de « Cette semaine » pour coller à Yuri** : recettes de la semaine et leur comparaison, taux de règlement, liste des prochains rendez-vous du jour avec son bouton Agenda. Ces chiffres restent ailleurs (Trésorerie, Créances, Agenda).
+
+**Tableau de bord arrêté après cette rangée** (votre décision) : « Hospitalisés », « Patients par espèce », « Stock à surveiller », « Rappels à venir » et « Gestion du cabinet » ne sont plus affichés ; mesuré, plus aucun de ces textes dans la page, aucune hauteur sous la rangée. Les modules ne bougent pas, le code de ces widgets reste (`dashboard-watch.tsx`, le prop `watch` n'est plus utilisé).
+
+**Vérifié** (équipe rouge, calcul indépendant sur les tables brutes, `rt-etape3.json`) : **221 vérifications, 0 écart**, sur les vraies données puis sur un cas dense (+70 rendez-vous) : chaque jour du mois (compte, jour courant, jours à venir), pied, teintes croissantes avec le compte, infobulle du jour le plus chargé ; chaque secteur des deux vues (centre et légende au survol), centre = total de la semaine, nombre de points, mention « 1 point = N » exactement quand le pic dépasse 24 ; mêmes hauteurs ; aucun texte sous 12 px. Référence d'avant : `etape3-avant/` (captures et textes de l'ancien widget : 5 rendez-vous sur le mois, 3 jours d'activité, 4 consultations).
+
+**Tests** : 197 fichiers, 1575 tests verts ; `tsc -b` et `eslint src tests` sans message.
+
+**Captures** : `etape3-apres/` (rangée, survol, vue « Par heure », quatre thèmes).
 
 ## Ce que l'équipe rouge a trouvé
 
