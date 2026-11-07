@@ -2,7 +2,8 @@
 :root[data-visual-style="premium"] .finance-register {
   position: relative;
   gap: 0;
-  box-shadow: var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r);
+  /* No square engraved frame around the register: its table carries its own rounded grey band. */
+  box-shadow: none;
 }
 
 :root[data-visual-style="premium"] .finance-register-heading {
@@ -147,4 +148,12 @@
   color: var(--ink);
   font-size: 14px;
   line-height: 1.45;
+}
+
+/* The register is its table's rounded grey band and nothing else: the skins' own frame around it (a white box with a 10 px
+   radius and a hairline) made a second, differently rounded border. */
+:root:root .finance-register {
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }

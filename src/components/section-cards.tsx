@@ -1,14 +1,11 @@
 "use client";
 
-import { FittedAmount } from "@/shared/ui/fitted-amount";
-
+import { LayoutGrid } from "lucide-react";
+import { StatGrid, type Stat, type StatTone } from "@/components/ui/stat-grid";
 import type { LucideIcon } from "@/lib/icons";
 import {
   Activity,
   AlarmClock,
-  ArrowDownRight,
-  ArrowRight,
-  ArrowUpRight,
   Calendar,
   ClipboardList,
   Coins,
@@ -21,7 +18,6 @@ import {
 } from "@/lib/icons";
 import { formatNumber } from "@/utils/display-format";
 import { cn } from "@/lib/utils";
-import "./section-cards.css";
 
 export interface SectionCardItem {
   onClick?: () => void;
@@ -51,12 +47,15 @@ export interface SectionCardItem {
   inverse?: boolean;
 }
 
-type Sense = "good" | "bad" | "watch" | "neutral";
-const toneSense: Record<NonNullable<SectionCardItem["tone"]>, Sense> = {
-  positive: "good",
-  critical: "bad",
-  watch: "watch",
-  quiet: "neutral",
+/*
+ * The strip of figures at the top of a page, drawn as the dashboard's « Chiffres clés »: the same frame, the same cards
+ * (icon chip, label, figure, badge, one short line). Pages keep passing `SectionCardItem`s; this maps each to a `Stat`.
+ */
+const TONES: Record<NonNullable<SectionCardItem["tone"]>, StatTone> = {
+  positive: "green",
+  critical: "rose",
+  watch: "amber",
+  quiet: "blue",
 };
 
 const iconRules: [pattern: RegExp, icon: LucideIcon][] = [
@@ -82,147 +81,96 @@ function resolveDefaultIcon(title: string, index: number) {
   return defaultIcons[index % defaultIcons.length] || Coins;
 }
 
-function renderDeltaBadge(item: SectionCardItem) {
-  // Numeric change: only a real variation gets an arrow, coloured by meaning.
+/** What the card's badge says: a variation, a rate, a count, or a status text; and whether it reads as good news. */
+function badgeOf(
+  item: SectionCardItem,
+): Pick<Stat, "delta" | "deltaText" | "higherIsBetter"> {
+  const sense =
+    item.tone === "positive" ? 1 : item.tone === "critical" ? -1 : 0;
   if (item.change !== undefined && item.change !== null) {
     const kind = item.changeKind ?? "variation";
-    const label = item.changeLabel || (item.inverse ? "vs échéances précédentes" : "vs période précédente");
-    if (kind === "count") {
-      const sense: Sense = item.tone ? toneSense[item.tone] : item.change === 0 ? "neutral" : item.inverse ? "bad" : "good";
-      return (
-        <span className="delta" data-sense={sense}>
-          <span>{formatNumber(item.change)}</span>
-          <span className="delta-label">{label}</span>
-        </span>
-      );
-    }
+    if (kind === "count")
+      return { delta: sense, deltaText: formatNumber(item.change) };
     // A percentage of nothing says nothing: hide it when the base is zero.
-    if (item.changeBase === 0) {
-      return item.changeLabel ? (
-        <span className="delta" data-sense="neutral">
-          <span className="delta-label">{item.changeLabel}</span>
-        </span>
-      ) : null;
-    }
-    if (kind === "rate") {
-      return (
-        <span className="delta" data-sense="neutral">
-          <span>{formatNumber(item.change, { maximumFractionDigits: 1 })} %</span>
-          <span className="delta-label">{label}</span>
-        </span>
-      );
-    }
-    const isZero = item.change === 0;
-    const good = item.inverse ? item.change < 0 : item.change > 0;
-    const sense: Sense = isZero ? "neutral" : good ? "good" : "bad";
-    const Icon = item.change < 0 ? ArrowDownRight : ArrowUpRight;
+    if (item.changeBase === 0) return {};
+    if (kind === "rate")
+      return {
+        delta: 0,
+        deltaText: `${formatNumber(item.change, { maximumFractionDigits: 1 })} %`,
+      };
     const unit = kind === "difference" ? "" : " %";
-    const formattedPercent = `${item.change > 0 ? "+" : ""}${formatNumber(item.change, { maximumFractionDigits: 1 })}${unit}`;
-    return (
-      <span className="delta" data-sense={sense}>
-        {!isZero && <Icon size={13} strokeWidth={1.5} aria-hidden="true" />}
-        <span>{formattedPercent}</span>
-        <span className="delta-label">{label}</span>
-      </span>
-    );
+    return {
+      delta: item.change,
+      higherIsBetter: !item.inverse,
+      deltaText: `${item.change > 0 ? "+" : ""}${formatNumber(item.change, { maximumFractionDigits: 1 })}${unit}`,
+    };
   }
-
-  // Text badge: a status, never a trend. Colour comes from its tone only.
-  if (item.badge) {
-    return (
-      <span className="delta" data-sense={item.tone ? toneSense[item.tone] : "neutral"}>
-        <span className="delta-badge-value">{item.badge}</span>
-        {item.changeLabel && <span className="delta-label">{item.changeLabel}</span>}
-      </span>
-    );
-  }
-
-  // Footer title shown as a quiet label when there is no detail row.
-  if (item.footerTitle && !item.detailRow) {
-    return (
-      <span className="delta" data-sense="neutral">
-        <span className="delta-label">{item.footerTitle}</span>
-      </span>
-    );
-  }
-
-  return null;
+  // A text badge is a status, never a trend: its colour comes from the tone only.
+  if (item.badge) return { delta: sense, deltaText: item.badge };
+  return {};
 }
 
 export function SectionCards({
   items,
   compact = false,
+  title = "Chiffres clés",
+  subtitle,
+  icon = LayoutGrid,
   className,
 }: {
   items: SectionCardItem[];
   compact?: boolean;
+  /** The band's title, as on the dashboard (« Chiffres clés »), and a few words under it saying what the figures cover. */
+  title?: string;
+  subtitle?: string;
+  /** The band's icon: each page has its own. */
+  icon?: LucideIcon;
   className?: string;
 }) {
+  const stats: Stat[] = items.map((item, idx) => {
+    const detail =
+      item.detailRow ||
+      (item.badge ? item.footerTitle : item.footerDescription) ||
+      (!item.badge && item.footerTitle) ||
+      undefined;
+    return {
+      id: item.title,
+      label: item.title,
+      value:
+        typeof item.value === "number" ? formatNumber(item.value) : item.value,
+      icon: item.icon || resolveDefaultIcon(item.title, idx),
+      tone: TONES[item.tone ?? "quiet"],
+      emphasize: item.tone === "critical" && Number(item.value) > 0,
+      hint: detail,
+      ariaLabel: item.onClick ? `Voir ${item.title}` : undefined,
+      ...badgeOf(item),
+    };
+  });
+  const byId = new Map(items.map((item) => [item.title, item]));
   return (
     <section
+      aria-label="Indicateurs de la rubrique"
       className={cn(
         "section-atlas",
         compact && "section-atlas-compact",
-        className
+        className,
       )}
-      aria-label="Indicateurs de la rubrique"
     >
-      <div
-        className="kpis frame section-atlas-grid"
-        data-card-count={items.length}
-        aria-live="polite"
-      >
-        {items.map((item, idx) => {
-          const Icon = item.icon || resolveDefaultIcon(item.title, idx);
-          const Content = item.onClick ? "button" : "div";
-          const detailText =
-            item.detailRow || (item.badge ? item.footerTitle : item.footerDescription);
-
-          return (
-            <Content
-              key={item.title}
-              className={cn("kpi section-atlas-card group")}
-              data-kpi={item.title}
-              onClick={item.onClick}
-              {...(item.onClick ? { type: "button" as const } : {})}
-              aria-label={item.onClick ? `Voir ${item.title}` : undefined}
-            >
-              <span className="kpiHead">
-                <span>
-                  <Icon
-                    aria-hidden="true"
-                    size={16}
-                    strokeWidth={1}
-                    className="section-atlas-title-icon"
-                  />
-                  <span>{item.title}</span>
-                </span>
-                <ArrowRight
-                  size={15}
-                  strokeWidth={1}
-                  className="kpiGo"
-                  aria-hidden="true"
-                />
-              </span>
-
-              <FittedAmount
-                className="kpiValue section-atlas-value"
-                value={typeof item.value === "number" ? formatNumber(item.value) : item.value}
-                maxFontSize={32}
-              />
-
-              <span className="kpiSub">
-                {renderDeltaBadge(item)}
-                {detailText && (
-                  <span className="kpiDetailRow section-atlas-context">
-                    {detailText}
-                  </span>
-                )}
-              </span>
-            </Content>
-          );
-        })}
-      </div>
+      <StatGrid
+        className="max-w-none"
+        data={stats}
+        goals={false}
+        icon={icon}
+        layout="row"
+        onSelect={
+          items.some((item) => item.onClick)
+            ? (stat) => byId.get(stat.id)?.onClick?.()
+            : undefined
+        }
+        sparklines={false}
+        subtitle={subtitle}
+        title={title}
+      />
     </section>
   );
 }

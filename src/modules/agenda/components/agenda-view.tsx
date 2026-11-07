@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CalendarDays } from "lucide-react";
 import { AgendaStays } from "@/modules/hospitalizations/stays/agenda-stays";
 import { PatientDossierSearch } from "./patient-dossier-search";
 import { formatPersonName } from "@/utils/display-format";
@@ -16,7 +17,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { fr } from "date-fns/locale";
 
 import { AgendaListView } from "@/components/AgendaListView";
-import { AgendaCalendar, type CalendarView } from "@/modules/agenda/components/agenda-calendar";
+import {
+  AgendaCalendar,
+  type CalendarView,
+} from "@/modules/agenda/components/agenda-calendar";
 import { AgendaDayLoadCard } from "@/modules/agenda/components/agenda-day-load";
 import { findNextAppointmentAfter } from "@/modules/agenda/components/agenda-day-load-model";
 import MotivationalHeader from "@/components/MotivationalHeader";
@@ -85,7 +89,6 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { APPOINTMENT_STATUS_META } from "@/config/status-meta";
-
 
 import type { RecurrenceFrequency } from "@/types/db";
 import {
@@ -230,10 +233,10 @@ export function AgendaView(props: AgendaViewProps) {
   };
   const dayRows = tableRowsByTab.selection;
   const dayCompleted = dayRows.filter(
-    (row) => row.appointment.status === "completed"
+    (row) => row.appointment.status === "completed",
   ).length;
   const dayUrgent = dayRows.filter(
-    (row) => row.appointment.type === "Urgence"
+    (row) => row.appointment.type === "Urgence",
   ).length;
   const daySummaryLabel =
     dayRows.length === 0
@@ -246,34 +249,43 @@ export function AgendaView(props: AgendaViewProps) {
           dayRows.length - dayCompleted > 0
             ? `${dayRows.length - dayCompleted} à suivre`
             : null,
-          dayUrgent > 0 ? `${dayUrgent} urgence${dayUrgent > 1 ? "s" : ""}` : null,
+          dayUrgent > 0
+            ? `${dayUrgent} urgence${dayUrgent > 1 ? "s" : ""}`
+            : null,
         ]
           .filter(Boolean)
           .join(" · ");
   // Suite proposée par le panneau de charge quand la journée est libre.
-  const nextAppointmentAfterDay = findNextAppointmentAfter(appointments, selectedDate);
+  const nextAppointmentAfterDay = findNextAppointmentAfter(
+    appointments,
+    selectedDate,
+  );
   const selectedAppointmentDate = selectedAppointment
     ? normalizeDate(selectedAppointment.startTime)
     : null;
   return (
     <div className="agenda-workspace dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <MotivationalHeader section="agenda"
-        actions={<>
-          <Button
-            className="h-9 px-4"
-            onClick={() => handleOpenCreate()}
-          >
-            <HugeiconsIcon
-              data-icon="inline-start"
-              icon={Add01Icon}
-              strokeWidth={1.5}
-            />
-            {t("agenda.newAppointment")}
-          </Button>
-        </>}
+      <MotivationalHeader
+        section="agenda"
+        actions={
+          <>
+            <Button className="h-9 px-4" onClick={() => handleOpenCreate()}>
+              <HugeiconsIcon
+                data-icon="inline-start"
+                icon={Add01Icon}
+                strokeWidth={1.5}
+              />
+              {t("agenda.newAppointment")}
+            </Button>
+          </>
+        }
       />
 
-      <SectionCards items={sectionCards} />
+      <SectionCards
+        icon={CalendarDays}
+        items={sectionCards}
+        subtitle="Rendez-vous du jour"
+      />
 
       <AgendaCalendar
         getAppointmentsForDate={getAppointmentsForDate}
@@ -285,9 +297,12 @@ export function AgendaView(props: AgendaViewProps) {
           // The detail card sits under the calendar: bring it into view.
           window.requestAnimationFrame(() =>
             document.getElementById("agenda-detail")?.scrollIntoView({
-              behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+                .matches
+                ? "auto"
+                : "smooth",
               block: "nearest",
-            })
+            }),
           );
         }}
         onSelectDate={(date) => {
@@ -328,7 +343,10 @@ export function AgendaView(props: AgendaViewProps) {
             >
               <div className="agenda-day-toolbar flex flex-col gap-3 border-border border-b px-5 py-4 sm:px-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <TabsList aria-label="Rendez-vous à afficher" tabsStyle="segmented">
+                  <TabsList
+                    aria-label="Rendez-vous à afficher"
+                    tabsStyle="segmented"
+                  >
                     {TABLE_TABS.map((tab) => (
                       <TabsTrigger key={tab.value} value={tab.value}>
                         {tab.label}
@@ -343,7 +361,10 @@ export function AgendaView(props: AgendaViewProps) {
                       onValueChange={(value) => setViewMode(value as ViewMode)}
                       value={displayMode}
                     >
-                      <TabsList aria-label="Affichage de la journée" tabsStyle="segmented">
+                      <TabsList
+                        aria-label="Affichage de la journée"
+                        tabsStyle="segmented"
+                      >
                         <TabsTrigger value="list">Liste</TabsTrigger>
                         <TabsTrigger value="day">Par vétérinaire</TabsTrigger>
                         <TabsTrigger value="week">Semaine</TabsTrigger>
@@ -397,7 +418,7 @@ export function AgendaView(props: AgendaViewProps) {
                           <NativeSelectOption key={status} value={status}>
                             {meta.label}
                           </NativeSelectOption>
-                        )
+                        ),
                       )}
                     </NativeSelect>
                     {hasActiveFilters ? (
@@ -429,7 +450,9 @@ export function AgendaView(props: AgendaViewProps) {
                     currentTimeLabel={formatTime(currentTime)}
                     currentTimePosition={currentTimePosition}
                     getPatientName={getPatientName}
-                    onCreateAt={(vetId, time) => handleOpenCreate(selectedDate, time, vetId)}
+                    onCreateAt={(vetId, time) =>
+                      handleOpenCreate(selectedDate, time, vetId)
+                    }
                     onSelectAppointment={selectAppointment}
                     selectedAppointmentId={selectedAppointmentId}
                     selectedDate={selectedDate}
@@ -453,7 +476,11 @@ export function AgendaView(props: AgendaViewProps) {
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
                           <HugeiconsIcon
-                            icon={tableTab === "attention" ? Alert02Icon : Calendar01Icon}
+                            icon={
+                              tableTab === "attention"
+                                ? Alert02Icon
+                                : Calendar01Icon
+                            }
                             strokeWidth={1.5}
                           />
                         </EmptyMedia>
@@ -496,7 +523,9 @@ export function AgendaView(props: AgendaViewProps) {
                   onDeleteAppointment={deleteAppointment}
                   onEditAppointment={handleOpenEdit}
                   onOpenAppointment={openAppointmentInFlux}
-                  onSelectAppointment={(appointment) => selectAppointment(appointment)}
+                  onSelectAppointment={(appointment) =>
+                    selectAppointment(appointment)
+                  }
                   onTransitionStatus={handleAppointmentStatusTransition}
                   resetKey={`${tableTab}:${selectedDate.toDateString()}:${searchTerm}:${vetFilter}:${statusFilter}`}
                   rows={tableRowsByTab[tableTab]}
@@ -508,7 +537,10 @@ export function AgendaView(props: AgendaViewProps) {
           </CardContent>
         </Card>
 
-        <aside className="grid min-w-0 gap-6" aria-label="Détail et charge de la journée">
+        <aside
+          className="grid min-w-0 gap-6"
+          aria-label="Détail et charge de la journée"
+        >
           {selectedAppointment ? (
             <Card className="agenda-side-panel board-frame" id="agenda-detail">
               <CardHeader className="border-border border-b px-5 py-4">
@@ -542,18 +574,22 @@ export function AgendaView(props: AgendaViewProps) {
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-muted-foreground">Date</span>
                     <span className="text-right font-medium text-foreground">
-                      {formatDateLabel(selectedAppointmentDate ?? selectedDate, {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatDateLabel(
+                        selectedAppointmentDate ?? selectedDate,
+                        {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        },
+                      )}
                     </span>
                   </div>
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-muted-foreground">Vétérinaire</span>
                     <span className="text-right font-medium text-foreground">
-                      {formatPersonName(selectedVet?.displayName) || "Vétérinaire local"}
+                      {formatPersonName(selectedVet?.displayName) ||
+                        "Vétérinaire local"}
                     </span>
                   </div>
                   <div className="flex items-start justify-between gap-3">
@@ -636,18 +672,19 @@ export function AgendaView(props: AgendaViewProps) {
           <AgendaDayLoadCard
             dayLoadSummary={dayLoadSummary}
             engagedVetsCount={engagedVetsCount}
-            getAppointmentCount={(date) => getAppointmentsForDate(date).filter(isActiveBooking).length}
+            getAppointmentCount={(date) =>
+              getAppointmentsForDate(date).filter(isActiveBooking).length
+            }
             nextAppointment={
               nextAppointmentAfterDay
                 ? {
                     appointment: nextAppointmentAfterDay,
                     patientName:
-                      patientsById.get(nextAppointmentAfterDay.patientId)?.name ||
-                      nextAppointmentAfterDay.title,
+                      patientsById.get(nextAppointmentAfterDay.patientId)
+                        ?.name || nextAppointmentAfterDay.title,
                   }
                 : null
             }
-            onCreateAppointment={() => handleOpenCreate(selectedDate)}
             onSelectDate={(date) => {
               setSelectedDate(date);
               setTableTab("selection");
@@ -707,10 +744,11 @@ export function AgendaView(props: AgendaViewProps) {
                 />
 
                 {/* Second path, folded: pick the owner first, then one of their dossiers. */}
-                <Collapsible className="lg:col-span-2" key={isDialogOpen ? "open" : "closed"}>
-                  <CollapsibleTrigger
-                    className="group/owner-path inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 t-13 font-medium text-[color:var(--ink-soft,#5d5d5d)] outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-                  >
+                <Collapsible
+                  className="lg:col-span-2"
+                  key={isDialogOpen ? "open" : "closed"}
+                >
+                  <CollapsibleTrigger className="group/owner-path inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 t-13 font-medium text-[color:var(--ink-soft,#5d5d5d)] outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
                     <HugeiconsIcon
                       aria-hidden="true"
                       className="transition-transform group-data-[panel-open]/owner-path:rotate-180"
@@ -722,85 +760,89 @@ export function AgendaView(props: AgendaViewProps) {
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pt-3">
                     <div className="grid gap-5 lg:grid-cols-2">
-                    <Field className="lg:col-span-2">
-                      <FieldLabel>Client existant</FieldLabel>
-                      <Input
-                        onChange={(event) => {
-                          setOwnerSearchTerm(event.target.value);
-                          if (!event.target.value.trim()) {
-                            setSelectedOwnerId("");
-                          }
-                        }}
-                        placeholder="Rechercher un propriétaire par nom, téléphone ou email…"
-                        value={ownerSearchTerm}
-                      />
-                      <FieldDescription>
-                        Sélectionnez d’abord le client pour filtrer automatiquement
-                        ses dossiers patients.
-                      </FieldDescription>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {filteredOwners.length > 0 ? (
-                          filteredOwners.map((owner) => (
-                            <Button
-                              key={owner.id}
-                              onClick={() => handleOwnerSelect(owner.id)}
-                              size="sm"
-                              type="button"
-                              variant={
-                                normalizeEntityId(selectedOwnerId) ===
-                                normalizeEntityId(owner.id)
-                                  ? "default"
-                                  : "outline"
-                              }
-                            >
-                              {formatOwnerName(owner)}
-                            </Button>
-                          ))
-                        ) : (
-                          <div className="text-muted-foreground text-sm">
-                            Aucun client existant ne correspond à cette recherche.
-                          </div>
-                        )}
-                      </div>
-                    </Field>
+                      <Field className="lg:col-span-2">
+                        <FieldLabel>Client existant</FieldLabel>
+                        <Input
+                          onChange={(event) => {
+                            setOwnerSearchTerm(event.target.value);
+                            if (!event.target.value.trim()) {
+                              setSelectedOwnerId("");
+                            }
+                          }}
+                          placeholder="Rechercher un propriétaire par nom, téléphone ou email…"
+                          value={ownerSearchTerm}
+                        />
+                        <FieldDescription>
+                          Sélectionnez d’abord le client pour filtrer
+                          automatiquement ses dossiers patients.
+                        </FieldDescription>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {filteredOwners.length > 0 ? (
+                            filteredOwners.map((owner) => (
+                              <Button
+                                key={owner.id}
+                                onClick={() => handleOwnerSelect(owner.id)}
+                                size="sm"
+                                type="button"
+                                variant={
+                                  normalizeEntityId(selectedOwnerId) ===
+                                  normalizeEntityId(owner.id)
+                                    ? "default"
+                                    : "outline"
+                                }
+                              >
+                                {formatOwnerName(owner)}
+                              </Button>
+                            ))
+                          ) : (
+                            <div className="text-muted-foreground text-sm">
+                              Aucun client existant ne correspond à cette
+                              recherche.
+                            </div>
+                          )}
+                        </div>
+                      </Field>
 
-                    <Field className="lg:col-span-2">
-                      <FieldLabel>Patient</FieldLabel>
-                      <Input
-                        onChange={(event) =>
-                          setPatientSearchTerm(event.target.value)
-                        }
-                        placeholder="Rechercher un patient par nom, espèce ou propriétaire…"
-                        value={patientSearchTerm}
-                      />
-                      <NativeSelect
-                        className="w-full cursor-pointer"
-                        onChange={(event) =>
-                          handlePatientSelect(event.target.value)
-                        }
-                        value={selectedPatientId}
-                      >
-                        <NativeSelectOption disabled value="">
+                      <Field className="lg:col-span-2">
+                        <FieldLabel>Patient</FieldLabel>
+                        <Input
+                          onChange={(event) =>
+                            setPatientSearchTerm(event.target.value)
+                          }
+                          placeholder="Rechercher un patient par nom, espèce ou propriétaire…"
+                          value={patientSearchTerm}
+                        />
+                        <NativeSelect
+                          className="w-full cursor-pointer"
+                          onChange={(event) =>
+                            handlePatientSelect(event.target.value)
+                          }
+                          value={selectedPatientId}
+                        >
+                          <NativeSelectOption disabled value="">
+                            {selectedOwnerId
+                              ? "Sélectionner un dossier du client"
+                              : "Sélectionner un dossier"}
+                          </NativeSelectOption>
+                          {filteredPatientsForForm.map((patient) => {
+                            const owner = ownersById.get(patient.ownerId);
+                            return (
+                              <NativeSelectOption
+                                key={patient.id}
+                                value={patient.id}
+                              >
+                                {patient.name} · {patient.species} ·{" "}
+                                {formatOwnerName(owner)}
+                              </NativeSelectOption>
+                            );
+                          })}
+                        </NativeSelect>
+                        <FieldDescription>
                           {selectedOwnerId
-                            ? "Sélectionner un dossier du client"
-                            : "Sélectionner un dossier"}
-                        </NativeSelectOption>
-                        {filteredPatientsForForm.map((patient) => {
-                          const owner = ownersById.get(patient.ownerId);
-                          return (
-                            <NativeSelectOption key={patient.id} value={patient.id}>
-                              {patient.name} · {patient.species} ·{" "}
-                              {formatOwnerName(owner)}
-                            </NativeSelectOption>
-                          );
-                        })}
-                      </NativeSelect>
-                      <FieldDescription>
-                        {selectedOwnerId
-                          ? "Seuls les patients liés au client choisi sont affichés."
-                          : "Le propriétaire sera lié automatiquement depuis le dossier choisi."}
-                      </FieldDescription>
-                    </Field>
+                            ? "Seuls les patients liés au client choisi sont affichés."
+                            : "Le propriétaire sera lié automatiquement depuis le dossier choisi."}
+                        </FieldDescription>
+                      </Field>
                     </div>
                   </CollapsibleContent>
                 </Collapsible>
@@ -840,7 +882,9 @@ export function AgendaView(props: AgendaViewProps) {
                     >
                       {roomOptions.map((room) => (
                         <NativeSelectOption key={room.value} value={room.value}>
-                          {room.archived ? `${room.label} (archivée)` : room.label}
+                          {room.archived
+                            ? `${room.label} (archivée)`
+                            : room.label}
                         </NativeSelectOption>
                       ))}
                     </NativeSelect>
@@ -922,7 +966,7 @@ export function AgendaView(props: AgendaViewProps) {
                             />
                             <span>
                               {t(
-                                `scheduling.recurrence.frequencies.${freq.value}`
+                                `scheduling.recurrence.frequencies.${freq.value}`,
                               )}
                             </span>
                           </label>
@@ -940,7 +984,7 @@ export function AgendaView(props: AgendaViewProps) {
                         <div className="flex flex-wrap gap-2">
                           {DAY_OF_WEEK_LABELS.map((day) => {
                             const checked = recurrenceDaysOfWeek.includes(
-                              day.value
+                              day.value,
                             );
                             return (
                               <Button
@@ -949,7 +993,7 @@ export function AgendaView(props: AgendaViewProps) {
                                   setRecurrenceDaysOfWeek((current) =>
                                     checked
                                       ? current.filter((d) => d !== day.value)
-                                      : [...current, day.value].sort()
+                                      : [...current, day.value].sort(),
                                   );
                                 }}
                                 size="sm"
@@ -971,10 +1015,9 @@ export function AgendaView(props: AgendaViewProps) {
                             defaultValue: "Date de fin (optionnelle)",
                           })}
                         </FieldLabel>
-                        <DatePicker clearable
-                          onChange={(value) =>
-                            setRecurrenceEndDate(value)
-                          }
+                        <DatePicker
+                          clearable
+                          onChange={(value) => setRecurrenceEndDate(value)}
                           value={recurrenceEndDate}
                         />
                       </Field>
@@ -989,7 +1032,7 @@ export function AgendaView(props: AgendaViewProps) {
                           onChange={(event) => {
                             const raw = event.target.value.trim();
                             setRecurrenceMaxOccurrences(
-                              raw === "" ? null : Math.max(1, Number(raw))
+                              raw === "" ? null : Math.max(1, Number(raw)),
                             );
                           }}
                           type="number"
@@ -1001,7 +1044,7 @@ export function AgendaView(props: AgendaViewProps) {
                             {
                               defaultValue:
                                 "Laissez vide pour une récurrence sans limite (jusqu'à la date de fin).",
-                            }
+                            },
                           )}
                         </FieldDescription>
                       </Field>
@@ -1023,7 +1066,9 @@ export function AgendaView(props: AgendaViewProps) {
                         />
                       }
                     >
-                      <span className="tabular-nums">{formDate.split("-").reverse().join("/")}</span>
+                      <span className="tabular-nums">
+                        {formDate.split("-").reverse().join("/")}
+                      </span>
                       <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.5} />
                     </PopoverTrigger>
                     <PopoverContent
@@ -1121,7 +1166,7 @@ export function AgendaView(props: AgendaViewProps) {
                   className="h-11 min-w-[120px] justify-center"
                   onClick={() => {
                     const current = appointments.find(
-                      (appointment) => appointment.id === editingAppointmentId
+                      (appointment) => appointment.id === editingAppointmentId,
                     );
                     if (current) {
                       void deleteAppointment(current);

@@ -1,4 +1,5 @@
 import { ErrorState } from "@/design-system/patterns/error-state";
+import { Syringe } from "lucide-react";
 import { careErrorMessage } from "./feedback";
 import "./care-page.css";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
@@ -35,8 +36,16 @@ import {
 import { CareTaskForm, careTypeLabels } from "./care-task-form";
 import { CareCompletionRollbackDialog } from "./care-completion-rollback-dialog";
 import { careTasksService } from "./service";
-import { announceCareTasksChanged, CARE_LIST_DAY_KEY, useCareTasks } from "./use-care-tasks";
-import { insufficientStockMessage, stockQuantityLabel, parseStockQuantityInput } from "@/domain/stock";
+import {
+  announceCareTasksChanged,
+  CARE_LIST_DAY_KEY,
+  useCareTasks,
+} from "./use-care-tasks";
+import {
+  insufficientStockMessage,
+  stockQuantityLabel,
+  parseStockQuantityInput,
+} from "@/domain/stock";
 import { ProductStockFields } from "@/modules/stock/components/product-stock-fields";
 import { DatePicker } from "@/components/ui/date-picker";
 import { PageHeader } from "@/design-system/patterns/page-header";
@@ -44,7 +53,12 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { InjectionIcon } from "@/lib/hugeicons";
 import { formatLongDay } from "@/utils/display-format";
 import { SectionCards } from "@/components/section-cards";
-import { careDaySummary, careDoses, careTimeline, type CareMarkKind } from "./care-day";
+import {
+  careDaySummary,
+  careDoses,
+  careTimeline,
+  type CareMarkKind,
+} from "./care-day";
 const labels: Record<CareDisplayStatus, string> = {
   a_faire: "À faire",
   en_cours: "En cours",
@@ -81,7 +95,11 @@ function CareDayStrip({
     <div className="care-strip" aria-label="Frise des soins du jour">
       <div className="care-strip-track">
         {line.now !== null && (
-          <span aria-hidden="true" className="care-strip-now" style={{ left: `${line.now}%` }} />
+          <span
+            aria-hidden="true"
+            className="care-strip-now"
+            style={{ left: `${line.now}%` }}
+          />
         )}
         {line.marks.map(({ task, kind, at }) => (
           <button
@@ -109,7 +127,10 @@ const time = (value: string) =>
     minute: "2-digit",
   });
 const shortDay = (value: string) =>
-  new Date(value).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  new Date(value).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+  });
 export default function CarePage({
   patientId,
   onNavigateToPatient,
@@ -128,12 +149,20 @@ export default function CarePage({
   const isPremium = useIsPremium();
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
     // A follow-up planned from a SOAP Plan opens the list on its own day, once.
-    const day = typeof sessionStorage === "undefined" ? null : sessionStorage.getItem(CARE_LIST_DAY_KEY);
+    const day =
+      typeof sessionStorage === "undefined"
+        ? null
+        : sessionStorage.getItem(CARE_LIST_DAY_KEY);
     if (!day) return null;
     sessionStorage.removeItem(CARE_LIST_DAY_KEY);
     const match = day.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (!match) return null;
-    const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12);
+    const date = new Date(
+      Number(match[1]),
+      Number(match[2]) - 1,
+      Number(match[3]),
+      12,
+    );
     const today = new Date();
     return date.toDateString() === today.toDateString() ? null : date;
   });
@@ -160,41 +189,65 @@ export default function CarePage({
   // own date, until it is done, moved or cancelled. It is not planned today.
   const dayStart = new Date(careDate);
   dayStart.setHours(0, 0, 0, 0);
-  const isCarried = (task: CareTask) => new Date(task.heure_prevue).getTime() < dayStart.getTime();
+  const isCarried = (task: CareTask) =>
+    new Date(task.heure_prevue).getTime() < dayStart.getTime();
   const when = (task: CareTask) =>
-    isCarried(task) ? `${shortDay(task.heure_prevue)}, ${time(task.heure_prevue)}` : time(task.heure_prevue);
+    isCarried(task)
+      ? `${shortDay(task.heure_prevue)}, ${time(task.heure_prevue)}`
+      : time(task.heure_prevue);
   const summary = careDaySummary(tasks, now, dayStart);
   const overdueCount = summary.overdue.length;
   const patients = usePatientsRepository();
   const products = useProductsRepository();
   const stockWarning = (task: CareTask) => {
-    if (!task.produit_id || ["fait", "annule"].includes(task.statut)) return null;
-    const product = products.data.find(p => p.id === task.produit_id);
+    if (!task.produit_id || ["fait", "annule"].includes(task.statut))
+      return null;
+    const product = products.data.find((p) => p.id === task.produit_id);
     if (products.loading) return null;
-    if (!product || product.archivedAt) return "Ce produit n’est plus disponible. Vérifiez le stock avant de valider.";
+    if (!product || product.archivedAt)
+      return "Ce produit n’est plus disponible. Vérifiez le stock avant de valider.";
     const requested = task.produit_quantite ?? 1;
-    if (product.stockTracked !== false && product.availabilityPending) return "Vérification du stock utilisable…";
-    if (product.inventoryInvalid) return "Les données d’un lot sont à vérifier avant validation.";
+    if (product.stockTracked !== false && product.availabilityPending)
+      return "Vérification du stock utilisable…";
+    if (product.inventoryInvalid)
+      return "Les données d’un lot sont à vérifier avant validation.";
     const available = product.availableQuantity ?? product.quantity;
     return product.stockTracked !== false && available < requested
-      ? insufficientStockMessage(product.name, available, requested, product.unit) : null;
+      ? insufficientStockMessage(
+          product.name,
+          available,
+          requested,
+          product.unit,
+        )
+      : null;
   };
   const users = useUsersRepository();
   const { currentUser } = useAuth();
   const [mode, setMode] = useState<"patient" | "heure">("patient");
   const [filter, setFilter] = useState("tous");
   const [search, setSearch] = useState("");
-  const [usageDrafts, setUsageDrafts] = useState<Record<string, {productId: string; quantity: string}>>({});
+  const [usageDrafts, setUsageDrafts] = useState<
+    Record<string, { productId: string; quantity: string }>
+  >({});
   const hasUnsavedProductUsage = (task: CareTask) => {
     const draft = usageDrafts[task.id];
     if (!draft) return false;
-    const product = products.data.find(p => p.id === draft.productId);
-    const quantity = !draft.productId || product?.stockTracked === false ? 1 : parseStockQuantityInput(draft.quantity);
-    return (draft.productId || null) !== task.produit_id || quantity !== (task.produit_quantite ?? 1);
+    const product = products.data.find((p) => p.id === draft.productId);
+    const quantity =
+      !draft.productId || product?.stockTracked === false
+        ? 1
+        : parseStockQuantityInput(draft.quantity);
+    return (
+      (draft.productId || null) !== task.produit_id ||
+      quantity !== (task.produit_quantite ?? 1)
+    );
   };
   const [creating, setCreating] = useState(false);
   useEffect(() => {
-    const open = () => { sessionStorage.removeItem("vetera:pending-care-form"); setCreating(true); };
+    const open = () => {
+      sessionStorage.removeItem("vetera:pending-care-form");
+      setCreating(true);
+    };
     if (sessionStorage.getItem("vetera:pending-care-form") === "true") open();
     window.addEventListener("vetera:plan-care", open);
     return () => window.removeEventListener("vetera:plan-care", open);
@@ -252,11 +305,16 @@ export default function CarePage({
   async function transition(task: CareTask, status: CareStatus) {
     if (busy) return;
     if (status === "fait" && hasUnsavedProductUsage(task)) {
-      setActionError("Enregistrez la modification du produit ou de la quantité avant de valider le soin.");
+      setActionError(
+        "Enregistrez la modification du produit ou de la quantité avant de valider le soin.",
+      );
       return;
     }
     const warning = status === "fait" ? stockWarning(task) : null;
-    if (warning) { setActionError(warning); return; }
+    if (warning) {
+      setActionError(warning);
+      return;
+    }
     setBusy(task.id);
     setActionError(null);
     try {
@@ -264,7 +322,7 @@ export default function CarePage({
         task.id,
         status,
         currentUser?.id ?? "",
-        reason
+        reason,
       );
       announceCareTasksChanged();
       await refresh();
@@ -280,13 +338,24 @@ export default function CarePage({
     setBusy(task.id);
     setUndoError(null);
     try {
-      await careTasksService.undoCompletion(task.id, currentUser?.id ?? "", correctionReason, task.completion_revision ?? 0);
+      await careTasksService.undoCompletion(
+        task.id,
+        currentUser?.id ?? "",
+        correctionReason,
+        task.completion_revision ?? 0,
+      );
       announceCareTasksChanged();
       await refresh();
-      setUsageDrafts(rows => {const copy = {...rows}; delete copy[task.id]; return copy;});
+      setUsageDrafts((rows) => {
+        const copy = { ...rows };
+        delete copy[task.id];
+        return copy;
+      });
       setFilter("tous");
       setUndoing(null);
-      setSavedMessage("Validation annulée. Le soin est de nouveau à faire et le stock consommé a été restitué.");
+      setSavedMessage(
+        "Validation annulée. Le soin est de nouveau à faire et le stock consommé a été restitué.",
+      );
     } catch (error) {
       setUndoError(careErrorMessage(error, "update"));
     } finally {
@@ -297,7 +366,7 @@ export default function CarePage({
     .filter((t) =>
       patientName(t.patient_id)
         .toLocaleLowerCase("fr")
-        .includes(search.toLocaleLowerCase("fr"))
+        .includes(search.toLocaleLowerCase("fr")),
     )
     .filter((t) => {
       const s = careDisplayStatus(t, now);
@@ -313,7 +382,7 @@ export default function CarePage({
       (a, b) =>
         Number(careDisplayStatus(b, now) === "en_retard") -
           Number(careDisplayStatus(a, now) === "en_retard") ||
-        a.heure_prevue.localeCompare(b.heure_prevue)
+        a.heure_prevue.localeCompare(b.heure_prevue),
     );
   const groupKey = (t: CareTask) =>
     isCarried(t)
@@ -322,14 +391,7 @@ export default function CarePage({
   const groups =
     mode === "patient"
       ? [...new Set(visible.map((t) => t.patient_id))]
-      : [
-          ...new Set(
-            visible.map(
-              (t) =>
-                groupKey(t)
-            )
-          ),
-        ];
+      : [...new Set(visible.map((t) => groupKey(t)))];
   function row(task: CareTask) {
     const status = careDisplayStatus(task, now);
     const terminal = task.statut === "fait" || task.statut === "annule";
@@ -357,7 +419,10 @@ export default function CarePage({
               setReason("");
             }}
           >
-            <time className="shrink-0 t-16 font-medium tabular-nums" dateTime={task.heure_prevue}>
+            <time
+              className="shrink-0 t-16 font-medium tabular-nums"
+              dateTime={task.heure_prevue}
+            >
               {isCarried(task) && (
                 <span className="block t-12 font-normal text-rose-700 dark:text-rose-300">
                   {shortDay(task.heure_prevue)}
@@ -370,12 +435,21 @@ export default function CarePage({
                 {task.label}
               </span>
               <span className="block t-12 text-muted-foreground">
-                {careTypeLabels[task.type]}{task.produit_id && products.data.find(p => p.id === task.produit_id)?.stockTracked !== false
-                  ? ` · ${stockQuantityLabel(task.produit_quantite ?? 1, products.data.find(p => p.id === task.produit_id)?.unit ?? "unité")}` : ""}
+                {careTypeLabels[task.type]}
+                {task.produit_id &&
+                products.data.find((p) => p.id === task.produit_id)
+                  ?.stockTracked !== false
+                  ? ` · ${stockQuantityLabel(task.produit_quantite ?? 1, products.data.find((p) => p.id === task.produit_id)?.unit ?? "unité")}`
+                  : ""}
               </span>
-              {stockWarning(task) && <span className="block t-12 text-destructive">Stock insuffisant, ouvrez le soin pour vérifier.</span>}
+              {stockWarning(task) && (
+                <span className="block t-12 text-destructive">
+                  Stock insuffisant, ouvrez le soin pour vérifier.
+                </span>
+              )}
             </span>
-            <span data-premium-status={status}
+            <span
+              data-premium-status={status}
               className={`shrink-0 rounded-lg px-2.5 py-1 t-12 font-medium ${tones[status]}`}
             >
               {labels[status]}
@@ -386,7 +460,12 @@ export default function CarePage({
           <Button
             className="min-h-11 shrink-0"
             variant="outline"
-            disabled={!!busy || !currentUser || !!stockWarning(task) || hasUnsavedProductUsage(task)}
+            disabled={
+              !!busy ||
+              !currentUser ||
+              !!stockWarning(task) ||
+              hasUnsavedProductUsage(task)
+            }
             onClick={() => void transition(task, "fait")}
             aria-label={`Valider ${task.label} pour ${patientName(task.patient_id)}`}
           >
@@ -402,8 +481,7 @@ export default function CarePage({
       className="h-11 w-44"
       value={`${careDate.getFullYear()}-${String(careDate.getMonth() + 1).padStart(2, "0")}-${String(careDate.getDate()).padStart(2, "0")}`}
       onChange={(value) => {
-        if (value)
-          setCareDate(new Date(`${value}T12:00:00`));
+        if (value) setCareDate(new Date(`${value}T12:00:00`));
       }}
     />
   );
@@ -433,7 +511,11 @@ export default function CarePage({
           actions={
             <>
               {patientId && onShowAll && (
-                <Button className="min-h-11" onClick={onShowAll} variant="outline">
+                <Button
+                  className="min-h-11"
+                  onClick={onShowAll}
+                  variant="outline"
+                >
                   Afficher tous les patients
                 </Button>
               )}
@@ -442,27 +524,36 @@ export default function CarePage({
               </Button>
             </>
           }
-          icon={<HugeiconsIcon icon={InjectionIcon} size={20} strokeWidth={1.5} />}
+          icon={
+            <HugeiconsIcon icon={InjectionIcon} size={20} strokeWidth={1.5} />
+          }
           kicker={formatLongDay(careDate)}
-          subtitle="Les soins planifiés, suivis par votre équipe."
+          subtitle="soins planifiés"
           title="Soins"
         />
       )}
       {!patientId && (
         <>
           <SectionCards
+            icon={Syringe}
             className="care-summary"
+            subtitle="Soins du jour"
             items={[
               {
                 title: "Soins prévus",
                 value: summary.planned,
-                detailRow: summary.planned || summary.cancelled
-                  ? [
-                      `${summary.done} fait${summary.done > 1 ? "s" : ""}`,
-                      `${summary.pending - summary.carried} à terminer`,
-                      summary.cancelled ? `${summary.cancelled} annulé${summary.cancelled > 1 ? "s" : ""}` : "",
-                    ].filter(Boolean).join(" · ")
-                  : "Aucun soin planifié pour cette date",
+                detailRow:
+                  summary.planned || summary.cancelled
+                    ? [
+                        `${summary.done} fait${summary.done > 1 ? "s" : ""}`,
+                        `${summary.pending - summary.carried} à terminer`,
+                        summary.cancelled
+                          ? `${summary.cancelled} annulé${summary.cancelled > 1 ? "s" : ""}`
+                          : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")
+                    : "Aucun soin planifié pour cette date",
                 footerTitle: "Hors soins annulés",
               },
               {
@@ -472,15 +563,18 @@ export default function CarePage({
                   ? `Prochain à ${time(summary.next.heure_prevue)}`
                   : summary.pending
                     ? undefined
-                    : summary.planned ? "Tous terminés" : undefined,
-                tone: !summary.pending && summary.planned ? "positive" : undefined,
+                    : summary.planned
+                      ? "Tous terminés"
+                      : undefined,
+                tone:
+                  !summary.pending && summary.planned ? "positive" : undefined,
                 detailRow: summary.next
                   ? `${summary.next.label} · ${patientName(summary.next.patient_id)}`
                   : summary.carried
                     ? `Dont ${summary.carried} des jours précédents`
                     : summary.inProgress
-                    ? `Dont ${summary.inProgress} en cours`
-                    : "À faire ou en cours",
+                      ? `Dont ${summary.inProgress} en cours`
+                      : "À faire ou en cours",
                 footerTitle: "À faire ou en cours",
               },
               {
@@ -545,7 +639,7 @@ export default function CarePage({
                 ))}
               </div>
             </div>
-              {isPremium && dateControl}
+            {isPremium && dateControl}
           </div>
         </>
       )}
@@ -574,80 +668,97 @@ export default function CarePage({
         </div>
       ) : (
         <>
-        {mode === "patient" && (
-          <ul aria-label="Légende de la frise" className="care-strip-legend">
-            {(Object.keys(markLabels) as CareMarkKind[]).map((kind) => (
-              <li key={kind}>
-                <span aria-hidden="true" className="care-strip-mark" data-kind={kind} />
-                {markLabels[kind]}
-              </li>
-            ))}
-          </ul>
-        )}
-        <div
-          className={
-            mode === "patient"
-              ? groups.length > 1
-                ? "grid items-start gap-4 xl:grid-cols-2"
-                : "grid items-start gap-4"
-              : "space-y-4"
-          }
-        >
-          {groups.map((group) => (
-            <article
-              key={group}
-              className="care-task-group space-y-3 rounded-2xl border border-border bg-card p-4"
-            >
-              <div className="care-group-head">
-              <div className="care-group-title">
-              <h2 className="t-16 font-medium">
-                {mode === "patient" ? (
-                  onNavigateToPatient ? (
-                    <button
-                      type="button"
-                      className="rounded text-left hover:underline focus-visible:outline-2 focus-visible:outline-primary"
-                      onClick={() => onNavigateToPatient(group)}
-                    >
-                      {patientName(group)}
-                    </button>
-                  ) : (
-                    patientName(group)
+          {mode === "patient" && (
+            <ul aria-label="Légende de la frise" className="care-strip-legend">
+              {(Object.keys(markLabels) as CareMarkKind[]).map((kind) => (
+                <li key={kind}>
+                  <span
+                    aria-hidden="true"
+                    className="care-strip-mark"
+                    data-kind={kind}
+                  />
+                  {markLabels[kind]}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div
+            className={
+              mode === "patient"
+                ? groups.length > 1
+                  ? "grid items-start gap-4 xl:grid-cols-2"
+                  : "grid items-start gap-4"
+                : "space-y-4"
+            }
+          >
+            {groups.map((group) => (
+              <article
+                key={group}
+                className="care-task-group space-y-3 rounded-2xl border border-border bg-card p-4"
+              >
+                <div className="care-group-head">
+                  <div className="care-group-title">
+                    <h2 className="t-16 font-medium">
+                      {mode === "patient" ? (
+                        onNavigateToPatient ? (
+                          <button
+                            type="button"
+                            className="rounded text-left hover:underline focus-visible:outline-2 focus-visible:outline-primary"
+                            onClick={() => onNavigateToPatient(group)}
+                          >
+                            {patientName(group)}
+                          </button>
+                        ) : (
+                          patientName(group)
+                        )
+                      ) : (
+                        group
+                      )}
+                    </h2>
+                    {mode === "patient" &&
+                      (() => {
+                        const doses = careDoses(
+                          tasks.filter(
+                            (t) => t.patient_id === group && !isCarried(t),
+                          ),
+                        );
+                        return doses.total ? (
+                          <span
+                            className="care-group-doses"
+                            title="Soins faits sur les soins prévus du jour, hors annulés"
+                          >
+                            <strong>
+                              {doses.done}/{doses.total}
+                            </strong>{" "}
+                            faits
+                          </span>
+                        ) : null;
+                      })()}
+                  </div>
+                  {mode === "patient" && (
+                    <CareDayStrip
+                      now={now}
+                      onOpen={(task) => {
+                        setSelected(task.id);
+                        setActionError(null);
+                        setReason("");
+                      }}
+                      tasks={tasks.filter(
+                        (t) => t.patient_id === group && !isCarried(t),
+                      )}
+                    />
+                  )}
+                </div>
+                {visible
+                  .filter((t) =>
+                    mode === "patient"
+                      ? t.patient_id === group
+                      : groupKey(t) === group,
                   )
-                ) : (
-                  group
-                )}
-              </h2>
-              {mode === "patient" && (() => {
-                const doses = careDoses(tasks.filter((t) => t.patient_id === group && !isCarried(t)));
-                return doses.total ? (
-                  <span className="care-group-doses" title="Soins faits sur les soins prévus du jour, hors annulés">
-                    <strong>{doses.done}/{doses.total}</strong> faits
-                  </span>
-                ) : null;
-              })()}
-              </div>
-              {mode === "patient" && (
-                <CareDayStrip
-                  now={now}
-                  onOpen={(task) => {
-                    setSelected(task.id);
-                    setActionError(null);
-                    setReason("");
-                  }}
-                  tasks={tasks.filter((t) => t.patient_id === group && !isCarried(t))}
-                />
-              )}
-              </div>
-              {visible
-                .filter((t) =>
-                  mode === "patient"
-                    ? t.patient_id === group
-                    : groupKey(t) === group
-                )
-                .map(row)}
-            </article>
-          ))}
-        </div>
+                  .map(row)}
+              </article>
+            ))}
+          </div>
         </>
       )}
       {actionError && (
@@ -658,9 +769,7 @@ export default function CarePage({
       <Dialog open={creating} onOpenChange={setCreating}>
         <DialogContent className="sm:max-w-[600px] sm:p-7">
           <DialogHeader>
-            <DialogTitle>
-              Planifier un soin
-            </DialogTitle>
+            <DialogTitle>Planifier un soin</DialogTitle>
             <DialogDescription>
               Une tâche pour un patient, à l’heure de votre choix.
             </DialogDescription>
@@ -675,7 +784,7 @@ export default function CarePage({
                 const date = new Date(scheduledAt);
                 setCareDate(date);
                 setSavedMessage(
-                  `Soin enregistré pour le ${date.toLocaleDateString("fr-FR")} à ${time(scheduledAt)}. La liste affiche la date du soin enregistré.`
+                  `Soin enregistré pour le ${date.toLocaleDateString("fr-FR")} à ${time(scheduledAt)}. La liste affiche la date du soin enregistré.`,
                 );
               }
             }}
@@ -702,9 +811,7 @@ export default function CarePage({
             Fermer
           </Button>
           <SheetHeader>
-            <SheetTitle>
-              Détail du soin
-            </SheetTitle>
+            <SheetTitle>Détail du soin</SheetTitle>
             <SheetDescription>
               {detail ? patientName(detail.patient_id) : "Chargement…"}
             </SheetDescription>
@@ -742,32 +849,106 @@ export default function CarePage({
               {detail.motif_annulation && (
                 <p>Motif : {detail.motif_annulation}</p>
               )}
-              {detail.statut === "fait" && <div className="border-y border-border py-4">
-                <Button variant="outline" className="min-h-11 w-full" disabled={!!busy || !currentUser}
-                  onClick={() => {setUndoError(null); setUndoing(detail);}}>Annuler la validation</Button>
-              </div>}
+              {detail.statut === "fait" && (
+                <div className="border-y border-border py-4">
+                  <Button
+                    variant="outline"
+                    className="min-h-11 w-full"
+                    disabled={!!busy || !currentUser}
+                    onClick={() => {
+                      setUndoError(null);
+                      setUndoing(detail);
+                    }}
+                  >
+                    Annuler la validation
+                  </Button>
+                </div>
+              )}
               {!["fait", "annule"].includes(detail.statut) && (
                 <div className="space-y-3">
                   <div className="space-y-3 border-y border-border py-4">
-                    <ProductStockFields products={products.data} optional disabled={!!busy}
-                      productId={usageDrafts[detail.id]?.productId ?? detail.produit_id ?? ""}
-                      quantity={usageDrafts[detail.id]?.quantity ?? String(detail.produit_quantite ?? 1)}
-                      onProductChange={productId => setUsageDrafts(rows => ({...rows, [detail.id]: {productId, quantity: "1"}}))}
-                      onQuantityChange={quantity => setUsageDrafts(rows => ({...rows, [detail.id]: {productId: rows[detail.id]?.productId ?? detail.produit_id ?? "", quantity}}))} />
-                    {hasUnsavedProductUsage(detail) && <p role="status" className="t-13 text-muted-foreground">Enregistrez la modification du produit ou de la quantité avant de valider le soin.</p>}
-                    <Button variant="outline" disabled={!!busy || !currentUser || !usageDrafts[detail.id]} onClick={async () => {
-                      const draft = usageDrafts[detail.id]; if (!draft || busy) return;
-                      setBusy(detail.id); setActionError(null);
-                      try {
-                        const product = products.data.find(p => p.id === draft.productId);
-                        await careTasksService.updateProductUsage(detail.id, draft.productId || null, product?.stockTracked === false ? 1 : parseStockQuantityInput(draft.quantity), currentUser?.id ?? "");
-                        announceCareTasksChanged(); await refresh();
-                        setUsageDrafts(rows => {const copy = {...rows}; delete copy[detail.id]; return copy;});
-                      } catch (error) {setActionError(careErrorMessage(error, "update"));}
-                      finally {setBusy(null);}
-                    }}>Mettre à jour le produit</Button>
+                    <ProductStockFields
+                      products={products.data}
+                      optional
+                      disabled={!!busy}
+                      productId={
+                        usageDrafts[detail.id]?.productId ??
+                        detail.produit_id ??
+                        ""
+                      }
+                      quantity={
+                        usageDrafts[detail.id]?.quantity ??
+                        String(detail.produit_quantite ?? 1)
+                      }
+                      onProductChange={(productId) =>
+                        setUsageDrafts((rows) => ({
+                          ...rows,
+                          [detail.id]: { productId, quantity: "1" },
+                        }))
+                      }
+                      onQuantityChange={(quantity) =>
+                        setUsageDrafts((rows) => ({
+                          ...rows,
+                          [detail.id]: {
+                            productId:
+                              rows[detail.id]?.productId ??
+                              detail.produit_id ??
+                              "",
+                            quantity,
+                          },
+                        }))
+                      }
+                    />
+                    {hasUnsavedProductUsage(detail) && (
+                      <p role="status" className="t-13 text-muted-foreground">
+                        Enregistrez la modification du produit ou de la quantité
+                        avant de valider le soin.
+                      </p>
+                    )}
+                    <Button
+                      variant="outline"
+                      disabled={
+                        !!busy || !currentUser || !usageDrafts[detail.id]
+                      }
+                      onClick={async () => {
+                        const draft = usageDrafts[detail.id];
+                        if (!draft || busy) return;
+                        setBusy(detail.id);
+                        setActionError(null);
+                        try {
+                          const product = products.data.find(
+                            (p) => p.id === draft.productId,
+                          );
+                          await careTasksService.updateProductUsage(
+                            detail.id,
+                            draft.productId || null,
+                            product?.stockTracked === false
+                              ? 1
+                              : parseStockQuantityInput(draft.quantity),
+                            currentUser?.id ?? "",
+                          );
+                          announceCareTasksChanged();
+                          await refresh();
+                          setUsageDrafts((rows) => {
+                            const copy = { ...rows };
+                            delete copy[detail.id];
+                            return copy;
+                          });
+                        } catch (error) {
+                          setActionError(careErrorMessage(error, "update"));
+                        } finally {
+                          setBusy(null);
+                        }
+                      }}
+                    >
+                      Mettre à jour le produit
+                    </Button>
                   </div>
-                  {stockWarning(detail) && <p role="alert" className="t-13 text-destructive">{stockWarning(detail)}</p>}
+                  {stockWarning(detail) && (
+                    <p role="alert" className="t-13 text-destructive">
+                      {stockWarning(detail)}
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-2">
                     {detail.statut === "a_faire" && (
                       <Button
@@ -781,7 +962,11 @@ export default function CarePage({
                     )}
                     <Button
                       className="min-h-11"
-                      disabled={!!busy || !!stockWarning(detail) || hasUnsavedProductUsage(detail)}
+                      disabled={
+                        !!busy ||
+                        !!stockWarning(detail) ||
+                        hasUnsavedProductUsage(detail)
+                      }
                       onClick={() => void transition(detail, "fait")}
                     >
                       Valider le soin
@@ -829,9 +1014,18 @@ export default function CarePage({
           )}
         </SheetContent>
       </Sheet>
-      {undoing && <CareCompletionRollbackDialog key={`${undoing.id}:${undoing.completion_revision ?? 0}`}
-        task={undoing} busy={!!busy} error={undoError} onClose={() => setUndoing(null)}
-        onConfirm={reason => {void undoCompletion(undoing, reason);}}/>}
+      {undoing && (
+        <CareCompletionRollbackDialog
+          key={`${undoing.id}:${undoing.completion_revision ?? 0}`}
+          task={undoing}
+          busy={!!busy}
+          error={undoError}
+          onClose={() => setUndoing(null)}
+          onConfirm={(reason) => {
+            void undoCompletion(undoing, reason);
+          }}
+        />
+      )}
     </section>
   );
 }

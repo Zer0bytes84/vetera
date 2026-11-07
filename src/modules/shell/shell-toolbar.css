@@ -642,3 +642,14 @@
     color: var(--ink, var(--foreground));
   }
 }
+
+/* The header's buttons are pills (circles for the icon ones), at the same level of roundness as the rest of the interface:
+   the Data Table's round buttons, the slot pills, the view switches. This sits above the skins' own radii (8 px squares). */
+:root:root [data-slot="app-header"] :is(.topIcon, .shell-toolbar-control, .shell-sidebar-toggle, .header-quick-actions, .shell-toolbar-actions button),
+:root:root [data-slot="app-header"] .shell-toolbar-actions .shell-toolbar-control {
+  border-radius: 9999px !important;
+}
+:root:root [data-slot="page-header-actions"] :is(button, [data-slot="button"]),
+:root:root .dashboardWelcome :is(button, [data-slot="button"]) {
+  border-radius: 9999px !important;
+}

@@ -1,7 +1,17 @@
 import { ListSearch } from "@/components/ui/list-controls";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { UsersRound } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { InitialsAvatar } from "@/design-system/patterns/initials-avatar";
-import { formatNumber, formatPersonName, formatPhone } from "@/utils/display-format";
+import {
+  formatNumber,
+  formatPersonName,
+  formatPhone,
+} from "@/utils/display-format";
 import {
   Add01Icon,
   Briefcase01Icon,
@@ -107,12 +117,11 @@ const ROLE_CONFIG: Record<
 };
 
 function createTemporaryPassword() {
-  const alphabet =
-    "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
   const randomValues = crypto.getRandomValues(new Uint32Array(7));
   const randomPart = Array.from(
     randomValues,
-    (value) => alphabet[value % alphabet.length]
+    (value) => alphabet[value % alphabet.length],
   ).join("");
   return `Vet${randomPart}!`;
 }
@@ -123,13 +132,13 @@ const Team: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [memberPendingDelete, setMemberPendingDelete] = useState<User | null>(
-    null
+    null,
   );
   const [passwordResetTarget, setPasswordResetTarget] = useState<User | null>(
-    null
+    null,
   );
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(
-    null
+    null,
   );
 
   // State for password reset feedback
@@ -217,7 +226,7 @@ const Team: React.FC = () => {
     const duplicateUser = users.find(
       (user) =>
         user.email?.trim().toLowerCase() === normalizedEmail &&
-        user.id !== editingId
+        user.id !== editingId,
     );
 
     if (duplicateUser) {
@@ -262,7 +271,7 @@ const Team: React.FC = () => {
         message.toLowerCase().includes("email")
       ) {
         toast.error(
-          "Impossible d'ajouter ce membre : cet email est déjà utilisé."
+          "Impossible d'ajouter ce membre : cet email est déjà utilisé.",
         );
       } else {
         toast.error(`Erreur lors de la sauvegarde : ${message}`);
@@ -290,7 +299,7 @@ const Team: React.FC = () => {
   const handleResetPassword = async (
     email: string,
     _name: string,
-    userId: string
+    userId: string,
   ) => {
     if (!(email && userId)) {
       return;
@@ -305,7 +314,7 @@ const Team: React.FC = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`
+        `Erreur lors de la réinitialisation : ${error?.message || "Erreur inconnue"}`,
       );
     } finally {
       setResetStatus({ loading: false, userId: null });
@@ -319,28 +328,31 @@ const Team: React.FC = () => {
           (u.displayName || "")
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          (u.email || "").toLowerCase().includes(searchTerm.toLowerCase())
+          (u.email || "").toLowerCase().includes(searchTerm.toLowerCase()),
       ),
-    [users, searchTerm]
+    [users, searchTerm],
   );
 
   const sectionCards = useMemo<SectionCardItem[]>(() => {
     const activeUsers = users.filter((user) => user.status === "active").length;
     const vets = users.filter((user) =>
-      ["vet_principal", "vet_adjoint"].includes(user.role || "")
+      ["vet_principal", "vet_adjoint"].includes(user.role || ""),
     ).length;
     const support = users.filter((user) =>
-      ["assistant", "stagiaire"].includes(user.role || "")
+      ["assistant", "stagiaire"].includes(user.role || ""),
     ).length;
     const accessReview = users.filter(
-      (user) => user.status !== "active"
+      (user) => user.status !== "active",
     ).length;
 
     return [
       {
         title: "Équipe active",
         value: formatNumber(activeUsers),
-        badge: activeUsers === users.length ? "Effectif complet" : `${activeUsers}/${users.length} en poste`,
+        badge:
+          activeUsers === users.length
+            ? "Effectif complet"
+            : `${activeUsers}/${users.length} en poste`,
         tone: "positive",
         trend: "up",
         detailRow: `${vets} praticien${vets > 1 ? "s" : ""} · ${support} soignant${support > 1 ? "s" : ""} · Coordination active`,
@@ -373,7 +385,10 @@ const Team: React.FC = () => {
         inverse: true,
         tone: accessReview > 0 ? "critical" : "positive",
         trend: accessReview > 0 ? "down" : "neutral",
-        detailRow: accessReview > 0 ? `${accessReview} compte${accessReview > 1 ? "s" : ""} inactif${accessReview > 1 ? "s" : ""} ou permissions en attente` : "Tous les profils et habilitations sont conformes",
+        detailRow:
+          accessReview > 0
+            ? `${accessReview} compte${accessReview > 1 ? "s" : ""} inactif${accessReview > 1 ? "s" : ""} ou permissions en attente`
+            : "Tous les profils et habilitations sont conformes",
         actionLabel: "Vérifier les accès",
       },
     ];
@@ -381,25 +396,29 @@ const Team: React.FC = () => {
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-4 px-4 pb-8 lg:px-6">
-      <MotivationalHeader section="equipe"
-        actions={<>
-          {canManageTeam ? (
-            <Button
-              className="h-9 px-4"
-              onClick={() => handleOpenModal()}
-            >
-              <HugeiconsIcon
-                className="size-4"
-                icon={Add01Icon}
-                strokeWidth={1.5}
-              />
-              <span>Nouveau membre</span>
-            </Button>
-          ) : null}
-        </>}
+      <MotivationalHeader
+        section="equipe"
+        actions={
+          <>
+            {canManageTeam ? (
+              <Button className="h-9 px-4" onClick={() => handleOpenModal()}>
+                <HugeiconsIcon
+                  className="size-4"
+                  icon={Add01Icon}
+                  strokeWidth={1.5}
+                />
+                <span>Nouveau membre</span>
+              </Button>
+            ) : null}
+          </>
+        }
       />
 
-      <SectionCards items={sectionCards} />
+      <SectionCards
+        icon={UsersRound}
+        items={sectionCards}
+        subtitle="Praticiens, soignants et accès"
+      />
 
       {/* Main Card */}
       <Card className="card-vibrant card-hover-lift flex flex-1 flex-col overflow-hidden rounded-[24px] border border-border bg-card shadow-none">
@@ -413,7 +432,13 @@ const Team: React.FC = () => {
         </CardHeader>
         {/* Toolbar */}
         <div className="flex flex-col items-center justify-between gap-4 border-border border-b px-6 py-4 md:flex-row">
-          <ListSearch className="w-full md:w-72" label="Rechercher un membre" placeholder="Rechercher un membre…" value={searchTerm} onValueChange={setSearchTerm} />
+          <ListSearch
+            className="w-full md:w-72"
+            label="Rechercher un membre"
+            placeholder="Rechercher un membre…"
+            value={searchTerm}
+            onValueChange={setSearchTerm}
+          />
 
           <p className="text-muted-foreground t-13 tabular-nums">
             {filteredUsers.length} membre{filteredUsers.length > 1 ? "s" : ""}
@@ -468,11 +493,15 @@ const Team: React.FC = () => {
                             src={resolvedAvatar}
                           />
                         ) : (
-                          <InitialsAvatar className="size-12" name={user.displayName} />
+                          <InitialsAvatar
+                            className="size-12"
+                            name={user.displayName}
+                          />
                         )}
                         <div>
                           <h3 className="font-bold text-base text-foreground leading-tight">
-                            {formatPersonName(user.displayName) || "Utilisateur inconnu"}
+                            {formatPersonName(user.displayName) ||
+                              "Utilisateur inconnu"}
                           </h3>
                           {user.specialty && (
                             <p className="mt-0.5 text-muted-foreground text-xs">
@@ -510,11 +539,19 @@ const Team: React.FC = () => {
                               disabled={isResetting}
                               onClick={() => setPasswordResetTarget(user)}
                             >
-                              <HugeiconsIcon icon={Key01Icon} strokeWidth={1.5} />
+                              <HugeiconsIcon
+                                icon={Key01Icon}
+                                strokeWidth={1.5}
+                              />
                               Réinitialiser le mot de passe
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleOpenModal(user)}>
-                              <HugeiconsIcon icon={Edit01Icon} strokeWidth={1.5} />
+                            <DropdownMenuItem
+                              onClick={() => handleOpenModal(user)}
+                            >
+                              <HugeiconsIcon
+                                icon={Edit01Icon}
+                                strokeWidth={1.5}
+                              />
                               Modifier le rôle / statut
                             </DropdownMenuItem>
                             {user.email !== "zohir.kh@gmail.com" && (
@@ -522,7 +559,10 @@ const Team: React.FC = () => {
                                 onClick={() => setMemberPendingDelete(user)}
                                 variant="destructive"
                               >
-                                <HugeiconsIcon icon={Delete01Icon} strokeWidth={1.5} />
+                                <HugeiconsIcon
+                                  icon={Delete01Icon}
+                                  strokeWidth={1.5}
+                                />
                                 Supprimer définitivement
                               </DropdownMenuItem>
                             )}
@@ -537,7 +577,7 @@ const Team: React.FC = () => {
                         className={cn(
                           "gap-1.5 border-transparent",
                           config.bg,
-                          config.color
+                          config.color,
                         )}
                       >
                         <HugeiconsIcon
@@ -567,7 +607,9 @@ const Team: React.FC = () => {
                           icon={SmartPhone01Icon}
                           strokeWidth={1.5}
                         />
-                        <span>{formatPhone(user.phone) || "Non renseigné"}</span>
+                        <span>
+                          {formatPhone(user.phone) || "Non renseigné"}
+                        </span>
                       </div>
                     </div>
 
@@ -578,7 +620,7 @@ const Team: React.FC = () => {
                           "gap-1 t-12",
                           TEAM_STATUS_META[
                             user.status === "active" ? "active" : "inactive"
-                          ].className
+                          ].className,
                         )}
                       >
                         <HugeiconsIcon
@@ -658,7 +700,7 @@ const Team: React.FC = () => {
                   void handleResetPassword(
                     passwordResetTarget.email,
                     passwordResetTarget.displayName,
-                    passwordResetTarget.id
+                    passwordResetTarget.id,
                   );
                 }
               }}
@@ -701,7 +743,9 @@ const Team: React.FC = () => {
                   toast.success("Mot de passe copié.");
                 } catch (error) {
                   console.error(error);
-                  toast.error("La copie a échoué. Sélectionnez le code manuellement.");
+                  toast.error(
+                    "La copie a échoué. Sélectionnez le code manuellement.",
+                  );
                 }
               }}
               variant="outline"
@@ -730,104 +774,114 @@ const Team: React.FC = () => {
 
           <FormDialogBody>
             <FieldGroup>
-            <Field>
-              <FieldLabel>Nom complet <span className="modal-required">requis</span></FieldLabel>
-              <Input
-                onChange={(e) =>
-                  setFormData({ ...formData, displayName: e.target.value })
-                }
-                placeholder="Prénom et nom"
-                type="text"
-                value={formData.displayName || ""}
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel>Email <span className="modal-required">requis</span></FieldLabel>
-              <Input
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                placeholder="Adresse e-mail"
-                type="email"
-                value={formData.email || ""}
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel>Téléphone</FieldLabel>
-              <Input
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                placeholder="Numéro de téléphone"
-                type="tel"
-                value={formData.phone || ""}
-              />
-            </Field>
-
-            <div className="grid grid-cols-2 gap-4">
               <Field>
-                <FieldLabel>Rôle <span className="modal-required">requis</span></FieldLabel>
-                <NativeSelect
-                  className="w-full cursor-pointer"
+                <FieldLabel>
+                  Nom complet <span className="modal-required">requis</span>
+                </FieldLabel>
+                <Input
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      role: e.target.value as UserRole,
-                    })
+                    setFormData({ ...formData, displayName: e.target.value })
                   }
-                  value={formData.role || ""}
-                >
-                  <NativeSelectOption value="" disabled>Choisir un rôle</NativeSelectOption>
-                  <NativeSelectOption value="vet_principal">
-                    Vétérinaire Principal
-                  </NativeSelectOption>
-                  <NativeSelectOption value="vet_adjoint">
-                    Vétérinaire Adjoint
-                  </NativeSelectOption>
-                  <NativeSelectOption value="assistant">
-                    Assistant(e)
-                  </NativeSelectOption>
-                  <NativeSelectOption value="stagiaire">
-                    Stagiaire
-                  </NativeSelectOption>
-                  <NativeSelectOption value="admin">
-                    Administrateur
-                  </NativeSelectOption>
-                </NativeSelect>
+                  placeholder="Prénom et nom"
+                  type="text"
+                  value={formData.displayName || ""}
+                />
               </Field>
-              <Field>
-                <FieldLabel>Statut</FieldLabel>
-                <NativeSelect
-                  className="w-full cursor-pointer"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      status: e.target.value as "active" | "inactive",
-                    })
-                  }
-                  value={formData.status}
-                >
-                  <NativeSelectOption value="active">Actif</NativeSelectOption>
-                  <NativeSelectOption value="inactive">
-                    Inactif
-                  </NativeSelectOption>
-                </NativeSelect>
-              </Field>
-            </div>
 
-            <Field>
-              <FieldLabel>Spécialité</FieldLabel>
-              <Input
-                onChange={(e) =>
-                  setFormData({ ...formData, specialty: e.target.value })
-                }
-                placeholder="Ex. chirurgie"
-                type="text"
-                value={formData.specialty || ""}
-              />
-            </Field>
+              <Field>
+                <FieldLabel>
+                  Email <span className="modal-required">requis</span>
+                </FieldLabel>
+                <Input
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="Adresse e-mail"
+                  type="email"
+                  value={formData.email || ""}
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel>Téléphone</FieldLabel>
+                <Input
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder="Numéro de téléphone"
+                  type="tel"
+                  value={formData.phone || ""}
+                />
+              </Field>
+
+              <div className="grid grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel>
+                    Rôle <span className="modal-required">requis</span>
+                  </FieldLabel>
+                  <NativeSelect
+                    className="w-full cursor-pointer"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        role: e.target.value as UserRole,
+                      })
+                    }
+                    value={formData.role || ""}
+                  >
+                    <NativeSelectOption value="" disabled>
+                      Choisir un rôle
+                    </NativeSelectOption>
+                    <NativeSelectOption value="vet_principal">
+                      Vétérinaire Principal
+                    </NativeSelectOption>
+                    <NativeSelectOption value="vet_adjoint">
+                      Vétérinaire Adjoint
+                    </NativeSelectOption>
+                    <NativeSelectOption value="assistant">
+                      Assistant(e)
+                    </NativeSelectOption>
+                    <NativeSelectOption value="stagiaire">
+                      Stagiaire
+                    </NativeSelectOption>
+                    <NativeSelectOption value="admin">
+                      Administrateur
+                    </NativeSelectOption>
+                  </NativeSelect>
+                </Field>
+                <Field>
+                  <FieldLabel>Statut</FieldLabel>
+                  <NativeSelect
+                    className="w-full cursor-pointer"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        status: e.target.value as "active" | "inactive",
+                      })
+                    }
+                    value={formData.status}
+                  >
+                    <NativeSelectOption value="active">
+                      Actif
+                    </NativeSelectOption>
+                    <NativeSelectOption value="inactive">
+                      Inactif
+                    </NativeSelectOption>
+                  </NativeSelect>
+                </Field>
+              </div>
+
+              <Field>
+                <FieldLabel>Spécialité</FieldLabel>
+                <Input
+                  onChange={(e) =>
+                    setFormData({ ...formData, specialty: e.target.value })
+                  }
+                  placeholder="Ex. chirurgie"
+                  type="text"
+                  value={formData.specialty || ""}
+                />
+              </Field>
             </FieldGroup>
           </FormDialogBody>
 
@@ -841,7 +895,12 @@ const Team: React.FC = () => {
             </Button>
             <Button
               className="cursor-pointer"
-              disabled={isSubmitting || !formData.role || !formData.displayName?.trim() || !formData.email?.trim()}
+              disabled={
+                isSubmitting ||
+                !formData.role ||
+                !formData.displayName?.trim() ||
+                !formData.email?.trim()
+              }
               onClick={handleSave}
             >
               {isSubmitting && <Spinner className="size-4" />}

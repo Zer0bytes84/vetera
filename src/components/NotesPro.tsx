@@ -437,7 +437,7 @@ const NotesPro: React.FC = () => {
 
   return (
     <div className="documents-workspace dashboard-stage flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-hidden px-4 pt-4 pb-0 md:pt-5 lg:px-6">
-      <MotivationalHeader section="notes" title="Documents" subtitle="Vos notes cliniques, reliées aux dossiers de vos patients."
+      <MotivationalHeader section="notes" title="Documents" subtitle="notes cliniques"
         actions={<>
           <Button size="sm" variant="outline" onClick={() => setWorkspaceMode(workspaceMode === "assistant" ? "library" : "assistant")}>{workspaceMode === "assistant" ? "Bibliothèque" : "Assistant documents"}</Button>
           <Button size="sm" variant="ghost" onClick={() => setWorkspaceMode(workspaceMode === "templates" ? "library" : "templates")}>{workspaceMode === "templates" ? "Bibliothèque" : "Modèles"}</Button>

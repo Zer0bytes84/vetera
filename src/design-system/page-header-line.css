@@ -1,0 +1,45 @@
+/* The page header, one line of text on the model of the dashboard's welcome line: « Titre : note », the actions at the
+   right, no icon and no rule. It sits above the Premium and Clean engravings, which draw an icon tile and a rule
+   under the header (`.dashboard-stage [data-slot="page-header"]::after`). */
+:root .page-header.page-header-line[data-slot="page-header"] {
+  position: static !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px 24px !important;
+  padding: 0 2px !important;
+  margin: 0 0 12px !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+:root .page-header.page-header-line[data-slot="page-header"]::before,
+:root .page-header.page-header-line[data-slot="page-header"]::after {
+  content: none !important;
+  display: none !important;
+}
+.page-header-line .page-header-lead {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 320px;
+  align-items: center;
+  gap: 12px;
+}
+.page-header-line .page-header-title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--foreground);
+}
+.page-header-line .page-header-note {
+  font-weight: 400;
+  color: var(--muted-foreground);
+}

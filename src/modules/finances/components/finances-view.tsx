@@ -1,4 +1,5 @@
 import { SearchableSelect } from "@/components/ui/searchable-select";
+import { Receipt } from "lucide-react";
 import { ListFilter, ListSearch } from "@/components/ui/list-controls";
 import { invoiceDocument } from "@/lib/invoice-document";
 import { InvoicePdfPreview } from "@/modules/invoices/components/invoice-pdf-preview";
@@ -6,7 +7,6 @@ import { FinancialPeriodFilter } from "@/components/financial-period-filter";
 import {
   Add01Icon,
   ArrowDown01Icon,
-  ArrowRight01Icon,
   ChartLineData01Icon,
   ArrowUp01Icon,
   CheckmarkCircle02Icon,
@@ -112,15 +112,15 @@ import {
   getInvoiceDisplayName,
   documentBadge,
   settlementBadge,
-  getInvoiceOwnerName,
   getInvoicePatientName,
-  getInvoiceDueLabel,
 } from "@/modules/finances/components/finances-shared";
 import type { FinancesViewProps } from "../hooks/use-finances-page-model";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import "../finances-premium.css";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useListCursor } from "@/hooks/useListCursor";
+import { InvoicesTable } from "./invoices-table";
+import { QuietButton } from "@/components/ui/tuff-controls";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import { patientDocumentName } from "@/modules/patients/reference/reference";
 
@@ -133,15 +133,11 @@ export function FinancesView(props: FinancesViewProps) {
     filteredInvoices,
     filteredTransactions,
     financeSectionCards,
-    invoiceAdvancedOpen,
     invoiceDocumentFilter,
     invoiceDraft,
     invoiceError,
     invoiceFilterCount,
     invoiceFrom,
-    invoicePage,
-    invoicePageCount,
-    invoiceQuery,
     invoiceSettlementFilter,
     invoiceTo,
     invoicesLoading,
@@ -184,7 +180,6 @@ export function FinancesView(props: FinancesViewProps) {
     openTransactionEditor,
     ownerPatients,
     owners,
-    paginatedInvoices,
     paginatedTransactions,
     patients,
     paymentDraft,
@@ -200,12 +195,10 @@ export function FinancesView(props: FinancesViewProps) {
     startEditingInvoicePrices,
     saveInvoicePrices,
     setActiveTab,
-    setInvoiceAdvancedOpen,
     setInvoiceDocumentFilter,
     setInvoiceDraft,
     setInvoiceFrom,
     setInvoicePage,
-    setInvoiceQuery,
     setInvoiceSettlementFilter,
     setInvoiceTo,
     setIsInvoiceDialogOpen,
@@ -237,7 +230,11 @@ export function FinancesView(props: FinancesViewProps) {
     transactionsLoading,
   } = props;
   const viewToggle = (
-    <TabsList aria-label="Vue des finances" className={cn(isPremium && "ml-auto shrink-0")} tabsStyle="segmented">
+    <TabsList
+      aria-label="Vue des finances"
+      className={cn(isPremium && "ml-auto shrink-0")}
+      tabsStyle="segmented"
+    >
       <TabsTrigger className="px-4" value="invoices">
         <HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />
         Factures
@@ -251,579 +248,170 @@ export function FinancesView(props: FinancesViewProps) {
 
   return (
     <div className="dashboard-stage flex w-full min-w-0 flex-col gap-6 px-4 pt-8 pb-8 lg:px-6">
-      <MotivationalHeader section="finances"
-        actions={<>
-          <Button
-            className="h-9 min-w-24 whitespace-nowrap px-4"
-            onClick={() => onNavigate?.("finances_analytics")}
-            variant="outline"
-          >
-            <HugeiconsIcon
-              className="size-4"
-              icon={ChartLineData01Icon}
-              strokeWidth={1.5}
-            />
-            Analyse
-          </Button>
-          <Button
-            className="h-9 min-w-36 whitespace-nowrap px-4"
-            onClick={() =>
-              activeTab === "invoices"
-                ? (setInvoiceDraft(createInvoiceDraft()),
-                  setIsInvoiceDialogOpen(true))
-                : openTransactionEditor()
-            }
-          >
-            <HugeiconsIcon
-              className="size-4"
-              icon={Add01Icon}
-              strokeWidth={1.5}
-            />
-            {activeTab === "invoices"
-              ? "Nouvelle facture"
-              : "Nouvelle écriture"}
-          </Button>
-        </>}
+      <MotivationalHeader
+        section="finances"
+        actions={
+          <>
+            <Button
+              className="h-9 min-w-24 whitespace-nowrap px-4"
+              onClick={() => onNavigate?.("finances_analytics")}
+              variant="outline"
+            >
+              <HugeiconsIcon
+                className="size-4"
+                icon={ChartLineData01Icon}
+                strokeWidth={1.5}
+              />
+              Analyse
+            </Button>
+            <Button
+              className="h-9 min-w-36 whitespace-nowrap px-4"
+              onClick={() =>
+                activeTab === "invoices"
+                  ? (setInvoiceDraft(createInvoiceDraft()),
+                    setIsInvoiceDialogOpen(true))
+                  : openTransactionEditor()
+              }
+            >
+              <HugeiconsIcon
+                className="size-4"
+                icon={Add01Icon}
+                strokeWidth={1.5}
+              />
+              {activeTab === "invoices"
+                ? "Nouvelle facture"
+                : "Nouvelle écriture"}
+            </Button>
+          </>
+        }
       />
 
-      <SectionCards items={financeSectionCards} />
+      <SectionCards
+        icon={Receipt}
+        items={financeSectionCards}
+        subtitle="Facturation et règlements"
+      />
 
       <Tabs
         className="finance-register"
         onValueChange={(value) => setActiveTab(value as FinanceTab)}
         value={activeTab}
       >
-        {isPremium ? <div className="finance-register-heading flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 className="font-heading font-medium text-lg">
-              {activeTab === "invoices" ? "Registre des factures" : "Journal de trésorerie"}
-            </h2>
-            <p className="mt-1 text-muted-foreground text-sm">
-              {activeTab === "invoices"
-                ? "Suivez l’émission, l’échéance et le recouvrement de chaque dossier."
-                : "Les lignes issues des règlements sont verrouillées."}
-            </p>
-          </div>
-          {viewToggle}
-        </div> : viewToggle}
+        {/* One title, the band's. On the invoices tab the switch lives in the table's band; the journal keeps it above its card. */}
+        {activeTab === "journal" ? (
+          <div className="flex justify-end">{viewToggle}</div>
+        ) : null}
 
         <TabsContent className="space-y-5" value="invoices">
-          <Card className="overflow-hidden rounded-2xl border-border/80 shadow-none">
-            <CardHeader className="border-b px-5 py-4">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                {!isPremium && <div>
-                  <CardTitle className="t-18 tracking-[-0.025em]">Registre des factures</CardTitle>
-                  <CardDescription className="mt-1">Suivez l’émission, l’échéance et le recouvrement de chaque dossier.</CardDescription>
-                </div>}
-                <div className="flex w-full flex-wrap items-center gap-2">
-                  <ListSearch className="w-full sm:min-w-56 sm:flex-1" label="Rechercher les factures" placeholder="Numéro ou propriétaire…" value={invoiceQuery} onValueChange={setInvoiceQuery} />
-                  <Button
-                    aria-expanded={invoiceAdvancedOpen}
-                    className="list-filter-control h-[30px] rounded-full text-xs"
-                    onClick={() => setInvoiceAdvancedOpen((open) => !open)}
-                    variant="outline"
-                  >
-                    <HugeiconsIcon icon={FilterIcon} strokeWidth={1.5} />
-                    Filtrer
-                    {invoiceFilterCount > 0 ? (
-                      <Badge
-                        className="ml-1 size-5 justify-center rounded-full px-0"
-                        variant="secondary"
-                      >
-                        {invoiceFilterCount}
-                      </Badge>
-                    ) : null}
-                  </Button>
-                      <FinancialPeriodFilter
-                        from={invoiceFrom}
-                        to={invoiceTo}
-                        onChange={(from, to) => {
-                          setInvoiceFrom(from);
-                          setInvoiceTo(to);
-                          setInvoicePage(1);
-                        }}
-                      />
-                </div>
-              </div>
-              {invoiceAdvancedOpen ? (
-                <div className="flex flex-wrap items-end gap-2 rounded-xl bg-muted/35 p-3">
-                  <DateFilter
-                    label="Du"
-                    onChange={setInvoiceFrom}
-                    value={invoiceFrom}
-                  />
-                  <DateFilter
-                    label="Au"
-                    onChange={setInvoiceTo}
-                    value={invoiceTo}
-                  />
-                  <ListFilter label="Document" value={invoiceDocumentFilter} onValueChange={(value) => setInvoiceDocumentFilter(
-                        value as InvoiceDocumentFilter
-                      )} options={[{ value: "all", label: "Tous les documents" }, { value: "draft", label: "Brouillons" }, { value: "issued", label: "Émises" }, { value: "void", label: "Annulées" }]} />
-                  <ListFilter label="Règlement" value={invoiceSettlementFilter} onValueChange={(value) => setInvoiceSettlementFilter(
-                        value as InvoiceSettlementFilter
-                      )} options={[{ value: "all", label: "Tous les règlements" }, { value: "open", label: "À régler" }, { value: "partial", label: "Partielles" }, { value: "paid", label: "Payées" }, { value: "overdue", label: "En retard" }, { value: "credited", label: "Créditées" }]} />
-                  <div className="flex items-end">
-                    <Button
-                      className="h-[30px] text-xs"
-                      disabled={invoiceFilterCount === 0 && !invoiceQuery}
-                      onClick={resetInvoiceFilters}
-                      size="sm"
-                      variant="ghost"
-                    >
-                      <HugeiconsIcon icon={Refresh01Icon} strokeWidth={1.5} />
-                      Réinitialiser les filtres
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
-            </CardHeader>
-            <CardContent className="p-0">
-              {invoicesLoading ? (
-                <div className="flex min-h-56 items-center justify-center">
-                  <Spinner className="size-6 text-muted-foreground" />
-                </div>
-              ) : invoiceError ? (
-                <Empty className="min-h-56 py-10">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />
-                    </EmptyMedia>
-                    <EmptyTitle>Facturation indisponible</EmptyTitle>
-                    <EmptyDescription>{invoiceError}</EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              ) : filteredInvoices.length === 0 ? (
-                <Empty className="min-h-56 py-10">
-                  <EmptyHeader>
-                    <EmptyMascot
-                      icon={<HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />}
-                    />
-                    <EmptyTitle>Aucune facture</EmptyTitle>
-                    <EmptyDescription>
-                      Créez un premier brouillon puis émettez-le lorsque son
-                      contenu est validé.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              ) : (
+          {invoicesLoading ? (
+            <div className="flex min-h-56 items-center justify-center">
+              <Spinner className="size-6 text-muted-foreground" />
+            </div>
+          ) : invoiceError ? (
+            <Empty className="min-h-56 py-10">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />
+                </EmptyMedia>
+                <EmptyTitle>Facturation indisponible</EmptyTitle>
+                <EmptyDescription>{invoiceError}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <InvoicesTable
+              toolbar={viewToggle}
+              busy={isSubmitting}
+              detailLoading={isDetailLoading}
+              filters={
                 <>
-                  <div className="hidden lg:block">
-                    <Table className="min-w-[980px]" ref={invoicesRef}>
-                      <TableHeader className="bg-muted/25">
-                        <TableRow className="hover:bg-transparent">
-                          <TableHead className="h-11 pl-5 t-12 text-muted-foreground uppercase tracking-[0.06em]">
-                            Facture
-                          </TableHead>
-                          <TableHead className="t-12 text-muted-foreground uppercase tracking-[0.06em]">
-                            Dossier
-                          </TableHead>
-                          <TableHead className="t-12 text-muted-foreground uppercase tracking-[0.06em]">
-                            Situation
-                          </TableHead>
-                          <TableHead className="t-12 text-muted-foreground uppercase tracking-[0.06em]">
-                            Échéance
-                          </TableHead>
-                          <TableHead className="text-right t-12 text-muted-foreground uppercase tracking-[0.06em]">
-                            Montant
-                          </TableHead>
-                          <TableHead className="text-right t-12 text-muted-foreground uppercase tracking-[0.06em]">
-                            À recouvrer
-                          </TableHead>
-                          <TableHead className="w-[1%] pr-5">
-                            <span className="sr-only">Actions</span>
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {paginatedInvoices.map((invoice) => {
-                          const ownerName = getInvoiceOwnerName(
-                            invoice,
-                            owners
-                          );
-                          const patientName = getInvoicePatientName(
-                            invoice,
-                            patients
-                          );
-                          const needsAttention =
-                            invoice.settlementStatus === "overdue";
-                          return (
-                            <TableRow
-                              className={cn(
-                                "group h-[76px] hover:bg-transparent focus-within:bg-transparent",
-                                needsAttention && "bg-rose-500/[0.025]"
-                              )}
-                              data-list-row=""
-                              data-row-id={invoice.id}
-                              key={invoice.id}
-                            >
-                              <TableCell className="pl-5">
-                                <button
-                                  data-row-open=""
-                                  className="rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                  onClick={() =>
-                                    void openInvoiceDetail(invoice)
-                                  }
-                                  type="button"
-                                >
-                                  <span className="block font-semibold text-foreground tabular-nums">
-                                    {getInvoiceDisplayName(invoice)}
-                                  </span>
-                                  <span className="mt-1 block text-muted-foreground text-xs">
-                                    {formatDate(
-                                      invoice.issuedAt ?? invoice.createdAt
-                                    )}
-                                  </span>
-                                </button>
-                              </TableCell>
-                              <TableCell className="whitespace-normal">
-                                <span className="block font-medium text-foreground">
-                                  {ownerName}
-                                </span>
-                                {patientName ? (
-                                  <span className="mt-1 block text-muted-foreground text-xs">
-                                    Patient · {patientName}
-                                  </span>
-                                ) : null}
-                              </TableCell>
-                              <TableCell className="whitespace-normal">
-                                <div className="flex flex-wrap gap-1.5">
-                                  {documentBadge(invoice.documentStatus)}
-                                  {settlementBadge(invoice.settlementStatus)}
-                                </div>
-                              </TableCell>
-                              <TableCell
-                                className={cn(
-                                  "whitespace-normal text-xs",
-                                  needsAttention
-                                    ? "font-semibold text-rose-700 dark:text-rose-300"
-                                    : "text-muted-foreground"
-                                )}
-                              >
-                                {getInvoiceDueLabel(invoice)}
-                              </TableCell>
-                              <TableCell className="text-right font-medium text-foreground tabular-nums">
-                                {formatDZD(invoice.grossAmount)}
-                              </TableCell>
-                              <TableCell
-                                className={cn(
-                                  "text-right font-semibold tabular-nums",
-                                  invoice.balanceAmount > 0
-                                    ? needsAttention
-                                      ? "text-rose-700 dark:text-rose-300"
-                                      : "text-amber-700 dark:text-amber-300"
-                                    : "text-emerald-700 dark:text-emerald-300"
-                                )}
-                              >
-                                {invoice.balanceAmount > 0
-                                  ? formatDZD(invoice.balanceAmount)
-                                  : "Soldé"}
-                              </TableCell>
-                              <TableCell className="pr-5">
-                                <div className="flex min-w-[142px] justify-end gap-1.5">
-                                  {invoice.documentStatus === "draft" ? (
-                                    <>
-                                      <Button disabled={isSubmitting} aria-label="Modifier les tarifs" title="Modifier les tarifs" size="icon-sm" variant="outline" onClick={() => void openInvoiceDetail(invoice, true)}>
-                                        <HugeiconsIcon icon={Edit01Icon} strokeWidth={1.5} className="size-4" />
-                                      </Button>
-                                      <Button
-                                        disabled={isSubmitting}
-                                        onClick={() =>
-                                          requestIssueInvoice(invoice)
-                                        }
-                                        className="rounded-lg"
-                                        size="sm"
-                                        variant="outline"
-                                      >
-                                        Émettre
-                                      </Button>
-                                      <Button
-                                        aria-label="Supprimer le brouillon"
-                                        disabled={isSubmitting}
-                                        onClick={() =>
-                                          requestDeleteInvoiceDraft(invoice)
-                                        }
-                                        className="rounded-lg text-muted-foreground hover:text-destructive"
-                                        size="sm"
-                                        variant="ghost"
-                                      >
-                                        Supprimer
-                                      </Button>
-                                    </>
-                                  ) : null}
-                                  {invoice.documentStatus === "issued" &&
-                                  invoice.balanceAmount > 0 ? (
-                                    <Button
-                                      onClick={() => openPaymentDialog(invoice)}
-                                      className="rounded-lg"
-                                      size="sm"
-                                    >
-                                      Régler
-                                    </Button>
-                                  ) : null}
-                                  {invoice.documentStatus === "issued" ? (
-                                    <Button
-                                      disabled={isSubmitting}
-                                      onClick={() =>
-                                        requestVoidInvoice(invoice)
-                                      }
-                                      className="rounded-lg text-muted-foreground hover:text-destructive"
-                                      size="sm"
-                                      variant="ghost"
-                                    >
-                                      Annuler
-                                    </Button>
-                                  ) : null}
-                                  <Button
-                                    aria-label={`Voir ${getInvoiceDisplayName(invoice)}`}
-                                    disabled={isDetailLoading}
-                                    onClick={() =>
-                                      void openInvoiceDetail(invoice)
-                                    }
-                                    size="icon-sm"
-                                    variant="ghost"
-                                  >
-                                    <HugeiconsIcon
-                                      icon={ArrowRight01Icon}
-                                      strokeWidth={1.5}
-                                    />
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-
-                  <div className="divide-y lg:hidden">
-                    {paginatedInvoices.map((invoice) => {
-                      const ownerName = getInvoiceOwnerName(invoice, owners);
-                      const patientName = getInvoicePatientName(
-                        invoice,
-                        patients
-                      );
-                      const needsAttention =
-                        invoice.settlementStatus === "overdue";
-                      return (
-                        <article
-                          className={cn(
-                            "space-y-4 px-4 py-5",
-                            needsAttention && "bg-rose-500/[0.025]"
-                          )}
-                          key={invoice.id}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <button
-                              className="min-w-0 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                              onClick={() => void openInvoiceDetail(invoice)}
-                              type="button"
-                            >
-                              <span className="block truncate font-semibold tabular-nums">
-                                {getInvoiceDisplayName(invoice)}
-                              </span>
-                              <span className="mt-1 block text-muted-foreground text-xs">
-                                {ownerName}
-                                {patientName ? ` · ${patientName}` : ""}
-                              </span>
-                            </button>
-                            <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
-                              {documentBadge(invoice.documentStatus)}
-                              {settlementBadge(invoice.settlementStatus)}
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-3 rounded-xl bg-muted/30 p-3">
-                            <div>
-                              <p className="t-12 text-muted-foreground">
-                                Total
-                              </p>
-                              <p className="mt-1 font-medium text-sm tabular-nums">
-                                {formatDZD(invoice.grossAmount)}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="t-12 text-muted-foreground">
-                                À recouvrer
-                              </p>
-                              <p
-                                className={cn(
-                                  "mt-1 font-semibold text-sm tabular-nums",
-                                  invoice.balanceAmount > 0
-                                    ? needsAttention
-                                      ? "text-rose-700 dark:text-rose-300"
-                                      : "text-amber-700 dark:text-amber-300"
-                                    : "text-emerald-700 dark:text-emerald-300"
-                                )}
-                              >
-                                {invoice.balanceAmount > 0
-                                  ? formatDZD(invoice.balanceAmount)
-                                  : "Soldé"}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-wrap items-center justify-between gap-3">
-                            <p
-                              className={cn(
-                                "text-xs",
-                                needsAttention
-                                  ? "font-semibold text-rose-700 dark:text-rose-300"
-                                  : "text-muted-foreground"
-                              )}
-                            >
-                              {getInvoiceDueLabel(invoice)}
-                            </p>
-                            <div className="flex gap-2">
-                              {invoice.documentStatus === "draft" ? (
-                                <>
-                                  <Button disabled={isSubmitting} aria-label="Modifier les tarifs" title="Modifier les tarifs" size="icon-sm" variant="outline" onClick={() => void openInvoiceDetail(invoice, true)}>
-                                    <HugeiconsIcon icon={Edit01Icon} strokeWidth={1.5} className="size-4" />
-                                  </Button>
-                                  <Button
-                                    disabled={isSubmitting}
-                                    onClick={() =>
-                                      requestIssueInvoice(invoice)
-                                    }
-                                    size="sm"
-                                    variant="outline"
-                                  >
-                                    Émettre
-                                  </Button>
-                                  <Button
-                                    disabled={isSubmitting}
-                                    onClick={() =>
-                                      requestDeleteInvoiceDraft(invoice)
-                                    }
-                                    size="sm"
-                                    variant="ghost"
-                                    className="text-muted-foreground hover:text-destructive"
-                                  >
-                                    Supprimer
-                                  </Button>
-                                </>
-                              ) : null}
-                              {invoice.documentStatus === "issued" &&
-                              invoice.balanceAmount > 0 ? (
-                                <Button
-                                  onClick={() => openPaymentDialog(invoice)}
-                                  size="sm"
-                                >
-                                  Régler
-                                </Button>
-                              ) : null}
-                              {invoice.documentStatus === "issued" ? (
-                                <Button
-                                  disabled={isSubmitting}
-                                  onClick={() => requestVoidInvoice(invoice)}
-                                  size="sm"
-                                  variant="ghost"
-                                  className="text-muted-foreground hover:text-destructive"
-                                >
-                                  Annuler
-                                </Button>
-                              ) : null}
-                              <Button
-                                aria-label={`Voir ${getInvoiceDisplayName(invoice)}`}
-                                disabled={isDetailLoading}
-                                onClick={() => void openInvoiceDetail(invoice)}
-                                size="icon-sm"
-                                variant="ghost"
-                              >
-                                <HugeiconsIcon
-                                  icon={ArrowRight01Icon}
-                                  strokeWidth={1.5}
-                                />
-                              </Button>
-                            </div>
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                  {invoicePageCount > 1 ? (
-                    <div className="flex items-center justify-between border-t px-5 py-3">
-                      <p className="text-muted-foreground text-xs">
-                        {filteredInvoices.length} facture
-                        {filteredInvoices.length > 1 ? "s" : ""}
-                      </p>
-                      <Pagination className="mx-0 w-auto justify-end">
-                        <PaginationContent>
-                          <PaginationItem>
-                            <PaginationPrevious
-                              aria-disabled={invoicePage === 1}
-                              className={cn(
-                                invoicePage === 1 &&
-                                  "pointer-events-none opacity-40"
-                              )}
-                              onClick={(event) => {
-                                event.preventDefault();
-                                setInvoicePage((page) => Math.max(1, page - 1));
-                              }}
-                              text="Précédent"
-                            />
-                          </PaginationItem>
-                          {Array.from(
-                            { length: invoicePageCount },
-                            (_, index) => index + 1
-                          ).map((page) => (
-                            <PaginationItem key={page}>
-                              <PaginationLink
-                                aria-label={`Aller à la page ${page}`}
-                                href={`#finances-page-${page}`}
-                                isActive={invoicePage === page}
-                                onClick={(event) => {
-                                  event.preventDefault();
-                                  setInvoicePage(page);
-                                }}
-                              >
-                                {page}
-                              </PaginationLink>
-                            </PaginationItem>
-                          ))}
-                          <PaginationItem>
-                            <PaginationNext
-                              aria-disabled={invoicePage === invoicePageCount}
-                              className={cn(
-                                invoicePage === invoicePageCount &&
-                                  "pointer-events-none opacity-40"
-                              )}
-                              onClick={(event) => {
-                                event.preventDefault();
-                                setInvoicePage((page) =>
-                                  Math.min(invoicePageCount, page + 1)
-                                );
-                              }}
-                              text="Suivant"
-                            />
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    </div>
-                  ) : null}
+                  <FinancialPeriodFilter
+                    from={invoiceFrom}
+                    to={invoiceTo}
+                    onChange={(from, to) => {
+                      setInvoiceFrom(from);
+                      setInvoiceTo(to);
+                      setInvoicePage(1);
+                    }}
+                  />
+                  <ListFilter
+                    label="Document"
+                    value={invoiceDocumentFilter}
+                    onValueChange={(value) =>
+                      setInvoiceDocumentFilter(value as InvoiceDocumentFilter)
+                    }
+                    options={[
+                      { value: "all", label: "Tous les documents" },
+                      { value: "draft", label: "Brouillons" },
+                      { value: "issued", label: "Émises" },
+                      { value: "void", label: "Annulées" },
+                    ]}
+                  />
+                  <ListFilter
+                    label="Règlement"
+                    value={invoiceSettlementFilter}
+                    onValueChange={(value) =>
+                      setInvoiceSettlementFilter(
+                        value as InvoiceSettlementFilter,
+                      )
+                    }
+                    options={[
+                      { value: "all", label: "Tous les règlements" },
+                      { value: "open", label: "À régler" },
+                      { value: "partial", label: "Partielles" },
+                      { value: "paid", label: "Payées" },
+                      { value: "overdue", label: "En retard" },
+                      { value: "credited", label: "Créditées" },
+                    ]}
+                  />
+                  {(invoiceFilterCount > 0 || invoiceFrom || invoiceTo) && (
+                    <QuietButton onClick={resetInvoiceFilters}>
+                      Réinitialiser
+                    </QuietButton>
+                  )}
                 </>
-              )}
-            </CardContent>
-          </Card>
+              }
+              invoices={filteredInvoices}
+              listRef={invoicesRef}
+              onDeleteDraft={requestDeleteInvoiceDraft}
+              onEditPrices={(invoice) => void openInvoiceDetail(invoice, true)}
+              onIssue={requestIssueInvoice}
+              onOpen={(invoice) => void openInvoiceDetail(invoice)}
+              onPay={openPaymentDialog}
+              onVoid={requestVoidInvoice}
+              owners={owners}
+              patients={patients}
+            />
+          )}
         </TabsContent>
 
         <TabsContent className="space-y-5" value="journal">
           <Card className="overflow-hidden rounded-panel border-border/80 shadow-none">
             <CardHeader className="border-b px-6 py-5">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                {!isPremium && <div>
-                  <CardTitle className="t-18 tracking-[-0.03em]">Journal de trésorerie</CardTitle>
-                  <CardDescription className="mt-1">Les lignes issues des règlements sont verrouillées</CardDescription>
-                </div>}
+                {!isPremium && (
+                  <div>
+                    <CardTitle className="t-18 tracking-[-0.03em]">
+                      Journal de trésorerie
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      Les lignes issues des règlements sont verrouillées
+                    </CardDescription>
+                  </div>
+                )}
                 <div className="flex flex-wrap items-center gap-2">
-                  <ListSearch className="w-full sm:w-64" label="Rechercher le journal" placeholder="Rechercher une écriture…" value={journalQuery} onValueChange={setJournalQuery} />
+                  <ListSearch
+                    className="w-full sm:w-64"
+                    label="Rechercher le journal"
+                    placeholder="Rechercher une écriture…"
+                    value={journalQuery}
+                    onValueChange={setJournalQuery}
+                  />
                   <ToggleGroup
                     data-tabs-style="segmented"
                     multiple={false}
                     onValueChange={(value) =>
                       setJournalFilter(
-                        (value[0] as TransactionFilter | undefined) ?? "all"
+                        (value[0] as TransactionFilter | undefined) ?? "all",
                       )
                     }
                     size="sm"
@@ -875,16 +463,58 @@ export function FinancesView(props: FinancesViewProps) {
                     onChange={setJournalTo}
                     value={journalTo}
                   />
-                  <ListFilter label="Catégorie" value={journalCategory} onValueChange={(value) => setJournalCategory(value)} options={[{ value: "all", label: "Toutes les catégories" }, ...transactionCategories.map(value => ({ value, label: value }))]} />
-                  <ListFilter label="Paiement" value={journalMethod} onValueChange={(value) => setJournalMethod(
-                        value as TransactionPaymentMethod | "all"
-                      )} options={[{ value: "all", label: "Tous les moyens" }, ...PAYMENT_METHODS.map(method => ({ value: method.value, label: method.label }))]} />
-                  <ListFilter label="Statut" value={journalStatus} onValueChange={(value) => setJournalStatus(
-                        value as TransactionStatusFilter
-                      )} options={[{ value: "all", label: "Tous les statuts" }, { value: "paid", label: "Payées" }, { value: "pending", label: "En attente" }]} />
-                  <ListFilter label="Origine" value={journalSource} onValueChange={(value) => setJournalSource(
-                        value as TransactionSourceFilter
-                      )} options={[{ value: "all", label: "Toutes les origines" }, { value: "manual", label: "Saisie manuelle" }, { value: "billing", label: "Facturation" }]} />
+                  <ListFilter
+                    label="Catégorie"
+                    value={journalCategory}
+                    onValueChange={(value) => setJournalCategory(value)}
+                    options={[
+                      { value: "all", label: "Toutes les catégories" },
+                      ...transactionCategories.map((value) => ({
+                        value,
+                        label: value,
+                      })),
+                    ]}
+                  />
+                  <ListFilter
+                    label="Paiement"
+                    value={journalMethod}
+                    onValueChange={(value) =>
+                      setJournalMethod(
+                        value as TransactionPaymentMethod | "all",
+                      )
+                    }
+                    options={[
+                      { value: "all", label: "Tous les moyens" },
+                      ...PAYMENT_METHODS.map((method) => ({
+                        value: method.value,
+                        label: method.label,
+                      })),
+                    ]}
+                  />
+                  <ListFilter
+                    label="Statut"
+                    value={journalStatus}
+                    onValueChange={(value) =>
+                      setJournalStatus(value as TransactionStatusFilter)
+                    }
+                    options={[
+                      { value: "all", label: "Tous les statuts" },
+                      { value: "paid", label: "Payées" },
+                      { value: "pending", label: "En attente" },
+                    ]}
+                  />
+                  <ListFilter
+                    label="Origine"
+                    value={journalSource}
+                    onValueChange={(value) =>
+                      setJournalSource(value as TransactionSourceFilter)
+                    }
+                    options={[
+                      { value: "all", label: "Toutes les origines" },
+                      { value: "manual", label: "Saisie manuelle" },
+                      { value: "billing", label: "Facturation" },
+                    ]}
+                  />
                   <Input
                     aria-label="Montant minimum"
                     className="h-[30px] w-36 rounded-full bg-background text-xs md:text-xs"
@@ -909,7 +539,19 @@ export function FinancesView(props: FinancesViewProps) {
                     type="number"
                     value={journalMaxAmount}
                   />
-                  <ListFilter label="Trier" value={journalSort} onValueChange={(value) => setJournalSort(value as TransactionSort)} options={[{ value: "date-desc", label: "Plus récentes" }, { value: "date-asc", label: "Plus anciennes" }, { value: "amount-desc", label: "Montant décroissant" }, { value: "amount-asc", label: "Montant croissant" }]} />
+                  <ListFilter
+                    label="Trier"
+                    value={journalSort}
+                    onValueChange={(value) =>
+                      setJournalSort(value as TransactionSort)
+                    }
+                    options={[
+                      { value: "date-desc", label: "Plus récentes" },
+                      { value: "date-asc", label: "Plus anciennes" },
+                      { value: "amount-desc", label: "Montant décroissant" },
+                      { value: "amount-asc", label: "Montant croissant" },
+                    ]}
+                  />
                   <div className="flex items-end">
                     <Button
                       className="h-9 rounded-xl"
@@ -938,7 +580,12 @@ export function FinancesView(props: FinancesViewProps) {
                 <Empty className="min-h-56 py-10">
                   <EmptyHeader>
                     <EmptyMascot
-                      icon={<HugeiconsIcon icon={ReceiptTextIcon} strokeWidth={1.5} />}
+                      icon={
+                        <HugeiconsIcon
+                          icon={ReceiptTextIcon}
+                          strokeWidth={1.5}
+                        />
+                      }
                     />
                     <EmptyTitle>Aucune écriture</EmptyTitle>
                     <EmptyDescription>
@@ -974,7 +621,7 @@ export function FinancesView(props: FinancesViewProps) {
                                     "flex size-9 items-center justify-center rounded-xl",
                                     isIncome
                                       ? "bg-emerald-500/10 text-emerald-600"
-                                      : "bg-rose-500/10 text-rose-600"
+                                      : "bg-rose-500/10 text-rose-600",
                                   )}
                                 >
                                   <HugeiconsIcon
@@ -1020,7 +667,7 @@ export function FinancesView(props: FinancesViewProps) {
                                 "text-right font-semibold tabular-nums",
                                 isIncome
                                   ? "text-emerald-600 dark:text-emerald-400"
-                                  : "text-rose-600 dark:text-rose-400"
+                                  : "text-rose-600 dark:text-rose-400",
                               )}
                             >
                               {isIncome ? "+" : "-"}
@@ -1080,7 +727,7 @@ export function FinancesView(props: FinancesViewProps) {
                               aria-disabled={journalPage === 1}
                               className={cn(
                                 journalPage === 1 &&
-                                  "pointer-events-none opacity-40"
+                                  "pointer-events-none opacity-40",
                               )}
                               onClick={(event) => {
                                 event.preventDefault();
@@ -1091,7 +738,7 @@ export function FinancesView(props: FinancesViewProps) {
                           </PaginationItem>
                           {Array.from(
                             { length: journalPageCount },
-                            (_, index) => index + 1
+                            (_, index) => index + 1,
                           ).map((page) => (
                             <PaginationItem key={page}>
                               <PaginationLink
@@ -1112,12 +759,12 @@ export function FinancesView(props: FinancesViewProps) {
                               aria-disabled={journalPage === journalPageCount}
                               className={cn(
                                 journalPage === journalPageCount &&
-                                  "pointer-events-none opacity-40"
+                                  "pointer-events-none opacity-40",
                               )}
                               onClick={(event) => {
                                 event.preventDefault();
                                 setJournalPage((page) =>
-                                  Math.min(journalPageCount, page + 1)
+                                  Math.min(journalPageCount, page + 1),
                                 );
                               }}
                               text="Suivant"
@@ -1153,8 +800,18 @@ export function FinancesView(props: FinancesViewProps) {
                     label="Propriétaire de la facture"
                     placeholder="Rechercher un propriétaire…"
                     value={invoiceDraft.ownerId}
-                    options={owners.map(owner => ({value:owner.id,label:`${owner.firstName} ${owner.lastName}`,keywords:owner.phone}))}
-                    onValueChange={ownerId => setInvoiceDraft(current => ({...current,ownerId,patientId:""}))}
+                    options={owners.map((owner) => ({
+                      value: owner.id,
+                      label: `${owner.firstName} ${owner.lastName}`,
+                      keywords: owner.phone,
+                    }))}
+                    onValueChange={(ownerId) =>
+                      setInvoiceDraft((current) => ({
+                        ...current,
+                        ownerId,
+                        patientId: "",
+                      }))
+                    }
                   />
                 </Field>
                 <Field>
@@ -1182,7 +839,8 @@ export function FinancesView(props: FinancesViewProps) {
               </div>
               <Field>
                 <FieldLabel htmlFor="invoice-due-at">Échéance</FieldLabel>
-                <DatePicker clearable
+                <DatePicker
+                  clearable
                   id="invoice-due-at"
                   onChange={(value) =>
                     setInvoiceDraft((current) => ({
@@ -1232,7 +890,7 @@ export function FinancesView(props: FinancesViewProps) {
                                   ...candidate,
                                   description: event.target.value,
                                 }
-                              : candidate
+                              : candidate,
                           ),
                         }))
                       }
@@ -1248,7 +906,7 @@ export function FinancesView(props: FinancesViewProps) {
                           lines: current.lines.map((candidate) =>
                             candidate.id === line.id
                               ? { ...candidate, quantity: event.target.value }
-                              : candidate
+                              : candidate,
                           ),
                         }))
                       }
@@ -1265,7 +923,7 @@ export function FinancesView(props: FinancesViewProps) {
                           lines: current.lines.map((candidate) =>
                             candidate.id === line.id
                               ? { ...candidate, unitAmount: event.target.value }
-                              : candidate
+                              : candidate,
                           ),
                         }))
                       }
@@ -1281,7 +939,7 @@ export function FinancesView(props: FinancesViewProps) {
                         setInvoiceDraft((current) => ({
                           ...current,
                           lines: current.lines.filter(
-                            (candidate) => candidate.id !== line.id
+                            (candidate) => candidate.id !== line.id,
                           ),
                         }))
                       }
@@ -1400,15 +1058,29 @@ export function FinancesView(props: FinancesViewProps) {
                             {line.quantityMilli / 1000}
                           </TableCell>
                           <TableCell className="text-right tabular-nums">
-                            {editingInvoicePrices && selectedInvoice.documentStatus === "draft" ? (
+                            {editingInvoicePrices &&
+                            selectedInvoice.documentStatus === "draft" ? (
                               <div className="flex items-center justify-end gap-2">
-                                <Input aria-label={`Prix unitaire en DA : ${line.description}`}
-                                  className="w-32 text-right tabular-nums" inputMode="decimal"
-                                  disabled={isSubmitting} value={invoicePrices[line.id] ?? ""}
-                                  onChange={(event) => setInvoicePrices((current) => ({ ...current, [line.id]: event.target.value }))} />
-                                <span className="text-xs text-muted-foreground">DA</span>
+                                <Input
+                                  aria-label={`Prix unitaire en DA : ${line.description}`}
+                                  className="w-32 text-right tabular-nums"
+                                  inputMode="decimal"
+                                  disabled={isSubmitting}
+                                  value={invoicePrices[line.id] ?? ""}
+                                  onChange={(event) =>
+                                    setInvoicePrices((current) => ({
+                                      ...current,
+                                      [line.id]: event.target.value,
+                                    }))
+                                  }
+                                />
+                                <span className="text-xs text-muted-foreground">
+                                  DA
+                                </span>
                               </div>
-                            ) : formatDZD(line.unitAmount)}
+                            ) : (
+                              formatDZD(line.unitAmount)
+                            )}
                           </TableCell>
                           <TableCell className="text-right font-medium tabular-nums">
                             {formatDZD(line.grossAmount)}
@@ -1444,7 +1116,7 @@ export function FinancesView(props: FinancesViewProps) {
                           className={cn(
                             "font-semibold tabular-nums",
                             payment.status === "void" &&
-                              "text-muted-foreground line-through"
+                              "text-muted-foreground line-through",
                           )}
                         >
                           {formatDZD(payment.amount)}
@@ -1470,7 +1142,7 @@ export function FinancesView(props: FinancesViewProps) {
                           </div>
                           <p className="text-muted-foreground text-xs">
                             {formatDate(
-                              creditNote.issuedAt ?? creditNote.createdAt
+                              creditNote.issuedAt ?? creditNote.createdAt,
                             )}
                             {creditNote.reason ? ` · ${creditNote.reason}` : ""}
                           </p>
@@ -1508,7 +1180,7 @@ export function FinancesView(props: FinancesViewProps) {
                           className={cn(
                             "font-semibold text-rose-600 tabular-nums dark:text-rose-300",
                             refund.status === "void" &&
-                              "text-muted-foreground line-through dark:text-muted-foreground"
+                              "text-muted-foreground line-through dark:text-muted-foreground",
                           )}
                         >
                           -{formatDZD(refund.amount)}
@@ -1531,13 +1203,41 @@ export function FinancesView(props: FinancesViewProps) {
                   </Button>
                 )}
                 {selectedInvoice.documentStatus === "draft" ? (
-                  editingInvoicePrices ? <>
-                    <Button variant="outline" disabled={isSubmitting} onClick={() => setEditingInvoicePrices(false)}>Annuler les modifications</Button>
-                    <Button disabled={isSubmitting} onClick={() => void saveInvoicePrices()}>Enregistrer les tarifs</Button>
-                  </> : <>
-                    <Button variant="outline" disabled={isSubmitting} onClick={startEditingInvoicePrices}>Modifier les tarifs</Button>
-                    <Button disabled={isSubmitting} onClick={() => void requestIssueInvoice(selectedInvoice)}>Émettre</Button>
-                  </>
+                  editingInvoicePrices ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        disabled={isSubmitting}
+                        onClick={() => setEditingInvoicePrices(false)}
+                      >
+                        Annuler les modifications
+                      </Button>
+                      <Button
+                        disabled={isSubmitting}
+                        onClick={() => void saveInvoicePrices()}
+                      >
+                        Enregistrer les tarifs
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        disabled={isSubmitting}
+                        onClick={startEditingInvoicePrices}
+                      >
+                        Modifier les tarifs
+                      </Button>
+                      <Button
+                        disabled={isSubmitting}
+                        onClick={() =>
+                          void requestIssueInvoice(selectedInvoice)
+                        }
+                      >
+                        Émettre
+                      </Button>
+                    </>
+                  )
                 ) : null}
                 {selectedInvoice.documentStatus === "issued" &&
                 selectedInvoice.balanceAmount > 0 ? (
@@ -1566,7 +1266,7 @@ export function FinancesView(props: FinancesViewProps) {
             description={
               paymentInvoice
                 ? `${getInvoiceDisplayName(paymentInvoice)} · solde ${formatDZD(
-                    paymentInvoice.balanceAmount
+                    paymentInvoice.balanceAmount,
                   )}`
                 : "Facture sélectionnée"
             }
@@ -1647,14 +1347,14 @@ export function FinancesView(props: FinancesViewProps) {
       {previewInvoice &&
         (() => {
           const invoicePatient = patients.find(
-            (patient) => patient.id === previewInvoice.patientId
+            (patient) => patient.id === previewInvoice.patientId,
           );
           const document = invoiceDocument(
             previewInvoice,
             invoicePatient
               ? patientDocumentName(invoicePatient)
               : getInvoicePatientName(previewInvoice, patients) ||
-                  "Patient non renseigné"
+                  "Patient non renseigné",
           );
           return (
             <InvoicePdfPreview
@@ -1868,7 +1568,9 @@ export function FinancesView(props: FinancesViewProps) {
           </AlertDialogHeader>
           <div className="px-6 pb-2">
             <Field>
-              <FieldLabel htmlFor="void-reason">Motif <span className="modal-required">requis</span></FieldLabel>
+              <FieldLabel htmlFor="void-reason">
+                Motif <span className="modal-required">requis</span>
+              </FieldLabel>
               <Input
                 id="void-reason"
                 onChange={(event) => setVoidReason(event.target.value)}

@@ -196,39 +196,39 @@ const MotivationalHeader: React.FC<MotivationalHeaderProps> = ({
     const defaultMeta: Record<string, { title: string; note: string }> = {
       patients: {
         title: "Patients",
-        note: "Dossiers médicaux, fiches cliniques et suivi des propriétaires.",
+        note: "liste du cabinet",
       },
       agenda: {
         title: "Agenda",
-        note: "Planning des consultations, chirurgies et rendez-vous du cabinet.",
+        note: "rendez-vous du cabinet",
       },
       clinique: {
         title: "Soins & hospitalisation",
-        note: "Soins du jour, hospitalisations et rappels médicaux.",
+        note: "soins du jour et hospitalisations",
       },
       stock: {
         title: "Produits",
-        note: "Gestion des médicaments, consommables et seuils d'alerte.",
+        note: "stock et seuils d'alerte",
       },
       finances: {
-        title: "Finances & Facturation",
-        note: "Encaissements, factures, devis et suivi des règlements.",
+        title: "Finances",
+        note: "factures et règlements",
       },
       equipe: {
-        title: "Équipe & Praticiens",
-        note: "Gestion des vétérinaires, ASV et plannings du cabinet.",
+        title: "Équipe",
+        note: "praticiens du cabinet",
       },
       notes: {
-        title: "Documents & Notes",
-        note: "Comptes-rendus, ordonnances types et modèles de documents.",
+        title: "Documents",
+        note: "notes et modèles",
       },
       taches: {
-        title: "Rappels & Tâches",
-        note: "Vaccinations à échéance et actions de suivi clinique.",
+        title: "Rappels",
+        note: "actions à suivre",
       },
       parametres: {
         title: "Paramètres",
-        note: "Configuration générale, préférences et personnalisation.",
+        note: "réglages du cabinet",
       },
     };
 

@@ -116,6 +116,7 @@ export function SectionGarden({
   if (!cards) return null;
   return (
     <SectionCards
+      subtitle="Vue d’ensemble de la rubrique"
       className="mx-4 mb-5 lg:mx-6"
       items={cards.map(card => ({
         title: card.title,

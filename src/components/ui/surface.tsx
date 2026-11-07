@@ -17,7 +17,7 @@ type DivProps = React.ComponentProps<"div">;
 export function Shell({ className, ...props }: React.ComponentProps<"section">) {
   return (
     <section
-      className={cn("@container w-full rounded-[1.375rem] bg-[var(--card-band)] p-1.5", className)}
+      className={cn("@container w-full rounded-[1.375rem] bg-[var(--card-band)] p-1.5 pb-3", className)}
       {...props}
     />
   );

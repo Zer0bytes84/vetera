@@ -21,9 +21,18 @@ import {
   WalletCards,
 } from "@/lib/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  DataTable,
+  type DataColumn,
+  type DataRow,
+} from "@/components/ui/data-table";
+import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
+import { QuietButton } from "@/components/ui/tuff-controls";
+import { Package } from "lucide-react";
+import { Panel, Shell, ShellHeader } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -61,7 +70,14 @@ import { StockLotsPanel } from "@/modules/stock/components/stock-lots-panel";
 import { PurchasingPanel } from "@/modules/stock/components/purchasing-panel";
 import { StockOperationsPanel } from "@/modules/stock/components/stock-operations-panel";
 import { MovementAllocationDetails } from "@/modules/stock/components/movement-allocation-details";
-import { expiryWords, restockNeed, stockAlert, stockExpiry, stockWords, unitCount } from "@/domain/stock-alerts";
+import {
+  expiryWords,
+  restockNeed,
+  stockAlert,
+  stockExpiry,
+  stockWords,
+  unitCount,
+} from "@/domain/stock-alerts";
 import { useListCursor } from "@/hooks/useListCursor";
 import { EmptyMascot } from "@/components/mascot/empty-mascot";
 import {
@@ -79,7 +95,7 @@ interface StockWorkspaceProps {
   onAdjust: (
     product: Product,
     quantity: number,
-    reason: string
+    reason: string,
   ) => Promise<void>;
   onDelete: (product: Product) => void;
   onEdit: (product: Product) => void;
@@ -138,11 +154,229 @@ function StatusBadge({ product }: { product: Product }) {
     <Badge
       className={cn(
         "rounded-full border-0 px-2.5 font-medium",
-        status.className
+        status.className,
       )}
     >
       {status.label}
     </Badge>
+  );
+}
+
+interface StockRow extends DataRow {
+  name: string;
+  state: string;
+  qty: number;
+  min: number;
+  buy: number;
+  sell: number;
+  expiry: string;
+  actions: string;
+}
+
+const STATUS_TONE: Record<Exclude<StockFilter, "all">, StatusTone> = {
+  healthy: "positive",
+  low: "warning",
+  out: "negative",
+  expiring: "warning",
+  expired: "negative",
+};
+
+/** The catalogue as TuffUI's Data Table: sortable columns, the filter field, pages, a selection, a CSV export, the state as a pill. */
+function CatalogueTable({
+  products,
+  filters,
+  toolbar,
+  onOpen,
+  onOrder,
+  onRestock,
+  onEdit,
+  onDelete,
+  listRef,
+}: {
+  products: Product[];
+  filters: React.ReactNode;
+  toolbar?: React.ReactNode;
+  onOpen: (product: Product) => void;
+  onOrder: (product: Product) => void;
+  onRestock: (product: Product) => void;
+  onEdit: (product: Product) => void;
+  onDelete: (product: Product) => void;
+  listRef: React.Ref<HTMLDivElement>;
+}) {
+  const byId = new Map(products.map((product) => [product.id, product]));
+  const rows: StockRow[] = products.map((product) => ({
+    id: product.id,
+    name: formatDisplayText(product.name),
+    state: statusCopy[productStatus(product)].label,
+    qty: product.quantity,
+    min: product.minStock,
+    buy: product.purchasePriceAmount,
+    sell: product.salePriceAmount,
+    expiry: stockExpiry(product)?.slice(0, 10) ?? "",
+    actions: "",
+  }));
+  const columns: DataColumn<StockRow>[] = [
+    {
+      key: "name",
+      label: "Produit",
+      sortable: true,
+      format: (_, row) => {
+        const product = byId.get(row.id)!;
+        return (
+          <span className="block max-w-64 min-w-0">
+            <span className="block truncate text-sm font-medium">
+              {row.name}
+            </span>
+            <span className="block truncate text-[0.8125rem] text-muted-foreground">
+              {product.category}
+              {product.subCategory ? ` · ${product.subCategory}` : ""}
+            </span>
+          </span>
+        );
+      },
+    },
+    {
+      key: "state",
+      label: "État",
+      sortable: true,
+      format: (_, row) => {
+        const product = byId.get(row.id)!;
+        return (
+          <span className="block">
+            <StatusPill tone={STATUS_TONE[productStatus(product)]}>
+              {statusCopy[productStatus(product)].label}
+            </StatusPill>
+            {stockWords(product) && (
+              <span className="mt-1 block whitespace-nowrap text-xs text-muted-foreground">
+                {stockWords(product)}
+              </span>
+            )}
+          </span>
+        );
+      },
+    },
+    {
+      key: "qty",
+      label: "Disponible",
+      align: "right",
+      sortable: true,
+      format: (_, row) => (
+        <span className="font-sans text-sm font-medium">
+          {row.qty}{" "}
+          <span className="font-normal text-muted-foreground text-xs">
+            {byId.get(row.id)!.unit}
+          </span>
+        </span>
+      ),
+    },
+    { key: "min", label: "Seuil", align: "right", sortable: true, priority: 3 },
+    {
+      key: "buy",
+      label: "Achat",
+      align: "right",
+      sortable: true,
+      priority: 3,
+      format: (value) => (
+        <span className="font-sans text-[0.8125rem]">
+          {formatDZD(Number(value))}
+        </span>
+      ),
+    },
+    {
+      key: "sell",
+      label: "Vente",
+      align: "right",
+      sortable: true,
+      priority: 2,
+      format: (value) => (
+        <span className="font-sans text-[0.8125rem] font-medium">
+          {formatDZD(Number(value))}
+        </span>
+      ),
+    },
+    {
+      key: "expiry",
+      label: "Péremption",
+      sortable: true,
+      priority: 2,
+      format: (value) => (
+        <span className="text-muted-foreground">
+          {formatDate(String(value) || undefined)}
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      hideLabel: true,
+      noExport: true,
+      priority: 1,
+      format: (_, row) => {
+        const product = byId.get(row.id)!;
+        return (
+          <div
+            className="flex items-center justify-end gap-1"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {restockNeed(product) > 0 && (
+              <QuietButton onClick={() => onOrder(product)}>
+                Commander
+              </QuietButton>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    aria-label={`Actions pour ${formatDisplayText(product.name)}`}
+                    className="rounded-full"
+                    size="icon-sm"
+                    variant="ghost"
+                  />
+                }
+              >
+                <MoreHorizontal />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onRestock(product)}>
+                  <RefreshCw /> Réceptionner
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEdit(product)}>
+                  <Edit3 /> Modifier
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onDelete(product)}
+                  variant="destructive"
+                >
+                  <Archive /> Archiver
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
+    },
+  ];
+  return (
+    <DataTable
+      columns={columns}
+      containerRef={listRef}
+      data={rows}
+      emptyDescription="Modifiez la recherche ou les filtres."
+      emptyTitle="Aucun produit dans cette sélection"
+      exportName="produits"
+      filters={filters}
+      toolbar={toolbar}
+      icon={Package}
+      noun={["référence", "références"]}
+      onRowClick={(row) => onOpen(byId.get(row.id)!)}
+      pageSize={PAGE_SIZE}
+      rowProps={(row) => ({
+        tabIndex: 0,
+        ...({ "data-list-row": "", "data-row-id": row.id } as object),
+      })}
+      searchPlaceholder="Nom, catégorie, usage"
+      title="Catalogue"
+    />
   );
 }
 
@@ -176,9 +410,7 @@ function ProductDetail({
                 {product.category}
               </span>
             </div>
-            <DialogTitle>
-              {formatDisplayText(product.name)}
-            </DialogTitle>
+            <DialogTitle>{formatDisplayText(product.name)}</DialogTitle>
             <DialogDescription>
               {product.subCategory || "Référence du catalogue"}
             </DialogDescription>
@@ -277,6 +509,44 @@ function ProductDetail({
   );
 }
 
+/** One container for a section of the page: the band carries the title and the section buttons, the panel the content. */
+function TabShell({
+  title,
+  toolbar,
+  children,
+}: {
+  title: string;
+  toolbar: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <Shell>
+      <ShellHeader aside={toolbar} as="h2" icon={Package} title={title} />
+      <Panel className="overflow-hidden">{children}</Panel>
+    </Shell>
+  );
+}
+
+function MaybeShell({
+  shell,
+  title,
+  toolbar,
+  children,
+}: {
+  shell: boolean;
+  title: string;
+  toolbar: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return shell ? (
+    <TabShell title={title} toolbar={toolbar}>
+      {children}
+    </TabShell>
+  ) : (
+    <>{children}</>
+  );
+}
+
 export function StockWorkspace({
   loading,
   movements,
@@ -297,7 +567,10 @@ export function StockWorkspace({
   // "Commander" on a row opens a supplier order for that product alone.
   const [orderFor, setOrderFor] = useState<string | null>(null);
   const clearOrderFor = useCallback(() => setOrderFor(null), []);
-  const order = (product: Product) => { setOrderFor(product.id); setWorkspaceTab("purchasing"); };
+  const order = (product: Product) => {
+    setOrderFor(product.id);
+    setWorkspaceTab("purchasing");
+  };
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [inventoryProductId, setInventoryProductId] = useState("");
   const [countedQuantity, setCountedQuantity] = useState(0);
@@ -309,23 +582,34 @@ export function StockWorkspace({
       [
         ...new Set(products.map((product) => product.category).filter(Boolean)),
       ].sort((a, b) => a.localeCompare(b, "fr")),
-    [products]
+    [products],
   );
   const stockValue = products.reduce(
-    (sum, product) => sum + (product.stockTracked === false ? 0 : product.quantity * product.purchasePriceAmount),
-    0
+    (sum, product) =>
+      sum +
+      (product.stockTracked === false
+        ? 0
+        : product.quantity * product.purchasePriceAmount),
+    0,
   );
-  const reorder = products.filter(
-    (product) => restockNeed(product) > 0
-  );
+  const reorder = products.filter((product) => restockNeed(product) > 0);
   const expiries = products
     .filter((product) => ["expired", "expiring"].includes(stockAlert(product)))
-    .sort((left, right) => (stockExpiry(left) ?? "9999").localeCompare(stockExpiry(right) ?? "9999"));
+    .sort((left, right) =>
+      (stockExpiry(left) ?? "9999").localeCompare(stockExpiry(right) ?? "9999"),
+    );
   const reorderWords = reorder
     .slice()
-    .sort((left, right) => restockNeed(right) / Math.max(1, right.minStock) - restockNeed(left) / Math.max(1, left.minStock))
+    .sort(
+      (left, right) =>
+        restockNeed(right) / Math.max(1, right.minStock) -
+        restockNeed(left) / Math.max(1, left.minStock),
+    )
     .slice(0, 2)
-    .map((product) => `${formatDisplayText(product.name)} : ${formatNumber(product.availableQuantity ?? product.quantity)} sur ${formatNumber(product.minStock)}`);
+    .map(
+      (product) =>
+        `${formatDisplayText(product.name)} : ${formatNumber(product.availableQuantity ?? product.quantity)} sur ${formatNumber(product.minStock)}`,
+    );
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase("fr");
@@ -340,7 +624,9 @@ export function StockWorkspace({
       return (
         matchesQuery &&
         (category === "all" || product.category === category) &&
-        (status === "all" || productStatus(product) === status || (status === "expiring" && productStatus(product) === "expired"))
+        (status === "all" ||
+          productStatus(product) === status ||
+          (status === "expiring" && productStatus(product) === "expired"))
       );
     });
   }, [category, products, query, status]);
@@ -349,12 +635,76 @@ export function StockWorkspace({
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const visibleProducts = filtered.slice(
     (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE
+    page * PAGE_SIZE,
   );
+
+  const filterControls = (
+    <>
+      <ListFilter
+        label="Catégorie"
+        value={category}
+        onValueChange={setCategory}
+        options={[
+          { value: "all", label: "Toutes" },
+          ...categories.map((value) => ({ value, label: value })),
+        ]}
+      />
+      <ListFilter
+        label="État"
+        value={status}
+        onValueChange={(value) => setStatus(value as StockFilter)}
+        options={[
+          { value: "all", label: "Tous" },
+          { value: "healthy", label: "Disponibles" },
+          { value: "low", label: "Stock bas" },
+          { value: "out", label: "Ruptures" },
+          { value: "expiring", label: "À surveiller" },
+          { value: "expired", label: "Expirés" },
+        ]}
+      />
+      <div className="stock-view-toggle ml-auto flex h-[30px] items-center rounded-full border bg-background p-0.5">
+        <Button
+          aria-label="Vue tableau"
+          aria-pressed={view === "table"}
+          className="size-6"
+          onClick={() => setView("table")}
+          size="icon-sm"
+          variant={view === "table" ? "secondary" : "ghost"}
+        >
+          <List />
+        </Button>
+        <Button
+          aria-label="Vue cartes"
+          aria-pressed={view === "cards"}
+          className="size-6"
+          onClick={() => setView("cards")}
+          size="icon-sm"
+          variant={view === "cards" ? "secondary" : "ghost"}
+        >
+          <LayoutGrid />
+        </Button>
+      </div>
+    </>
+  );
+
+  // The page's sections, as buttons in the band of the table or card they switch: one title, the band's.
+  const tabButtons = (
+    <TabsList aria-label="Sections des produits" tabsStyle="segmented">
+      <TabsTrigger value="catalogue">Catalogue</TabsTrigger>
+      <TabsTrigger value="mouvements">Mouvements</TabsTrigger>
+      <TabsTrigger value="inventaire">Inventaire</TabsTrigger>
+      <TabsTrigger value="lots">Lots</TabsTrigger>
+      <TabsTrigger value="purchasing">Approvisionnements</TabsTrigger>
+      <TabsTrigger value="operations">Opérations</TabsTrigger>
+    </TabsList>
+  );
+  const catalogueInShell = loading || view === "cards";
 
   return (
     <div className="space-y-4">
       <SectionCards
+        icon={Package}
+        subtitle="Stock, seuils et péremptions"
         items={[
           {
             title: "Valeur du stock",
@@ -364,35 +714,49 @@ export function StockWorkspace({
             tone: "quiet",
             trend: "neutral",
             detailRow: `${formatNumber(products.length)} références · ${formatNumber(categories.length)} catégories actives`,
-            onClick: () => { setStatus("all"); setCategory("all"); setWorkspaceTab("catalogue"); },
+            onClick: () => {
+              setStatus("all");
+              setCategory("all");
+              setWorkspaceTab("catalogue");
+            },
             actionLabel: "Voir tout le catalogue",
           },
           {
             title: "À réapprovisionner",
             icon: PackageOpen,
             value: formatNumber(reorder.length),
-            badge: reorder.length > 0 ? "Sous le seuil" : "Au-dessus des seuils",
+            badge:
+              reorder.length > 0 ? "Sous le seuil" : "Au-dessus des seuils",
             tone: reorder.length ? "watch" : "positive",
             trend: reorder.length ? "down" : "neutral",
-            detailRow: reorder.length > 0
-              ? `${reorderWords.join(" · ")}${reorder.length > 2 ? ` · +${reorder.length - 2}` : ""}`
-              : "Chaque produit suivi est au-dessus de son seuil",
-            onClick: () => { setStatus("low"); setWorkspaceTab("catalogue"); },
+            detailRow:
+              reorder.length > 0
+                ? `${reorderWords.join(" · ")}${reorder.length > 2 ? ` · +${reorder.length - 2}` : ""}`
+                : "Chaque produit suivi est au-dessus de son seuil",
+            onClick: () => {
+              setStatus("low");
+              setWorkspaceTab("catalogue");
+            },
             actionLabel: "Voir les produits concernés",
           },
           {
             title: "Péremptions à surveiller",
             icon: CalendarClock,
             value: formatNumber(expiries.length),
-            badge: expiries.length > 0
-              ? `${expiries.length} produit${expiries.length > 1 ? "s" : ""} sous 90 jours`
-              : "Rien sous 90 jours",
+            badge:
+              expiries.length > 0
+                ? `${expiries.length} produit${expiries.length > 1 ? "s" : ""} sous 90 jours`
+                : "Rien sous 90 jours",
             tone: expiries.length ? "watch" : "positive",
             trend: expiries.length ? "down" : "neutral",
-            detailRow: expiries.length > 0
-              ? `${formatDisplayText(expiries[0].name)} : ${expiryWords(expiries[0]).toLocaleLowerCase("fr")}`
-              : "Aucune date de péremption dans les 90 prochains jours",
-            onClick: () => { setStatus("expiring"); setWorkspaceTab("catalogue"); },
+            detailRow:
+              expiries.length > 0
+                ? `${formatDisplayText(expiries[0].name)} : ${expiryWords(expiries[0]).toLocaleLowerCase("fr")}`
+                : "Aucune date de péremption dans les 90 prochains jours",
+            onClick: () => {
+              setStatus("expiring");
+              setWorkspaceTab("catalogue");
+            },
             actionLabel: "Voir les échéances",
           },
           {
@@ -403,110 +767,110 @@ export function StockWorkspace({
             tone: "quiet",
             trend: "neutral",
             detailRow: (() => {
-              const tracked = products.filter((p) => p.stockTracked !== false).length;
+              const tracked = products.filter(
+                (p) => p.stockTracked !== false,
+              ).length;
               const untracked = products.length - tracked;
               return `${formatNumber(tracked)} avec stock suivi${untracked ? ` · ${formatNumber(untracked)} sans suivi de stock` : ""}`;
             })(),
-            onClick: () => { setStatus("all"); setWorkspaceTab("mouvements"); },
+            onClick: () => {
+              setStatus("all");
+              setWorkspaceTab("mouvements");
+            },
             actionLabel: "Voir l'historique des mouvements",
           },
         ]}
       />
 
-      <Card className="overflow-hidden border-border/70 shadow-none">
-        <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
-          <div className="flex flex-col gap-3 border-b px-5 py-4 xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
-            <div>
-              <h2 className="font-display font-medium t-18 tracking-[-0.035em]">
-                Catalogue & inventaire
-              </h2>
-            </div>
-            <TabsList tabsStyle="nav" variant="line">
-              <TabsTrigger value="catalogue">
-                <PackageCheck /> Catalogue
-              </TabsTrigger>
-              <TabsTrigger value="mouvements">
-                <History /> Mouvements
-              </TabsTrigger>
-              <TabsTrigger value="inventaire">
-                <ClipboardCheck /> Inventaire
-              </TabsTrigger>
-              <TabsTrigger value="lots"><PackageOpen /> Lots</TabsTrigger>
-              <TabsTrigger value="purchasing">Approvisionnements</TabsTrigger>
-              <TabsTrigger value="operations">Opérations</TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="catalogue">
-            <div className="flex flex-wrap items-center gap-2 border-b p-4">
-              <ListSearch className="w-full sm:w-64" label="Rechercher les produits" placeholder="Nom, catégorie, usage…" value={query} onValueChange={setQuery} />
-              <ListFilter label="Catégorie" value={category} onValueChange={setCategory} options={[{ value: "all", label: "Toutes" }, ...categories.map(value => ({ value, label: value }))]} />
-              <ListFilter label="État" value={status} onValueChange={value => setStatus(value as StockFilter)} options={[
-                { value: "all", label: "Tous" }, { value: "healthy", label: "Disponibles" }, { value: "low", label: "Stock bas" }, { value: "out", label: "Ruptures" }, { value: "expiring", label: "À surveiller" }, { value: "expired", label: "Expirés" },
-              ]} />
-              <div className="stock-view-toggle ml-auto flex h-[30px] items-center rounded-full border bg-background p-0.5">
-                <Button
-                  aria-label="Vue tableau"
-                  aria-pressed={view === "table"}
-                  className="size-6"
-                  onClick={() => setView("table")}
-                  size="icon-sm"
-                  variant={view === "table" ? "secondary" : "ghost"}
-                >
-                  <List />
-                </Button>
-                <Button
-                  aria-label="Vue cartes"
-                  aria-pressed={view === "cards"}
-                  className="size-6"
-                  onClick={() => setView("cards")}
-                  size="icon-sm"
-                  variant={view === "cards" ? "secondary" : "ghost"}
-                >
-                  <LayoutGrid />
-                </Button>
+      <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
+        <TabsContent value="catalogue">
+          <MaybeShell
+            shell={catalogueInShell}
+            title="Catalogue"
+            toolbar={tabButtons}
+          >
+            {view === "cards" && (
+              <div className="flex flex-wrap items-center gap-2 border-b p-4">
+                <ListSearch
+                  className="w-full sm:w-64"
+                  label="Rechercher les produits"
+                  placeholder="Nom, catégorie, usage…"
+                  value={query}
+                  onValueChange={setQuery}
+                />
+                {filterControls}
               </div>
-            </div>
+            )}
 
             <CardContent className="p-0">
-              {!loading && expiries.length > 0 && status !== "expiring" && status !== "expired" && (
-                <ul aria-label="Péremptions proches" className="divide-y border-b bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200 [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200">
-                  {expiries.slice(0, 3).map((product) => (
-                    <li data-expired={stockAlert(product) === "expired" ? "" : undefined} key={product.id}>
-                      <CalendarClock aria-hidden="true" className="size-4 shrink-0" />
-                      <span className="min-w-0 flex-1">
-                        <strong>{formatDisplayText(product.name)}</strong>
-                        {" · "}
-                        {expiryWords(product)}
-                        {(() => {
-                          const quantity = stockAlert(product) === "expired"
-                            ? product.expiredQuantity ?? product.quantity
-                            : product.expiringQuantity ?? product.quantity;
-                          return quantity > 0 ? ` · ${unitCount(quantity, product.unit)} à cette échéance` : "";
-                        })()}
-                      </span>
-                      <Button onClick={() => setSelected(product)} size="sm" type="button" variant="ghost">
-                        Voir les lots
-                      </Button>
-                    </li>
-                  ))}
-                  {expiries.length > 3 && (
-                    <li>
-                      <span className="flex-1 text-muted-foreground">
-                        {expiries.length - 3} autre{expiries.length - 3 > 1 ? "s" : ""} produit{expiries.length - 3 > 1 ? "s" : ""} à surveiller
-                      </span>
-                      <Button onClick={() => setStatus("expiring")} size="sm" type="button" variant="ghost">
-                        Tout afficher
-                      </Button>
-                    </li>
-                  )}
-                </ul>
-              )}
+              {!loading &&
+                expiries.length > 0 &&
+                status !== "expiring" &&
+                status !== "expired" && (
+                  <ul
+                    aria-label="Péremptions proches"
+                    className="mb-3 divide-y overflow-hidden rounded-2xl bg-amber-50/60 text-sm dark:bg-amber-500/[0.06] [&>li]:flex [&>li]:items-center [&>li]:gap-3 [&>li]:px-5 [&>li]:py-2 [&>li]:text-amber-900 dark:[&>li]:text-amber-200 [&>li[data-expired]]:bg-rose-50/70 [&>li[data-expired]]:text-rose-800 dark:[&>li[data-expired]]:bg-rose-500/[0.08] dark:[&>li[data-expired]]:text-rose-200"
+                  >
+                    {expiries.slice(0, 3).map((product) => (
+                      <li
+                        data-expired={
+                          stockAlert(product) === "expired" ? "" : undefined
+                        }
+                        key={product.id}
+                      >
+                        <CalendarClock
+                          aria-hidden="true"
+                          className="size-4 shrink-0"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <strong>{formatDisplayText(product.name)}</strong>
+                          {" · "}
+                          {expiryWords(product)}
+                          {(() => {
+                            const quantity =
+                              stockAlert(product) === "expired"
+                                ? (product.expiredQuantity ?? product.quantity)
+                                : (product.expiringQuantity ??
+                                  product.quantity);
+                            return quantity > 0
+                              ? ` · ${unitCount(quantity, product.unit)} à cette échéance`
+                              : "";
+                          })()}
+                        </span>
+                        <Button
+                          onClick={() => setSelected(product)}
+                          size="sm"
+                          type="button"
+                          variant="ghost"
+                        >
+                          Voir les lots
+                        </Button>
+                      </li>
+                    ))}
+                    {expiries.length > 3 && (
+                      <li>
+                        <span className="flex-1 text-muted-foreground">
+                          {expiries.length - 3} autre
+                          {expiries.length - 3 > 1 ? "s" : ""} produit
+                          {expiries.length - 3 > 1 ? "s" : ""} à surveiller
+                        </span>
+                        <Button
+                          onClick={() => setStatus("expiring")}
+                          size="sm"
+                          type="button"
+                          variant="ghost"
+                        >
+                          Tout afficher
+                        </Button>
+                      </li>
+                    )}
+                  </ul>
+                )}
               {loading ? (
                 <div className="p-12 text-center text-muted-foreground">
                   Chargement du catalogue…
                 </div>
-              ) : visibleProducts.length === 0 ? (
+              ) : view === "cards" && visibleProducts.length === 0 ? (
                 <Empty className="min-h-56 border-0 bg-transparent py-10">
                   <EmptyHeader>
                     <EmptyMascot icon={<PackageOpen />} />
@@ -517,114 +881,19 @@ export function StockWorkspace({
                   </EmptyHeader>
                 </Empty>
               ) : view === "table" ? (
-                <Table ref={listRef}>
-                  <TableHeader className="bg-[#edf3ef] dark:bg-[#25332d]">
-                    <TableRow className="border-[#dce7df] hover:bg-transparent dark:border-[#35473d]">
-                      <TableHead className="text-[#456152] dark:text-[#c0d4c7]">
-                        Produit
-                      </TableHead>
-                      <TableHead>État</TableHead>
-                      <TableHead className="text-right">Disponible</TableHead>
-                      <TableHead className="text-right">Seuil</TableHead>
-                      <TableHead className="text-right">Achat</TableHead>
-                      <TableHead className="text-right">Vente</TableHead>
-                      <TableHead>Péremption</TableHead>
-                      <TableHead className="w-14 text-right">
-                        <span className="sr-only">Actions</span>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {visibleProducts.map((product) => (
-                      <TableRow
-                        className="cursor-pointer hover:bg-transparent focus-within:bg-transparent"
-                        data-list-row=""
-                        data-row-id={product.id}
-                        key={product.id}
-                        onClick={() => setSelected(product)}
-                        tabIndex={0}
-                      >
-                        <TableCell>
-                          <div className="max-w-[280px]">
-                            <p className="truncate font-semibold">
-                              {formatDisplayText(product.name)}
-                            </p>
-                            <p className="truncate text-muted-foreground text-xs">
-                              {product.category}
-                              {product.subCategory
-                                ? ` · ${product.subCategory}`
-                                : ""}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <StatusBadge product={product} />
-                          {stockWords(product) && (
-                            <p className="mt-1 whitespace-nowrap text-muted-foreground text-xs">{stockWords(product)}</p>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold tabular-nums">
-                          {product.quantity}{" "}
-                          <span className="font-normal text-muted-foreground text-xs">
-                            {product.unit}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          {product.minStock}
-                        </TableCell>
-                        <TableCell className="text-right whitespace-nowrap">
-                          {formatDZD(product.purchasePriceAmount)}
-                        </TableCell>
-                        <TableCell className="text-right whitespace-nowrap font-medium">
-                          {formatDZD(product.salePriceAmount)}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {formatDate(stockExpiry(product))}
-                        </TableCell>
-                        <TableCell onClick={(event) => event.stopPropagation()}>
-                          <div className="flex items-center justify-end gap-1">
-                          {restockNeed(product) > 0 && (
-                            <Button onClick={() => order(product)} size="sm" type="button" variant="outline">
-                              Commander
-                            </Button>
-                          )}
-                          <div data-row-reveal="">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger
-                                render={
-                                  <Button
-                                    aria-label={`Actions pour ${formatDisplayText(product.name)}`}
-                                    size="icon-sm"
-                                    variant="ghost"
-                                  />
-                                }
-                              >
-                                <MoreHorizontal />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() => onRestock(product)}
-                                >
-                                  <RefreshCw /> Réceptionner
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => onEdit(product)}>
-                                  <Edit3 /> Modifier
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => onDelete(product)}
-                                  variant="destructive"
-                                >
-                                  <Archive /> Archiver
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="p-1">
+                  <CatalogueTable
+                    filters={filterControls}
+                    toolbar={tabButtons}
+                    listRef={listRef}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+                    onOpen={setSelected}
+                    onOrder={order}
+                    onRestock={onRestock}
+                    products={filtered}
+                  />
+                </div>
               ) : (
                 <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
                   {visibleProducts.map((product) => (
@@ -666,41 +935,45 @@ export function StockWorkspace({
                   ))}
                 </div>
               )}
-              <div className="flex flex-col gap-3 border-t px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-muted-foreground text-xs">
-                  {filtered.length} référence{filtered.length > 1 ? "s" : ""} ·
-                  page {page} sur {pages}
-                </p>
-                <div className="flex items-center gap-1">
-                  <Button
-                    aria-label="Page précédente"
-                    disabled={page === 1}
-                    onClick={() => setPage((value) => Math.max(1, value - 1))}
-                    size="icon-sm"
-                    variant="outline"
-                  >
-                    <ChevronLeft />
-                  </Button>
-                  <span className="min-w-10 text-center font-medium text-sm">
-                    {page}
-                  </span>
-                  <Button
-                    aria-label="Page suivante"
-                    disabled={page === pages}
-                    onClick={() =>
-                      setPage((value) => Math.min(pages, value + 1))
-                    }
-                    size="icon-sm"
-                    variant="outline"
-                  >
-                    <ChevronRight />
-                  </Button>
+              {view === "cards" && (
+                <div className="flex flex-col gap-3 border-t px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-muted-foreground text-xs">
+                    {filtered.length} référence{filtered.length > 1 ? "s" : ""}{" "}
+                    · page {page} sur {pages}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      aria-label="Page précédente"
+                      disabled={page === 1}
+                      onClick={() => setPage((value) => Math.max(1, value - 1))}
+                      size="icon-sm"
+                      variant="outline"
+                    >
+                      <ChevronLeft />
+                    </Button>
+                    <span className="min-w-10 text-center font-medium text-sm">
+                      {page}
+                    </span>
+                    <Button
+                      aria-label="Page suivante"
+                      disabled={page === pages}
+                      onClick={() =>
+                        setPage((value) => Math.min(pages, value + 1))
+                      }
+                      size="icon-sm"
+                      variant="outline"
+                    >
+                      <ChevronRight />
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
-          </TabsContent>
+          </MaybeShell>
+        </TabsContent>
 
-          <TabsContent value="mouvements">
+        <TabsContent value="mouvements">
+          <TabShell title="Mouvements" toolbar={tabButtons}>
             <CardContent className="p-0">
               {movements.length === 0 ? (
                 <div className="p-12 text-center">
@@ -731,7 +1004,7 @@ export function StockWorkspace({
                       .slice(0, 20)
                       .map((movement) => {
                         const product = products.find(
-                          (item) => item.id === movement.productId
+                          (item) => item.id === movement.productId,
                         );
                         const positive = movement.quantityDelta > 0;
                         return (
@@ -740,7 +1013,9 @@ export function StockWorkspace({
                               {formatDate(movement.createdAt)}
                             </TableCell>
                             <TableCell className="font-medium">
-                              {movement.productNameSnapshot || product?.name || "Produit archivé"}
+                              {movement.productNameSnapshot ||
+                                product?.name ||
+                                "Produit archivé"}
                             </TableCell>
                             <TableCell>
                               <span className="inline-flex items-center gap-1.5">
@@ -754,12 +1029,12 @@ export function StockWorkspace({
                                 {movement.sourceType === "transfer"
                                   ? "Transfert"
                                   : movement.type === "restock"
-                                  ? "Réception"
-                                  : movement.type === "adjustment"
-                                    ? "Ajustement"
-                                    : movement.type === "usage"
-                                      ? "Utilisation"
-                                      : "Mouvement"}
+                                    ? "Réception"
+                                    : movement.type === "adjustment"
+                                      ? "Ajustement"
+                                      : movement.type === "usage"
+                                        ? "Utilisation"
+                                        : "Mouvement"}
                               </span>
                             </TableCell>
                             <TableCell
@@ -768,22 +1043,61 @@ export function StockWorkspace({
                                 movement.quantityDelta === 0
                                   ? "text-muted-foreground"
                                   : positive
-                                  ? "text-emerald-700 dark:text-emerald-300"
-                                  : "text-rose-700 dark:text-rose-300"
+                                    ? "text-emerald-700 dark:text-emerald-300"
+                                    : "text-rose-700 dark:text-rose-300",
                               )}
                             >
                               {positive ? "+" : ""}
-                              {movement.quantityDelta.toLocaleString("fr-FR", {maximumFractionDigits: 6})}
-                              <span className="ml-1 text-xs font-normal text-muted-foreground">{movement.unitSnapshot || product?.unit || "unité non renseignée"}</span>
+                              {movement.quantityDelta.toLocaleString("fr-FR", {
+                                maximumFractionDigits: 6,
+                              })}
+                              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                                {movement.unitSnapshot ||
+                                  product?.unit ||
+                                  "unité non renseignée"}
+                              </span>
                             </TableCell>
                             <TableCell className="text-right tabular-nums">
-                              {movement.quantityAfter.toLocaleString("fr-FR", {maximumFractionDigits: 6})}
-                              <span className="ml-1 text-xs text-muted-foreground">{movement.unitSnapshot || product?.unit || "unité non renseignée"}</span>
+                              {movement.quantityAfter.toLocaleString("fr-FR", {
+                                maximumFractionDigits: 6,
+                              })}
+                              <span className="ml-1 text-xs text-muted-foreground">
+                                {movement.unitSnapshot ||
+                                  product?.unit ||
+                                  "unité non renseignée"}
+                              </span>
                             </TableCell>
                             <TableCell className="text-muted-foreground">
-                              <span className="block">{movement.sourceType === "care" ? "Soin" : movement.sourceType === "prescription" ? "Ordonnance" : movement.sourceType === "consultation" ? "Consultation" : movement.sourceType === "transfer" ? "Transfert" : movement.sourceType === "receipt" ? "Réception" : "Stock"} · {movement.sourceLabel || movement.reason || "Non renseigné"}</span>
-                              {movement.invoiceId && <StockInvoiceLink invoiceId={movement.invoiceId} />}
-                              <MovementAllocationDetails movementId={movement.id} unit={movement.unitSnapshot || product?.unit || "unité"} />
+                              <span className="block">
+                                {movement.sourceType === "care"
+                                  ? "Soin"
+                                  : movement.sourceType === "prescription"
+                                    ? "Ordonnance"
+                                    : movement.sourceType === "consultation"
+                                      ? "Consultation"
+                                      : movement.sourceType === "transfer"
+                                        ? "Transfert"
+                                        : movement.sourceType === "receipt"
+                                          ? "Réception"
+                                          : "Stock"}{" "}
+                                ·{" "}
+                                {movement.sourceLabel ||
+                                  movement.reason ||
+                                  "Non renseigné"}
+                              </span>
+                              {movement.invoiceId && (
+                                <StockInvoiceLink
+                                  invoiceId={movement.invoiceId}
+                                />
+                              )}
+                              <MovementAllocationDetails
+                                movementId={movement.id}
+                                unit={
+                                  movement.unitSnapshot ||
+                                  product?.unit ||
+                                  "unité"
+                                }
+                              />
                             </TableCell>
                           </TableRow>
                         );
@@ -792,14 +1106,33 @@ export function StockWorkspace({
                 </Table>
               )}
             </CardContent>
-          </TabsContent>
+          </TabShell>
+        </TabsContent>
 
-          <TabsContent value="lots"><StockLotsPanel /></TabsContent>
-          <TabsContent value="purchasing"><PurchasingPanel orderFor={orderFor} onOrderOpened={clearOrderFor} /></TabsContent>
-          <TabsContent value="operations"><StockOperationsPanel onOpenMovements={() => setWorkspaceTab("mouvements")} /></TabsContent>
-          <TabsContent value="inventaire">
+        <TabsContent value="lots">
+          <TabShell title="Lots" toolbar={tabButtons}>
+            <StockLotsPanel />
+          </TabShell>
+        </TabsContent>
+        <TabsContent value="purchasing">
+          <TabShell title="Approvisionnements" toolbar={tabButtons}>
+            <PurchasingPanel
+              orderFor={orderFor}
+              onOrderOpened={clearOrderFor}
+            />
+          </TabShell>
+        </TabsContent>
+        <TabsContent value="operations">
+          <TabShell title="Opérations" toolbar={tabButtons}>
+            <StockOperationsPanel
+              onOpenMovements={() => setWorkspaceTab("mouvements")}
+            />
+          </TabShell>
+        </TabsContent>
+        <TabsContent value="inventaire">
+          <TabShell title="Inventaire" toolbar={tabButtons}>
             <CardContent className="grid gap-4 p-5 md:grid-cols-3">
-              <div className="rounded-2xl border bg-muted/15 p-5">
+              <div className="rounded-2xl bg-foreground/[0.04] p-5">
                 <PackageCheck className="size-5 text-emerald-600" />
                 <p className="mt-5 text-muted-foreground text-xs">
                   Valeur d’acquisition
@@ -808,7 +1141,7 @@ export function StockWorkspace({
                   {formatDZD(stockValue)}
                 </p>
               </div>
-              <div className="rounded-2xl border bg-muted/15 p-5">
+              <div className="rounded-2xl bg-foreground/[0.04] p-5">
                 <AlertTriangle className="size-5 text-amber-600" />
                 <p className="mt-5 text-muted-foreground text-xs">
                   Sous le seuil
@@ -817,7 +1150,7 @@ export function StockWorkspace({
                   {reorder.length} références
                 </p>
               </div>
-              <div className="rounded-2xl border bg-muted/15 p-5">
+              <div className="rounded-2xl bg-foreground/[0.04] p-5">
                 <WalletCards className="size-5 text-sky-600" />
                 <p className="mt-5 text-muted-foreground text-xs">
                   Valeur de vente théorique
@@ -827,12 +1160,12 @@ export function StockWorkspace({
                     products.reduce(
                       (sum, product) =>
                         sum + product.quantity * product.salePriceAmount,
-                      0
-                    )
+                      0,
+                    ),
                   )}
                 </p>
               </div>
-              <div className="md:col-span-3 flex flex-col gap-4 rounded-2xl border border-dashed p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="md:col-span-3 flex flex-col gap-4 rounded-2xl bg-foreground/[0.04] p-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                     <ClipboardCheck className="size-5" />
@@ -857,9 +1190,9 @@ export function StockWorkspace({
                 </Button>
               </div>
             </CardContent>
-          </TabsContent>
-        </Tabs>
-      </Card>
+          </TabShell>
+        </TabsContent>
+      </Tabs>
 
       <ProductDetail
         onEdit={onEdit}
@@ -883,7 +1216,7 @@ export function StockWorkspace({
                 className="w-full"
                 onChange={(event) => {
                   const next = products.find(
-                    (product) => product.id === event.target.value
+                    (product) => product.id === event.target.value,
                   );
                   setInventoryProductId(event.target.value);
                   setCountedQuantity(next?.quantity || 0);
@@ -892,7 +1225,8 @@ export function StockWorkspace({
               >
                 {products.map((product) => (
                   <NativeSelectOption key={product.id} value={product.id}>
-                    {formatDisplayText(product.name)} · {product.quantity} {product.unit}
+                    {formatDisplayText(product.name)} · {product.quantity}{" "}
+                    {product.unit}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
@@ -922,7 +1256,7 @@ export function StockWorkspace({
                 <strong className="tabular-nums">
                   {countedQuantity -
                     (products.find(
-                      (product) => product.id === inventoryProductId
+                      (product) => product.id === inventoryProductId,
                     )?.quantity || 0)}
                 </strong>
               </div>
@@ -941,7 +1275,7 @@ export function StockWorkspace({
               }
               onClick={async () => {
                 const product = products.find(
-                  (item) => item.id === inventoryProductId
+                  (item) => item.id === inventoryProductId,
                 );
                 if (!product) return;
                 setInventorySaving(true);

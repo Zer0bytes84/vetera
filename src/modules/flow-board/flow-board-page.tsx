@@ -579,10 +579,10 @@ export function FlowBoardPage({
           icon={<HugeiconsIcon icon={KanbanIcon} size={20} strokeWidth={1.5} />}
           subtitle={
             loading
-              ? "Chargement des visites du jour…"
+              ? "chargement des visites du jour"
               : total === 0
-                ? "Aucune visite aujourd'hui pour l'instant."
-                : `${total} visite${total > 1 ? "s" : ""} aujourd'hui · qui est où, en un coup d'œil`
+                ? "aucune visite aujourd'hui"
+                : `${total} visite${total > 1 ? "s" : ""} aujourd'hui`
           }
           title="Flux"
         />

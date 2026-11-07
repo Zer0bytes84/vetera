@@ -58,7 +58,7 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [
           </Button>
         }
         icon={<HugeiconsIcon icon={ChartLineData01Icon} size={20} strokeWidth={1.5} />}
-        subtitle="Vos encaissements et votre trésorerie, à partir des écritures du journal."
+        subtitle="encaissements et trésorerie"
         title="Analyse financière"
       />
 

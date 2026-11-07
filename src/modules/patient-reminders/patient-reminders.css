@@ -222,8 +222,6 @@
 .medical-reminders-widget-upcoming { display: grid; margin: 0; padding: 0; list-style: none; }
 .medical-reminders-widget-upcoming > li { display: grid; grid-template-columns: 104px minmax(0, 1fr) minmax(0, 0.8fr); align-items: baseline; gap: 16px; min-height: 40px; padding-block: 9px; }
 .medical-reminders-widget-upcoming > li + li { border-top: 1px solid var(--border); }
-:root[data-visual-style="premium"] .medical-reminders-widget { padding: 0; border-radius: 0; background: transparent; box-shadow: var(--hair-t), var(--hair-b), var(--hair-l), var(--hair-r); }
-:root[data-visual-style="premium"] .medical-reminders-widget > div { border-radius: 0; background: transparent; }
 
 @media (max-width: 840px) {
   .medical-reminder-row { grid-template-columns: 84px minmax(0, 1fr); }

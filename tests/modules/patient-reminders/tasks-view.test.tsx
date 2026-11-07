@@ -64,7 +64,7 @@ afterEach(() => vi.useRealTimers());
 it("affiche les quatre rappels à traiter même en l’absence de rappels médicaux", () => {
   harness.tasks = [task("1"), task("2"), task("3"), task("4")];
   const html = render();
-  expect(html).toMatch(/À traiter[\s\S]*?class="[^"]*\bsection-atlas-value\b[^"]*"[^>]*>4<\/span>/);
+  expect(html).toMatch(/À traiter[\s\S]*?<span class="sr-only">4<\/span>/);
   for (const id of ["1", "2", "3", "4"]) expect(html).toContain(`data-task-id="${id}"`);
   expect(html).not.toContain("Aucun rappel dans cette vue.");
 });
@@ -73,7 +73,7 @@ it("compte et affiche les mêmes échéances médicales et manuelles, sans inclu
   harness.tasks = [task("manuel"), task("futur", "2026-10-15"), task("termine", "2026-10-14", "done")];
   harness.medicalReminders = [medical("du", "2026-10-13"), medical("futur", "2026-10-15"), medical("termine", "2026-10-12", "termine")];
   const html = render();
-  expect(html).toMatch(/À traiter[\s\S]*?class="[^"]*\bsection-atlas-value\b[^"]*"[^>]*>2<\/span>/);
+  expect(html).toMatch(/À traiter[\s\S]*?<span class="sr-only">2<\/span>/);
   expect(html).toContain('data-task-id="manuel"');
   expect(html).toContain('data-medical-reminder-id="du"');
   expect(html).toContain("Patient test");

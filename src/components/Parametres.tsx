@@ -1174,7 +1174,7 @@ const Parametres: React.FC<ParametresProps> = ({
           <HugeiconsIcon icon={Settings02Icon} size={20} strokeWidth={1.5} />
         }
         kicker={<PageDate />}
-        subtitle="Votre compte, votre espace et les données du cabinet."
+        subtitle="réglages du cabinet"
         title="Paramètres"
       />
       <div className="settings-page-layout">

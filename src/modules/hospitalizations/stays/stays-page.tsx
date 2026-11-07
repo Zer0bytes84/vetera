@@ -30,7 +30,7 @@ export default function StaysPage({patientId,initialStayId}: {patientId?: string
     actions={<Button className="h-11" onClick={() => setForm(view === "emplacements" ? "location" : "admission")}>{view === "emplacements" ? "Créer un emplacement" : "Admettre un patient"}</Button>}
     icon={<HugeiconsIcon icon={Hospital01Icon} size={20} strokeWidth={1.5} />}
     kicker="Soins & hospitalisation"
-    subtitle={`Séjours, surveillance et occupation des emplacements · ${active.length} séjour${active.length > 1 ? "s" : ""} actif${active.length > 1 ? "s" : ""}`}
+    subtitle={`${active.length} séjour${active.length > 1 ? "s" : ""} actif${active.length > 1 ? "s" : ""}`}
     title="Hospitalisation"
   />
   <Tabs value={view} onValueChange={setView}><TabsList aria-label="Vues de l’hospitalisation" tabsStyle="segmented"><TabsTrigger value="sejours">Séjours</TabsTrigger><TabsTrigger value="occupation">Occupation</TabsTrigger><TabsTrigger value="tournee">Tournée</TabsTrigger><TabsTrigger value="emplacements">Emplacements</TabsTrigger></TabsList></Tabs>

@@ -1,4 +1,5 @@
 "use client";
+import { ChartLine } from "lucide-react";
 
 import { ArrowLeft01Icon } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -46,23 +47,23 @@ import { PremiumFinancialAnalysis } from "./components/premium-financial-analysi
 function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
   const incomeDelta = percentageDelta(
     metrics.summary.income30,
-    metrics.summary.previousIncome30
+    metrics.summary.previousIncome30,
   );
   const appointmentsDelta = percentageDelta(
     metrics.summary.todayAppointments,
-    metrics.summary.yesterdayAppointments
+    metrics.summary.yesterdayAppointments,
   );
   const basketDelta = percentageDelta(
     metrics.summary.averageBasket,
     metrics.summary.previousIncome30
       ? metrics.summary.previousIncome30 /
           Math.max(1, metrics.summary.currentQualified)
-      : 0
+      : 0,
   );
 
   const yearlyRevenue = metrics.monthlyRevenue.reduce(
     (sum, item) => sum + item.value,
-    0
+    0,
   );
 
   const sectionCards: SectionCardItem[] = [
@@ -73,7 +74,8 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
       changeBase: metrics.summary.previousIncome30,
       changeLabel: "vs période précédente",
       tone: incomeDelta >= 0 ? "positive" : "watch",
-      detailRow: "Flux net encaissé sur les 30 derniers jours · Règlements reçus",
+      detailRow:
+        "Flux net encaissé sur les 30 derniers jours · Règlements reçus",
       actionLabel: "Voir le détail des encaissements",
     },
     {
@@ -107,7 +109,13 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
     },
   ];
 
-  return <SectionCards items={sectionCards} />;
+  return (
+    <SectionCards
+      icon={ChartLine}
+      items={sectionCards}
+      subtitle="Encaissements et trésorerie"
+    />
+  );
 }
 
 // ============================================================================
@@ -115,7 +123,7 @@ function FinancialMetricStrip({ metrics }: { metrics: DashboardMetrics }) {
 // ============================================================================
 function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
   const [activeTab, setActiveTab] = React.useState<"revenue" | "cashflow">(
-    "revenue"
+    "revenue",
   );
 
   // Format revenue data
@@ -125,7 +133,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
         month: entry.month,
         value: Number(entry.value.toFixed(1)),
       })),
-    [metrics.monthlyRevenue]
+    [metrics.monthlyRevenue],
   );
 
   // Format cashflow data (last 14 days)
@@ -184,7 +192,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                 "relative cursor-pointer rounded-full px-4 py-1.5 font-semibold text-xs tracking-wide transition duration-200 active:scale-95",
                 activeTab === "revenue"
                   ? "font-bold text-white dark:text-zinc-950"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
               onClick={() => setActiveTab("revenue")}
               type="button"
@@ -203,7 +211,7 @@ function FinancialChartsCenter({ metrics }: { metrics: DashboardMetrics }) {
                 "relative cursor-pointer rounded-full px-4 py-1.5 font-semibold text-xs tracking-wide transition duration-200 active:scale-95",
                 activeTab === "cashflow"
                   ? "font-bold text-white dark:text-zinc-950"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
               onClick={() => setActiveTab("cashflow")}
               type="button"
@@ -538,11 +546,17 @@ export function FinancialAnalyticsV2Page({
         transactions,
         locale,
       }),
-    [appointments, owners, patients, tasks, transactions, locale]
+    [appointments, owners, patients, tasks, transactions, locale],
   );
 
   if (isPremium) {
-    return <PremiumFinancialAnalysis metrics={metrics} onNavigate={onNavigate} transactions={transactions} />;
+    return (
+      <PremiumFinancialAnalysis
+        metrics={metrics}
+        onNavigate={onNavigate}
+        transactions={transactions}
+      />
+    );
   }
 
   return (

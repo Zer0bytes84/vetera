@@ -1,5 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getAppointmentTypeMeta } from "@/config/status-meta";
-import { Add01Icon, Calendar01Icon } from "@/lib/hugeicons";
 import { cn } from "@/lib/utils";
 import type { Appointment, User as AppUser } from "@/types/db";
 import { formatPersonName } from "@/utils/display-format";
@@ -32,7 +29,6 @@ export interface AgendaDayLoadCardProps {
   getAppointmentCount?: (date: Date) => number;
   /** Prochain rendez-vous maintenu après la journée affichée. */
   nextAppointment?: { appointment: Appointment; patientName: string } | null;
-  onCreateAppointment?: () => void;
   onSelectDate?: (date: Date) => void;
   selectedDate: Date;
   totalPlannedMinutes: number;
@@ -48,7 +44,6 @@ export function AgendaDayLoadCard({
   engagedVetsCount,
   getAppointmentCount,
   nextAppointment,
-  onCreateAppointment,
   onSelectDate,
   selectedDate,
   totalPlannedMinutes,
@@ -150,30 +145,8 @@ export function AgendaDayLoadCard({
           </>
         ) : (
           <>
-            <div className="agenda-load-empty">
-              <span className="agenda-load-empty-icon">
-                <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={1.5} />
-              </span>
-              <p className="agenda-load-empty-title">Journée libre</p>
-              <p className="agenda-load-caption">
-                Aucun rendez-vous planifié ce jour-là.
-              </p>
-              {onCreateAppointment ? (
-                <Button
-                  className="mt-1"
-                  onClick={onCreateAppointment}
-                  size="sm"
-                  variant="outline"
-                >
-                  <HugeiconsIcon
-                    data-icon="inline-start"
-                    icon={Add01Icon}
-                    strokeWidth={1.5}
-                  />
-                  Planifier un rendez-vous
-                </Button>
-              ) : null}
-            </div>
+            {/* The page's main column already says the day is free and offers the button: here, the load stays plain text. */}
+            <p className="agenda-load-caption">Aucun rendez-vous planifié ce jour-là.</p>
 
             {nextAppointment !== undefined ? (
               <div className="agenda-load-section grid gap-2.5">
