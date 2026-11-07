@@ -11,6 +11,11 @@
   --color-signal-watch: var(--signal-watch);
   --color-signal-positive: var(--signal-positive);
   --color-signal-quiet: var(--signal-quiet);
+  /* Names the TuffUI components use, tied to the app's own accent tones (clair et sombre, Clean et Premium). */
+  --color-brand: var(--tone-blue);
+  --color-positive: var(--tone-green);
+  --color-negative: var(--tone-rose);
+  --color-warning: var(--tone-amber);
   --font-display: var(--app-font-display);
   --shadow-hairline: 0 0 0 1px var(--hairline);
   --shadow-card: var(--elev-card);
@@ -45,6 +50,14 @@
   --tone-violet: #6a3fd6;
   --tone-amber: #8a5500;
   --tone-rose: #b23c30;
+  /* The two series colours of the dashboard chart, those of TuffUI's Chart Card: blue, then teal. */
+  /* The three greys of a widget, those of TuffUI's Chart Card (its surface, inset and raised), in light and dark:
+     the frame with its header band, the panel set into it, the tooltip over it. */
+  --card-band: oklch(0.948 0.002 286);
+  --card-inset: oklch(1 0 0);
+  --card-raised: oklch(0.912 0.003 286);
+  --chart-blue: #0071e3;
+  --chart-teal: #1a9e8c;
   --primary: #191919;
   --primary-foreground: #ffffff;
   --secondary: #ffffff;
@@ -109,6 +122,11 @@
   --tone-violet: #b9a1ff;
   --tone-amber: #e2b467;
   --tone-rose: #f0a097;
+  --card-band: oklch(0.212 0 0);
+  --card-inset: oklch(0.172 0 0);
+  --card-raised: oklch(0.265 0 0);
+  --chart-blue: #0a84ff;
+  --chart-teal: #1a9e8c;
   --elev-card: 0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06);
   --elev-float:
     0 0 0 1px var(--hairline), inset 0 1px 0 rgb(255 255 255 / 0.06),

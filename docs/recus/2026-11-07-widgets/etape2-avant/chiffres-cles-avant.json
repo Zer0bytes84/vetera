@@ -1,0 +1,212 @@
+{
+ "Aujourd’hui": [
+  {
+   "nom": "Trésorerie",
+   "aria": "Voir la trésorerie",
+   "valeur": "7 700 DA",
+   "graphique": null,
+   "comparaison": "+24,2 % contre 6 200 DA la période précédente",
+   "sens": "good",
+   "detail": "Solde net : 7 700 DA · Dépenses : 0 DA",
+   "texteComplet": "Trésorerie 7 700 DA +24,2 % contre 6 200 DA la période précédente Solde net : 7 700 DA · Dépenses : 0 DA"
+  },
+  {
+   "nom": "Consultations",
+   "aria": "Voir les consultations",
+   "valeur": "3",
+   "graphique": "Consultations par motif : Contrôle 1 (34 %) · Urgence 1 (33 %) · Vaccin 1 (33 %)",
+   "comparaison": "+200 % contre 1 la période précédente",
+   "sens": "good",
+   "detail": "1 terminée · 1 en cours · 1 prévue",
+   "texteComplet": "Consultations 3 Contrôle · 34 % · 2 autres +200 % contre 1 la période précédente 1 terminée · 1 en cours · 1 prévue"
+  },
+  {
+   "nom": "Patients suivis",
+   "aria": "Voir les dossiers patients",
+   "valeur": "3",
+   "graphique": null,
+   "comparaison": "+200 % contre 1 la période précédente",
+   "sens": "good",
+   "detail": "0 nouveaux dossiers dans la période",
+   "texteComplet": "Patients suivis 3 +200 % contre 1 la période précédente 0 nouveaux dossiers dans la période"
+  },
+  {
+   "nom": "Actions à suivre",
+   "aria": "Voir les actions et rappels",
+   "valeur": "2",
+   "graphique": null,
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "2 prioritaires · 0 vaccins · 2 tâches",
+   "texteComplet": "Actions à suivre 2 Pas de période précédente comparable 2 prioritaires · 0 vaccins · 2 tâches"
+  }
+ ],
+ "7 jours": [
+  {
+   "nom": "Trésorerie",
+   "aria": "Voir la trésorerie",
+   "valeur": "13 900 DA",
+   "graphique": "Cumul des recettes encaissées sur la période",
+   "comparaison": "+157,4 % contre 5 400 DA la période précédente",
+   "sens": "good",
+   "detail": "Solde net : 13 900 DA · Dépenses : 0 DA",
+   "texteComplet": "Trésorerie 13 900 DA +157,4 % contre 5 400 DA la période précédente Solde net : 13 900 DA · Dépenses : 0 DA"
+  },
+  {
+   "nom": "Consultations",
+   "aria": "Voir les consultations",
+   "valeur": "4",
+   "graphique": "Consultations par motif : Consultation 1 (25 %) · Contrôle 1 (25 %) · Urgence 1 (25 %) · Vaccin 1 (25 %)",
+   "comparaison": "+100 % contre 2 la période précédente",
+   "sens": "good",
+   "detail": "2 terminées · 1 en cours · 1 prévue",
+   "texteComplet": "Consultations 4 Consultation · 25 % · 3 autres +100 % contre 2 la période précédente 2 terminées · 1 en cours · 1 prévue"
+  },
+  {
+   "nom": "Patients suivis",
+   "aria": "Voir les dossiers patients",
+   "valeur": "4",
+   "graphique": null,
+   "comparaison": "+100 % contre 2 la période précédente",
+   "sens": "good",
+   "detail": "0 nouveaux dossiers dans la période",
+   "texteComplet": "Patients suivis 4 +100 % contre 2 la période précédente 0 nouveaux dossiers dans la période"
+  },
+  {
+   "nom": "Actions à suivre",
+   "aria": "Voir les actions et rappels",
+   "valeur": "2",
+   "graphique": null,
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "2 prioritaires · 0 vaccins · 2 tâches",
+   "texteComplet": "Actions à suivre 2 Pas de période précédente comparable 2 prioritaires · 0 vaccins · 2 tâches"
+  }
+ ],
+ "30 jours": [
+  {
+   "nom": "Trésorerie",
+   "aria": "Voir la trésorerie",
+   "valeur": "26 700 DA",
+   "graphique": "Cumul des recettes encaissées sur la période",
+   "comparaison": "+203,4 % contre 8 800 DA la période précédente",
+   "sens": "good",
+   "detail": "Solde net : 23 750 DA · Dépenses : 2 950 DA",
+   "texteComplet": "Trésorerie 26 700 DA +203,4 % contre 8 800 DA la période précédente Solde net : 23 750 DA · Dépenses : 2 950 DA"
+  },
+  {
+   "nom": "Consultations",
+   "aria": "Voir les consultations",
+   "valeur": "6",
+   "graphique": "Consultations par motif : Consultation 2 (33 %) · Contrôle 2 (33 %) · Urgence 1 (17 %) · Vaccin 1 (17 %)",
+   "comparaison": "+500 % contre 1 la période précédente",
+   "sens": "good",
+   "detail": "4 terminées · 1 en cours · 1 prévue",
+   "texteComplet": "Consultations 6 Consultation · 33 % · 3 autres +500 % contre 1 la période précédente 4 terminées · 1 en cours · 1 prévue"
+  },
+  {
+   "nom": "Patients suivis",
+   "aria": "Voir les dossiers patients",
+   "valeur": "5",
+   "graphique": null,
+   "comparaison": "+400 % contre 1 la période précédente",
+   "sens": "good",
+   "detail": "0 nouveaux dossiers dans la période",
+   "texteComplet": "Patients suivis 5 +400 % contre 1 la période précédente 0 nouveaux dossiers dans la période"
+  },
+  {
+   "nom": "Actions à suivre",
+   "aria": "Voir les actions et rappels",
+   "valeur": "2",
+   "graphique": null,
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "2 prioritaires · 0 vaccins · 2 tâches",
+   "texteComplet": "Actions à suivre 2 Pas de période précédente comparable 2 prioritaires · 0 vaccins · 2 tâches"
+  }
+ ],
+ "90 jours": [
+  {
+   "nom": "Trésorerie",
+   "aria": "Voir la trésorerie",
+   "valeur": "35 500 DA",
+   "graphique": "Cumul des recettes encaissées sur la période",
+   "comparaison": "+184 % contre 12 500 DA la période précédente",
+   "sens": "good",
+   "detail": "Solde net : 32 550 DA · Dépenses : 2 950 DA",
+   "texteComplet": "Trésorerie 35 500 DA +184 % contre 12 500 DA la période précédente Solde net : 32 550 DA · Dépenses : 2 950 DA"
+  },
+  {
+   "nom": "Consultations",
+   "aria": "Voir les consultations",
+   "valeur": "7",
+   "graphique": "Consultations par motif : Consultation 2 (29 %) · Contrôle 2 (29 %) · Vaccin 2 (28 %) · Urgence 1 (14 %)",
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "5 terminées · 1 en cours · 1 prévue",
+   "texteComplet": "Consultations 7 Consultation · 29 % · 3 autres Pas de période précédente comparable 5 terminées · 1 en cours · 1 prévue"
+  },
+  {
+   "nom": "Patients suivis",
+   "aria": "Voir les dossiers patients",
+   "valeur": "5",
+   "graphique": null,
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "2 nouveaux dossiers dans la période",
+   "texteComplet": "Patients suivis 5 Pas de période précédente comparable 2 nouveaux dossiers dans la période"
+  },
+  {
+   "nom": "Actions à suivre",
+   "aria": "Voir les actions et rappels",
+   "valeur": "2",
+   "graphique": null,
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "2 prioritaires · 0 vaccins · 2 tâches",
+   "texteComplet": "Actions à suivre 2 Pas de période précédente comparable 2 prioritaires · 0 vaccins · 2 tâches"
+  }
+ ],
+ "12 mois": [
+  {
+   "nom": "Trésorerie",
+   "aria": "Voir la trésorerie",
+   "valeur": "48 000 DA",
+   "graphique": "Cumul des recettes encaissées sur la période",
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "Solde net : 45 050 DA · Dépenses : 2 950 DA",
+   "texteComplet": "Trésorerie 48 000 DA Pas de période précédente comparable Solde net : 45 050 DA · Dépenses : 2 950 DA"
+  },
+  {
+   "nom": "Consultations",
+   "aria": "Voir les consultations",
+   "valeur": "7",
+   "graphique": "Consultations par motif : Consultation 2 (29 %) · Contrôle 2 (29 %) · Vaccin 2 (28 %) · Urgence 1 (14 %)",
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "5 terminées · 1 en cours · 1 prévue",
+   "texteComplet": "Consultations 7 Consultation · 29 % · 3 autres Pas de période précédente comparable 5 terminées · 1 en cours · 1 prévue"
+  },
+  {
+   "nom": "Patients suivis",
+   "aria": "Voir les dossiers patients",
+   "valeur": "5",
+   "graphique": null,
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "5 nouveaux dossiers dans la période",
+   "texteComplet": "Patients suivis 5 Pas de période précédente comparable 5 nouveaux dossiers dans la période"
+  },
+  {
+   "nom": "Actions à suivre",
+   "aria": "Voir les actions et rappels",
+   "valeur": "2",
+   "graphique": null,
+   "comparaison": "Pas de période précédente comparable",
+   "sens": "neutral",
+   "detail": "2 prioritaires · 0 vaccins · 2 tâches",
+   "texteComplet": "Actions à suivre 2 Pas de période précédente comparable 2 prioritaires · 0 vaccins · 2 tâches"
+  }
+ ]
+}

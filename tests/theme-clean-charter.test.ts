@@ -343,17 +343,29 @@ describe("thème Clean : widgets", () => {
     expect(chart).not.toMatch(/focusPrevious/);
   });
 
-  it("donne à chaque carte de la première rangée son propre graphique, sur la même ligne de base", () => {
+  it("donne à chaque carte de la première rangée sa propre courbe, jamais la même forme deux fois", () => {
     const source = readFileSync("src/modules/dashboard/components/premium-analytics.tsx", "utf8");
-    // 31 October: Trésorerie and Consultations drew the same cumulative area
-    // (Clean), and three cards the same bars (Premium). One chart per card.
-    expect(source.match(/<MiniArea /g)).toHaveLength(1);
-    expect(source.match(/<MiniKinds /g)).toHaveLength(1);
+    // 31 October: Trésorerie and Consultations drew the same cumulative area (Clean), and three cards the same
+    // bars (Premium). Since the Stat Grid: a curve only where a card has its own series, never a copy.
+    expect(source).toContain("<StatGrid");
     expect(source).not.toMatch(/<MiniBars /);
-    expect(source).not.toMatch(/className="kpiArea"[^>]*data-clean-only/);
-    const row = rulesFor(/\.kpis \.kpiValueRow$/)[0]?.toString() ?? "";
-    expect(row).toContain("height: 32px");
-    expect(rulesFor(/\.kpis \.kpi > \.kpiValue$/)[0]?.toString()).toContain("height: 32px");
+    expect(source).not.toMatch(/<MiniArea /);
+    const figures = readFileSync("src/modules/dashboard/model/key-figures.ts", "utf8");
+    // Four different series, one per card: receipts as a running total, appointments and actions as a count
+    // per day, what is still to collect as its level at each date.
+    expect(figures).toMatch(/trend: running/);
+    expect(figures).toMatch(/trend: trend\.appointments/);
+    expect(figures).toMatch(/trend: trend\.actions/);
+    expect(figures).toMatch(/trend: trend\.receivables/);
+    expect(figures.match(/trend:/g)).toHaveLength(4);
+    // One template on rows of fixed height, so label, figure with its curve, badge, line and goal bar fall on
+    // the same lines from one card to the next, whatever the text.
+    const card = readFileSync("src/components/ui/stat-grid.tsx", "utf8");
+    expect(card).toContain('className="flex h-6 items-center gap-2');
+    expect(card).toContain('className="flex h-8 items-center justify-between gap-3"');
+    expect(card).toContain('className="flex h-5 items-center"');
+    expect(card).toContain('className="h-4 truncate text-xs leading-4 text-muted-foreground"');
+    expect(card).toContain("mt-auto");
   });
 
   it("dessine la capacité en unités et la vue d'ensemble des finances avec les jetons Clean", () => {

@@ -1,4 +1,5 @@
 import type { Appointment, Invoice, Owner, Patient, Product, Task, Transaction, Vaccination } from "@/types/db";
+import { receivablesTrend } from "../v2/financial-model";
 import { addDays, endOfDay, parseDashboardDate, startOfDay, type ClinicalAlert } from "../v2/model";
 import { buildVisitKinds } from "./dashboard-widgets";
 
@@ -145,6 +146,8 @@ export function dashboardPresentationData(data: {
 export function buildPremiumAnalytics(data: {
   appointments: Appointment[]; patients: Patient[]; transactions: Transaction[];
   tasks: Task[]; vaccinations: Vaccination[]; alerts: ClinicalAlert[];
+  /** The issued invoices, for the curve of what is still to collect. */
+  invoices?: Invoice[];
 }, period: DashboardPeriod, now: Date, custom?: CustomRange | null) {
   const ranges = analyticsRanges(period, now, custom);
   const knownPatients = new Set(data.patients.map(p => p.id));
@@ -153,6 +156,12 @@ export function buildPremiumAnalytics(data: {
   );
   const currentVisits = visitsIn(ranges.current);
   const previousVisits = visitsIn(ranges.previous);
+  // Every appointment of the agenda in the period, whatever became of it: held, cancelled, missed, still to come.
+  const appointmentsIn = (range: AnalyticsRange) => data.appointments.filter(a =>
+    knownPatients.has(a.patientId) && within(a.startTime, range)
+  );
+  const currentAppointments = appointmentsIn(ranges.current);
+  const previousAppointments = appointmentsIn(ranges.previous);
   const followed = new Set(currentVisits.map(a => a.patientId)).size;
   const previousFollowed = new Set(previousVisits.map(a => a.patientId)).size;
   const cashIn = (range: AnalyticsRange, type: Transaction["type"]) => data.transactions
@@ -175,10 +184,26 @@ export function buildPremiumAnalytics(data: {
     income: buckets.map(range => cashIn(range, "income")),
     visits: buckets.map(range => currentVisits.filter(a => within(a.startTime, range)).length),
     patients: buckets.map(range => new Set(currentVisits.filter(a => within(a.startTime, range)).map(a => a.patientId)).size),
+    // The agenda's appointments per bucket, whatever became of them: the Rendez-vous card's curve.
+    appointments: buckets.map(range => currentAppointments.filter(a => within(a.startTime, range)).length),
+    // The open actions falling due per bucket: the Actions card's curve.
+    actions: buckets.map(range => actionsIn(range).length),
+    // What is still to collect at the end of each bucket (never later than now), in dinars.
+    receivables: receivablesTrend(data.invoices ?? [], data.transactions, buckets.map(range => new Date(Math.min(range.to.getTime(), now.getTime())))),
   };
   return {
     ranges,
+    // What was still to collect when the previous period ended, in dinars: the level the Créances card is compared with.
+    receivablesBefore: receivablesTrend(data.invoices ?? [], data.transactions, [new Date(ranges.current.from.getTime() - 1)])[0] ?? 0,
     trend,
+    appointments: {
+      count: currentAppointments.length,
+      previous: previousAppointments.length,
+      change: metricChange(currentAppointments.length, previousAppointments.length),
+      honored: currentAppointments.filter(a => a.status === "completed").length,
+      cancelled: currentAppointments.filter(a => a.status === "cancelled").length,
+      missed: currentAppointments.filter(a => a.status === "no_show").length,
+    },
     cash: { income, expense, net: income - expense, previous: previousIncome, change: metricChange(income, previousIncome) },
     patients: { count: followed, previous: previousFollowed, change: metricChange(followed, previousFollowed), visits: currentVisits.length,
       previousVisits: previousVisits.length, visitsChange: metricChange(currentVisits.length, previousVisits.length),
@@ -188,6 +213,8 @@ export function buildPremiumAnalytics(data: {
       kinds: buildVisitKinds(currentVisits),
       newRecords: data.patients.filter(p => within(p.createdAt, ranges.current)).length },
     actions: { count: actions.length, previous: previousActions.length, change: metricChange(actions.length, previousActions.length),
+      // The tasks falling due in the period that are done: with the open actions, the Actions card's goal.
+      tasksDone: data.tasks.filter(t => t.status === "done" && within(t.dueDate, ranges.current)).length,
       urgent: actions.filter(a => a.tone === "critical").length,
       reminders: actions.filter(a => a.source === "vaccine").length,
       tasks: actions.filter(a => a.source === "task").length },

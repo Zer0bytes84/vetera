@@ -125,6 +125,65 @@ export function buildFinancialOverview(
 }
 
 /**
+ * What is still to collect, all periods together: the figure « Reste à recouvrer » has always shown
+ * (invoice balances net of credit notes, plus the manual entries still pending), with the invoices
+ * behind it: how many are unpaid, and how many of those are past their due date. The amount is in
+ * dinars; the counts are invoices only, a manual entry is not an invoice.
+ */
+export function receivablesSummary(invoices: Invoice[], transactions: Transaction[]) {
+  const overview = buildFinancialOverview(invoices, transactions, { from: "", to: "" }, "all");
+  const total = overview.categories.reduce((sum, category) => sum + category.riskValue, 0);
+  const open = invoices.filter((invoice) => {
+    if (invoice.documentStatus !== "issued" || !(invoice.issuedAt ?? invoice.createdAt)) return false;
+    const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
+    return Math.min(net, Math.max(0, invoice.balanceAmount) / 100) > 0;
+  });
+  return {
+    total,
+    unpaidInvoices: open.length,
+    overdueInvoices: open.filter((invoice) => invoice.settlementStatus === "overdue").length,
+    pendingEntries: overview.categories.find((category) => category.id === "manual")?.riskCount ?? 0,
+  };
+}
+
+const localDay = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+/**
+ * How what is still to collect moved over time: the amount owed at the end of each of `ends`, in
+ * dinars, read back from today's figure so the last point is exactly what `receivablesSummary` says.
+ * Going back in time, an invoice issued after a date was not owed yet, and a payment received after
+ * it was still outstanding; a manual entry is owed from its date. Days are compared by calendar day.
+ */
+export function receivablesTrend(invoices: Invoice[], transactions: Transaction[], ends: Date[]): number[] {
+  const issued = invoices.filter((invoice) => invoice.documentStatus === "issued" && (invoice.issuedAt ?? invoice.createdAt));
+  const migrated = new Set(issued.map((invoice) => invoice.legacySourceTransactionId).filter(Boolean));
+  const open = issued.map((invoice) => {
+    const net = Math.max(0, invoice.grossAmount - invoice.creditAmount) / 100;
+    const balance = Math.min(net, Math.max(0, invoice.balanceAmount) / 100);
+    const payments = transactions
+      .filter((row) => row.type === "income" && row.status === "paid" && row.sourceType === "billing_payment" && row.referenceId === invoice.id)
+      .map((row) => ({ day: row.date.slice(0, 10), amount: Math.max(0, row.amount) / 100 }));
+    return { day: (invoice.issuedAt ?? invoice.createdAt).slice(0, 10), net, balance, payments };
+  });
+  const entries = transactions
+    .filter((row) => row.type === "income" && !row.sourceType && !migrated.has(row.id) && row.status !== "paid" && row.amount > 0)
+    .map((row) => ({ day: row.date.slice(0, 10), amount: row.amount / 100 }));
+  return ends.map((end) => {
+    const at = localDay(end);
+    let owed = 0;
+    for (const invoice of open) {
+      if (invoice.day > at) continue;
+      // Paid after that day: still outstanding then. Never more than the invoice's net.
+      const later = invoice.payments.filter((payment) => payment.day > at).reduce((sum, payment) => sum + payment.amount, 0);
+      owed += Math.min(invoice.net, invoice.balance + later);
+    }
+    for (const entry of entries) if (entry.day <= at) owed += entry.amount;
+    return Math.round(owed * 100) / 100;
+  });
+}
+
+/**
  * Share of the invoiced amount already settled, over every issued invoice:
  * net of credit notes, against what remains to collect (the same net and
  * balance as "Reste à recouvrer"). Null without any invoiced amount; never

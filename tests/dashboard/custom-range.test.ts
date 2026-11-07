@@ -70,3 +70,35 @@ describe("période choisie au sélecteur de dates", () => {
     expect(m.cash.change).toBe(0);
   });
 });
+
+describe("rendez-vous de la période : tous les statuts, comparés à la période d'avant", () => {
+  const appt = (id: string, date: string, status: Appointment["status"], patientId = "a"): Appointment => ({ ...visit(id, patientId, date), status });
+  it("compte tous les rendez-vous de la période et détaille honorés, annulés et absences", () => {
+    const d = data();
+    d.appointments = [
+      appt("1", "2026-10-06T09:00:00", "completed"), appt("2", "2026-10-07T09:00:00", "completed"),
+      appt("3", "2026-10-08T09:00:00", "cancelled"), appt("4", "2026-10-09T09:00:00", "no_show"),
+      appt("5", "2026-10-10T09:00:00", "scheduled"), appt("6", "2026-10-12T09:00:00", "completed"),
+      appt("7", "2026-09-30T09:00:00", "completed"), appt("8", "2026-09-29T09:00:00", "cancelled"),
+    ];
+    const m = buildPremiumAnalytics(d, "custom", now, { from: "2026-10-05", to: "2026-10-11" });
+    expect(m.appointments).toMatchObject({ count: 5, honored: 2, cancelled: 1, missed: 1, previous: 2 });
+    expect(m.appointments.change).toBe(150);
+  });
+  it("une période précédente vide donne une base nulle, pas un pourcentage", () => {
+    const d = data(); d.appointments = [appt("1", "2026-10-06T09:00:00", "completed")];
+    const m = buildPremiumAnalytics(d, "custom", now, { from: "2026-10-05", to: "2026-10-11" });
+    expect(m.appointments.previous).toBe(0);
+    expect(m.appointments.change).toBeNull();
+  });
+  it("ignore le rendez-vous d'un patient inconnu et celui sans date, comme les autres chiffres", () => {
+    const d = data(); d.appointments = [appt("1", "2026-10-06T09:00:00", "completed", "inconnu"), { ...appt("2", "2026-10-06T09:00:00", "completed"), startTime: "" }];
+    expect(buildPremiumAnalytics(d, "custom", now, { from: "2026-10-05", to: "2026-10-11" }).appointments.count).toBe(0);
+  });
+  it("la somme des honorés, annulés et absences ne dépasse jamais le total", () => {
+    const d = data(); d.appointments = [appt("1", "2026-10-06T09:00:00", "completed"), appt("2", "2026-10-06T10:00:00", "in_progress")];
+    const { count, honored, cancelled, missed } = buildPremiumAnalytics(d, "custom", now, { from: "2026-10-05", to: "2026-10-11" }).appointments;
+    expect(honored + cancelled + missed).toBeLessThanOrEqual(count);
+    expect(count).toBe(2);
+  });
+});

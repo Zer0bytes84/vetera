@@ -1,0 +1,138 @@
+{
+ "periodes": {
+  "7 jours": {
+   "points": 7,
+   "enTete": "13 900 DA",
+   "recettesAttendues": 13900,
+   "consultations": {
+    "affichees": 4,
+    "attendues": 4
+   },
+   "precedente": {
+    "recettes": 5400,
+    "consultations": 2
+   },
+   "pastilles": [
+    "Recettes +157,4 % contre 5 400 DA la période précédente",
+    "Consultations 4 · +100 % contre 2 la période précédente"
+   ],
+   "ecarts": []
+  },
+  "30 jours": {
+   "points": 30,
+   "enTete": "26 700 DA",
+   "recettesAttendues": 26700,
+   "consultations": {
+    "affichees": 6,
+    "attendues": 6
+   },
+   "precedente": {
+    "recettes": 8800,
+    "consultations": 1
+   },
+   "pastilles": [
+    "Recettes +203,4 % contre 8 800 DA la période précédente",
+    "Consultations 6 · +500 % contre 1 la période précédente"
+   ],
+   "ecarts": []
+  },
+  "90 jours": {
+   "points": 90,
+   "enTete": "35 500 DA",
+   "recettesAttendues": 35500,
+   "consultations": {
+    "affichees": 7,
+    "attendues": 7
+   },
+   "precedente": {
+    "recettes": 12500,
+    "consultations": 0
+   },
+   "pastilles": [
+    "Recettes +184 % contre 12 500 DA la période précédente",
+    "Consultations 7 · Pas de période précédente comparable"
+   ],
+   "ecarts": []
+  },
+  "12 mois": {
+   "points": 53,
+   "enTete": "48 000 DA",
+   "recettesAttendues": 48000,
+   "consultations": {
+    "affichees": 7,
+    "attendues": 7
+   },
+   "precedente": {
+    "recettes": 0,
+    "consultations": 0
+   },
+   "pastilles": [
+    "Recettes Pas de période précédente comparable",
+    "Consultations 7 · Pas de période précédente comparable"
+   ],
+   "ecarts": []
+  }
+ },
+ "vues": {
+  "Barres": "mêmes données que la courbe",
+  "Aires": "mêmes données que la courbe",
+  "Repartition": {
+   "affichee": {
+    "Consultation": 2,
+    "Contrôle": 2,
+    "Urgence": 1,
+    "Vaccin": 1
+   },
+   "attendue": {
+    "Consultation": 2,
+    "Urgence": 1,
+    "Vaccin": 1,
+    "Contrôle": 2
+   },
+   "sommeAffichee": 6,
+   "consultationsDeLaCourbe": 6,
+   "egaleAuxConsultations": true,
+   "memesTypes": true
+  }
+ },
+ "personnalisee": {
+  "plage": {
+   "from": "2026-11-02",
+   "to": "2026-11-06"
+  },
+  "points": 5,
+  "enTete": "6 200 DA",
+  "ecarts": [],
+  "sousTitre": "Du 2 nov. 2026 au 6 nov. 2026"
+ },
+ "clavier": [
+  "ok",
+  "ok",
+  "ok",
+  "ok",
+  "ok"
+ ],
+ "ancien": {
+  "7 jours": {
+   "entete": "identique",
+   "variationRecettes": "identique",
+   "consultations": "identique"
+  },
+  "30 jours": {
+   "entete": "identique",
+   "variationRecettes": "identique",
+   "consultations": "identique"
+  },
+  "90 jours": {
+   "entete": "identique",
+   "variationRecettes": "identique",
+   "consultations": "identique"
+  },
+  "12 mois": {
+   "entete": "identique",
+   "variationRecettes": "identique",
+   "consultations": "identique"
+  }
+ },
+ "erreurs": []
+}

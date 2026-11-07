@@ -1786,3 +1786,24 @@ button:hover .toggleIcon[data-collapsed="true"] .toggleChevron {
 .premium-analytics-dashboard .kpis .kpi:is([data-tone="amber"], [data-tone="rose"]) .kpiValue {
   color: var(--tone) !important;
 }
+
+
+/* ------------------------------------------------------------ Welcome
+   The greeting alone, flush at the top of the page, the quick actions on its right. No frame, no
+   kicker, no date: the figures are on screen as soon as the page opens. The name takes one of the
+   theme's tones (the accent blue, 5.9:1 on the light canvas, 8:1 on the dark one). */
+.premium-analytics-dashboard .dashboardWelcome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 0 2px;
+}
+.premium-analytics-dashboard .dashboardWelcome .heroTitle {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+.premium-analytics-dashboard .dashboardWelcome .heroName {
+  color: var(--tone-blue);
+}

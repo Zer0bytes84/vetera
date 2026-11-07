@@ -1,0 +1,142 @@
+{
+ "periodes": {
+  "Aujourd’hui": {
+   "badges": [
+    "Trésorerie : +24,2 % (favorable)",
+    "Rendez-vous : +200 % (favorable)",
+    "Créances : 0 % (neutre)",
+    "Actions à suivre : +2 (défavorable)"
+   ],
+   "lignes": [
+    "Solde net : 7 700 DA",
+    "1 honoré · 0 annulé · 0 absence",
+    "Aucune facture impayée",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
+   "ecarts": []
+  },
+  "7 jours": {
+   "badges": [
+    "Trésorerie : +157,4 % (favorable)",
+    "Rendez-vous : +100 % (favorable)",
+    "Créances : 0 % (neutre)",
+    "Actions à suivre : +2 (défavorable)"
+   ],
+   "lignes": [
+    "Solde net : 13 900 DA",
+    "2 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
+   "ecarts": []
+  },
+  "30 jours": {
+   "badges": [
+    "Trésorerie : +203,4 % (favorable)",
+    "Rendez-vous : +500 % (favorable)",
+    "Créances : 0 % (neutre)",
+    "Actions à suivre : +2 (défavorable)"
+   ],
+   "lignes": [
+    "Solde net : 23 750 DA",
+    "4 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
+   "ecarts": []
+  },
+  "90 jours": {
+   "badges": [
+    "Trésorerie : +184 % (favorable)",
+    "Rendez-vous : +7 (favorable)",
+    "Créances : 0 % (neutre)",
+    "Actions à suivre : +2 (défavorable)"
+   ],
+   "lignes": [
+    "Solde net : 32 550 DA",
+    "5 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
+   "ecarts": []
+  },
+  "12 mois": {
+   "badges": [
+    "Trésorerie : +48 000 DA (favorable)",
+    "Rendez-vous : +7 (favorable)",
+    "Créances : 0 % (neutre)",
+    "Actions à suivre : +2 (défavorable)"
+   ],
+   "lignes": [
+    "Solde net : 45 050 DA",
+    "5 honorés · 0 annulé · 0 absence",
+    "Aucune facture impayée",
+    "2 prioritaires · 0 vaccins · 2 tâches"
+   ],
+   "ecarts": []
+  }
+ },
+ "gabarit": {
+  "1440px · Mini-graphiques": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "n/a",
+   "courbe": "identique"
+  },
+  "1440px · Indicateurs": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "identique",
+   "courbe": "n/a"
+  },
+  "1100px · Mini-graphiques": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "n/a",
+   "courbe": "identique"
+  },
+  "1100px · Indicateurs": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "identique",
+   "courbe": "n/a"
+  },
+  "900px · Mini-graphiques": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "n/a",
+   "courbe": "identique"
+  },
+  "900px · Indicateurs": {
+   "haut": "identique",
+   "h": "identique",
+   "libelle": "identique",
+   "valeur": "identique",
+   "badge": "identique",
+   "ligne": "identique",
+   "barre": "identique",
+   "courbe": "n/a"
+  }
+ },
+ "erreurs": []
+}

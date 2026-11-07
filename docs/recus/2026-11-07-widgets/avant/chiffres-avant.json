@@ -1,0 +1,82 @@
+{
+ "Aujourd’hui": {
+  "recettes": {
+   "valeur": "13 900 DA",
+   "variation": "+157,4 % contre 5 400 DA la période précédente"
+  },
+  "consultations": {
+   "valeur": "4",
+   "variation": "+100 % contre 2 la période précédente"
+  },
+  "survol": {
+   "debut": "dim. 1 novembre 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "milieu": "mer. 4 novembre 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "fin": "sam. 7 novembre 2026 7 700 DA 3 consultations Période précédente : 0 DA · 0"
+  },
+  "pied": "Encaissements payés, par jour · consultations hors annulations et absences Finances"
+ },
+ "7 jours": {
+  "recettes": {
+   "valeur": "13 900 DA",
+   "variation": "+157,4 % contre 5 400 DA la période précédente"
+  },
+  "consultations": {
+   "valeur": "4",
+   "variation": "+100 % contre 2 la période précédente"
+  },
+  "survol": {
+   "debut": "dim. 1 novembre 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "milieu": "mer. 4 novembre 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "fin": "sam. 7 novembre 2026 7 700 DA 3 consultations Période précédente : 0 DA · 0"
+  },
+  "pied": "Encaissements payés, par jour · consultations hors annulations et absences Finances"
+ },
+ "30 jours": {
+  "recettes": {
+   "valeur": "26 700 DA",
+   "variation": "+203,4 % contre 8 800 DA la période précédente"
+  },
+  "consultations": {
+   "valeur": "6",
+   "variation": "+500 % contre 1 la période précédente"
+  },
+  "survol": {
+   "debut": "sam. 10 octobre 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "milieu": "sam. 24 octobre 2026 7 400 DA 0 consultation Période précédente : 0 DA · 0",
+   "fin": "ven. 6 novembre 2026 6 200 DA 1 consultation Période précédente : 0 DA · 0"
+  },
+  "pied": "Encaissements payés, par jour · consultations hors annulations et absences Finances"
+ },
+ "90 jours": {
+  "recettes": {
+   "valeur": "35 500 DA",
+   "variation": "+184 % contre 12 500 DA la période précédente"
+  },
+  "consultations": {
+   "valeur": "7",
+   "variation": "Pas de période précédente comparable"
+  },
+  "survol": {
+   "debut": "mer. 12 août 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "milieu": "jeu. 24 septembre 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "fin": "mer. 4 novembre 2026 0 DA 0 consultation Période précédente : 0 DA · 0"
+  },
+  "pied": "Encaissements payés, par jour · consultations hors annulations et absences Finances"
+ },
+ "12 mois": {
+  "recettes": {
+   "valeur": "48 000 DA",
+   "variation": "Pas de période précédente comparable"
+  },
+  "consultations": {
+   "valeur": "7",
+   "variation": "Pas de période précédente comparable"
+  },
+  "survol": {
+   "debut": "Du 15 nov. au 21 nov. 2025 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "milieu": "Du 9 mai au 15 mai 2026 0 DA 0 consultation Période précédente : 0 DA · 0",
+   "fin": "Du 24 oct. au 30 oct. 2026 12 800 DA 2 consultations Période précédente : 0 DA · 0"
+  },
+  "pied": "Encaissements payés, par semaine · consultations hors annulations et absences Finances"
+ }
+}
