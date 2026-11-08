@@ -584,7 +584,7 @@ function AppShellInner() {
           "!border-none backdrop-blur-xl",
           "!m-0 !rounded-none !bg-white/40 dark:!bg-zinc-950/40 p-0 shadow-none ring-0",
           "transition-[margin,background-color,border-color,border-radius,box-shadow,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-          aiAssistantOpen && !isAssistantCollapsed && "sm:mr-[460px] lg:mr-[520px]",
+          aiAssistantOpen && !isAssistantCollapsed && "sm:mr-[var(--assistant-width)]",
           "max-h-dvh"
         )}
       >

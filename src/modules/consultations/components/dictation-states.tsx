@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { AgentStatus } from "@/components/ui/agent-status";
 import "./dictation-states.css";
 
 /** Bar weights, highest in the middle: the meter reads as one voice, not a spectrum. */
@@ -63,26 +62,19 @@ const HINT_AFTER_MS = 5_000;
  */
 export function MicrophonePermissionWait({ onCancel }: { onCancel: () => void }) {
   const [hint, setHint] = useState(false);
+  const [startedAt] = useState(() => Date.now());
   useEffect(() => {
     const timer = setTimeout(() => setHint(true), HINT_AFTER_MS);
     return () => clearTimeout(timer);
   }, []);
   return (
-    <div
-      aria-live="polite"
-      className="microphone-permission-wait flex flex-col gap-2 rounded-xl border border-border bg-card px-3.5 py-3 t-13 shadow-xs"
-      role="status"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2 font-medium text-foreground">
-          <Spinner className="size-3.5" />
-          Autorisation du microphone…
-        </span>
-        <Button className="h-7 px-2.5 t-12" onClick={onCancel} size="xs" variant="outline">
-          Annuler
-        </Button>
-      </div>
-      <p className="t-12 leading-relaxed text-muted-foreground">
+    <div className="microphone-permission-wait flex flex-col gap-1.5">
+      <AgentStatus
+        data={{ label: "Autorisation du microphone…", startedAt }}
+        onStop={onCancel}
+        stopLabel="Annuler"
+      />
+      <p className="px-2 text-xs leading-relaxed text-muted-foreground">
         {hint
           ? "Aucune fenêtre ne s’affiche ? Ouvrez Réglages Système → Confidentialité et sécurité → Microphone, autorisez Baitari, puis cliquez à nouveau sur Dicter."
           : "Si macOS vous le demande, cliquez sur Autoriser."}
@@ -96,22 +88,14 @@ export function MicrophonePermissionWait({ onCancel }: { onCancel: () => void })
  * attenuated for its first seconds. The vet waits for « Écoute en cours ».
  */
 export function MicrophoneWarmup({ onCancel }: { onCancel: () => void }) {
+  const [startedAt] = useState(() => Date.now());
   return (
-    <div
-      aria-live="polite"
-      className="microphone-warmup flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3.5 py-2.5 t-13 shadow-xs"
-      role="status"
-    >
-      <span className="flex items-center gap-2 font-medium text-foreground">
-        <Spinner className="size-3.5" />
-        Préparation du micro…
-        <span className="hidden font-normal text-muted-foreground sm:inline">
-          Parlez dès « Écoute en cours ».
-        </span>
-      </span>
-      <Button className="h-7 px-2.5 t-12" onClick={onCancel} size="xs" variant="outline">
-        Annuler
-      </Button>
+    <div className="microphone-warmup">
+      <AgentStatus
+        data={{ label: "Préparation du micro…", detail: "Parlez dès « Écoute en cours ».", startedAt }}
+        onStop={onCancel}
+        stopLabel="Annuler"
+      />
     </div>
   );
 }

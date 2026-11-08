@@ -1,29 +1,31 @@
 import { analyzeTreatmentDictation } from "../local-ai/treatment-routing";
 import {
   useEffect,
-  useId,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import {
-  ArrowRight,
   Check,
-  CheckCircle,
-  CircleNotch,
   FileText,
   Microphone,
   Search,
   Settings2,
-  Sparkle,
-  Stop,
-  Trash,
   X,
   XCircle,
 } from "@/lib/icons";
+import { ArrowRight as ArrowRightIcon, FileText as FileTextIcon, Mic, Sparkles, Square, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { Button as ActionButton, IconButton } from "@/components/ui/action-button";
+import { AgentComposer } from "@/components/ui/agent-composer";
+import { AgentQuestion } from "@/components/ui/agent-question";
+import { AgentStatus } from "@/components/ui/agent-status";
+import { ConfirmationCard } from "@/components/ui/confirmation-card";
+import { ContextWindowMeter } from "@/components/ui/context-window-meter";
+import { Segmented } from "@/components/ui/segmented-control";
+import { StreamingMessage } from "@/components/ui/streaming-message";
+import { ToolApprovalQueue, type ApprovalDecision, type ApprovalRequest } from "@/components/ui/tool-approval-queue";
 import { Button } from "@/components/ui/button";
 import { Message, MessageContent } from "@/components/ui/message";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
@@ -31,7 +33,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -194,6 +195,11 @@ export default function LocalConsultationAssistant({
   // Dictation the assistant's draft was refused for: generating again would give the same answer.
   const [refusedFor, setRefusedFor] = useState<string | null>(null);
 
+  // The vet's decision on each rubric the assistant reworded: nothing is saved while one is still to be examined.
+  const [decisions, setDecisions] = useState<Partial<Record<keyof LocalSoapNote, ApprovalDecision>>>({});
+  // When the microphone started listening, for the timer of the status card.
+  const [listeningSince, setListeningSince] = useState(() => Date.now());
+
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -201,7 +207,6 @@ export default function LocalConsultationAssistant({
   const [discardOpen, setDiscardOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dictationScrollRef = useRef<HTMLDivElement>(null);
-  const id = useId();
 
   const patient = patients.data.find((entry) => entry.id === effectivePatientId);
   const resolvedExistingNote = existingNote ?? EMPTY_SOAP;
@@ -226,6 +231,19 @@ export default function LocalConsultationAssistant({
     // dictationNote reads the same rubric answers as fullTranscript.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note, fullTranscript, hasExistingNote, resolvedExistingNote]);
+  const proposalRequests: ApprovalRequest[] = useMemo(() => {
+    if (!reviewSource || !assistantProposal) return [];
+    return SOAP_SECTIONS.filter(({ key }) => !sameWords(reviewSource[key], assistantProposal[key])).map(
+      ({ key, title }) => ({
+        id: key,
+        title,
+        status: decisions[key] ?? "pending",
+        before: reviewSource[key],
+        after: assistantProposal[key],
+      }),
+    );
+  }, [assistantProposal, decisions, reviewSource]);
+  const pendingProposals = proposalRequests.filter((request) => request.status === "pending").length;
   const refused =
     refusedFor !== null && refusedFor === fullTranscript && !!ai.error && !ai.busy;
   // Way out of a refusal: the dictation becomes the note, laid out, for the vet to
@@ -346,6 +364,12 @@ export default function LocalConsultationAssistant({
   const stopDictation = async () => {
     await ai.stop();
   };
+
+  useEffect(() => {
+    if (ai.phase === "listening") setListeningSince(Date.now() - ai.seconds * 1000);
+    // Only the moment it starts: the timer then counts on its own.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ai.phase]);
 
   useEffect(() => {
     if (ai.transcription) {
@@ -505,6 +529,7 @@ export default function LocalConsultationAssistant({
       }
       setReviewSource(source);
       setAssistantProposal(proposal);
+      setDecisions({});
       setNoteOrigin(origin);
       // The note's skeleton is laid by code once the content is accepted: one
       // bullet per observation, numbered plan. Words and order are unchanged.
@@ -523,6 +548,13 @@ export default function LocalConsultationAssistant({
     const candidate = note ?? activeSoapDraft;
     if (!candidate || saving || saved) return;
     setMessage(null);
+    // Nothing the assistant proposed is written before the vet has examined it.
+    if (pendingProposals > 0) {
+      setMessage(
+        `${pendingProposals} reformulation${pendingProposals > 1 ? "s" : ""} de l’assistant ${pendingProposals > 1 ? "sont" : "est"} à examiner avant d’enregistrer la note.`
+      );
+      return;
+    }
     const parsed = localSoapSchema.safeParse(candidate);
     if (!parsed.success) {
       setMessage(
@@ -615,6 +647,38 @@ export default function LocalConsultationAssistant({
   };
 
   const hasNoteContent = Object.values(activeSoapDraft).some((val) => val.trim().length > 0);
+
+  // Accepting keeps the assistant's wording; refusing puts the vet's own words back, laid out like the rest of the note.
+  const decideProposals = (requests: ApprovalRequest[], decision: ApprovalDecision) => {
+    if (!reviewSource || !assistantProposal) return;
+    setDecisions((previous) => ({
+      ...previous,
+      ...Object.fromEntries(requests.map((request) => [request.id, decision])),
+    }));
+    if (decision === "denied") {
+      const own = layoutSoapNote(reviewSource);
+      setNote((previous) => ({
+        ...(previous ?? activeSoapDraft),
+        ...Object.fromEntries(requests.map((request) => [request.id, own[request.id as keyof LocalSoapNote]])),
+      }));
+    }
+  };
+  const undoProposal = (request: ApprovalRequest) => {
+    setDecisions((previous) => {
+      const next = { ...previous };
+      delete next[request.id as keyof LocalSoapNote];
+      return next;
+    });
+    if (request.status === "denied" && assistantProposal) {
+      const proposed = layoutSoapNote(assistantProposal);
+      setNote((previous) => ({
+        ...(previous ?? activeSoapDraft),
+        [request.id]: proposed[request.id as keyof LocalSoapNote],
+      }));
+    }
+  };
+  // The note's own warnings (treatments kept word for word, avoidance alerts) travel with the card that confirms it.
+  const noteWarnings = notice ? notice.split(/\n{2,}/).filter(Boolean) : [];
 
   // The guided dictation reads like a conversation: the current question and
   // its field sit at the bottom, so the list opens there and follows each
@@ -748,52 +812,48 @@ export default function LocalConsultationAssistant({
         </div>
       </div>
 
-      {/* 2. Segmented Navigation Bar */}
-      <div className="mt-3 flex shrink-0 items-center justify-between gap-1 rounded-xl bg-muted/70 p-1">
-        <button
-          type="button"
-          onClick={() => setActiveTab("dictation")}
-          className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition",
-            activeTab === "dictation"
-              ? "bg-background text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <Microphone className="size-3.5" />
-          <span>Dictée libre</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("soap")}
-          className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition",
-            activeTab === "soap"
-              ? "bg-background text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <FileText className="size-3.5" />
-          <span>Validation SOAP</span>
-          {hasNoteContent ? (
-            <span className="size-1.5 rounded-full bg-primary" />
-          ) : null}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("search")}
-          className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 t-12 font-medium transition",
-            activeTab === "search"
-              ? "bg-background text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <Search className="size-3.5" />
-          <span>Cas similaires</span>
-        </button>
+      {/* 2. Tabs: few, and the validation tab appears once there is a note to read. */}
+      <div className="mt-3 shrink-0">
+        <Segmented<AssistantTab>
+          className="flex w-full [&>button]:flex-1"
+          label="Sections de l’assistant"
+          onValueChange={setActiveTab}
+          options={[
+            {
+              value: "dictation",
+              label: (
+                <span className="inline-flex items-center gap-1.5">
+                  <Microphone className="size-3.5" />
+                  Dictée libre
+                </span>
+              ),
+            },
+            ...(hasNoteContent || activeTab === "soap"
+              ? [
+                  {
+                    value: "soap" as const,
+                    label: (
+                      <span className="inline-flex items-center gap-1.5">
+                        <FileText className="size-3.5" />
+                        Validation SOAP
+                        {pendingProposals > 0 ? <span className="size-1.5 rounded-full bg-brand" /> : null}
+                      </span>
+                    ),
+                  },
+                ]
+              : []),
+            {
+              value: "search",
+              label: (
+                <span className="inline-flex items-center gap-1.5">
+                  <Search className="size-3.5" />
+                  Cas similaires
+                </span>
+              ),
+            },
+          ]}
+          value={activeTab}
+        />
       </div>
 
       {/* 3. Settings Overlay / Popover */}
@@ -838,7 +898,7 @@ export default function LocalConsultationAssistant({
 
             <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 t-12">
               <div>
-                <span className="font-medium text-foreground">Assistant de rédaction</span>
+                <span className="font-medium text-foreground">Assistant IA</span>
                 <p className="t-12 text-muted-foreground">
                   {models.generatorReady ? "Modèle actif et disponible" : "Fichiers à initialiser"}
                 </p>
@@ -862,31 +922,26 @@ export default function LocalConsultationAssistant({
       {activeTab === "dictation" && (
         <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
           <div ref={dictationScrollRef} className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
-            {/* Assistant Welcome Card: the mascot speaks once, in the header. */}
-            <div className="assistant-welcome-card flex items-start gap-3 rounded-2xl border border-border/70 bg-card p-3.5 shadow-xs">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="t-13 font-semibold text-foreground">
-                    Dictée de consultation
-                  </span>
-                  <span className="t-12 text-muted-foreground">
-                    Confidentiel & Local
-                  </span>
-                </div>
-                <div className="mt-1 t-13 leading-relaxed text-muted-foreground">
-                  Nous allons parcourir quatre rubriques. Dictez ou écrivez vos observations, puis relisez la note. Rien n’est enregistré sans votre validation.
-                </div>
-              </div>
-            </div>
+            {/* The mascot speaks once, in the header; the assistant's words are plain messages. */}
+            <StreamingMessage
+              className="assistant-welcome-card max-w-none"
+              data={{
+                status: "done",
+                content:
+                  "Dictez ou écrivez vos observations, rubrique par rubrique, puis relisez la note. Rien n’est enregistré sans votre validation.",
+              }}
+              showActions={false}
+              showHeader={false}
+            />
 
             {sectionPrompts.slice(0, sectionIndex + 1).map((step, index) => (
               <div key={step.letter} className="flex flex-col gap-2">
-                <Message align="start"><MessageContent>
-                  <Bubble className="assistant-section-prompt max-w-[92%]"><BubbleContent className="bg-blue-600 text-white">
-                    <p className="mb-1 text-xs text-blue-100">{step.letter} · {step.title}</p>
-                    <p className="text-sm leading-relaxed">{step.question}</p>
-                  </BubbleContent></Bubble>
-                </MessageContent></Message>
+                <StreamingMessage
+                  className="assistant-section-prompt max-w-none"
+                  data={{ status: "done", content: `**${step.letter} · ${step.title}**\n\n${step.question}` }}
+                  showActions={false}
+                  showHeader={false}
+                />
                 {index < sectionIndex && responses[index].trim() && (
                   <Message align="end"><MessageContent><Bubble variant="muted"><BubbleContent className="whitespace-pre-wrap">{responses[index]}</BubbleContent></Bubble></MessageContent></Message>
                 )}
@@ -904,29 +959,18 @@ export default function LocalConsultationAssistant({
               </div>
             ))}
 
-            {/* Whisper Live Listening Banner */}
+            {/* Listening: the status card, with the real microphone level. */}
             {ai.phase === "listening" && (
-              <div className="flex items-center justify-between rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 t-13 text-destructive shadow-xs animate-in fade-in">
-                <div className="flex items-center gap-2.5">
-                  <DictationLevelMeter read={ai.readLevel} />
-                  <span className="font-medium">
-                    Écoute en cours · {Math.floor(ai.seconds / 60)}:
-                    {String(ai.seconds % 60).padStart(2, "0")}
-                  </span>
-                  <span className="hidden t-13 text-destructive/80 sm:inline">
-                    Parlez naturellement, puis relisez votre transcription.
-                  </span>
-                </div>
-                <Button
-                  size="xs"
-                  variant="destructive"
-                  onClick={() => void stopDictation()}
-                  className="h-7 gap-1 px-2.5 t-12 font-medium"
-                >
-                  <Stop className="size-3 text-white" />
-                  Arrêter
-                </Button>
-              </div>
+              <AgentStatus
+                className="max-w-none"
+                data={{
+                  label: "Écoute en cours",
+                  detail: "Parlez naturellement, puis relisez votre transcription.",
+                  startedAt: listeningSince,
+                }}
+                meter={<DictationLevelMeter read={ai.readLevel} />}
+                onStop={() => void stopDictation()}
+              />
             )}
 
             {/* Waiting for the microphone permission: always a way out. */}
@@ -951,47 +995,58 @@ export default function LocalConsultationAssistant({
             {visibleError && (
               <div
                 role="alert"
-                className="flex flex-col gap-2.5 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
+                className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 t-12 text-destructive"
               >
-                <div className="flex items-center gap-2">
-                  <XCircle className="size-4 shrink-0" />
-                  <span>{visibleError}</span>
-                </div>
-                {refused && (
-                  <div className="flex flex-col gap-2 border-t border-destructive/20 pt-2.5 text-foreground">
-                    <p className="t-12 text-muted-foreground">
-                      Relancer l’assistant sur la même dictée donnerait la même réponse. Vous pouvez reprendre votre dictée telle quelle comme note à relire et valider vous-même, ou corriger une rubrique.
-                    </p>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <Button size="xs" onClick={reviewDictation} className="t-12">
-                        Relire ma dictée comme note
-                      </Button>
-                      {sectionPrompts.map((step, index) => (
-                        <Button
-                          key={step.letter}
-                          size="xs"
-                          variant="outline"
-                          onClick={() => {
-                            ai.clearError();
-                            changeSection(index);
-                          }}
-                          className="t-12"
-                        >
-                          Modifier « {step.title} »
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <XCircle className="size-4 shrink-0" />
+                <span>{visibleError}</span>
               </div>
             )}
 
-            {/* Dictation Workspace Container */}
-            <div className="assistant-dictation-workspace flex min-h-fit flex-1 flex-col gap-2 rounded-2xl border border-border/80 bg-card p-3 shadow-xs">
-              {/* Mentions tags & patient autocomplete */}
-              <div className="flex items-center justify-between gap-2 px-0.5">
-                <span className="t-12 font-medium text-foreground">
-                  Section {sectionIndex + 1}/4 · {sectionPrompts[sectionIndex].title}
+            {/* Refused: the way out is a question with its options, answered by one click. */}
+            {refused && (
+              <AgentQuestion
+                agent="assistant"
+                data={{
+                  question:
+                    "Relancer l’assistant sur la même dictée donnerait la même réponse. Que souhaitez-vous faire ?",
+                  options: [
+                    {
+                      id: "review",
+                      label: "Relire ma dictée comme note",
+                      description: "Votre dictée devient la note, mot pour mot, à relire et valider vous-même.",
+                      icon: FileTextIcon,
+                    },
+                    ...sectionPrompts.map((step, index) => ({
+                      id: `edit-${index}`,
+                      label: `Corriger « ${step.title} »`,
+                    })),
+                  ],
+                }}
+                onSubmit={(answer) => {
+                  const choice = answer.optionIds[0];
+                  if (choice === "review") reviewDictation();
+                  else if (choice?.startsWith("edit-")) {
+                    ai.clearError();
+                    changeSection(Number(choice.slice(5)));
+                  }
+                }}
+              />
+            )}
+
+            {/* Dictation workspace */}
+            <div className="assistant-dictation-workspace flex min-h-fit flex-1 flex-col gap-2">
+              {/* Progress of the four rubrics, and the patients mentioned */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="flex items-center gap-3 t-12 font-medium text-foreground">
+                  <span aria-hidden="true" className="flex gap-1">
+                    {sectionPrompts.map((step, index) => (
+                      <span
+                        key={step.letter}
+                        className={cn("h-1 w-6 rounded-full", index <= sectionIndex ? "bg-brand" : "bg-foreground/[0.12]")}
+                      />
+                    ))}
+                  </span>
+                  Rubrique {sectionIndex + 1} sur 4 · {sectionPrompts[sectionIndex].title}
                 </span>
                 {mentions.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -1006,280 +1061,152 @@ export default function LocalConsultationAssistant({
                         )}
                       >
                         @{mention.name}
-                        {mention.patient
-                          ? ` (${mention.patient.name})`
-                          : " (Introuvable)"}
+                        {mention.patient ? ` (${mention.patient.name})` : " (Introuvable)"}
                       </span>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Suggestions dropdown for @mentions */}
-              {suggestions.length > 0 && !ai.busy && (
-                <div
-                  role="listbox"
-                  aria-label="Suggestions de patients"
-                  id={id + "-suggestions"}
-                  className="max-h-36 overflow-y-auto rounded-xl border border-border bg-popover p-1 shadow-md"
-                >
-                  {suggestions.map((entry, idx) => (
-                    <button
-                      key={entry.id}
-                      type="button"
-                      role="option"
-                      aria-selected={suggestionIndex === idx}
-                      className={cn(
-                        "flex w-full flex-col gap-0.5 rounded-lg px-2.5 py-1.5 text-left t-12",
-                        suggestionIndex === idx
-                          ? "bg-muted text-foreground"
-                          : "text-muted-foreground hover:bg-muted"
-                      )}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => choosePatient(entry)}
-                    >
-                      <span className="font-medium text-foreground">
-                        {entry.name}
-                      </span>
-                      <span className="t-12 text-muted-foreground">
-                        {patientLabel(entry)}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Free Textarea */}
-              <Textarea
-                ref={textareaRef}
-                id={id + "-transcript"}
-                value={transcript}
+              <AgentComposer
+                disabled={(ai.busy && ai.phase !== "listening") || importing}
+                label="Vos observations"
                 maxLength={MAX_TRANSCRIPT_LENGTH}
-                disabled={ai.busy && ai.phase !== "listening" || importing}
-                placeholder={`Vos observations · ${sectionPrompts[sectionIndex].title}…`}
-                className="assistant-dictation-field min-h-[120px] flex-1 resize-none rounded-[10px] border-border bg-background px-3 py-2.5 t-13 leading-relaxed shadow-none focus-visible:border-muted-foreground focus-visible:ring-0"
-                onChange={(e) => {
-                  setTranscript(e.target.value);
-                  setCaret(e.target.selectionStart);
+                menu={
+                  suggestions.length > 0 && !ai.busy
+                    ? {
+                        label: "Suggestions de patients",
+                        items: suggestions.map((entry) => ({
+                          key: entry.id,
+                          label: entry.name,
+                          detail: patientLabel(entry),
+                        })),
+                        active: suggestionIndex,
+                        onActiveChange: setSuggestionIndex,
+                        onPick: (item) => {
+                          const entry = suggestions.find((candidate) => candidate.id === item.key);
+                          if (entry) choosePatient(entry);
+                        },
+                        onDismiss: () => setCaret(0),
+                      }
+                    : undefined
+                }
+                meter={
+                  <ContextWindowMeter
+                    data={{
+                      limit: MAX_TRANSCRIPT_LENGTH,
+                      segments: [{ id: "dictation", label: "Dictée", tokens: transcript.length }],
+                    }}
+                    variant="inline"
+                  />
+                }
+                onCaretChange={setCaret}
+                onSubmit={() => {
+                  if (refused && sectionIndex === 3) reviewDictation();
+                  else void generate();
+                }}
+                onValueChange={(value, nextCaret) => {
+                  setTranscript(value);
+                  setCaret(nextCaret);
                   setSuggestionIndex(0);
                 }}
-                onSelect={(e) => setCaret(e.currentTarget.selectionStart)}
-                onKeyDown={(e) => {
-                  if (suggestions.length) {
-                    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-                      e.preventDefault();
-                      setSuggestionIndex(
-                        (prev) =>
-                          (prev + (e.key === "ArrowDown" ? 1 : -1) + suggestions.length) %
-                          suggestions.length
-                      );
-                      return;
-                    }
-                    if (e.key === "Enter" || e.key === "Tab") {
-                      e.preventDefault();
-                      choosePatient(suggestions[suggestionIndex] ?? suggestions[0]);
-                      return;
-                    }
-                    if (e.key === "Escape") {
-                      e.preventDefault();
-                      setCaret(0);
-                      return;
-                    }
-                  }
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                    e.preventDefault();
-                    if (refused && sectionIndex === 3) reviewDictation();
-                    else void generate();
-                  }
-                }}
-              />
-
-              {/* Toolbar beneath textarea */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    size="sm"
-                    variant={ai.phase === "listening" ? "destructive" : "default"}
-                    className="h-8 gap-1.5 px-3 t-12"
-                    disabled={
-                      ai.busy && ai.phase !== "listening" ||
-                      importing ||
-                      (!ai.native && checkingModels) ||
-                      !dictationReady
-                    }
-                    onClick={() => {
-                      if (ai.phase === "listening") {
-                        void stopDictation();
-                      } else {
-                        void ai.start(models, dictationLanguage);
+                placeholder={`Vos observations · ${sectionPrompts[sectionIndex].title}…`}
+                textareaRef={textareaRef}
+                toolbar={
+                  <>
+                    <ActionButton
+                      disabled={
+                        (ai.busy && ai.phase !== "listening") ||
+                        importing ||
+                        (!ai.native && checkingModels) ||
+                        !dictationReady
                       }
-                    }}
-                  >
-                    {ai.phase === "listening" ? (
-                      <>
-                        <Stop className="size-3.5 animate-pulse" />
-                        <span>
-                          Stop · {Math.floor(ai.seconds / 60)}:
-                          {String(ai.seconds % 60).padStart(2, "0")}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <Microphone className="size-3.5" />
-                        <span>{transcript ? "Compléter" : "Dicter"}</span>
-                      </>
-                    )}
-                  </Button>
-
-                  <Select
-                    value={dictationLanguage}
-                    disabled={ai.busy || importing || saving}
-                    onValueChange={(val) => {
-                      const next: DictationLanguage =
-                        val === "auto" ? "auto" : "fr";
-                      setDictationLanguage(next);
-                      saveDictationLanguage(next);
-                    }}
-                  >
-                    <SelectTrigger className="h-8 t-12">
-                      <SelectValue>
-                        {dictationLanguage === "fr" ? "Français" : "Auto"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="fr">Français</SelectItem>
-                        <SelectItem value="auto">Automatique</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-
-                  {transcript.trim() && !ai.busy && (
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => setTranscript("")}
-                      title="Effacer la dictée"
-                      className="size-8 text-muted-foreground hover:text-foreground"
+                      icon={ai.phase === "listening" ? Square : Mic}
+                      onClick={() => {
+                        if (ai.phase === "listening") {
+                          void stopDictation();
+                        } else {
+                          void ai.start(models, dictationLanguage);
+                        }
+                      }}
+                      variant={ai.phase === "listening" ? "danger" : "primary"}
                     >
-                      <Trash className="size-3.5" />
-                    </Button>
-                  )}
-                </div>
-
-                <div className="t-12 text-muted-foreground tabular-nums">
-                  {transcript.length} car. ·{" "}
-                  {transcript.trim()
-                    ? transcript.trim().split(/\s+/).length
-                    : 0}{" "}
-                  mots
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="assistant-section-nav flex items-center justify-between py-2">
-            {sectionIndex > 0 ? (
-              <Button variant="outline" size="sm" disabled={ai.busy || importing} onClick={() => changeSection(sectionIndex - 1)} className="gap-1 t-12">
-                <ArrowRight className="size-3.5 rotate-180" />
-                Revenir à « {sectionPrompts[sectionIndex - 1].title} »
-              </Button>
-            ) : <span />}
-            {sectionIndex < 3 && <Button variant="ghost" size="sm" disabled={ai.busy || importing} onClick={() => changeSection(sectionIndex + 1)}>Passer cette rubrique</Button>}
-          </div>
-          {/* Dictation Bottom Action Bar */}
-          <div className="shrink-0 border-t border-border/80 pt-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-1.5 t-13 text-muted-foreground">
-                {hasExistingNote && (
-                  <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 t-12 font-medium text-foreground/80">
-                    Note existante
-                  </span>
-                )}
-                {patient && (
-                  <span className="flex min-w-0 items-center gap-1">
-                    <span className="shrink-0">Patient :</span>
-                    <PatientSpeciesGlyph species={patient.species} />
-                    <strong className="truncate text-foreground">{patient.name}</strong>
-                  </span>
-                )}
-              </div>
-
-              <Button
-                variant="default"
-                size="default"
-                disabled={
-                  ai.busy ||
-                  importing ||
-                  (sectionIndex === 3 && !fullTranscript.trim() && !hasExistingNote) ||
-                  !!mentionError
+                      {ai.phase === "listening"
+                        ? `Stop · ${Math.floor(ai.seconds / 60)}:${String(ai.seconds % 60).padStart(2, "0")}`
+                        : transcript
+                          ? "Compléter"
+                          : "Dicter"}
+                    </ActionButton>
+                    <Segmented<DictationLanguage>
+                      label="Langue de la dictée"
+                      onValueChange={(next) => {
+                        setDictationLanguage(next);
+                        saveDictationLanguage(next);
+                      }}
+                      options={[
+                        { value: "fr", label: "Français", disabled: ai.busy || importing || saving },
+                        { value: "auto", label: "Auto", disabled: ai.busy || importing || saving },
+                      ]}
+                      value={dictationLanguage}
+                    />
+                    {transcript.trim() && !ai.busy && (
+                      <IconButton icon={Trash2} label="Effacer la dictée" onClick={() => setTranscript("")} />
+                    )}
+                  </>
                 }
-                onClick={() => (refused && sectionIndex === 3 ? reviewDictation() : void generate())}
-                title="Structurer la consultation en note SOAP (⌘+Entrée)"
-                className="h-9 gap-1.5 px-4 t-13 font-semibold tracking-[-0.01em] shadow-sm hover:shadow active:scale-[0.98] transition"
-              >
-                <Sparkle className="size-3.5 stroke-[2.2]" />
-                <span>{sectionIndex < 3 ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}` : refused ? "Relire ma dictée comme note" : "Relire la note SOAP"}</span>
-                <ArrowRight className="size-3.5 stroke-[2.2]" />
-              </Button>
+                value={transcript}
+              />
             </div>
+          </div>
+
+          {/* The one action: continue to the next rubric, or read the note. */}
+          <div className="shrink-0 border-t border-border/80 pt-3">
+            <ActionButton
+              className="w-full"
+              disabled={
+                ai.busy ||
+                importing ||
+                (sectionIndex === 3 && !fullTranscript.trim() && !hasExistingNote) ||
+                !!mentionError
+              }
+              icon={Sparkles}
+              onClick={() => (refused && sectionIndex === 3 ? reviewDictation() : void generate())}
+              size="md"
+              title="Structurer la consultation en note SOAP (⌘+Entrée)"
+              variant="primary"
+            >
+              {sectionIndex < 3 ? `Continuer vers ${sectionPrompts[sectionIndex + 1].title}` : refused ? "Relire ma dictée comme note" : "Relire la note SOAP"}
+              <ArrowRightIcon className="size-3.5" />
+            </ActionButton>
           </div>
         </div>
       )}
 
-      {/* 5. Tab 2: Dedicated SOAP Validation View */}
+      {/* 5. Tab 2: the note to read, what the assistant proposed, and the card that confirms it */}
       {activeTab === "soap" && (
         <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
-            {/* Overview Banner */}
-            <div className="rounded-xl border border-border/80 bg-card p-3 shadow-xs">
-              <div className="flex items-center justify-between gap-2">
-                <div>
-                  <h4 className="t-14 font-semibold text-foreground">
-                    Relecture & Validation SOAP
-                  </h4>
-                  <p className="mt-0.5 t-12 text-muted-foreground">
-                    {hasExistingNote ? "Note existante intégrée. " : ""}
-                    Relisez les 4 rubriques ci-dessous et validez la note en un clic unique.
-                  </p>
-                </div>
-                <Badge
-                  variant="outline"
-                  className="shrink-0 gap-1 t-12 font-medium text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/5"
-                >
-                  <CheckCircle className="size-3" />
-                  Validation unique
-                </Badge>
-              </div>
-
-              {models.generatorReady && !assistantProposal && fullTranscript.trim() && refusedFor !== fullTranscript && (
-                <div className="mt-3 flex items-center justify-between gap-2 border-t border-border/60 pt-2.5">
-                  <span className="t-12 text-muted-foreground">
-                    Améliorer la formulation avec l’assistant ?
-                  </span>
-                  <Button
-                    size="xs"
-                    variant="outline"
-                    disabled={ai.busy}
-                    onClick={() => void generate()}
-                    className="gap-1.5 t-12"
-                  >
-                    <Sparkle className="size-3" />
-                    Structurer avec l’IA
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {notice && (
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 t-12 leading-relaxed text-foreground">
-                <div className="flex items-start gap-2">
-                  <Sparkle className="mt-0.5 size-3.5 text-primary" />
-                  <p className="whitespace-pre-line">{notice}</p>
-                </div>
+            {models.generatorReady && !assistantProposal && fullTranscript.trim() && refusedFor !== fullTranscript && (
+              <div className="flex items-center justify-between gap-2 rounded-2xl border border-border/80 bg-card px-3 py-3">
+                <span className="t-12 text-muted-foreground">
+                  Améliorer la formulation avec l’assistant ?
+                </span>
+                <ActionButton disabled={ai.busy} icon={Sparkles} onClick={() => void generate()}>
+                  Structurer avec l’IA
+                </ActionButton>
               </div>
             )}
 
+            {/* What the assistant reworded: each proposal is the vet's to accept or refuse. */}
+            {proposalRequests.length > 0 && (
+              <ToolApprovalQueue
+                data={proposalRequests}
+                heading="Reformulations proposées"
+                onDecide={decideProposals}
+                onUndo={undoProposal}
+                subtitle="Vous décidez de chaque formulation avant d’enregistrer."
+              />
+            )}
             {visibleError && (
               <div
                 role="alert"
@@ -1296,7 +1223,7 @@ export default function LocalConsultationAssistant({
               return (
                 <div
                   key={key}
-                  className="flex flex-col gap-2 rounded-xl border border-border/80 bg-card p-3.5 shadow-xs transition-colors"
+                  className="flex flex-col gap-2"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <label
@@ -1305,9 +1232,6 @@ export default function LocalConsultationAssistant({
                     >
                       {SOAP_FULL_HEADINGS[key]}
                     </label>
-                    <span className="t-12 text-muted-foreground tabular-nums">
-                      {currentValue.length} / 6 000
-                    </span>
                   </div>
 
                   <Textarea
@@ -1332,67 +1256,39 @@ export default function LocalConsultationAssistant({
                     placeholder="Aucune observation saisie pour cette rubrique."
                     className="min-h-20 resize-y bg-background t-13 leading-relaxed"
                   />
-
-                  {/* Comparative diff if assistant generated proposal */}
-                  {reviewSource && assistantProposal && (
-                    <div className="rounded-lg border border-border/60 bg-muted/30 p-2.5 t-12 leading-relaxed">
-                      {sameWords(reviewSource[key], assistantProposal[key]) ? (
-                        <p className="text-muted-foreground">
-                          Aucune modification proposée par l’assistant.
-                        </p>
-                      ) : (
-                        <div className="space-y-1">
-                          <p className="font-medium text-foreground">
-                            Proposition formulée par l’assistant :
-                          </p>
-                          <p className="text-muted-foreground">
-                            Dictée : {reviewSource[key] || "Vide"}
-                          </p>
-                          <p className="text-foreground">
-                            Formulation :{" "}
-                            <span className="rounded bg-muted px-1 font-medium">
-                              {assistantProposal[key]}
-                            </span>
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
 
-          {/* Sticky Bottom Actions */}
-          <div className="shrink-0 border-t border-border/80 pt-3">
-            <div className="flex items-center justify-between gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={editTranscript}
-                disabled={saving}
-                className="h-9 t-12"
-              >
-                Revoir la dictée
-              </Button>
-
-              <Button
-                variant="default"
-                size="sm"
-                disabled={saving || !!mentionError || dataUnavailable}
-                onClick={() => void save()}
-                className="h-9 flex-1 gap-1.5 t-12 font-medium"
-              >
-                {saving ? (
-                  <CircleNotch className="size-3.5 animate-spin" />
-                ) : (
-                  <CheckCircle className="size-3.5" />
-                )}
-                <span>
-                  {saving ? "Enregistrement…" : "Valider et enregistrer la note (⌘+Entrée)"}
-                </span>
-              </Button>
-            </div>
+          {/* The confirmation: nothing is written before « Valider ». */}
+          <div className="shrink-0 pt-3">
+            <ConfirmationCard
+              blocked={
+                pendingProposals > 0
+                  ? `${pendingProposals} reformulation${pendingProposals > 1 ? "s" : ""} à examiner avant d’enregistrer.`
+                  : (mentionError ?? (dataUnavailable ? "Lecture du dossier en cours…" : undefined))
+              }
+              compact
+              confirmLabel="Valider et enregistrer la note"
+              data={{
+                title: "Enregistrer la note",
+                subtitle: patient ? `Dossier de ${patient.name}` : "Base locale du cabinet",
+                items: SOAP_SECTIONS.map(({ key, title }) => {
+                  const length = (activeSoapDraft[key] ?? "").trim().length;
+                  return {
+                    id: key,
+                    label: title,
+                    filled: length > 0,
+                  };
+                }),
+                warnings: noteWarnings,
+              }}
+              editLabel="Revoir la dictée"
+              onConfirm={() => void save()}
+              onEdit={editTranscript}
+              status={saving ? "confirming" : "review"}
+            />
           </div>
         </div>
       )}

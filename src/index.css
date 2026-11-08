@@ -3719,3 +3719,8 @@ button:focus-visible,
   background: color-mix(in oklab, var(--tone-blue) 14%, transparent) !important;
   color: var(--foreground) !important;
 }
+
+/* The assistant panel: 20 % wider than before (460 / 520 px became 552 / 624 px), and capped by the window so that on a
+   13-inch screen the patient record stays visible beside it. The shell pushes its content by the same width. */
+:root { --assistant-width: clamp(420px, 55vw, 552px); }
+@media (min-width: 1024px) { :root { --assistant-width: clamp(460px, 46vw, 624px); } }

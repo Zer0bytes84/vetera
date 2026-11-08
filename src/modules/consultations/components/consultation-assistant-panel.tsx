@@ -109,7 +109,7 @@ export function ConsultationAssistantPanel({
         data-state={collapsed ? "collapsed" : visible ? "open" : "closed"}
         className={cn(
           "fixed inset-y-0 right-0 z-50 flex w-full flex-col",
-          "sm:max-w-[460px] lg:max-w-[520px]",
+          "sm:max-w-[var(--assistant-width)]",
           "border-l border-border bg-background",
           "shadow-[-16px_0_48px_-12px_rgba(0,0,0,0.18)]",
           "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
@@ -117,7 +117,7 @@ export function ConsultationAssistantPanel({
           visible && !collapsed ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-5">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-3">
           <PanelControlsContext.Provider
             value={{
               collapse: () => {

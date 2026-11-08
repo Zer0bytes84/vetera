@@ -26,6 +26,8 @@ import {
   X,
 } from "@/lib/icons";
 import { toast } from "sonner";
+import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import { useLocalConsultationAi } from "../hooks/use-local-consultation-ai";
 import { getLocalModels, importLocalModel } from "../local-ai/models";
 import {
@@ -136,6 +138,8 @@ export function PatientDocumentSearch({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [results, setResults] = useState<SearchResult[]>([]);
   const active = useRef<AbortController | null>(null);
+  // The last operation the assistant ran, shown as one folded row: what it did, how long it took, what it found.
+  const [lastRun, setLastRun] = useState<{ id: number; name: string; startedAt: number; durationMs?: number } | null>(null);
 
   useEffect(() => {
     if (dictation.transcription) {
@@ -164,6 +168,7 @@ export function PatientDocumentSearch({
         ?.tableName;
       if (table === "consultation_soaps" || table === "notes") {
         setResults([]);
+        setLastRun(null);
         setMessage(
           "Dossier modifié. La recherche réactualisera les sources validées.",
         );
@@ -182,6 +187,12 @@ export function PatientDocumentSearch({
     setError("");
     setResults([]);
     setMessage(indexOnly ? "Indexation des documents…" : "Recherche en cours…");
+    const startedAt = Date.now();
+    setLastRun({
+      id: startedAt,
+      name: indexOnly ? "Actualisation de l’index" : "Recherche dans les dossiers",
+      startedAt,
+    });
 
     try {
       if (indexOnly) {
@@ -291,6 +302,11 @@ export function PatientDocumentSearch({
       if (active.current === controller) {
         active.current = null;
         setBusy(false);
+        setLastRun((previous) =>
+          previous && previous.startedAt === startedAt
+            ? { ...previous, durationMs: Date.now() - startedAt }
+            : previous,
+        );
       }
     }
   };
@@ -310,7 +326,7 @@ export function PatientDocumentSearch({
       }
     } catch {
       setError(
-        "L’installation de la recherche locale a échoué. Vérifiez la présence des fichiers dans ~/Desktop/embeddinggemma.",
+        "L’installation de la recherche locale a échoué. Vérifiez que les fichiers de la recherche locale sont bien présents sur cet ordinateur.",
       );
     } finally {
       setBusy(false);
@@ -338,6 +354,7 @@ export function PatientDocumentSearch({
 
   const resetResults = () => {
     active.current?.abort();
+    setLastRun(null);
     setResults([]);
     setMessage("");
     setError("");
@@ -529,7 +546,7 @@ export function PatientDocumentSearch({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {(busy || dictation.busy) ? (
+        {!lastRun && (busy || dictation.busy) ? (
           <span role="status" className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground">
             <CircleNotch className="size-3 shrink-0 animate-spin" />
             <span className="assistant-thinking-text truncate">
@@ -537,13 +554,33 @@ export function PatientDocumentSearch({
             </span>
           </span>
         ) : (
-          message && !error && (
+          !lastRun && message && !error && (
             <span role="status" className="truncate t-12 text-muted-foreground">
               {message}
             </span>
           )
         )}
       </div>
+
+      {lastRun && (busy || message || error) && (
+        <ToolCallBlock
+          className="shrink-0"
+          data={{
+            id: String(lastRun.id),
+            name: lastRun.name,
+            summary: message,
+            status: busy ? "running" : error ? "error" : "success",
+            durationMs: lastRun.durationMs,
+            details: searchedQuery
+              ? [
+                  { label: "Recherche", value: searchedQuery },
+                  { label: "Dans", value: filterSummary },
+                ]
+              : undefined,
+            error: error || undefined,
+          }}
+        />
+      )}
 
       {error && (
         <div
@@ -563,21 +600,16 @@ export function PatientDocumentSearch({
                 : "Retrouvez le passage utile dans les notes, documents et protocoles validés : symptômes, pathologies, molécules ou synonymes."}
             </p>
             {!query.trim() && (
-              <div className="flex flex-wrap justify-center gap-1.5">
-                {SUGGESTED_QUERIES.map((suggested) => (
-                  <button
-                    key={suggested}
-                    type="button"
-                    onClick={() => {
-                      setQuery(suggested);
-                      void run(false, suggested);
-                    }}
-                    className="rounded-full border border-border/70 px-2.5 py-1 t-12 text-muted-foreground transition-colors hover:border-border hover:text-foreground"
-                  >
-                    {suggested}
-                  </button>
-                ))}
-              </div>
+              <PromptSuggestions
+                className="items-center"
+                data={SUGGESTED_QUERIES.map((suggested) => ({ id: suggested, title: suggested }))}
+                heading="Suggestions"
+                onSelect={(_, prompt) => {
+                  setQuery(prompt);
+                  void run(false, prompt);
+                }}
+                variant="chips"
+              />
             )}
           </div>
         )}

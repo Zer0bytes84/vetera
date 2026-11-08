@@ -1,14 +1,7 @@
-import { Check, ChevronDown, CircleNotch, Clock, XCircle } from "@/lib/icons";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
-import { Progress } from "@/components/ui/progress";
+import { useState } from "react";
+import { AgentStatus } from "@/components/ui/agent-status";
 import type { LocalAiPhase } from "../hooks/use-local-consultation-ai";
 import type { LocalAiProgress } from "../local-ai/worker-protocol";
-import "./assistant-thinking.css";
 
 interface Props {
   phase: LocalAiPhase;
@@ -30,143 +23,38 @@ export function AssistantActivity({
 }: Props) {
   const busy = phase !== "idle";
   const preparing = phase === "loading-soap" || phase === "generating";
+  const [startedAt] = useState(() => Date.now());
+  // The steps already behind: the dictation, then the patient's file.
   const steps = [
-    {
-      label: "Transcription",
-      done: hasTranscript,
-      active: busy && !preparing,
-      detail: hasTranscript
-        ? "Observations prêtes à relire"
-        : busy && !preparing
-          ? progress.message
-          : "En attente de vos observations",
-    },
-    {
-      label: "Vérification du patient",
-      done: patientVerified,
-      active: false,
-      detail: patientVerified
-        ? "Fiche et mentions vérifiées"
-        : hasTranscript
-          ? "Confirmez le patient dans la conversation"
-          : "Après la dictée",
-    },
-    {
-      label: "Préparation de la note",
-      done: hasNote,
-      active: preparing,
-      detail: hasNote
-        ? "Quatre sections vérifiées · à relire par vous"
-        : preparing
-          ? progress.message
-          : "Après votre confirmation",
-    },
-  ];
-  const summary = failed
+    hasTranscript && { id: "transcription", label: "Dictée transcrite" },
+    patientVerified && { id: "patient", label: "Fiche et mentions vérifiées" },
+  ].filter((step): step is { id: string; label: string } => Boolean(step));
+  const label = failed
     ? "Préparation interrompue"
     : hasNote
       ? "Note prête à relire"
-      : busy
-        ? progress.message
-        : patientVerified
-          ? "Patient vérifié"
-          : hasTranscript
-            ? "Vérification du patient"
+      : preparing
+        ? "Préparation de la note"
+        : busy
+          ? "Transcription de la dictée"
+          : patientVerified
+            ? "Patient vérifié"
             : "Les étapes de votre note";
+  const detail =
+    busy && !failed
+      ? preparing && typeof progress.characters === "number"
+        ? `${progress.characters.toLocaleString("fr-FR")} caractères rédigés${progress.attempt === 2 ? " · nouvel essai" : ""}`
+        : progress.message
+      : undefined;
   return (
-    <Collapsible className="group/activity rounded-lg bg-muted/20">
-      <CollapsibleTrigger className="flex w-full items-center gap-2 px-3 py-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <Marker
-          render={<span />}
-          role="status"
-          aria-live="polite"
-          className="min-w-0 flex-1 text-xs"
-        >
-          <MarkerIcon>
-            {failed ? (
-              <XCircle />
-            ) : busy ? (
-              <CircleNotch className="animate-spin motion-reduce:animate-none" />
-            ) : hasNote || patientVerified ? (
-              <Check />
-            ) : (
-              <Clock />
-            )}
-          </MarkerIcon>
-          <MarkerContent className={busy && !failed ? "assistant-thinking-text" : undefined}>
-            {summary}
-          </MarkerContent>
-        </Marker>
-        {(preparing || phase === "transcribing") &&
-          typeof progress.characters === "number" && (
-            <span
-              aria-live="off"
-              className="shrink-0 t-12 tabular-nums text-muted-foreground"
-            >
-              {progress.characters.toLocaleString("fr-FR")} caractères
-            </span>
-          )}
-        <ChevronDown
-          aria-hidden
-          className="size-3.5 shrink-0 text-muted-foreground transition-transform group-has-[[data-panel-open]]/activity:rotate-180 motion-reduce:transition-none"
-        />
-        <span className="sr-only">
-          Afficher ou masquer les étapes de préparation
-        </span>
-      </CollapsibleTrigger>
-      <CollapsibleContent className="overflow-hidden">
-        <ol
-          className="flex flex-col gap-3 border-t px-3 py-3"
-          aria-label="Étapes de préparation"
-        >
-          {steps.map(({ label, done, active, detail }) => (
-            <li key={label} className="flex items-start gap-2.5 text-xs">
-              <span
-                aria-hidden
-                className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted"
-              >
-                {done ? (
-                  <Check className="size-3" />
-                ) : active ? (
-                  <CircleNotch className="size-3 animate-spin motion-reduce:animate-none" />
-                ) : (
-                  <span className="size-1 rounded-full bg-muted-foreground/40" />
-                )}
-              </span>
-              <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <span
-                  className={
-                    done || active ? "font-medium" : "text-muted-foreground"
-                  }
-                >
-                  {label}
-                </span>
-                <span className="text-muted-foreground">{detail}</span>
-                {active &&
-                  preparing &&
-                  typeof progress.characters === "number" && (
-                    <span
-                      aria-live="off"
-                      className="tabular-nums text-muted-foreground"
-                    >
-                      {progress.characters.toLocaleString("fr-FR")} caractères
-                      rédigés{progress.attempt === 2 ? " · nouvel essai" : ""}
-                    </span>
-                  )}
-                {active &&
-                  !preparing &&
-                  typeof progress.progress === "number" && (
-                    <Progress
-                      value={progress.progress * 100}
-                      aria-label="Chargement de la dictée"
-                      className="h-1"
-                    />
-                  )}
-              </div>
-            </li>
-          ))}
-        </ol>
-      </CollapsibleContent>
-    </Collapsible>
+    <AgentStatus
+      data={{
+        label,
+        detail,
+        startedAt,
+        steps,
+        status: failed ? "error" : hasNote ? "done" : busy ? "working" : "done",
+      }}
+    />
   );
 }
