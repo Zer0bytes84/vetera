@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registre</title>
+<style>
+@font-face { font-family: "Inter Var"; src: url(assets/inter-latin-opsz-normal.woff2) format("woff2"); font-weight: 100 900; }
+/* Direction A, Registre: the day kept like the clinic's ruled register.
+   No cards. One sheet, one grid, type and alignment carry the hierarchy. */
+:root {
+  --ground: #ffffff; --side: #f5f5f5; --hover: #f5f5f5; --press: #ededed;
+  --ink: #292929; --ink-2: #5d5d5d; --ink-3: #7f7f7f;
+  --rule: #f2f2f2; --rule-2: #e6e6e6;
+  --primary: #191919; --on-primary: #ffffff;
+  --s-planned: #8c8c8c; --s-waiting: #a15c00; --s-consultation: #2f62b5; --s-care: #22766f; --s-billing: #b4304f; --s-done: #2d7a4b;
+  --good: #2d7a4b; --bad: #b4304f;
+  --bar: #d6d6d6; --bar-today: #191919;
+  --ease: cubic-bezier(.23, 1, .32, 1);
+}
+:root[data-theme="dark"] {
+  --ground: #141414; --side: #191919; --hover: #1d1d1d; --press: #242424;
+  --ink: #ececec; --ink-2: #b3b3b3; --ink-3: #8a8a8a;
+  --rule: #222222; --rule-2: #2c2c2c;
+  --primary: #ececec; --on-primary: #141414;
+  --s-planned: #8a8a8a; --s-waiting: #e0a54a; --s-consultation: #84aef0; --s-care: #6cc1b8; --s-billing: #f08ba1; --s-done: #74c398;
+  --good: #74c398; --bad: #f08ba1; --bar: #3a3a3a; --bar-today: #ececec;
+}
+* { box-sizing: border-box; margin: 0; }
+html { background: var(--ground); }
+body { font: 400 13px/1.5 "Inter Var", system-ui, sans-serif; font-optical-sizing: auto; color: var(--ink); background: var(--ground); -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "ss03"; }
+.num, td.t, .kpi-v, .fig { font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+.i { flex: none; }
+.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+
+/* Sidebar: recedes. Active item is a neutral tone step, no colour. */
+.sb { background: var(--side); padding: 14px 12px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; }
+.sb-brand { display: flex; align-items: center; gap: 8px; padding: 2px 6px 14px; }
+.sb-mascot { width: 32px; height: 32px; border-radius: 50%; }
+.sb-name { font-weight: 600; font-size: 16px; letter-spacing: -.01em; flex: 1; }
+.sb-fold { color: var(--ink-3); display: grid; }
+.sb-group { font-size: 12px; color: var(--ink-3); padding: 14px 8px 4px; }
+.nav-item, .nav-quick { display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 8px; border-radius: 6px; color: var(--ink-2); font-size: 13px; transition: background-color 120ms ease; }
+.nav-item:hover, .nav-quick:hover { background: var(--hover); color: var(--ink); }
+.nav-item.is-active { background: var(--ground); color: var(--ink); font-weight: 500; }
+.nav-quick { font-size: 13px; height: 30px; }
+.sb-nav { flex: 1; }
+.sb-user { display: flex; gap: 10px; align-items: center; padding: 10px 6px 2px; }
+.sb-user img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.sb-user b { display: block; font-weight: 500; font-size: 13px; }
+.sb-user small { color: var(--ink-3); font-size: 12px; }
+
+.main { min-width: 0; }
+.top { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid var(--rule); color: var(--ink-3); }
+.top .crumb b { color: var(--ink); font-weight: 500; }
+.top .tools { display: flex; gap: 4px; }
+.top .tools button { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 6px; color: var(--ink-2); }
+.top .tools button:hover { background: var(--hover); }
+.page { padding: 28px 40px 64px; max-width: 1208px; }
+.load-banner { margin: 0 40px; padding: 8px 0; font-size: 12px; color: var(--ink-3); border-bottom: 1px solid var(--rule); }
+
+/* Buttons: square-cornered 6px, black fill for the one primary. */
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 6px; font-size: 13px; font-weight: 500; transition: transform 120ms var(--ease), background-color 120ms ease; white-space: nowrap; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--primary); color: var(--on-primary); }
+.btn-line { box-shadow: inset 0 0 0 1px var(--rule-2); }
+.btn-line:hover { background: var(--hover); }
+.kbd { font-size: 12px; opacity: .6; margin-left: 2px; }
+.btn:focus-visible, .nav-item:focus-visible, .row-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Header: the date is the title, the finding is the subline. */
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding-bottom: 24px; }
+h1 { font-size: 24px; line-height: 1.2; font-weight: 600; letter-spacing: -.022em; }
+h1 .time { color: var(--ink-3); font-weight: 400; margin-left: 8px; }
+.finding { font-size: 16px; color: var(--ink); margin-top: 6px; letter-spacing: -.005em; }
+.next { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.next a { text-decoration: underline; text-decoration-color: var(--rule-2); text-underline-offset: 3px; }
+.actions { display: flex; gap: 8px; }
+
+/* Sections: a title row on a 1px rule. */
+.sec { margin-top: 40px; }
+.sec:first-of-type { margin-top: 0; }
+.sec-h { display: flex; align-items: center; gap: 12px; height: 40px; border-bottom: 1px solid var(--rule-2); }
+.sec-h h2 { font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.sec-h .meta { color: var(--ink-3); font-size: 12px; }
+.sec-h .end { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.link { color: var(--ink-2); font-size: 13px; display: inline-flex; gap: 6px; align-items: center; }
+.link:hover { color: var(--ink); }
+
+/* Maintenant: six register columns, one per stage. A synthesis, no buttons on visits. */
+.now { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-bottom: 1px solid var(--rule); }
+.now-col { padding: 14px 16px 16px; border-left: 1px solid var(--rule); min-width: 0; }
+.now-col:first-child { border-left: 0; padding-left: 0; }
+.now-l { display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 12px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c); flex: none; }
+.now-n { font-size: 24px; font-weight: 500; letter-spacing: -.02em; margin: 2px 0 8px; }
+.now-col.is-zero .now-n { color: var(--ink-3); }
+.now-list { list-style: none; padding: 0; display: grid; gap: 4px; }
+.now-list li { min-width: 0; display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.now-list li span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.now-list li span:last-child { color: var(--ink-3); font-size: 12px; white-space: nowrap; }
+.now-list .more { color: var(--ink-3); font-size: 12px; }
+.now-foot { display: flex; align-items: center; gap: 16px; padding: 12px 0 0; }
+.progress { flex: 1; height: 4px; display: flex; gap: 2px; }
+.progress i { display: block; background: var(--c); height: 100%; border-radius: 1px; }
+.progress .rest { background: var(--rule-2); flex: 1; }
+.now-foot .fig { color: var(--ink-2); white-space: nowrap; }
+.btn-flux { height: 36px; padding: 0 14px; box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
+.btn-flux:hover { background: var(--ink); color: var(--ground); }
+.btn-flux .i { transition: transform 160ms var(--ease); }
+.btn-flux:hover .i { transform: translateX(2px); }
+
+.cols { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 40px; }
+
+/* Register table: rules and alignment, no bands. */
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-weight: 400; color: var(--ink-3); font-size: 12px; height: 32px; border-bottom: 1px solid var(--rule); }
+td { height: 44px; border-bottom: 1px solid var(--rule); padding-right: 12px; vertical-align: middle; }
+tr.v { transition: background-color 100ms ease; }
+tr.v:hover td { background: var(--hover); }
+td.t { width: 56px; color: var(--ink-2); }
+td .who { font-weight: 500; display: block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+td .sub { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+td.owner { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+table { table-layout: fixed; }
+th:nth-child(1) { width: 56px; } th:nth-child(2) { width: 27%; } th:nth-child(3) { width: 24%; } th:nth-child(5) { width: 120px; }
+td .sub { display: block; color: var(--ink-3); font-size: 12px; }
+td.reason { color: var(--ink-2); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stage { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; color: var(--ink-2); }
+tr.is-done td:not(.st) { color: var(--ink-3); }
+tr.is-done .who { font-weight: 400; }
+.table-more { padding: 12px 0; color: var(--ink-2); }
+.daynav { display: flex; align-items: center; gap: 2px; }
+.daynav button { height: 28px; min-width: 28px; display: grid; place-items: center; border-radius: 6px; color: var(--ink-2); padding: 0 6px; }
+.daynav button:hover { background: var(--hover); }
+
+/* Right column: to-do and watch lists. */
+.tabs { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-size: 13px; }
+.tabs button { color: var(--ink-3); padding: 0; }
+.tabs button.on { color: var(--ink); font-weight: 500; }
+.tabs .c { color: var(--ink-3); font-weight: 400; margin-left: 3px; }
+.todo { list-style: none; padding: 0; }
+.todo li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.todo .box { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--ink-3); margin-top: 2px; flex: none; transition: box-shadow 120ms ease, background-color 120ms ease; }
+.todo .box:hover { box-shadow: inset 0 0 0 1px var(--ink); }
+.todo .tt { flex: 1; min-width: 0; }
+.todo .due { display: block; color: var(--ink-3); font-size: 12px; }
+.todo .due.is-late { color: var(--bad); }
+.watch { margin-top: 28px; }
+.watch-h { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0 6px; border-bottom: 1px solid var(--rule); }
+.watch-h b { font-weight: 500; }
+.watch-h span { color: var(--ink-3); font-size: 12px; }
+.empty-line { color: var(--ink-3); padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.wrow { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--rule); }
+.wrow span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wrow .r { color: var(--ink-3); font-size: 12px; white-space: nowrap; }
+.wrow .r.is-late { color: var(--bad); }
+
+/* Activity: KPIs are type, not tiles. */
+.seg { display: flex; gap: 2px; }
+.seg button { height: 28px; padding: 0 10px; border-radius: 6px; color: var(--ink-2); font-size: 13px; }
+.seg button.on { background: var(--hover); color: var(--ink); font-weight: 500; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--rule); }
+.kpi { text-align: left; align-self: stretch; padding: 16px 20px 18px; border-left: 1px solid var(--rule); transition: background-color 120ms ease; display: block; }
+.kpi:first-child { border-left: 0; padding-left: 0; }
+.kpi:hover { background: var(--hover); }
+.kpi:first-child:hover { box-shadow: -12px 0 0 var(--hover); }
+.kpi-l { color: var(--ink-2); font-size: 13px; }
+.kpi-v { display: block; font-size: 24px; font-weight: 500; letter-spacing: -.02em; margin: 4px 0 6px; }
+.kpi-v small { font-size: 14px; color: var(--ink-3); font-weight: 400; margin-left: 2px; }
+.kpi-d { display: block; font-size: 12px; color: var(--ink-3); }
+.kpi-x { display: block; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.delta.is-good { color: var(--good); } .delta.is-bad { color: var(--bad); } .delta.is-none, .delta.is-flat { color: var(--ink-3); }
+.chart-wrap { padding: 20px 0 4px; }
+.ch-grid { stroke: var(--rule); stroke-width: 1; } .ch-grid.is-base { stroke: var(--rule-2); }
+.ch-y, .ch-x { fill: var(--ink-3); font-size: 12px; font-family: inherit; font-variant-numeric: tabular-nums; }
+.ch-x.is-today { fill: var(--ink); font-weight: 500; }
+.ch-bar { fill: var(--bar); transition: fill 120ms ease; } .ch-bar:hover { fill: var(--ink-2); }
+.ch-bar.is-today { fill: var(--bar-today); }
+.ch-dot { fill: var(--ink-3); } .ch-dot.is-today { fill: var(--ink); } .ch-dot-empty { fill: var(--rule-2); }
+.ch-empty { fill: var(--ink-3); font-size: 13px; }
+.facts { display: grid; }
+.fact { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.fact dt { color: var(--ink-2); }
+.fact dd { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.fact dd.muted { color: var(--ink-3); font-weight: 400; font-size: 13px; }
+.fact dd.warn { color: var(--bad); }
+
+/* Cabinet index: links, not tiles. */
+.index { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 40px; }
+.index a { display: block; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.index a b { font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
+.index a b .i { color: var(--ink-3); opacity: 0; transform: translateX(-4px); transition: opacity 120ms ease, transform 160ms var(--ease); }
+.index a:hover b .i { opacity: 1; transform: none; }
+.index a span { color: var(--ink-3); font-size: 12px; }
+
+.empty-block { display: flex; align-items: center; gap: 16px; padding: 28px 0; border-bottom: 1px solid var(--rule); }
+.empty-block img { width: 56px; height: 56px; }
+.empty-block p { color: var(--ink-2); }
+.empty-block p b { color: var(--ink); font-weight: 500; display: block; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { * { transition-duration: 0ms !important; } }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script src="real-data.js"></script>
+<script src="model.js"></script>
+<script src="shell.js"></script>
+<script src="parts.js"></script>
+<script>
+const M = BaitariModel, S = Shell, X = Parts, I = S.icon;
+const m = M.load(S.state);
+const ST = M.STAGES;
+const cvar = (s) => `--c: var(--s-${s})`;
+
+function now() {
+  const cols = ST.map((s) => {
+    const list = m.byStage[s];
+    const items = list.slice(0, 3).map((v) => {
+      const right = s === "waiting" ? `${m.waitingMinutes(v)} min` : v.time;
+      return `<li><span>${X.esc(v.patient)}</span><span>${right}</span></li>`;
+    }).join("");
+    const more = list.length > 3 ? `<li class="more">et ${list.length - 3} autre${list.length - 3 > 1 ? "s" : ""}</li>` : "";
+    return `<div class="now-col${list.length ? "" : " is-zero"}"><div class="now-l"><i class="dot" style="${cvar(s)}"></i>${M.STAGE_LABEL[s]}</div><div class="now-n num">${list.length}</div><ul class="now-list">${items}${more}</ul></div>`;
+  }).join("");
+  const segs = ["done", "billing", "care", "consultation", "waiting"].map((s) => m.byStage[s].length ? `<i style="${cvar(s)}; flex: ${m.byStage[s].length}"></i>` : "").join("");
+  const rest = m.byStage.planned.length || !m.today.length ? `<i class="rest" style="flex:${m.byStage.planned.length || 1}"></i>` : "";
+  return `<section class="sec">
+    <div class="sec-h"><h2>Maintenant</h2><span class="meta">À ${m.nowLabel}, d’après Flux</span>
+      <div class="end"><a class="btn btn-flux" href="#">Ouvrir Flux ${I("arrow")}</a></div></div>
+    <div class="now">${cols}</div>
+    ${m.today.length ? `<div class="now-foot"><div class="progress" aria-hidden="true">${segs}${rest}</div><span class="fig">${m.today.length ? `${m.progress.done} sur ${m.progress.total} visites terminées` : "Aucune visite aujourd’hui"}</span></div>` : ""}
+  </section>`;
+}
+
+function register() {
+  const rows = m.today.slice(0, 10).map((v) => `<tr class="v${v.stage === "done" ? " is-done" : ""}">
+      <td class="t">${v.time}</td>
+      <td><span class="who">${X.esc(v.patient)}</span><span class="sub">${X.esc([v.species, v.breed].filter(Boolean).join(" · "))}</span></td>
+      <td class="owner" title="${X.esc(v.owner)}">${X.esc(v.owner)}</td>
+      <td class="reason" title="${X.esc(v.reason)}">${X.esc(v.type)}${v.reason ? `<span class="sub">${X.esc(v.reason)}</span>` : ""}</td>
+      <td class="st"><span class="stage"><i class="dot" style="${cvar(v.stage)}"></i>${M.STAGE_LABEL[v.stage]}</span></td>
+    </tr>`).join("");
+  const body = m.today.length
+    ? `<table><thead><tr><th>Heure</th><th>Patient</th><th>Propriétaire</th><th>Motif</th><th>Étape</th></tr></thead><tbody>${rows}</tbody></table>
+       ${m.today.length > 10 ? `<a class="table-more link" href="#">Voir les ${m.today.length} visites dans l’Agenda ${I("arrow", 14)}</a>` : ""}`
+    : `<div class="empty-block"><img src="assets/chien-base.webp" alt=""><p><b>Aucune visite prévue ce jour</b>Les rendez-vous pris dans l’Agenda apparaissent ici.</p><button class="btn btn-line" style="margin-left:auto">${I("plus")}Planifier une visite</button></div>`;
+  return `<section class="sec">
+    <div class="sec-h"><h2>Planning des visites</h2><span class="meta">${m.today.length ? X.plural(m.today.length, "visite", "visites") : ""}</span>
+      <div class="end"><div class="daynav"><button aria-label="Jour précédent">${I("left")}</button><button>Aujourd’hui</button><button aria-label="Jour suivant">${I("right")}</button></div></div></div>
+    ${body}
+  </section>`;
+}
+
+function side() {
+  const t = m.openTasks, rem = m.reminders, st = m.stock;
+  const todo = t.length ? `<ul class="todo">${t.slice(0, 4).map((x) => `<li><button class="box" aria-label="Terminer la tâche"></button><span class="tt">${X.esc(x.title)}<span class="due${x.overdue ? " is-late" : ""}">${x.due ? `Échéance ${X.relDue(x.due, m.now)}` : "Sans échéance"}</span></span></li>`).join("")}</ul>`
+    : `<p class="empty-line">Rien à faire pour l’instant.</p>`;
+  const watch = (title, n, rows, empty, link) => `<div class="watch-h"><b>${title}</b><span>${n ? n : ""}</span></div>${rows || `<p class="empty-line">${empty}</p>`}`;
+  return `<section class="sec">
+    <div class="sec-h"><h2>Actions à suivre</h2><span class="meta">${m.kpis.actions || ""}</span><div class="end"><a class="link" href="#">Rappels ${I("arrow", 14)}</a></div></div>
+    <div class="tabs"><button class="on">Tout<span class="c">${m.kpis.actions}</span></button><button>Tâches<span class="c">${t.length}</span></button><button>Vaccins<span class="c">${rem.length}</span></button><button>Stock<span class="c">${st.length}</span></button></div>
+    ${todo}
+    <div class="watch">
+      ${watch("Hospitalisés", m.stays.length, m.stays.map((s) => `<div class="wrow"><span>${X.esc(s.patient)} <span class="r">· ${X.esc(s.reason)}</span></span><span class="r">${X.since(s.since, m.now)}</span></div>`).join(""), "Aucun animal hospitalisé.")}
+      ${watch("Rappels sous 14 jours", rem.length, rem.map((r) => `<div class="wrow"><span>${X.esc(r.patient)}, ${X.esc(r.type)}</span><span class="r${r.due < m.now ? " is-late" : ""}">${X.relDue(r.due, m.now)}</span></div>`).join(""), "Aucun rappel dans les 14 prochains jours.")}
+      ${watch("Stock à surveiller", st.length, st.map((p) => `<div class="wrow"><span>${X.esc(p.name)}</span><span class="r">${M.num(p.qty)} ${X.esc(p.unit)} · seuil ${M.num(p.min)}</span></div>`).join(""), "Aucun produit sous son seuil.")}
+    </div>
+  </section>`;
+}
+
+function activity() {
+  const k = m.kpis, mo = m.money;
+  const kpi = (label, value, unit, d, extra) => `<button class="kpi"><span class="kpi-l">${label}</span><span class="kpi-v num">${value}${unit ? `<small>${unit}</small>` : ""}</span><span class="kpi-d">${d}</span><span class="kpi-x">${extra}</span></button>`;
+  const money = (c) => M.num(c / 100);
+  return `<section class="sec">
+    <div class="sec-h"><h2>Activité</h2><span class="meta">Du ${m.rangeLabel}</span>
+      <div class="end"><div class="seg" role="group" aria-label="Période"><button>7 jours</button><button class="on">30 jours</button><button>90 jours</button><button>12 mois</button></div></div></div>
+    <div class="kpis">
+      ${kpi("Trésorerie", money(mo.income30), "DA", X.delta(mo.change), `Solde net ${M.da(mo.net30)} · dépenses ${M.da(mo.expense30)}`)}
+      ${kpi("Consultations", M.num(k.visits30), "", X.delta(k.visitsChange), `${k.done30} terminées · ${k.visits30 - k.done30} en cours`)}
+      ${kpi("Patients suivis", M.num(k.seen30), "", X.delta(k.seenChange), `${X.plural(k.newRecords, "nouveau dossier", "nouveaux dossiers")}`)}
+      ${kpi("Actions à suivre", M.num(k.actions), "", `${X.plural(m.openTasks.length, "tâche", "tâches")} · ${X.plural(m.reminders.length, "vaccin", "vaccins")} · ${m.stock.length} en stock`, "&nbsp;")}
+    </div>
+    <div class="cols">
+      <div class="chart-wrap"><div class="sec-h" style="border:0;height:auto;margin-bottom:8px"><h2 style="font-size:13px">Recettes encaissées par jour</h2><span class="meta">en DA, et nombre de visites</span><div class="end"><a class="link" href="#">Finances ${I("arrow", 14)}</a></div></div>${X.chart(m.series, { w: 720, h: 230 })}</div>
+      <div><div class="sec-h" style="border-bottom:1px solid var(--rule)"><h2 style="font-size:13px">Cette semaine</h2></div>
+        <dl class="facts">
+          <div class="fact"><dt>Encaissé aujourd’hui</dt><dd class="num">${M.da(mo.incomeToday)}</dd></div>
+          <div class="fact"><dt>Recettes encaissées</dt><dd class="num">${M.da(m.week.income)}</dd></div>
+          <div class="fact"><dt>Consultations</dt><dd class="num">${M.num(m.week.visits)}</dd></div>
+          <div class="fact"><dt>Taux de règlement</dt>${m.week.settleRate === null ? `<dd class="muted">Aucune facture</dd>` : `<dd class="num">${m.week.settleRate.toLocaleString("fr-FR")}${" "}%</dd>`}</div>
+          <div class="fact"><dt>Reste à recouvrer</dt><dd class="num${mo.receivables ? " warn" : ""}">${M.da(mo.receivables)}</dd></div>
+        </dl></div>
+    </div>
+  </section>`;
+}
+
+function cabinet() {
+  const mods = [["Agenda & rendez-vous", "Planning et disponibilités"], ["Soins & hospitalisation", "Soins du jour et séjours"], ["Dossiers patients", "Fiches, antécédents, propriétaires"], ["Produits", "Médicaments, lots, seuils"], ["Facturation & devis", "Factures, règlements, devis"], ["Rappels & vaccins", "Échéances et relances"], ["Documents", "Ordonnances, comptes rendus"], ["Bilan & analyses", "Indicateurs et synthèse"]];
+  return `<section class="sec"><div class="sec-h"><h2>Gestion du cabinet</h2></div><div class="index">${mods.map(([a, b]) => `<a href="#"><b>${a}${I("arrow", 14)}</b><span>${b}</span></a>`).join("")}</div></section>`;
+}
+
+const next = m.next ? `Prochain rendez-vous : <a href="#">${m.next.time}, ${X.esc(m.next.patient)} (${X.esc(m.next.owner)})</a>` : (m.today.length ? "Plus aucun rendez-vous aujourd’hui." : "Les rendez-vous apparaîtront dès leur réservation.");
+const day = m.dateLabel.charAt(0).toUpperCase() + m.dateLabel.slice(1);
+document.getElementById("app").innerHTML = `${S.sidebar()}
+<main class="main">
+  <div class="top"><span class="crumb">Cabinet / <b>Tableau de bord</b></span><span class="tools"><button aria-label="Thème">${I("sun")}</button><button aria-label="Rechercher">${I("search")}</button><button aria-label="Messages">${I("chat")}</button><button aria-label="Notifications">${I("bell")}</button><button aria-label="Réglages">${I("sliders")}</button></span></div>
+  ${S.loadBanner()}
+  <div class="page">
+    <header class="head"><div><h1>${day}<span class="time num">${m.nowLabel}</span></h1><p class="finding">${m.finding}</p><p class="next">${next}</p></div>
+      <div class="actions"><button class="btn btn-line">${I("plus")}Nouveau patient</button><button class="btn btn-primary">${I("steth")}Nouvelle consultation<span class="kbd">N</span></button></div></header>
+    ${now()}
+    <div class="cols">${register()}${side()}</div>
+    ${activity()}
+    ${cabinet()}
+  </div>
+</main>`;
+</script>
+</body>
+</html>
