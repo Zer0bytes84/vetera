@@ -44,8 +44,7 @@ function Change({ value, previous }: { value: number; previous: number }) {
 
 /**
  * Income at a glance: the period's total and its change, the period chosen inside the card, the curve against the previous
- * period, then what was invoiced by nature. Shown by the Clean skin only (data-clean-only); it reads the same journal and
- * invoices as the rest. The card is the shared ChartCard (grey band, white panel); only its footer is this page's.
+ * period, then what was invoiced by nature. It reads the same journal and invoices as the rest. The card is the shared ChartCard (grey band, white panel); only its footer is this page's.
  */
 export function FinanceOverview({ transactions }: { transactions: Transaction[] }) {
   const [period, setPeriod] = useState<AnalyticsPeriod>("30d");
@@ -68,7 +67,7 @@ export function FinanceOverview({ transactions }: { transactions: Transaction[] 
   const invoiced = natures?.reduce((sum, row) => sum + row.value, 0) ?? 0;
 
   return (
-    <section aria-label="Vue d’ensemble des encaissements" className="finance-overview min-w-0" data-clean-only="">
+    <section aria-label="Vue d’ensemble des encaissements" className="finance-overview min-w-0">
       <ChartCard
         className="max-w-none"
         data={{

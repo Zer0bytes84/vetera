@@ -23,3 +23,16 @@
 - Dans la vue d'ensemble de Clean, la période précédente est une ligne pleine de teinte calme (le chart-card ne dessine pas de pointillés) ; elle était en pointillés.
 - Dans le navigateur, « Facturé par nature » affiche « Les factures n'ont pas pu être lues » : ces lignes viennent de SQLite natif (comme avant le changement). Seul `npm run tauri:dev` les montre.
 - Un test de la charte Clean épinglait la règle `.finance-overview` ; il dit maintenant que la vue d'ensemble n'a plus de règle Clean propre.
+
+## Compléments : une vraie lecture financière
+
+Captures dans `apres-complements/` (quatre thèmes). La page lit maintenant, en deux colonnes :
+
+- **Évolution des encaissements et trésorerie** : le chart-card de Yuri, comme sur le tableau de bord, avec le choix Encaissements / Trésorerie.
+- **Comparaison entre périodes** : la période choisie (7 jours à 12 mois) contre la précédente, avec la variation, et « Facturé par nature ». Visible dans les deux thèmes (elle ne l'était que dans Clean).
+- **Répartition des recettes** : un anneau par catégorie du journal, la phrase de lecture, les parts et le total.
+- **Créances et ancienneté** : le « reste à recouvrer » classé par âge de la facture (moins de 30 jours, 30 à 60, 60 à 90, plus de 90), avec les factures impayées, celles en retard, les écritures en attente et les quatre plus gros soldes.
+
+Données : le journal et les factures émises que l'app lit déjà (la même lecture que le tableau de bord). Aucun calcul existant n'est modifié ; le seul calcul nouveau est le classement par âge (`receivables-aging.ts`), en lecture seule. Un test vérifie que la somme des tranches est exactement le total de « Reste à recouvrer » déjà affiché. Dans le navigateur, les factures viennent de SQLite natif : le bloc créances n'y montre que les écritures en attente (voir `npm run tauri:dev` pour les factures).
+
+Le bouton de retour est dans la bande grise du premier bloc, à droite, comme les actions des autres pages : pilule blanche, texte noir, libellé « Finances ».

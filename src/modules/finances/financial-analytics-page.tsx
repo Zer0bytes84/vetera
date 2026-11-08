@@ -40,6 +40,7 @@ import { formatDZD } from "@/utils/currency";
 import { formatDinars } from "@/utils/display-format";
 import { useIsPremium } from "@/modules/dashboard/v2/use-is-premium";
 import { PremiumFinancialAnalysis } from "./components/premium-financial-analysis";
+import { useDashboardFinancials } from "@/modules/dashboard/hooks/use-dashboard-financials";
 
 // ============================================================================
 // METRICS STRIP
@@ -534,6 +535,7 @@ export function FinancialAnalyticsV2Page({
   const { data: patients } = usePatientsRepository();
   const { data: tasks } = useTasksRepository();
   const { data: transactions } = useTransactionsRepository();
+  const financials = useDashboardFinancials();
   const locale = getCurrentLocale(i18n.language);
 
   const metrics = React.useMemo(
@@ -552,6 +554,8 @@ export function FinancialAnalyticsV2Page({
   if (isPremium) {
     return (
       <PremiumFinancialAnalysis
+        invoices={financials.invoices}
+        invoicesUnavailable={Boolean(financials.error)}
         metrics={metrics}
         onNavigate={onNavigate}
         transactions={transactions}
