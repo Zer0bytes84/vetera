@@ -54,7 +54,7 @@ export function SidebarBrand({ collapsed, onHome }: { collapsed: boolean; onHome
           </div>
         </PopoverContent>
       </Popover>
-      {!collapsed && <button type="button" aria-label="Tableau de bord Baitari" className="sidebar-brand-home" onClick={onHome}><span className="sidebar-brand-wordmark">Baitari</span></button>}
+      {!collapsed && <button type="button" aria-label="Tableau de bord Baitari" className="sidebar-brand-home" onClick={onHome}><span aria-hidden="true" className="sidebar-brand-wordmark">b<span className="sidebar-brand-ai">AI</span>tari</span></button>}
     </div>
   );
 }

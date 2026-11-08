@@ -1,11 +1,43 @@
 
 
 .sidebar-brand-wordmark {
+  display: block;
+  /* Centred on the mascot's whole height, ears included (measured: the ink sat 0.7 px low). */
+  transform: translateY(-0.7px);
   color: var(--sidebar-foreground);
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -.035em;
   line-height: 1;
+}
+/* « bAItari »: the AI in the middle of the name, in the blue and teal of our charts. The gradient runs twice its width so a
+   sheen can cross it on hover; at rest it shows blue to teal. */
+.sidebar-brand-ai {
+  /* The charts' blue and teal, lifted for a dark sidebar (6.6 to 7.8 : 1) and deepened for Premium's light one (4.9 to 5.3 : 1):
+     the chart tones themselves fell to 4.1 and 2.9 at this size. */
+  --brand-ai-blue: #3d9bff;
+  --brand-ai-teal: #2fb7a3;
+  background-image: linear-gradient(100deg, var(--brand-ai-blue) 0%, var(--brand-ai-teal) 50%, var(--brand-ai-blue) 100%);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  transition: background-position 900ms var(--ease-out, cubic-bezier(.22, 1, .36, 1));
+}
+:root[data-skin="premium"]:not(.dark) .sidebar-brand-ai {
+  --brand-ai-blue: #0060c0;
+  --brand-ai-teal: #0f7566;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-brand-home:hover .sidebar-brand-ai { background-position: 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-brand-ai { transition: none; }
+}
+@media (forced-colors: active) {
+  .sidebar-brand-ai { color: CanvasText; -webkit-text-fill-color: CanvasText; background: none; }
 }
 .mascot-settings-intro {
   display: flex;
