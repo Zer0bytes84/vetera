@@ -35,4 +35,4 @@ Captures dans `apres-complements/` (quatre thèmes). La page lit maintenant, en 
 
 Données : le journal et les factures émises que l'app lit déjà (la même lecture que le tableau de bord). Aucun calcul existant n'est modifié ; le seul calcul nouveau est le classement par âge (`receivables-aging.ts`), en lecture seule. Un test vérifie que la somme des tranches est exactement le total de « Reste à recouvrer » déjà affiché. Dans le navigateur, les factures viennent de SQLite natif : le bloc créances n'y montre que les écritures en attente (voir `npm run tauri:dev` pour les factures).
 
-Le bouton de retour est dans la bande grise du premier bloc, à droite, comme les actions des autres pages : pilule blanche, texte noir, libellé « Finances ».
+Le bouton de retour est dans la bande grise du premier bloc, à droite, comme les actions des autres pages : pilule bleue (la teinte de l’app) pour attirer l’attention, libellé « Finances ».

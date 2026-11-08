@@ -123,7 +123,7 @@ export function PremiumFinancialAnalysis({ metrics, onNavigate, transactions = [
 
       <Section
         aside={
-          <ActionButton className="text-foreground" icon={ArrowLeft} onClick={() => onNavigate("finances")} variant="secondary">
+          <ActionButton className="bg-brand text-white hover:bg-brand/90" icon={ArrowLeft} onClick={() => onNavigate("finances")} variant="primary">
             Finances
           </ActionButton>
         }
