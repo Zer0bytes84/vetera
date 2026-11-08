@@ -71,13 +71,17 @@ Le panneau dit « Assistant IA » et « Dictée vocale » (la ligne « Assistant
 
 ## Vérifications
 
-`tsc -b` et `eslint .` propres ; suite de tests verte (207 fichiers, 1649 tests).
+`tsc -b` et `eslint .` propres ; suite de tests verte (208 fichiers, 1654 tests).
 
 ## Ajouts après les premiers retours
 
 - **Bulles** : le registre de Yuri ne met que le vétérinaire en bulle (`user-message`, `chat-thread`) ; son `streaming-message` dessine l'assistant en texte libre. J'ai donc ajouté à `streaming-message` une option `bubble` (même géométrie que la bulle du vétérinaire, coin arrondi côté de l'auteur plat). Et la bulle du vétérinaire passe de `surface-raised` (blanc, invisible sur la carte blanche du panneau) à une teinte `brand`. Ce sont deux écarts au registre, signalés dans l'en-tête des fichiers.
-- **Pas d'étoile « IA »** : retirée du bouton « Continuer », de « Structurer avec l'IA », de l'avatar par défaut du fil, de l'en-tête de `streaming-message`, de `agent-question` et de l'état « recherche à installer ». L'assistant, c'est la mascotte, avec son humeur (réfléchit pendant la rédaction, contente après l'enregistrement). Reste hors panneau : le bouton d'ouverture dans l'en-tête de l'app et la carte du nouvel assistant dans Paramètres.
+- **Pas d'étoile « IA »** : retirée du bouton « Continuer », de « Structurer avec l'IA », de l'avatar par défaut du fil, de l'en-tête de `streaming-message`, de `agent-question` et de l'état « recherche à installer ». L'assistant, c'est la mascotte, avec son humeur (réfléchit pendant la rédaction, contente après l'enregistrement). Hors panneau, l'étoile de la carte du nouvel assistant dans Paramètres est retirée aussi. Le bouton d'ouverture dans l'en-tête de l'app garde son icône d'origine (la remplacer par la mascotte n'était pas demandé : je l'ai essayé puis remis comme avant). Restent des icônes d'étincelle qui ne sont pas l'assistant : la baguette de l'éditeur de notes, le menu « IA » de la sélection de texte, l'entrée de la palette de commandes.
 - **Mascotte dans les bulles** : affichée entière (oreille non rognée), centrée sur la première ligne de la bulle. Les noms « Assistant IA » et « Vous » au-dessus des bulles sont retirés (la mascotte et le côté suffisent).
 - **En-tête** : bande grise arrondie, « Assistant Baitari » en grand et gras ; dessous le patient (nom appuyé), l'espèce et l'état de santé. Plus de grande mascotte ni de « Traitement local » (retiré partout dans l'en-tête). Le contenu est dans une carte blanche. La ligne sous l'en-tête de l'app arrive au bord de cette carte à la même hauteur : 60 px, 68 px en Clean.
 - **Largeur et vide** : le champ de dictée prend la hauteur que les bulles lui laissent ; bouton « Continuer » centré, en pilule, plus petit.
 - **Texte progressif** : à l’ouverture, le message d’accueil puis la première question s’écrivent mot à mot (la question attend la fin de l’accueil) (les mots apparaissent en fondu, effet de `streaming-message`). C'est un affichage progressif d'un texte connu, pas un flux du moteur. Les questions, les réponses et la note apparaissent d'un bloc. Avec « réduire les animations », l'accueil est affiché d'un bloc. Pour mémoire : le moteur local de rédaction ne livre pas de texte lisible au fil de la génération (le worker ne renvoie qu'un nombre de caractères, la sortie étant un JSON validé à la fin) ; je n'ai donc rien simulé pour les réponses générées.
+
+## Captures finales
+
+Relancées après le dernier correctif, avec le code final : `quatre-themes/` (fermé, ouvert, en dictée, recherche, validation, quatre thèmes) et `largeurs/` (1280 px). Le texte d'accueil et la première question sont affichés en entier : les captures attendent la fin de leur écriture progressive.

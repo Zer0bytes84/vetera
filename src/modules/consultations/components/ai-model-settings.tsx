@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/choice-controls";
 import { Cpu } from "lucide-react";
 import { SettingsSection } from "@/components/settings-section";
-import { ArrowDown, Microphone, MessageSquarePlus, Search, Check, FolderOpen, Sparkles } from "@/lib/icons";
+import { ArrowDown, Microphone, MessageSquarePlus, Search, Check, FolderOpen } from "@/lib/icons";
 import { isTauriRuntime } from "@/services/browser-store";
 import { importLocalModel } from "../local-ai/models";
 import { aiModelInstallation, useAIModelInstallation } from "../services/ai-model-installation";
@@ -117,7 +117,7 @@ export function NewAssistantCard({installed, downloading, busy, enabled, fellBac
   suspended?: boolean;
 }) {
   return <article className="mx-6 mb-6 flex min-w-0 flex-col gap-3 rounded-2xl border bg-background p-4">
-    <div className="flex items-center gap-2"><Sparkles className="size-4 shrink-0 text-muted-foreground"/><h4 className="text-sm font-medium">{NEW_ASSISTANT.name}</h4></div>
+    <div className="flex items-center gap-2"><h4 className="text-sm font-medium">{NEW_ASSISTANT.name}</h4></div>
     <p className="text-xs leading-relaxed text-muted-foreground">{NEW_ASSISTANT.description}</p>
     {suspended && <p role="status" className="text-xs text-muted-foreground">Temporairement indisponible : cette version est en cours de correction. L’assistant actuel rédige vos notes.</p>}
     {!suspended && installed && enabled && fellBack && <p role="status" className="text-xs text-muted-foreground">Cet ordinateur n’a pas pu la charger : l’assistant actuel a pris le relais.</p>}
