@@ -90,9 +90,11 @@
 
 /* Hovers: our header's hover tone; the close button keeps Windows' own red. On a touch screen there is no hover: decorum's own
    grey and red are cancelled too. */
-:root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn:hover,
-:root[data-window-controls="decorum"] #window-controls button#decorum-tb-close:hover {
-  background-color: transparent !important;
+@media not ((hover: hover) and (pointer: fine)) {
+  :root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn:hover,
+  :root[data-window-controls="decorum"] #window-controls button#decorum-tb-close:hover {
+    background-color: transparent !important;
+  }
 }
 @media (hover: hover) and (pointer: fine) {
   :root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn:hover {
