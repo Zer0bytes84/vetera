@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
-import { Area, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ChartCard } from "@/components/ui/chart-card";
+import { Segmented } from "@/components/ui/segmented-control";
+import { cn } from "@/lib/utils";
 import {
   ANALYTICS_PERIODS,
   analyticsRanges,
@@ -26,12 +28,12 @@ function paidIncome(transactions: Transaction[], range: AnalyticsRange) {
 
 function Change({ value, previous }: { value: number; previous: number }) {
   if (previous === 0) {
-    return <span className="finance-overview-context">{value === 0 ? "Rien sur les deux périodes" : "Rien sur la période précédente"}</span>;
+    return <span className="text-xs text-muted-foreground">{value === 0 ? "Rien sur les deux périodes" : "Rien sur la période précédente"}</span>;
   }
   const change = ((value - previous) / previous) * 100;
   return (
-    <span className="finance-overview-change">
-      <span data-sense={change > 0 ? "good" : change < 0 ? "bad" : "neutral"}>
+    <span className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+      <span className={cn("font-medium", change > 0 && "text-positive", change < 0 && "text-negative")}>
         {change > 0 ? "+" : ""}
         {change.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %
       </span>
@@ -41,10 +43,9 @@ function Change({ value, previous }: { value: number; previous: number }) {
 }
 
 /**
- * Income at a glance (Portfolio overview reference): the period's total and
- * its change, the period chosen inside the card, the curve against the
- * previous period, then what was invoiced by nature. Shown by the Clean skin
- * only (data-clean-only); it reads the same journal and invoices as the rest.
+ * Income at a glance: the period's total and its change, the period chosen inside the card, the curve against the previous
+ * period, then what was invoiced by nature. Shown by the Clean skin only (data-clean-only); it reads the same journal and
+ * invoices as the rest. The card is the shared ChartCard (grey band, white panel); only its footer is this page's.
  */
 export function FinanceOverview({ transactions }: { transactions: Transaction[] }) {
   const [period, setPeriod] = useState<AnalyticsPeriod>("30d");
@@ -65,71 +66,62 @@ export function FinanceOverview({ transactions }: { transactions: Transaction[] 
   }, [period, ranges, transactions]);
   const natures = Array.isArray(lines) ? invoicedByNature(lines, ranges) : null;
   const invoiced = natures?.reduce((sum, row) => sum + row.value, 0) ?? 0;
-  const tick = { fill: "var(--ink-muted)", fontSize: 12, fontFamily: "var(--app-font-sans)" };
 
   return (
-    <section aria-label="Vue d’ensemble des encaissements" className="finance-overview board-frame" data-clean-only="">
-      <div className="finance-overview-head">
-        <div>
-          <h2>Encaissements</h2>
-          <p>Écritures réglées, sur la période choisie</p>
-        </div>
-        <div aria-label="Période des encaissements" className="finance-overview-periods" data-tabs-style="segmented" role="group">
-          {PERIODS.map((option) => (
-            <button aria-pressed={period === option.value} key={option.value} onClick={() => setPeriod(option.value)} type="button">
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="finance-overview-hero">
-        <strong>{formatDinars(current / 100, 0)}</strong>
-        <Change previous={previous} value={current} />
-      </div>
-
-      <div aria-label="Encaissements de la période, et de la période précédente en pointillé" className="finance-overview-plot" role="img">
-        <ResponsiveContainer height="100%" minHeight={0} minWidth={0} width="100%">
-          <ComposedChart data={points} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-            <XAxis axisLine={false} dataKey="label" minTickGap={24} tick={tick} tickLine={false} tickMargin={10} />
-            <YAxis axisLine={false} tick={tick} tickFormatter={(value) => Number(value).toLocaleString("fr-FR", { notation: "compact" })} tickLine={false} width={48} />
-            <Tooltip content={({ active, payload, label }) => active && payload?.length ? (
-              <div className="finance-analysis-tooltip">
-                <span>{String(label)}</span>
-                <strong>{formatDinars(Number(payload[0]?.payload?.value ?? 0), 0)}</strong>
-                {payload[0]?.payload?.previous !== null ? (
-                  <span>{formatDinars(Number(payload[0]?.payload?.previous ?? 0), 0)} la période précédente</span>
-                ) : null}
+    <section aria-label="Vue d’ensemble des encaissements" className="finance-overview min-w-0" data-clean-only="">
+      <ChartCard
+        className="max-w-none"
+        data={{
+          labels: points.map((point) => point.label),
+          series: [
+            { id: "current", label: "Encaissements", values: points.map((point) => point.value), valueFormat: (value) => formatDinars(value, 0) },
+            // The previous period, quiet: a null stays a gap in the journal and reads as nothing here.
+            { id: "previous", label: "Période précédente", values: points.map((point) => point.previous ?? 0), color: "var(--muted-foreground)", valueFormat: (value) => formatDinars(value, 0) },
+          ],
+        }}
+        footer={
+          <div className="flex flex-col gap-6 pt-3">
+            <Change previous={previous} value={current} />
+            <div className="flex flex-col gap-3 border-t border-border pt-6">
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="text-[0.8125rem] font-medium">Facturé par nature</h3>
+                {natures ? <span className="text-[0.8125rem] font-medium tabular-nums">{formatDinars(invoiced / 100, 0)}</span> : null}
               </div>
-            ) : null} />
-            <Line dataKey="previous" dot={false} isAnimationActive={false} stroke="var(--series-1, var(--premium-blue))" strokeDasharray="2 5" strokeOpacity={0.35} strokeWidth={1} type="monotone" />
-            <Area activeDot={{ r: 4, fill: "var(--surface)", stroke: "var(--series-1, var(--premium-blue))", strokeWidth: 1 }} dataKey="value" fill="var(--series-1, var(--premium-blue))" fillOpacity={0.08} isAnimationActive={false} stroke="var(--series-1, var(--premium-blue))" strokeWidth={2} type="monotone" />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="finance-overview-natures">
-        <div className="finance-overview-natures-head">
-          <h3>Facturé par nature</h3>
-          {natures ? <span>{formatDinars(invoiced / 100, 0)}</span> : null}
-        </div>
-        {natures ? (
-          <ul>
-            {natures.map((row) => (
-              <li key={row.key}>
-                <span className="finance-overview-nature">{row.label}</span>
-                <strong>{formatDinars(row.value / 100, 0)}</strong>
-                <Change previous={row.previous} value={row.value} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="finance-overview-context">
-            {lines === "error" ? "Les factures n’ont pas pu être lues." : "Chargement des factures…"}
-          </p>
-        )}
-        <p className="finance-overview-footnote">Facturé : factures émises sur la période, avant avoirs. Encaissé : écritures réglées du journal.</p>
-      </div>
+              {natures ? (
+                <ul className="flex flex-col divide-y divide-border">
+                  {natures.map((row) => (
+                    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-1 py-3 first:pt-0" key={row.key}>
+                      <span className="text-[0.8125rem] font-medium">{row.label}</span>
+                      <strong className="text-right text-[0.8125rem] font-medium tabular-nums">{formatDinars(row.value / 100, 0)}</strong>
+                      <span className="col-span-2 justify-self-end">
+                        <Change previous={row.previous} value={row.value} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  {lines === "error" ? "Les factures n’ont pas pu être lues." : "Chargement des factures…"}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">Facturé : factures émises sur la période, avant avoirs. Encaissé : écritures réglées du journal.</p>
+            </div>
+          </div>
+        }
+        height={220}
+        subtitle="Écritures réglées, sur la période choisie"
+        title="Encaissements"
+        toolbar={
+          <Segmented<AnalyticsPeriod>
+            label="Période des encaissements"
+            onValueChange={setPeriod}
+            options={PERIODS.map((option) => ({ value: option.value, label: option.label }))}
+            value={period}
+          />
+        }
+        total={formatDinars(current / 100, 0)}
+        type="line"
+      />
     </section>
   );
 }

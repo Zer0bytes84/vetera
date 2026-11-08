@@ -368,10 +368,11 @@ describe("thème Clean : widgets", () => {
     expect(card).toContain("mt-auto");
   });
 
-  it("dessine la capacité en unités et la vue d'ensemble des finances avec les jetons Clean", () => {
+  it("dessine la capacité en unités avec les jetons Clean, et laisse la vue d'ensemble des finances à la carte de graphique commune", () => {
     const units = rulesFor(/stay-occupancy-units > span,/).map((rule) => rule.toString()).join("");
     expect(units).toContain("var(--clean-segment-track)");
-    expect(rulesFor(/\.finance-overview$/)[0]?.toString()).toContain("var(--clean-card-radius)");
+    // The overview is the shared chart card (grey band, white panel) and carries no Clean-only rule of its own.
+    expect(rulesFor(/\.finance-overview/)).toHaveLength(0);
   });
 });
 
