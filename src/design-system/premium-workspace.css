@@ -1009,22 +1009,6 @@
   box-shadow: none !important;
 }
 
-/* Revue 3.3.20 : paramètres Sécurité et Cabinet, mêmes repères gravés. */
-:root[data-visual-style="premium"] .settings-page-main:is([data-settings-section="securite"], [data-settings-section="cabinet"]) .settings-section-stack { gap: 24px; }
-:root[data-visual-style="premium"] .settings-page-main:is([data-settings-section="securite"], [data-settings-section="cabinet"]) :is(.settings-panel, [data-slot="card"]) {
-  min-width: 0; overflow: hidden; padding: 0; gap: 0; border: 1px solid var(--line) !important; border-radius: 0 !important; background: var(--surface) !important; box-shadow: var(--hair-t), var(--hair-l), var(--hair-r), var(--hair-b) !important;
-}
-:root[data-visual-style="premium"] .settings-page-main:is([data-settings-section="securite"], [data-settings-section="cabinet"]) :is(.settings-panel-heading, [data-slot="card-header"]) {
-  display: block; margin: 0; padding: 20px 24px !important; border-bottom: 1px solid var(--line); background: var(--band); overflow: hidden;
-}
-:root[data-visual-style="premium"] .settings-page-main:is([data-settings-section="securite"], [data-settings-section="cabinet"]) :is(.settings-panel-heading h3, [data-slot="card-title"]) { font-family: var(--app-font-heading); font-size: 16px; font-weight: 500; line-height: 1.5; color: var(--ink); }
-:root[data-visual-style="premium"] .settings-page-main:is([data-settings-section="securite"], [data-settings-section="cabinet"]) :is(.settings-panel-heading p, [data-slot="card-description"]) { margin-top: 4px; color: var(--soft); font-size: 13px; line-height: 1.6; }
-:root[data-visual-style="premium"] .settings-page-main[data-settings-section="securite"] [data-slot="card-content"] { padding: 24px !important; }
-:root[data-visual-style="premium"] .settings-page-main:is([data-settings-section="securite"], [data-settings-section="cabinet"]) :is(input:not([type="file"]), textarea) { min-height: 40px; border: 1px solid var(--line-strong) !important; border-radius: 6px !important; background: var(--surface) !important; padding: 10px 12px; }
-:root[data-visual-style="premium"] .settings-page-main:is([data-settings-section="securite"], [data-settings-section="cabinet"]) .settings-row { flex-wrap: wrap; gap: 16px; padding: 20px 24px; border-color: var(--line); }
-:root[data-visual-style="premium"] .settings-reset-panel .settings-row > div { flex: 1 1 280px; }
-:root[data-visual-style="premium"] .settings-reset-panel .settings-row > button { flex-shrink: 0; }
-
 /* Footer du compte : un bloc identité posé sur la barre, sans cadre ni filet. */
 /* 15px + 10px of card padding: the avatar lines up with the shortcut icons, the "⋯" with their dots. */
 :root[data-visual-style="premium"] .app-sidebar [data-slot="sidebar-footer"] { padding: 16px 15px 20px !important; }
@@ -1045,12 +1029,6 @@
 :root[data-visual-style="premium"] [data-collapsible="icon"] .sidebar-account-frame::before { display: none; }
 
 :root[data-visual-style="premium"] [data-collapsible="icon"] .sidebar-account-frame .sidebar-user-card { padding: 0 !important; min-height: 44px !important; }
-
-/* Crédits restaurés, mêmes photos et contenus que les anciennes fiches. */
-:root[data-visual-style="premium"] .settings-credits { border: 1px solid var(--line); border-radius: 0; background: var(--surface); box-shadow: var(--hair-t), var(--hair-l), var(--hair-r), var(--hair-b); }
-:root[data-visual-style="premium"] .settings-credits > .settings-panel-heading { padding: 20px 24px; border-bottom: 1px solid var(--line); background: var(--band); }
-:root[data-visual-style="premium"] .settings-credits .settings-contributor { border-radius: 0; border-color: var(--line); box-shadow: var(--hair-l); }
-:root[data-visual-style="premium"] .settings-credits h4 { font-family: var(--app-font-heading); font-weight: 500; color: var(--ink); }
 
 /* Calendars are tables: keep the premium data-table cell styling (padding,
    hairlines, row hover) out of their day grid so popovers stay compact. */

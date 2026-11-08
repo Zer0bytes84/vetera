@@ -1,7 +1,9 @@
 import { relaunch } from "@tauri-apps/plugin-process";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Network } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SettingsSection } from "@/components/settings-section";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -161,35 +163,35 @@ export function ClinicNetworkSettings() {
 
   if (!desktop) {
     return (
-      <section className="settings-panel" aria-label="Réseau local">
-        <div className="settings-panel-heading">
-          <h3>Réseau local</h3>
-          <p>Le partage entre postes est disponible dans l'application de bureau.</p>
-        </div>
-      </section>
+      <SettingsSection
+        aria-label="Réseau local"
+        icon={Network}
+        subtitle="Partager la base entre les postes du cabinet."
+        title="Réseau local"
+      >
+        <p className="p-6 text-sm text-muted-foreground">
+          Le partage entre postes est disponible dans l'application de bureau.
+        </p>
+      </SettingsSection>
     );
   }
 
   const host = status?.host;
 
   return (
-    <section className="settings-panel" aria-label="Réseau local">
-      <div className="settings-panel-heading flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1 basis-64">
-          <h3>Postes du cabinet</h3>
-          <p>
-            Plusieurs postes du cabinet travaillent sur la même base, par le réseau de la clinique. Rien ne
-            passe par internet.
-          </p>
-        </div>
-        <Badge variant="outline" className="shrink-0">Aperçu technique</Badge>
-      </div>
+    <SettingsSection
+      aria-label="Réseau local"
+      aside={<Badge variant="outline" className="shrink-0">Aperçu technique</Badge>}
+      icon={Network}
+      subtitle="Plusieurs postes du cabinet travaillent sur la même base, par le réseau de la clinique. Rien ne passe par internet."
+      title="Postes du cabinet"
+    >
 
-      <div className="space-y-4 px-4 pb-4">
+      <div className="space-y-6 p-6">
         <RadioGroup
           aria-label="Rôle de ce poste"
           // Wraps on the panel's own width: settings content is narrower than the window.
-          className="grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-2"
+          className="grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-3"
           value={choice}
           onValueChange={(value) => {
             setChoice(value as NetworkMode);
@@ -200,7 +202,7 @@ export function ClinicNetworkSettings() {
             <label
               key={mode.id}
               className={cn(
-                "flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border bg-background p-4 transition-colors",
+                "flex min-w-0 cursor-pointer items-start gap-3 rounded-2xl border bg-background p-4 transition-colors",
                 choice === mode.id ? "border-primary/60 bg-primary/5" : "hover:bg-muted/40"
               )}
             >
@@ -231,7 +233,7 @@ export function ClinicNetworkSettings() {
         )}
 
         {choice === "standalone" && status && status.mode !== "standalone" && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4">
             <p className="text-sm text-muted-foreground">
               {status.mode === "host"
                 ? "Les postes secondaires ne pourront plus travailler tant que ce poste ne partage plus sa base."
@@ -245,7 +247,7 @@ export function ClinicNetworkSettings() {
         )}
 
         {choice === "host" && host && (
-          <div className="space-y-4 rounded-xl border p-4">
+          <div className="space-y-4 rounded-2xl border p-4">
             {host.running ? (
               <>
                 <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
@@ -318,7 +320,7 @@ export function ClinicNetworkSettings() {
         )}
 
         {choice === "client" && linked && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4">
             <div className="flex min-w-0 items-center gap-2 text-sm">
               <StatusDot tone={remoteError ? "warn" : remote ? "on" : "off"} />
               {remoteError ? (
@@ -336,7 +338,7 @@ export function ClinicNetworkSettings() {
         )}
 
         {choice === "client" && !linked && status?.mode !== "client" && (
-          <div className="space-y-4 rounded-xl border p-4">
+          <div className="space-y-4 rounded-2xl border p-4">
             <div className="flex flex-wrap items-end gap-3">
               <Field className="min-w-48 flex-1">
                 <FieldLabel htmlFor="clinic-network-address">Adresse du poste principal</FieldLabel>
@@ -437,7 +439,7 @@ export function ClinicNetworkSettings() {
         )}
 
         {error && (
-          <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
+          <p role="alert" className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
             {error}
           </p>
         )}
@@ -445,7 +447,7 @@ export function ClinicNetworkSettings() {
         {status?.needsRestart && (
           <div
             role="status"
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4"
           >
             <p className="text-sm">
               {status.mode === "client"
@@ -458,6 +460,6 @@ export function ClinicNetworkSettings() {
           </div>
         )}
       </div>
-    </section>
+    </SettingsSection>
   );
 }

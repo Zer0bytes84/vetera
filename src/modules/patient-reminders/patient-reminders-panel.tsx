@@ -1,3 +1,4 @@
+import { Switch } from "@/components/ui/choice-controls";
 import { ErrorState } from "@/design-system/patterns/error-state";
 import "./patient-reminders.css";
 
@@ -472,7 +473,7 @@ export function PatientRemindersContent({
             }}>
               <label className="block t-13">Nom<Input className="mt-1 min-h-11" onChange={(event) => setName(event.target.value)} required value={name} /></label>
               <label className="block t-13">Intervalle en mois<Input className="mt-1 min-h-11" max="120" min="1" onChange={(event) => setMonths(event.target.value)} required step="1" type="number" value={months} /></label>
-              <label className="flex min-h-11 items-center gap-2 t-13"><input checked={active} onChange={(event) => setActive(event.target.checked)} type="checkbox" />Actif</label>
+              <Switch checked={active} className="min-h-11 items-center t-13" label="Actif" onCheckedChange={setActive} />
               <Button className="min-h-11" disabled={busy || !currentUser} type="submit">Enregistrer le type</Button>
             </form>
           )}

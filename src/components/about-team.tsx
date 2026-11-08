@@ -1,4 +1,6 @@
+import { UsersRound } from "lucide-react";
 import Avatar from "@/components/Avatar";
+import { SettingsSection } from "@/components/settings-section";
 
 const contributors = [
   {
@@ -25,13 +27,9 @@ const contributors = [
 ];
 
 export function AboutTeam() {
-  return <section className="settings-panel settings-credits" aria-labelledby="about-team-title">
-    <div className="settings-panel-heading">
-      <h3 id="about-team-title">Équipe Baitari</h3>
-      <p>Produit, expertise clinique et validation terrain réunis autour d’un même outil.</p>
-    </div>
-    <div className="settings-credits-grid grid gap-4 p-5 xl:grid-cols-3">
-      {contributors.map(person => <article key={person.name} className="settings-contributor flex min-w-0 flex-col gap-3 rounded-lg border border-border p-4">
+  return <SettingsSection icon={UsersRound} title="Équipe Baitari" subtitle="Produit, expertise clinique et validation terrain réunis autour d’un même outil." panelClassName="settings-credits">
+    <div className="settings-credits-grid grid gap-6 p-6 xl:grid-cols-3">
+      {contributors.map(person => <article key={person.name} className="settings-contributor flex min-w-0 flex-col gap-3 rounded-2xl border border-border p-6">
         <Avatar name={person.name} src={person.photo} size="lg" className="size-14 shrink-0 rounded-full" />
         <div className="min-w-0"><h4 className="text-sm font-medium leading-5">{person.name}</h4><p className="mt-1 text-xs text-muted-foreground leading-5">{person.role}</p></div>
         <p className="flex-1 text-xs text-muted-foreground leading-6">{person.description}</p>
@@ -40,5 +38,5 @@ export function AboutTeam() {
         </ul>
       </article>)}
     </div>
-  </section>;
+  </SettingsSection>;
 }

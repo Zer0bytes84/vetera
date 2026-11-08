@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SettingsBody, SettingsSection } from "@/components/settings-section";
 import {
   checkLicenseAccess,
   type LicenseAccess,
@@ -18,10 +20,10 @@ export function LicenseStatusCard() {
     };
   }, []);
   return (
-    <section className="rounded-xl border bg-card p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold">Licence de ce poste</h3>
+    <SettingsSection
+      aside={
         <Button
+          className="rounded-full"
           type="button"
           variant="outline"
           size="sm"
@@ -37,22 +39,28 @@ export function LicenseStatusCard() {
         >
           {busy ? "Vérification…" : "Vérifier maintenant"}
         </Button>
-      </div>
-      <p role="status" className="mt-2 text-sm text-muted-foreground">
-        {access?.message || "Lecture de l’activation…"}
-      </p>
-      {access?.allowed && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          {access.expiresAt
-            ? `Valable jusqu’au ${new Date(access.expiresAt).toLocaleString("fr-FR")}`
-            : "Licence sans date d’expiration"}{" "}
-          · contrôle périodique en ligne
+      }
+      icon={ShieldCheck}
+      subtitle="Activation et validité de ce poste."
+      title="Licence de ce poste"
+    >
+      <SettingsBody className="gap-3">
+        <p role="status" className="text-sm">
+          {access?.message || "Lecture de l’activation…"}
         </p>
-      )}
-      <p className="mt-2 text-xs text-muted-foreground">
-        Après une vérification réussie, l’accès reste disponible jusqu’à sept
-        jours hors connexion, dans la limite de validité de la licence.
-      </p>
-    </section>
+        {access?.allowed && (
+          <p className="text-xs text-muted-foreground">
+            {access.expiresAt
+              ? `Valable jusqu’au ${new Date(access.expiresAt).toLocaleString("fr-FR")}`
+              : "Licence sans date d’expiration"}{" "}
+            · contrôle périodique en ligne
+          </p>
+        )}
+        <p className="text-xs text-muted-foreground">
+          Après une vérification réussie, l’accès reste disponible jusqu’à sept
+          jours hors connexion, dans la limite de validité de la licence.
+        </p>
+      </SettingsBody>
+    </SettingsSection>
   );
 }

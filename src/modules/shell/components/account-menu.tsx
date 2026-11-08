@@ -1,4 +1,5 @@
 import {
+  Building01Icon,
   Logout01Icon,
   Notification01Icon,
   Settings01Icon,
@@ -31,6 +32,7 @@ export function AccountMenu({
   role,
   unreadCount,
   onProfile,
+  onClinic,
   onFinances,
   onNotifications,
   onSettings,
@@ -42,6 +44,8 @@ export function AccountMenu({
   role: string;
   unreadCount: number;
   onProfile: () => void;
+  /** Opens Paramètres on its « Mon cabinet » section. */
+  onClinic: () => void;
   onFinances: () => void;
   onNotifications: () => void;
   onSettings: () => void;
@@ -77,6 +81,10 @@ export function AccountMenu({
           <DropdownMenuItem className="shell-account-item" onClick={onProfile}>
             <HugeiconsIcon icon={UserCircleIcon} strokeWidth={1.5} />
             Mon profil
+          </DropdownMenuItem>
+          <DropdownMenuItem className="shell-account-item" onClick={onClinic}>
+            <HugeiconsIcon icon={Building01Icon} strokeWidth={1.5} />
+            Mon cabinet
           </DropdownMenuItem>
           <DropdownMenuItem className="shell-account-item" onClick={onNotifications}>
             <HugeiconsIcon icon={Notification01Icon} strokeWidth={1.5} />

@@ -1802,10 +1802,7 @@
   width: var(--clean-nav-icon) !important;
   height: var(--clean-nav-icon) !important;
 }
-:root[data-skin="clean"][data-skin] .settings-panel { border-radius: var(--clean-card-radius) !important; }
 :root[data-skin="clean"][data-skin] .settings-page-nav { gap: 24px !important; }
-:root[data-skin="clean"][data-skin] .settings-profile-identity { gap: 16px !important; }
-:root[data-skin="clean"][data-skin] .settings-content-heading { margin-bottom: 24px !important; }
 
 /* Help: Tailwind's zinc greys (hue 286) took the place of the Clean lines and
    inks there. Same roles, Clean values. */
@@ -1836,7 +1833,6 @@
 :root[data-skin="clean"][data-skin] :is(.heatSide, .flow-toolbar-summary) { gap: 12px !important; }
 :root[data-skin="clean"][data-skin] .finance-analysis { gap: 24px !important; }
 :root[data-skin="clean"][data-skin] .finance-analysis-category-detail { margin-top: 8px !important; }
-:root[data-skin="clean"][data-skin] .settings-content-heading > p { margin-top: 4px !important; }
 :root[data-skin="clean"][data-skin] .flow-planned { padding: 12px !important; }
 
 /* ---------- Type sets: Appearance > Police, Clean only ----------

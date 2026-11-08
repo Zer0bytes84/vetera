@@ -1,18 +1,15 @@
 import { isActivationOwner } from "@/services/adminAccess";
 import { LocalDataResetSettings } from "./local-data-reset-settings";
 import { AboutTeam } from "./about-team";
-import { PageDate } from "@/components/PageDate";
 import { MascotSettings } from "@/components/mascot/mascot-settings";
 import { DashboardVersionSetting } from "@/modules/dashboard/components/dashboard-version-setting";
-import { InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
+import { ClinicIdentityPanel, InvoiceSettingsPanel } from "@/modules/invoices/components/invoice-settings-panel";
 import DocumentTemplateManager from "@/modules/documents/components/document-template-manager";
 import { PatientRemindersContent } from "@/modules/patient-reminders/patient-reminders-panel";
 import { usePatientReminders } from "@/modules/patient-reminders/use-patient-reminders";
 import { LicenseStatusCard } from "@/components/LicenseStatusCard";
 import {
-  Alert02Icon,
   Building01Icon,
-  CheckmarkCircle02Icon,
   DatabaseIcon,
   Delete01Icon,
   Door01Icon,
@@ -20,28 +17,43 @@ import {
   InformationCircleIcon,
   LaptopIcon,
   Notification01Icon,
+  ReceiptTextIcon,
   Refresh01Icon,
-  SaveIcon,
   Shield01Icon,
   PencilEdit01Icon,
   UserCircle02Icon,
   Wifi01Icon,
 } from "@/lib/hugeicons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bell,
+  History,
+  IdCard,
+  Info,
+  KeyRound,
+  LayoutDashboard,
+  Palette,
+  PanelLeft,
+  UserRound,
+  Database,
+  KeySquare,
+} from "lucide-react";
 import { relaunch } from "@tauri-apps/plugin-process";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Segmented } from "@/components/ui/segmented-control";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  SettingsBody,
+  SettingsFooter,
+  SettingsNotice,
+  SettingsRow,
+  SettingsSection,
+  SettingsStack,
+} from "@/components/settings-section";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLayout } from "@/contexts/layout-provider";
 import { useUsersRepository } from "@/data/repositories";
@@ -88,30 +100,20 @@ import {
   AI_ONBOARDING_OPEN_EVENT,
   AI_SETTINGS_PENDING_KEY,
 } from "@/modules/consultations/services/ai-model-provisioning";
+import {
+  isSettingsTab,
+  SETTINGS_SECTION_EVENT,
+  SETTINGS_SECTION_KEY,
+  type SettingsTab,
+} from "@/lib/settings-navigation";
 import type { View } from "@/types";
 import Avatar, { PROFILE_AVATAR_EMOJIS } from "./Avatar";
 import Logo from "./Logo";
-import { ThemeModeToggle } from "./theme-mode-toggle";
-import { AppThemePicker } from "./app-theme-picker";
-import { appThemeSettings, currentAppTheme, normalizeSkin } from "@/lib/theme-skin";
+import { APP_THEMES, appThemeSettings, currentAppTheme, normalizeSkin, type AppTheme } from "@/lib/theme-skin";
 import { getSidebarTone, saveSidebarTone, SIDEBAR_TONES, type SidebarTone } from "@/lib/sidebar-tone";
 import { formatPersonName } from "@/utils/display-format";
 import { roleLabel as displayRole } from "@/lib/user-role";
 import { PageHeader } from "@/design-system/patterns/page-header";
-import { Settings02Icon } from "@/lib/hugeicons";
-
-type SettingsTab =
-  | "cabinet"
-  | "salles"
-  | "profil"
-  | "apparence"
-  | "securite"
-  | "ia"
-  | "rappels-medicaux"
-  | "modeles-documents"
-  | "sauvegarde"
-  | "reseau"
-  | "apropos";
 
 type SettingsNavItem = {
   id: SettingsTab;
@@ -139,7 +141,6 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
           "nom",
           "email",
           "téléphone",
-          "cabinet",
           "photo",
           "avatar",
           "bio",
@@ -158,10 +159,18 @@ const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     label: "Espace de travail",
     items: [
       {
-        id: "cabinet",
-        label: "Cabinet & factures",
-        description: "Coordonnées, logo et présentation des PDF",
+        id: "mon-cabinet",
+        label: "Mon cabinet",
+        description: "Nom, adresse, coordonnées et logo du cabinet",
         icon: Building01Icon,
+        keywords: ["nom", "adresse", "téléphone", "email", "e-mail", "logo", "identité", "clinique", "nif"],
+      },
+      {
+        id: "cabinet",
+        label: "Facturation",
+        description: "Couleur, pied de page et aperçu des factures",
+        icon: ReceiptTextIcon,
+        keywords: ["facture", "pdf", "pied de page", "couleur"],
       },
       {
         id: "salles",
@@ -358,24 +367,23 @@ const BackupSettings: React.FC = () => {
   };
 
   return (
-    <div className="settings-section-stack">
+    <SettingsStack>
       {!desktop && (
-        <p className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
-          Les sauvegardes de la base sont disponibles dans l’application de
-          bureau.
-        </p>
+        <SettingsNotice tone="info">
+          Les sauvegardes de la base sont disponibles dans l’application de bureau.
+        </SettingsNotice>
       )}
-      <section className="settings-panel">
-        <div className="settings-row border-t-0">
-          <div>
-            <p className="settings-row-title">Dernière sauvegarde</p>
-            <p className="settings-row-detail">
-              {lastBackup
-                ? formatDate(lastBackup)
-                : "Aucune sauvegarde enregistrée"}
-            </p>
-          </div>
+      <SettingsSection
+        icon={Database}
+        subtitle="Une copie de sécurité est créée avant toute importation ou restauration."
+        title="Sauvegarde"
+      >
+        <SettingsRow
+          detail={lastBackup ? formatDate(lastBackup) : "Aucune sauvegarde enregistrée"}
+          title="Dernière sauvegarde"
+        >
           <Button
+            className="rounded-full"
             disabled={!desktop || busy || loading}
             onClick={() =>
               void run(() => createBackup("manual"), "Sauvegarde créée.")
@@ -384,46 +392,39 @@ const BackupSettings: React.FC = () => {
             {busy && <Spinner className="size-4" />}
             Sauvegarder maintenant
           </Button>
-        </div>
-        <div className="settings-row">
-          <div>
-            <p className="settings-row-title">Copie externe</p>
-            <p className="settings-row-detail">
-              Conserver une copie de la base sur un autre support.
-            </p>
-          </div>
+        </SettingsRow>
+        <SettingsRow
+          detail="Conserver une copie de la base sur un autre support."
+          title="Copie externe"
+        >
           <Button
+            className="rounded-full"
             disabled={!desktop || busy}
             onClick={() => void run(() => exportDatabase(), "Base exportée.")}
             variant="outline"
           >
             Exporter
           </Button>
-        </div>
-        <div className="settings-row">
-          <div>
-            <p className="settings-row-title">Importer une base</p>
-            <p className="settings-row-detail">
-              Remplace les données actuelles par celles du fichier choisi.
-            </p>
-          </div>
+        </SettingsRow>
+        <SettingsRow
+          detail="Remplace les données actuelles par celles du fichier choisi."
+          title="Importer une base"
+        >
           <Button
+            className="rounded-full"
             disabled={!desktop || busy}
             onClick={() => setPending({ kind: "import" })}
             variant="outline"
           >
             Importer…
           </Button>
-        </div>
-      </section>
-      <section className="settings-panel">
-        <div className="settings-panel-heading flex items-center justify-between gap-3">
-          <div>
-            <h3>Sauvegardes conservées</h3>
-            <p>Les cinq dernières copies sont conservées automatiquement.</p>
-          </div>
+        </SettingsRow>
+      </SettingsSection>
+      <SettingsSection
+        aside={
           <Button
             aria-label="Actualiser les sauvegardes"
+            className="rounded-full"
             disabled={loading || busy}
             onClick={() => void load()}
             size="icon-sm"
@@ -435,61 +436,59 @@ const BackupSettings: React.FC = () => {
               strokeWidth={1.5}
             />
           </Button>
-        </div>
+        }
+        icon={History}
+        subtitle="Les cinq dernières copies sont conservées automatiquement."
+        title="Sauvegardes conservées"
+      >
         {loading ? (
           <div className="flex justify-center p-6">
             <Spinner />
           </div>
         ) : backups.length === 0 ? (
-          <p className="border-t border-border px-6 py-6 text-sm text-muted-foreground">
+          <p className="px-6 py-6 text-sm text-muted-foreground">
             Votre première copie apparaîtra ici après la sauvegarde.
           </p>
         ) : (
           backups.map((backup) => (
-            <div className="settings-row" key={backup.filename}>
-              <div>
-                <p className="settings-row-title">{formatDate(backup.date)}</p>
-                <p className="settings-row-detail">
-                  Version {backup.version} ·{" "}
-                  {backup.filename.includes("auto")
-                    ? "Automatique"
-                    : "Manuelle"}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  disabled={busy}
-                  onClick={() =>
-                    setPending({ kind: "restore", filename: backup.filename })
-                  }
-                  size="sm"
-                  variant="outline"
-                >
-                  Restaurer…
-                </Button>
-                <Button
-                  aria-label={`Supprimer la sauvegarde du ${formatDate(backup.date)}`}
-                  disabled={busy}
-                  onClick={() =>
-                    setPending({ kind: "delete", filename: backup.filename })
-                  }
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon
-                    className="size-4"
-                    icon={Delete01Icon}
-                    strokeWidth={1.5}
-                  />
-                </Button>
-              </div>
-            </div>
+            <SettingsRow
+              detail={`Version ${backup.version} · ${
+                backup.filename.includes("auto") ? "Automatique" : "Manuelle"
+              }`}
+              key={backup.filename}
+              title={formatDate(backup.date)}
+            >
+              <Button
+                className="rounded-full"
+                disabled={busy}
+                onClick={() =>
+                  setPending({ kind: "restore", filename: backup.filename })
+                }
+                size="sm"
+                variant="outline"
+              >
+                Restaurer…
+              </Button>
+              <Button
+                aria-label={`Supprimer la sauvegarde du ${formatDate(backup.date)}`}
+                className="rounded-full"
+                disabled={busy}
+                onClick={() =>
+                  setPending({ kind: "delete", filename: backup.filename })
+                }
+                size="icon-sm"
+                variant="ghost"
+              >
+                <HugeiconsIcon
+                  className="size-4"
+                  icon={Delete01Icon}
+                  strokeWidth={1.5}
+                />
+              </Button>
+            </SettingsRow>
           ))
         )}
-      </section>
-      <p className="text-xs leading-5 text-muted-foreground">
-        Une copie de sécurité est créée avant toute importation ou restauration.
-      </p>
+      </SettingsSection>
       <AlertDialog
         open={pending !== null}
         onOpenChange={(open) => {
@@ -543,7 +542,7 @@ const BackupSettings: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </SettingsStack>
   );
 };
 
@@ -572,22 +571,34 @@ const Parametres: React.FC<ParametresProps> = ({
     return normalized;
   };
 
-  const [activeTab, setActiveTab] = useState<SettingsTab>(() =>
-    typeof window !== "undefined" &&
-    window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true"
+  const [activeTab, setActiveTab] = useState<SettingsTab>(() => {
+    if (typeof window === "undefined") return "profil";
+    // A section asked for from elsewhere (the account menu's « Mon cabinet ») opens directly.
+    const requested = window.sessionStorage.getItem(SETTINGS_SECTION_KEY);
+    if (isSettingsTab(requested)) return requested;
+    return window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true"
       ? "ia"
-      : "profil",
-  );
+      : "profil";
+  });
   useEffect(() => {
     const openAISettings = () => {
       window.sessionStorage.removeItem(AI_SETTINGS_PENDING_KEY);
       setActiveTab("ia");
     };
-    if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true")
+    const openRequestedSection = () => {
+      const requested = window.sessionStorage.getItem(SETTINGS_SECTION_KEY);
+      window.sessionStorage.removeItem(SETTINGS_SECTION_KEY);
+      if (isSettingsTab(requested)) setActiveTab(requested);
+    };
+    if (window.sessionStorage.getItem(SETTINGS_SECTION_KEY)) openRequestedSection();
+    else if (window.sessionStorage.getItem(AI_SETTINGS_PENDING_KEY) === "true")
       openAISettings();
     window.addEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
-    return () =>
+    window.addEventListener(SETTINGS_SECTION_EVENT, openRequestedSection);
+    return () => {
       window.removeEventListener(AI_ONBOARDING_OPEN_EVENT, openAISettings);
+      window.removeEventListener(SETTINGS_SECTION_EVENT, openRequestedSection);
+    };
   }, []);
   const { currentUser, refreshCurrentUser } = useAuth();
   const medicalReminders = usePatientReminders();
@@ -755,49 +766,48 @@ const Parametres: React.FC<ParametresProps> = ({
 
   const roleLabel = displayRole(userDoc?.role, currentUser?.email);
 
+  const isDarkNow =
+    currentTheme === "dark" ||
+    (currentTheme === "system" &&
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const appTheme = currentAppTheme(normalizeSkin(themeConfig.skin), isDarkNow);
+
   const renderContent = () => {
     switch (activeTab) {
       case "modeles-documents":
         return (
           <DocumentTemplateManager
             embedded
-            onConfigureClinic={() => setActiveTab("cabinet")}
+            onConfigureClinic={() => setActiveTab("mon-cabinet")}
           />
         );
       case "profil":
         return (
-          <div className="settings-section-stack">
+          <SettingsStack>
             {message && (
-              <p
-                className={cn(
-                  "rounded-lg border px-4 py-3 text-sm",
-                  message.type === "success"
-                    ? "border-emerald-500/25 text-emerald-700 dark:text-emerald-300"
-                    : "border-destructive/25 text-destructive",
-                )}
-                role="status"
-              >
-                {message.text}
-              </p>
+              <SettingsNotice tone={message.type}>{message.text}</SettingsNotice>
             )}
-            <section className="settings-panel">
-              <div className="settings-profile-identity">
+            <SettingsSection
+              icon={UserRound}
+              subtitle="Votre identité et votre avatar dans l’équipe."
+              title="Profil"
+            >
+              <div className="flex items-center gap-3 p-6">
                 <Avatar name={displayName} size="xl" src={avatarUrl} />
                 <div className="min-w-0">
-                  <h3 className="truncate text-lg font-semibold">
+                  <p className="truncate text-lg font-medium">
                     {formatPersonName(displayName) || "Votre profil"}
-                  </h3>
-                  <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                  </p>
+                  <p className="truncate text-sm text-muted-foreground">
                     {currentUser?.email}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {roleLabel}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{roleLabel}</p>
                 </div>
               </div>
               <details className="settings-avatar-picker">
                 <summary>Changer l’avatar</summary>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-6 flex flex-wrap gap-3">
                   {PROFILE_AVATAR_EMOJIS.map((emoji) => {
                     const value = `emoji:${emoji}`;
                     return (
@@ -818,8 +828,9 @@ const Parametres: React.FC<ParametresProps> = ({
                     );
                   })}
                 </div>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-6 flex flex-wrap gap-3">
                   <Button
+                    className="rounded-full"
                     onClick={() => setAvatarUrl("")}
                     size="sm"
                     type="button"
@@ -830,7 +841,7 @@ const Parametres: React.FC<ParametresProps> = ({
                   <label
                     className={cn(
                       buttonVariants({ size: "sm", variant: "outline" }),
-                      "cursor-pointer",
+                      "cursor-pointer rounded-full",
                     )}
                     htmlFor="profile-photo-upload"
                   >
@@ -845,143 +856,138 @@ const Parametres: React.FC<ParametresProps> = ({
                   />
                 </div>
               </details>
-            </section>
-            <section className="settings-panel">
-              <div className="settings-panel-heading">
-                <h3>Informations professionnelles</h3>
-                <p>Vos coordonnées personnelles dans l’équipe.</p>
-              </div>
-              <div className="settings-profile-fields">
-                <Field>
-                  <FieldLabel htmlFor="settings-name">Nom complet</FieldLabel>
-                  <Input
-                    id="settings-name"
-                    autoComplete="name"
-                    onChange={(event) => setDisplayName(event.target.value)}
-                    value={displayName}
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="settings-phone">Téléphone</FieldLabel>
-                  <Input
-                    id="settings-phone"
-                    autoComplete="tel"
-                    onChange={(event) => setPhone(event.target.value)}
-                    placeholder="Numéro de téléphone"
-                    type="tel"
-                    value={phone}
-                  />
-                </Field>
-              </div>
-              <div className="settings-profile-footer">
-                <Button disabled={isSaving} onClick={handleSaveProfile}>
+            </SettingsSection>
+            <SettingsSection
+              icon={IdCard}
+              subtitle="Vos coordonnées personnelles dans l’équipe."
+              title="Informations professionnelles"
+            >
+              <SettingsBody>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <Field className="sm:col-span-2">
+                    <FieldLabel htmlFor="settings-name">Nom complet</FieldLabel>
+                    <Input
+                      id="settings-name"
+                      autoComplete="name"
+                      onChange={(event) => setDisplayName(event.target.value)}
+                      value={displayName}
+                    />
+                  </Field>
+                  <Field className="sm:col-span-2">
+                    <FieldLabel htmlFor="settings-phone">Téléphone</FieldLabel>
+                    <Input
+                      id="settings-phone"
+                      autoComplete="tel"
+                      onChange={(event) => setPhone(event.target.value)}
+                      placeholder="Numéro de téléphone"
+                      type="tel"
+                      value={phone}
+                    />
+                  </Field>
+                </div>
+              </SettingsBody>
+              <SettingsFooter className="justify-end">
+                <Button
+                  className="rounded-full"
+                  disabled={isSaving}
+                  onClick={handleSaveProfile}
+                >
                   {isSaving && <Spinner className="size-4" />}
                   Enregistrer
                 </Button>
-              </div>
-            </section>
-          </div>
+              </SettingsFooter>
+            </SettingsSection>
+          </SettingsStack>
         );
+      case "mon-cabinet":
+        return <ClinicIdentityPanel />;
       case "cabinet":
-        return null;
+        return (
+          <InvoiceSettingsPanel onOpenClinic={() => setActiveTab("mon-cabinet")} />
+        );
       case "apparence":
         return (
-          <div className="settings-section-stack">
+          <SettingsStack>
             <MascotSettings />
-            <section className="settings-panel">
-              <div className="settings-panel-heading">
-                <h3>Affichage</h3>
-                <p>Un espace lisible, de jour comme de nuit.</p>
-              </div>
-              <div className="settings-row">
-                <div>
-                  <p className="settings-row-title">Thème</p>
-                  <p className="settings-row-detail">
-                    Premium clair, Premium sombre, Clean clair ou Clean sombre.
-                  </p>
-                </div>
-                <AppThemePicker
-                  value={currentAppTheme(
-                    normalizeSkin(themeConfig.skin),
-                    currentTheme === "dark" ||
-                      (currentTheme === "system" &&
-                        window.matchMedia("(prefers-color-scheme: dark)").matches),
-                  )}
-                  onChange={(theme) => {
+            <SettingsSection
+              icon={Palette}
+              subtitle="Un espace lisible, de jour comme de nuit."
+              title="Affichage"
+            >
+              <SettingsRow
+                detail={`${APP_THEMES.find((theme) => theme.id === appTheme)?.description ?? ""}`}
+                title="Thème"
+              >
+                <Segmented<AppTheme>
+                  label="Thème"
+                  onValueChange={(theme) => {
                     const { skin, mode } = appThemeSettings(theme);
                     handleThemeConfigChange({ ...themeConfig, skin });
                     onThemeChange?.(mode);
                   }}
+                  options={APP_THEMES.map((theme) => ({
+                    value: theme.id,
+                    label: theme.label,
+                  }))}
+                  value={appTheme}
                 />
-              </div>
-              <div className="settings-row">
-                <div>
-                  <p className="settings-row-title">Mode</p>
-                  <p className="settings-row-detail">
-                    Suit votre environnement ou reste fixe.
-                  </p>
-                </div>
-                <ThemeModeToggle
-                  mode={currentTheme}
-                  onChange={(nextMode) => onThemeChange?.(nextMode)}
+              </SettingsRow>
+              <SettingsRow
+                detail="Suit votre environnement ou reste fixe."
+                title="Mode"
+              >
+                <Segmented<"light" | "system" | "dark">
+                  label="Mode"
+                  onValueChange={(nextMode) => onThemeChange?.(nextMode)}
+                  options={[
+                    { value: "light", label: "Clair" },
+                    { value: "system", label: "Auto" },
+                    { value: "dark", label: "Sombre" },
+                  ]}
+                  value={currentTheme}
                 />
-              </div>
+              </SettingsRow>
               <SidebarToneSetting userId={currentUser?.id} />
               {normalizeSkin(themeConfig.skin) === "clean" && (
-                  <div className="settings-row">
-                    <div>
-                      <p className="settings-row-title">Police</p>
-                      <p className="settings-row-detail">
-                        {CLEAN_FONT_SETS[normalizeCleanFont(themeConfig.cleanFont)].description}
-                        . Thème Clean seulement.
-                      </p>
-                    </div>
-                    <div
-                      className="settings-segmented"
-                      role="group"
-                      aria-label="Police du thème Clean"
-                    >
-                      {(
-                        Object.entries(CLEAN_FONT_SETS) as [
-                          CleanFontSet,
-                          (typeof CLEAN_FONT_SETS)[CleanFontSet],
-                        ][]
-                      ).map(([value, set]) => {
-                        const active =
-                          normalizeCleanFont(themeConfig.cleanFont) === value;
-                        return (
-                          <button
-                            aria-pressed={active}
-                            className={cn(active && "settings-segmented-active")}
-                            key={value}
-                            onClick={() =>
-                              handleThemeConfigChange({
-                                ...themeConfig,
-                                cleanFont: value,
-                              })
-                            }
-                            style={{ fontFamily: set.sample }}
-                            type="button"
-                          >
-                            {set.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-            </section>
-            <section className="settings-panel">
-              <div className="settings-row">
-                <div>
-                  <p className="settings-row-title">
-                    Disposition du tableau de bord
-                  </p>
-                  <p className="settings-row-detail">
-                    Réorganisez les rangées de widgets de la journée clinique.
-                  </p>
-                </div>
+                <SettingsRow
+                  detail={`${CLEAN_FONT_SETS[normalizeCleanFont(themeConfig.cleanFont)].description}. Thème Clean seulement.`}
+                  title="Police"
+                >
+                  <Segmented<CleanFontSet>
+                    label="Police du thème Clean"
+                    onValueChange={(cleanFont) =>
+                      handleThemeConfigChange({ ...themeConfig, cleanFont })
+                    }
+                    options={(
+                      Object.entries(CLEAN_FONT_SETS) as [
+                        CleanFontSet,
+                        (typeof CLEAN_FONT_SETS)[CleanFontSet],
+                      ][]
+                    ).map(([value, set]) => ({
+                      value,
+                      label: (
+                        <span style={{ fontFamily: set.sample }}>
+                          {set.label}
+                        </span>
+                      ),
+                    }))}
+                    value={normalizeCleanFont(themeConfig.cleanFont)}
+                  />
+                </SettingsRow>
+              )}
+            </SettingsSection>
+            <SettingsSection
+              icon={LayoutDashboard}
+              subtitle="La vue d’ensemble ou la journée clinique, et l’ordre des widgets."
+              title="Tableau de bord"
+            >
+              <DashboardVersionSetting />
+              <SettingsRow
+                detail="Réorganisez les rangées de widgets de la journée clinique."
+                title="Disposition du tableau de bord"
+              >
                 <Button
+                  className="rounded-full"
                   variant="outline"
                   onClick={() => {
                     window.sessionStorage.setItem(
@@ -994,61 +1000,23 @@ const Parametres: React.FC<ParametresProps> = ({
                 >
                   Réorganiser les widgets
                 </Button>
-              </div>
-            </section>
-            <DashboardVersionSetting />
+              </SettingsRow>
+            </SettingsSection>
             <SidebarLayoutSettings />
-          </div>
+          </SettingsStack>
         );
       case "securite":
         return (
-          <div className="settings-section-stack">
+          <SettingsStack>
             {message && (
-              <Card
-                className={cn(
-                  "xl:col-span-2",
-                  message.type === "success"
-                    ? "border-green-200 bg-green-500/5"
-                    : "border-red-200 bg-red-500/5",
-                )}
-                size="sm"
-              >
-                <CardContent className="flex items-center gap-3 p-4">
-                  {message.type === "success" ? (
-                    <HugeiconsIcon
-                      className="size-4.5 text-green-700"
-                      icon={CheckmarkCircle02Icon}
-                      strokeWidth={1.5}
-                    />
-                  ) : (
-                    <HugeiconsIcon
-                      className="size-4.5 text-red-700"
-                      icon={Alert02Icon}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                  <p
-                    className={cn(
-                      "font-medium text-sm",
-                      message.type === "success"
-                        ? "text-green-700"
-                        : "text-red-700",
-                    )}
-                  >
-                    {message.text}
-                  </p>
-                </CardContent>
-              </Card>
+              <SettingsNotice tone={message.type}>{message.text}</SettingsNotice>
             )}
-
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle>Mot de passe</CardTitle>
-                <CardDescription>
-                  Modifiez votre mot de passe pour sécuriser votre compte
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <SettingsSection
+              icon={KeyRound}
+              subtitle="Modifiez votre mot de passe pour sécuriser votre compte."
+              title="Mot de passe"
+            >
+              <SettingsBody>
                 <Field>
                   <FieldLabel htmlFor="settings-password">
                     Nouveau mot de passe
@@ -1075,42 +1043,43 @@ const Parametres: React.FC<ParametresProps> = ({
                     value={confirmPassword}
                   />
                 </Field>
+              </SettingsBody>
+              <SettingsFooter className="justify-end">
                 <Button
-                  className="flex items-center gap-2"
+                  className="rounded-full"
                   disabled={isSaving || !newPassword}
                   onClick={handleChangePassword}
                 >
-                  {isSaving ? (
-                    <Spinner className="size-4" />
-                  ) : (
-                    <HugeiconsIcon
-                      className="size-4"
-                      icon={SaveIcon}
-                      strokeWidth={1.5}
-                    />
-                  )}
+                  {isSaving && <Spinner className="size-4" />}
                   {isSaving ? "Modification..." : "Modifier le mot de passe"}
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
+              </SettingsFooter>
+            </SettingsSection>
+          </SettingsStack>
         );
       case "ia":
         return <AIModelSettings />;
       case "rappels-medicaux":
         return (
-          <PatientRemindersContent
-            embedded
-            model={medicalReminders}
-            view="types"
-          />
+          <SettingsSection
+            icon={Bell}
+            panelClassName="p-6"
+            subtitle="Types et intervalles préventifs."
+            title="Rappels médicaux"
+          >
+            <PatientRemindersContent
+              embedded
+              model={medicalReminders}
+              view="types"
+            />
+          </SettingsSection>
         );
       case "sauvegarde":
         return (
-          <div className="settings-section-stack">
+          <SettingsStack>
             <BackupSettings />
             <LocalDataResetSettings />
-          </div>
+          </SettingsStack>
         );
       case "salles":
         return <RoomsSettings />;
@@ -1118,30 +1087,36 @@ const Parametres: React.FC<ParametresProps> = ({
         return <ClinicNetworkSettings />;
       case "apropos":
         return (
-          <div className="settings-section-stack">
-            <section className="settings-panel">
-              <div className="flex items-center gap-4 p-6">
+          <SettingsStack>
+            <SettingsSection
+              icon={Info}
+              subtitle="Version et activation"
+              title="À propos"
+            >
+              <div className="flex items-center gap-6 p-6">
                 <Logo collapsed size="lg" />
                 <div className="min-w-0">
-                  <h3 className="text-lg font-semibold">{APP_NAME}</h3>
+                  <p className="text-lg font-medium">{APP_NAME}</p>
                   <p className="text-sm text-muted-foreground">
                     Version {getAppVersion()}
                   </p>
                 </div>
               </div>
-            </section>
+            </SettingsSection>
             <AboutTeam />
             <LicenseStatusCard />
             {isActivationOwner(currentUser?.email) && (
-              <section className="settings-panel">
-                <div className="settings-row">
-                  <div>
-                    <p className="settings-row-title">Centre d’activation</p>
-                    <p className="settings-row-detail">
-                      Gérer les accès accordés aux testeurs.
-                    </p>
-                  </div>
+              <SettingsSection
+                icon={KeySquare}
+                subtitle="Gérer les accès accordés aux testeurs."
+                title="Centre d’activation"
+              >
+                <SettingsRow
+                  detail="Ouvre la fenêtre de gestion des activations."
+                  title="Accès des testeurs"
+                >
                   <Button
+                    className="rounded-full"
                     onClick={() => {
                       openActivationAdminWindow().catch((error) => {
                         toast.error(
@@ -1156,10 +1131,10 @@ const Parametres: React.FC<ParametresProps> = ({
                   >
                     Ouvrir
                   </Button>
-                </div>
-              </section>
+                </SettingsRow>
+              </SettingsSection>
             )}
-          </div>
+          </SettingsStack>
         );
       default:
         return null;
@@ -1167,16 +1142,8 @@ const Parametres: React.FC<ParametresProps> = ({
   };
 
   return (
-    <div className="settings-page">
-      <PageHeader
-        className="settings-page-header"
-        icon={
-          <HugeiconsIcon icon={Settings02Icon} size={20} strokeWidth={1.5} />
-        }
-        kicker={<PageDate />}
-        subtitle="réglages du cabinet"
-        title="Paramètres"
-      />
+    <div className="settings-page flex w-full min-w-0 flex-col px-4 pb-12 lg:px-6">
+      <PageHeader subtitle="réglages du cabinet" title="Paramètres" />
       <div className="settings-page-layout">
         <nav aria-label="Sections des paramètres" className="settings-page-nav">
           {SETTINGS_NAV_GROUPS.map((group) => (
@@ -1216,18 +1183,12 @@ const Parametres: React.FC<ParametresProps> = ({
           className="settings-page-main"
           data-settings-section={activeTab}
         >
-          <div className="settings-content-heading">
-            <h2 id="settings-section-title">{activeNavItem.label}</h2>
-            <p>{activeNavItem.description}</p>
+          <h2 className="sr-only" id="settings-section-title">
+            {activeNavItem.label} : {activeNavItem.description}
+          </h2>
+          <div className="settings-content" key={activeTab}>
+            {renderContent()}
           </div>
-          <div className="settings-content" hidden={activeTab !== "cabinet"}>
-            <InvoiceSettingsPanel />
-          </div>
-          {activeTab !== "cabinet" && (
-            <div className="settings-content" key={activeTab}>
-              {renderContent()}
-            </div>
-          )}
         </section>
       </div>
     </div>
@@ -1240,77 +1201,52 @@ function SidebarToneSetting({ userId }: { userId: string | undefined }) {
   const [chosen, setChosen] = useState<{ userId: string; tone: SidebarTone } | null>(null);
   const tone = chosen && chosen.userId === userId ? chosen.tone : getSidebarTone(userId);
   return (
-    <div className="settings-row">
-      <div>
-        <p className="settings-row-title">Barre latérale</p>
-        <p className="settings-row-detail">
-          Automatique suit le thème. Claire ou Sombre reste votre choix, quel que soit le thème.
-        </p>
-      </div>
-      <div className="settings-segmented" role="group" aria-label="Teinte de la barre latérale">
-        {SIDEBAR_TONES.map(({ value, label }) => (
-          <button
-            aria-pressed={tone === value}
-            className={cn(tone === value && "settings-segmented-active")}
-            disabled={!userId}
-            key={value}
-            onClick={() => {
-              if (!userId) return;
-              setChosen({ userId, tone: value });
-              saveSidebarTone(userId, value);
-            }}
-            type="button"
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-    </div>
+    <SettingsRow
+      detail="Automatique suit le thème. Claire ou Sombre reste votre choix, quel que soit le thème."
+      title="Barre latérale"
+    >
+      <Segmented<SidebarTone>
+        label="Teinte de la barre latérale"
+        onValueChange={(next) => {
+          if (!userId) return;
+          setChosen({ userId, tone: next });
+          saveSidebarTone(userId, next);
+        }}
+        options={SIDEBAR_TONES.map(({ value, label }) => ({
+          value,
+          label,
+          disabled: !userId,
+        }))}
+        value={tone}
+      />
+    </SettingsRow>
   );
 }
 
 function SidebarLayoutSettings() {
   const { collapsible, setCollapsible } = useLayout();
   return (
-    <section className="settings-panel">
-      <div className="settings-panel-heading">
-        <h3>Navigation</h3>
-        <p>Choisissez l’espace qui convient à votre façon de travailler.</p>
-      </div>
-      <div className="settings-row">
-        <div>
-          <p className="settings-row-title">Réduire la barre latérale</p>
-          <p className="settings-row-detail">
-            Laissez les icônes visibles ou masquez la barre.
-          </p>
-        </div>
-        <div
-          className="settings-segmented"
-          role="group"
-          aria-label="Réduction de la barre latérale"
-        >
-          {(
-            [
-              ["icon", "Icônes"],
-              ["offcanvas", "Masquée"],
-              ["none", "Jamais"],
-            ] as const
-          ).map(([value, label]) => (
-            <button
-              aria-pressed={collapsible === value}
-              className={cn(
-                collapsible === value && "settings-segmented-active",
-              )}
-              key={value}
-              onClick={() => setCollapsible(value)}
-              type="button"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
+    <SettingsSection
+      icon={PanelLeft}
+      subtitle="Choisissez l’espace qui convient à votre façon de travailler."
+      title="Navigation"
+    >
+      <SettingsRow
+        detail="Laissez les icônes visibles ou masquez la barre."
+        title="Réduire la barre latérale"
+      >
+        <Segmented<"icon" | "offcanvas" | "none">
+          label="Réduction de la barre latérale"
+          onValueChange={setCollapsible}
+          options={[
+            { value: "icon", label: "Icônes" },
+            { value: "offcanvas", label: "Masquée" },
+            { value: "none", label: "Jamais" },
+          ]}
+          value={collapsible}
+        />
+      </SettingsRow>
+    </SettingsSection>
   );
 }
 

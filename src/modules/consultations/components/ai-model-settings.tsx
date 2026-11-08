@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/choice-controls";
+import { Cpu } from "lucide-react";
+import { SettingsSection } from "@/components/settings-section";
 import { ArrowDown, Microphone, MessageSquarePlus, Search, Check, FolderOpen, Sparkles } from "@/lib/icons";
 import { isTauriRuntime } from "@/services/browser-store";
 import { importLocalModel } from "../local-ai/models";
@@ -44,15 +46,12 @@ export function AIModelSettings() {
   const allReady = allAIModelsReady(state.status);
   const ready = {whisper: dictationModelReady(state.status), generator: state.status.generatorReady, embeddinggemma: state.status.embeddingReady};
 
-  return <section className="settings-panel" aria-label="Outils IA locaux">
-    <div className="settings-panel-heading">
-      <h3>Vos outils IA</h3>
-      <p>Une installation facultative ({TOTAL_AI_MODELS_SIZE_LABEL}), puis une utilisation hors ligne. Vos dictées et dossiers restent sur cet ordinateur.</p>
-    </div>
-    {!desktop && <p role="status" className="mx-4 my-4 rounded-xl border bg-muted/40 p-4 text-sm text-muted-foreground">
+  return <SettingsSection aria-label="Outils IA locaux" icon={Cpu} title="Vos outils IA"
+    subtitle={`Une installation facultative (${TOTAL_AI_MODELS_SIZE_LABEL}), puis une utilisation hors ligne. Vos dictées et dossiers restent sur cet ordinateur.`}>
+    {!desktop && <p role="status" className="p-6 text-sm text-muted-foreground">
       Ces outils sont disponibles dans l’application de bureau. Vous pouvez continuer à utiliser la version web sans les installer.
     </p>}
-    <div className="grid gap-3 p-4 sm:grid-cols-3">
+    <div className="grid gap-3 p-6 sm:grid-cols-3">
       {AI_MODELS_CATALOG.map(model => {
         const Icon = icons[model.id];
         const stages = state.progress?.models as Record<string, string | undefined> | undefined;
@@ -60,7 +59,7 @@ export function AIModelSettings() {
         const stage = !state.running ? undefined
           : model.id === "whisper" && stages?.["whisper-turbo"] && stages["whisper-turbo"] !== "ready" ? stages["whisper-turbo"] : stages?.[model.id];
         const installed = ready[model.id] || stage === "ready";
-        return <article key={model.id} className="flex min-w-0 flex-col gap-3 rounded-xl border bg-background p-4">
+        return <article key={model.id} className="flex min-w-0 flex-col gap-3 rounded-2xl border bg-background p-4">
           <div className="flex items-center gap-2"><Icon className="size-4 shrink-0 text-muted-foreground"/><h4 className="text-sm font-medium">{model.name}</h4></div>
           <p className="flex-1 text-xs leading-relaxed text-muted-foreground">{model.description}</p>
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -81,14 +80,14 @@ export function AIModelSettings() {
       fellBack={hasGeneratorFallenBack()}
       onEnable={enabled => { setGeneratorPreference(enabled ? "gemma4" : "gemma3"); setUseNewAssistant(enabled); }}
     />}
-    {desktop && <div className="space-y-4 px-4 pb-4">
-      {state.running && <div role="status" aria-live="polite" className="space-y-2 rounded-xl border p-4">
+    {desktop && <div className="space-y-6 p-6 pt-0">
+      {state.running && <div role="status" aria-live="polite" className="space-y-2 rounded-2xl border p-4">
         <div className="flex items-center justify-between gap-3 text-sm"><span>{state.progress?.stepMessage || "Préparation du téléchargement…"}</span><span className="tabular-nums">{state.progress?.percentage ?? 0} %</span></div>
         <Progress value={state.progress?.percentage ?? 0} aria-label="Progression de l’installation"/>
         <p className="text-xs text-muted-foreground">Vous pouvez changer de page. Le téléchargement continue en arrière-plan.</p>
       </div>}
-      {(state.error || importError) && <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{importError || state.error}</p>}
-      {!allReady && <details open={state.errorCode === "access_required" ? true : undefined} className="rounded-xl border p-4">
+      {(state.error || importError) && <p role="alert" className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{importError || state.error}</p>}
+      {!allReady && <details open={state.errorCode === "access_required" ? true : undefined} className="rounded-2xl border p-4">
         <summary className="cursor-pointer text-sm font-medium">Accès au téléchargement</summary>
         <div className="mt-4 space-y-3">
           <p className="text-xs leading-relaxed text-muted-foreground">L’assistant IA nécessite un accès autorisé chez son fournisseur. Les autres outils se téléchargent directement. Le téléchargement installe les outils manquants. Vous pouvez aussi utiliser des fichiers déjà téléchargés.</p>
@@ -108,7 +107,7 @@ export function AIModelSettings() {
         <p className="text-xs text-muted-foreground">Seuls les outils manquants sont installés.</p>
       </div>
     </div>}
-  </section>;
+  </SettingsSection>;
 }
 
 /** The new assistant version: one-tap download, then an explicit choice; the current one stays the fallback. */
@@ -117,17 +116,15 @@ export function NewAssistantCard({installed, downloading, busy, enabled, fellBac
   /** Kept installed but not selectable until its generation is fixed. */
   suspended?: boolean;
 }) {
-  return <article className="mx-4 mb-4 flex min-w-0 flex-col gap-3 rounded-xl border bg-background p-4">
+  return <article className="mx-6 mb-6 flex min-w-0 flex-col gap-3 rounded-2xl border bg-background p-4">
     <div className="flex items-center gap-2"><Sparkles className="size-4 shrink-0 text-muted-foreground"/><h4 className="text-sm font-medium">{NEW_ASSISTANT.name}</h4></div>
     <p className="text-xs leading-relaxed text-muted-foreground">{NEW_ASSISTANT.description}</p>
     {suspended && <p role="status" className="text-xs text-muted-foreground">Temporairement indisponible : cette version est en cours de correction. L’assistant actuel rédige vos notes.</p>}
     {!suspended && installed && enabled && fellBack && <p role="status" className="text-xs text-muted-foreground">Cet ordinateur n’a pas pu la charger : l’assistant actuel a pris le relais.</p>}
     <div className="flex flex-wrap items-center justify-between gap-3">
       {installed
-        ? <label className={suspended ? "flex cursor-not-allowed items-center gap-2 text-sm text-muted-foreground opacity-60" : "flex cursor-pointer items-center gap-2 text-sm"}>
-            <Switch checked={enabled && !suspended} disabled={suspended} onCheckedChange={onEnable} aria-label="Utiliser la nouvelle version de l’assistant"/>
-            Utiliser la nouvelle version
-          </label>
+        ? <Switch checked={enabled && !suspended} disabled={suspended} onCheckedChange={onEnable} aria-label="Utiliser la nouvelle version de l’assistant"
+            label="Utiliser la nouvelle version" className={suspended ? "cursor-not-allowed text-muted-foreground" : undefined}/>
         : <Badge variant="outline">{downloading ? "Téléchargement…" : "Non installée"}</Badge>}
       {installed
         ? <Badge variant="outline"><Check className="size-3"/>Prête</Badge>

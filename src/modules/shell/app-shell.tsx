@@ -8,6 +8,7 @@ import { HeaderSearch } from "./components/header-search";
 import { HeaderSidebarToggle } from "./components/header-sidebar-toggle";
 import { HeaderQuickActions } from "./components/header-quick-actions";
 import { roleLabel } from "@/lib/user-role";
+import { requestSettingsSection } from "@/lib/settings-navigation";
 import type { PremiumShortcut } from "@/lib/visual-style";
 import { useSidebarTone } from "@/lib/sidebar-tone";
 import { HeroPattern } from "@/components/HeroPattern";
@@ -973,6 +974,10 @@ function AppShellInner() {
                   onFinances={() => handleNavigate("finances")}
                   onLogout={logout}
                   onNotifications={() => window.setTimeout(() => setNotificationsOpen(true), 0)}
+                  onClinic={() => {
+                    requestSettingsSection("mon-cabinet");
+                    handleNavigate("parametres");
+                  }}
                   onProfile={() => handleNavigate("parametres")}
                   onSettings={() => handleNavigate("parametres")}
                   role={roleLabel(currentUser?.role, currentUser?.email)}

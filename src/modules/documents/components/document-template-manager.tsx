@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/choice-controls";
+import { SettingsSection } from "@/components/settings-section";
 import { useAuth } from "@/contexts/AuthContext";
 import { DOCUMENT_TYPES, type DocumentKind, type ManagedDocumentTemplate } from "../document-domain";
 import { documentsService } from "../document-service";
@@ -148,20 +149,14 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
     });
   };
 
-  return (
-    <section aria-label="Modèles de documents" className="document-templates-manager">
-      <div className="document-templates-heading">
-        <div>
-          <h2 className={embedded ? "sr-only" : undefined}>Modèles de documents</h2>
-          <p>Vos formulations, réutilisables pour chaque patient. Les documents déjà générés conservent leur contenu.</p>
-        </div>
-        {canEdit && <Button disabled={store.loading || Boolean(store.error)} onClick={() => openEditor()}><Plus aria-hidden="true" />Nouveau modèle</Button>}
-      </div>
-
+  const newModel = canEdit ? <Button className="rounded-full" disabled={store.loading || Boolean(store.error)} onClick={() => openEditor()}><Plus aria-hidden="true" />Nouveau modèle</Button> : null;
+  const intro = "Vos formulations, réutilisables pour chaque patient. Les documents déjà générés conservent leur contenu.";
+  const content = (
+    <>
       <div className="document-templates-clinic">
         <Settings2 aria-hidden="true" strokeWidth={1} />
         <p>L’en-tête, le logo et les mentions du cabinet sont communs à tous les documents.</p>
-        {onConfigureClinic ? <Button onClick={onConfigureClinic} variant="outline">Configurer le cabinet</Button> : <span>Paramètres &gt; Cabinet &amp; factures</span>}
+        {onConfigureClinic ? <Button className="rounded-full" onClick={onConfigureClinic} variant="outline">Configurer le cabinet</Button> : <span>Paramètres &gt; Mon cabinet</span>}
       </div>
       {!canEdit && <p className="document-templates-notice" role="status">Vous pouvez consulter les modèles. Leur gestion est réservée à l’administrateur du cabinet.</p>}
       {error && !draft && <p className="document-templates-error" role="alert">{error}</p>}
@@ -179,7 +174,7 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
             <label className="document-templates-search">
               <Search aria-hidden="true" />
               <span className="sr-only">Rechercher un modèle</span>
-              <Input onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un modèle…" type="search" value={query} />
+              <Input className="pl-10" onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un modèle…" type="search" value={query} />
             </label>
             <NativeSelect aria-label="Filtrer les modèles par statut" className="document-templates-status-filter" onChange={(event) => setStatusFilter(event.target.value)} value={statusFilter}>
               <NativeSelectOption value="all">Tous les statuts</NativeSelectOption>
@@ -220,7 +215,7 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
               </tbody>
             </table>
           </div>
-          <p className="document-templates-notice">Un modèle utilisé ne peut pas être supprimé. Désactivez-le pour le retirer des prochains choix.</p>
+          <p className="document-templates-notice">Un modèle utilisé ne peut pas être supprimé. Désactivez-le pour le retirer des prochains choix. Les documents déjà générés conservent leur contenu.</p>
         </>
       )}
 
@@ -261,6 +256,22 @@ export default function DocumentTemplateManager({ onConfigureClinic, embedded = 
       <AlertDialog onOpenChange={setDiscardOpen} open={discardOpen}>
         <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Fermer sans enregistrer ?</AlertDialogTitle><AlertDialogDescription>Les modifications de ce modèle n’ont pas encore été enregistrées.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Continuer la rédaction</AlertDialogCancel><AlertDialogAction onClick={() => { setDiscardOpen(false); setDraft(null); }}>Fermer sans enregistrer</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
       </AlertDialog>
+    </>
+  );
+  return embedded ? (
+    <SettingsSection aria-label="Modèles de documents" aside={newModel} icon={FileText} panelClassName="document-templates-manager flex flex-col gap-6 divide-y-0 p-6" subtitle="Vos formulations, réutilisables pour chaque patient." title="Modèles de documents">
+      {content}
+    </SettingsSection>
+  ) : (
+    <section aria-label="Modèles de documents" className="document-templates-manager">
+      <div className="document-templates-heading">
+        <div>
+          <h2>Modèles de documents</h2>
+          <p>{intro}</p>
+        </div>
+        {newModel}
+      </div>
+      {content}
     </section>
   );
 }

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SettingsRow, SettingsSection } from "@/components/settings-section";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from "@/components/ui/alert-dialog";
@@ -15,9 +17,10 @@ export function LocalDataResetSettings() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   if (currentUser?.role !== "admin") return null;
-  return <section className="settings-panel settings-reset-panel" aria-label="Réinitialisation">
-    <div className="settings-panel-heading"><h3>Réinitialisation</h3><p>Administration de la base de ce poste.</p></div>
-    <div className="settings-row"><div><p className="settings-row-title">Revenir à la première installation</p><p className="settings-row-detail">Supprime les données du cabinet, les comptes, les sessions, les paramètres et la licence enregistrée sur ce poste. Une sauvegarde automatique est créée avant toute suppression.</p></div><Button variant="outline" onClick={() => { setConfirmation(""); setPassword(""); setError(""); setOpen(true); }}>Réinitialiser</Button></div>
+  return <SettingsSection aria-label="Réinitialisation" icon={RotateCcw} subtitle="Administration de la base de ce poste." title="Réinitialisation">
+    <SettingsRow title="Revenir à la première installation" detail="Supprime les données du cabinet, les comptes, les sessions, les paramètres et la licence enregistrée sur ce poste. Une sauvegarde automatique est créée avant toute suppression.">
+      <Button className="rounded-full" variant="outline" onClick={() => { setConfirmation(""); setPassword(""); setError(""); setOpen(true); }}>Réinitialiser</Button>
+    </SettingsRow>
     <AlertDialog open={open} onOpenChange={value => { if (!busy) setOpen(value); }}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Réinitialiser les données locales ?</AlertDialogTitle><AlertDialogDescription>Cette action efface toutes les données de l’application sur ce poste, y compris les comptes et la licence enregistrée. Une sauvegarde préalable est conservée. Au redémarrage, vous devrez effectuer la première installation et activer à nouveau votre licence.</AlertDialogDescription></AlertDialogHeader>
       <Field><FieldLabel htmlFor="reset-password">Votre mot de passe administrateur</FieldLabel><Input id="reset-password" type="password" autoComplete="current-password" value={password} disabled={busy} onChange={event => setPassword(event.target.value)}/></Field>
       <Field><FieldLabel htmlFor="reset-confirmation">Saisissez {RESET_CONFIRMATION}</FieldLabel><Input id="reset-confirmation" value={confirmation} disabled={busy} onChange={event => setConfirmation(event.target.value)} autoComplete="off"/></Field>
@@ -28,5 +31,5 @@ export function LocalDataResetSettings() {
         catch (err) { setError(err instanceof Error ? err.message : "Réinitialisation impossible."); setBusy(false); }
       }}>{busy ? "Réinitialisation…" : "Confirmer la réinitialisation"}</Button></AlertDialogFooter>
     </AlertDialogContent></AlertDialog>
-  </section>;
+  </SettingsSection>;
 }

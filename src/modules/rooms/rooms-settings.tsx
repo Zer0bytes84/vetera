@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { DoorOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SettingsSection } from "@/components/settings-section";
 import { Input } from "@/components/ui/input";
 import { Archive, ArrowDown, ArrowUp, Check, Loader2, Plus, RotateCcw, Trash2 } from "@/lib/icons";
 import { isTauriRuntime } from "@/services/browser-store";
@@ -144,28 +146,29 @@ export function RoomsSettings() {
   };
 
   return (
-    <section className="settings-panel" aria-label="Salles du cabinet">
-      <div className="settings-panel-heading">
-        <h3>Salles du cabinet</h3>
-        <p>
-          Avec une seule salle, l'agenda ne vous demande rien. Dès la deuxième, chaque rendez-vous choisit la
-          sienne et les conflits de salle sont signalés.
-        </p>
-      </div>
-
+    <SettingsSection
+      aria-label="Salles du cabinet"
+      icon={DoorOpen}
+      subtitle="Les espaces où vous recevez les animaux."
+      title="Salles du cabinet"
+    >
+      <p className="p-6 text-sm text-muted-foreground">
+        Avec une seule salle, l'agenda ne vous demande rien. Dès la deuxième, chaque rendez-vous choisit la
+        sienne et les conflits de salle sont signalés.
+      </p>
       {!desktop ? (
-        <p className="mx-4 mb-4 rounded-xl border bg-muted/40 p-4 text-sm text-muted-foreground">
+        <p className="p-6 text-sm text-muted-foreground">
           Les salles se gèrent dans l'application de bureau.
         </p>
       ) : (
-        <div className="space-y-4 px-4 pb-4">
+        <div className="space-y-6 p-6">
           {!loaded ? (
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
               Chargement des salles…
             </p>
           ) : (
-            <ul className="divide-y rounded-xl border bg-background">
+            <ul className="divide-y rounded-2xl border bg-background">
               {active.map((room, index) => (
                 <RoomRow
                   key={`${room.id}:${room.name}`}
@@ -197,13 +200,13 @@ export function RoomsSettings() {
           </form>
 
           {(problem || error) && (
-            <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
+            <p role="alert" className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
               {problem ?? error}
             </p>
           )}
 
           {archived.length > 0 && (
-            <details className="rounded-xl border">
+            <details className="rounded-2xl border">
               <summary className="cursor-pointer px-4 py-3 text-sm font-medium">
                 Salles archivées ({archived.length})
               </summary>
@@ -231,6 +234,6 @@ export function RoomsSettings() {
           )}
         </div>
       )}
-    </section>
+    </SettingsSection>
   );
 }

@@ -3614,139 +3614,75 @@ button:focus-visible,
 @media (max-width: 767px) {
   .activity-analysis-card .widget-metrics > div:nth-child(3) { border-inline-start: 0; padding-inline-start: 0; }
 }
-/* Settings are a workspace page, with the app shell providing the scroll area. */
-.settings-page {
-  min-height: calc(100dvh - 100px);
-  color: var(--foreground);
-}
-
-.settings-page-header {
-  padding: 38px clamp(24px, 4vw, 64px) 30px;
-  border-bottom: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
-}
-
-.settings-page-header h1 {
-  font-family: var(--app-font-heading);
-  font-size: 24px;
-  font-weight: 620;
-  letter-spacing: -0.035em;
-  line-height: 1.12;
-}
-
-.settings-page-header p {
-  margin-top: 8px;
-  color: var(--muted-foreground);
-  font-size: 14px;
-}
-
+/* Paramètres: the page of the patient record's language. A one-line header, the section list on the left, and on the
+   right the sections (see `components/settings-section.tsx`): a grey band with its header, one white panel inside.
+   Spacing on the 12 / 24 / 48 scale; the app shell provides the scroll area. */
+.settings-page { color: var(--foreground); }
 .settings-page-layout {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
+  align-items: start;
+  gap: 48px;
   max-width: 1180px;
-  margin-inline: auto;
 }
-
 .settings-page-nav {
-  align-self: start;
   position: sticky;
   top: 72px;
   display: grid;
-  gap: 26px;
-  padding: 36px 2px 36px 10px;
-  border-right: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
+  gap: 24px;
 }
-
+.settings-nav-group { display: grid; gap: 4px; }
 .settings-nav-group > p {
-  padding: 0 8px 8px;
+  padding: 0 12px 4px;
   color: var(--muted-foreground);
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .06em;
+  font-weight: 500;
 }
-
 .settings-nav-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  min-height: 40px;
-  padding: 0 8px;
-  border-radius: 9px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
   color: var(--muted-foreground);
   font-size: 13px;
   font-weight: 500;
   text-align: left;
   transition: background-color .16s ease, color .16s ease;
 }
-
-.settings-nav-item svg { width: 18px; height: 18px; flex: none; }
+.settings-nav-item svg { width: 16px; height: 16px; flex: none; }
 @media (hover: hover) and (pointer: fine){
   .settings-nav-item:hover {
-    background: var(--muted);
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
     color: var(--foreground);
   }
 }
-.settings-nav-item-active { background: var(--muted); color: var(--foreground); font-weight: 560; }
-.settings-nav-item:focus-visible, .settings-segmented button:focus-visible, .settings-swatch:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-
-.settings-page-main { min-width: 0; padding: 36px clamp(24px, 4vw, 58px) 80px; }
-.settings-content-heading { margin-bottom: 28px; }
-.settings-content-heading h2 { font-size: 18px; font-weight: 640; letter-spacing: -.025em; }
-.settings-content-heading p { margin-top: 5px; color: var(--muted-foreground); font-size: 13px; }
-.settings-content { max-width: 800px; }
-.settings-section-stack { display: grid; gap: 16px; }
-.settings-panel { overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
-.settings-panel-heading { padding: 21px 24px 15px; }
-.settings-panel-heading h3 { font-size: 16px; font-weight: 620; }
-.settings-panel-heading p { margin-top: 4px; color: var(--muted-foreground); font-size: 12px; }
-.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 74px; padding: 15px 24px; border-top: 1px solid var(--border); }
-.settings-row-title { font-size: 13px; font-weight: 580; }
-.settings-row-detail { margin-top: 3px; color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
-.settings-segmented { display: flex; flex-wrap: wrap; gap: 3px; padding: 3px; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); }
-.settings-segmented button { padding: 7px 10px; border-radius: 7px; color: var(--muted-foreground); font-size: 12px; white-space: nowrap; }
-.settings-segmented .settings-segmented-active { background: var(--background); color: var(--foreground); box-shadow: 0 1px 3px rgb(0 0 0 / .08); }
-.settings-swatch { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--border); border-radius: 50%; }
-.settings-swatch-active { border-color: var(--foreground); box-shadow: 0 0 0 2px var(--background), 0 0 0 3px var(--foreground); }
-/* Theme picker: three cards, each with a miniature of its sheet. */
-.app-theme-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(100%, 480px); }
-.app-theme-option { display: flex; flex-direction: column; gap: 4px; padding: 8px 8px 10px; border: 1px solid var(--border); border-radius: 10px; text-align: left; background: var(--background); }
-.app-theme-option-active { border-color: var(--foreground); box-shadow: 0 0 0 1px var(--foreground); }
-.app-theme-option:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.app-theme-preview { display: flex; gap: 4px; height: 56px; padding: 5px; border-radius: 6px; }
-.app-theme-preview-nav { display: flex; flex-direction: column; gap: 4px; width: 26%; padding: 4px 3px; border-right: 1px solid; }
-.app-theme-preview-sheet { display: flex; flex: 1; flex-direction: column; gap: 5px; padding: 6px; border: 1px solid; border-radius: 4px; }
-.app-theme-preview i { display: block; height: 4px; border-radius: 2px; }
-.app-theme-preview-sheet i:first-child { width: 55%; }
-.app-theme-preview-sheet i:nth-child(2) { height: 8px; }
-.app-theme-label { margin-top: 4px; font-size: 13px; font-weight: 580; color: var(--foreground); }
-.app-theme-description { font-size: 12px; line-height: 1.4; color: var(--muted-foreground); }
-@media (max-width: 780px) { .app-theme-picker { grid-template-columns: 1fr; } }
-.settings-profile-identity { display: flex; align-items: center; gap: 18px; padding: 24px; }
-.settings-avatar-picker { padding: 14px 24px; border-top: 1px solid var(--border); }
-.settings-avatar-picker summary { width: fit-content; cursor: pointer; color: var(--foreground); font-size: 13px; font-weight: 560; }
+.settings-nav-item-active { background: color-mix(in srgb, var(--foreground) 6%, transparent); color: var(--foreground); }
+.settings-nav-item:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.settings-page-main { min-width: 0; }
+.settings-content { max-width: 880px; }
+/* The page's buttons are pills, whatever the section that draws them. */
+.settings-page [data-slot="button"]:not([data-size^="icon"]) { border-radius: 9999px; }
+/* Profile: the avatar picker opens inside the profile panel, on the panel's 24 px inset. */
+.settings-avatar-picker { padding: 12px 24px; }
+.settings-avatar-picker summary { width: fit-content; cursor: pointer; color: var(--foreground); font-size: 13px; font-weight: 500; }
 @media (hover: hover) and (pointer: fine){
   .settings-avatar-picker summary:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 }
-.settings-avatar-choice { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--border); border-radius: 10px; background: var(--background); font-size: 20px; }
+.settings-avatar-choice { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--border); border-radius: 12px; background: var(--background); font-size: 20px; }
 .settings-avatar-choice-active { border-color: var(--foreground); }
-.settings-profile-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 20px 24px 24px; border-top: 1px solid var(--border); }
-.settings-profile-fields > :first-child { grid-column: 1 / -1; }
-.settings-profile-footer { display: flex; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--border); }
 
 @media (max-width: 780px) {
-  .settings-page-header { padding: 24px 20px; }
   .settings-page-layout { display: block; }
-  .settings-page-nav { position: static; display: flex; gap: 18px; overflow-x: auto; padding: 14px 20px; border-right: 0; border-bottom: 1px solid var(--border); scrollbar-width: thin; }
+  .settings-page-nav { position: static; display: flex; gap: 24px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: thin; }
   .settings-nav-group { display: flex; align-items: center; gap: 4px; flex: none; }
   .settings-nav-group > p { display: none; }
   .settings-nav-item { width: auto; white-space: nowrap; }
-  .settings-page-main { padding: 28px 20px 60px; }
-  .settings-row { align-items: flex-start; flex-direction: column; gap: 14px; }
-  .settings-profile-fields { grid-template-columns: 1fr; }
-  .settings-profile-fields > :first-child { grid-column: auto; }
 }
 
 /* Quiet dialog surfaces keep the application's semantic palette. */
