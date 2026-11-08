@@ -224,9 +224,35 @@ function AppShellInner() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Every navigation lands at the very top, the page's stats band whole: a click on the page already shown included
+  // (navigationTick), and while the page fills in (lazy view, data read after the first paint, which in the desktop app comes
+  // later than the paint) it stays pinned at zero until the person scrolls themselves.
+  const [navigationTick, setNavigationTick] = useState(0);
   useEffect(() => {
-    sidebarScrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
-  }, [currentView, currentPatientId]);
+    const panel = sidebarScrollRef.current;
+    if (!panel) return;
+    panel.scrollTo({ top: 0, behavior: "instant" });
+    let pinned = true;
+    const release = () => {
+      pinned = false;
+    };
+    const keep = () => {
+      if (pinned && panel.scrollTop !== 0) panel.scrollTo({ top: 0, behavior: "instant" });
+    };
+    const content = panel.querySelector<HTMLElement>("[data-slot='shell-view-content']") ?? panel;
+    const resize = new ResizeObserver(keep);
+    resize.observe(content);
+    panel.addEventListener("scroll", keep, { passive: true });
+    const inputs = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
+    for (const type of inputs) panel.addEventListener(type, release, { passive: true });
+    const stop = window.setTimeout(release, 2500);
+    return () => {
+      window.clearTimeout(stop);
+      resize.disconnect();
+      panel.removeEventListener("scroll", keep);
+      for (const type of inputs) panel.removeEventListener(type, release);
+    };
+  }, [currentView, currentPatientId, navigationTick]);
 
   useEffect(() => {
     const panel = sidebarScrollRef.current;
@@ -266,12 +292,14 @@ function AppShellInner() {
     }
     setCurrentView(view);
     setCurrentPatientId(null);
+    setNavigationTick((tick) => tick + 1);
   }, []);
 
   const handleNavigateToPatient = useCallback((patientId: string) => {
     setPeekPatientId(null);
     setCurrentView("patient_detail");
     setCurrentPatientId(patientId);
+    setNavigationTick((tick) => tick + 1);
   }, []);
 
   const handleCloseAIAgent = useCallback(() => {
