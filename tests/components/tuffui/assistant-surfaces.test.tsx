@@ -6,6 +6,9 @@ import { ContextWindowMeter } from "@/components/ui/context-window-meter";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
 import { StreamingMessage } from "@/components/ui/streaming-message";
 import { ToolCallBlock } from "@/components/ui/tool-call-block";
+import { ChatThread } from "@/components/ui/chat-thread";
+import { SourceList } from "@/components/ui/source-list";
+import { UserMessage } from "@/components/ui/user-message";
 
 describe("composants de l'assistant : français, jetons Baitari, rien de technique", () => {
   it("le message de l'assistant se signe « Assistant IA » et peut taire copier et régénérer", () => {
@@ -56,5 +59,41 @@ describe("composants de l'assistant : français, jetons Baitari, rien de techniq
     expect(html).toContain("Terminé");
     expect(html).toContain("1,2 s");
     expect(html).not.toMatch(/\{|json|Arguments/i);
+  });
+
+  it("le message de l'assistant peut se voir dans sa bulle, et jamais avec une étoile « IA » générique", () => {
+    const html = renderToStaticMarkup(<StreamingMessage bubble data={{ status: "done", content: "Bonjour" }} showActions={false} showHeader={false} />);
+    expect(html).toContain("rounded-tl-md");
+    expect(html).toContain("--card-band");
+    expect(renderToStaticMarkup(<StreamingMessage data={{ status: "done", content: "x" }} />)).not.toMatch(/lucide-sparkle/);
+  });
+
+  it("le fil met la question de l'assistant à gauche, la réponse du vétérinaire dans sa bulle à droite, sans noms si on les tait", () => {
+    const html = renderToStaticMarkup(
+      <ChatThread showNames={false} messages={[
+        { id: "a", role: "assistant", at: "2026-11-08T10:00:00Z", content: "Quel est le motif ?" },
+        { id: "u", role: "user", at: "2026-11-08T10:01:00Z", content: <UserMessage data={{ id: "u", content: "Il boite" }} />, plain: true },
+      ]} />,
+    );
+    expect(html).toContain("Quel est le motif ?");
+    expect(html).toContain("Il boite");
+    expect(html).toContain("rounded-br-md");
+    expect(html).toContain("flex-row-reverse");
+    expect(html).not.toContain(">Assistant IA<");
+    expect(html).not.toMatch(/lucide-sparkle/);
+  });
+
+  it("la liste de sources groupe les passages par type de dossier, met le passage en avant et n'ouvre aucun lien", () => {
+    const html = renderToStaticMarkup(
+      <SourceList heading="2 passages trouvés" sources={[
+        { id: "1", group: "Consultations SOAP", title: "Rex", passage: <p>Otite externe</p>, actions: <button type="button">Copier</button> },
+        { id: "2", group: "Consultations SOAP", title: "Nala", passage: <p>Récidive</p> },
+      ]} />,
+    );
+    expect(html).toContain("Consultations SOAP");
+    expect(html).toContain("Otite externe");
+    expect(html).toContain("border-brand");
+    expect(html).toContain("Copier");
+    expect(html).not.toMatch(/href=|target="_blank"/);
   });
 });

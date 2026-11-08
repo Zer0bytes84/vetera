@@ -1859,3 +1859,6 @@
   --font-mono: var(--clean-font-data);
 }
 
+
+/* Assistant panel: the header's rule meets the Clean header's, 68 px from the top of the window. */
+:root[data-skin="clean"] .assistant-panel-header { height: 68px; }

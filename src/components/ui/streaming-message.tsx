@@ -3,12 +3,13 @@
 "use client";
 
 /*
- * Adapted for Baitari: no sources chip (nothing leaves the machine, so no links), copy and regenerate can be turned off, the author is « Assistant IA ».
+ * Adapted for Baitari: the avatar is the app's mascot (never a generic « AI » glyph); `bubble` puts the text in a bubble (TuffUI draws the assistant as free text and only the user in a bubble); no sources chip (nothing leaves the machine, so no links), copy and regenerate can be turned off, the author is « Assistant IA ».
  * Icons are lucide (`strokeWidth={2.5}` for what Phosphor drew bold); colours are our tokens (`brand`, `positive`,
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { RotateCcw, Brain, ChevronRight, Check, Copy, Sparkles, CircleAlert } from "lucide-react";
+import { RotateCcw, Brain, ChevronRight, Check, Copy, CircleAlert } from "lucide-react";
+import { Mascot } from "@/components/mascot";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Fragment, useEffect, useState } from "react";
 import { Button, IconButton } from "@/components/ui/action-button";
@@ -28,6 +29,8 @@ export type StreamingMessageProps = {
   model?: string;
   /** Hide the avatar + model row when a surrounding thread already shows the author. */
   showHeader?: boolean;
+  /** The message in its bubble (rounded, tinted, the corner at the author's side squared), as the vet's bubble is on the other side. */
+  bubble?: boolean;
   /** Copy and regenerate under a finished message; off for the assistant's fixed prompts. */
   showActions?: boolean;
   onCopy?: (content: string) => void;
@@ -48,6 +51,7 @@ export function StreamingMessage({
   data,
   model = "Assistant IA",
   showHeader = true,
+  bubble = false,
   showActions = true,
   onCopy,
   onRetry,
@@ -67,9 +71,7 @@ export function StreamingMessage({
       >
         {showHeader && (
           <header className="mb-2 flex items-center gap-2">
-            <span className="flex size-6 items-center justify-center rounded-full bg-surface-raised">
-              <Sparkles className="size-3.5 text-brand" aria-hidden="true" />
-            </span>
+            <Mascot className="shrink-0" size={28} />
             <span className="font-medium">{model}</span>
             {streaming && (
               <span className="text-[0.8125rem] text-muted-foreground">Rédaction en cours…</span>
@@ -79,7 +81,13 @@ export function StreamingMessage({
         <div className={showHeader ? "pl-8" : undefined}>
           {reasoning && <Reasoning {...reasoning} />}
           {(content || !reasoning?.streaming) && (
-            <Content text={content} streaming={streaming} settled={settled} />
+            <div
+              className={cn(
+                bubble && "w-fit max-w-full rounded-2xl rounded-tl-md bg-[var(--card-band)] px-3.5 py-2",
+              )}
+            >
+              <Content text={content} streaming={streaming} settled={settled} />
+            </div>
           )}
           <AnimatePresence initial={false}>
             {status === "error" && (

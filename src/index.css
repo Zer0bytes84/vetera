@@ -3724,3 +3724,7 @@ button:focus-visible,
    13-inch screen the patient record stays visible beside it. The shell pushes its content by the same width. */
 :root { --assistant-width: clamp(420px, 55vw, 552px); }
 @media (min-width: 1024px) { :root { --assistant-width: clamp(460px, 46vw, 624px); } }
+
+/* The assistant panel's header ends on the line of the app's header, so the two rules meet: 60 px from the top of the
+   window, 68 in the Clean theme, whose header sits 8 px inside its frame (the 1 px border is part of that height). */
+.assistant-panel-header { box-sizing: border-box; height: 60px; }

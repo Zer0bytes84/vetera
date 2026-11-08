@@ -47,6 +47,8 @@ export type AgentComposerProps = {
   meter?: ReactNode;
   /** ⌘ or Ctrl + Entrée. Plain Entrée adds a line: a dictation is prose, not a command. */
   onSubmit?: () => void;
+  /** Takes the height the panel leaves: the field is the work area, not a fixed box. */
+  fill?: boolean;
   className?: string;
 };
 
@@ -63,6 +65,7 @@ export function AgentComposer({
   toolbar,
   meter,
   onSubmit,
+  fill = false,
   className,
 }: AgentComposerProps) {
   const id = useId();
@@ -76,10 +79,10 @@ export function AgentComposer({
 
   useLayoutEffect(() => {
     const el = inner.current;
-    if (!el) return;
+    if (!el || fill) return;
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 220)}px`;
-  }, [value]);
+  }, [value, fill]);
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (menu && menuOpen) {
@@ -108,7 +111,7 @@ export function AgentComposer({
 
   return (
     <MotionConfig reducedMotion="user">
-      <Shell className={cn("relative max-w-none bg-transparent p-0", className)}>
+      <Shell className={cn("relative max-w-none bg-transparent p-0", fill && "flex min-h-0 flex-col", className)}>
         {/* Opened by typing « @ », so it appears instantly: keyboard actions never animate. */}
         {menuOpen && menu && (
           <ul
@@ -136,14 +139,14 @@ export function AgentComposer({
             ))}
           </ul>
         )}
-        <Panel className="relative border border-border">
+        <Panel className={cn("relative border border-border", fill && "flex min-h-0 flex-1 flex-col")}>
           <label htmlFor={`${id}-input`} className="sr-only">
             {label}
           </label>
           <textarea
             ref={inner}
             id={`${id}-input`}
-            rows={2}
+            rows={fill ? undefined : 2}
             value={value}
             maxLength={maxLength}
             disabled={disabled}
@@ -156,7 +159,7 @@ export function AgentComposer({
             aria-expanded={menu ? menuOpen : undefined}
             aria-controls={menu && menuOpen ? `${id}-menu` : undefined}
             aria-activedescendant={menuOpen ? `${id}-opt-${active}` : undefined}
-            className="block max-h-[220px] min-h-[5.5rem] w-full resize-none bg-transparent px-3 pt-3 pb-0 text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:opacity-60"
+            className={cn("block w-full resize-none bg-transparent px-3 pt-3 pb-0 text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:opacity-60", fill ? "min-h-[14rem] flex-1" : "max-h-[220px] min-h-[5.5rem]")}
           />
           <div className="flex flex-wrap items-center justify-between gap-3 p-3">
             <div className="flex min-w-0 flex-wrap items-center gap-3">{toolbar}</div>

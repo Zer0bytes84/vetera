@@ -13,20 +13,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
-  Check,
   ChevronDown,
   CircleNotch,
-  Copy,
   Microphone,
-  Plus,
   RefreshCw,
   Search,
-  Sparkle,
   Stop,
   X,
 } from "@/lib/icons";
 import { toast } from "sonner";
+import { Check as CheckIcon, Copy as CopyIcon, Plus as PlusIcon } from "lucide-react";
+import { Button as ActionButton } from "@/components/ui/action-button";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { SourceList } from "@/components/ui/source-list";
 import { ToolCallBlock } from "@/components/ui/tool-call-block";
 import { useLocalConsultationAi } from "../hooks/use-local-consultation-ai";
 import { getLocalModels, importLocalModel } from "../local-ai/models";
@@ -375,7 +374,7 @@ export function PatientDocumentSearch({
   if (!ready)
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-6 py-10 text-center text-foreground">
-        <Sparkle className="size-5 text-muted-foreground" />
+        <Search className="size-5 text-muted-foreground" />
         <div className="space-y-1">
           <h4 className="t-14 font-medium">Recherche dans les dossiers</h4>
           <p className="max-w-[300px] t-12 text-muted-foreground">
@@ -614,56 +613,54 @@ export function PatientDocumentSearch({
           </div>
         )}
 
-        <ul className="divide-y divide-border/60">
-          {results.map((result) => {
-            const uniqueKey = `${result.sourceType}-${result.sourceId}-${result.section}-${result.chunkIndex ?? 0}`;
-            const passage = bestPassage(result.text, searchedQuery);
-            return (
-              <li key={uniqueKey} className="group flex flex-col gap-1.5 py-3 first:pt-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="min-w-0 truncate t-12 text-muted-foreground">
-                    {(audience === "all" || !patientId) && result.patientName && (
-                      <span className="font-medium text-foreground">{result.patientName} · </span>
-                    )}
-                    {SECTION_LABELS[result.section] ?? result.section}
-                  </p>
-                  <div className="flex shrink-0 items-center gap-0.5 opacity-70 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={() => handleCopy(passage, uniqueKey)}
-                      className="h-6 gap-1 px-1.5 t-12 text-muted-foreground hover:text-foreground"
+        {results.length > 0 && (
+          <SourceList
+            heading={`${results.length} passage${results.length > 1 ? "s" : ""} trouvé${results.length > 1 ? "s" : ""}`}
+            sources={results.map((result) => {
+              const uniqueKey = `${result.sourceType}-${result.sourceId}-${result.section}-${result.chunkIndex ?? 0}`;
+              const passage = bestPassage(result.text, searchedQuery);
+              return {
+                id: uniqueKey,
+                group: SOURCES.find((item) => item.key === result.sourceType)?.label ?? "Source",
+                title:
+                  (audience === "all" || !patientId) && result.patientName
+                    ? result.patientName
+                    : (SECTION_LABELS[result.section] ?? result.section),
+                tag:
+                  (audience === "all" || !patientId) && result.patientName
+                    ? (SECTION_LABELS[result.section] ?? result.section)
+                    : undefined,
+                passage: <Passage query={searchedQuery} text={passage} />,
+                actions: (
+                  <>
+                    <ActionButton
                       aria-label="Copier le passage"
+                      icon={copiedId === uniqueKey ? CheckIcon : CopyIcon}
+                      onClick={() => handleCopy(passage, uniqueKey)}
+                      variant="quiet"
                     >
-                      {copiedId === uniqueKey ? (
-                        <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
-                      ) : (
-                        <Copy className="size-3" />
-                      )}
-                      <span>{copiedId === uniqueKey ? "Copié" : "Copier"}</span>
-                    </Button>
+                      {copiedId === uniqueKey ? "Copié" : "Copier"}
+                    </ActionButton>
                     {onInsertExcerpt && (
-                      <Button
-                        size="xs"
-                        variant="ghost"
+                      <ActionButton
+                        aria-label="Insérer le passage dans le dossier"
+                        icon={PlusIcon}
                         onClick={() => {
                           onInsertExcerpt(passage, result.section);
                           toast.success("Passage inséré dans le dossier");
                         }}
-                        className="h-6 gap-1 px-1.5 t-12 text-muted-foreground hover:text-foreground"
-                        aria-label="Insérer le passage dans le dossier"
+                        variant="quiet"
                       >
-                        <Plus className="size-3" />
-                        <span>Insérer</span>
-                      </Button>
+                        Insérer
+                      </ActionButton>
                     )}
-                  </div>
-                </div>
-                <Passage text={passage} query={searchedQuery} />
-              </li>
-            );
-          })}
-        </ul>
+                  </>
+                ),
+              };
+            })}
+            subtitle={searchedQuery ? `Pour « ${searchedQuery} »` : undefined}
+          />
+        )}
       </div>
     </div>
   );

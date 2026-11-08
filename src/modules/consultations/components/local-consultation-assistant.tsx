@@ -15,20 +15,20 @@ import {
   X,
   XCircle,
 } from "@/lib/icons";
-import { ArrowRight as ArrowRightIcon, FileText as FileTextIcon, Mic, Sparkles, Square, Trash2 } from "lucide-react";
+import { ArrowRight as ArrowRightIcon, FileText as FileTextIcon, Mic, Square, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button as ActionButton, IconButton } from "@/components/ui/action-button";
 import { AgentComposer } from "@/components/ui/agent-composer";
 import { AgentQuestion } from "@/components/ui/agent-question";
 import { AgentStatus } from "@/components/ui/agent-status";
+import { ChatThread, type ThreadMessage } from "@/components/ui/chat-thread";
+import { UserMessage } from "@/components/ui/user-message";
 import { ConfirmationCard } from "@/components/ui/confirmation-card";
 import { ContextWindowMeter } from "@/components/ui/context-window-meter";
 import { Segmented } from "@/components/ui/segmented-control";
 import { StreamingMessage } from "@/components/ui/streaming-message";
 import { ToolApprovalQueue, type ApprovalDecision, type ApprovalRequest } from "@/components/ui/tool-approval-queue";
 import { Button } from "@/components/ui/button";
-import { Message, MessageContent } from "@/components/ui/message";
-import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -43,6 +43,9 @@ import {
   type DictationLanguage,
 } from "../local-ai/whisper-language";
 import { useSQLite } from "@/hooks/useSQLite";
+import { getPatientStatusMeta } from "@/config/status-meta";
+import { useAuth } from "@/contexts/AuthContext";
+import UserAvatar from "@/components/Avatar";
 import type { Appointment, ConsultationSoap, Owner, Patient } from "@/types/db";
 import { useLocalConsultationAi } from "../hooks/use-local-consultation-ai";
 import { nativeDictationEnabled } from "../local-ai/native-dictation";
@@ -112,6 +115,9 @@ interface Props {
 
 export type SoapNoteOrigin = "assistant" | "dictee";
 
+const WELCOME_WORDS =
+  "Dictez ou écrivez vos observations, rubrique par rubrique, puis relisez la note. Rien n’est enregistré sans votre validation.".split(" ");
+
 // Same text once line breaks and spacing are set aside: nothing was reworded.
 const sameWords = (a: string, b: string) =>
   a.replace(/\s+/gu, " ").trim() === b.replace(/\s+/gu, " ").trim();
@@ -175,7 +181,28 @@ export default function LocalConsultationAssistant({
     plan: responses[3],
   };
   const fullTranscript = guidedDictationTranscript(guidedAnswers);
+  // When each rubric's question reached the conversation, for the times of the thread.
+  const [stepAt, setStepAt] = useState<string[]>(() => [new Date().toISOString()]);
+  const [noteAt] = useState(() => new Date().toISOString());
+  const { currentUser } = useAuth();
+  // The welcome, and only the welcome, is written out word by word when the panel opens (the words fade in as they come, as
+  // in StreamingMessage). The questions, the answers and the note always appear whole. With reduced motion it is shown whole.
+  const [welcomeWords, setWelcomeWords] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? WELCOME_WORDS.length
+      : 1,
+  );
+  useEffect(() => {
+    if (welcomeWords >= WELCOME_WORDS.length) return;
+    const timer = setTimeout(() => setWelcomeWords((count) => count + 1), 70);
+    return () => clearTimeout(timer);
+  }, [welcomeWords]);
   const changeSection = (next: number) => {
+    setStepAt((previous) => {
+      const grown = [...previous];
+      while (grown.length <= next) grown.push(new Date().toISOString());
+      return grown;
+    });
     setSectionResponses(responses);
     setTranscript(responses[next]);
     setSectionIndex(next);
@@ -690,11 +717,92 @@ export default function LocalConsultationAssistant({
     if (list) list.scrollTop = list.scrollHeight;
   }, [activeTab, sectionIndex, setupOpen, ai.phase, visibleError]);
 
+  const threadMessages: ThreadMessage[] = [
+    {
+      id: "welcome",
+      role: "assistant",
+      at: stepAt[0],
+      content: (
+        <StreamingMessage
+          className="max-w-none"
+          data={{
+            status: welcomeWords < WELCOME_WORDS.length ? "streaming" : "done",
+            content: WELCOME_WORDS.slice(0, welcomeWords).join(" "),
+          }}
+          bubble
+          showActions={false}
+          showHeader={false}
+        />
+      ),
+    },
+    ...sectionPrompts.slice(0, sectionIndex + 1).flatMap((step, index): ThreadMessage[] => {
+      const answered = index < sectionIndex;
+      const reply = responses[index].trim();
+      const edit = answered ? (
+        <ActionButton
+          disabled={ai.busy || importing}
+          onClick={() => changeSection(index)}
+          variant="quiet"
+        >
+          Modifier « {step.title} »
+        </ActionButton>
+      ) : null;
+      return [
+        {
+          id: `prompt-${step.letter}`,
+          role: "assistant",
+          at: stepAt[index] ?? stepAt[0],
+          content: (
+            <div className="flex flex-col items-start gap-1">
+              <StreamingMessage
+                className="assistant-section-prompt max-w-none"
+                data={{ status: "done", content: `**${step.letter} · ${step.title}**\n\n${step.question}` }}
+                bubble
+                showActions={false}
+                showHeader={false}
+              />
+              {answered && !reply ? edit : null}
+            </div>
+          ),
+        },
+        ...(answered && reply
+          ? [
+              {
+                id: `answer-${step.letter}`,
+                role: "user" as const,
+                plain: true,
+                at: stepAt[index + 1] ?? stepAt[index] ?? stepAt[0],
+                content: (
+                  <div className="flex flex-col items-end gap-1">
+                    <UserMessage data={{ id: `answer-${step.letter}`, content: responses[index] }} />
+                    {edit}
+                  </div>
+                ),
+              },
+            ]
+          : []),
+      ];
+    }),
+  ];
+
   const assistantMood: MascotMood = saved
     ? "happy"
     : (ai.busy || saving)
       ? "thinking"
       : "idle";
+
+  // The assistant in the conversation is the mascot, with the mood the header shows; the vet is the vet's own avatar.
+  const renderThreadAvatar = (message: ThreadMessage) =>
+    message.role === "assistant" ? (
+      <Mascot mood={assistantMood} overflow size={28} />
+    ) : (
+      <UserAvatar
+        className="size-7 shrink-0"
+        name={currentUser?.displayName || "Vous"}
+        size="sm"
+        src={currentUser?.avatarUrl ?? undefined}
+      />
+    );
 
   return (
     <section
@@ -702,49 +810,39 @@ export default function LocalConsultationAssistant({
       className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden text-foreground"
     >
       {/* 1. Header Pinned */}
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border/80 pb-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <Mascot
-            interactive
-            size={48}
-            mood={assistantMood}
-            className="shrink-0"
-          />
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="t-14 font-semibold tracking-tight text-foreground">
-                Assistant Baitari
-              </h3>
-              {!patientId && patients.data.length > 0 && (
-                <Select
-                  value={effectivePatientId || "none"}
-                  onValueChange={(val) => setSelectedPatientId(val === "none" || !val ? undefined : val)}
-                >
-                  <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 t-12">
-                    <SelectValue placeholder="Patient…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Tous / Général</SelectItem>
-                    {patients.data.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-            <p className="flex min-w-0 items-center gap-1 t-12 text-muted-foreground">
-              {patient?.name ? (
-                <>
-                  <PatientSpeciesGlyph species={patient.species} />
-                  <span className="truncate">{patient.name} · Traitement local</span>
-                </>
-              ) : (
-                <span className="truncate">Traitement local</span>
-              )}
-            </p>
+      <div className="assistant-panel-header flex shrink-0 items-center justify-between gap-3 px-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-3">
+            <h3 className="text-[1.125rem] font-semibold leading-6 tracking-tight text-foreground">
+              Assistant Baitari
+            </h3>
+            {!patientId && patients.data.length > 0 && (
+              <Select
+                value={effectivePatientId || "none"}
+                onValueChange={(val) => setSelectedPatientId(val === "none" || !val ? undefined : val)}
+              >
+                <SelectTrigger className="h-6 max-w-[140px] rounded-lg border-border/70 px-2 t-12">
+                  <SelectValue placeholder="Patient…" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Tous / Général</SelectItem>
+                  {patients.data.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
+          {patient?.name ? (
+            <p className="flex min-w-0 items-center gap-1.5 t-12 text-muted-foreground">
+              <PatientSpeciesGlyph species={patient.species} />
+              <span className="truncate font-medium text-foreground">{patient.name}</span>
+              <span className="shrink-0">· {patient.species}</span>
+              <span className="shrink-0">· {getPatientStatusMeta(patient.status).label}</span>
+            </p>
+          ) : null}
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
@@ -812,8 +910,10 @@ export default function LocalConsultationAssistant({
         </div>
       </div>
 
+      {/* The content: a white card under the grey band of the header. */}
+      <div className="mx-3 mb-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-[var(--card-inset)] p-3">
       {/* 2. Tabs: few, and the validation tab appears once there is a note to read. */}
-      <div className="mt-3 shrink-0">
+      <div className="shrink-0">
         <Segmented<AssistantTab>
           className="flex w-full [&>button]:flex-1"
           label="Sections de l’assistant"
@@ -922,42 +1022,13 @@ export default function LocalConsultationAssistant({
       {activeTab === "dictation" && (
         <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
           <div ref={dictationScrollRef} className="assistant-dictation-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
-            {/* The mascot speaks once, in the header; the assistant's words are plain messages. */}
-            <StreamingMessage
-              className="assistant-welcome-card max-w-none"
-              data={{
-                status: "done",
-                content:
-                  "Dictez ou écrivez vos observations, rubrique par rubrique, puis relisez la note. Rien n’est enregistré sans votre validation.",
-              }}
-              showActions={false}
-              showHeader={false}
+            {/* The conversation: the assistant's questions, the vet's answers. The mascot speaks once, in the header. */}
+            <ChatThread
+              messages={threadMessages}
+              renderAvatar={renderThreadAvatar}
+              showNames={false}
+              userName="Vous"
             />
-
-            {sectionPrompts.slice(0, sectionIndex + 1).map((step, index) => (
-              <div key={step.letter} className="flex flex-col gap-2">
-                <StreamingMessage
-                  className="assistant-section-prompt max-w-none"
-                  data={{ status: "done", content: `**${step.letter} · ${step.title}**\n\n${step.question}` }}
-                  showActions={false}
-                  showHeader={false}
-                />
-                {index < sectionIndex && responses[index].trim() && (
-                  <Message align="end"><MessageContent><Bubble variant="muted"><BubbleContent className="whitespace-pre-wrap">{responses[index]}</BubbleContent></Bubble></MessageContent></Message>
-                )}
-                {index < sectionIndex && (
-                  <Button
-                    variant="outline"
-                    size="xs"
-                    disabled={ai.busy || importing}
-                    onClick={() => changeSection(index)}
-                    className="self-end t-12"
-                  >
-                    Modifier « {step.title} »
-                  </Button>
-                )}
-              </div>
-            ))}
 
             {/* Listening: the status card, with the real microphone level. */}
             {ai.phase === "listening" && (
@@ -1069,6 +1140,8 @@ export default function LocalConsultationAssistant({
               </div>
 
               <AgentComposer
+                className="flex-1"
+                fill
                 disabled={(ai.busy && ai.phase !== "listening") || importing}
                 label="Vos observations"
                 maxLength={MAX_TRANSCRIPT_LENGTH}
@@ -1160,18 +1233,16 @@ export default function LocalConsultationAssistant({
           </div>
 
           {/* The one action: continue to the next rubric, or read the note. */}
-          <div className="shrink-0 border-t border-border/80 pt-3">
+          <div className="flex shrink-0 justify-center pt-3">
             <ActionButton
-              className="w-full"
               disabled={
                 ai.busy ||
                 importing ||
                 (sectionIndex === 3 && !fullTranscript.trim() && !hasExistingNote) ||
                 !!mentionError
               }
-              icon={Sparkles}
               onClick={() => (refused && sectionIndex === 3 ? reviewDictation() : void generate())}
-              size="md"
+              size="sm"
               title="Structurer la consultation en note SOAP (⌘+Entrée)"
               variant="primary"
             >
@@ -1191,22 +1262,51 @@ export default function LocalConsultationAssistant({
                 <span className="t-12 text-muted-foreground">
                   Améliorer la formulation avec l’assistant ?
                 </span>
-                <ActionButton disabled={ai.busy} icon={Sparkles} onClick={() => void generate()}>
+                <ActionButton disabled={ai.busy} onClick={() => void generate()}>
                   Structurer avec l’IA
                 </ActionButton>
               </div>
             )}
 
-            {/* What the assistant reworded: each proposal is the vet's to accept or refuse. */}
-            {proposalRequests.length > 0 && (
-              <ToolApprovalQueue
-                data={proposalRequests}
-                heading="Reformulations proposées"
-                onDecide={decideProposals}
-                onUndo={undoProposal}
-                subtitle="Vous décidez de chaque formulation avant d’enregistrer."
-              />
-            )}
+            {/* The assistant's turn: what it prepared, and what it reworded for the vet to accept or refuse. */}
+            <ChatThread
+              messages={[
+                {
+                  id: "note",
+                  role: "assistant",
+                  at: noteAt,
+                  content: (
+                    <div className="flex flex-col gap-3">
+                      <StreamingMessage
+                        className="max-w-none"
+                        data={{
+                          status: "done",
+                          content:
+                            proposalRequests.length > 0
+                              ? `J’ai reformulé ${proposalRequests.length === 1 ? "une rubrique" : `${proposalRequests.length} rubriques`}. Pour chacune, gardez ma formulation ou votre dictée, puis validez la note : rien n’est enregistré avant.`
+                              : "Voici votre note. Relisez chaque rubrique, puis validez : rien n’est enregistré avant votre accord.",
+                        }}
+                        bubble
+                        showActions={false}
+                        showHeader={false}
+                      />
+                      {proposalRequests.length > 0 && (
+                        <ToolApprovalQueue
+                          data={proposalRequests}
+                          heading="Reformulations proposées"
+                          onDecide={decideProposals}
+                          onUndo={undoProposal}
+                        />
+                      )}
+                    </div>
+                  ),
+                },
+              ]}
+              renderAvatar={renderThreadAvatar}
+              showNames={false}
+              userName="Vous"
+            />
+
             {visibleError && (
               <div
                 role="alert"
@@ -1303,6 +1403,8 @@ export default function LocalConsultationAssistant({
           />
         </div>
       )}
+
+      </div>
 
       {/* Discard Dialog */}
       {discardOpen && (

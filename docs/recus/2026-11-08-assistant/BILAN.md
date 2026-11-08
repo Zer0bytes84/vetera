@@ -1,6 +1,6 @@
 # Panneau assistant : composants de Yuri, plus large, plus sobre
 
-8 novembre 2026. Captures : `quatre-themes/` (Clean et Premium, clair et sombre, à 1440 × 900 : panneau fermé, ouvert, en dictée, en attente de validation) et `largeurs/` (13 pouces serré à 1280 × 800, grand écran à 1920 × 1080).
+8 novembre 2026. Captures : `quatre-themes/` (Clean et Premium, clair et sombre, à 1440 × 900 : panneau fermé, ouvert, en dictée, recherche avec passages trouvés, en attente de validation) et `largeurs/` (13 pouces serré à 1280 × 800).
 
 ## Composants installés, où ils servent
 
@@ -8,9 +8,12 @@ Installés à la main depuis `~/refs/tuffui` dans `src/components/ui/`, icônes 
 
 | Composant | Où il est utilisé |
 |---|---|
-| `streaming-message` | Les messages de l'assistant dans la dictée : l'invite d'accueil et la question de chaque rubrique. Signé « Assistant IA ». Sans copier ni régénérer, sans sources (rien ne sort de la machine). |
+| `streaming-message` | Les messages de l'assistant : l'accueil, la question de chaque rubrique, l'introduction de la note à relire, chacun dans sa bulle. Sans copier ni régénérer, sans sources (rien ne sort de la machine). |
 | `agent-composer` | Le champ de dictée : champ qui s'agrandit, menu des @mentions de patients (mêmes touches : flèches, Entrée, Tab, Échap), boutons de dictée dans son pied, ⌘ + Entrée pour continuer. Ni modes, ni modèles, ni fichiers joints, ni file de messages. |
 | `agent-status` | L'écoute en cours (avec le vrai niveau du micro et le chronomètre), l'attente d'autorisation du micro, la préparation du micro, la préparation de la note (remplace `AssistantActivity`). |
+| `chat-thread` | Le fil de la dictée et de la validation : la mascotte à gauche pour l'assistant, l'avatar du vétérinaire à droite, bulles alignées sur la première ligne. |
+| `user-message` | Les réponses dictées du vétérinaire, en bulle à droite. |
+| `source-list` | Les passages trouvés par la recherche, groupés par type de dossier, le passage mis en avant, « Copier » et « Insérer » dessous. Variante panneau seulement, sans liens. |
 | `tool-call-block` | La recherche dans les dossiers : une ligne repliée « Recherche dans les dossiers », durée, nombre de passages, détails au dépli. Mots, jamais JSON ni nom d'outil. |
 | `tool-approval-queue` | Les reformulations proposées par l'assistant, une par rubrique, « votre dictée » contre « formulation proposée » : accepter, garder ma dictée, annuler. |
 | `confirmation-card` | L'enregistrement de la note SOAP : une carte, avec les alertes de la note (traitements conservés mot pour mot, éviction). |
@@ -68,4 +71,13 @@ Le panneau dit « Assistant IA » et « Dictée vocale » (la ligne « Assistant
 
 ## Vérifications
 
-`tsc -b` et `eslint .` propres ; suite de tests verte (207 fichiers, 1646 tests, dont 12 ajoutés pour ces composants). Le test existant sur l'attente du micro a guidé une correction : le libellé d'origine « Autorisation du microphone… » est conservé.
+`tsc -b` et `eslint .` propres ; suite de tests verte (207 fichiers, 1649 tests).
+
+## Ajouts après les premiers retours
+
+- **Bulles** : le registre de Yuri ne met que le vétérinaire en bulle (`user-message`, `chat-thread`) ; son `streaming-message` dessine l'assistant en texte libre. J'ai donc ajouté à `streaming-message` une option `bubble` (même géométrie que la bulle du vétérinaire, coin arrondi côté de l'auteur plat). Et la bulle du vétérinaire passe de `surface-raised` (blanc, invisible sur la carte blanche du panneau) à une teinte `brand`. Ce sont deux écarts au registre, signalés dans l'en-tête des fichiers.
+- **Pas d'étoile « IA »** : retirée du bouton « Continuer », de « Structurer avec l'IA », de l'avatar par défaut du fil, de l'en-tête de `streaming-message`, de `agent-question` et de l'état « recherche à installer ». L'assistant, c'est la mascotte, avec son humeur (réfléchit pendant la rédaction, contente après l'enregistrement). Reste hors panneau : le bouton d'ouverture dans l'en-tête de l'app et la carte du nouvel assistant dans Paramètres.
+- **Mascotte dans les bulles** : affichée entière (oreille non rognée), centrée sur la première ligne de la bulle. Les noms « Assistant IA » et « Vous » au-dessus des bulles sont retirés (la mascotte et le côté suffisent).
+- **En-tête** : bande grise arrondie, « Assistant Baitari » en grand et gras ; dessous le patient (nom appuyé), l'espèce et l'état de santé. Plus de grande mascotte ni de « Traitement local » (retiré partout dans l'en-tête). Le contenu est dans une carte blanche. La ligne sous l'en-tête de l'app arrive au bord de cette carte à la même hauteur : 60 px, 68 px en Clean.
+- **Largeur et vide** : le champ de dictée prend la hauteur que les bulles lui laissent ; bouton « Continuer » centré, en pilule, plus petit.
+- **Texte progressif** : seul le message d'accueil s'écrit mot à mot à l'ouverture (les mots apparaissent en fondu, effet de `streaming-message`). C'est un affichage progressif d'un texte connu, pas un flux du moteur. Les questions, les réponses et la note apparaissent d'un bloc. Avec « réduire les animations », l'accueil est affiché d'un bloc. Pour mémoire : le moteur local de rédaction ne livre pas de texte lisible au fil de la génération (le worker ne renvoie qu'un nombre de caractères, la sortie étant un JSON validé à la fin) ; je n'ai donc rien simulé pour les réponses générées.

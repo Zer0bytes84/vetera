@@ -8,7 +8,7 @@
  * `negative`, `warning` are our tones; never the TuffUI theme); text is French, never under 12 px; no demo data.
  */
 
-import { Undo2, MessageCircleMore, Check, type LucideIcon, PencilLine, Sparkles } from "lucide-react";
+import { Undo2, MessageCircleMore, Check, type LucideIcon, PencilLine } from "lucide-react";
 import { AnimatePresence, LayoutGroup, MotionConfig, motion } from "motion/react";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui/action-button";
@@ -149,11 +149,6 @@ export function AgentQuestion({
         </div>
         {status === "pending" && data.suggested && suggested && (
           <p className="-mt-1 flex items-start gap-1.5 px-3.5 pb-3 text-[0.8125rem] text-muted-foreground">
-            <Sparkles
-             
-              className="mt-0.5 size-3.5 shrink-0 text-brand"
-              aria-hidden="true"
-            />
             <span>
               Suggestion : <span className="text-foreground">{suggested.label}</span> —{" "}
               {data.suggested.reason}

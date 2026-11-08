@@ -19,6 +19,8 @@ export interface MascotProps {
   animated?: boolean;
   size?: number;
   framing?: "full" | "portrait";
+  /** Ears and paws may leave the round frame instead of being cut by it. */
+  overflow?: boolean;
   className?: string;
   interactive?: boolean;
   fallbackToLogo?: boolean;
@@ -31,6 +33,7 @@ export function Mascot({
   animated,
   size = 48,
   framing = "portrait",
+  overflow,
   className,
   interactive = false,
   fallbackToLogo = true,
@@ -61,6 +64,7 @@ export function Mascot({
       mood={mood}
       size={size}
       framing={framing}
+      overflow={overflow}
       className={className}
     />
   );
