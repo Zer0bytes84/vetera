@@ -44,6 +44,10 @@ objc2 = "0.6"
 objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSApplication", "NSImage", "NSResponder"] }
 objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSData"] }
 
+# Windows only: the application's header becomes the title bar (no native bar). Mac keeps its overlay, Linux its native bar.
+[target.'cfg(target_os = "windows")'.dependencies]
+tauri-plugin-decorum = "=1.1.1"
+
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = "2.10"
 
