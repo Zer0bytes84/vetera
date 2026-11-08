@@ -1,0 +1,143 @@
+/*
+ * Windows window controls (tauri-plugin-decorum) drawn as part of our header. Measured on our header: 60 px high in the four
+ * themes. The three buttons take the Windows caption width, 46 px each: 138 px in all, kept free at the end of the header and
+ * nothing more. They stay in the DOM and visible (decorum shows the Snap Layout menu from a hover on the maximize button).
+ *
+ * Selectors are the ones decorum creates: div[data-tauri-decorum-tb] (our #window-controls), button.decorum-tb-btn,
+ * button#decorum-tb-minimize, button#decorum-tb-maximize, button#decorum-tb-close. decorum injects its own <style> for
+ * .decorum-tb-btn (58 × 32, grey and red hovers, the second with !important): every rule here outweighs it.
+ */
+
+#window-controls[hidden] {
+  display: none !important;
+}
+
+:root[data-window-controls="decorum"] {
+  --window-control-width: 46px;
+  --window-controls-width: calc(var(--window-control-width) * 3);
+  --window-controls-height: 60px;
+}
+
+/* Fixed at the window's top-right corner, above the header (z-40) and under dialogs and sheets (z-50): a modal still covers
+   the whole window, as everywhere else in the application. */
+:root[data-window-controls="decorum"] div#window-controls[data-tauri-decorum-tb] {
+  position: fixed !important;
+  top: 0 !important;
+  right: auto !important;
+  left: auto !important;
+  inset-inline-end: 0 !important;
+  z-index: 45 !important;
+  display: flex !important;
+  width: var(--window-controls-width) !important;
+  height: var(--window-controls-height) !important;
+  align-items: stretch !important;
+  justify-content: flex-end !important;
+  background: transparent !important;
+}
+:root[data-window-controls="decorum"][data-window-fullscreen="true"] div#window-controls[data-tauri-decorum-tb] {
+  display: none !important;
+}
+
+:root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn {
+  position: relative !important;
+  /* Flex, not grid: decorum writes a Segoe glyph as text in each button; in a grid that text became a second row and pushed
+     the icon up. Here it is a zero-size item beside it. */
+  display: flex !important;
+  width: var(--window-control-width) !important;
+  height: 100% !important;
+  flex: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--foreground) !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  cursor: default !important;
+  transition: background-color var(--speed-highlight-out, 120ms) ease !important;
+}
+:root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: -4px !important;
+}
+:root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn::before {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  content: "";
+  -webkit-mask: var(--window-control-icon) center / 16px 16px no-repeat;
+  mask: var(--window-control-icon) center / 16px 16px no-repeat;
+}
+
+/* The header's own icons: a 16 px line drawing, 1.5 stroke. */
+:root[data-window-controls="decorum"] #window-controls button#decorum-tb-minimize {
+  --window-control-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M3.5 8h9'/%3E%3C/svg%3E");
+}
+:root[data-window-controls="decorum"] #window-controls button#decorum-tb-maximize {
+  --window-control-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'%3E%3Crect x='3.75' y='3.75' width='8.5' height='8.5' rx='1.5'/%3E%3C/svg%3E");
+}
+:root[data-window-controls="decorum"][data-window-maximized="true"] #window-controls button#decorum-tb-maximize {
+  --window-control-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round' stroke-linecap='round'%3E%3Crect x='3.25' y='5.25' width='7.5' height='7.5' rx='1.5'/%3E%3Cpath d='M5.75 3.25h5.5a1.5 1.5 0 0 1 1.5 1.5v5.5'/%3E%3C/svg%3E");
+}
+:root[data-window-controls="decorum"] #window-controls button#decorum-tb-close {
+  --window-control-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M4 4l8 8M12 4l-8 8'/%3E%3C/svg%3E");
+}
+
+/* Hovers: our header's hover tone; the close button keeps Windows' own red. On a touch screen there is no hover: decorum's own
+   grey and red are cancelled too. */
+:root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn:hover,
+:root[data-window-controls="decorum"] #window-controls button#decorum-tb-close:hover {
+  background-color: transparent !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn:hover {
+    background-color: color-mix(in oklab, var(--foreground) 7%, transparent) !important;
+  }
+  :root[data-window-controls="decorum"] #window-controls button#decorum-tb-close:hover {
+    background-color: #e81123 !important;
+    color: #ffffff !important;
+  }
+}
+:root[data-window-controls="decorum"] #window-controls button.decorum-tb-btn:active {
+  background-color: color-mix(in oklab, var(--foreground) 12%, transparent) !important;
+}
+:root[data-window-controls="decorum"] #window-controls button#decorum-tb-close:active {
+  background-color: #f1707a !important;
+  color: #ffffff !important;
+}
+
+/* The header keeps exactly the controls' width free at its end, and draws the same thin rule as after the sidebar button,
+   10 px from the avatar. In full screen the controls are gone, and so are the room and the rule. */
+.window-controls-divider {
+  display: none;
+}
+:root:root:root:root[data-window-controls="decorum"]:not([data-window-fullscreen="true"]) [data-slot="app-header"] .shell-toolbar {
+  padding-inline-end: var(--window-controls-width) !important;
+}
+:root[data-window-controls="decorum"]:not([data-window-fullscreen="true"]) .shell-toolbar > .window-controls-divider {
+  display: block;
+  margin-inline: -10px 10px;
+}
+
+/* The light sheet reaches the window's top and right edges (Clean leaves an 8 px dark frame there): the close button sits in
+   the very corner, where Windows users aim, and the dark sidebar still rises to the top-left corner. The skins pad the inset
+   with important rules of their own: these sit in the `base` layer, whose important declarations come first. */
+@layer base {
+  :root[data-window-controls="decorum"]:not([data-window-fullscreen="true"]) [data-slot="sidebar-inset"] {
+    padding-top: 0 !important;
+    padding-inline-end: 0 !important;
+  }
+  /* #root is rounded for the Mac window; Windows rounds (or squares, when maximized) its own window. */
+  :root[data-window-controls="decorum"] #root {
+    border-radius: 0 !important;
+  }
+  :root[data-window-controls="decorum"]:not([data-window-fullscreen="true"]) [data-slot="shell-scroll-panel"],
+  :root[data-window-controls="decorum"]:not([data-window-fullscreen="true"]) [data-slot="app-header"] {
+    border-start-end-radius: 0 !important;
+  }
+}

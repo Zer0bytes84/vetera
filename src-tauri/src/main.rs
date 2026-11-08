@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-#[cfg(debug_assertions)]
+#[cfg(any(debug_assertions, target_os = "windows"))]
 use tauri::Manager;
 
 mod clinic_database;
@@ -11,7 +11,14 @@ mod local_ai_download;
 mod dictation;
 
 fn main() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default();
+
+    // Windows: decorum removes the native title bar and puts minimize, maximize and close in our header (index.html
+    // holds the element it fills). Registered on Windows only, so Mac and Linux keep their bar exactly as before.
+    #[cfg(target_os = "windows")]
+    let builder = builder.plugin(tauri_plugin_decorum::init());
+
+    builder
         .plugin(tauri_plugin_sql::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
@@ -21,6 +28,15 @@ fn main() {
         .manage(clinic_network::ClinicNetwork::new())
         .setup(|_app| {
             clinic_network::init(_app.handle());
+
+            // If the bar cannot be replaced, the window keeps its native one: the application still starts.
+            #[cfg(target_os = "windows")]
+            if let Some(window) = _app.get_webview_window("main") {
+                use tauri_plugin_decorum::WebviewWindowExt;
+                if let Err(error) = window.create_overlay_titlebar() {
+                    eprintln!("barre de titre : {error:?}");
+                }
+            }
 
             #[cfg(all(debug_assertions, target_os = "macos"))]
             nommer_processus_dev(&_app.package_info().name);

@@ -951,6 +951,9 @@ function AppShellInner() {
                   unreadCount={unreadCount}
                 />
               )}
+
+              {/* Windows: the same thin rule between the avatar and the window controls (shown by window-controls.css). */}
+              <span aria-hidden="true" className="shell-header-divider window-controls-divider" />
             </div>
           </motion.header>
 
